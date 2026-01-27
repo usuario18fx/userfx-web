@@ -1,14 +1,17 @@
 // api/track.js
-// Tracking seguro: valida Telegram initData (para saber "quién").
-// Permite testing en navegador SOLO si mandas X-Track-Secret (TRACK_SECRET en Vercel).
-import { createHmac, timingSafeEqual } from "crypto";
+// - Valida Telegram initData con BOT_TOKEN (para saber "quién")
+// - Permite testing fuera de Telegram con X-Track-Secret (TRACK_SECRET en Vercel)
+// - Guarda eventos en Supabase (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY)
+
+import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 function timingSafeEqualHex(aHex, bHex) {
   try {
     const a = Buffer.from(aHex, "hex");
     const b = Buffer.from(bHex, "hex");
     if (a.length !== b.length) return false;
-    return timingSafeEqual(a, b);
+    return crypto.timingSafeEqual(a, b);
   } catch {
     return false;
   }
@@ -18,34 +21,34 @@ function validateTelegramInitData(initDataRaw, botToken) {
   if (!initDataRaw || typeof initDataRaw !== "string") {
     return { ok: false, error: "initData_empty" };
   }
-  
+
   const params = new URLSearchParams(initDataRaw);
   const hash = params.get("hash");
   if (!hash) return { ok: false, error: "missing_hash" };
-  // Construir data_check_string: ordenar keys, excluir hash, unir con \n como key=value
+
+  // data_check_string: ordenar keys, excluir hash, unir con \n como key=value
   params.delete("hash");
   const pairs = [];
   for (const [k, v] of params.entries()) pairs.push([k, v]);
   pairs.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
   const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join("\n");
-  
+
   // secret_key = HMAC_SHA256("WebAppData", bot_token)
-  const secretKey = createHmac("sha256", "WebAppData").update(botToken).digest();
+  const secretKey = crypto.createHmac("sha256", "WebAppData").update(botToken).digest();
 
   // computed_hash = HMAC_SHA256(data_check_string, secret_key)
-  const computed = createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
+  const computed = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
 
   if (!timingSafeEqualHex(computed, hash)) {
     return { ok: false, error: "bad_hash" };
   }
 
-  // Parse user si existe
   const out = Object.fromEntries(pairs);
   if (out.user) {
     try {
       out.user = JSON.parse(out.user);
     } catch {
-      // si no parsea, lo dejamos como string
+      // leave as string
     }
   }
 
@@ -66,25 +69,6 @@ function pickTelegramIdentity(tgData) {
   };
 }
 
-async function readJsonBody(req) {
-  // Vercel a veces NO llena req.body en functions vanilla.
-  try {
-    if (req.body && typeof req.body === "object") return req.body;
-
-    let raw = "";
-    await new Promise((resolve, reject) => {
-      req.on("data", (c) => (raw += c));
-      req.on("end", resolve);
-      req.on("error", reject);
-    });
-
-    if (!raw) return {};
-    return JSON.parse(raw);
-  } catch {
-    return {};
-  }
-}
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "method_not_allowed" });
@@ -92,29 +76,32 @@ export default async function handler(req, res) {
 
   const BOT_TOKEN = process.env.BOT_TOKEN;
   const TRACK_SECRET = process.env.TRACK_SECRET || "";
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!BOT_TOKEN) {
-    return res.status(500).json({ ok: false, error: "server_missing_bot_token" });
+  if (!BOT_TOKEN) return res.status(500).json({ ok: false, error: "server_missing_bot_token" });
+  if (!SUPABASE_URL) return res.status(500).json({ ok: false, error: "server_missing_supabase_url" });
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    return res.status(500).json({ ok: false, error: "server_missing_service_role_key" });
   }
 
-  const body = await readJsonBody(req);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false },
+  });
 
+  const body = req.body && typeof req.body === "object" ? req.body : {};
   const event = typeof body.event === "string" ? body.event : "unknown";
   const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
+  const href = typeof body.href === "string" ? body.href : null;
 
-  // initData puede venir por header o por body
-  const initDataHeader =
-    req.headers["x-telegram-init-data"] ||
-    req.headers["x-telegram-initdata"] ||
-    req.headers["x-telegram-init-data".toLowerCase()] || // por si acaso
-    "";
-
+  // initData por header o body
+  const initDataHeader = req.headers["x-telegram-init-data"];
   const initData =
     (typeof initDataHeader === "string" && initDataHeader) ||
     (typeof body.initData === "string" ? body.initData : "") ||
     "";
 
-  // Para testing en browser: header X-Track-Secret debe matchear TRACK_SECRET
+  // Testing fuera de Telegram: X-Track-Secret
   const secretHeader = req.headers["x-track-secret"];
   const hasSecret =
     TRACK_SECRET &&
@@ -129,16 +116,14 @@ export default async function handler(req, res) {
   if (hasTelegramInitData) {
     const v = validateTelegramInitData(initData, BOT_TOKEN);
     if (!v.ok) {
-      console.log("[track][reject]", v.error);
       return res.status(401).json({ ok: false, error: "bad_initData", reason: v.error });
     }
     telegram = pickTelegramIdentity(v.data);
   } else if (!hasSecret) {
-    console.log("[track][reject]", "missing_initData_or_secret");
     return res.status(401).json({ ok: false, error: "missing_initData_or_secret" });
   }
 
-  // Geo aproximado por IP (Vercel headers)
+  // Geo aprox por headers de Vercel
   const geo = {
     country: req.headers["x-vercel-ip-country"] || null,
     region: req.headers["x-vercel-ip-country-region"] || null,
@@ -156,8 +141,29 @@ export default async function handler(req, res) {
     telegram, // null si fue testing con secret
     geo,
     ua: req.headers["user-agent"] || null,
+    href,
   };
 
+  // Log (por si quieres verlo en Vercel Logs)
   console.log("[track]", JSON.stringify(payload));
+
+  // Insert en Supabase
+  const { error } = await supabase.from("track_events").insert([
+    {
+      ts: payload.ts,
+      event: payload.event,
+      meta: payload.meta,
+      telegram: payload.telegram,
+      geo: payload.geo,
+      ua: payload.ua,
+      href: payload.href,
+    },
+  ]);
+
+  if (error) {
+    console.error("[track][supabase_error]", error);
+    // No rompo la UI del usuario: devuelvo 200 igual, pero queda el error en logs.
+  }
+
   return res.status(200).json({ ok: true });
 }
