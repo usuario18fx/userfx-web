@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>UserFx — Telegram Bot</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap"
+			rel="stylesheet"
+		/>
+
+		<link rel="stylesheet" href="./styles.css" />
+		<script src="https://telegram.org/js/telegram-web-app.js"></script>
+	</head>
+
+	<body>
+		<header class="topbar">
+			<div class="brand">
+				<div class="logo">UF</div>
+				<div class="brand-text">
+					<div class="name">UserFx</div>
+					<div class="tag">Telegram Bot</div>
+				</div>
+			</div>
+
+			<nav class="actions">
+				<a class="btn ghost" href="#galeria">Galería</a>
+				<a class="btn primary" href="https://t.me/UserFx" target="_blank" rel="noreferrer">
+					Abrir en Telegram
+				</a>
+			</nav>
+		</header>
+
+		<main class="scene" id="galeria">
+			<div class="overlay"></div>
+
+			<div class="bg-typography" aria-hidden="true">
+				<span>UserFx</span>
+				<span>Gallery</span>
+			</div>
+
+			<section class="content">
+				<div class="left">
+					<h1>Portada + Galería 3D para tu bot</h1>
+					<p class="sub">
+						Click en las páginas para abrir/cerrar. Efecto “libro” 3D, sin complicarte la vida.
+					</p>
+
+					<div class="cta">
+						<a class="btn primary big" id="enterBotBtn" href="https://t.me/UserFx" target="_blank" rel="noreferrer">
+                           Entrar al bot
+                            </a>
+
+						<button class="btn ghost big" id="resetBtn" type="button">Reset libro</button>
+					</div>
+				</div>
+
+				<div class="right">
+					<div class="galeria-book-3d" id="book" aria-label="Galería 3D tipo libro"></div>
+					<p class="micro">
+						Haz click en una página. Click otra vez para cerrar.
+					</p>
+				</div>
+			</section>
+		</main>
+
+		<footer class="footer">
+			<span>© <span id="year"></span> UserFx</span>
+			<span class="dot">•</span>
+			<a href="https://t.me/UserFx" target="_blank" rel="noreferrer">t.me/UserFx</a>
+		</footer>
+
+		<script src="./app.js"></script>
+	</body>
+</html>
