@@ -1,15 +1,14 @@
 // api/track.js
 // Tracking seguro: valida Telegram initData (para saber "quién").
 // Permite testing en navegador SOLO si mandas X-Track-Secret (TRACK_SECRET en Vercel).
-
-import crypto from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 
 function timingSafeEqualHex(aHex, bHex) {
   try {
     const a = Buffer.from(aHex, "hex");
     const b = Buffer.from(bHex, "hex");
     if (a.length !== b.length) return false;
-    return crypto.timingSafeEqual(a, b);
+    return timingSafeEqual(a, b);
   } catch {
     return false;
   }
@@ -19,33 +18,35 @@ function validateTelegramInitData(initDataRaw, botToken) {
   if (!initDataRaw || typeof initDataRaw !== "string") {
     return { ok: false, error: "initData_empty" };
   }
-
+  
   const params = new URLSearchParams(initDataRaw);
   const hash = params.get("hash");
   if (!hash) return { ok: false, error: "missing_hash" };
-
-  // Construir data_check_string
+  // Construir data_check_string: ordenar keys, excluir hash, unir con \n como key=value
   params.delete("hash");
   const pairs = [];
   for (const [k, v] of params.entries()) pairs.push([k, v]);
   pairs.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
   const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join("\n");
-
+  
   // secret_key = HMAC_SHA256("WebAppData", bot_token)
-  const secretKey = crypto.createHmac("sha256", "WebAppData").update(botToken).digest();
+  const secretKey = createHmac("sha256", "WebAppData").update(botToken).digest();
 
   // computed_hash = HMAC_SHA256(data_check_string, secret_key)
-  const computed = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
+  const computed = createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
 
   if (!timingSafeEqualHex(computed, hash)) {
     return { ok: false, error: "bad_hash" };
   }
 
+  // Parse user si existe
   const out = Object.fromEntries(pairs);
   if (out.user) {
     try {
       out.user = JSON.parse(out.user);
-    } catch {}
+    } catch {
+      // si no parsea, lo dejamos como string
+    }
   }
 
   return { ok: true, data: out };
@@ -65,17 +66,23 @@ function pickTelegramIdentity(tgData) {
   };
 }
 
-function normalizeBody(reqBody) {
-  if (!reqBody) return {};
-  if (typeof reqBody === "object") return reqBody;
-
-  // A veces llega string/buffer (sendBeacon o clientes raros)
+async function readJsonBody(req) {
+  // Vercel a veces NO llena req.body en functions vanilla.
   try {
-    if (typeof reqBody === "string") return JSON.parse(reqBody);
-    if (Buffer.isBuffer(reqBody)) return JSON.parse(reqBody.toString("utf8"));
-  } catch {}
+    if (req.body && typeof req.body === "object") return req.body;
 
-  return {};
+    let raw = "";
+    await new Promise((resolve, reject) => {
+      req.on("data", (c) => (raw += c));
+      req.on("end", resolve);
+      req.on("error", reject);
+    });
+
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 export default async function handler(req, res) {
@@ -90,19 +97,24 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: "server_missing_bot_token" });
   }
 
-  const body = normalizeBody(req.body);
+  const body = await readJsonBody(req);
+
   const event = typeof body.event === "string" ? body.event : "unknown";
   const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
 
-  // initData por header o body
+  // initData puede venir por header o por body
   const initDataHeader =
-    (typeof req.headers["x-telegram-init-data"] === "string" && req.headers["x-telegram-init-data"]) ||
-    (typeof req.headers["x-telegram-initdata"] === "string" && req.headers["x-telegram-initdata"]) ||
+    req.headers["x-telegram-init-data"] ||
+    req.headers["x-telegram-initdata"] ||
+    req.headers["x-telegram-init-data".toLowerCase()] || // por si acaso
     "";
 
-  const initData = initDataHeader || (typeof body.initData === "string" ? body.initData : "");
+  const initData =
+    (typeof initDataHeader === "string" && initDataHeader) ||
+    (typeof body.initData === "string" ? body.initData : "") ||
+    "";
 
-  // Testing en browser: X-Track-Secret debe matchear TRACK_SECRET
+  // Para testing en browser: header X-Track-Secret debe matchear TRACK_SECRET
   const secretHeader = req.headers["x-track-secret"];
   const hasSecret =
     TRACK_SECRET &&
@@ -117,10 +129,12 @@ export default async function handler(req, res) {
   if (hasTelegramInitData) {
     const v = validateTelegramInitData(initData, BOT_TOKEN);
     if (!v.ok) {
+      console.log("[track][reject]", v.error);
       return res.status(401).json({ ok: false, error: "bad_initData", reason: v.error });
     }
     telegram = pickTelegramIdentity(v.data);
   } else if (!hasSecret) {
+    console.log("[track][reject]", "missing_initData_or_secret");
     return res.status(401).json({ ok: false, error: "missing_initData_or_secret" });
   }
 
@@ -145,6 +159,5 @@ export default async function handler(req, res) {
   };
 
   console.log("[track]", JSON.stringify(payload));
-
   return res.status(200).json({ ok: true });
 }
