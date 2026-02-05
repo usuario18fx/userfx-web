@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fx — WebSite</title>
+    <title>Fx — Website</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -50,12 +50,7 @@
 
       <section class="content">
         <div class="left">
-          <h1 class="sigil">🜲</h1>
-
-          <p class="lead">
-            Galería + acceso directo al bot.
-            <span class="muted">Sin drama, sin 404, sin llorar.</span>
-          </p>
+          <h1 class="hero" aria-label="Fx">🜲</h1>
 
           <div class="cta">
             <a
@@ -67,22 +62,18 @@
             >
               ˗ˏˋ 🕻 ˎˊ˗
             </a>
-          </div>
-
-          <div class="hint">
-            Tip: usa <span class="kbd">←</span> <span class="kbd">→</span> o los botones.
+            <p class="hint">Tip: click en el “libro” para pasar páginas.</p>
           </div>
         </div>
 
         <div class="right">
-          <div class="galeria-book-3d" aria-label="Galería tipo libro 3D">
-            <div class="book" id="book" aria-live="polite"></div>
-
-            <div class="book-controls">
-              <button class="btn ghost" id="prevBtn" type="button">← Prev</button>
-              <button class="btn ghost" id="nextBtn" type="button">Next →</button>
-            </div>
-          </div>
+          <div
+            class="galeria-book-3d"
+            id="book"
+            aria-label="Galería 3D tipo libro"
+            role="button"
+            tabindex="0"
+          ></div>
 
           <p class="micro">═══ 🜲 ═══</p>
         </div>
