@@ -1,84 +1,107 @@
-/* app.js — UserFX Web (static) */
+/* UserFX Web – flipbook 3D simple
+   Nota: En Vercel (Linux) las rutas son case-sensitive.
+   Si tu archivo es "smkl-.MP4", debes poner exactamente ".MP4".
+*/
 
+const $ = (id) => document.getElementById(id);
+
+const yearEl = $("year");
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+const book = $("book");
+if (!book) throw new Error("No se encontró #book");
+
+// Lista EXACTA según tu carpeta /assets
 const MEDIA = [
-  { type: "img",  src: "./assets/1.jpg" },
-  { type: "img",  src: "./assets/2.jpg" },
-  { type: "video",src: "./assets/3.mp4" },
-  { type: "img",  src: "./assets/4.jpg" },
-  { type: "img",  src: "./assets/5.jpg" },
-  { type: "video",src: "./assets/6.mp4" },
-  { type: "img",  src: "./assets/7.jpg" },
-  { type: "img",  src: "./assets/8.jpg" },
-  { type: "img",  src: "./assets/9.jpg" },
+  "1.jpg",
+  "2.jpg",
+  "3.mp4",
+  "4.1.jpg",
+  "4.jpg",
+  "5.jpg",
+  "6.mp4",
+  "7.1.jpg",
+  "7.jpg",
+  "8.1.jpg",
+  "8.jpg",
+  "9.jpg",
+  "smkl-.MP4",
 ];
 
-// Si existen en tu carpeta (por el screenshot), puedes descomentar:
-// MEDIA.splice(4, 0, { type:"img", src:"./assets/4.1.jpg" });
-// MEDIA.splice(8, 0, { type:"img", src:"./assets/7.1.jpg" });
-// MEDIA.splice(10,0, { type:"img", src:"./assets/8.1.jpg" });
+const isVideo = (name) => /\.mp4$/i.test(name);
 
-function $(sel) { return document.querySelector(sel); }
+function mediaNode(file) {
+  const src = `./assets/${file}`;
 
-function makeMediaEl(item) {
-  if (item.type === "video") {
+  if (isVideo(file)) {
     const v = document.createElement("video");
-    v.className = "galeria-book-3d__media";
-    v.src = item.src;
+    v.className = "media";
+    v.src = src;
     v.muted = true;
     v.loop = true;
+    v.autoplay = true;
     v.playsInline = true;
     v.preload = "metadata";
-    // Autoplay suele requerir interacción; intentamos igual.
-    v.addEventListener("canplay", () => v.play().catch(() => {}));
     return v;
   }
 
   const img = document.createElement("img");
-  img.className = "galeria-book-3d__media";
-  img.src = item.src;
-  img.alt = "Media";
+  img.className = "media";
+  img.src = src;
+  img.alt = file;
   img.loading = "lazy";
   return img;
 }
 
-function buildBook(bookEl) {
-  const total = MEDIA.length;
+const pages = MEDIA.map((file, i) => {
+  const page = document.createElement("div");
+  page.className = "page";
+  page.style.zIndex = String(MEDIA.length - i);
 
-  MEDIA.forEach((item, i) => {
-    const page = document.createElement("div");
-    page.className = "galeria-book-3d__item";
-    page.style.setProperty("--i", String(i));
-    page.style.setProperty("--total", String(total));
+  const front = document.createElement("div");
+  front.className = "face front";
+  front.appendChild(mediaNode(file));
 
-    const front = document.createElement("div");
-    front.className = "galeria-book-3d__face front";
-    front.appendChild(makeMediaEl(item));
+  const back = document.createElement("div");
+  back.className = "face back";
+  back.appendChild(mediaNode(file));
 
-    const backItem = MEDIA[(i + 1) % total];
-    const back = document.createElement("div");
-    back.className = "galeria-book-3d__face back";
-    back.appendChild(makeMediaEl(backItem));
+  page.appendChild(front);
+  page.appendChild(back);
 
-    page.appendChild(front);
-    page.appendChild(back);
+  book.appendChild(page);
+  return page;
+});
 
-    page.addEventListener("click", () => {
-      page.classList.toggle("is-open");
+let index = 0;
 
-      const anyOpen = !!bookEl.querySelector(".galeria-book-3d__item.is-open");
-      bookEl.classList.toggle("book-open", anyOpen);
-    });
-
-    bookEl.appendChild(page);
+function applyState() {
+  pages.forEach((p, i) => {
+    p.classList.toggle("is-flipped", i < index);
+    p.style.zIndex = String(MEDIA.length - i + (i < index ? 0 : 1000));
   });
 }
 
-function init() {
-  const yearEl = $("#year");
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
-  const book = $("#book");
-  if (book) buildBook(book);
+function next() {
+  if (index < pages.length) index++;
+  applyState();
 }
 
-document.addEventListener("DOMContentLoaded", init);
+function prev() {
+  if (index > 0) index--;
+  applyState();
+}
+
+book.addEventListener("click", (e) => {
+  const rect = book.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const isLeft = x < rect.width * 0.5;
+  isLeft ? prev() : next();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") prev();
+});
+
+applyState();

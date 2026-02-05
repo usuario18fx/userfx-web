@@ -1,8 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/assets/$1" },
-    { "source": "/style.css", "destination": "/style.css" },
-    { "source": "/app.js", "destination": "/app.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }
