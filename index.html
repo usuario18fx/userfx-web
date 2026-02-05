@@ -1,136 +1,98 @@
-<!doctype 
-   html>
-<html 
-lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" 
-		content="width=device-width, initial-scale=1.0" />
-		<title>
-			Fx — WebSite/title>
-		<link 
-		rel="preconnect" 
-		href="https://fonts.googleapis.com" />
-		<link rel="preconnect" 
-		href="https://fonts.gstatic.com" 
-		crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap"
-			rel="stylesheet"
-		/>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fx — WebSite</title>
 
-	<link rel="stylesheet" href="/styles.css" />
-		<script defer src="/app.js"></script>
-	</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-	<body class="theme-dark">
+    <link rel="stylesheet" href="/style.css" />
+    <script defer src="/app.js"></script>
+  </head>
 
-		<header class="topbar">
-			<div class="brand">
-				<div class="logo">
-					🜲
-				</div>
-				<div class="brand-text">
-					<div class="name">
-						Fx
-					</div>
-					<div class="tag">
-						Telegram Bot
-					</div>
-				</div>
-			</div>
+  <body class="theme-dark">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🜲</div>
+        <div class="brand-text">
+          <div class="name">Fx</div>
+          <div class="tag">Telegram Bot</div>
+        </div>
+      </div>
 
-			<nav class="actions">
-				<a class="btn ghost" 
-				href="#galeria">
-					pics</a>
-				<a class="btn primary" 
-				href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI"
-				 target="_blank" 
-				 rel="noreferrer">
-					⌯⌲
-				</a>
-			</nav>
-		</header>
+      <nav class="actions">
+        <a class="btn ghost" href="#galeria">pics</a>
+        <a
+          class="btn primary"
+          href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Abrir llamada en Telegram"
+        >
+          ⌯⌲
+        </a>
+      </nav>
+    </header>
 
-		<main 
-		class="scene" 
-		id="galeria">
-			<div 
-			class="overlay">
-		</div>
+    <main class="scene" id="galeria">
+      <div class="overlay" aria-hidden="true"></div>
 
-			<div 
-			class="bg-typography" 
-			aria-hidden="true">
-				<span>
-					UserFx
-				</span>
-				<span>
-					Gallery
-				</span>
-			</div>
+      <div class="bg-typography" aria-hidden="true">
+        <span>UserFx</span>
+        <span>Gallery</span>
+      </div>
 
-			<section 
-			class="content">
-				<div 
-				class="left">
-					<h1>
-						🜲
-					</h1>
+      <section class="content">
+        <div class="left">
+          <h1 class="sigil">🜲</h1>
 
-					<div 
-					class="cta">
-						<a 
-					class="btn primary big" 
-					id="enterBotBtn" 
-					href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI" 
-					target="_blank" 
-					rel="noreferrer">
-                          ˗ˏˋ 🕻 ˎˊ˗
-                            </a>
-					</div>
-				</div>
+          <p class="lead">
+            Galería + acceso directo al bot.
+            <span class="muted">Sin drama, sin 404, sin llorar.</span>
+          </p>
 
-				<div 
-				class="right">
-					<div 
-					class="galeria-book-3d"
-					 id="book" 
-					 aria-label="Galería 3D tipo libro">
-					</div>
-					<p 
-					class="micro">
-				  ═══ 🜲 ═══
-					</p>
-				</div>
-			</section>
-		</main>
+          <div class="cta">
+            <a
+              class="btn primary big"
+              id="enterBotBtn"
+              href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ˗ˏˋ 🕻 ˎˊ˗
+            </a>
+          </div>
 
-		<footer 
-		class="footer">
-			<span>
-				🜲
-				<span 
-				id="year">
+          <div class="hint">
+            Tip: usa <span class="kbd">←</span> <span class="kbd">→</span> o los botones.
+          </div>
+        </div>
 
-			</span> 
-			Fx
-		   </span>
-			<span
-			 class="dot">
-				•
-			</span>
-			<a
-			 href="https://t.me/User18Fx" 
-			 target="_blank" 
-			 rel="noreferrer">
-			 t.me/User18Fx
-			</a>
-		</footer>
+        <div class="right">
+          <div class="galeria-book-3d" aria-label="Galería tipo libro 3D">
+            <div class="book" id="book" aria-live="polite"></div>
 
-		<script 
-		src="./app.js">
-	</script>
-	</body>
+            <div class="book-controls">
+              <button class="btn ghost" id="prevBtn" type="button">← Prev</button>
+              <button class="btn ghost" id="nextBtn" type="button">Next →</button>
+            </div>
+          </div>
+
+          <p class="micro">═══ 🜲 ═══</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>🜲 <span id="year"></span> Fx</span>
+      <span class="dot">•</span>
+      <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">t.me/User18Fx</a>
+    </footer>
+  </body>
 </html>
