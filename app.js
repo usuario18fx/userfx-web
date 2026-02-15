@@ -60,33 +60,24 @@ const pages = MEDIA.map((file, i) => {
   book.appendChild(page);
   return page; });
 
-let index = 0;
-
+let index = 1;
 function applyState() {
   pages.forEach((p, i) => {
-    p.classList.toggle("is-flipped", i < index);
-    p.style.zIndex = String(MEDIA.length - i + (i < index ? 0 : 1000)); });}
-
-function next() {
-  if (index < pages.length) index++;
-  applyState();
-}
-function prev() {
-  if (index > 0) index--;
-  applyState();
-}
-book.addEventListener("click", (e) => {
-  const rect = book.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const isLeft = x < rect.width * 0.5;
-  isLeft ? prev() : next();
-});
-window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") next();
-  if (e.key === "ArrowLeft") prev();
-});
-applyState();
-
+    p.classList.remove("is-flipped");
+    p.style.zIndex = "0";
+    p.style.opacity = "0";
+  });
+  if (index > 0) {
+    const left = pages[index - 1];
+    left.classList.add("is-flipped");
+    left.style.zIndex = "2";
+    left.style.opacity = "1";
+  }
+  if (index < pages.length) {
+    const right = pages[index];
+    right.style.zIndex = "3";
+    right.style.opacity = "1";
+  }}
 function createWatermark(){
   const wm = document.getElementById("wm");
   if(!wm) return;
@@ -102,7 +93,7 @@ function createWatermark(){
     pattern.appendChild(span);
   }
   wm.appendChild(pattern);
-}
+  }
 createWatermark();
 setInterval(() => {
   const wm = document.getElementById("wm");
