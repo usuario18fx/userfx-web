@@ -86,3 +86,22 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft") prev();
 });
 applyState();
+
+function createWatermark(){
+  const wm = document.getElementById("wm");
+  if(!wm) return;
+  const pattern = document.createElement("div");
+  pattern.className = "wm-pattern";
+  const now = new Date();
+  const date = now.toISOString().split("T")[0];
+  const domain = location.hostname;
+  const text = `UserFX · ${domain} · ${date}`;
+  for(let i = 0; i < 20; i++){
+    const span = document.createElement("span");
+    span.textContent = text;
+    pattern.appendChild(span);
+  }
+  wm.appendChild(pattern);
+}
+createWatermark();
+
