@@ -18,7 +18,7 @@ const MEDIA = [
   "8.1.jpg",
   "8.jpg",
   "9.jpg",
-  "smkl-.MP4",];
+  "smkl.mp4",];
 const isVideo = 
    (name) => /\.mp4$/i.test(name);
 function mediaNode(file) {
