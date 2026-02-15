@@ -104,4 +104,10 @@ function createWatermark(){
   wm.appendChild(pattern);
 }
 createWatermark();
+setInterval(() => {
+  const wm = document.getElementById("wm");
+  if(wm) wm.innerHTML = "";
+  createWatermark();
+}, 10000);
+
 
