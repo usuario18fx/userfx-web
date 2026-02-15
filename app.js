@@ -1,17 +1,10 @@
-/* UserFX Web – flipbook 3D simple
-   Nota: En Vercel (Linux) las rutas son case-sensitive.
-   Si tu archivo es "smkl-.MP4", debes poner exactamente ".MP4".
-*/
-
-const $ = (id) => document.getElementById(id);
-
+const $ = (id) =>
+   document.getElementById(id);
 const yearEl = $("year");
-if (yearEl) yearEl.textContent = new Date().getFullYear();
-
+if (yearEl) yearEl.textContent = 
+   new Date().getFullYear();
 const book = $("book");
 if (!book) throw new Error("No se encontró #book");
-
-// Lista EXACTA según tu carpeta /assets
 const MEDIA = [
   "1.jpg",
   "2.jpg",
@@ -25,13 +18,11 @@ const MEDIA = [
   "8.1.jpg",
   "8.jpg",
   "9.jpg",
-  "smkl-.MP4",
-];
-
-const isVideo = (name) => /\.mp4$/i.test(name);
-
+  "smkl-.MP4",];
+const isVideo = 
+   (name) => /\.mp4$/i.test(name);
 function mediaNode(file) {
-  const src = `/assets/${file}`;
+  const src = `assets/${file}`;
 
   if (isVideo(file)) {
     const v = document.createElement("video");
@@ -44,7 +35,6 @@ function mediaNode(file) {
     v.preload = "metadata";
     return v;
   }
-
   const img = document.createElement("img");
   img.className = "media";
   img.src = src;
@@ -52,7 +42,6 @@ function mediaNode(file) {
   img.loading = "lazy";
   return img;
 }
-
 const pages = MEDIA.map((file, i) => {
   const page = document.createElement("div");
   page.className = "page";
@@ -70,38 +59,31 @@ const pages = MEDIA.map((file, i) => {
   page.appendChild(back);
 
   book.appendChild(page);
-  return page;
-});
+  return page; });
 
 let index = 0;
 
 function applyState() {
   pages.forEach((p, i) => {
     p.classList.toggle("is-flipped", i < index);
-    p.style.zIndex = String(MEDIA.length - i + (i < index ? 0 : 1000));
-  });
-}
+    p.style.zIndex = String(MEDIA.length - i + (i < index ? 0 : 1000)); });}
 
 function next() {
   if (index < pages.length) index++;
   applyState();
 }
-
 function prev() {
   if (index > 0) index--;
   applyState();
 }
-
 book.addEventListener("click", (e) => {
   const rect = book.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const isLeft = x < rect.width * 0.5;
   isLeft ? prev() : next();
 });
-
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
 });
-
 applyState();
