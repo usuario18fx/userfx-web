@@ -31,7 +31,7 @@ const MEDIA = [
 const isVideo = (name) => /\.mp4$/i.test(name);
 
 function mediaNode(file) {
-  const src = `./assets/${file}`;
+  const src = `/assets/${file}`;
 
   if (isVideo(file)) {
     const v = document.createElement("video");
