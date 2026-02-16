@@ -21,7 +21,7 @@ const MEDIA = [
   "8.1.jpg",
   "8.jpg",
   "9.jpg",
-  "smkl.mp4",
+  "v-08_.mp4",
 ];
 
 const isVideo = (name) => /\.mp4$/i.test(name);
