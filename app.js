@@ -1,10 +1,13 @@
-const $ = (id) =>
-   document.getElementById(id);
+/* ========= HELPERS ========= */
+const $ = (id) => document.getElementById(id);
+
 const yearEl = $("year");
-if (yearEl) yearEl.textContent = 
-   new Date().getFullYear();
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+
 const book = $("book");
 if (!book) throw new Error("No se encontró #book");
+
+/* ========= MEDIA ========= */
 const MEDIA = [
   "1.jpg",
   "2.jpg",
@@ -18,11 +21,14 @@ const MEDIA = [
   "8.1.jpg",
   "8.jpg",
   "9.jpg",
-  "smkl.mp4",];
-const isVideo = 
-   (name) => /\.mp4$/i.test(name);
+  "smkl.mp4",
+];
+
+const isVideo = (name) => /\.mp4$/i.test(name);
+
 function mediaNode(file) {
-  const src = `assets/${file}`;
+  const src = `assets/${file}`; // GitHub Pages subpath correcto
+
   if (isVideo(file)) {
     const v = document.createElement("video");
     v.className = "media";
@@ -34,6 +40,7 @@ function mediaNode(file) {
     v.preload = "metadata";
     return v;
   }
+
   const img = document.createElement("img");
   img.className = "media";
   img.src = src;
@@ -41,10 +48,11 @@ function mediaNode(file) {
   img.loading = "lazy";
   return img;
 }
+
+/* ========= BUILD PAGES ========= */
 const pages = MEDIA.map((file, i) => {
   const page = document.createElement("div");
   page.className = "page";
-  page.style.zIndex = String(MEDIA.length - i);
 
   const front = document.createElement("div");
   front.className = "face front";
@@ -58,47 +66,97 @@ const pages = MEDIA.map((file, i) => {
   page.appendChild(back);
 
   book.appendChild(page);
-  return page; });
+  return page;
+});
 
+/* ========= ALBUM LOGIC ========= */
 let index = 1;
+
 function applyState() {
-  pages.forEach((p, i) => {
+  pages.forEach((p) => {
     p.classList.remove("is-flipped");
     p.style.zIndex = "0";
     p.style.opacity = "0";
   });
+
+  // Página izquierda
   if (index > 0) {
     const left = pages[index - 1];
     left.classList.add("is-flipped");
     left.style.zIndex = "2";
     left.style.opacity = "1";
   }
+
+  // Página derecha
   if (index < pages.length) {
     const right = pages[index];
     right.style.zIndex = "3";
     right.style.opacity = "1";
-  }}
-function createWatermark(){
+  }
+}
+
+function next() {
+  if (index < pages.length - 1) {
+    index++;
+    applyState();
+  }
+}
+
+function prev() {
+  if (index > 1) {
+    index--;
+    applyState();
+  }
+}
+
+book.addEventListener("click", (e) => {
+  const rect = book.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const isLeft = x < rect.width * 0.5;
+  isLeft ? prev() : next();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") prev();
+});
+
+applyState();
+
+/* ========= WATERMARK ========= */
+function createWatermark() {
   const wm = document.getElementById("wm");
-  if(!wm) return;
+  if (!wm) return;
+
+  wm.innerHTML = "";
+
   const pattern = document.createElement("div");
   pattern.className = "wm-pattern";
+
   const now = new Date();
   const date = now.toISOString().split("T")[0];
   const domain = location.hostname;
-  const text = `UserFX · ${domain} · ${date}`;
-  for(let i = 0; i < 20; i++){
+
+  const text = `USERFX · ${domain} · ${date}`;
+
+  for (let i = 0; i < 20; i++) {
     const span = document.createElement("span");
     span.textContent = text;
     pattern.appendChild(span);
   }
+
   wm.appendChild(pattern);
-  }
+}
+
 createWatermark();
-setInterval(() => {
-  const wm = document.getElementById("wm");
-  if(wm) wm.innerHTML = "";
-  createWatermark();
-}, 10000);
 
+setInterval(createWatermark, 10000);
 
+/* ========= BLUR ON TAB SWITCH ========= */
+window.addEventListener("blur", () => {
+  document.body.style.filter = "blur(10px)";
+});
+
+window.addEventListener("focus", () => {
+  document.body.style.filter = "none";
+});
