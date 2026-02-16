@@ -27,7 +27,7 @@ const MEDIA = [
 const isVideo = (name) => /\.mp4$/i.test(name);
 
 function mediaNode(file) {
-  const src = `assets/${file}`; // GitHub Pages subpath correcto
+  const src = `./assets/${file}?v=2`;
 
   if (isVideo(file)) {
     const v = document.createElement("video");
