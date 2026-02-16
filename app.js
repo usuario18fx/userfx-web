@@ -27,7 +27,7 @@ const MEDIA = [
 const isVideo = (name) => /\.mp4$/i.test(name);
 
 function mediaNode(file) {
-  const src = `./assets/${file}?v=2`;
+  const src = `./assets/${file}?v=3`;
 
   if (isVideo(file)) {
     const v = document.createElement("video");
@@ -35,9 +35,12 @@ function mediaNode(file) {
     v.src = src;
     v.muted = true;
     v.loop = true;
-    v.autoplay = true;
     v.playsInline = true;
     v.preload = "metadata";
+    v.controls = false;
+    v.disablePictureInPicture = true;
+
+    v.play().catch(() => {});
     return v;
   }
 
@@ -48,8 +51,9 @@ function mediaNode(file) {
   img.loading = "lazy";
   return img;
 }
+
 /* ========= BUILD PAGES ========= */
-const pages = MEDIA.map((file, i) => {
+const pages = MEDIA.map((file) => {
   const page = document.createElement("div");
   page.className = "page";
 
@@ -67,6 +71,7 @@ const pages = MEDIA.map((file, i) => {
   book.appendChild(page);
   return page;
 });
+
 let index = 0;
 
 function applyState() {
@@ -88,7 +93,28 @@ function prev() {
     applyState();
   }
 }
+
+/* ========= LOCK + CLICK ========= */
+const lockOverlay = document.getElementById("lockOverlay");
+const handHint = document.querySelector(".hand-hint");
+
 book.addEventListener("click", (e) => {
+
+  // 🔓 Quitar candado
+  if (lockOverlay) {
+    lockOverlay.style.transition =
+      "opacity 600ms ease, transform 600ms ease";
+    lockOverlay.style.opacity = "0";
+    lockOverlay.style.transform = "scale(0.6) rotate(-20deg)";
+    setTimeout(() => lockOverlay.remove(), 600);
+  }
+
+  // 👆 Quitar mano
+  if (handHint) {
+    handHint.remove();
+  }
+
+  // 📖 Flip
   const rect = book.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const isLeft = x < rect.width * 0.5;
@@ -128,9 +154,9 @@ function createWatermark() {
 }
 
 createWatermark();
-
 setInterval(createWatermark, 10000);
 
+/* ========= VISIBILITY EFFECT ========= */
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     document.body.style.opacity = "0.6";
@@ -138,4 +164,3 @@ document.addEventListener("visibilitychange", () => {
     document.body.style.opacity = "1";
   }
 });
-
