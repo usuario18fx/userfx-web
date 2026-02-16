@@ -1,49 +1,96 @@
-<main class="scene" id="galeria">
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fx — UserFX Web</title>
 
-  <div class="overlay" aria-hidden="true"></div>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet"/>
 
-  <div class="bg-typography" aria-hidden="true">
-    <span>──˗🜲ˊ˗</span>
-    <span>Gallery</span>
-    <span>UserFx</span>
-  </div>
+  <link rel="stylesheet" href="./style.css" />
+  <script defer src="./app.js"></script>
+</head>
 
-  <section class="content">
+<body class="theme-dark">
 
-    <!-- IZQUIERDA -->
-    <div class="left">
-      <h1 class="sigil" aria-label="UserFx">🜲</h1>
-
-      <div class="cta">
-        <a
-          class="btn primary big"
-          id="enterBotBtn"
-          href="https://x.com/User18fx"
-          target="_blank"
-          rel="noreferrer"
-        >Х</a>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">Ŧҳ</div>
+      <div class="brand-text">
+        <div class="name">🜲</div>
+        <div class="tag">Website</div>
       </div>
-
-      <p class="hint">
-        Enjoy my content. ╰┈➤
-      </p>
     </div>
 
-    <!-- DERECHA -->
-    <div class="right">
+    <nav class="actions">
+      <a class="btn ghost" href="#galeria">Videocam</a>
+      <a class="btn primary"
+         href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI"
+         target="_blank"
+         rel="noreferrer">
+        ℤ⌯⌲
+      </a>
+    </nav>
+  </header>
 
-      <div class="galeria-book-3d" id="book" aria-label="Galería 3D tipo libro"></div>
+  <!-- MAIN -->
+  <main class="scene" id="galeria">
 
-      <div class="lock-overlay" id="lockOverlay">
-        <div class="lock"></div>
+    <section class="content">
+
+      <!-- LEFT PANEL -->
+      <div class="left">
+        <h1 class="sigil">🜲</h1>
+
+        <div class="cta">
+          <a class="btn primary big"
+             href="https://x.com/User18fx"
+             target="_blank"
+             rel="noreferrer">
+            Х
+          </a>
+        </div>
+
+        <p class="hint">
+          Enjoy my content. ╰┈➤
+        </p>
       </div>
 
-      <div class="hand-hint">👆</div>
+      <!-- RIGHT SIDE (BOOK AREA) -->
+      <div class="right">
 
-      <p class="micro">══════ 🜲 ════════════</p>
+        <div class="galeria-book-3d" id="book">
+          
+          <!-- LOCK -->
+          <div class="lock-overlay" id="lockOverlay">
+            <div class="lock"></div>
+          </div>
 
-    </div>
+          <!-- HAND HINT -->
+          <div class="hand-hint">👆</div>
 
-  </section>
+        </div>
 
-</main>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>User | 𝐅ㄨ🜲 | <span id="year"></span> Fx</span>
+    <span class="dot">•</span>
+    <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
+      t.me/User18Fx
+    </a>
+  </footer>
+
+  <!-- WATERMARK -->
+  <div id="wm"></div>
+
+</body>
+</html>
