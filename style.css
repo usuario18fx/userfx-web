@@ -281,3 +281,6 @@ a{ color:inherit; text-decoration:none; }
 @media(max-width:900px){
   .content{ grid-template-columns:1fr; }
 }
+body {
+  background: red !important;
+}
