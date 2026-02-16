@@ -48,7 +48,6 @@ function mediaNode(file) {
   img.loading = "lazy";
   return img;
 }
-
 /* ========= BUILD PAGES ========= */
 const pages = MEDIA.map((file, i) => {
   const page = document.createElement("div");
@@ -68,47 +67,27 @@ const pages = MEDIA.map((file, i) => {
   book.appendChild(page);
   return page;
 });
-
-/* ========= ALBUM LOGIC ========= */
-let index = 1;
+let index = 0;
 
 function applyState() {
-  pages.forEach((p) => {
-    p.classList.remove("is-flipped");
-    p.style.zIndex = "0";
-    p.style.opacity = "0";
+  pages.forEach((p, i) => {
+    p.classList.toggle("is-flipped", i < index);
   });
-
-  // Página izquierda
-  if (index > 0) {
-    const left = pages[index - 1];
-    left.classList.add("is-flipped");
-    left.style.zIndex = "2";
-    left.style.opacity = "1";
-  }
-
-  // Página derecha
-  if (index < pages.length) {
-    const right = pages[index];
-    right.style.zIndex = "3";
-    right.style.opacity = "1";
-  }
 }
 
 function next() {
-  if (index < pages.length - 1) {
+  if (index < pages.length) {
     index++;
     applyState();
   }
 }
 
 function prev() {
-  if (index > 1) {
+  if (index > 0) {
     index--;
     applyState();
   }
 }
-
 book.addEventListener("click", (e) => {
   const rect = book.getBoundingClientRect();
   const x = e.clientX - rect.left;
