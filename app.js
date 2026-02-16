@@ -131,11 +131,11 @@ createWatermark();
 
 setInterval(createWatermark, 10000);
 
-/* ========= BLUR ON TAB SWITCH ========= */
-window.addEventListener("blur", () => {
-  document.body.style.filter = "blur(10px)";
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    document.body.style.opacity = "0.6";
+  } else {
+    document.body.style.opacity = "1";
+  }
 });
 
-window.addEventListener("focus", () => {
-  document.body.style.filter = "none";
-});
