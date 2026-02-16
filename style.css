@@ -33,7 +33,7 @@ a{ color:inherit; text-decoration:none; }
   backdrop-filter:blur(10px);
 }
 
-/* LOGO + CORONA */
+/* LOGO */
 .logo{
   position:relative;
   width:40px;
@@ -84,6 +84,11 @@ a{ color:inherit; text-decoration:none; }
   transform:translateY(-2px);
 }
 
+.btn.big{
+  padding:14px 18px;
+  font-weight:800;
+}
+
 /* SCENE */
 .scene{
   min-height:100vh;
@@ -119,6 +124,12 @@ a{ color:inherit; text-decoration:none; }
     0 0 20px rgba(255,215,0,.3);
 }
 
+.hint{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:14px;
+}
+
 /* RIGHT SIDE */
 .right{
   position:relative;
@@ -139,6 +150,7 @@ a{ color:inherit; text-decoration:none; }
     0 40px 100px rgba(0,0,0,.8),
     0 0 60px rgba(212,175,55,.15);
   perspective:1800px;
+  overflow:hidden;
 }
 
 /* GOLD FRAME */
@@ -280,7 +292,7 @@ a{ color:inherit; text-decoration:none; }
 /* RESPONSIVE */
 @media(max-width:900px){
   .content{ grid-template-columns:1fr; }
-}
-body {
-  background: red !important;
+  .galeria-book-3d{
+    width:min(320px,80vw);
+  }
 }
