@@ -233,6 +233,10 @@ img {
   z-index: 9999;
   overflow: hidden;
 }
+#wm,
+#wm * {
+  pointer-events: none !important;
+}
 
 .wm-pattern{
   position:absolute;
