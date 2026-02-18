@@ -6,9 +6,7 @@
   <title>Fx — UserFX Web</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet"/>
-
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
@@ -25,13 +23,39 @@
     </div>
 
     <nav class="actions">
-      <a class="btn ghost" href="#galeria">Videocam</a>
-      <a class="btn primary"
-         href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI"
-         target="_blank">
+      <a href="#galeria">Videocam</a>
+      <a href="https://t.me/call/pJHwvL0fLj94ToJFieJxazX7hjI" target="_blank">
         ℤ⌯⌲
       </a>
     </nav>
   </header>
 
-  <main
+  <main class="scene" id="galeria">
+    <section class="content">
+
+      <div class="left">
+        <h1 class="sigil">🜲</h1>
+        <p class="hint">Enjoy my content.</p>
+      </div>
+
+      <div class="right">
+        <div class="galeria-book-3d" id="book">
+
+          <div class="lock-overlay" id="lockOverlay">
+            <div class="lock"></div>
+          </div>
+
+          <div class="hand-hint">👆</div>
+
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    User | 𝐅ㄨ🜲 | <span id="year"></span> Fx
+  </footer>
+
+</body>
+</html>
