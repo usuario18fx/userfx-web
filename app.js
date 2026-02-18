@@ -25,7 +25,6 @@ const MEDIA = [
 ];
 
 const isVideo = (name) => /\.mp4$/i.test(name);
-
 function mediaNode(file) {
   const src = `assets/${file}?v=3`;
 
@@ -33,13 +32,23 @@ function mediaNode(file) {
     const v = document.createElement("video");
     v.className = "media";
     v.src = src;
+
     v.muted = true;
     v.loop = true;
+    v.autoplay = true;
     v.playsInline = true;
-    v.preload = "metadata";
+    v.preload = "auto";
     v.controls = false;
-    v.disablePictureInPicture = true;
-    v.play().catch(() => {});
+
+    // 🔥 IMPORTANTE
+    v.setAttribute("muted", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("autoplay", "");
+
+    v.addEventListener("loadeddata", () => {
+      v.play().catch(() => {});
+    });
+
     return v;
   }
 
