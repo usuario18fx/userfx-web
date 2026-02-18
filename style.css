@@ -242,4 +242,14 @@ body::before{
   color: rgba(255,255,255,0.5);
 }
 
+.scene,
+.content,
+.left,
+.right,
+.galeria-book-3d,
+.topbar,
+.footer {
+  position: relative;
+  z-index: 2;
+}
 
