@@ -39,7 +39,6 @@ function mediaNode(file) {
     v.preload = "metadata";
     v.controls = false;
     v.disablePictureInPicture = true;
-
     v.play().catch(() => {});
     return v;
   }
@@ -53,7 +52,7 @@ function mediaNode(file) {
 }
 
 /* ========= BUILD PAGES ========= */
-const pages = MEDIA.map((file) => {
+const pages = MEDIA.map((file, i) => {
   const page = document.createElement("div");
   page.className = "page";
 
@@ -68,6 +67,8 @@ const pages = MEDIA.map((file) => {
   page.appendChild(front);
   page.appendChild(back);
 
+  page.style.zIndex = MEDIA.length - i; // 🔥 ORDEN CORRECTO
+
   book.appendChild(page);
   return page;
 });
@@ -76,6 +77,7 @@ let index = 0;
 
 function applyState() {
   pages.forEach((p, i) => {
+    p.style.zIndex = pages.length - i;
     p.classList.toggle("is-flipped", i < index);
   });
 }
@@ -99,8 +101,6 @@ const lockOverlay = document.getElementById("lockOverlay");
 const handHint = document.querySelector(".hand-hint");
 
 book.addEventListener("click", (e) => {
-
-  // 🔓 Quitar candado
   if (lockOverlay) {
     lockOverlay.style.transition =
       "opacity 600ms ease, transform 600ms ease";
@@ -109,15 +109,12 @@ book.addEventListener("click", (e) => {
     setTimeout(() => lockOverlay.remove(), 600);
   }
 
-  // 👆 Quitar mano
-  if (handHint) {
-    handHint.remove();
-  }
+  if (handHint) handHint.remove();
 
-  // 📖 Flip
   const rect = book.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const isLeft = x < rect.width * 0.5;
+
   isLeft ? prev() : next();
 });
 
@@ -156,11 +153,8 @@ function createWatermark() {
 createWatermark();
 setInterval(createWatermark, 10000);
 
-/* ========= VISIBILITY EFFECT ========= */
+/* ========= VISIBILITY ========= */
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    document.body.style.opacity = "0.6";
-  } else {
-    document.body.style.opacity = "1";
-  }
+  document.body.style.opacity = document.hidden ? "0.6" : "1";
 });
+
