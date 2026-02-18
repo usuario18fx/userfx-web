@@ -77,8 +77,12 @@ let index = 0;
 
 function applyState() {
   pages.forEach((p, i) => {
+    const offset = i * 1.5;
+
     p.style.zIndex = pages.length - i;
-    p.classList.toggle("is-flipped", i < index);
+    p.style.transform = i < index
+      ? `rotateY(-180deg) translateZ(${offset}px)`
+      : `rotateY(0deg) translateZ(${offset}px)`;
   });
 }
 
