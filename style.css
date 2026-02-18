@@ -33,18 +33,63 @@ body{
   backdrop-filter:blur(10px);
 }
 
-/* BOOK AREA */
+/* SCENE */
+.scene{
+  min-height:100vh;
+  padding-top:100px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* LAYOUT */
+.content{
+  width:min(1200px,92vw);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+/* LEFT PANEL */
+.left{
+  padding:40px;
+  border-radius:20px;
+  backdrop-filter:blur(20px);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.sigil{
+  font-size:70px;
+  margin-bottom:20px;
+}
+
+.hint{
+  margin-top:20px;
+  color:var(--muted);
+}
+
+/* RIGHT SIDE */
+.right{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* BOOK */
 .galeria-book-3d{
-  width:min(360px,60vw);
+  width:360px;
   aspect-ratio:2/3;
   position:relative;
   border-radius:22px;
-  background:linear-gradient(145deg,#0e0e12,#050507);
+  background:#050507;
   border:1px solid var(--line);
   box-shadow:0 40px 100px rgba(0,0,0,.8);
   perspective:1800px;
   overflow:hidden;
-  cursor:pointer; /* 👈 FIX */
+  cursor:pointer;
 }
 
 /* FRAME */
@@ -71,7 +116,6 @@ body{
   transform-origin:left center;
   transition:transform .65s cubic-bezier(.2,.75,.15,1);
   border-radius:16px;
-  z-index:5;
 }
 
 .page.is-flipped{
@@ -156,4 +200,12 @@ body{
   inset:0;
   pointer-events:none;
   z-index:9999;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .content{
+    grid-template-columns:1fr;
+    gap:40px;
+  }
 }
