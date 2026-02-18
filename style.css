@@ -1,13 +1,19 @@
 :root{
-  --bg:#000;
-  --text:rgba(255,255,255,0.92);
-  --muted:rgba(255,255,255,0.65);
-  --line:rgba(255,255,255,0.15);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.65);
+  --line: rgba(255,255,255,0.15);
 }
 
-/* RESET */
-*{ box-sizing:border-box; margin:0; padding:0; }
-html,body{ height:100%; }
+/* ================= RESET ================= */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  height:100%;
+}
 
 body{
   font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -16,13 +22,13 @@ body{
   overflow-x:hidden;
 }
 
-/* Fondo geométrico real */
+/* ================= FONDO GEOMÉTRICO ================= */
 body::before{
   content:"";
   position:fixed;
   inset:0;
-  z-index:0;
   pointer-events:none;
+  z-index:0;
 
   background-image:
     linear-gradient(32deg, rgba(255,255,255,.03) 30px, transparent 0),
@@ -30,30 +36,31 @@ body::before{
   background-size:120px 100px;
 }
 
-
-/* TOPBAR */
+/* ================= TOPBAR ================= */
 .topbar{
   position:fixed;
   inset:0 0 auto 0;
   display:flex;
   justify-content:space-between;
   padding:14px 18px;
-  z-index:200;
+  z-index:100;
   background:linear-gradient(to bottom,#0a0a0e,#000000cc);
   border-bottom:1px solid var(--line);
   backdrop-filter:blur(10px);
 }
 
-/* SCENE */
+/* ================= MAIN ================= */
 .scene{
   min-height:100vh;
   padding-top:100px;
   display:flex;
   align-items:center;
   justify-content:center;
+  position:relative;
+  z-index:1;
 }
 
-/* LAYOUT */
+/* ================= LAYOUT ================= */
 .content{
   width:min(1200px,92vw);
   display:grid;
@@ -62,7 +69,7 @@ body::before{
   align-items:center;
 }
 
-/* LEFT PANEL */
+/* ================= LEFT PANEL ================= */
 .left{
   padding:40px;
   border-radius:20px;
@@ -82,14 +89,14 @@ body::before{
   color:var(--muted);
 }
 
-/* RIGHT SIDE */
+/* ================= RIGHT SIDE ================= */
 .right{
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* BOOK */
+/* ================= BOOK ================= */
 .galeria-book-3d{
   width:360px;
   aspect-ratio:2/3;
@@ -103,7 +110,7 @@ body::before{
   cursor:pointer;
 }
 
-/* FRAME */
+/* Marco dorado */
 .galeria-book-3d::before{
   content:"";
   position:absolute;
@@ -119,7 +126,7 @@ body::before{
   z-index:1;
 }
 
-/* PAGE */
+/* ================= PAGE ================= */
 .page{
   position:absolute;
   inset:0;
@@ -129,11 +136,6 @@ body::before{
   border-radius:16px;
 }
 
-.page.is-flipped{
-  transform:rotateY(-180deg);
-}
-
-/* FACE */
 .face{
   position:absolute;
   inset:0;
@@ -148,7 +150,6 @@ body::before{
   transform:rotateY(180deg);
 }
 
-/* MEDIA */
 .media{
   width:100%;
   height:100%;
@@ -157,14 +158,14 @@ body::before{
   background:#000;
 }
 
-/* LOCK */
+/* ================= LOCK ================= */
 .lock-overlay{
   position:absolute;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:100;
+  z-index:10;
   pointer-events:none;
 }
 
@@ -176,7 +177,7 @@ body::before{
   border:1px solid var(--line);
 }
 
-/* HAND */
+/* ================= HAND ================= */
 .hand-hint{
   position:absolute;
   bottom:20px;
@@ -192,7 +193,7 @@ body::before{
   100%{ transform:translateY(0); }
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 .footer{
   position:fixed;
   bottom:0;
@@ -205,51 +206,10 @@ body::before{
   border-top:1px solid var(--line);
 }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 @media(max-width:900px){
   .content{
     grid-template-columns:1fr;
     gap:40px;
   }
 }
-
-
-/* ================= WATERMARK ================= */
-
-#wm {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.wm-pattern {
-  position: absolute;
-  inset: -50%;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  opacity: 0.03; /* más sutil */
-  font-size: 14px;
-  white-space: nowrap;
-  transform: rotate(-20deg);
-}
-
-.wm-pattern span {
-  display: block;
-  width: 200%;
-  color: rgba(255,255,255,0.5);
-}
-
-.scene,
-.content,
-.left,
-.right,
-.galeria-book-3d,
-.topbar,
-.footer {
-  position: relative;
-  z-index: 2;
-}
-
