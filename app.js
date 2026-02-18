@@ -125,33 +125,18 @@ window.addEventListener("keydown", (e) => {
 
 applyState();
 
-/* ========= WATERMARK ========= */
-function createWatermark() {
-  const wm = document.getElementById("wm");
-  if (!wm) return;
+/* ================== */
+function applyState() {
+  pages.forEach((p, i) => {
+    const offset = i * 1.5;
 
-  wm.innerHTML = "";
-
-  const pattern = document.createElement("div");
-  pattern.className = "wm-pattern";
-
-  const now = new Date();
-  const date = now.toISOString().split("T")[0];
-  const domain = location.hostname;
-
-  const text = `USERFX · ${domain} · ${date}`;
-
-  for (let i = 0; i < 20; i++) {
-    const span = document.createElement("span");
-    span.textContent = text;
-    pattern.appendChild(span);
-  }
-
-  wm.appendChild(pattern);
+    p.style.zIndex = pages.length - i;
+    p.style.transform = i < index
+      ? `rotateY(-180deg) translateZ(${offset}px)`
+      : `rotateY(0deg) translateZ(${offset}px)`;
+  });
 }
 
-createWatermark();
-setInterval(createWatermark, 10000);
 
 /* ========= VISIBILITY ========= */
 document.addEventListener("visibilitychange", () => {
