@@ -12,13 +12,16 @@ html,body{ height:100%; }
 body{
   font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:#000;
-  background-image:
-    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size:40px 40px;
   color:var(--text);
   overflow-x:hidden;
+  opacity: 0.03;
+
+  background-image:
+    linear-gradient(32deg, rgba(255,255,255,.04) 30px, transparent 0),
+    linear-gradient(-32deg, rgba(255,255,255,.04) 30px, transparent 0);
+  background-size:120px 100px;
 }
+
 
 /* TOPBAR */
 .topbar{
