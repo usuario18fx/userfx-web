@@ -79,16 +79,12 @@ let index = 0;
 function applyState() {
   pages.forEach((p, i) => {
     p.style.zIndex = pages.length - i;
-
-    if (i < index) {
-      p.style.transform = "rotateY(-180deg)";
-    } else {
-      p.style.transform = "rotateY(0deg)";
-    }
+    p.style.transform = i < index
+      ? "rotateY(-180deg)"
+      : "rotateY(0deg)";
   });
 }
 
-/* ========= NAVIGATION ========= */
 function next() {
   if (index < pages.length) {
     index++;
@@ -103,7 +99,7 @@ function prev() {
   }
 }
 
-/* ========= LOCK + CLICK ========= */
+/* ========= CLICK ========= */
 const lockOverlay = document.getElementById("lockOverlay");
 const handHint = document.querySelector(".hand-hint");
 
@@ -133,8 +129,3 @@ window.addEventListener("keydown", (e) => {
 });
 
 applyState();
-
-/* ========= VISIBILITY ========= */
-document.addEventListener("visibilitychange", () => {
-  document.body.style.opacity = document.hidden ? "0.6" : "1";
-});
