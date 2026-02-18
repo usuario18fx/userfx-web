@@ -27,7 +27,7 @@ const MEDIA = [
 const isVideo = (name) => /\.mp4$/i.test(name);
 
 function mediaNode(file) {
-  const src = `./assets/${file}?v=3`;
+  const src = `assets/${file}?v=3`;
 
   if (isVideo(file)) {
     const v = document.createElement("video");
@@ -67,7 +67,7 @@ const pages = MEDIA.map((file, i) => {
   page.appendChild(front);
   page.appendChild(back);
 
-  page.style.zIndex = MEDIA.length - i; // 🔥 ORDEN CORRECTO
+  page.style.zIndex = MEDIA.length - i;
 
   book.appendChild(page);
   return page;
@@ -75,17 +75,20 @@ const pages = MEDIA.map((file, i) => {
 
 let index = 0;
 
+/* ========= APPLY STATE ========= */
 function applyState() {
   pages.forEach((p, i) => {
-    const offset = i * 1.5;
-
     p.style.zIndex = pages.length - i;
-    p.style.transform = i < index
-      ? `rotateY(-180deg) translateZ(${offset}px)`
-      : `rotateY(0deg) translateZ(${offset}px)`;
+
+    if (i < index) {
+      p.style.transform = "rotateY(-180deg)";
+    } else {
+      p.style.transform = "rotateY(0deg)";
+    }
   });
 }
 
+/* ========= NAVIGATION ========= */
 function next() {
   if (index < pages.length) {
     index++;
@@ -105,6 +108,7 @@ const lockOverlay = document.getElementById("lockOverlay");
 const handHint = document.querySelector(".hand-hint");
 
 book.addEventListener("click", (e) => {
+
   if (lockOverlay) {
     lockOverlay.style.transition =
       "opacity 600ms ease, transform 600ms ease";
@@ -122,42 +126,15 @@ book.addEventListener("click", (e) => {
   isLeft ? prev() : next();
 });
 
+/* ========= KEYBOARD ========= */
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
 });
 
 applyState();
-/* ========= WATERMARK ========= */
-function createWatermark() {
-  const wm = document.getElementById("wm");
-  if (!wm) return;
-
-  wm.innerHTML = "";
-
-  const pattern = document.createElement("div");
-  pattern.className = "wm-pattern";
-
-  const now = new Date();
-  const date = now.toISOString().split("T")[0];
-  const domain = location.hostname;
-
-  const text = `USERFX · ${domain} · ${date}`;
-
-  for (let i = 0; i < 20; i++) {
-    const span = document.createElement("span");
-    span.textContent = text;
-    pattern.appendChild(span);
-  }
-
-  wm.appendChild(pattern);
-}
-
-createWatermark();
-setInterval(createWatermark, 10000);
 
 /* ========= VISIBILITY ========= */
 document.addEventListener("visibilitychange", () => {
   document.body.style.opacity = document.hidden ? "0.6" : "1";
 });
-
