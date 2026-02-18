@@ -125,7 +125,13 @@ window.addEventListener("keydown", (e) => {
 
 applyState();
 
-/* ================== */
+/* ==========/* WATERMARK =========*/
+#wm{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
+======== */
 function applyState() {
   pages.forEach((p, i) => {
     const offset = i * 1.5;
