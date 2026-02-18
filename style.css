@@ -212,22 +212,6 @@ body{
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  overflow: hidden;
 }
 
-.wm-pattern {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-rows: repeat(20, 1fr);
-  opacity: 0.08;
-  font-size: 14px;
-  white-space: nowrap;
-  transform: rotate(-20deg) scale(1.2);
-}
 
-.wm-pattern span {
-  display: block;
-  width: 200%;
-  color: white;
-}
