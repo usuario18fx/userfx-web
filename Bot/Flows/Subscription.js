@@ -26,12 +26,12 @@ export async function handleSubscription(ctx, planType) {
 
     const result = await db.query(
       `
-      UPDATE users
-      SET plan = $1,
+      update users
+      set plan = $1,
           verificado = true,
-          updated_at = NOW()
-      WHERE user_id = $2
-      RETURNING user_id, username, plan, verificado
+          updated_at = now()
+      where user_id = $2
+      returning user_id, username, plan, verificado
       `,
       [planName, userId]
     );
@@ -43,8 +43,8 @@ export async function handleSubscription(ctx, planType) {
 
     await db.query(
       `
-      INSERT INTO logs (user_id, action)
-      VALUES ($1, $2)
+      insert into logs (user_id, action)
+      values ($1, $2)
       `,
       [userId, `PURCHASE_${planName.toUpperCase()}`]
     );
