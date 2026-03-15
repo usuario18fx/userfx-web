@@ -7,4 +7,4 @@ export function getPlansMenu() {
     .text("👑 Cloud VIP Pro - 15 USD", "buy_plan_premium")
     .row()
     .text("⬅️ Volver al Panel", "back_to_main");
-} 
+}
