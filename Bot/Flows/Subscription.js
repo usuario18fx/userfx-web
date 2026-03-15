@@ -24,16 +24,17 @@ export async function handleSubscription(ctx, planType) {
       { parse_mode: "HTML" }
     );
 
-    const query = `
+    const result = await db.query(
+      `
       UPDATE users
       SET plan = $1,
           verificado = true,
           updated_at = NOW()
       WHERE user_id = $2
       RETURNING user_id, username, plan, verificado
-    `;
-
-    const result = await db.query(query, [planName, userId]);
+      `,
+      [planName, userId]
+    );
 
     if (result.rowCount === 0) {
       await ctx.reply("❌ No se encontró tu usuario en la base de datos.");
