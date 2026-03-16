@@ -68,7 +68,10 @@ function resolvePlan(planType) {
       durationDays: 30,
     };
   }
-
+function generateAccessCode(planName) {
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `FX-${planName.toUpperCase()}-${random}`;
+}
   return {
     planName: "userfx",
     price: 5,
