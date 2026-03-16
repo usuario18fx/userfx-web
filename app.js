@@ -138,3 +138,61 @@ window.addEventListener("keydown", (e) => {
 });
 
 applyState();
+const accessCodeInput = document.getElementById("accessCodeInput");
+const unlockBtn = document.getElementById("unlockBtn");
+const unlockMsg = document.getElementById("unlockMsg");
+const lockOverlayEl = document.getElementById("lockOverlay");
+
+function unlockAlbumUI() {
+  if (lockOverlayEl) {
+    lockOverlayEl.remove();
+  }
+  localStorage.setItem("fx_album_unlocked", "1");
+}
+
+async function validateAccessCode(code) {
+  const response = await fetch("/api/unlock", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code }),
+  });
+
+  return response.json();
+}
+
+if (localStorage.getItem("fx_album_unlocked") === "1") {
+  unlockAlbumUI();
+}
+
+if (unlockBtn && accessCodeInput) {
+  unlockBtn.addEventListener("click", async () => {
+    const code = accessCodeInput.value.trim().toUpperCase();
+
+    if (!code) {
+      if (unlockMsg) unlockMsg.textContent = "Ingresa un código.";
+      return;
+    }
+
+    if (unlockMsg) unlockMsg.textContent = "Validando...";
+
+    try {
+      const result = await validateAccessCode(code);
+
+      if (!result.ok) {
+        if (unlockMsg) unlockMsg.textContent = result.error || "Código inválido.";
+        return;
+      }
+
+      unlockAlbumUI();
+
+      if (unlockMsg) {
+        unlockMsg.textContent = "Acceso desbloqueado.";
+      }
+    } catch (error) {
+      console.error("UNLOCK CLIENT ERROR:", error);
+      if (unlockMsg) unlockMsg.textContent = "Error validando el código.";
+    }
+  });
+}
