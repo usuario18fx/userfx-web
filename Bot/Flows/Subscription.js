@@ -57,4 +57,4 @@ export async function handleSubscription(ctx, planType) {
     console.error("Error en la transacción de suscripción:", error);
     await ctx.reply("❌ Hubo un problema al procesar la suscripción.");
   }
-}
+} 
