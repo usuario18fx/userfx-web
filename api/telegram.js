@@ -22,25 +22,44 @@ const db = new Pool({
 
 const bot = new Bot(token);
 
-function getPlansMenu() {
-  return new InlineKeyboard()
-    .text("☁️ Cloud Básico - 5 USD", "buy_plan_basic")
-    .row()
-    .text("👑 Cloud VIP Pro - 15 USD", "buy_plan_premium")
-    .row()
-    .text("⬅️ Volver al Panel", "back_to_main");
-}
+/* =========================
+   MENUS
+========================= */
 
 function getMainMenu() {
-  return new InlineKeyboard().text("💳 Ver Suscripciones", "action_subscription");
+  return new InlineKeyboard()
+    .text("💳 Ver Suscripciones", "action_subscription")
+    .row()
+    .text("🔄 Actualizar Estado", "action_refresh");
 }
+
+function getPlansMenu() {
+  return new InlineKeyboard()
+    .text("☁️ Básico · $5", "buy_plan_basic")
+    .row()
+    .text("👑 VIP Pro · $15", "buy_plan_premium")
+    .row()
+    .text("⬅️ Volver", "back_to_main");
+}
+
+/* =========================
+   HELPERS
+========================= */
 
 function resolvePlan(planType) {
   if (planType === "buy_plan_premium") {
-    return { planName: "premium", price: 15 };
+    return {
+      planName: "premium",
+      price: 15,
+      label: "VIP PRO",
+    };
   }
 
-  return { planName: "basic", price: 5 };
+  return {
+    planName: "basic",
+    price: 5,
+    label: "BÁSICO",
+  };
 }
 
 async function ensureTables() {
@@ -79,6 +98,77 @@ async function ensureUser(userId, username) {
   );
 }
 
+async function getUserPlan(userId) {
+  const result = await db.query(
+    `
+    select plan, verificado
+    from users
+    where user_id = $1
+    limit 1
+    `,
+    [userId]
+  );
+
+  if (result.rowCount === 0) {
+    return {
+      plan: "free",
+      verificado: false,
+    };
+  }
+
+  return {
+    plan: result.rows[0].plan ?? "free",
+    verificado: result.rows[0].verificado ?? false,
+  };
+}
+
+function formatPlanLabel(plan) {
+  switch (plan) {
+    case "premium":
+      return "👑 VIP PRO";
+    case "basic":
+      return "☁️ BÁSICO";
+    default:
+      return "🆓 FREE";
+  }
+}
+
+async function showMainMenu(ctx, userId) {
+  const user = await getUserPlan(userId);
+
+  await ctx.reply(
+    `☁️ <b>CloudVip System</b>\n\nPlan actual: <b>${formatPlanLabel(user.plan)}</b>\nVerificado: <b>${user.verificado ? "Sí" : "No"}</b>\n\nPanel principal:`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getMainMenu(),
+    }
+  );
+}
+
+async function editMainMenu(ctx, userId) {
+  const user = await getUserPlan(userId);
+
+  await ctx.editMessageText(
+    `☁️ <b>CloudVip System</b>\n\nPlan actual: <b>${formatPlanLabel(user.plan)}</b>\nVerificado: <b>${user.verificado ? "Sí" : "No"}</b>\n\nPanel principal:`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getMainMenu(),
+    }
+  );
+}
+
+async function showPlansMenu(ctx, userId) {
+  const user = await getUserPlan(userId);
+
+  await ctx.editMessageText(
+    `⭐️ <b>CloudVip Subscriptions</b>\n\nTu plan actual: <b>${formatPlanLabel(user.plan)}</b>\n\nSelecciona un plan:`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getPlansMenu(),
+    }
+  );
+}
+
 async function handleSubscription(ctx, planType) {
   const userId = ctx.from?.id;
 
@@ -87,11 +177,11 @@ async function handleSubscription(ctx, planType) {
     return;
   }
 
-  const { planName, price } = resolvePlan(planType);
+  const { planName, price, label } = resolvePlan(planType);
 
   try {
     await ctx.reply(
-      `⏳ Procesando tu suscripción <b>${planName.toUpperCase()}</b> por <b>${price} USD</b>...`,
+      `⏳ Procesando suscripción <b>${label}</b> por <b>$${price}</b>...`,
       { parse_mode: "HTML" }
     );
 
@@ -121,14 +211,20 @@ async function handleSubscription(ctx, planType) {
     );
 
     await ctx.reply(
-      `🔥 <b>Upgrade completado.</b>\n\nAhora eres un usuario <b>${planName.toUpperCase()}</b> de CloudVip.\nTus beneficios fueron desbloqueados automáticamente.`,
+      `🔥 <b>Upgrade completado</b>\n\nNuevo plan: <b>${label}</b>\nEstado: <b>Verificado</b>`,
       { parse_mode: "HTML" }
     );
+
+    await showMainMenu(ctx, userId);
   } catch (error) {
     console.error("Error en la transacción de suscripción:", error);
     await ctx.reply("❌ Hubo un problema al procesar la suscripción.");
   }
 }
+
+/* =========================
+   BOT LOGIC
+========================= */
 
 bot.command("start", async (ctx) => {
   const userId = ctx.from?.id;
@@ -141,14 +237,7 @@ bot.command("start", async (ctx) => {
 
   await ensureTables();
   await ensureUser(userId, username);
-
-  await ctx.reply(
-    `☁️ <b>CloudVip System</b>\n\nPanel principal:`,
-    {
-      parse_mode: "HTML",
-      reply_markup: getMainMenu(),
-    }
-  );
+  await showMainMenu(ctx, userId);
 });
 
 bot.on("callback_query:data", async (ctx) => {
@@ -168,26 +257,12 @@ bot.on("callback_query:data", async (ctx) => {
     await ensureUser(userId, username);
 
     if (data === "action_subscription") {
-      const userResult = await db.query(
-        `
-        select plan
-        from users
-        where user_id = $1
-        limit 1
-        `,
-        [userId]
-      );
+      await showPlansMenu(ctx, userId);
+      return;
+    }
 
-      const currentPlan = userResult.rows[0]?.plan ?? "free";
-
-      await ctx.editMessageText(
-        `⭐️ <b>CloudVip Subscriptions</b>\n\nTu plan actual: <code>${String(currentPlan).toUpperCase()}</code>\n\nSelecciona un plan:`,
-        {
-          parse_mode: "HTML",
-          reply_markup: getPlansMenu(),
-        }
-      );
-
+    if (data === "action_refresh") {
+      await editMainMenu(ctx, userId);
       return;
     }
 
@@ -197,13 +272,7 @@ bot.on("callback_query:data", async (ctx) => {
     }
 
     if (data === "back_to_main") {
-      await ctx.editMessageText(
-        `☁️ <b>CloudVip System</b>\n\nPanel principal:`,
-        {
-          parse_mode: "HTML",
-          reply_markup: getMainMenu(),
-        }
-      );
+      await editMainMenu(ctx, userId);
       return;
     }
   } catch (error) {
