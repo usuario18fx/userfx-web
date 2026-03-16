@@ -1,6 +1,10 @@
 {
   "name": "userfx-bot",
+  "private": true,
   "type": "module",
+  "scripts": {
+    "build": "echo build-skipped"
+  },
   "dependencies": {
     "dotenv": "^16.4.5",
     "grammy": "^1.30.0",
