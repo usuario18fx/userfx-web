@@ -74,7 +74,7 @@ function generateAccessCode(planName) {
 }
   return {
     planName: "userfx",
-    price: 5,
+    price: 5,a
     label: "userFX",
     durationDays: 8,
   };
@@ -331,17 +331,15 @@ async function handleSubscription(ctx, planType) {
     );
 
     await ctx.reply(
-      `🔥 <b>Membresía activada</b>\n\n` +
-        `Plan: <b>${label}</b>\n` +
-        `Duración: <b>${durationDays} días</b>\n` +
-        `Expira: <b>${formatExpiry(result.rows[0].membership_expires_at)}</b>\n\n` +
-        `Ya puedes acceder a:\n` +
-        `📺 Feed\n` +
-        `🌩 VideoClouds\n` +
-        `📸 Fotos\n` +
-        `🎁 Gifts`,
-      { parse_mode: "HTML" }
-    );
+  `🔥 <b>Membresía activada</b>\n\n` +
+    `Plan: <b>${label}</b>\n` +
+    `Duración: <b>${durationDays} días</b>\n` +
+    `Expira: <b>${formatExpiry(result.rows[0].membership_expires_at)}</b>\n\n` +
+    `Código de acceso web:\n` +
+    `<code>${accessCode}</code>\n\n` +
+    `Abre tu sitio y pega ese código para desbloquear el álbum.`,
+  { parse_mode: "HTML" }
+);
 
     await renderAccessMenu(ctx, userId, "reply");
   } catch (error) {
