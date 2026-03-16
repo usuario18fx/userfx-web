@@ -1,13 +1,9 @@
 {
   "name": "userfx-bot",
   "type": "module",
-  "scripts": {
-    "dev": "node Bot/index.js",
-    "start": "node Bot/index.js"
-  },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "grammy": "^1.30.0",
-    "pg": "^8.12.0",
-    "dotenv": "^16.4.5"
+    "pg": "^8.12.0"
   }
-} 
+}
