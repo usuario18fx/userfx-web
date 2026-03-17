@@ -284,6 +284,22 @@ async function renderAccessMenu(ctx, userId, mode = "edit") {
   });
 }
 
+async function getLatestAccessCode(userId, planName) {
+  const result = await db.query(
+    `
+    select code, expires_at
+    from access_codes
+    where user_id = $1 and plan = $2
+    order by created_at desc
+    limit 1
+    `,
+    [userId, planName]
+  );
+
+  if (result.rowCount === 0) return null;
+  return result.rows[0];
+}
+
 async function handleSubscription(ctx, planType) {
   const userId = ctx.from?.id;
 
@@ -295,21 +311,50 @@ async function handleSubscription(ctx, planType) {
   const current = await getFreshUserRecord(userId);
   const { planName, price, label, durationDays } = resolvePlan(planType);
 
-  if (current.plan === planName && isMembershipActive(current)) {
-    await ctx.reply(
-      `ℹ️ Your <b>${label}</b> membership is already active.\nExpires: <b>${formatExpiry(current.membership_expires_at)}</b>`,
-      { parse_mode: "HTML" }
-    );
-    return;
-  }
-
   try {
+    if (current.plan === planName && isMembershipActive(current)) {
+      let existingCode = await getLatestAccessCode(userId, planName);
+
+      if (!existingCode) {
+        const fallbackCode = generateAccessCode(planName);
+
+        await db.query(
+          `
+          insert into access_codes (user_id, code, plan, expires_at)
+          values ($1, $2, $3, $4)
+          `,
+          [
+            userId,
+            fallbackCode,
+            planName,
+            current.membership_expires_at,
+          ]
+        );
+
+        existingCode = {
+          code: fallbackCode,
+          expires_at: current.membership_expires_at,
+        };
+      }
+
+      await ctx.reply(
+        `ℹ️ Your <b>${label}</b> membership is already active.\n` +
+          `Expires: <b>${formatExpiry(current.membership_expires_at)}</b>\n\n` +
+          `Your website access code:\n` +
+          `<code>${existingCode.code}</code>`,
+        { parse_mode: "HTML" }
+      );
+      return;
+    }
+
+    await db.query("BEGIN");
+
     await ctx.reply(
       `🧪 Activating <b>${label}</b>\nPrice: <b>$${price}</b>\nDuration: <b>${durationDays} days</b>.`,
       { parse_mode: "HTML" }
     );
 
-    const result = await db.query(
+    const membershipResult = await db.query(
       `
       update users
       set plan = $1,
@@ -329,7 +374,8 @@ async function handleSubscription(ctx, planType) {
       [planName, String(durationDays), userId]
     );
 
-    if (result.rowCount === 0) {
+    if (membershipResult.rowCount === 0) {
+      await db.query("ROLLBACK");
       await ctx.reply("❌ User not found in the database.");
       return;
     }
@@ -345,7 +391,7 @@ async function handleSubscription(ctx, planType) {
         userId,
         accessCode,
         planName,
-        result.rows[0].membership_expires_at,
+        membershipResult.rows[0].membership_expires_at,
       ]
     );
 
@@ -357,11 +403,13 @@ async function handleSubscription(ctx, planType) {
       [userId, `PURCHASE_${planName.toUpperCase()}`]
     );
 
+    await db.query("COMMIT");
+
     await ctx.reply(
       `🔥 <b>Membership activated</b>\n\n` +
         `Plan: <b>${label}</b>\n` +
         `Duration: <b>${durationDays} days</b>\n` +
-        `Expires: <b>${formatExpiry(result.rows[0].membership_expires_at)}</b>\n\n` +
+        `Expires: <b>${formatExpiry(membershipResult.rows[0].membership_expires_at)}</b>\n\n` +
         `Your website access code:\n` +
         `<code>${accessCode}</code>\n\n` +
         `Open the website and paste that code to unlock your album.`,
@@ -370,6 +418,7 @@ async function handleSubscription(ctx, planType) {
 
     await renderAccessMenu(ctx, userId, "reply");
   } catch (error) {
+    await db.query("ROLLBACK").catch(() => {});
     console.error("Subscription SQL error:", error);
     await ctx.reply("❌ Something went wrong while activating your membership.");
   }
