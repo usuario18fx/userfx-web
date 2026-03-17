@@ -518,7 +518,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "feed") {
     await ctx.reply(
-      `🗒️ <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
+      `📜 <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessMenu(),
@@ -540,7 +540,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "photos") {
     await ctx.reply(
-      `📸 <b>Unlocked Photos</b>\n\nYour photos won’t stay blocked anymore. With an active membership, you’ll be able to view them on my website.`,
+      `📸 <b>Unlocked Photos</b>\n\n⬇ Your photos won’t stay blocked anymore. With ⬇ an active membership, you’ll be able to view them on my website.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessMenu(),
