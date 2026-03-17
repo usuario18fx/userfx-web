@@ -113,7 +113,7 @@ function formatPlanLabel(plan) {
     case "vipfx":
       return "👑 vipFX";
     case "userfx":
-      return "⚪ userFX";
+      return "⚡️ userFX";
     default:
       return "🆓 FREE";
   }
@@ -285,14 +285,14 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
 
 async function renderChannelsMenu(ctx, mode = "reply") {
   const text =
-    `╔══════ -🜲 - ══════╗\n\n` +
+    `╔═════ -🜲 - ═════╗\n\n` +
     `👑  <b>ʀᴏᴏᴍ | •Ŧҳ ᴠɪᴘ 🜲</b>\n` +
     `•             $12.00\n` +
     `•     ᴇxᴄʟᴜꜱɪᴠᴇ ᴄᴏɴᴛᴇɴᴛ\n\n` +
     `☁️       <b>𝐒ᴍᴏᴋᴇ𝐋ᴀɴᴅɪᴀ</b>\n` +
     `•               $10.00\n` +
     `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
-    `╚═══════════════╝\n\n` +
+    `╚════════════════╝\n\n` +
     `⌦ <code>/channels</code>`;
 
   if (mode === "edit") {
