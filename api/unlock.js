@@ -33,7 +33,18 @@ export default async function handler(req, res) {
       });
       return;
     }
+const cleanCode = code.trim().toUpperCase();
 
+const result = await db.query(
+  `
+  select user_id, code, code_suffix, plan, expires_at
+  from access_codes
+  where code_suffix = $1
+  order by created_at desc
+  limit 1
+  `,
+  [cleanCode]
+);
     const cleanCode = code.trim().toUpperCase();
 
     const result = await db.query(
