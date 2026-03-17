@@ -25,14 +25,15 @@ const bot = new Bot(token);
 /* =========================
    MENUS
 ========================= */
-
 function getMainMenu() {
-  return new InlineKeyboard()
-    .text("💳 View Memberships", "action_subscription")
-    .row()
-    .text("🔓 Access", "action_access")
-    .row()
-    .text("🔄 Refresh Status", "action_refresh");
+return new InlineKeyboard()
+.text("💳 View Memberships", "action_subscription")
+.row()
+.text("🔓 Access", "action_access")
+.row()
+.text("📺 Channels", "action_channels")
+.row()
+.text("🔄 Refresh Status","action_refresh");
 }
 
 function getPlansMenu() {
@@ -43,7 +44,14 @@ function getPlansMenu() {
     .row()
     .text("⬅️ Back", "back_to_main");
 }
-
+function getChannelsMenu() {
+  return new InlineKeyboard()
+    .text("👑 Room | Ŧҳ VIP 🜲", "channel_fxvip")
+    .row()
+    .text("☁️ SmokeLandia", "channel_smokelandia")
+    .row()
+    .text("⬅️ Back", "back_to_main");
+}
 function getAccessMenu() {
   return new InlineKeyboard()
     .text("📺 Feed", "access_feed")
@@ -94,7 +102,31 @@ function formatPlanLabel(plan) {
       return "🆓 FREE";
   }
 }
+async function renderChannelsMenu(ctx, mode = "reply") {
+  const text =
+    `╔══════ -🜲 - ══════╗\n\n` +
+    `👑  <b>ʀᴏᴏᴍ | •Ŧҳ ᴠɪᴘ 🜲</b>\n` +
+    `•             $12.00\n` +
+    `•     ᴇxᴄʟᴜꜱɪᴠᴇ ᴄᴏɴᴛᴇɴᴛ\n\n` +
+    `☁️       <b>𝐒ᴍᴏᴋᴇ𝐋ᴀɴᴅɪᴀ</b>\n` +
+    `•               $10.00\n` +
+    `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
+    `╚═══════════════╝\n\n` +
+    `⌦ <code>/channels</code>`;
 
+  if (mode === "edit") {
+    await ctx.editMessageText(text, {
+      parse_mode: "HTML",
+      reply_markup: getChannelsMenu(),
+    });
+    return;
+  }
+
+  await ctx.reply(text, {
+    parse_mode: "HTML",
+    reply_markup: getChannelsMenu(),
+  });
+}
 function isMembershipActive(user) {
   if (!user?.membership_expires_at) return false;
   return new Date(user.membership_expires_at).getTime() > Date.now();
@@ -350,7 +382,7 @@ async function handleSubscription(ctx, planType) {
     await db.query("BEGIN");
 
     await ctx.reply(
-      `🧪 Activating <b>${label}</b>\nPrice: <b>$${price}</b>\nDuration: <b>${durationDays} days</b>.`,
+      `🔂 Activating <b>${label}</b>\nPrice: <b>$${price}</b>\nDuration: <b>${durationDays} days</b>.`,
       { parse_mode: "HTML" }
     );
 
@@ -440,7 +472,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "feed") {
     await ctx.reply(
-      `📺 <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
+      `🗒️ <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessMenu(),
@@ -533,11 +565,38 @@ bot.command("access", async (ctx) => {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+const accessCode = generateAccessCode(planName);
+const codeSuffix = accessCode.slice(-4);
 
+await db.query(
+  `
+  insert into access_codes (user_id, code, code_suffix, plan, expires_at)
+  values ($1, $2, $3, $4, $5)
+  `,
+  [
+    userId,
+    accessCode,
+    codeSuffix,
+    planName,
+    membershipResult.rows[0].membership_expires_at,
+  ]
+);
+await ctx.reply(
+  `🥵 <b>Membership activated</b>\n\n` +
+    `Plan: <b>${label}</b>\n` +
+    `Duration: <b>${durationDays} days</b>\n` +
+    `Expires: <b>${formatExpiry(membershipResult.rows[0].membership_expires_at)}</b>\n\n` +
+    `Your unlock digits:\n` +
+    `<code>${codeSuffix}</code>\n\n` +
+    `Enter those 4 digits on the website to unlock the album.`,
+  { parse_mode: "HTML" }
+); 
   await ensureUser(userId, username);
   await renderAccessMenu(ctx, userId, "reply");
 });
-
+bot.command("channels", async (ctx) => {
+  await renderChannelsMenu(ctx, "reply");
+});
 bot.command("status", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
@@ -552,25 +611,23 @@ bot.command("status", async (ctx) => {
 });
 
 bot.command("help", async (ctx) => {
+bot.command("help", async (ctx) => {
   await ctx.reply(
-    `📘 <b>Available commands</b>\n\n` +
-      `/start - open panel\n` +
-      `/menu - open main menu\n` +
-      `/plans - view memberships\n` +
-      `/access - view access options\n` +
-      `/status - check current status\n` +
-      `/help - show help`,
-    {
+`📘 <b>Available commands</b>\n\n` +
+`/start - open panel\n` +
+`/menu - open main menu\n` +
+`/plans - view memberships\n` +
+`/access - view access options\n` +
+`/status - check current status\n` +
+`/channels - view premium channel options\n` +
+`/help - show help`,
+  {
       parse_mode: "HTML",
       reply_markup: getMainMenu(),
     }
   );
 });
-
-/* =========================
-   CALLBACKS
-========================= */
-
+/* ========== CALLBACKS ================ */
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
   const userId = ctx.from?.id;
@@ -605,7 +662,10 @@ bot.on("callback_query:data", async (ctx) => {
       await handleSubscription(ctx, data);
       return;
     }
-
+if (data === "action_channels") {
+  await renderChannelsMenu(ctx, "edit");
+  return;
+}
     if (data === "back_to_main") {
       await renderMainMenu(ctx, userId, "edit");
       return;
@@ -668,4 +728,25 @@ export default async function telegramWebhook(req, res) {
   }
 
   return handler(req, res);
+}
+if (data === "channel_fxvip") {
+  await ctx.reply(
+    `👑 <b>Room | Ŧҳ VIP 🜲</b>\n\n` +
+      `Price: <b>$12.00</b>\n` +
+      `Type: <b>Exclusive content</b>\n\n` +
+      `Use /channels to come back here.`,
+    { parse_mode: "HTML" }
+  );
+  return;
+}
+
+if (data === "channel_smokelandia") {
+  await ctx.reply(
+    `☁️ <b>SmokeLandia</b>\n\n` +
+      `Price: <b>$10.00</b>\n` +
+      `Type: <b>Exclusive</b>\n\n` +
+      `Use /channels to come back here.`,
+    { parse_mode: "HTML" }
+  );
+  return;
 }
