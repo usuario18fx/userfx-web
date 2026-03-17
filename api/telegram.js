@@ -1,15 +1,10 @@
 import "dotenv/config";
 import pg from "pg";
-import {
-  Bot,
-  InlineKeyboard,
-  Keyboard,
-  webhookCallback,
-} from "grammy";
+import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
 
 const token = process.env.BOT_TOKEN;
 const databaseUrl = process.env.DATABASE_URL;
-const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN; // live or test token from BotFather payments
+const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
 
 if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
@@ -17,10 +12,6 @@ if (!token) {
 
 if (!databaseUrl) {
   throw new Error("Missing DATABASE_URL in environment variables");
-}
-
-if (!providerToken) {
-  throw new Error("Missing TELEGRAM_PROVIDER_TOKEN in environment variables");
 }
 
 const { Pool } = pg;
@@ -32,7 +23,9 @@ const db = new Pool({
 
 const bot = new Bot(token);
 
-/* =============== KEYBOARDS ================== */
+/* =========================
+   KEYBOARDS
+========================= */
 
 function getMainKeyboard() {
   return new Keyboard()
@@ -59,7 +52,9 @@ function getAccessKeyboard() {
     .persistent();
 }
 
-/* ============ INLINE MENUS ================= */
+/* =========================
+   INLINE MENUS
+========================= */
 
 function getPlansMenu() {
   return new InlineKeyboard()
@@ -79,7 +74,9 @@ function getChannelsMenu() {
     .text("⬅️ Back", "back_to_main");
 }
 
-/* =============  HELPERS ================ */
+/* =========================
+   HELPERS
+========================= */
 
 function resolvePlan(planType) {
   if (planType === "buy_plan_vipfx") {
@@ -109,6 +106,11 @@ function resolvePlan(planType) {
   };
 }
 
+function planTypeFromPayload(payload) {
+  if (payload === "membership_vipfx_30d") return "buy_plan_vipfx";
+  return "buy_plan_userfx";
+}
+
 function randomSuffix(length = 4) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
@@ -118,14 +120,33 @@ function randomSuffix(length = 4) {
   return out;
 }
 
-function generateAccessCodeFromPlan(planName) {
-  const codePrefix = planName === "vipfx" ? "FX-VIP01-" : "FX-USER01-";
+function generateAccessCode(planType) {
+  const { codePrefix } = resolvePlan(planType);
   const suffix = randomSuffix(4);
 
   return {
     code: `${codePrefix}${suffix}`,
     prefix: codePrefix,
     suffix,
+  };
+}
+
+function normalizeAccessCodeRow(row) {
+  if (!row) return null;
+
+  const code = row.code ?? "";
+  const prefix =
+    row.code_prefix ??
+    (code && code.length > 4 ? code.slice(0, -4) : "");
+  const suffix =
+    row.code_suffix ??
+    (code && code.length >= 4 ? code.slice(-4) : "");
+
+  return {
+    code,
+    code_prefix: prefix,
+    code_suffix: suffix,
+    expires_at: row.expires_at ?? null,
   };
 }
 
@@ -244,103 +265,12 @@ async function getLatestAccessCode(userId, planName) {
   );
 
   if (result.rowCount === 0) return null;
-  return result.rows[0];
+  return normalizeAccessCodeRow(result.rows[0]);
 }
 
-function planTypeFromPayload(payload) {
-  if (payload === "membership_vipfx_30d") return "buy_plan_vipfx";
-  return "buy_plan_userfx";
-}
-
-async function activateMembershipAfterPayment(ctx, planType) {
-  const userId = ctx.from?.id;
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  const { planName, label, durationDays } = resolvePlan(planType);
-
-  await db.query("BEGIN");
-
-  try {
-    const membershipResult = await db.query(
-      `
-      update users
-      set plan = $1,
-          verificado = true,
-          membership_started_at = now(),
-          membership_expires_at = now() + ($2 || ' days')::interval,
-          updated_at = now()
-      where user_id = $3
-      returning membership_expires_at
-      `,
-      [planName, String(durationDays), userId]
-    );
-
-    if (membershipResult.rowCount === 0) {
-      await db.query("ROLLBACK");
-      await ctx.reply("❌ User not found in the database.");
-      return;
-    }
-
-    const generated = generateAccessCodeFromPlan(planName);
-
-    await db.query(
-      `
-      insert into access_codes (
-        user_id,
-        code,
-        code_prefix,
-        code_suffix,
-        plan,
-        expires_at
-      )
-      values ($1, $2, $3, $4, $5, $6)
-      `,
-      [
-        userId,
-        generated.code,
-        generated.prefix,
-        generated.suffix,
-        planName,
-        membershipResult.rows[0].membership_expires_at,
-      ]
-    );
-
-    await db.query(
-      `
-      insert into logs (user_id, action)
-      values ($1, $2)
-      `,
-      [userId, `PURCHASE_${planName.toUpperCase()}`]
-    );
-
-    await db.query("COMMIT");
-
-    await ctx.reply(
-      `🔥 <b>Membership activated</b>\n\n` +
-        `Plan: <b>${label}</b>\n` +
-        `Duration: <b>${durationDays} days</b>\n` +
-        `Expires: <b>${formatExpiry(membershipResult.rows[0].membership_expires_at)}</b>\n\n` +
-        `Your website access code:\n` +
-        `<code>${generated.prefix}</code><b>${generated.suffix}</b>\n\n` +
-        `On the website, the first part is already filled in.\n` +
-        `You only need the last 4 characters: <b>${generated.suffix}</b>`,
-      {
-        parse_mode: "HTML",
-        reply_markup: getAccessKeyboard(),
-      }
-    );
-  } catch (error) {
-    await db.query("ROLLBACK").catch(() => {});
-    console.error("Activation after payment error:", error);
-    await ctx.reply("❌ Something went wrong while activating your membership.");
-  }
-}
-
-/* =============  RENDERERS ================ */
+/* =========================
+   RENDERERS
+========================= */
 
 async function renderMainMenu(ctx, userId, mode = "reply") {
   const user = await getFreshUserRecord(userId);
@@ -357,7 +287,6 @@ async function renderMainMenu(ctx, userId, mode = "reply") {
   if (mode === "edit") {
     await ctx.editMessageText(text, {
       parse_mode: "HTML",
-      reply_markup: getPlansMenu(),
     });
     return;
   }
@@ -375,7 +304,7 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
     `⭐️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `⚡️ <b>userFX</b>\n` +
+    `⚪ <b>userFX</b>\n` +
     `Duration: <b>8 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `👑 <b>vipFX</b>\n` +
@@ -435,7 +364,6 @@ async function renderAccessMenu(ctx, userId, mode = "reply") {
     if (mode === "edit") {
       await ctx.editMessageText(text, {
         parse_mode: "HTML",
-        reply_markup: getPlansMenu(),
       });
       return;
     }
@@ -456,7 +384,6 @@ async function renderAccessMenu(ctx, userId, mode = "reply") {
   if (mode === "edit") {
     await ctx.editMessageText(text, {
       parse_mode: "HTML",
-      reply_markup: getChannelsMenu(),
     });
     return;
   }
@@ -467,7 +394,212 @@ async function renderAccessMenu(ctx, userId, mode = "reply") {
   });
 }
 
-/* ============   PROTECTED CONTENT ================ */
+/* =========================
+   ACCESS CODE MESSAGES
+========================= */
+
+async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
+  const row = normalizeAccessCodeRow(accessRow);
+
+  if (!row) {
+    await ctx.reply("❌ No access code found.");
+    return;
+  }
+
+  await ctx.reply(
+    `ℹ️ Your <b>${label}</b> membership is already active.\n` +
+      `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
+      `Full code:\n<code>${row.code}</code>\n\n` +
+      `Last 4 characters:\n<code>${row.code_suffix}</code>\n\n` +
+      `On the website, the first part is already filled in.\n` +
+      `You only need to enter:\n<code>${row.code_suffix}</code>`,
+    { parse_mode: "HTML" }
+  );
+}
+
+async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) {
+  await ctx.reply(
+    `🔥 <b>Membership activated</b>\n\n` +
+      `Plan: <b>${label}</b>\n` +
+      `Duration: <b>${durationDays} days</b>\n` +
+      `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
+      `Full code:\n<code>${generated.code}</code>\n\n` +
+      `Last 4 characters:\n<code>${generated.suffix}</code>\n\n` +
+      `On the website, the first part is already filled in.\n` +
+      `You only need to enter:\n<code>${generated.suffix}</code>`,
+    { parse_mode: "HTML" }
+  );
+}
+
+/* =========================
+   BUSINESS LOGIC
+========================= */
+
+async function activateMembership(ctx, planType) {
+  const userId = ctx.from?.id;
+
+  if (!userId) {
+    await ctx.reply("❌ Couldn't identify the user.");
+    return;
+  }
+
+  const { planName, label, durationDays } = resolvePlan(planType);
+
+  await db.query("BEGIN");
+
+  try {
+    const membershipResult = await db.query(
+      `
+      update users
+      set plan = $1,
+          verificado = true,
+          membership_started_at = now(),
+          membership_expires_at = now() + ($2 || ' days')::interval,
+          updated_at = now()
+      where user_id = $3
+      returning membership_expires_at
+      `,
+      [planName, String(durationDays), userId]
+    );
+
+    if (membershipResult.rowCount === 0) {
+      await db.query("ROLLBACK");
+      await ctx.reply("❌ User not found in the database.");
+      return;
+    }
+
+    const generated = generateAccessCode(planType);
+
+    await db.query(
+      `
+      insert into access_codes (
+        user_id,
+        code,
+        code_prefix,
+        code_suffix,
+        plan,
+        expires_at
+      )
+      values ($1, $2, $3, $4, $5, $6)
+      `,
+      [
+        userId,
+        generated.code,
+        generated.prefix,
+        generated.suffix,
+        planName,
+        membershipResult.rows[0].membership_expires_at,
+      ]
+    );
+
+    await db.query(
+      `
+      insert into logs (user_id, action)
+      values ($1, $2)
+      `,
+      [userId, `PURCHASE_${planName.toUpperCase()}`]
+    );
+
+    await db.query("COMMIT");
+
+    await replyWithNewCode(
+      ctx,
+      label,
+      durationDays,
+      membershipResult.rows[0].membership_expires_at,
+      generated
+    );
+
+    await renderAccessMenu(ctx, userId, "reply");
+  } catch (error) {
+    await db.query("ROLLBACK").catch(() => {});
+    console.error("Activation error:", error);
+    await ctx.reply("❌ Something went wrong while activating your membership.");
+  }
+}
+
+async function handleSubscription(ctx, planType) {
+  const userId = ctx.from?.id;
+
+  if (!userId) {
+    await ctx.reply("❌ Couldn't identify the user.");
+    return;
+  }
+
+  const current = await getFreshUserRecord(userId);
+  const plan = resolvePlan(planType);
+
+  try {
+    if (current.plan === plan.planName && isMembershipActive(current)) {
+      let existingCode = await getLatestAccessCode(userId, plan.planName);
+
+      if (!existingCode) {
+        const generated = generateAccessCode(planType);
+
+        await db.query(
+          `
+          insert into access_codes (
+            user_id,
+            code,
+            code_prefix,
+            code_suffix,
+            plan,
+            expires_at
+          )
+          values ($1, $2, $3, $4, $5, $6)
+          `,
+          [
+            userId,
+            generated.code,
+            generated.prefix,
+            generated.suffix,
+            plan.planName,
+            current.membership_expires_at,
+          ]
+        );
+
+        existingCode = {
+          code: generated.code,
+          code_prefix: generated.prefix,
+          code_suffix: generated.suffix,
+          expires_at: current.membership_expires_at,
+        };
+      }
+
+      await replyWithExistingCode(
+        ctx,
+        plan.label,
+        current.membership_expires_at,
+        existingCode
+      );
+      return;
+    }
+
+    if (providerToken) {
+      await ctx.replyWithInvoice(
+        plan.title,
+        plan.description,
+        plan.payload,
+        providerToken,
+        "USD",
+        [{ label: plan.label, amount: plan.amountCents }]
+      );
+      return;
+    }
+
+    await ctx.reply(
+      `🔂 Activating <b>${plan.label}</b>\n` +
+        `Price: <b>$${plan.priceUsd}</b>\n` +
+        `Duration: <b>${plan.durationDays} days</b>.`,
+      { parse_mode: "HTML" }
+    );
+
+    await activateMembership(ctx, planType);
+  } catch (error) {
+    console.error("Subscription flow error:", error);
+    await ctx.reply("❌ Something went wrong while processing your membership.");
+  }
+}
 
 async function handleProtectedAccess(ctx, userId, type) {
   const user = await getFreshUserRecord(userId);
@@ -485,7 +617,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "feed") {
     await ctx.reply(
-      `🗒️ <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
+      `📜<b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessKeyboard(),
@@ -507,7 +639,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "photos") {
     await ctx.reply(
-      `📸 <b>Unlocked Photos</b>\n\nYour photos won’t stay blocked anymore. With an active membership, you’ll be able to view them on my website.`,
+      `📸 <b>Unlocked Photos</b>\n\n⬇ Your photos won’t stay blocked anymore. With ⬇ an active membership, you’ll be able to view them on my website.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessKeyboard(),
@@ -527,7 +659,9 @@ async function handleProtectedAccess(ctx, userId, type) {
   }
 }
 
-/* ============== COMMANDS ================ */
+/* =========================
+   COMMANDS
+========================= */
 
 bot.command("start", async (ctx) => {
   const userId = ctx.from?.id;
@@ -615,7 +749,9 @@ bot.command("help", async (ctx) => {
   );
 });
 
-/* ===========  CALLBACKS ============= */
+/* =========================
+   CALLBACKS
+========================= */
 
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -653,16 +789,7 @@ bot.on("callback_query:data", async (ctx) => {
     }
 
     if (data === "buy_plan_userfx" || data === "buy_plan_vipfx") {
-      const p = resolvePlan(data);
-
-      await ctx.replyWithInvoice(
-        p.title,
-        p.description,
-        p.payload,
-        providerToken,
-        "USD",
-        [{ label: p.label, amount: p.amountCents }]
-      );
+      await handleSubscription(ctx, data);
       return;
     }
 
@@ -710,7 +837,7 @@ bot.on("message:successful_payment", async (ctx) => {
   const payload = ctx.message.successful_payment.invoice_payload;
   const planType = planTypeFromPayload(payload);
 
-  await activateMembershipAfterPayment(ctx, planType);
+  await activateMembership(ctx, planType);
 });
 
 /* =========================
@@ -762,7 +889,7 @@ bot.on("message:text", async (ctx) => {
     return;
   }
 
-  if (text === "📸 Nudes") {
+  if (text === "📸 Photos") {
     await handleProtectedAccess(ctx, userId, "photos");
     return;
   }
@@ -772,7 +899,7 @@ bot.on("message:text", async (ctx) => {
     return;
   }
 
-  if (text === "⬅️ ") {
+  if (text === "⬅️ Back") {
     await renderMainMenu(ctx, userId, "reply");
     return;
   }
