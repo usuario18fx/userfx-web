@@ -24,41 +24,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { code } = req.body ?? {};
+    const { prefix, suffix } = req.body ?? {};
 
-    if (!code || typeof code !== "string") {
+    if (!prefix || !suffix) {
       res.status(400).json({
         ok: false,
-        error: "Invalid access code",
+        error: "Missing code parts",
       });
       return;
     }
-const cleanCode = code.trim().toUpperCase();
 
-const result = await db.query(
-  `
-  select user_id, code, code_suffix, plan, expires_at
-  from access_codes
-  where code_suffix = $1
-  order by created_at desc
-  limit 1
-  `,
-  [cleanCode]
-);
-    const cleanCode = code.trim().toUpperCase();
+    const cleanPrefix = String(prefix).trim().toUpperCase();
+    const cleanSuffix = String(suffix).trim().toUpperCase();
 
     const result = await db.query(
       `
-      select
-        user_id,
-        code,
-        plan,
-        expires_at
+      select user_id, code, code_prefix, code_suffix, plan, expires_at
       from access_codes
-      where code = $1
+      where code_prefix = $1
+        and code_suffix = $2
+      order by created_at desc
       limit 1
       `,
-      [cleanCode]
+      [cleanPrefix, cleanSuffix]
     );
 
     if (result.rowCount === 0) {
@@ -85,6 +73,7 @@ const result = await db.query(
       message: "Access unlocked",
       plan: row.plan,
       expires_at: row.expires_at,
+      code: row.code,
     });
   } catch (error) {
     console.error("UNLOCK ERROR:", error);
