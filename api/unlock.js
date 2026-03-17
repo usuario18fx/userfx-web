@@ -39,7 +39,13 @@ export default async function handler(req, res) {
 
     const result = await db.query(
       `
-      select user_id, code, code_prefix, code_suffix, plan, expires_at
+      select
+        user_id,
+        code,
+        code_prefix,
+        code_suffix,
+        plan,
+        expires_at
       from access_codes
       where code_prefix = $1
         and code_suffix = $2
