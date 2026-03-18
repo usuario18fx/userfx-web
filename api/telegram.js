@@ -41,13 +41,13 @@ function getMainKeyboard() {
 
 function getAccessKeyboard() {
   return new Keyboard()
-    .text("📺 Feed")
-    .text("🌩 VideoClouds")
+    .text("📺")
+    .text("🌩")
     .row()
-    .text("📸 Photos")
-    .text("🎁 Gifts")
+    .text("📸")
+    .text("🎁")
     .row()
-    .text("⬅️ Back")
+    .text("⬅️")
     .resized()
     .persistent();
 }
@@ -67,11 +67,11 @@ function getPlansMenu() {
 
 function getChannelsMenu() {
   return new InlineKeyboard()
-    .text("👑 Room | Ŧҳ VIP 🜲", "channel_fxvip")
+    .text("👑room | ŦҳVIP 🜲", "channel_fxvip")
     .row()
-    .text("☁️ SmokeLandia", "channel_smokelandia")
+    .text("☁️SmokeLandia", "channel_smokelandia")
     .row()
-    .text("⬅️ Back", "back_to_main");
+    .text("⬅️", "back_to_main");
 }
 
 /* =========================
