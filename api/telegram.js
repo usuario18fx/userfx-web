@@ -835,7 +835,6 @@ bot.on("message:successful_payment", async (ctx) => {
 /* =========================
    KEYBOARD TEXT ROUTES
 ========================= */
-
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text.trim();
 
@@ -856,12 +855,12 @@ bot.on("message:text", async (ctx) => {
     return;
   }
 
-  if (text === "🔓 Access") {
+  if (text === "🔒 Access") {
     await renderAccessMenu(ctx, userId, "reply");
     return;
   }
 
-  if (text === "📺 Channels") {
+  if (text === "🖥 Channels") {
     await renderChannelsMenu(ctx, "reply");
     return;
   }
