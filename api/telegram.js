@@ -155,7 +155,7 @@ function formatPlanLabel(plan) {
     case "vipfx":
       return "👑 vipFX";
     case "userfx":
-      return "⚪ userFX";
+      return "⚡️ userFX";
     default:
       return "🆓 FREE";
   }
@@ -268,9 +268,7 @@ async function getLatestAccessCode(userId, planName) {
   return normalizeAccessCodeRow(result.rows[0]);
 }
 
-/* =========================
-   RENDERERS
-========================= */
+/* ================  RENDERERS ============ */
 
 async function renderMainMenu(ctx, userId, mode = "reply") {
   const user = await getFreshUserRecord(userId);
@@ -304,7 +302,7 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
     `⭐️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `⚪ <b>userFX</b>\n` +
+    `⚡️ <b>userFX</b>\n` +
     `Duration: <b>8 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `👑 <b>vipFX</b>\n` +
@@ -431,9 +429,7 @@ async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) 
   );
 }
 
-/* =========================
-   BUSINESS LOGIC
-========================= */
+/* ===============  BUSINESS LOGIC ====================== */
 
 async function activateMembership(ctx, planType) {
   const userId = ctx.from?.id;
@@ -749,9 +745,7 @@ bot.command("help", async (ctx) => {
   );
 });
 
-/* =========================
-   CALLBACKS
-========================= */
+/* ====================   CALLBACKS =================== */
 
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -825,9 +819,7 @@ bot.on("callback_query:data", async (ctx) => {
   }
 });
 
-/* =========================
-   PAYMENTS
-========================= */
+/* ======================   PAYMENTS ================== */
 
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
@@ -879,27 +871,27 @@ bot.on("message:text", async (ctx) => {
     return;
   }
 
-  if (text === "📺 Feed") {
+  if (text === "📺 ") {
     await handleProtectedAccess(ctx, userId, "feed");
     return;
   }
 
-  if (text === "🌩 VideoClouds") {
+  if (text === "🌩 ") {
     await handleProtectedAccess(ctx, userId, "videoclouds");
     return;
   }
 
-  if (text === "📸 Photos") {
+  if (text === "📸 ") {
     await handleProtectedAccess(ctx, userId, "photos");
     return;
   }
 
-  if (text === "🎁 Gifts") {
+  if (text === "🎁 ") {
     await handleProtectedAccess(ctx, userId, "gifts");
     return;
   }
 
-  if (text === "⬅️ Back") {
+  if (text === "⬅️ ") {
     await renderMainMenu(ctx, userId, "reply");
     return;
   }
