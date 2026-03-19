@@ -32,7 +32,7 @@ function getMainKeyboard() {
     .text("💳 View Memberships")
     .row()
     .text("🔓 Access")
-    .text("📺 Channels")
+    .text("📺 ")
     .row()
     .text("🔄 Refresh Status")
     .resized()
@@ -58,7 +58,7 @@ function getAccessKeyboard() {
 
 function getPlansMenu() {
   return new InlineKeyboard()
-    .text("⚪ userFX · 8 days · $5", "buy_plan_userfx")
+    .text("🔷 userFX · 8 days · $5", "buy_plan_userfx")
     .row()
     .text("👑 vipFX · 30 days · $15", "buy_plan_vipfx")
     .row()
@@ -155,7 +155,7 @@ function formatPlanLabel(plan) {
     case "vipfx":
       return "👑 vipFX";
     case "userfx":
-      return "⚡️ userFX";
+      return "🔷 userFX";
     default:
       return "🆓 FREE";
   }
@@ -302,7 +302,7 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
     `⭐️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `⚡️ <b>userFX</b>\n` +
+    `🔷 <b>userFX</b>\n` +
     `Duration: <b>8 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `👑 <b>vipFX</b>\n` +
@@ -850,22 +850,22 @@ bot.on("message:text", async (ctx) => {
 
   await ensureUser(userId, username);
 
-  if (text === "💳 View Memberships") {
+  if (text === "💳 ") {
     await renderPlansMenu(ctx, userId, "reply");
     return;
   }
 
-  if (text === "🔒 Access") {
+  if (text === "🔒 ") {
     await renderAccessMenu(ctx, userId, "reply");
     return;
   }
 
-  if (text === "🖥 Channels") {
+  if (text === "📺 ") {
     await renderChannelsMenu(ctx, "reply");
     return;
   }
 
-  if (text === "🔄 Refresh Status") {
+  if (text === "🔄 ") {
     await renderMainMenu(ctx, userId, "reply");
     return;
   }
