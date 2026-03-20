@@ -38,32 +38,43 @@ function getMainInlineMenu() {
 
 bot.command("start", async (ctx) => {
   await ctx.reply(
-    `☁️ <b>SmokeLandia</b>\n\nPrivate entry point.\nOpen the miniapp or choose an access option below.`,
+    `☁️ <b>SmokeLandia</b>\n\n` +
+      `Private entry point.\n` +
+      `Open the miniapp or choose an access option below.`,
     {
       parse_mode: "HTML",
       reply_markup: getMainKeyboard(),
     }
   );
 
-  await ctx.reply("Main panel:", {
-    reply_markup: getMainInlineMenu(),
-  });
+  await ctx.reply(
+    `Main panel:`,
+    {
+      reply_markup: getMainInlineMenu(),
+    }
+  );
 });
 
 bot.command("menu", async (ctx) => {
-  await ctx.reply(`☁️ <b>SmokeLandia</b>\n\nChoose an option:`, {
-    parse_mode: "HTML",
-    reply_markup: getMainKeyboard(),
-  });
+  await ctx.reply(
+    `☁️ <b>SmokeLandia</b>\n\nChoose an option:`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getMainKeyboard(),
+    }
+  );
 
-  await ctx.reply("Main panel:", {
+  await ctx.reply(`Main panel:`, {
     reply_markup: getMainInlineMenu(),
   });
 });
 
 bot.command("help", async (ctx) => {
   await ctx.reply(
-    `📘 <b>Available commands</b>\n\n/start - open panel\n/menu - open panel\n/help - show help`,
+    `📘 <b>Available commands</b>\n\n` +
+      `/start - open panel\n` +
+      `/menu - open panel\n` +
+      `/help - show help`,
     {
       parse_mode: "HTML",
       reply_markup: getMainKeyboard(),
@@ -77,7 +88,9 @@ bot.on("callback_query:data", async (ctx) => {
 
   if (data === "vip_room") {
     await ctx.reply(
-      `👑 <b>VIP Room</b>\n\nPrivate premium access.\nOpen here:\n${SMOKELANDIA_VIP_URL}`,
+      `👑 <b>VIP Room</b>\n\n` +
+        `Private premium access.\n` +
+        `Open here:\n${SMOKELANDIA_VIP_URL}`,
       { parse_mode: "HTML" }
     );
     return;
@@ -85,7 +98,8 @@ bot.on("callback_query:data", async (ctx) => {
 
   if (data === "join_group") {
     await ctx.reply(
-      `🔥 <b>Join Group</b>\n\nOpen here:\n${SMOKELANDIA_GROUP_URL}`,
+      `🔥 <b>Join Group</b>\n\n` +
+        `Open here:\n${SMOKELANDIA_GROUP_URL}`,
       { parse_mode: "HTML" }
     );
     return;
@@ -93,7 +107,8 @@ bot.on("callback_query:data", async (ctx) => {
 
   if (data === "about_smokelandia") {
     await ctx.reply(
-      `ℹ️ <b>SmokeLandia</b>\n\nExclusive access point for the Smokelandia experience.`,
+      `ℹ️ <b>SmokeLandia</b>\n\n` +
+        `Exclusive access point for the Smokelandia experience.`,
       { parse_mode: "HTML" }
     );
   }
@@ -105,22 +120,29 @@ bot.on("message:text", async (ctx) => {
   if (text.startsWith("/")) return;
 
   if (text === "☁️ Open SmokeLandia") {
-    await ctx.reply("Tap below to open the miniapp.", {
-      reply_markup: new InlineKeyboard().webApp(
-        "☁️ Open SmokeLandia",
-        SMOKELANDIA_MINIAPP_URL
-      ),
-    });
+    await ctx.reply(
+      `Tap below to open the miniapp.`,
+      {
+        reply_markup: new InlineKeyboard().webApp(
+          "☁️ Open SmokeLandia",
+          SMOKELANDIA_MINIAPP_URL
+        ),
+      }
+    );
     return;
   }
 
   if (text === "👑 VIP Room") {
-    await ctx.reply(`👑 VIP Room\n${SMOKELANDIA_VIP_URL}`);
+    await ctx.reply(
+      `👑 VIP Room\n${SMOKELANDIA_VIP_URL}`
+    );
     return;
   }
 
   if (text === "🔥 Join Group") {
-    await ctx.reply(`🔥 Join Group\n${SMOKELANDIA_GROUP_URL}`);
+    await ctx.reply(
+      `🔥 Join Group\n${SMOKELANDIA_GROUP_URL}`
+    );
     return;
   }
 
