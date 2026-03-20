@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Telegraf, Markup } from "telegraf";
+import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
 
 const token = process.env.BOT_TOKEN;
 
@@ -7,128 +7,149 @@ if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
 }
 
-const bot = new Telegraf(token);
+const bot = new Bot(token);
 
 const SMOKELANDIA_MINIAPP_URL = "https://fx.smokelandia.app";
-const SMOKELANDIA_GROUP_URL = "https://t.me/+TU_LINK_DEL_GRUPO";
-const SMOKELANDIA_VIP_URL = "https://t.me/+TU_LINK_VIP";
+const SMOKELANDIA_GROUP_URL = "https://t.me/+TU_LINK_AQUI";
+const SMOKELANDIA_VIP_URL = "https://t.me/+TU_LINK_VIP_AQUI";
 
-function mainKeyboard() {
-  return Markup.keyboard([
-    ["☁️ Open SmokeLandia"],
-    ["👑 VIP Room", "🔥 Join Group"],
-    ["ℹ️ About"]
-  ]).resize();
+function getMainKeyboard() {
+  return new Keyboard()
+    .text("☁️ Open SmokeLandia")
+    .row()
+    .text("👑 VIP Room")
+    .text("🔥 Join Group")
+    .row()
+    .text("ℹ️ About")
+    .resized()
+    .persistent();
 }
 
-function mainInlineMenu() {
-  return Markup.inlineKeyboard([
-    [Markup.button.webApp("☁️ Open SmokeLandia", SMOKELANDIA_MINIAPP_URL)],
-    [Markup.button.callback("👑 VIP Room", "vip_room")],
-    [Markup.button.callback("🔥 Join Group", "join_group")],
-    [Markup.button.callback("ℹ️ About", "about_smokelandia")]
-  ]);
+function getMainInlineMenu() {
+  return new InlineKeyboard()
+    .webApp("☁️ Open SmokeLandia", SMOKELANDIA_MINIAPP_URL)
+    .row()
+    .text("👑 VIP Room", "vip_room")
+    .row()
+    .text("🔥 Join Group", "join_group")
+    .row()
+    .text("ℹ️ About", "about_smokelandia");
 }
 
-bot.start(async (ctx) => {
+bot.command("start", async (ctx) => {
   await ctx.reply(
-    "☁️ SmokeLandia\n\nPrivate entry point.\nOpen the miniapp or choose an access option below.",
-    mainKeyboard()
+    `☁️ <b>SmokeLandia</b>\n\nPrivate entry point.\nOpen the miniapp or choose an access option below.`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getMainKeyboard(),
+    }
   );
 
-  await ctx.reply("Main panel:", mainInlineMenu());
+  await ctx.reply("Main panel:", {
+    reply_markup: getMainInlineMenu(),
+  });
 });
 
 bot.command("menu", async (ctx) => {
-  await ctx.reply(
-    "☁️ SmokeLandia\n\nChoose an option:",
-    mainKeyboard()
-  );
+  await ctx.reply(`☁️ <b>SmokeLandia</b>\n\nChoose an option:`, {
+    parse_mode: "HTML",
+    reply_markup: getMainKeyboard(),
+  });
 
-  await ctx.reply("Main panel:", mainInlineMenu());
+  await ctx.reply("Main panel:", {
+    reply_markup: getMainInlineMenu(),
+  });
 });
 
 bot.command("help", async (ctx) => {
   await ctx.reply(
-    "Available commands:\n\n/start - open panel\n/menu - open panel\n/help - show help",
-    mainKeyboard()
-  );
-});
-
-bot.action("vip_room", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply(
-    `👑 VIP Room\n\nPrivate premium access.\nOpen here:\n${SMOKELANDIA_VIP_URL}`
-  );
-});
-
-bot.action("join_group", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply(
-    `🔥 Join Group\n\nOpen here:\n${SMOKELANDIA_GROUP_URL}`
-  );
-});
-
-bot.action("about_smokelandia", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply(
-    "☁️ SmokeLandia\n\nExclusive access point for the Smokelandia experience."
-  );
-});
-
-bot.hears("☁️ Open SmokeLandia", async (ctx) => {
-  await ctx.reply(
-    "Tap below to open the miniapp.",
-    Markup.inlineKeyboard([
-      [Markup.button.webApp("☁️ Open SmokeLandia", SMOKELANDIA_MINIAPP_URL)]
-    ])
-  );
-});
-
-bot.hears("👑 VIP Room", async (ctx) => {
-  await ctx.reply(`👑 VIP Room\n${SMOKELANDIA_VIP_URL}`);
-});
-
-bot.hears("🔥 Join Group", async (ctx) => {
-  await ctx.reply(`🔥 Join Group\n${SMOKELANDIA_GROUP_URL}`);
-});
-
-bot.hears("ℹ️ About", async (ctx) => {
-  await ctx.reply(
-    "☁️ SmokeLandia\nExclusive access point for the Smokelandia experience.",
-    mainKeyboard()
-  );
-});
-
-bot.on("text", async (ctx, next) => {
-  const text = ctx.message?.text?.trim();
-  if (text === "/start" || text === "/menu" || text === "/help") {
-    return next();
-  }
-
-  const known = [
-    "☁️ Open SmokeLandia",
-    "👑 VIP Room",
-    "🔥 Join Group",
-    "ℹ️ About"
-  ];
-
-  if (!known.includes(text)) {
-    await ctx.reply("Use /menu to open the panel.", mainKeyboard());
-  }
-});
-
-export default async function handler(req, res) {
-  try {
-    if (req.method !== "POST") {
-      res.status(405).send("Method Not Allowed");
-      return;
+    `📘 <b>Available commands</b>\n\n/start - open panel\n/menu - open panel\n/help - show help`,
+    {
+      parse_mode: "HTML",
+      reply_markup: getMainKeyboard(),
     }
+  );
+});
 
-    await bot.handleUpdate(req.body, res);
-    res.status(200).send("OK");
-  } catch (error) {
-    console.error("TELEGRAM WEBHOOK ERROR:", error);
-    res.status(500).send("Internal Server Error");
+bot.on("callback_query:data", async (ctx) => {
+  const data = ctx.callbackQuery.data;
+  await ctx.answerCallbackQuery();
+
+  if (data === "vip_room") {
+    await ctx.reply(
+      `👑 <b>VIP Room</b>\n\nPrivate premium access.\nOpen here:\n${SMOKELANDIA_VIP_URL}`,
+      { parse_mode: "HTML" }
+    );
+    return;
   }
+
+  if (data === "join_group") {
+    await ctx.reply(
+      `🔥 <b>Join Group</b>\n\nOpen here:\n${SMOKELANDIA_GROUP_URL}`,
+      { parse_mode: "HTML" }
+    );
+    return;
+  }
+
+  if (data === "about_smokelandia") {
+    await ctx.reply(
+      `ℹ️ <b>SmokeLandia</b>\n\nExclusive access point for the Smokelandia experience.`,
+      { parse_mode: "HTML" }
+    );
+  }
+});
+
+bot.on("message:text", async (ctx) => {
+  const text = ctx.message.text.trim();
+
+  if (text.startsWith("/")) return;
+
+  if (text === "☁️ Open SmokeLandia") {
+    await ctx.reply("Tap below to open the miniapp.", {
+      reply_markup: new InlineKeyboard().webApp(
+        "☁️ Open SmokeLandia",
+        SMOKELANDIA_MINIAPP_URL
+      ),
+    });
+    return;
+  }
+
+  if (text === "👑 VIP Room") {
+    await ctx.reply(`👑 VIP Room\n${SMOKELANDIA_VIP_URL}`);
+    return;
+  }
+
+  if (text === "🔥 Join Group") {
+    await ctx.reply(`🔥 Join Group\n${SMOKELANDIA_GROUP_URL}`);
+    return;
+  }
+
+  if (text === "ℹ️ About") {
+    await ctx.reply(
+      `☁️ SmokeLandia\nExclusive access point for the Smokelandia experience.`,
+      {
+        reply_markup: getMainKeyboard(),
+      }
+    );
+    return;
+  }
+
+  await ctx.reply("Use /menu to open the panel.", {
+    reply_markup: getMainKeyboard(),
+  });
+});
+
+bot.catch((err) => {
+  console.error("BOT ERROR:", err);
+});
+
+const handler = webhookCallback(bot, "http");
+
+export default async function telegramWebhook(req, res) {
+  if (req.method !== "POST") {
+    res.status(405).send("Method Not Allowed");
+    return;
+  }
+
+  return handler(req, res);
 }
