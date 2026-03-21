@@ -1,3 +1,4 @@
+
 import "dotenv/config";
 import pg from "pg";
 
@@ -36,6 +37,14 @@ export default async function handler(req, res) {
 
     const cleanPrefix = String(prefix).trim().toUpperCase();
     const cleanSuffix = String(suffix).trim().toUpperCase();
+
+    if (cleanSuffix.length !== 4) {
+      res.status(400).json({
+        ok: false,
+        error: "Invalid suffix",
+      });
+      return;
+    }
 
     const result = await db.query(
       `
