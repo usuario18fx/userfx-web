@@ -58,7 +58,7 @@ function getAccessKeyboard() {
 
 function getPlansMenu() {
   return new InlineKeyboard()
-    .text("🔷 userFX · 8 days · $5", "buy_plan_userfx")
+    .text("⚪ userFX · 8 days · $5", "buy_plan_userfx")
     .row()
     .text("👑 vipFX · 30 days · $15", "buy_plan_vipfx")
     .row()
@@ -155,7 +155,7 @@ function formatPlanLabel(plan) {
     case "vipfx":
       return "👑 vipFX";
     case "userfx":
-      return "🔷 userFX";
+      return "⚪ userFX";
     default:
       return "🆓 FREE";
   }
@@ -304,7 +304,7 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
     `⭐️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `🔷 <b>userFX</b>\n` +
+    `⚪ <b>userFX</b>\n` +
     `Duration: <b>8 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `👑 <b>vipFX</b>\n` +
@@ -337,6 +337,7 @@ async function renderChannelsMenu(ctx, mode = "reply") {
     `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
     `╚═══════════════╝\n\n` +
     `⌦ <code>/channels</code>`;
+
   if (mode === "edit") {
     await ctx.editMessageText(text, {
       parse_mode: "HTML",
@@ -344,30 +345,36 @@ async function renderChannelsMenu(ctx, mode = "reply") {
     });
     return;
   }
+
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getChannelsMenu(),
   });
 }
+
 async function renderAccessMenu(ctx, userId, mode = "reply") {
   const user = await getFreshUserRecord(userId);
+
   if (!isMembershipActive(user) || user.plan === "free") {
     const text =
       `🔒 <b>Access locked</b>\n\n` +
       `You need an active membership to unlock this content.\n` +
       `Open <b>View Memberships</b> and activate your access.`;
+
     if (mode === "edit") {
       await ctx.editMessageText(text, {
         parse_mode: "HTML",
       });
       return;
     }
+
     await ctx.reply(text, {
       parse_mode: "HTML",
       reply_markup: getMainKeyboard(),
     });
     return;
   }
+
   const text =
     `🔓 <b>Access unlocked</b>\n\n` +
     `Active plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
@@ -386,15 +393,19 @@ async function renderAccessMenu(ctx, userId, mode = "reply") {
     reply_markup: getAccessKeyboard(),
   });
 }
+
 /* =========================
    ACCESS CODE MESSAGES
 ========================= */
+
 async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
   const row = normalizeAccessCodeRow(accessRow);
+
   if (!row) {
     await ctx.reply("❌ No access code found.");
     return;
   }
+
   await ctx.reply(
     `ℹ️ Your <b>${label}</b> membership is already active.\n` +
       `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
@@ -405,6 +416,7 @@ async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
     { parse_mode: "HTML" }
   );
 }
+
 async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) {
   await ctx.reply(
     `🔥 <b>Membership activated</b>\n\n` +
@@ -418,9 +430,11 @@ async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) 
     { parse_mode: "HTML" }
   );
 }
+
 /* =========================
    BUSINESS LOGIC
 ========================= */
+
 async function activateMembership(ctx, planType) {
   const userId = ctx.from?.id;
 
@@ -428,11 +442,14 @@ async function activateMembership(ctx, planType) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   const { planName, label, durationDays } = resolvePlan(planType);
+
   await db.query("BEGIN");
+
   try {
-    const membershipResult = await db.query}
-  `
+    const membershipResult = await db.query(
+      `
       update users
       set plan = $1,
           verificado = true,
@@ -474,6 +491,7 @@ async function activateMembership(ctx, planType) {
         membershipResult.rows[0].membership_expires_at,
       ]
     );
+
     await db.query(
       `
       insert into logs (user_id, action)
@@ -491,6 +509,7 @@ async function activateMembership(ctx, planType) {
       membershipResult.rows[0].membership_expires_at,
       generated
     );
+
     await renderAccessMenu(ctx, userId, "reply");
   } catch (error) {
     await db.query("ROLLBACK").catch(() => {});
@@ -498,6 +517,7 @@ async function activateMembership(ctx, planType) {
     await ctx.reply("❌ Something went wrong while activating your membership.");
   }
 }
+
 async function handleSubscription(ctx, planType) {
   const userId = ctx.from?.id;
 
@@ -508,6 +528,7 @@ async function handleSubscription(ctx, planType) {
 
   const current = await getFreshUserRecord(userId);
   const plan = resolvePlan(planType);
+
   try {
     if (current.plan === plan.planName && isMembershipActive(current)) {
       let existingCode = await getLatestAccessCode(userId, plan.planName);
