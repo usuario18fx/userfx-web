@@ -5,6 +5,7 @@ import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
 const token = process.env.BOT_TOKEN;
 const databaseUrl = process.env.DATABASE_URL;
 const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
+const photosAppUrl = process.env.PHOTOS_APP_URL || "https://fx.smokelandia.app";
 
 if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
@@ -272,7 +273,7 @@ async function getLatestAccessCode(userId, planName) {
    RENDERERS
 ========================= */
 
-async function renderMainMenu(ctx, userId, mode = "reply") {
+async function renderMainMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
   const active = isMembershipActive(user);
 
@@ -284,20 +285,13 @@ async function renderMainMenu(ctx, userId, mode = "reply") {
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
     `Main panel:`;
 
-  if (mode === "edit") {
-    await ctx.editMessageText(text, {
-      parse_mode: "HTML",
-    });
-    return;
-  }
-
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getMainKeyboard(),
   });
 }
 
-async function renderPlansMenu(ctx, userId, mode = "edit") {
+async function renderPlansMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
 
   const text =
@@ -312,21 +306,13 @@ async function renderPlansMenu(ctx, userId, mode = "edit") {
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `Pick a membership:`;
 
-  if (mode === "edit") {
-    await ctx.editMessageText(text, {
-      parse_mode: "HTML",
-      reply_markup: getPlansMenu(),
-    });
-    return;
-  }
-
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getPlansMenu(),
   });
 }
 
-async function renderChannelsMenu(ctx, mode = "reply") {
+async function renderChannelsMenu(ctx) {
   const text =
     `╔══════ -🜲 - ══════╗\n\n` +
     `👑  <b>ʀᴏᴏᴍ | •Ŧҳ ᴠɪᴘ 🜲</b>\n` +
@@ -335,16 +321,7 @@ async function renderChannelsMenu(ctx, mode = "reply") {
     `☁️       <b>𝐒ᴍᴏᴋᴇ𝐋ᴀɴᴅɪᴀ</b>\n` +
     `•               $10.00\n` +
     `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
-    `╚═══════════════╝\n\n` +
-    `⌦ <code>/channels</code>`;
-
-  if (mode === "edit") {
-    await ctx.editMessageText(text, {
-      parse_mode: "HTML",
-      reply_markup: getChannelsMenu(),
-    });
-    return;
-  }
+    `╚═══════════════╝`;
 
   await ctx.reply(text, {
     parse_mode: "HTML",
@@ -352,26 +329,17 @@ async function renderChannelsMenu(ctx, mode = "reply") {
   });
 }
 
-async function renderAccessMenu(ctx, userId, mode = "reply") {
+async function renderAccessMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
 
   if (!isMembershipActive(user) || user.plan === "free") {
-    const text =
-      `🔒 <b>Access locked</b>\n\n` +
-      `You need an active membership to unlock this content.\n` +
-      `Open <b>View Memberships</b> and activate your access.`;
-
-    if (mode === "edit") {
-      await ctx.editMessageText(text, {
+    await ctx.reply(
+      `🔒 <b>Access locked</b>\n\nYou need an active membership to unlock this content.`,
+      {
         parse_mode: "HTML",
-      });
-      return;
-    }
-
-    await ctx.reply(text, {
-      parse_mode: "HTML",
-      reply_markup: getMainKeyboard(),
-    });
+        reply_markup: getMainKeyboard(),
+      }
+    );
     return;
   }
 
@@ -380,13 +348,6 @@ async function renderAccessMenu(ctx, userId, mode = "reply") {
     `Active plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
     `Choose an option:`;
-
-  if (mode === "edit") {
-    await ctx.editMessageText(text, {
-      parse_mode: "HTML",
-    });
-    return;
-  }
 
   await ctx.reply(text, {
     parse_mode: "HTML",
@@ -475,7 +436,7 @@ async function activateMembership(ctx, planType) {
       insert into access_codes (
         user_id,
         code,
-        code_prefix,
+    code_prefix,
         code_suffix,
         plan,
         expires_at
@@ -510,7 +471,7 @@ async function activateMembership(ctx, planType) {
       generated
     );
 
-    await renderAccessMenu(ctx, userId, "reply");
+    await renderAccessMenu(ctx, userId);
   } catch (error) {
     await db.query("ROLLBACK").catch(() => {});
     console.error("Activation error:", error);
@@ -617,7 +578,7 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "feed") {
     await ctx.reply(
-      `🗒️ <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
+      `📺 <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
       {
         parse_mode: "HTML",
         reply_markup: getAccessKeyboard(),
@@ -639,10 +600,13 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (type === "photos") {
     await ctx.reply(
-      `📸 <b>Unlocked Photos</b>\n\nYour photos won’t stay blocked anymore. With an active membership, you’ll be able to view them on my website.`,
+      `📸 <b>Photos unlocked</b>\n\nYour gallery is ready.\nOpen the app to view your unlocked album.`,
       {
         parse_mode: "HTML",
-        reply_markup: getAccessKeyboard(),
+        reply_markup: new InlineKeyboard()
+          .url("🔓 Open App", photosAppUrl)
+          .row()
+          .text("⬅️ Back", "back_to_access"),
       }
     );
     return;
@@ -673,7 +637,7 @@ bot.command("start", async (ctx) => {
   }
 
   await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId, "reply");
+  await renderMainMenu(ctx, userId);
 });
 
 bot.command("menu", async (ctx) => {
@@ -686,7 +650,7 @@ bot.command("menu", async (ctx) => {
   }
 
   await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId, "reply");
+  await renderMainMenu(ctx, userId);
 });
 
 bot.command("plans", async (ctx) => {
@@ -699,7 +663,7 @@ bot.command("plans", async (ctx) => {
   }
 
   await ensureUser(userId, username);
-  await renderPlansMenu(ctx, userId, "reply");
+  await renderPlansMenu(ctx, userId);
 });
 
 bot.command("access", async (ctx) => {
@@ -712,11 +676,11 @@ bot.command("access", async (ctx) => {
   }
 
   await ensureUser(userId, username);
-  await renderAccessMenu(ctx, userId, "reply");
+  await renderAccessMenu(ctx, userId);
 });
 
 bot.command("channels", async (ctx) => {
-  await renderChannelsMenu(ctx, "reply");
+  await renderChannelsMenu(ctx);
 });
 
 bot.command("status", async (ctx) => {
@@ -729,7 +693,7 @@ bot.command("status", async (ctx) => {
   }
 
   await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId, "reply");
+  await renderMainMenu(ctx, userId);
 });
 
 bot.command("help", async (ctx) => {
@@ -768,26 +732,6 @@ bot.on("callback_query:data", async (ctx) => {
   try {
     await ensureUser(userId, username);
 
-    if (data === "action_subscription") {
-      await renderPlansMenu(ctx, userId);
-      return;
-    }
-
-    if (data === "action_access") {
-      await renderAccessMenu(ctx, userId);
-      return;
-    }
-
-    if (data === "action_channels") {
-      await renderChannelsMenu(ctx, "edit");
-      return;
-    }
-
-    if (data === "action_refresh") {
-      await renderMainMenu(ctx, userId, "reply");
-      return;
-    }
-
     if (data === "buy_plan_userfx" || data === "buy_plan_vipfx") {
       await handleSubscription(ctx, data);
       return;
@@ -816,7 +760,12 @@ bot.on("callback_query:data", async (ctx) => {
     }
 
     if (data === "back_to_main") {
-      await renderMainMenu(ctx, userId, "reply");
+      await renderMainMenu(ctx, userId);
+      return;
+    }
+
+    if (data === "back_to_access") {
+      await renderAccessMenu(ctx, userId);
       return;
     }
   } catch (error) {
@@ -860,22 +809,22 @@ bot.on("message:text", async (ctx) => {
   await ensureUser(userId, username);
 
   if (text === "💳 View Memberships") {
-    await renderPlansMenu(ctx, userId, "reply");
+    await renderPlansMenu(ctx, userId);
     return;
   }
 
   if (text === "🔒 Access") {
-    await renderAccessMenu(ctx, userId, "reply");
+    await renderAccessMenu(ctx, userId);
     return;
   }
 
   if (text === "🖥 Channels") {
-    await renderChannelsMenu(ctx, "reply");
+    await renderChannelsMenu(ctx);
     return;
   }
 
   if (text === "🔄 Refresh Status") {
-    await renderMainMenu(ctx, userId, "reply");
+    await renderMainMenu(ctx, userId);
     return;
   }
 
@@ -900,7 +849,7 @@ bot.on("message:text", async (ctx) => {
   }
 
   if (text === "⬅️ Back") {
-    await renderMainMenu(ctx, userId, "reply");
+    await renderMainMenu(ctx, userId);
     return;
   }
 
