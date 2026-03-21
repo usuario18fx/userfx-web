@@ -1,177 +1,306 @@
 import "dotenv/config";
+import pg from "pg";
 import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
 
 const token = process.env.BOT_TOKEN;
+const databaseUrl = process.env.DATABASE_URL;
+const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
 
 if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
 }
 
+if (!databaseUrl) {
+  throw new Error("Missing DATABASE_URL in environment variables");
+}
+
+const { Pool } = pg;
+
+const db = new Pool({
+  connectionString: databaseUrl,
+  ssl: { rejectUnauthorized: false },
+});
+
 const bot = new Bot(token);
 
-const SMOKELANDIA_MINIAPP_URL = "https://fx.smokelandia.app";
-const SMOKELANDIA_GROUP_URL = "https://t.me/+TU_LINK_AQUI";
-const SMOKELANDIA_VIP_URL = "https://t.me/+TU_LINK_VIP_AQUI";
+/* =========================
+   KEYBOARDS
+========================= */
 
 function getMainKeyboard() {
   return new Keyboard()
-    .text("☁️ Open SmokeLandia")
+    .text("💳 View Memberships")
     .row()
-    .text("👑 VIP Room")
-    .text("🔥 Join Group")
+    .text("🔒 Access")
+    .text("🖥 Channels")
     .row()
-    .text("ℹ️ About")
+    .text("🔄 Refresh Status")
     .resized()
     .persistent();
 }
 
-function getMainInlineMenu() {
-  return new InlineKeyboard()
-    .webApp("☁️ Open SmokeLandia", SMOKELANDIA_MINIAPP_URL)
+function getAccessKeyboard() {
+  return new Keyboard()
+    .text("📺 Feed")
+    .text("🌩 VideoClouds")
     .row()
-    .text("👑 VIP Room", "vip_room")
+    .text("📸 Photos")
+    .text("🎁 Gifts")
     .row()
-    .text("🔥 Join Group", "join_group")
-    .row()
-    .text("ℹ️ About", "about_smokelandia");
+    .text("⬅️ Back")
+    .resized()
+    .persistent();
 }
 
-bot.command("start", async (ctx) => {
-  await ctx.reply(
-    `☁️ <b>SmokeLandia</b>\n\n` +
-      `Private entry point.\n` +
-      `Open the miniapp or choose an access option below.`,
-    {
-      parse_mode: "HTML",
-      reply_markup: getMainKeyboard(),
-    }
-  );
+/* =========================
+   INLINE MENUS
+========================= */
 
-  await ctx.reply(
-    `Main panel:`,
-    {
-      reply_markup: getMainInlineMenu(),
-    }
-  );
-});
+function getPlansMenu() {
+  return new InlineKeyboard()
+    .text("⚪ userFX · 8 days · $5", "buy_plan_userfx")
+    .row()
+    .text("👑 vipFX · 30 days · $15", "buy_plan_vipfx")
+    .row()
+    .text("⬅️ Back", "back_to_main");
+}
 
-bot.command("menu", async (ctx) => {
-  await ctx.reply(
-    `☁️ <b>SmokeLandia</b>\n\nChoose an option:`,
-    {
-      parse_mode: "HTML",
-      reply_markup: getMainKeyboard(),
-    }
-  );
+function getChannelsMenu() {
+  return new InlineKeyboard()
+    .text("👑 Room | Ŧҳ VIP 🜲", "channel_fxvip")
+    .row()
+    .text("☁️ SmokeLandia", "channel_smokelandia")
+    .row()
+    .text("⬅️ Back", "back_to_main");
+}
 
-  await ctx.reply(`Main panel:`, {
-    reply_markup: getMainInlineMenu(),
+/* =========================
+   HELPERS
+========================= */
+
+function resolvePlan(planType) {
+  if (planType === "buy_plan_vipfx") {
+    return {
+      planName: "vipfx",
+      priceUsd: 15,
+      label: "vipFX",
+      durationDays: 30,
+      codePrefix: "FX-VIP01-",
+      title: "vipFX Membership",
+      description: "30 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
+      amountCents: 1500,
+      payload: "membership_vipfx_30d",
+    };
+  }
+
+  return {
+    planName: "userfx",
+    priceUsd: 5,
+    label: "userFX",
+    durationDays: 8,
+    codePrefix: "FX-USER01-",
+    title: "userFX Membership",
+    description: "8 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
+    amountCents: 500,
+    payload: "membership_userfx_8d",
+  };
+}
+
+function planTypeFromPayload(payload) {
+  if (payload === "membership_vipfx_30d") return "buy_plan_vipfx";
+  return "buy_plan_userfx";
+}
+
+function randomSuffix(length = 4) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < length; i++) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function generateAccessCode(planType) {
+  const { codePrefix } = resolvePlan(planType);
+  const suffix = randomSuffix(4);
+
+  return {
+    code: `${codePrefix}${suffix}`,
+    prefix: codePrefix,
+    suffix,
+  };
+}
+
+function normalizeAccessCodeRow(row) {
+  if (!row) return null;
+
+  const code = row.code ?? "";
+  const prefix =
+    row.code_prefix ??
+    (code && code.length > 4 ? code.slice(0, -4) : "");
+  const suffix =
+    row.code_suffix ??
+    (code && code.length >= 4 ? code.slice(-4) : "");
+
+  return {
+    code,
+    code_prefix: prefix,
+    code_suffix: suffix,
+    expires_at: row.expires_at ?? null,
+  };
+}
+
+function formatPlanLabel(plan) {
+  switch (plan) {
+    case "vipfx":
+      return "👑 vipFX";
+    case "userfx":
+      return "⚪ userFX";
+    default:
+      return "🆓 FREE";
+  }
+}
+
+function isMembershipActive(user) {
+  if (!user?.membership_expires_at) return false;
+  return new Date(user.membership_expires_at).getTime() > Date.now();
+}
+
+function formatExpiry(dateValue) {
+  if (!dateValue) return "Not set";
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "Not set";
+
+  return date.toLocaleString("en-CA", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
-});
+}
 
-bot.command("help", async (ctx) => {
-  await ctx.reply(
-    `📘 <b>Available commands</b>\n\n` +
-      `/start - open panel\n` +
-      `/menu - open panel\n` +
-      `/help - show help`,
-    {
-      parse_mode: "HTML",
-      reply_markup: getMainKeyboard(),
-    }
+async function ensureUser(userId, username) {
+  await db.query(
+    `
+    insert into users (user_id, username)
+    values ($1, $2)
+    on conflict (user_id)
+    do update set
+      username = excluded.username,
+      updated_at = now()
+    `,
+    [userId, username]
   );
-});
+}
 
-bot.on("callback_query:data", async (ctx) => {
-  const data = ctx.callbackQuery.data;
-  await ctx.answerCallbackQuery();
+async function getUserRecord(userId) {
+  const result = await db.query(
+    `
+    select
+      plan,
+      verificado,
+      membership_started_at,
+      membership_expires_at
+    from users
+    where user_id = $1
+    limit 1
+    `,
+    [userId]
+  );
 
-  if (data === "vip_room") {
-    await ctx.reply(
-      `👑 <b>VIP Room</b>\n\n` +
-        `Private premium access.\n` +
-        `Open here:\n${SMOKELANDIA_VIP_URL}`,
-      { parse_mode: "HTML" }
+  if (result.rowCount === 0) {
+    return {
+      plan: "free",
+      verificado: false,
+      membership_started_at: null,
+      membership_expires_at: null,
+    };
+  }
+
+  return {
+    plan: result.rows[0].plan ?? "free",
+    verificado: result.rows[0].verificado ?? false,
+    membership_started_at: result.rows[0].membership_started_at ?? null,
+    membership_expires_at: result.rows[0].membership_expires_at ?? null,
+  };
+}
+
+async function expireMembershipIfNeeded(userId) {
+  const user = await getUserRecord(userId);
+
+  if (
+    user.plan !== "free" &&
+    user.membership_expires_at &&
+    new Date(user.membership_expires_at).getTime() <= Date.now()
+  ) {
+    await db.query(
+      `
+      update users
+      set plan = 'free',
+          verificado = false,
+          updated_at = now()
+      where user_id = $1
+      `,
+      [userId]
     );
+  }
+}
+
+async function getFreshUserRecord(userId) {
+  await expireMembershipIfNeeded(userId);
+  return getUserRecord(userId);
+}
+
+async function getLatestAccessCode(userId, planName) {
+  const result = await db.query(
+    `
+    select code, code_prefix, code_suffix, expires_at
+    from access_codes
+    where user_id = $1 and plan = $2
+    order by created_at desc
+    limit 1
+    `,
+    [userId, planName]
+  );
+
+  if (result.rowCount === 0) return null;
+  return normalizeAccessCodeRow(result.rows[0]);
+}
+
+/* =========================
+   RENDERERS
+========================= */
+
+async function renderMainMenu(ctx, userId, mode = "reply") {
+  const user = await getFreshUserRecord(userId);
+  const active = isMembershipActive(user);
+
+  const text =
+    `☁️ <b>FX Memberships</b>\n\n` +
+    `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
+    `Verified: <b>${user.verificado ? "Yes" : "No"}</b>\n` +
+    `Membership active: <b>${active ? "Yes" : "No"}</b>\n` +
+    `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
+    `Main panel:`;
+
+  if (mode === "edit") {
+    await ctx.editMessageText(text, {
+      parse_mode: "HTML",
+    });
     return;
   }
 
-  if (data === "join_group") {
-    await ctx.reply(
-      `🔥 <b>Join Group</b>\n\n` +
-        `Open here:\n${SMOKELANDIA_GROUP_URL}`,
-      { parse_mode: "HTML" }
-    );
-    return;
-  }
-
-  if (data === "about_smokelandia") {
-    await ctx.reply(
-      `ℹ️ <b>SmokeLandia</b>\n\n` +
-        `Exclusive access point for the Smokelandia experience.`,
-      { parse_mode: "HTML" }
-    );
-  }
-});
-
-bot.on("message:text", async (ctx) => {
-  const text = ctx.message.text.trim();
-
-  if (text.startsWith("/")) return;
-
-  if (text === "☁️ Open SmokeLandia") {
-    await ctx.reply(
-      `Tap below to open the miniapp.`,
-      {
-        reply_markup: new InlineKeyboard().webApp(
-          "☁️ Open SmokeLandia",
-          SMOKELANDIA_MINIAPP_URL
-        ),
-      }
-    );
-    return;
-  }
-
-  if (text === "👑 VIP Room") {
-    await ctx.reply(
-      `👑 VIP Room\n${SMOKELANDIA_VIP_URL}`
-    );
-    return;
-  }
-
-  if (text === "🔥 Join Group") {
-    await ctx.reply(
-      `🔥 Join Group\n${SMOKELANDIA_GROUP_URL}`
-    );
-    return;
-  }
-
-  if (text === "ℹ️ About") {
-    await ctx.reply(
-      `☁️ SmokeLandia\nExclusive access point for the Smokelandia experience.`,
-      {
-        reply_markup: getMainKeyboard(),
-      }
-    );
-    return;
-  }
-
-  await ctx.reply("Use /menu to open the panel.", {
+  await ctx.reply(text, {
+    parse_mode: "HTML",
     reply_markup: getMainKeyboard(),
   });
-});
-
-bot.catch((err) => {
-  console.error("BOT ERROR:", err);
-});
-
-const handler = webhookCallback(bot, "http");
-
-export default async function telegramWebhook(req, res) {
-  if (req.method !== "POST") {
-    res.status(405).send("Method Not Allowed");
-    return;
-  }
-
-  return handler(req, res);
 }
+
+async function renderPlansMenu(ctx, userId, mode = "edit") {
+  const user = await getFreshUserRecord(userId);
+
+  const text =
+    `⭐️ <b>FX Memberships</b>\n\n` +
+    `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
+    `Expires: <b>${formatExpiry(user.membership_ex
