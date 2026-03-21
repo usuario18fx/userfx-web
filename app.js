@@ -32,7 +32,7 @@ if (unlockBtn && accessCodePrefix && accessCodeSuffix) {
     const prefix = accessCodePrefix.value.trim().toUpperCase();
     const suffix = accessCodeSuffix.value.trim().toUpperCase();
 
-    if (!suffix || suffix.length < 4) {
+    if (!suffix || suffix.length !== 4) {
       if (unlockMsg) unlockMsg.textContent = "Enter the last 4 characters.";
       return;
     }
@@ -57,6 +57,9 @@ if (unlockBtn && accessCodePrefix && accessCodeSuffix) {
   });
 
   accessCodeSuffix.addEventListener("input", () => {
-    accessCodeSuffix.value = accessCodeSuffix.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+    accessCodeSuffix.value = accessCodeSuffix.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 4);
   });
 }
