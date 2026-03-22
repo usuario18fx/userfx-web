@@ -687,7 +687,6 @@ bot.on("message:text", async (ctx) => {
     await renderChannelsMenu(ctx);
     return;
   }
-
   if (text === "🔄 Refresh Status") {
     await renderMainMenu(ctx, userId);
     return;
@@ -716,11 +715,9 @@ bot.on("message:text", async (ctx) => {
     reply_markup: getMainKeyboard(),
   });
 });
-
 bot.command("groupid", async (ctx) => {
   await ctx.reply(`Chat ID: ${ctx.chat.id}`);
 });
-
 bot.catch((err) => {
   console.error("BOT ERROR:", err);
 });
@@ -730,6 +727,5 @@ export default async function telegramWebhook(req, res) {
     res.status(405).send("Method Not Allowed");
     return;
   }
-
   return handler(req, res);
 }
