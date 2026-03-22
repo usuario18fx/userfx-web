@@ -4,26 +4,36 @@ import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
 
 const botOwnerId = process.env.BOT_OWNER_ID;
 const targetGroupId = process.env.TARGET_GROUP_ID;
-const channelLink = "https://t.me/+v57jkAGn3DA0NWJh";
+const channelLink =
+  process.env.CHANNEL_LINK || "https://t.me/+v57jkAGn3DA0NWJh";
 
 const token = process.env.BOT_TOKEN;
 const databaseUrl = process.env.DATABASE_URL;
 const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
-const photosAppUrl = process.env.PHOTOS_APP_URL || "https://fx.smokelandia.app";
+const photosAppUrl =
+  process.env.PHOTOS_APP_URL || "https://fx.smokelandia.app";
 
 if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
 }
+
 if (!databaseUrl) {
   throw new Error("Missing DATABASE_URL in environment variables");
 }
+
 const { Pool } = pg;
+
 const db = new Pool({
   connectionString: databaseUrl,
   ssl: { rejectUnauthorized: false },
 });
+
 const bot = new Bot(token);
-/* =========  KEYBOARDS ============ */
+
+/* =========================
+   KEYBOARDS
+========================= */
+
 function getMainKeyboard() {
   return new Keyboard()
     .text("💳 View Memberships")
@@ -35,6 +45,7 @@ function getMainKeyboard() {
     .resized()
     .persistent();
 }
+
 function getAccessKeyboard() {
   return new Keyboard()
     .text("📺 Feed")
@@ -47,7 +58,11 @@ function getAccessKeyboard() {
     .resized()
     .persistent();
 }
-/* =========  INLINE MENUS =================== */
+
+/* =========================
+   INLINE MENUS
+========================= */
+
 function getPlansMenu() {
   return new InlineKeyboard()
     .text("🔷 userFX · 8 days · $5", "buy_plan_userfx")
@@ -56,6 +71,7 @@ function getPlansMenu() {
     .row()
     .text("⬅️ Back", "back_to_main");
 }
+
 function getChannelsMenu() {
   return new InlineKeyboard()
     .text("👑 Room | Ŧҳ VIP 🜲", "channel_fxvip")
@@ -64,8 +80,11 @@ function getChannelsMenu() {
     .row()
     .text("⬅️ Back", "back_to_main");
 }
-/* ==========  HELPERS ==================
-======================================== */
+
+/* =========================
+   HELPERS
+========================= */
+
 function resolvePlan(planType) {
   if (planType === "buy_plan_vipfx") {
     return {
@@ -75,11 +94,13 @@ function resolvePlan(planType) {
       durationDays: 30,
       codePrefix: "FX-VIP01-",
       title: "vipFX Membership",
-      description: "30 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
+      description:
+        "30 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
       amountCents: 1500,
       payload: "membership_vipfx_30d",
     };
   }
+
   return {
     planName: "userfx",
     priceUsd: 5,
@@ -87,23 +108,29 @@ function resolvePlan(planType) {
     durationDays: 8,
     codePrefix: "FX-USER01-",
     title: "userFX Membership",
-    description: "8 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
+    description:
+      "8 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
     amountCents: 500,
     payload: "membership_userfx_8d",
   };
 }
+
 function planTypeFromPayload(payload) {
   if (payload === "membership_vipfx_30d") return "buy_plan_vipfx";
   return "buy_plan_userfx";
 }
+
 function randomSuffix(length = 4) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
+
   for (let i = 0; i < length; i++) {
     out += chars[Math.floor(Math.random() * chars.length)];
   }
+
   return out;
-  }
+}
+
 function generateAccessCode(planType) {
   const { codePrefix } = resolvePlan(planType);
   const suffix = randomSuffix(4);
@@ -114,15 +141,16 @@ function generateAccessCode(planType) {
     suffix,
   };
 }
+
 function normalizeAccessCodeRow(row) {
   if (!row) return null;
+
   const code = row.code ?? "";
   const prefix =
-    row.code_prefix ??
-    (code && code.length > 4 ? code.slice(0, -4) : "");
+    row.code_prefix ?? (code && code.length > 4 ? code.slice(0, -4) : "");
   const suffix =
-    row.code_suffix ??
-    (code && code.length >= 4 ? code.slice(-4) : "");
+    row.code_suffix ?? (code && code.length >= 4 ? code.slice(-4) : "");
+
   return {
     code,
     code_prefix: prefix,
@@ -130,6 +158,7 @@ function normalizeAccessCodeRow(row) {
     expires_at: row.expires_at ?? null,
   };
 }
+
 function formatPlanLabel(plan) {
   switch (plan) {
     case "vipfx":
@@ -140,14 +169,18 @@ function formatPlanLabel(plan) {
       return "🆓 FREE";
   }
 }
+
 function isMembershipActive(user) {
   if (!user?.membership_expires_at) return false;
   return new Date(user.membership_expires_at).getTime() > Date.now();
 }
+
 function formatExpiry(dateValue) {
   if (!dateValue) return "Not set";
+
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "Not set";
+
   return date.toLocaleString("en-CA", {
     year: "numeric",
     month: "short",
@@ -156,6 +189,7 @@ function formatExpiry(dateValue) {
     minute: "2-digit",
   });
 }
+
 async function ensureUser(userId, username) {
   await db.query(
     `
@@ -169,6 +203,7 @@ async function ensureUser(userId, username) {
     [userId, username]
   );
 }
+
 async function getUserRecord(userId) {
   const result = await db.query(
     `
@@ -183,6 +218,7 @@ async function getUserRecord(userId) {
     `,
     [userId]
   );
+
   if (result.rowCount === 0) {
     return {
       plan: "free",
@@ -191,6 +227,7 @@ async function getUserRecord(userId) {
       membership_expires_at: null,
     };
   }
+
   return {
     plan: result.rows[0].plan ?? "free",
     verificado: result.rows[0].verificado ?? false,
@@ -198,8 +235,10 @@ async function getUserRecord(userId) {
     membership_expires_at: result.rows[0].membership_expires_at ?? null,
   };
 }
+
 async function expireMembershipIfNeeded(userId) {
   const user = await getUserRecord(userId);
+
   if (
     user.plan !== "free" &&
     user.membership_expires_at &&
@@ -217,10 +256,12 @@ async function expireMembershipIfNeeded(userId) {
     );
   }
 }
+
 async function getFreshUserRecord(userId) {
   await expireMembershipIfNeeded(userId);
   return getUserRecord(userId);
 }
+
 async function getLatestAccessCode(userId, planName) {
   const result = await db.query(
     `
@@ -232,15 +273,19 @@ async function getLatestAccessCode(userId, planName) {
     `,
     [userId, planName]
   );
+
   if (result.rowCount === 0) return null;
   return normalizeAccessCodeRow(result.rows[0]);
 }
 
-/* ==========  RENDERERS ================
-======================================== */
+/* =========================
+   RENDERERS
+========================= */
+
 async function renderMainMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
   const active = isMembershipActive(user);
+
   const text =
     `☁️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
@@ -248,13 +293,16 @@ async function renderMainMenu(ctx, userId) {
     `Membership active: <b>${active ? "Yes" : "No"}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
     `Main panel:`;
+
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getMainKeyboard(),
   });
 }
+
 async function renderPlansMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
+
   const text =
     `⭐️ <b>FX Memberships</b>\n\n` +
     `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
@@ -266,11 +314,13 @@ async function renderPlansMenu(ctx, userId) {
     `Duration: <b>30 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `Pick a membership:`;
+
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getPlansMenu(),
   });
 }
+
 async function renderChannelsMenu(ctx) {
   const text =
     `╔══════ -🜲 - ══════╗\n\n` +
@@ -281,13 +331,16 @@ async function renderChannelsMenu(ctx) {
     `•               $10.00\n` +
     `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
     `╚═══════════════╝`;
+
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getChannelsMenu(),
   });
 }
+
 async function renderAccessMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
+
   if (!isMembershipActive(user) || user.plan === "free") {
     await ctx.reply(
       `🔒 <b>Access locked</b>\n\nYou need an active membership to unlock this content.`,
@@ -298,25 +351,31 @@ async function renderAccessMenu(ctx, userId) {
     );
     return;
   }
+
   const text =
     `🔓 <b>Access unlocked</b>\n\n` +
     `Active plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
     `Choose an option:`;
+
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getAccessKeyboard(),
   });
 }
 
-/* ======= ACCESS CODE MESSAGES ===========
-======================================== */
+/* =========================
+   ACCESS CODE MESSAGES
+========================= */
+
 async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
   const row = normalizeAccessCodeRow(accessRow);
+
   if (!row) {
     await ctx.reply("❌ No access code found.");
     return;
   }
+
   await ctx.reply(
     `ℹ️ Your <b>${label}</b> membership is already active.\n` +
       `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
@@ -327,6 +386,7 @@ async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
     { parse_mode: "HTML" }
   );
 }
+
 async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) {
   await ctx.reply(
     `🔥 <b>Membership activated</b>\n\n` +
@@ -340,15 +400,23 @@ async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) 
     { parse_mode: "HTML" }
   );
 }
-/* ===========  BUSINESS LOGIC ================= */
+
+/* =========================
+   BUSINESS LOGIC
+========================= */
+
 async function activateMembership(ctx, planType) {
   const userId = ctx.from?.id;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   const { planName, label, durationDays } = resolvePlan(planType);
+
   await db.query("BEGIN");
+
   try {
     const membershipResult = await db.query(
       `
@@ -369,13 +437,15 @@ async function activateMembership(ctx, planType) {
       await ctx.reply("❌ User not found in the database.");
       return;
     }
+
     const generated = generateAccessCode(planType);
+
     await db.query(
       `
       insert into access_codes (
         user_id,
         code,
-    code_prefix,
+        code_prefix,
         code_suffix,
         plan,
         expires_at
@@ -391,6 +461,7 @@ async function activateMembership(ctx, planType) {
         membershipResult.rows[0].membership_expires_at,
       ]
     );
+
     await db.query(
       `
       insert into logs (user_id, action)
@@ -398,7 +469,9 @@ async function activateMembership(ctx, planType) {
       `,
       [userId, `PURCHASE_${planName.toUpperCase()}`]
     );
+
     await db.query("COMMIT");
+
     await replyWithNewCode(
       ctx,
       label,
@@ -414,19 +487,25 @@ async function activateMembership(ctx, planType) {
     await ctx.reply("❌ Something went wrong while activating your membership.");
   }
 }
+
 async function handleSubscription(ctx, planType) {
   const userId = ctx.from?.id;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   const current = await getFreshUserRecord(userId);
   const plan = resolvePlan(planType);
+
   try {
     if (current.plan === plan.planName && isMembershipActive(current)) {
       let existingCode = await getLatestAccessCode(userId, plan.planName);
+
       if (!existingCode) {
         const generated = generateAccessCode(planType);
+
         await db.query(
           `
           insert into access_codes (
@@ -448,6 +527,7 @@ async function handleSubscription(ctx, planType) {
             current.membership_expires_at,
           ]
         );
+
         existingCode = {
           code: generated.code,
           code_prefix: generated.prefix,
@@ -455,6 +535,7 @@ async function handleSubscription(ctx, planType) {
           expires_at: current.membership_expires_at,
         };
       }
+
       await replyWithExistingCode(
         ctx,
         plan.label,
@@ -463,6 +544,7 @@ async function handleSubscription(ctx, planType) {
       );
       return;
     }
+
     if (providerToken) {
       await ctx.replyWithInvoice(
         plan.title,
@@ -474,20 +556,24 @@ async function handleSubscription(ctx, planType) {
       );
       return;
     }
+
     await ctx.reply(
       `🔂 Activating <b>${plan.label}</b>\n` +
         `Price: <b>$${plan.priceUsd}</b>\n` +
         `Duration: <b>${plan.durationDays} days</b>.`,
       { parse_mode: "HTML" }
     );
+
     await activateMembership(ctx, planType);
   } catch (error) {
     console.error("Subscription flow error:", error);
     await ctx.reply("❌ Something went wrong while processing your membership.");
   }
 }
+
 async function handleProtectedAccess(ctx, userId, type) {
   const user = await getFreshUserRecord(userId);
+
   if (!isMembershipActive(user) || user.plan === "free") {
     await ctx.reply(
       `🔒 <b>Access locked</b>\n\nYou need an active membership to use this option.`,
@@ -498,6 +584,7 @@ async function handleProtectedAccess(ctx, userId, type) {
     );
     return;
   }
+
   if (type === "feed") {
     await ctx.reply(
       `📺 <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
@@ -508,6 +595,7 @@ async function handleProtectedAccess(ctx, userId, type) {
     );
     return;
   }
+
   if (type === "videoclouds") {
     await ctx.reply(
       `🌩 <b>VideoClouds</b>\n\nA chill spot to get ready, settle in, and be set to smoke with me.\n\nJoin here:\nhttps://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1`,
@@ -518,6 +606,7 @@ async function handleProtectedAccess(ctx, userId, type) {
     );
     return;
   }
+
   if (type === "photos") {
     await ctx.reply(
       `📸 <b>Photos unlocked</b>\n\nYour gallery is ready.\nOpen the app to view your unlocked album.`,
@@ -531,6 +620,7 @@ async function handleProtectedAccess(ctx, userId, type) {
     );
     return;
   }
+
   if (type === "gifts") {
     await ctx.reply(
       `🎁 <b>Gifts & transfers</b>\n\nYou can send gifts, bank transfers, or direct support through PayPal here:\nhttps://www.paypal.me/UsuarioFX`,
@@ -542,25 +632,32 @@ async function handleProtectedAccess(ctx, userId, type) {
   }
 }
 
-/* ======= COMMANDS ===========
-============================= */
+/* =========================
+   COMMANDS
+========================= */
+
 bot.command("start", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
   await renderMainMenu(ctx, userId);
 });
+
 bot.command("menu", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
   await renderMainMenu(ctx, userId);
 });
@@ -568,36 +665,46 @@ bot.command("menu", async (ctx) => {
 bot.command("plans", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
   await renderPlansMenu(ctx, userId);
 });
+
 bot.command("access", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
   await renderAccessMenu(ctx, userId);
 });
+
 bot.command("channels", async (ctx) => {
   await renderChannelsMenu(ctx);
 });
+
 bot.command("status", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
   await renderMainMenu(ctx, userId);
 });
+
 bot.command("help", async (ctx) => {
   await ctx.reply(
     `📘 <b>Available commands</b>\n\n` +
@@ -614,33 +721,42 @@ bot.command("help", async (ctx) => {
     }
   );
 });
-/* ===========  CALLBACKS =============== */
-/* ====================================== */
+
+/* =========================
+   CALLBACKS
+========================= */
+
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   await ctx.answerCallbackQuery();
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   try {
     await ensureUser(userId, username);
+
     if (data === "buy_plan_userfx" || data === "buy_plan_vipfx") {
       await handleSubscription(ctx, data);
       return;
     }
+
     if (data === "channel_fxvip") {
       await ctx.reply(
         `👑 <b>Room | Ŧҳ VIP 🜲</b>\n\n` +
-          `Price: <b>$12.00</b>\n` +
+          `Price: <b>$9.99</b>\n` +
           `Type: <b>Exclusive content</b>\n\n` +
           `Use /channels to come back here.`,
         { parse_mode: "HTML" }
       );
       return;
     }
+
     if (data === "channel_smokelandia") {
       await ctx.reply(
         `☁️ <b>SmokeLandia</b>\n\n` +
@@ -651,6 +767,7 @@ bot.on("callback_query:data", async (ctx) => {
       );
       return;
     }
+
     if (data === "back_to_main") {
       await renderMainMenu(ctx, userId);
       return;
@@ -665,68 +782,94 @@ bot.on("callback_query:data", async (ctx) => {
     await ctx.reply("❌ Something went wrong while processing that action.");
   }
 });
-/* ===========  PAYMENTS ================ */
-/* ======================================= */
+
+/* =========================
+   PAYMENTS
+========================= */
+
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
+
 bot.on("message:successful_payment", async (ctx) => {
   const payload = ctx.message.successful_payment.invoice_payload;
   const planType = planTypeFromPayload(payload);
   await activateMembership(ctx, planType);
 });
-/* ============  KEYBOARD TEXT ROUTES ============== */
-/* ================================================= */
+
+/* =========================
+   KEYBOARD TEXT ROUTES
+========================= */
+
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text.trim();
+
   if (text.startsWith("/")) return;
+
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
+
   if (!userId) {
     await ctx.reply("❌ Couldn't identify the user.");
     return;
   }
+
   await ensureUser(userId, username);
+
   if (text === "💳 View Memberships") {
     await renderPlansMenu(ctx, userId);
     return;
   }
+
   if (text === "🔒 Access") {
     await renderAccessMenu(ctx, userId);
     return;
   }
+
   if (text === "🖥 Channels") {
     await renderChannelsMenu(ctx);
     return;
   }
+
   if (text === "🔄 Refresh Status") {
     await renderMainMenu(ctx, userId);
     return;
   }
+
   if (text === "📺 Feed") {
     await handleProtectedAccess(ctx, userId, "feed");
     return;
   }
+
   if (text === "🌩 VideoClouds") {
     await handleProtectedAccess(ctx, userId, "videoclouds");
     return;
   }
+
   if (text === "📸 Photos") {
     await handleProtectedAccess(ctx, userId, "photos");
     return;
   }
+
   if (text === "🎁 Gifts") {
     await handleProtectedAccess(ctx, userId, "gifts");
     return;
-    }
+  }
+
   if (text === "⬅️ Back") {
     await renderMainMenu(ctx, userId);
     return;
-   }
+  }
+
   await ctx.reply("Use /menu to open the panel.", {
     reply_markup: getMainKeyboard(),
   });
-  });
+});
+
+/* =========================
+   GROUP JOIN NOTIFICATIONS
+========================= */
+
 async function notifyOwnerAboutJoin(member, chat, source = "joined") {
   if (!botOwnerId) return;
 
@@ -742,9 +885,7 @@ async function notifyOwnerAboutJoin(member, chat, source = "joined") {
   if (source === "approved") label = "Join approved";
 
   await bot.api.sendMessage(
-    
     botOwnerId,
-    
     `🔥 <b>${label}</b>\n\n` +
       `Name: <b>${fullName || "Unknown"}</b>\n` +
       `Username: <b>${username}</b>\n` +
@@ -757,35 +898,35 @@ async function notifyOwnerAboutJoin(member, chat, source = "joined") {
 
 bot.on("message:new_chat_members", async (ctx) => {
   try {
-    
     const chatId = String(ctx.chat.id);
-    
     if (targetGroupId && chatId !== String(targetGroupId)) return;
 
     const members = ctx.message.new_chat_members || [];
 
     for (const member of members) {
-      
       if (member.is_bot) continue;
-
       await notifyOwnerAboutJoin(member, ctx.chat, "joined");
     }
   } catch (error) {
-  
     console.error("NEW_CHAT_MEMBERS ERROR:", error);
   }
 });
+
+/* =========================
+   ERROR / WEBHOOK
+========================= */
+
 bot.catch((err) => {
   console.error("BOT ERROR:", err);
-  });
+});
 
 const handler = webhookCallback(bot, "http");
 
 export default async function telegramWebhook(req, res) {
-  
   if (req.method !== "POST") {
     res.status(405).send("Method Not Allowed");
     return;
   }
+
   return handler(req, res);
-  }
+}
