@@ -1,10 +1,16 @@
 import "dotenv/config";
 import pg from "pg";
 import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
+
+const botOwnerId = process.env.BOT_OWNER_ID;
+const targetGroupId = process.env.TARGET_GROUP_ID;
+const channelLink = "https://t.me/+v57jkAGn3DA0NWJh";
+
 const token = process.env.BOT_TOKEN;
 const databaseUrl = process.env.DATABASE_URL;
 const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
 const photosAppUrl = process.env.PHOTOS_APP_URL || "https://fx.smokelandia.app";
+
 if (!token) {
   throw new Error("Missing BOT_TOKEN in environment variables");
 }
@@ -58,7 +64,8 @@ function getChannelsMenu() {
     .row()
     .text("⬅️ Back", "back_to_main");
 }
-/* ==========  HELPERS ================== */
+/* ==========  HELPERS ==================
+======================================== */
 function resolvePlan(planType) {
   if (planType === "buy_plan_vipfx") {
     return {
@@ -191,10 +198,8 @@ async function getUserRecord(userId) {
     membership_expires_at: result.rows[0].membership_expires_at ?? null,
   };
 }
-
 async function expireMembershipIfNeeded(userId) {
   const user = await getUserRecord(userId);
-
   if (
     user.plan !== "free" &&
     user.membership_expires_at &&
@@ -230,7 +235,9 @@ async function getLatestAccessCode(userId, planName) {
   if (result.rowCount === 0) return null;
   return normalizeAccessCodeRow(result.rows[0]);
 }
-/* ====== RENDERERS ================= */
+
+/* ==========  RENDERERS ================
+======================================== */
 async function renderMainMenu(ctx, userId) {
   const user = await getFreshUserRecord(userId);
   const active = isMembershipActive(user);
@@ -241,7 +248,6 @@ async function renderMainMenu(ctx, userId) {
     `Membership active: <b>${active ? "Yes" : "No"}</b>\n` +
     `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
     `Main panel:`;
-
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getMainKeyboard(),
@@ -260,7 +266,6 @@ async function renderPlansMenu(ctx, userId) {
     `Duration: <b>30 days</b>\n` +
     `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
     `Pick a membership:`;
-
   await ctx.reply(text, {
     parse_mode: "HTML",
     reply_markup: getPlansMenu(),
@@ -303,7 +308,9 @@ async function renderAccessMenu(ctx, userId) {
     reply_markup: getAccessKeyboard(),
   });
 }
-/* ========= ACCESS CODE MESSAGES ================ */
+
+/* ======= ACCESS CODE MESSAGES ===========
+======================================== */
 async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
   const row = normalizeAccessCodeRow(accessRow);
   if (!row) {
@@ -534,7 +541,9 @@ async function handleProtectedAccess(ctx, userId, type) {
     );
   }
 }
-/* ========= COMMANDS ================== */
+
+/* ======= COMMANDS ===========
+============================= */
 bot.command("start", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
@@ -606,6 +615,7 @@ bot.command("help", async (ctx) => {
   );
 });
 /* ===========  CALLBACKS =============== */
+/* ====================================== */
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
   const userId = ctx.from?.id;
@@ -655,7 +665,8 @@ bot.on("callback_query:data", async (ctx) => {
     await ctx.reply("❌ Something went wrong while processing that action.");
   }
 });
-/* ===========  PAYMENTS ================= */
+/* ===========  PAYMENTS ================ */
+/* ======================================= */
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
@@ -664,7 +675,8 @@ bot.on("message:successful_payment", async (ctx) => {
   const planType = planTypeFromPayload(payload);
   await activateMembership(ctx, planType);
 });
-/* ============  KEYBOARD TEXT ROUTES =================== */
+/* ============  KEYBOARD TEXT ROUTES ============== */
+/* ================================================= */
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text.trim();
   if (text.startsWith("/")) return;
@@ -706,26 +718,74 @@ bot.on("message:text", async (ctx) => {
   if (text === "🎁 Gifts") {
     await handleProtectedAccess(ctx, userId, "gifts");
     return;
-  }
+    }
   if (text === "⬅️ Back") {
     await renderMainMenu(ctx, userId);
     return;
-  }
+   }
   await ctx.reply("Use /menu to open the panel.", {
     reply_markup: getMainKeyboard(),
   });
-});
-bot.command("groupid", async (ctx) => {
-  await ctx.reply(`Chat ID: ${ctx.chat.id}`);
+  });
+async function notifyOwnerAboutJoin(member, chat, source = "joined") {
+  if (!botOwnerId) return;
+
+  const fullName = [member.first_name, member.last_name]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  const username = member.username ? `@${member.username}` : "no username";
+
+  let label = "New member joined";
+  if (source === "request") label = "New join request";
+  if (source === "approved") label = "Join approved";
+
+  await bot.api.sendMessage(
+    
+    botOwnerId,
+    
+    `🔥 <b>${label}</b>\n\n` +
+      `Name: <b>${fullName || "Unknown"}</b>\n` +
+      `Username: <b>${username}</b>\n` +
+      `User ID: <code>${member.id}</code>\n` +
+      `Chat: <b>${chat.title || "Unknown group"}</b>\n\n` +
+      `Link:\n${channelLink}`,
+    { parse_mode: "HTML" }
+  );
+}
+
+bot.on("message:new_chat_members", async (ctx) => {
+  try {
+    
+    const chatId = String(ctx.chat.id);
+    
+    if (targetGroupId && chatId !== String(targetGroupId)) return;
+
+    const members = ctx.message.new_chat_members || [];
+
+    for (const member of members) {
+      
+      if (member.is_bot) continue;
+
+      await notifyOwnerAboutJoin(member, ctx.chat, "joined");
+    }
+  } catch (error) {
+  
+    console.error("NEW_CHAT_MEMBERS ERROR:", error);
+  }
 });
 bot.catch((err) => {
   console.error("BOT ERROR:", err);
-});
+  });
+
 const handler = webhookCallback(bot, "http");
+
 export default async function telegramWebhook(req, res) {
+  
   if (req.method !== "POST") {
     res.status(405).send("Method Not Allowed");
     return;
   }
   return handler(req, res);
-}
+  }
