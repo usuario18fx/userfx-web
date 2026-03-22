@@ -535,10 +535,6 @@ async function handleProtectedAccess(ctx, userId, type) {
   }
 }
 /* ========= COMMANDS ================== */
-bot.command("groupid", async (ctx) => {
-  await ctx.reply(`Chat ID: ${ctx.chat.id}`);
-});
-
 bot.command("start", async (ctx) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username ?? null;
@@ -720,6 +716,11 @@ bot.on("message:text", async (ctx) => {
     reply_markup: getMainKeyboard(),
   });
 });
+
+bot.command("groupid", async (ctx) => {
+  await ctx.reply(`Chat ID: ${ctx.chat.id}`);
+});
+
 bot.catch((err) => {
   console.error("BOT ERROR:", err);
 });
