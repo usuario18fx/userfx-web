@@ -96,6 +96,7 @@ function randomSuffix(length = 4) {
     out += chars[Math.floor(Math.random() * chars.length)];
   }
   return out;
+  }
 function generateAccessCode(planType) {
   const { codePrefix } = resolvePlan(planType);
   const suffix = randomSuffix(4);
