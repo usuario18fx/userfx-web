@@ -1,574 +1,272 @@
-import "dotenv/config";
-import pg from "pg";
-import { Bot, InlineKeyboard, Keyboard, webhookCallback } from "grammy";
+import { Telegraf, Markup } from "telegraf";
 
-const botOwnerId = process.env.BOT_OWNER_ID;
-const targetGroupId = process.env.TARGET_GROUP_ID;
-const channelLink =
-  process.env.CHANNEL_LINK || "https://t.me/+v57jkAGn3DA0NWJh";
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const token = process.env.BOT_TOKEN;
-const databaseUrl = process.env.DATABASE_URL;
-const providerToken = process.env.TELEGRAM_PROVIDER_TOKEN || "";
-const photosAppUrl =
-  process.env.PHOTOS_APP_URL || "https://fx.smokelandia.app";
+const WEBSITE_URL = "https://tu-dominio.com";
+const VIP_CHANNEL_URL = "https://t.me/tu_canal_vip";
+const SMOKELANDIA_CHANNEL_URL = "https://t.me/tu_canal_smokelandia";
+const PAYPAL_URL = "https://www.paypal.me/UsuarioFX";
+const PREVIEW_VIDEO_URL = "https://tu-servidor.com/preview.mp4";
 
-if (!token) {
-  throw new Error("Missing BOT_TOKEN in environment variables");
-}
+const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
 
-if (!databaseUrl) {
-  throw new Error("Missing DATABASE_URL in environment variables");
-}
-
-const { Pool } = pg;
-
-const db = new Pool({
-  connectionString: databaseUrl,
-  ssl: { rejectUnauthorized: false },
-});
-
-const bot = new Bot(token);
-
-/* =========================
-   KEYBOARDS
-========================= */
+const MEMBERSHIPS = {
+  userfx: {
+    title: "⚪ userFX",
+    days: 8,
+    priceUsd: 5,
+    starsAmount: 500,
+    label: "userFX · 8 days · $5",
+  },
+  vipfx: {
+    title: "👑 vipFX",
+    days: 30,
+    priceUsd: 15,
+    starsAmount: 1500,
+    label: "👑 vipFX · 30 days · $15",
+  },
+};
 
 function getMainKeyboard() {
-  return new Keyboard()
-    .text("💳 View Memberships")
-    .row()
-    .text("🔒 Access")
-    .text("🖥 Channels")
-    .row()
-    .text("🔄 Refresh Status")
-    .resized()
-    .persistent();
+  return Markup.keyboard([["💳"], ["🔐", "🖥️"], ["🔄"]]).resize();
 }
 
 function getAccessKeyboard() {
-  return new Keyboard()
-    .text("📺 Feed")
-    .text("🌩 VideoClouds")
-    .row()
-    .text("📸 Photos")
-    .text("🎁 Gifts")
-    .row()
-    .text("⬅️ Back")
-    .resized()
-    .persistent();
+  return Markup.keyboard([["📺", "🌩️"], ["📸", "🎁"], ["↩️"]]).resize();
 }
 
-/* =========================
-   INLINE MENUS
-========================= */
-
-function getPlansMenu() {
-  return new InlineKeyboard()
-    .text("🔷 userFX · 8 days · $5", "buy_plan_userfx")
-    .row()
-    .text("👑 vipFX · 30 days · $15", "buy_plan_vipfx")
-    .row()
-    .text("⬅️ Back", "back_to_main");
+function getInlineWebsiteButton() {
+  return Markup.inlineKeyboard([[Markup.button.url("🜲", WEBSITE_URL)]]);
 }
 
-function getChannelsMenu() {
-  return new InlineKeyboard()
-    .text("👑 Room | Ŧҳ VIP 🜲", "channel_fxvip")
-    .row()
-    .text("☁️ SmokeLandia", "channel_smokelandia")
-    .row()
-    .text("⬅️ Back", "back_to_main");
+function getInlineWebsiteAndStarsButtons(planKey = "vipfx") {
+  const plan = MEMBERSHIPS[planKey];
+
+  return Markup.inlineKeyboard([
+    [Markup.button.url("🜲", WEBSITE_URL)],
+    [Markup.button.callback("⭐", `pay_stars:${planKey}`)],
+  ]);
 }
 
-/* =========================
-   HELPERS
-========================= */
+function getMembershipsInlineKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback("⚪", "membership:userfx")],
+    [Markup.button.callback("👑", "membership:vipfx")],
+    [Markup.button.url("🜲", WEBSITE_URL)],
+  ]);
+}
 
-function resolvePlan(planType) {
-  if (planType === "buy_plan_vipfx") {
-    return {
-      planName: "vipfx",
-      priceUsd: 15,
-      label: "vipFX",
-      durationDays: 30,
-      codePrefix: "FX-VIP01-",
-      title: "vipFX Membership",
-      description:
-        "30 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
-      amountCents: 1500,
-      payload: "membership_vipfx_30d",
-    };
+function getChannelsInlineKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.url("👑", VIP_CHANNEL_URL)],
+    [Markup.button.url("☁️", SMOKELANDIA_CHANNEL_URL)],
+    [Markup.button.url("🜲", WEBSITE_URL)],
+  ]);
+}
+
+function formatDate(dateValue) {
+  try {
+    const date = new Date(dateValue);
+    return new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(date);
+  } catch {
+    return String(dateValue || "");
   }
-
-  return {
-    planName: "userfx",
-    priceUsd: 5,
-    label: "userFX",
-    durationDays: 8,
-    codePrefix: "FX-USER01-",
-    title: "userFX Membership",
-    description:
-      "8 days access to Feed, VideoClouds, unlocked Photos, and Gifts.",
-    amountCents: 500,
-    payload: "membership_userfx_8d",
-  };
 }
 
-function planTypeFromPayload(payload) {
-  if (payload === "membership_vipfx_30d") return "buy_plan_vipfx";
-  return "buy_plan_userfx";
-}
-
-function randomSuffix(length = 4) {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out = "";
-
-  for (let i = 0; i < length; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
-  }
-
-  return out;
-}
-
-function generateAccessCode(planType) {
-  const { codePrefix } = resolvePlan(planType);
-  const suffix = randomSuffix(4);
-
-  return {
-    code: `${codePrefix}${suffix}`,
-    prefix: codePrefix,
-    suffix,
-  };
-}
-
-function normalizeAccessCodeRow(row) {
-  if (!row) return null;
-
-  const code = row.code ?? "";
-  const prefix =
-    row.code_prefix ?? (code && code.length > 4 ? code.slice(0, -4) : "");
-  const suffix =
-    row.code_suffix ?? (code && code.length >= 4 ? code.slice(-4) : "");
-
-  return {
-    code,
-    code_prefix: prefix,
-    code_suffix: suffix,
-    expires_at: row.expires_at ?? null,
-  };
-}
-
-function formatPlanLabel(plan) {
-  switch (plan) {
-    case "vipfx":
-      return "👑 vipFX";
-    case "userfx":
-      return "🔷 userFX";
-    default:
-      return "🆓 FREE";
-  }
+function getCodeLast4(fullCode = "") {
+  return fullCode.slice(-4).toUpperCase();
 }
 
 function isMembershipActive(user) {
-  if (!user?.membership_expires_at) return false;
+  if (!user) return false;
+  if (!user.membership_expires_at) return false;
   return new Date(user.membership_expires_at).getTime() > Date.now();
 }
 
-function formatExpiry(dateValue) {
-  if (!dateValue) return "Not set";
-
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "Not set";
-
-  return date.toLocaleString("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-async function ensureUser(userId, username) {
-  await db.query(
-    `
-    insert into users (user_id, username)
-    values ($1, $2)
-    on conflict (user_id)
-    do update set
-      username = excluded.username,
-      updated_at = now()
-    `,
-    [userId, username]
-  );
-}
-
-async function getUserRecord(userId) {
-  const result = await db.query(
-    `
-    select
-      plan,
-      verificado,
-      membership_started_at,
-      membership_expires_at
-    from users
-    where user_id = $1
-    limit 1
-    `,
-    [userId]
-  );
-
-  if (result.rowCount === 0) {
-    return {
-      plan: "free",
-      verificado: false,
-      membership_started_at: null,
-      membership_expires_at: null,
-    };
-  }
-
+async function getFreshUserRecord(userId) {
   return {
-    plan: result.rows[0].plan ?? "free",
-    verificado: result.rows[0].verificado ?? false,
-    membership_started_at: result.rows[0].membership_started_at ?? null,
-    membership_expires_at: result.rows[0].membership_expires_at ?? null,
+    telegram_id: userId,
+    username: "userFX",
+    plan: "userfx",
+    membership_expires_at: "2026-03-25T08:13:00.000Z",
+    access_code: "FX-USERFX-BXZRKL",
   };
 }
 
-async function expireMembershipIfNeeded(userId) {
-  const user = await getUserRecord(userId);
+async function sendMainPanel(ctx) {
+  await ctx.reply(
+    `${BRAND}
 
-  if (
-    user.plan !== "free" &&
-    user.membership_expires_at &&
-    new Date(user.membership_expires_at).getTime() <= Date.now()
-  ) {
-    await db.query(
-      `
-      update users
-      set plan = 'free',
-          verificado = false,
-          updated_at = now()
-      where user_id = $1
-      `,
-      [userId]
-    );
-  }
-}
-
-async function getFreshUserRecord(userId) {
-  await expireMembershipIfNeeded(userId);
-  return getUserRecord(userId);
-}
-
-async function getLatestAccessCode(userId, planName) {
-  const result = await db.query(
-    `
-    select code, code_prefix, code_suffix, expires_at
-    from access_codes
-    where user_id = $1 and plan = $2
-    order by created_at desc
-    limit 1
-    `,
-    [userId, planName]
+Main panel:`,
+    getMainKeyboard()
   );
-
-  if (result.rowCount === 0) return null;
-  return normalizeAccessCodeRow(result.rows[0]);
 }
 
-/* =========================
-   RENDERERS
-========================= */
+async function sendAccessPanel(ctx) {
+  await ctx.reply(
+    `${BRAND}
 
-async function renderMainMenu(ctx, userId) {
-  const user = await getFreshUserRecord(userId);
-  const active = isMembershipActive(user);
-
-  const text =
-    `☁️ <b>FX Memberships</b>\n\n` +
-    `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
-    `Verified: <b>${user.verificado ? "Yes" : "No"}</b>\n` +
-    `Membership active: <b>${active ? "Yes" : "No"}</b>\n` +
-    `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `Main panel:`;
-
-  await ctx.reply(text, {
-    parse_mode: "HTML",
-    reply_markup: getMainKeyboard(),
-  });
+Access panel:`,
+    getAccessKeyboard()
+  );
 }
 
-async function renderPlansMenu(ctx, userId) {
-  const user = await getFreshUserRecord(userId);
-
-  const text =
-    `⭐️ <b>FX Memberships</b>\n\n` +
-    `Current plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
-    `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `🔷 <b>userFX</b>\n` +
-    `Duration: <b>8 days</b>\n` +
-    `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
-    `👑 <b>vipFX</b>\n` +
-    `Duration: <b>30 days</b>\n` +
-    `Access to Feed, VideoClouds, unlocked Photos, and Gifts.\n\n` +
-    `Pick a membership:`;
-
-  await ctx.reply(text, {
-    parse_mode: "HTML",
-    reply_markup: getPlansMenu(),
-  });
-}
-
-async function renderChannelsMenu(ctx) {
-  const text =
-    `╔══════ -🜲 - ══════╗\n\n` +
-    `👑  <b>ʀᴏᴏᴍ | •Ŧҳ ᴠɪᴘ 🜲</b>\n` +
-    `•             $9.99\n` +
-    `•     ᴇxᴄʟᴜꜱɪᴠᴇ ᴄᴏɴᴛᴇɴᴛ\n\n` +
-    `☁️       <b>𝐒ᴍᴏᴋᴇ𝐋ᴀɴᴅɪᴀ</b>\n` +
-    `•               $10.00\n` +
-    `•             ᴇxᴄʟᴜꜱɪᴠᴇ\n` +
-    `╚═══════════════╝`;
-
-  await ctx.reply(text, {
-    parse_mode: "HTML",
-    reply_markup: getChannelsMenu(),
-  });
-}
-
-async function renderAccessMenu(ctx, userId) {
-  const user = await getFreshUserRecord(userId);
-
-  if (!isMembershipActive(user) || user.plan === "free") {
-    await ctx.reply(
-      `🔒 <b>Access locked</b>\n\nYou need an active membership to unlock this content.`,
-      {
-        parse_mode: "HTML",
-        reply_markup: getMainKeyboard(),
-      }
-    );
-    return;
-  }
-
-  const text =
-    `🔓 <b>Access unlocked</b>\n\n` +
-    `Active plan: <b>${formatPlanLabel(user.plan)}</b>\n` +
-    `Expires: <b>${formatExpiry(user.membership_expires_at)}</b>\n\n` +
-    `Choose an option:`;
-
-  await ctx.reply(text, {
-    parse_mode: "HTML",
-    reply_markup: getAccessKeyboard(),
-  });
-}
-
-/* =========================
-   ACCESS CODE MESSAGES
-========================= */
-
-async function replyWithExistingCode(ctx, label, expiresAt, accessRow) {
-  const row = normalizeAccessCodeRow(accessRow);
-
-  if (!row) {
-    await ctx.reply("❌ No access code found.");
-    return;
-  }
+async function sendMembershipStatus(ctx, user) {
+  const fullCode = user?.access_code || "FX-USERFX-BXZRKL";
+  const last4 = getCodeLast4(fullCode);
 
   await ctx.reply(
-    `ℹ️ Your <b>${label}</b> membership is already active.\n` +
-      `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
-      `Full code:\n<code>${row.code}</code>\n\n` +
-      `Last 4 characters:\n<code>${row.code_suffix}</code>\n\n` +
-      `On the website, the first part is already filled in.\n` +
-      `You only need to enter:\n<code>${row.code_suffix}</code>`,
-    { parse_mode: "HTML" }
+    `${BRAND}
+
+ℹ️ <b>Your ${user.plan || "userFX"} membership is already active.</b>
+Expires: <b>${formatDate(user.membership_expires_at)}</b>
+
+Full code:
+${fullCode}
+
+Last 4 characters:
+<b>${last4}</b>
+
+On the website, the first part is already filled in.
+
+You only need to enter:
+<b>${last4}</b>`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
+    }
   );
+
+  await ctx.reply("‎", getMainKeyboard());
 }
 
-async function replyWithNewCode(ctx, label, durationDays, expiresAt, generated) {
+async function sendMembershipOptions(ctx) {
   await ctx.reply(
-    `🔥 <b>Membership activated</b>\n\n` +
-      `Plan: <b>${label}</b>\n` +
-      `Duration: <b>${durationDays} days</b>\n` +
-      `Expires: <b>${formatExpiry(expiresAt)}</b>\n\n` +
-      `Full code:\n<code>${generated.code}</code>\n\n` +
-      `Last 4 characters:\n<code>${generated.suffix}</code>\n\n` +
-      `On the website, the first part is already filled in.\n` +
-      `You only need to enter:\n<code>${generated.suffix}</code>`,
-    { parse_mode: "HTML" }
+    `${BRAND}
+
+Access to Feed, VideoClouds, unlocked Photos, and Gifts.
+
+Pick a membership:`,
+    getMembershipsInlineKeyboard()
   );
+
+  await ctx.reply("‎", getMainKeyboard());
 }
 
-/* =========================
-   BUSINESS LOGIC
-========================= */
+async function sendFeedMessage(ctx) {
+  await ctx.reply(
+    `📺 <b>Feed</b>
 
-async function activateMembership(ctx, planType) {
-  const userId = ctx.from?.id;
+Public updates, previews, and featured drops.
 
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  const { planName, label, durationDays } = resolvePlan(planType);
-
-  await db.query("BEGIN");
-
-  try {
-    const membershipResult = await db.query(
-      `
-      update users
-      set plan = $1,
-          verificado = true,
-          membership_started_at = now(),
-          membership_expires_at = now() + ($2 || ' days')::interval,
-          updated_at = now()
-      where user_id = $3
-      returning membership_expires_at
-      `,
-      [planName, String(durationDays), userId]
-    );
-
-    if (membershipResult.rowCount === 0) {
-      await db.query("ROLLBACK");
-      await ctx.reply("❌ User not found in the database.");
-      return;
+Open the website for the full experience.`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
     }
+  );
 
-    const generated = generateAccessCode(planType);
-
-    await db.query(
-      `
-      insert into access_codes (
-        user_id,
-        code,
-        code_prefix,
-        code_suffix,
-        plan,
-        expires_at
-      )
-      values ($1, $2, $3, $4, $5, $6)
-      `,
-      [
-        userId,
-        generated.code,
-        generated.prefix,
-        generated.suffix,
-        planName,
-        membershipResult.rows[0].membership_expires_at,
-      ]
-    );
-
-    await db.query(
-      `
-      insert into logs (user_id, action)
-      values ($1, $2)
-      `,
-      [userId, `PURCHASE_${planName.toUpperCase()}`]
-    );
-
-    await db.query("COMMIT");
-
-    await replyWithNewCode(
-      ctx,
-      label,
-      durationDays,
-      membershipResult.rows[0].membership_expires_at,
-      generated
-    );
-
-    await renderAccessMenu(ctx, userId);
-  } catch (error) {
-    await db.query("ROLLBACK").catch(() => {});
-    console.error("Activation error:", error);
-    await ctx.reply("❌ Something went wrong while activating your membership.");
-  }
+  await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function handleSubscription(ctx, planType) {
-  const userId = ctx.from?.id;
+async function sendVideoCloudsMessage(ctx) {
+  await ctx.reply(
+    `☁️ <b>VideoClouds</b>
 
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
+A chill spot to get ready, settle in, and be set to smoke with me.
 
-  const current = await getFreshUserRecord(userId);
-  const plan = resolvePlan(planType);
+Join here:
+https://us05web.zoom.us/j/9010970018?pwd=TU_LINK_REAL`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
+    }
+  );
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendPhotosMessage(ctx) {
+  await ctx.reply(
+    `📸 <b>Unlocked Photos</b>
+
+Your photos won’t stay blocked anymore. With an active membership, you’ll be able to view them on my website.`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
+    }
+  );
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendGiftsMessage(ctx) {
+  await ctx.reply(
+    `🎁 <b>Gifts & transfers</b>
+
+You can send gifts, bank transfers, or direct support through PayPal here:
+${PAYPAL_URL}`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteAndStarsButtons("vipfx"),
+    }
+  );
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendChannelsMessage(ctx) {
+  await ctx.reply(
+    `${BRAND}
+
+╭─────────────── crown ───────────────╮
+
+👑 <b>ROOM | Ŧҳ VIP</b>
+One page.
+One video.
+Exclusive content.
+Private drops.
+VIP access.
+
+☁️ <b>SmokeLandia</b>
+One page.
+One video.
+Ambient content.
+Exclusive space.
+Website-linked access.
+
+╰─────────────────────────────────────╯
+
+/channels`,
+    {
+      parse_mode: "HTML",
+      ...getChannelsInlineKeyboard(),
+    }
+  );
 
   try {
-    if (current.plan === plan.planName && isMembershipActive(current)) {
-      let existingCode = await getLatestAccessCode(userId, plan.planName);
+    await ctx.replyWithVideo(PREVIEW_VIDEO_URL, {
+      caption: `${BRAND}
 
-      if (!existingCode) {
-        const generated = generateAccessCode(planType);
-
-        await db.query(
-          `
-          insert into access_codes (
-            user_id,
-            code,
-            code_prefix,
-            code_suffix,
-            plan,
-            expires_at
-          )
-          values ($1, $2, $3, $4, $5, $6)
-          `,
-          [
-            userId,
-            generated.code,
-            generated.prefix,
-            generated.suffix,
-            plan.planName,
-            current.membership_expires_at,
-          ]
-        );
-
-        existingCode = {
-          code: generated.code,
-          code_prefix: generated.prefix,
-          code_suffix: generated.suffix,
-          expires_at: current.membership_expires_at,
-        };
-      }
-
-      await replyWithExistingCode(
-        ctx,
-        plan.label,
-        current.membership_expires_at,
-        existingCode
-      );
-      return;
-    }
-
-    if (providerToken) {
-      await ctx.replyWithInvoice(
-        plan.title,
-        plan.description,
-        plan.payload,
-        providerToken,
-        "USD",
-        [{ label: plan.label, amount: plan.amountCents }]
-      );
-      return;
-    }
-
+Channel preview.`,
+      ...getInlineWebsiteButton(),
+    });
+  } catch {
     await ctx.reply(
-      `🔂 Activating <b>${plan.label}</b>\n` +
-        `Price: <b>$${plan.priceUsd}</b>\n` +
-        `Duration: <b>${plan.durationDays} days</b>.`,
-      { parse_mode: "HTML" }
-    );
+      `${BRAND}
 
-    await activateMembership(ctx, planType);
-  } catch (error) {
-    console.error("Subscription flow error:", error);
-    await ctx.reply("❌ Something went wrong while processing your membership.");
+Preview video pending.`,
+      getInlineWebsiteButton()
+    );
   }
+
+  await ctx.reply("‎", getMainKeyboard());
 }
 
 async function handleProtectedAccess(ctx, userId, type) {
@@ -576,357 +274,180 @@ async function handleProtectedAccess(ctx, userId, type) {
 
   if (!isMembershipActive(user) || user.plan === "free") {
     await ctx.reply(
-      `🔒 <b>Access locked</b>\n\nYou need an active membership to use this option.`,
+      `🔒 <b>Access locked</b>
+
+You need an active membership to use this option.`,
       {
         parse_mode: "HTML",
-        reply_markup: getMainKeyboard(),
+        ...getInlineWebsiteAndStarsButtons("vipfx"),
       }
     );
+
+    await ctx.reply("‎", getMainKeyboard());
     return;
   }
 
   if (type === "feed") {
-    await ctx.reply(
-      `📺 <b>Private Feed</b>\n\nAccess to the private channel and exclusive content while your membership is active.`,
-      {
-        parse_mode: "HTML",
-        reply_markup: getAccessKeyboard(),
-      }
-    );
+    await sendFeedMessage(ctx);
     return;
   }
 
   if (type === "videoclouds") {
-    await ctx.reply(
-      `🌩 <b>VideoClouds</b>\n\nA chill spot to get ready, settle in, and be set to smoke with me.\n\nJoin here:\nhttps://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1`,
-      {
-        parse_mode: "HTML",
-        reply_markup: getAccessKeyboard(),
-      }
-    );
+    await sendVideoCloudsMessage(ctx);
     return;
   }
 
   if (type === "photos") {
-    await ctx.reply(
-      `📸 <b>Photos unlocked</b>\n\nYour gallery is ready.\nOpen the app to view your unlocked album.`,
-      {
-        parse_mode: "HTML",
-        reply_markup: new InlineKeyboard()
-          .url("🔓 Open App", photosAppUrl)
-          .row()
-          .text("⬅️ Back", "back_to_access"),
-      }
-    );
+    await sendPhotosMessage(ctx);
     return;
   }
 
   if (type === "gifts") {
-    await ctx.reply(
-      `🎁 <b>Gifts & transfers</b>\n\nYou can send gifts, bank transfers, or direct support through PayPal here:\nhttps://www.paypal.me/UsuarioFX`,
-      {
-        parse_mode: "HTML",
-        reply_markup: getAccessKeyboard(),
-      }
-    );
+    await sendGiftsMessage(ctx);
+    return;
   }
 }
 
-/* =========================
-   COMMANDS
-========================= */
+async function sendTelegramStarsInvoice(ctx, planKey) {
+  const plan = MEMBERSHIPS[planKey];
+  if (!plan) return;
 
-bot.command("start", async (ctx) => {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
+  await ctx.replyWithInvoice({
+    title: `${plan.title} membership`,
+    description: `${BRAND}
 
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
+Access to exclusive content.`,
+    payload: `membership:${planKey}`,
+    currency: "XTR",
+    prices: [{ label: plan.label, amount: plan.starsAmount }],
+    start_parameter: `buy-${planKey}`,
+    photo_width: 512,
+    photo_height: 512,
+    ...getInlineWebsiteButton(),
+  });
+}
 
-  await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId);
-});
-
-bot.command("menu", async (ctx) => {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId);
-});
-
-bot.command("plans", async (ctx) => {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  await ensureUser(userId, username);
-  await renderPlansMenu(ctx, userId);
-});
-
-bot.command("access", async (ctx) => {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  await ensureUser(userId, username);
-  await renderAccessMenu(ctx, userId);
+bot.start(async (ctx) => {
+  await sendMainPanel(ctx);
 });
 
 bot.command("channels", async (ctx) => {
-  await renderChannelsMenu(ctx);
+  await sendChannelsMessage(ctx);
 });
 
-bot.command("status", async (ctx) => {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
+bot.command("memberships", async (ctx) => {
+  await sendMembershipOptions(ctx);
+});
 
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
+bot.hears("💳", async (ctx) => {
+  const user = await getFreshUserRecord(ctx.from.id);
+
+  if (isMembershipActive(user) && user.plan !== "free") {
+    await sendMembershipStatus(ctx, user);
     return;
   }
 
-  await ensureUser(userId, username);
-  await renderMainMenu(ctx, userId);
+  await sendMembershipOptions(ctx);
 });
 
-bot.command("help", async (ctx) => {
+bot.hears("🔐", async (ctx) => {
+  await sendAccessPanel(ctx);
+});
+
+bot.hears("🖥️", async (ctx) => {
+  await sendChannelsMessage(ctx);
+});
+
+bot.hears("🔄", async (ctx) => {
+  const user = await getFreshUserRecord(ctx.from.id);
+
+  if (isMembershipActive(user) && user.plan !== "free") {
+    await sendMembershipStatus(ctx, user);
+    return;
+  }
+
   await ctx.reply(
-    `📘 <b>Available commands</b>\n\n` +
-      `/start - open panel\n` +
-      `/menu - open main menu\n` +
-      `/plans - view memberships\n` +
-      `/access - view access options\n` +
-      `/channels - view premium channel options\n` +
-      `/status - check current status\n` +
-      `/help - show help`,
-    {
-      parse_mode: "HTML",
-      reply_markup: getMainKeyboard(),
-    }
+    `${BRAND}
+
+No active membership found.`,
+    getInlineWebsiteAndStarsButtons("vipfx")
   );
+
+  await ctx.reply("‎", getMainKeyboard());
 });
 
-/* =========================
-   CALLBACKS
-========================= */
-
-bot.on("callback_query:data", async (ctx) => {
-  const data = ctx.callbackQuery.data;
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
-
-  await ctx.answerCallbackQuery();
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  try {
-    await ensureUser(userId, username);
-
-    if (data === "buy_plan_userfx" || data === "buy_plan_vipfx") {
-      await handleSubscription(ctx, data);
-      return;
-    }
-
-    if (data === "channel_fxvip") {
-      await ctx.reply(
-        `👑 <b>Room | Ŧҳ VIP 🜲</b>\n\n` +
-          `Price: <b>$9.99</b>\n` +
-          `Type: <b>Exclusive content</b>\n\n` +
-          `Use /channels to come back here.`,
-        { parse_mode: "HTML" }
-      );
-      return;
-    }
-
-    if (data === "channel_smokelandia") {
-      await ctx.reply(
-        `☁️ <b>SmokeLandia</b>\n\n` +
-          `Price: <b>$10.00</b>\n` +
-          `Type: <b>Exclusive</b>\n\n` +
-          `Use /channels to come back here.`,
-        { parse_mode: "HTML" }
-      );
-      return;
-    }
-
-    if (data === "back_to_main") {
-      await renderMainMenu(ctx, userId);
-      return;
-    }
-
-    if (data === "back_to_access") {
-      await renderAccessMenu(ctx, userId);
-      return;
-    }
-  } catch (error) {
-    console.error("Callback error:", error);
-    await ctx.reply("❌ Something went wrong while processing that action.");
-  }
+bot.hears("📺", async (ctx) => {
+  await handleProtectedAccess(ctx, ctx.from.id, "feed");
 });
 
-/* =========================
-   PAYMENTS
-========================= */
+bot.hears("🌩️", async (ctx) => {
+  await handleProtectedAccess(ctx, ctx.from.id, "videoclouds");
+});
+
+bot.hears("📸", async (ctx) => {
+  await handleProtectedAccess(ctx, ctx.from.id, "photos");
+});
+
+bot.hears("🎁", async (ctx) => {
+  await handleProtectedAccess(ctx, ctx.from.id, "gifts");
+});
+
+bot.hears("↩️", async (ctx) => {
+  await sendMainPanel(ctx);
+});
+
+bot.action("membership:userfx", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendTelegramStarsInvoice(ctx, "userfx");
+});
+
+bot.action("membership:vipfx", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendTelegramStarsInvoice(ctx, "vipfx");
+});
+
+bot.action("pay_stars:userfx", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendTelegramStarsInvoice(ctx, "userfx");
+});
+
+bot.action("pay_stars:vipfx", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendTelegramStarsInvoice(ctx, "vipfx");
+});
 
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
 
-bot.on("message:successful_payment", async (ctx) => {
-  const payload = ctx.message.successful_payment.invoice_payload;
-  const planType = planTypeFromPayload(payload);
-  await activateMembership(ctx, planType);
-});
+bot.on("successful_payment", async (ctx) => {
+  const payment = ctx.message.successful_payment;
 
-/* =========================
-   KEYBOARD TEXT ROUTES
-========================= */
+  await ctx.reply(
+    `${BRAND}
 
-bot.on("message:text", async (ctx) => {
-  const text = ctx.message.text.trim();
+✅ Payment received.
 
-  if (text.startsWith("/")) return;
-
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username ?? null;
-
-  if (!userId) {
-    await ctx.reply("❌ Couldn't identify the user.");
-    return;
-  }
-
-  await ensureUser(userId, username);
-
-  if (text === "💳 View Memberships") {
-    await renderPlansMenu(ctx, userId);
-    return;
-  }
-
-  if (text === "🔒 Access") {
-    await renderAccessMenu(ctx, userId);
-    return;
-  }
-
-  if (text === "🖥 Channels") {
-    await renderChannelsMenu(ctx);
-    return;
-  }
-
-  if (text === "🔄 Refresh Status") {
-    await renderMainMenu(ctx, userId);
-    return;
-  }
-
-  if (text === "📺 Feed") {
-    await handleProtectedAccess(ctx, userId, "feed");
-    return;
-  }
-
-  if (text === "🌩 VideoClouds") {
-    await handleProtectedAccess(ctx, userId, "videoclouds");
-    return;
-  }
-
-  if (text === "📸 Photos") {
-    await handleProtectedAccess(ctx, userId, "photos");
-    return;
-  }
-
-  if (text === "🎁 Gifts") {
-    await handleProtectedAccess(ctx, userId, "gifts");
-    return;
-  }
-
-  if (text === "⬅️ Back") {
-    await renderMainMenu(ctx, userId);
-    return;
-  }
-
-  await ctx.reply("Use /menu to open the panel.", {
-    reply_markup: getMainKeyboard(),
-  });
-});
-
-/* =========================
-   GROUP JOIN NOTIFICATIONS
-========================= */
-
-async function notifyOwnerAboutJoin(member, chat, source = "joined") {
-  if (!botOwnerId) return;
-
-  const fullName = [member.first_name, member.last_name]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-
-  const username = member.username ? `@${member.username}` : "no username";
-
-  let label = "New member joined";
-  if (source === "request") label = "New join request";
-  if (source === "approved") label = "Join approved";
-
-  await bot.api.sendMessage(
-    botOwnerId,
-    `🔥 <b>${label}</b>\n\n` +
-      `Name: <b>${fullName || "Unknown"}</b>\n` +
-      `Username: <b>${username}</b>\n` +
-      `User ID: <code>${member.id}</code>\n` +
-      `Chat: <b>${chat.title || "Unknown group"}</b>\n\n` +
-      `Link:\n${channelLink}`,
-    { parse_mode: "HTML" }
+Currency: ${payment.currency}
+Total: ${payment.total_amount}`,
+    getInlineWebsiteButton()
   );
-}
 
-bot.on("message:new_chat_members", async (ctx) => {
-  try {
-    const chatId = String(ctx.chat.id);
-    if (targetGroupId && chatId !== String(targetGroupId)) return;
-
-    const members = ctx.message.new_chat_members || [];
-
-    for (const member of members) {
-      if (member.is_bot) continue;
-      await notifyOwnerAboutJoin(member, ctx.chat, "joined");
-    }
-  } catch (error) {
-    console.error("NEW_CHAT_MEMBERS ERROR:", error);
-  }
+  await ctx.reply("‎", getMainKeyboard());
 });
 
-/* =========================
-   ERROR / WEBHOOK
-========================= */
+bot.on("text", async (ctx) => {
+  const text = (ctx.message.text || "").trim();
 
-bot.catch((err) => {
-  console.error("BOT ERROR:", err);
-});
-
-const handler = webhookCallback(bot, "http");
-
-export default async function telegramWebhook(req, res) {
-  if (req.method !== "POST") {
-    res.status(405).send("Method Not Allowed");
+  if (text === "/channels") {
+    await sendChannelsMessage(ctx);
     return;
   }
 
-  return handler(req, res);
-}
+  await sendMainPanel(ctx);
+});
+
+bot.launch();
+
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
