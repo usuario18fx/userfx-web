@@ -417,11 +417,14 @@ bot.action("pay_stars:vipfx", async (ctx) => {
 });
 
 bot.on("pre_checkout_query", async (ctx) => {
+  console.log("PRE CHECKOUT:", ctx.update.pre_checkout_query);
   await ctx.answerPreCheckoutQuery(true);
 });
 
 bot.on("successful_payment", async (ctx) => {
   const payment = ctx.message.successful_payment;
+
+  console.log("SUCCESSFUL PAYMENT:", payment);
 
   await ctx.reply(
     `${BRAND}
