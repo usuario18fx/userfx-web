@@ -2,17 +2,17 @@ import { Telegraf, Markup } from "telegraf";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const WEBSITE_URL = "https://tu-dominio.com";
-const VIP_CHANNEL_URL = "https://t.me/tu_canal_vip";
-const SMOKELANDIA_CHANNEL_URL = "https://t.me/tu_canal_smokelandia";
-const PAYPAL_URL = "https://www.paypal.me/UsuarioFX";
+const WEBSITE_URL = "https://userfx-web.vercel.app";
+const VIP_CHANNEL_URL = "https://t.me/+HpfTil4YbSA5NjJh";
+const SMOKELANDIA_CHANNEL_URL = "https://t.me/+E4X5V3IlygxhMGQx;
+const PAYPAL_URL = "paypal.me/UsuarioFX";
 const PREVIEW_VIDEO_URL = "https://tu-servidor.com/preview.mp4";
 
 const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
 
 const MEMBERSHIPS = {
   userfx: {
-    title: "⚪ userFX",
+    title: "🔷 userFX",
     days: 8,
     priceUsd: 5,
     starsAmount: 500,
@@ -50,7 +50,7 @@ function getInlineWebsiteAndStarsButtons(planKey = "vipfx") {
 
 function getMembershipsInlineKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.callback("⚪", "membership:userfx")],
+    [Markup.button.callback("🔷", "membership:userfx")],
     [Markup.button.callback("👑", "membership:vipfx")],
     [Markup.button.url("🜲", WEBSITE_URL)],
   ]);
