@@ -88,6 +88,15 @@ function isMembershipActive(user) {
   if (!user.membership_expires_at) return false;
   return new Date(user.membership_expires_at).getTime() > Date.now();
 }
+function getInlineWebsiteButton() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "🜲", url: WEBSITE_URL }]
+      ]
+    }
+  };
+}
 
 async function getFreshUserRecord(userId) {
   return {
@@ -448,6 +457,30 @@ bot.on("text", async (ctx) => {
   }
 
   await sendMainPanel(ctx);
+});
+
+bot.command("start", async (ctx) => {
+  await sendMainPanel(ctx);
+});
+
+bot.command("channels", async (ctx) => {
+  await sendChannelsMessage(ctx);
+});
+
+bot.command("memberships", async (ctx) => {
+  await sendMembershipOptions(ctx);
+});
+
+bot.command("help", async (ctx) => {
+  await ctx.reply(
+    `${BRAND}
+
+Available commands:
+/start
+/channels
+/memberships`,
+    getMainKeyboard()
+  );
 });
 
 bot.launch();
