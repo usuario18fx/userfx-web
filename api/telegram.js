@@ -9,6 +9,12 @@ const DATABASE_URL = process.env.DATABASE_URL;
 if (!BOT_TOKEN) {
   throw new Error("Missing BOT_TOKEN");
 }
+
+if (!DATABASE_URL) {
+  throw new Error("Missing DATABASE_URL");
+}
+
+const bot = new Telegraf(BOT_TOKEN);
 TABASE_URL) {
   throw new Error("Missing DATABASE_URL");
 }
