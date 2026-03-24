@@ -431,7 +431,7 @@ async function sendAccessPanel(ctx, user) {
   await ctx.reply(
     `🔓 <b>Access unlocked</b>
 
-Active plan: <b>${user.plan === "vipfx" ? "👑 vipFX" : "🔷 userFX"}</b>
+Active plan: <b>${user.plan === "vipfx" ? "👑 vipFX" : "⚪ userFX"}</b>
 Expires: <b>${formatDate(user.membership_expires_at)}</b>
 
 Choose an option:`,
@@ -490,9 +490,7 @@ async function sendFeedMessage(ctx) {
   await ctx.reply(
     `📺 <b>Feed</b>
 
-Public updates, previews, and featured drops.
-
-Open the website for the full experience.`,
+Public updates, previews, and featured drops.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
