@@ -15,10 +15,7 @@ if (!DATABASE_URL) {
 }
 
 const bot = new Telegraf(BOT_TOKEN);
-TABASE_URL) {
-  throw new Error("Missing DATABASE_URL");
-}
-const bot = new Telegraf(BOT_TOKEN);
+
 const WEBSITE_URL = process.env.WEBSITE_URL || "https://userfx-web.vercel.app";
 const VIP_CHANNEL_URL =
   process.env.VIP_CHANNEL_URL || "https://t.me/+HpfTil4YbSA5NjJh";
@@ -29,6 +26,7 @@ const ZOOM_URL =
   process.env.ZOOM_URL || "https://us05web.zoom.us/j/9010970018?pwd=TU_LINK_REAL";
 const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
 const VIDEO_PATH = path.join(process.cwd(), "assets", "smkl-video01.mp4");
+
 const MEMBERSHIPS = {
   userfx: {
     key: "userfx",
@@ -51,6 +49,7 @@ const MEMBERSHIPS = {
     displayName: "vipFX",
   },
 };
+
 const pool =
   globalThis.__userfxTelegramPool ||
   new Pool({
