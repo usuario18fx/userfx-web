@@ -1,16 +1,12 @@
 import { Telegraf, Markup, Input } from "telegraf";
 import path from "path";
-
 const bot = new Telegraf(process.env.BOT_TOKEN);
-
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const VIP_CHANNEL_URL = "https://t.me/+HpfTil4YbSA5NjJh";
 const SMOKELANDIA_CHANNEL_URL = "https://t.me/+E4X5V3IlygxhMGQx";
 const PAYPAL_URL = "https://paypal.me/UsuarioFX";
 const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=TU_LINK_REAL";
-
 const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
-
 const VIDEO_PATH = path.join(process.cwd(), "assets", "smkl-video01.mp4");
 
 const MEMBERSHIPS = {
