@@ -7,7 +7,7 @@ const WEBSITE_URL =
 if (!BOT_TOKEN) {
   throw new Error("Missing BOT_TOKEN");
 }
-
+ 
 const bot = new Telegraf(BOT_TOKEN);
 
 const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
