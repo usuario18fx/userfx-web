@@ -11,7 +11,7 @@ if (!BOT_TOKEN) {
 const bot = new Telegraf(BOT_TOKEN);
 
 const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "🔥 userFX";
+const PLAN_NAME = "⚪ userFX";
 const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
 
 function getMainKeyboard() {
@@ -48,7 +48,7 @@ Choose a section below.`,
 
 async function sendMembershipPanel(ctx) {
   await ctx.reply(
-    `🔥 <b>MEMBERSHIP</b>
+    `☁️ <b>MEMBERSHIP</b>
 
 Plan
 <b>${PLAN_NAME}</b>
