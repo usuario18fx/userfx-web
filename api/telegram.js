@@ -1,7 +1,8 @@
 import { Telegraf, Markup } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const WEBSITE_URL = process.env.WEBSITE_URL || "https://userfx-nzr5594a7-user-fxs-projects.vercel.app";
+const WEBSITE_URL =
+  process.env.WEBSITE_URL || "https://userfx-6ln9hopv9-user-fxs-projects.vercel.app";
 
 if (!BOT_TOKEN) {
   throw new Error("Missing BOT_TOKEN");
@@ -9,7 +10,9 @@ if (!BOT_TOKEN) {
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
+const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
+const PLAN_NAME = "⚪ userFX";
+const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
 
 function getMainKeyboard() {
   return Markup.keyboard([["💳"], ["🔐", "🖥️"], ["🔄"]]).resize();
@@ -22,7 +25,7 @@ function getAccessKeyboard() {
 function getInlineWebsiteButton() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "🜲", url: WEBSITE_URL }]],
+      inline_keyboard: [[{ text: "↗ ENTER", url: WEBSITE_URL }]],
     },
   };
 }
@@ -31,21 +34,33 @@ async function sendMainPanel(ctx) {
   await ctx.reply(
     `${BRAND}
 
-Main panel:`,
-    getMainKeyboard()
+<b>Exclusive access panel</b>
+
+Choose a section below.`,
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
+    }
   );
+
+  await ctx.reply("‎", getMainKeyboard());
 }
 
 async function sendMembershipPanel(ctx) {
   await ctx.reply(
-    `☁️ <b>FX Memberships</b>
+    `☁️ <b>MEMBERSHIP</b>
 
-Current plan: <b>⚪ userFX</b>
-Verified: <b>Yes</b>
-Membership active: <b>Yes</b>
-Expires: <b>Mar 25, 2026, 08:13 a.m.</b>
+Plan
+<b>${PLAN_NAME}</b>
 
-Main panel:`,
+Status
+<b>Verified</b>
+
+Access
+<b>Active</b>
+
+Expires
+<b>${EXPIRES_AT}</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -57,12 +72,15 @@ Main panel:`,
 
 async function sendAccessPanel(ctx) {
   await ctx.reply(
-    `🔓 <b>Access unlocked</b>
+    `🔓 <b>ACCESS OPEN</b>
 
-Active plan: <b>⚪ userFX</b>
-Expires: <b>Mar 25, 2026, 08:13 a.m.</b>
+Plan
+<b>${PLAN_NAME}</b>
 
-Choose an option:`,
+Valid until
+<b>${EXPIRES_AT}</b>
+
+Select a room.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -74,9 +92,9 @@ Choose an option:`,
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `🖥️ <b>Channels</b>
+    `🖥️ <b>CHANNELS</b>
 
-Open channels and site access from here.`,
+Private spaces, drops, and direct access.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -88,10 +106,13 @@ Open channels and site access from here.`,
 
 async function sendRefreshPanel(ctx) {
   await ctx.reply(
-    `🔄 <b>Status refreshed</b>
+    `🔄 <b>STATUS UPDATED</b>
 
-Current plan: <b>⚪ userFX</b>
-Membership active: <b>Yes</b>`,
+Plan
+<b>${PLAN_NAME}</b>
+
+Access
+<b>Active</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -103,9 +124,9 @@ Membership active: <b>Yes</b>`,
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `📺 <b>Feed</b>
+    `📺 <b>FEED</b>
 
-Public updates, previews, and featured drops.`,
+Drops, previews, and selected content.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -117,9 +138,9 @@ Public updates, previews, and featured drops.`,
 
 async function sendVideoCloudsMessage(ctx) {
   await ctx.reply(
-    `🌩️ <b>VideoClouds</b>
+    `🌩️ <b>VIDEOCLOUDS</b>
 
-Cloud access section enabled.`,
+Ambient room access enabled.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -131,9 +152,9 @@ Cloud access section enabled.`,
 
 async function sendPhotosMessage(ctx) {
   await ctx.reply(
-    `📸 <b>Photos</b>
+    `📸 <b>PHOTOS</b>
 
-Unlocked preview section.`,
+Unlocked visual section.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -145,9 +166,9 @@ Unlocked preview section.`,
 
 async function sendGiftsMessage(ctx) {
   await ctx.reply(
-    `🎁 <b>Gifts</b>
+    `🎁 <b>GIFTS</b>
 
-Support section enabled.`,
+Support and transfer section.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -165,11 +186,17 @@ bot.command("help", async (ctx) => {
   await ctx.reply(
     `${BRAND}
 
-Available commands:
+<b>Available commands</b>
+
 /start
 /help`,
-    getMainKeyboard()
+    {
+      parse_mode: "HTML",
+      ...getInlineWebsiteButton(),
+    }
   );
+
+  await ctx.reply("‎", getMainKeyboard());
 });
 
 bot.hears("💳", async (ctx) => {
