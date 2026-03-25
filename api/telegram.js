@@ -11,7 +11,7 @@ if (!BOT_TOKEN) {
 const bot = new Telegraf(BOT_TOKEN);
 
 const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "🔷 userFX";
+const PLAN_NAME = "⚪ userFX";
 const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
 const STATUS = "Verified";
 const ACCESS_STATE = "Active";
