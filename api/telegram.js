@@ -6,7 +6,7 @@ import { Telegraf, Markup, Input } from "telegraf";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const DATABASE_URL = process.env.DATABASE_URL;
 
-if (!BOT_TOKEN) {
+if (!BOT_TOKEN) { 
   throw new Error("Missing BOT_TOKEN");
 }
 
