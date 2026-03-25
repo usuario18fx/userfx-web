@@ -11,11 +11,20 @@ if (!BOT_TOKEN) {
 const bot = new Telegraf(BOT_TOKEN);
 
 const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "⚪ userFX";
+const PLAN_NAME = "🔷 userFX";
 const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
+const STATUS = "Verified";
+const ACCESS_STATE = "Active";
 
 function getMainKeyboard() {
-  return Markup.keyboard([["💳"], ["🔐", "🖥️"], ["🔄"]]).resize();
+  return Markup.keyboard(
+    [
+      ["💳 Membership"],
+      ["🔐 Access", "🖥️ Channels"],
+      ["🔄 Refresh"],
+    ],
+    { columns: 2 }
+  ).resize();
 }
 
 function getAccessKeyboard() {
@@ -25,7 +34,7 @@ function getAccessKeyboard() {
 function getInlineWebsiteButton() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "↗ ENTER", url: WEBSITE_URL }]],
+      inline_keyboard: [[{ text: "↗ ENTER SITE", url: WEBSITE_URL }]],
     },
   };
 }
@@ -35,6 +44,8 @@ async function sendMainPanel(ctx) {
     `${BRAND}
 
 <b>Exclusive access panel</b>
+
+Premium content, private sections, and direct entry.
 
 Choose a section below.`,
     {
@@ -54,13 +65,15 @@ Plan
 <b>${PLAN_NAME}</b>
 
 Status
-<b>Verified</b>
+<b>${STATUS}</b>
 
 Access
-<b>Active</b>
+<b>${ACCESS_STATE}</b>
 
 Expires
-<b>${EXPIRES_AT}</b>`,
+<b>${EXPIRES_AT}</b>
+
+Your membership is currently active.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -77,10 +90,13 @@ async function sendAccessPanel(ctx) {
 Plan
 <b>${PLAN_NAME}</b>
 
+Status
+<b>${ACCESS_STATE}</b>
+
 Valid until
 <b>${EXPIRES_AT}</b>
 
-Select a room.`,
+Choose a section below.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -94,7 +110,12 @@ async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `🖥️ <b>CHANNELS</b>
 
-Private spaces, drops, and direct access.`,
+Private channel access
+Exclusive drops
+Locked sections
+Direct website entry
+
+Use the button below to enter.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -111,8 +132,14 @@ async function sendRefreshPanel(ctx) {
 Plan
 <b>${PLAN_NAME}</b>
 
+Status
+<b>${STATUS}</b>
+
 Access
-<b>Active</b>`,
+<b>${ACCESS_STATE}</b>
+
+Expires
+<b>${EXPIRES_AT}</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -126,7 +153,9 @@ async function sendFeedMessage(ctx) {
   await ctx.reply(
     `📺 <b>FEED</b>
 
-Drops, previews, and selected content.`,
+Selected drops
+Public previews
+Featured content`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -140,7 +169,9 @@ async function sendVideoCloudsMessage(ctx) {
   await ctx.reply(
     `🌩️ <b>VIDEOCLOUDS</b>
 
-Ambient room access enabled.`,
+Ambient room
+Visual session
+Cloud access enabled`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -154,7 +185,8 @@ async function sendPhotosMessage(ctx) {
   await ctx.reply(
     `📸 <b>PHOTOS</b>
 
-Unlocked visual section.`,
+Unlocked visual section
+Private gallery access`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -168,7 +200,9 @@ async function sendGiftsMessage(ctx) {
   await ctx.reply(
     `🎁 <b>GIFTS</b>
 
-Support and transfer section.`,
+Support section
+Transfer section
+Additional access support`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -199,19 +233,19 @@ bot.command("help", async (ctx) => {
   await ctx.reply("‎", getMainKeyboard());
 });
 
-bot.hears("💳", async (ctx) => {
+bot.hears("💳 Membership", async (ctx) => {
   await sendMembershipPanel(ctx);
 });
 
-bot.hears("🔐", async (ctx) => {
+bot.hears("🔐 Access", async (ctx) => {
   await sendAccessPanel(ctx);
 });
 
-bot.hears("🖥️", async (ctx) => {
+bot.hears("🖥️ Channels", async (ctx) => {
   await sendChannelsPanel(ctx);
 });
 
-bot.hears("🔄", async (ctx) => {
+bot.hears("🔄 Refresh", async (ctx) => {
   await sendRefreshPanel(ctx);
 });
 
@@ -239,10 +273,10 @@ bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
 
   const knownInputs = [
-    "💳",
-    "🔐",
-    "🖥️",
-    "🔄",
+    "💳 Membership",
+    "🔐 Access",
+    "🖥️ Channels",
+    "🔄 Refresh",
     "📺",
     "🌩️",
     "📸",
