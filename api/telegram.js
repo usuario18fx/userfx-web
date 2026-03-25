@@ -914,16 +914,9 @@ bot.on("text", async (ctx) => {
     "/help",
   ];
 
-  if (knownInputs.includes(text)) return;
-
-  await sendMainPanel(ctx);
-});
-
-bot.catch((error) => {
-  console.error("TELEGRAF ERROR:", error);
-});
-
 export default async function handler(req, res) {
+  console.log("METHOD:", req.method);
+
   if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
@@ -935,6 +928,7 @@ export default async function handler(req, res) {
     return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
+      method: req.method,
     });
   }
 
@@ -952,6 +946,7 @@ export default async function handler(req, res) {
     return res.status(500).json({
       ok: false,
       error: "handler_error",
+      details: String(error?.message || error),
     });
   }
 }
