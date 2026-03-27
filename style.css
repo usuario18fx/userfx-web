@@ -257,6 +257,27 @@
       transform: translateY(-2px);
     }
 
+
+.lock-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #000;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+
     .scene {
       flex: 1;
       display: flex;
