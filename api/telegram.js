@@ -337,7 +337,7 @@ bot.start(async (ctx) => {
   const payload = (ctx.startPayload || "").trim();
 
   if (payload === "videocall") {
-    await ctx.reply("Send your photos to continue.");
+    await ctx.reply("Send me your pics to get my link.");
     return;
   }
 
