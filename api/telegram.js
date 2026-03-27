@@ -1,19 +1,37 @@
 import { Telegraf, Markup } from "telegraf";
+import { Pool } from "pg";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+const DATABASE_URL = process.env.DATABASE_URL;
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 
 if (!BOT_TOKEN) {
   throw new Error("Missing BOT_TOKEN");
 }
 
+if (!DATABASE_URL) {
+  throw new Error("Missing DATABASE_URL");
+}
+
 const bot = new Telegraf(BOT_TOKEN);
 
+const pool =
+  globalThis.__userfxTelegramPool ||
+  new Pool({
+    connectionString: DATABASE_URL,
+    ssl:
+      DATABASE_URL.includes("localhost") || DATABASE_URL.includes("127.0.0.1")
+        ? false
+        : { rejectUnauthorized: false },
+  });
+
+if (!globalThis.__userfxTelegramPool) {
+  globalThis.__userfxTelegramPool = pool;
+}
+
 const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "🔷 userFX";
-const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
-const STATUS = "Verified";
-const ACCESS_STATE = "Active";
+
+let schemaPromise = null;
 
 function getMainKeyboard() {
   return Markup.keyboard(
@@ -38,6 +56,108 @@ function getInlineWebsiteButton() {
   };
 }
 
+function formatDate(dateValue) {
+  if (!dateValue) return "Not available";
+
+  try {
+    const date = new Date(dateValue);
+    return new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(date);
+  } catch {
+    return String(dateValue);
+  }
+}
+
+function isMembershipActive(user) {
+  if (!user?.membership_expires_at) return false;
+  return new Date(user.membership_expires_at).getTime() > Date.now();
+}
+
+function getPlanLabel(plan) {
+  if (plan === "vipfx") return "👑 vipFX";
+  if (plan === "userfx") return "🔷 userFX";
+  return "Free";
+}
+
+async function ensureSchema() {
+  if (!schemaPromise) {
+    schemaPromise = (async () => {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS users (
+          id BIGSERIAL PRIMARY KEY,
+          telegram_id BIGINT NOT NULL UNIQUE,
+          username TEXT,
+          first_name TEXT,
+          plan TEXT NOT NULL DEFAULT 'free',
+          verificado BOOLEAN NOT NULL DEFAULT FALSE,
+          membership_started_at TIMESTAMPTZ,
+          membership_expires_at TIMESTAMPTZ,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+      `);
+
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_users_telegram_id
+        ON users(telegram_id);
+      `);
+    })();
+  }
+
+  return schemaPromise;
+}
+
+async function upsertTelegramUser(telegramUser, client = pool) {
+  const telegramId = telegramUser?.id;
+  const username = telegramUser?.username || null;
+  const firstName = telegramUser?.first_name || null;
+
+  if (!telegramId) {
+    throw new Error("Missing telegram user id");
+  }
+
+  const result = await client.query(
+    `
+      INSERT INTO users (telegram_id, username, first_name, updated_at)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (telegram_id)
+      DO UPDATE SET
+        username = EXCLUDED.username,
+        first_name = EXCLUDED.first_name,
+        updated_at = NOW()
+      RETURNING *;
+    `,
+    [telegramId, username, firstName]
+  );
+
+  return result.rows[0];
+}
+
+async function getUserByTelegramId(telegramId, client = pool) {
+  const result = await client.query(
+    `
+      SELECT *
+      FROM users
+      WHERE telegram_id = $1
+      LIMIT 1;
+    `,
+    [telegramId]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function getFreshUser(ctx) {
+  await ensureSchema();
+  await upsertTelegramUser(ctx.from);
+  return getUserByTelegramId(ctx.from.id);
+}
+
 async function sendMainPanel(ctx) {
   await ctx.reply(
     `${BRAND}
@@ -56,23 +176,27 @@ Choose a section below.`,
   await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendMembershipPanel(ctx) {
+async function sendMembershipPanel(ctx, user) {
+  const active = isMembershipActive(user);
+  const planLabel = active ? getPlanLabel(user.plan) : "Free";
+  const statusLabel = user?.verificado ? "Verified" : "Unverified";
+  const accessLabel = active ? "Active" : "Locked";
+  const expiresLabel = active ? formatDate(user.membership_expires_at) : "No active membership";
+
   await ctx.reply(
     `☁️ <b>MEMBERSHIP</b>
 
 Plan
-<b>${PLAN_NAME}</b>
+<b>${planLabel}</b>
 
 Status
-<b>${STATUS}</b>
+<b>${statusLabel}</b>
 
 Access
-<b>${ACCESS_STATE}</b>
+<b>${accessLabel}</b>
 
 Expires
-<b>${EXPIRES_AT}</b>
-
-Your membership is currently active.`,
+<b>${expiresLabel}</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -82,18 +206,41 @@ Your membership is currently active.`,
   await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendAccessPanel(ctx) {
+async function sendAccessPanel(ctx, user) {
+  const active = isMembershipActive(user);
+
+  if (!active) {
+    await ctx.reply(
+      `🔒 <b>ACCESS LOCKED</b>
+
+Plan
+<b>Free</b>
+
+Status
+<b>No active membership</b>
+
+Use the website to unlock access.`,
+      {
+        parse_mode: "HTML",
+        ...getInlineWebsiteButton(),
+      }
+    );
+
+    await ctx.reply("‎", getMainKeyboard());
+    return;
+  }
+
   await ctx.reply(
     `🔓 <b>ACCESS OPEN</b>
 
 Plan
-<b>${PLAN_NAME}</b>
+<b>${getPlanLabel(user.plan)}</b>
 
 Status
-<b>${ACCESS_STATE}</b>
+<b>Active</b>
 
 Valid until
-<b>${EXPIRES_AT}</b>
+<b>${formatDate(user.membership_expires_at)}</b>
 
 Choose a section below.`,
     {
@@ -124,21 +271,27 @@ Use the button below to enter.`,
   await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendRefreshPanel(ctx) {
+async function sendRefreshPanel(ctx, user) {
+  const active = isMembershipActive(user);
+  const planLabel = active ? getPlanLabel(user.plan) : "Free";
+  const statusLabel = user?.verificado ? "Verified" : "Unverified";
+  const accessLabel = active ? "Active" : "Locked";
+  const expiresLabel = active ? formatDate(user.membership_expires_at) : "No active membership";
+
   await ctx.reply(
     `🔄 <b>STATUS UPDATED</b>
 
 Plan
-<b>${PLAN_NAME}</b>
+<b>${planLabel}</b>
 
 Status
-<b>${STATUS}</b>
+<b>${statusLabel}</b>
 
 Access
-<b>${ACCESS_STATE}</b>
+<b>${accessLabel}</b>
 
 Expires
-<b>${EXPIRES_AT}</b>`,
+<b>${expiresLabel}</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -148,7 +301,12 @@ Expires
   await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendFeedMessage(ctx) {
+async function sendFeedMessage(ctx, user) {
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
+
   await ctx.reply(
     `📺 <b>FEED</b>
 
@@ -164,7 +322,12 @@ Featured content`,
   await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function sendVideoCloudsMessage(ctx) {
+async function sendVideoCloudsMessage(ctx, user) {
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
+
   await ctx.reply(
     `🌩️ <b>VIDEOCLOUDS</b>
 
@@ -180,7 +343,12 @@ Cloud access enabled`,
   await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function sendPhotosMessage(ctx) {
+async function sendPhotosMessage(ctx, user) {
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
+
   await ctx.reply(
     `📸 <b>PHOTOS</b>
 
@@ -195,7 +363,12 @@ Private gallery access`,
   await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function sendGiftsMessage(ctx) {
+async function sendGiftsMessage(ctx, user) {
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
+
   await ctx.reply(
     `🎁 <b>GIFTS</b>
 
@@ -212,10 +385,13 @@ Additional access support`,
 }
 
 bot.start(async (ctx) => {
-  await sendMainPanel(ctx);
+  const user = await getFreshUser(ctx);
+  await sendMainPanel(ctx, user);
 });
 
 bot.command("help", async (ctx) => {
+  await getFreshUser(ctx);
+
   await ctx.reply(
     `${BRAND}
 
@@ -233,44 +409,54 @@ bot.command("help", async (ctx) => {
 });
 
 bot.hears("💳 Membership", async (ctx) => {
-  await sendMembershipPanel(ctx);
+  const user = await getFreshUser(ctx);
+  await sendMembershipPanel(ctx, user);
 });
 
 bot.hears("🔐 Access", async (ctx) => {
-  await sendAccessPanel(ctx);
+  const user = await getFreshUser(ctx);
+  await sendAccessPanel(ctx, user);
 });
 
 bot.hears("🖥️ Channels", async (ctx) => {
+  await getFreshUser(ctx);
   await sendChannelsPanel(ctx);
 });
 
 bot.hears("🔄 Refresh", async (ctx) => {
-  await sendRefreshPanel(ctx);
+  const user = await getFreshUser(ctx);
+  await sendRefreshPanel(ctx, user);
 });
 
 bot.hears("📺", async (ctx) => {
-  await sendFeedMessage(ctx);
+  const user = await getFreshUser(ctx);
+  await sendFeedMessage(ctx, user);
 });
 
 bot.hears("🌩️", async (ctx) => {
-  await sendVideoCloudsMessage(ctx);
+  const user = await getFreshUser(ctx);
+  await sendVideoCloudsMessage(ctx, user);
 });
 
 bot.hears("📸", async (ctx) => {
-  await sendPhotosMessage(ctx);
+  const user = await getFreshUser(ctx);
+  await sendPhotosMessage(ctx, user);
 });
 
 bot.hears("🎁", async (ctx) => {
-  await sendGiftsMessage(ctx);
+  const user = await getFreshUser(ctx);
+  await sendGiftsMessage(ctx, user);
 });
 
 bot.hears("↩️", async (ctx) => {
+  await getFreshUser(ctx);
   await sendMainPanel(ctx);
 });
 
 bot.on("text", async (ctx) => {
-  const text = (ctx.message.text || "").trim();
+  await getFreshUser(ctx);
 
+  const text = (ctx.message.text || "").trim();
   const knownInputs = [
     "💳 Membership",
     "🔐 Access",
@@ -312,6 +498,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    await ensureSchema();
+
     const update =
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
