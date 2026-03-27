@@ -5,8 +5,13 @@ const BOT_TOKEN = process.env.BOT_TOKEN;
 const DATABASE_URL = process.env.DATABASE_URL;
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 
-if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!DATABASE_URL) throw new Error("Missing DATABASE_URL");
+if (!BOT_TOKEN) {
+  throw new Error("Missing BOT_TOKEN");
+}
+
+if (!DATABASE_URL) {
+  throw new Error("Missing DATABASE_URL");
+}
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -29,7 +34,6 @@ const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
 function getMainKeyboard() {
   return Markup.keyboard(
     [
-      ["⏳ Status"],
       ["💳 Membership"],
       ["🔐 Access", "🖥️ Channels"],
       ["🔄 Refresh"],
@@ -39,24 +43,20 @@ function getMainKeyboard() {
 }
 
 function getAccessKeyboard() {
-  return Markup.keyboard([["📺", "🌩️"], ["📸", "🎁"], ["↩️ [ BACK ]"]]).resize();
+  return Markup.keyboard([["📺", "🌩️"], ["📸", "🎁"], ["↩️"]]).resize();
 }
 
 function getInlineWebsiteButton() {
   return {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "[ X/USER ]", url: WEBSITE_URL },
-          { text: "[ V/VIP ]", url: WEBSITE_URL },
-        ],
-      ],
+      inline_keyboard: [[{ text: "↗ ENTER SITE", url: WEBSITE_URL }]],
     },
   };
 }
 
 function formatDate(dateValue) {
   if (!dateValue) return "Not available";
+
   try {
     const date = new Date(dateValue);
     return new Intl.DateTimeFormat("en-CA", {
@@ -77,42 +77,43 @@ function isMembershipActive(user) {
 }
 
 function getPlanLabel(plan) {
-  if (plan === "vipfx") return "V/VIP";
-  if (plan === "userfx") return "X/USER";
-  return "FREE";
+  if (plan === "vipfx") return "👑 vipFX";
+  if (plan === "userfx") return "🔷 userFX";
+  return "Free";
 }
 
-function getUserMode(user) {
-  return user?.plan === "vipfx" && isMembershipActive(user) ? "V/VIP" : "X/USER";
+function getLookupValue(from) {
+  return from?.username || from?.first_name || null;
 }
 
 async function getUserFromDb(from) {
-  const username = from?.username || null;
-  if (!username) return null;
+  const lookup = getLookupValue(from);
+
+  if (!lookup) {
+    return null;
+  }
 
   const result = await pool.query(
     `
       SELECT *
       FROM users
       WHERE username = $1
+         OR first_name = $1
       LIMIT 1
     `,
-    [username]
+    [lookup]
   );
 
   return result.rows[0] || null;
 }
 
-async function sendMainPanel(ctx, user = null) {
-  const mode = getUserMode(user);
-
+async function sendMainPanel(ctx) {
   await ctx.reply(
     `${BRAND}
 
 <b>Exclusive access panel</b>
 
-Mode
-<b>${mode}</b>
+Premium content, private sections, and direct entry.
 
 Choose a section below.`,
     {
@@ -124,49 +125,27 @@ Choose a section below.`,
   await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendStatusPanel(ctx, user) {
+async function sendMembershipPanel(ctx, user) {
   const active = isMembershipActive(user);
-  const mode = getUserMode(user);
-  const expiresLabel = active
-    ? formatDate(user.membership_expires_at)
-    : "No active membership";
+  const planLabel = active ? getPlanLabel(user.plan) : "Free";
+  const statusLabel = user?.verificado ? "Verified" : "Unverified";
+  const accessLabel = active ? "Active" : "Locked";
+  const expiresLabel = active ? formatDate(user.membership_expires_at) : "No active membership";
 
   await ctx.reply(
-    `⏳ <b>STATUS</b>
-
-Type
-<b>${mode}</b>
+    `☁️ <b>MEMBERSHIP</b>
 
 Plan
-<b>${active ? getPlanLabel(user.plan) : "FREE"}</b>
+<b>${planLabel}</b>
+
+Status
+<b>${statusLabel}</b>
 
 Access
-<b>${active ? "OPEN" : "LOCKED"}</b>
+<b>${accessLabel}</b>
 
 Expires
 <b>${expiresLabel}</b>`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendMembershipPanel(ctx) {
-  await ctx.reply(
-    `💳 <b>MEMBERSHIP</b>
-
-<b>[ X/USER ]</b>
-8 days
-Price: <b>$5 USD</b>
-
-<b>[ V/VIP ]</b>
-30 days
-Price: <b>$15 USD</b>
-
-Choose your access on the website.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -183,12 +162,13 @@ async function sendAccessPanel(ctx, user) {
     await ctx.reply(
       `🔒 <b>ACCESS LOCKED</b>
 
-Type
-<b>X/USER</b>
+Plan
+<b>Free</b>
 
-No active membership found.
+Status
+<b>No active membership</b>
 
-Go to the website and unlock access.`,
+Use the website to unlock access.`,
       {
         parse_mode: "HTML",
         ...getInlineWebsiteButton(),
@@ -202,8 +182,11 @@ Go to the website and unlock access.`,
   await ctx.reply(
     `🔓 <b>ACCESS OPEN</b>
 
-Type
-<b>${getUserMode(user)}</b>
+Plan
+<b>${getPlanLabel(user.plan)}</b>
+
+Status
+<b>Active</b>
 
 Valid until
 <b>${formatDate(user.membership_expires_at)}</b>
@@ -218,17 +201,16 @@ Choose a section below.`,
   await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function sendChannelsPanel(ctx, user) {
+async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `🖥️ <b>CHANNELS</b>
-
-Type
-<b>${getUserMode(user)}</b>
 
 Private channel access
 Exclusive drops
 Locked sections
-Direct website entry`,
+Direct website entry
+
+Use the button below to enter.`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -240,21 +222,25 @@ Direct website entry`,
 
 async function sendRefreshPanel(ctx, user) {
   const active = isMembershipActive(user);
+  const planLabel = active ? getPlanLabel(user.plan) : "Free";
+  const statusLabel = user?.verificado ? "Verified" : "Unverified";
+  const accessLabel = active ? "Active" : "Locked";
+  const expiresLabel = active ? formatDate(user.membership_expires_at) : "No active membership";
 
   await ctx.reply(
     `🔄 <b>STATUS UPDATED</b>
 
-Type
-<b>${getUserMode(user)}</b>
-
 Plan
-<b>${active ? getPlanLabel(user.plan) : "FREE"}</b>
+<b>${planLabel}</b>
+
+Status
+<b>${statusLabel}</b>
 
 Access
-<b>${active ? "OPEN" : "LOCKED"}</b>
+<b>${accessLabel}</b>
 
 Expires
-<b>${active ? formatDate(user.membership_expires_at) : "No active membership"}</b>`,
+<b>${expiresLabel}</b>`,
     {
       parse_mode: "HTML",
       ...getInlineWebsiteButton(),
@@ -265,7 +251,10 @@ Expires
 }
 
 async function sendFeedMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
 
   await ctx.reply(
     `📺 <b>FEED</b>
@@ -283,7 +272,10 @@ Featured content`,
 }
 
 async function sendVideoCloudsMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
 
   await ctx.reply(
     `🌩️ <b>VIDEOCLOUDS</b>
@@ -301,7 +293,10 @@ Cloud access enabled`,
 }
 
 async function sendPhotosMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
 
   await ctx.reply(
     `📸 <b>PHOTOS</b>
@@ -318,7 +313,10 @@ Private gallery access`,
 }
 
 async function sendGiftsMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
+  if (!isMembershipActive(user)) {
+    await sendAccessPanel(ctx, user);
+    return;
+  }
 
   await ctx.reply(
     `🎁 <b>GIFTS</b>
@@ -336,13 +334,10 @@ Additional access support`,
 }
 
 bot.start(async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+  await sendMainPanel(ctx);
 });
 
 bot.command("help", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-
   await ctx.reply(
     `${BRAND}
 
@@ -357,16 +352,11 @@ bot.command("help", async (ctx) => {
   );
 
   await ctx.reply("‎", getMainKeyboard());
-  await sendMainPanel(ctx, user);
-});
-
-bot.hears("⏳ Status", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendStatusPanel(ctx, user);
 });
 
 bot.hears("💳 Membership", async (ctx) => {
-  await sendMembershipPanel(ctx);
+  const user = await getUserFromDb(ctx.from);
+  await sendMembershipPanel(ctx, user);
 });
 
 bot.hears("🔐 Access", async (ctx) => {
@@ -375,8 +365,7 @@ bot.hears("🔐 Access", async (ctx) => {
 });
 
 bot.hears("🖥️ Channels", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendChannelsPanel(ctx, user);
+  await sendChannelsPanel(ctx);
 });
 
 bot.hears("🔄 Refresh", async (ctx) => {
@@ -404,15 +393,13 @@ bot.hears("🎁", async (ctx) => {
   await sendGiftsMessage(ctx, user);
 });
 
-bot.hears("↩️ [ BACK ]", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+bot.hears("↩️", async (ctx) => {
+  await sendMainPanel(ctx);
 });
 
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const knownInputs = [
-    "⏳ Status",
     "💳 Membership",
     "🔐 Access",
     "🖥️ Channels",
@@ -421,15 +408,14 @@ bot.on("text", async (ctx) => {
     "🌩️",
     "📸",
     "🎁",
-    "↩️ [ BACK ]",
+    "↩️",
     "/start",
     "/help",
   ];
 
   if (knownInputs.includes(text)) return;
 
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+  await sendMainPanel(ctx);
 });
 
 bot.catch((error) => {
