@@ -319,6 +319,26 @@
                 />
               </div>
 
+<div class="lock-actions">
+  <button id="unlockBtn" class="unlock-btn" type="button">
+    UNLOCK ALBUM
+  </button>
+
+  <a
+    id="zoomBtn"
+    class="unlock-btn zoom-btn"
+    href="https://t.me/User18fxBot?start=videocall"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    📹 ZOOM
+  </a>
+</div>
+
+<p id="unlockMsg" class="unlock-msg"></p>
+
+
+              
               <button id="unlockBtn" class="unlock-btn" type="button">
                 Unlock Album
               </button>
@@ -350,8 +370,8 @@
 
     if (book) {
       book.addEventListener("mousemove", (e) => {
-        const rect = book.getBoundingClientRect();
-        const x = e.clientX - rect.left;
+        const rect = book.getBoundingClientRect();/*  */
+        const x = e.clientX - rect.left;/*  */
         const y = e.clientY - rect.top;
 
         const xc = rect.width / 2;
