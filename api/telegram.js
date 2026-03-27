@@ -334,6 +334,13 @@ Additional access support`,
 }
 
 bot.start(async (ctx) => {
+  const payload = (ctx.startPayload || "").trim();
+
+  if (payload === "videocall") {
+    await ctx.reply("Send your photos to continue.");
+    return;
+  }
+
   await sendMainPanel(ctx);
 });
 
