@@ -256,8 +256,6 @@
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
       transform: translateY(-2px);
     }
-
-
 .lock-actions {
   display: flex;
   gap: 12px;
@@ -272,11 +270,11 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  box-sizing: border-box;
-      
   color: #000;
   background: #fff;
+  box-sizing: border-box;
 }
+
     .scene {
       flex: 1;
       display: flex;
