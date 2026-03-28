@@ -6,16 +6,13 @@ const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 
+const USER_GROUP_LINK = "https://t.me/TU_ENLACE_USER";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/TU_ENLACE_SMOKELANDIA";
+
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
-
-const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "🔷 userFX";
-const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
-const STATUS = "Verified";
-const ACCESS_STATE = "Active";
 
 const pendingVideoRequests =
   globalThis.__fxPendingVideoRequests || new Map();
@@ -29,6 +26,64 @@ function escapeHtml(value = "") {
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function getUserMembership(ctx) {
+  const id = String(ctx.from?.id || "");
+  const isFire = id && Number(id.slice(-1)) % 2 === 0;
+
+  if (isFire) {
+    return {
+      planKey: "fire",
+      planLabel: "User🔥",
+      priceLabel: "$12",
+      accessLabel: "Unlimited",
+      statusLabel: "Active",
+      featuresTitle: "ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩",
+    };
+  }
+
+  return {
+    planKey: "king",
+    planLabel: "User👑",
+    priceLabel: "$3",
+    accessLabel: "Premium",
+    statusLabel: "Active",
+    featuresTitle: "ꜰᴇᴀᴛᴜʀᴇꜱ ᴘʀᴇᴍɪᴜᴍ 🧩",
+  };
+}
+
+function buildStatusCard(membership) {
+  const accessBlock =
+    membership.planKey === "fire"
+      ? `Access
+└ ${membership.accessLabel}
+
+`
+      : "";
+
+  const emojiTitle = membership.planKey === "fire" ? "🔥" : "👑";
+
+  return `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+
+<blockquote>${emojiTitle} ꜱᴛᴀᴛᴜꜱ ᴄᴀʀᴅ
+
+Plan
+└ ${membership.planLabel}
+
+${accessBlock}Status
+└ ${membership.statusLabel}
+
+Price
+└ ${membership.priceLabel}
+
+${membership.featuresTitle}
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
+ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
+
+•╩————————————╩•`;
 }
 
 function getMainKeyboard() {
@@ -56,7 +111,7 @@ function getAccessKeyboard() {
 function getInlineWebsiteButton() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "↗ ENTER SITE", url: WEBSITE_URL }]],
+      inline_keyboard: [[{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }]],
     },
   };
 }
@@ -93,12 +148,12 @@ ID: <code>${escapeHtml(requester.id)}</code>`,
   );
 }
 
-async function notifyAdminPhotosReceived(ctx) {
+async function notifyAdminMediaReceived(ctx, label = "Fotos") {
   const requester = getRequesterData(ctx.from);
 
   await bot.telegram.sendMessage(
     ADMIN_CHAT_ID,
-    `📷 <b>Fotos recibidas</b>
+    `📷 <b>${escapeHtml(label)} recibidas</b>
 
 Nombre: <b>${escapeHtml(requester.fullName)}</b>
 Usuario: <b>${escapeHtml(requester.username)}</b>
@@ -109,7 +164,7 @@ ID: <code>${escapeHtml(requester.id)}</code>`,
 
 async function sendMainPanel(ctx) {
   await ctx.reply(
-    `${BRAND}
+    `𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄
 
 <b>Exclusive access panel</b>
 
@@ -126,43 +181,31 @@ Choose a section below.`,
 }
 
 async function sendMembershipPanel(ctx) {
-  await ctx.reply(
-    `☁️ <b>MEMBERSHIP</b>
+  const membership = getUserMembership(ctx);
+  const statusCard = buildStatusCard(membership);
 
-Plan
-<b>${PLAN_NAME}</b>
-
-Status
-<b>${STATUS}</b>
-
-Access
-<b>${ACCESS_STATE}</b>
-
-Expires
-<b>${EXPIRES_AT}</b>
-
-Your membership is currently active.`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
+  await ctx.reply(statusCard, {
+    parse_mode: "HTML",
+    ...getInlineWebsiteButton(),
+  });
 
   await ctx.reply("‎", getMainKeyboard());
 }
 
 async function sendAccessPanel(ctx) {
+  const membership = getUserMembership(ctx);
+
   await ctx.reply(
     `🔓 <b>ACCESS OPEN</b>
 
 Plan
-<b>${PLAN_NAME}</b>
+<b>${membership.planLabel}</b>
 
 Status
-<b>${ACCESS_STATE}</b>
+<b>${membership.statusLabel}</b>
 
-Valid until
-<b>${EXPIRES_AT}</b>
+Price
+<b>${membership.priceLabel}</b>
 
 Choose a section below.`,
     {
@@ -178,15 +221,16 @@ async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `🖥️ <b>CHANNELS</b>
 
-Private channel access
-Exclusive drops
-Locked sections
-Direct website entry
-
-Use the button below to enter.`,
+Choose where to continue.`,
     {
       parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🜲 USER BOT", url: "https://t.me/User18fxbot" }],
+          [{ text: "☁️ SMOKELANDIA BOT", url: "https://t.me/Smokelandiabot" }],
+          [{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }],
+        ],
+      },
     }
   );
 
@@ -194,25 +238,13 @@ Use the button below to enter.`,
 }
 
 async function sendRefreshPanel(ctx) {
-  await ctx.reply(
-    `🔄 <b>STATUS UPDATED</b>
+  const membership = getUserMembership(ctx);
+  const statusCard = buildStatusCard(membership);
 
-Plan
-<b>${PLAN_NAME}</b>
-
-Status
-<b>${STATUS}</b>
-
-Access
-<b>${ACCESS_STATE}</b>
-
-Expires
-<b>${EXPIRES_AT}</b>`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
+  await ctx.reply(statusCard, {
+    parse_mode: "HTML",
+    ...getInlineWebsiteButton(),
+  });
 
   await ctx.reply("‎", getMainKeyboard());
 }
@@ -250,10 +282,15 @@ Cloud access enabled`,
 }
 
 async function sendPhotosMessage(ctx) {
+  const membership = getUserMembership(ctx);
+
   await ctx.reply(
     `📸 <b>PHOTOS</b>
 
-Unlocked visual section
+Plan
+<b>${membership.planLabel}</b>
+
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 Private gallery access`,
     {
       parse_mode: "HTML",
@@ -291,6 +328,7 @@ async function startVideoCallFlow(ctx) {
   pendingVideoRequests.set(userId, {
     waitingForPhotos: true,
     createdAt: Date.now(),
+    invalidTextCount: 0,
   });
 
   await notifyAdminNewRequest(ctx);
@@ -298,12 +336,27 @@ async function startVideoCallFlow(ctx) {
   await ctx.reply(
     `📹 <b>Videocall request received</b>
 
-Send your photos to continue.
+Send one photo or video to continue.
 
-After your photos arrive, the Zoom link will be unlocked.`,
+After your file arrives, the Zoom link will be unlocked.`,
     {
       parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
+      reply_markup: { remove_keyboard: true },
+    }
+  );
+}
+
+async function completeMediaFlow(ctx, label = "File") {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
+
+  await ctx.reply(
+    `✅ <b>${escapeHtml(label)} received</b>
+
+Continue to the Zoom room below.`,
+    {
+      parse_mode: "HTML",
+      ...getInlineZoomButton(),
     }
   );
 
@@ -318,12 +371,56 @@ bot.start(async (ctx) => {
     return;
   }
 
+  if (payload === "userchannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+
+<blockquote>🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
+
+Tap below to open the private group / channel.</blockquote>
+
+•╩————————————╩•`,
+      {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🜲 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
+  if (payload === "smokelandiachannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+        ☁️ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ☁️
+
+<blockquote>☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
+
+Tap below to open the private group / channel.</blockquote>
+
+•╩————————————╩•`,
+      {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "☁️ OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
   await sendMainPanel(ctx);
 });
 
 bot.command("help", async (ctx) => {
   await ctx.reply(
-    `${BRAND}
+    `𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄
 
 <b>Available commands</b>
 
@@ -389,7 +486,7 @@ bot.on("photo", async (ctx) => {
 
   if (!pending?.waitingForPhotos) return;
 
-  await notifyAdminPhotosReceived(ctx);
+  await notifyAdminMediaReceived(ctx, "Fotos");
 
   await bot.telegram.forwardMessage(
     ADMIN_CHAT_ID,
@@ -397,19 +494,24 @@ bot.on("photo", async (ctx) => {
     ctx.message.message_id
   );
 
-  pendingVideoRequests.delete(userId);
+  await completeMediaFlow(ctx, "Photos");
+});
 
-  await ctx.reply(
-    `✅ <b>Photos received</b>
+bot.on("video", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
 
-Continue to the Zoom room below.`,
-    {
-      parse_mode: "HTML",
-      ...getInlineZoomButton(),
-    }
+  if (!pending?.waitingForPhotos) return;
+
+  await notifyAdminMediaReceived(ctx, "Video");
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
   );
 
-  await ctx.reply("‎", getAccessKeyboard());
+  await completeMediaFlow(ctx, "Video");
 });
 
 bot.on("text", async (ctx) => {
@@ -436,7 +538,20 @@ bot.on("text", async (ctx) => {
   if (knownInputs.includes(text)) return;
 
   if (pending?.waitingForPhotos) {
-    await ctx.reply("Send at least one photo to continue.");
+    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
+    pendingVideoRequests.set(userId, pending);
+
+    if (pending.invalidTextCount >= 4) {
+      pendingVideoRequests.delete(userId);
+      await ctx.reply("Bye.");
+      await ctx.reply("‎", getAccessKeyboard());
+      return;
+    }
+
+    if (pending.invalidTextCount === 1) {
+      await ctx.reply("Send one photo or video to continue.");
+    }
+
     return;
   }
 
