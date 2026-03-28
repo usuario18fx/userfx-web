@@ -1,100 +1,59 @@
-import "dotenv/config";
-import pg from "pg";
-
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error("Missing DATABASE_URL in environment variables");
-}
-
-const { Pool } = pg;
-
-const db = new Pool({
-  connectionString: databaseUrl,
-  ssl: { rejectUnauthorized: false },
-});
+const TRACK_SECRET = process.env.TRACK_SECRET;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.status(405).json({
+    return res.status(405).json({
       ok: false,
-      error: "Method not allowed",
+      error: "method_not_allowed",
     });
-    return;
   }
 
   try {
-    const { prefix, suffix } = req.body ?? {};
+    const { prefix, suffix } =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-    if (!prefix || !suffix) {
-      res.status(400).json({
+    const safePrefix = String(prefix || "").trim().toUpperCase();
+    const safeSuffix = String(suffix || "").trim().toUpperCase();
+
+    if (!safePrefix || !safeSuffix) {
+      return res.status(400).json({
         ok: false,
-        error: "Missing code parts",
+        error: "Missing code.",
       });
-      return;
     }
 
-    const cleanPrefix = String(prefix).trim().toUpperCase();
-    const cleanSuffix = String(suffix).trim().toUpperCase();
-
-    if (cleanSuffix.length !== 4) {
-      res.status(400).json({
+    if (safeSuffix.length !== 4) {
+      return res.status(400).json({
         ok: false,
-        error: "Invalid suffix",
+        error: "The suffix must be 4 characters.",
       });
-      return;
     }
 
-    const result = await db.query(
-      `
-      select
-        user_id,
-        code,
-        code_prefix,
-        code_suffix,
-        plan,
-        expires_at
-      from access_codes
-      where code_prefix = $1
-        and code_suffix = $2
-      order by created_at desc
-      limit 1
-      `,
-      [cleanPrefix, cleanSuffix]
-    );
+    const fullCode = `${safePrefix}${safeSuffix}`;
 
-    if (result.rowCount === 0) {
-      res.status(404).json({
+    if (!TRACK_SECRET) {
+      return res.status(500).json({
         ok: false,
-        error: "That code doesn't exist",
+        error: "Missing TRACK_SECRET on server.",
       });
-      return;
     }
 
-    const row = result.rows[0];
-    const expiresAt = new Date(row.expires_at);
-
-    if (Number.isNaN(expiresAt.getTime()) || expiresAt.getTime() <= Date.now()) {
-      res.status(403).json({
-        ok: false,
-        error: "This code has expired",
+    if (fullCode === TRACK_SECRET.toUpperCase()) {
+      return res.status(200).json({
+        ok: true,
+        code: fullCode,
       });
-      return;
     }
 
-    res.status(200).json({
-      ok: true,
-      message: "Access unlocked",
-      plan: row.plan,
-      expires_at: row.expires_at,
-      code: row.code,
+    return res.status(401).json({
+      ok: false,
+      error: "Invalid code.",
     });
   } catch (error) {
-    console.error("UNLOCK ERROR:", error);
-
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
-      error: "Something went wrong",
+      error: "server_error",
+      details: String(error?.message || error),
     });
   }
 }
