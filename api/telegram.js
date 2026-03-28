@@ -436,7 +436,7 @@ bot.on("text", async (ctx) => {
   if (knownInputs.includes(text)) return;
 
   if (pending?.waitingForPhotos) {
-    await ctx.reply("Send me at least one nude to get the link");
+    await ctx.reply("Send at least one photo to continue.");
     return;
   }
 
