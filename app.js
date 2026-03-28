@@ -1,15 +1,16 @@
-const accessCodePrefix = document.getElementById("accessCodePrefix");
 const accessCodeSuffix = document.getElementById("accessCodeSuffix");
 const unlockBtn = document.getElementById("unlockBtn");
 const unlockMsg = document.getElementById("unlockMsg");
 const lockOverlayEl = document.getElementById("lockOverlay");
+
+const ACCESS_CODE_PREFIX = "FX-USER01-";
 
 function setMessage(text, ok = false) {
   if (!unlockMsg) return;
   unlockMsg.textContent = text;
   unlockMsg.style.color = ok
     ? "rgba(0, 242, 255, 0.95)"
-    : "rgba(255, 255, 255, 0.82)";
+    : "rgba(255, 255, 255, 0.84)";
 }
 
 function unlockAlbumUI() {
@@ -47,7 +48,6 @@ async function validateAccessCode(prefix, suffix) {
 }
 
 async function handleUnlock() {
-  const prefix = (accessCodePrefix?.value || "").trim().toUpperCase();
   const suffix = (accessCodeSuffix?.value || "").trim().toUpperCase();
 
   if (!suffix || suffix.length !== 4) {
@@ -61,7 +61,7 @@ async function handleUnlock() {
   setMessage("Checking code...");
 
   try {
-    const result = await validateAccessCode(prefix, suffix);
+    const result = await validateAccessCode(ACCESS_CODE_PREFIX, suffix);
 
     if (!result?.ok) {
       setMessage(result?.error || "Invalid code.");
