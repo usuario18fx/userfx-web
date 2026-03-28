@@ -439,8 +439,9 @@ bot.on("text", async (ctx) => {
     await ctx.reply("Send at least one photo to continue.");
     return;
   }
-});
 
+  await ctx.reply("Use the buttons below.");
+});
 
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
