@@ -1,5 +1,14 @@
 import { Telegraf, Markup } from "telegraf";
+import { Telegraf, Markup } from "telegraf";
 
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+const WEBSITE_URL = "https://userfx-web.vercel.app";
+const ZOOM_URL =
+  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
+
+const USER_GROUP_LINK = "https://t.me/TU_ENLACE_USER";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/TU_ENLACE_SMOKELANDIA";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const WEBSITE_URL = "https://userfx-web.vercel.app";
