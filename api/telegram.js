@@ -1,435 +1,409 @@
-import { Telegraf, Markup } from "telegraf";
-import { Pool } from "pg";
+import { Telegraf } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const DATABASE_URL = process.env.DATABASE_URL;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+
 const WEBSITE_URL = "https://userfx-web.vercel.app";
+const ZOOM_URL =
+  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
+
+const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
+const SMOKELANDIA_BOT_URL = "https://t.me/Smokelandiabot?start=smokelandiachannel";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!DATABASE_URL) throw new Error("Missing DATABASE_URL");
+if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const pool =
-  globalThis.__userfxTelegramPool ||
-  new Pool({
-    connectionString: DATABASE_URL,
-    ssl:
-      DATABASE_URL.includes("localhost") || DATABASE_URL.includes("127.0.0.1")
-        ? false
-        : { rejectUnauthorized: false },
-  });
+const pendingVideoRequests =
+  globalThis.__fxPendingVideoRequests || new Map();
 
-if (!globalThis.__userfxTelegramPool) {
-  globalThis.__userfxTelegramPool = pool;
+if (!globalThis.__fxPendingVideoRequests) {
+  globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
 
-const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-
-function getMainKeyboard() {
-  return Markup.keyboard(
-    [
-      ["⏳ Status"],
-      ["💳 Membership"],
-      ["🔐 Access", "🖥️ Channels"],
-      ["🔄 Refresh"],
-    ],
-    { columns: 2 }
-  ).resize();
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
-function getAccessKeyboard() {
-  return Markup.keyboard([["📺", "🌩️"], ["📸", "🎁"], ["↩️ [ BACK ]"]]).resize();
+function getRequesterData(from) {
+  const firstName = from?.first_name || "";
+  const lastName = from?.last_name || "";
+  const fullName = `${firstName} ${lastName}`.trim() || "No name";
+  const username = from?.username ? `@${from.username}` : "sin_username";
+  const id = String(from?.id || "");
+  return { fullName, username, id };
 }
 
-function getInlineWebsiteButton() {
+function getMainMenuKeyboard() {
   return {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "[ X/USER ]", url: WEBSITE_URL },
-          { text: "[ V/VIP ]", url: WEBSITE_URL },
+          { text: "[ X/USER ]", callback_data: "mode_user" },
+          { text: "[ V/VIP ]", callback_data: "mode_vip" },
+        ],
+        [
+          { text: "🌐 WEBSITE", url: WEBSITE_URL },
+        ],
+        [
+          { text: "📞 VIDEOCALL", callback_data: "videocall_start" },
+          { text: "🖥 CHANNELS", callback_data: "open_channels" },
         ],
       ],
     },
   };
 }
 
-function formatDate(dateValue) {
-  if (!dateValue) return "Not available";
-  try {
-    const date = new Date(dateValue);
-    return new Intl.DateTimeFormat("en-CA", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(date);
-  } catch {
-    return String(dateValue);
-  }
+function getBackToMenuKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "↩ BACK TO MENU", callback_data: "back_main" }],
+      ],
+    },
+  };
 }
 
-function isMembershipActive(user) {
-  if (!user?.membership_expires_at) return false;
-  return new Date(user.membership_expires_at).getTime() > Date.now();
+function getZoomKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "📹 ENTER ZOOM", url: ZOOM_URL }],
+        [{ text: "↩ BACK TO MENU", callback_data: "back_main" }],
+      ],
+    },
+  };
 }
 
-function getPlanLabel(plan) {
-  if (plan === "vipfx") return "V/VIP";
-  if (plan === "userfx") return "X/USER";
-  return "FREE";
+function getChannelsKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "🜲 USER BOT", url: USER_BOT_URL }],
+        [{ text: "☁️ SMOKELANDIA BOT", url: SMOKELANDIA_BOT_URL }],
+        [{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }],
+        [{ text: "↩ BACK TO MENU", callback_data: "back_main" }],
+      ],
+    },
+  };
 }
 
-function getUserMode(user) {
-  return user?.plan === "vipfx" && isMembershipActive(user) ? "V/VIP" : "X/USER";
-}
-
-async function getUserFromDb(from) {
-  const username = from?.username || null;
-  if (!username) return null;
-
-  const result = await pool.query(
-    `
-      SELECT *
-      FROM users
-      WHERE username = $1
-      LIMIT 1
-    `,
-    [username]
-  );
-
-  return result.rows[0] || null;
-}
-
-async function sendMainPanel(ctx, user = null) {
-  const mode = getUserMode(user);
-
-  await ctx.reply(
-    `${BRAND}
+function buildMainMenuText() {
+  return `𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄
 
 <b>Exclusive access panel</b>
 
 Mode
-<b>${mode}</b>
+<b>Choose below</b>
 
-Choose a section below.`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getMainKeyboard());
+Select your section.`;
 }
 
-async function sendStatusPanel(ctx, user) {
-  const active = isMembershipActive(user);
-  const mode = getUserMode(user);
-  const expiresLabel = active
-    ? formatDate(user.membership_expires_at)
-    : "No active membership";
+function buildUserCard() {
+  return `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
-  await ctx.reply(
-    `⏳ <b>STATUS</b>
-
-Type
-<b>${mode}</b>
+<blockquote>👑 ꜱᴛᴀᴛᴜꜱ ᴄᴀʀᴅ
 
 Plan
-<b>${active ? getPlanLabel(user.plan) : "FREE"}</b>
+└ X/USER
+
+Status
+└ Active
+
+Price
+└ $3
+
+ꜰᴇᴀᴛᴜʀᴇꜱ ᴘʀᴇᴍɪᴜᴍ 🧩
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
+ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
+
+•╩————————————╩•`;
+}
+
+function buildVipCard() {
+  return `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+
+<blockquote>🔥 ꜱᴛᴀᴛᴜꜱ ᴄᴀʀᴅ
+
+Plan
+└ V/VIP
 
 Access
-<b>${active ? "OPEN" : "LOCKED"}</b>
+└ Unlimited
 
-Expires
-<b>${expiresLabel}</b>`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
+Status
+└ Active
 
-  await ctx.reply("‎", getMainKeyboard());
+Price
+└ $12
+
+ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
+ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
+
+•╩————————————╩•`;
 }
 
-async function sendMembershipPanel(ctx) {
+async function notifyAdminNewRequest(ctx) {
+  const requester = getRequesterData(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📞 <b>Nueva solicitud de videollamada</b>
+
+Nombre: <b>${escapeHtml(requester.fullName)}</b>
+Usuario: <b>${escapeHtml(requester.username)}</b>
+ID: <code>${escapeHtml(requester.id)}</code>`,
+    { parse_mode: "HTML" }
+  );
+}
+
+async function notifyAdminMediaReceived(ctx, label = "Fotos") {
+  const requester = getRequesterData(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📷 <b>${escapeHtml(label)} recibidas</b>
+
+Nombre: <b>${escapeHtml(requester.fullName)}</b>
+Usuario: <b>${escapeHtml(requester.username)}</b>
+ID: <code>${escapeHtml(requester.id)}</code>`,
+    { parse_mode: "HTML" }
+  );
+}
+
+async function sendMainMenu(ctx) {
+  await ctx.reply(buildMainMenuText(), {
+    parse_mode: "HTML",
+    ...getMainMenuKeyboard(),
+  });
+}
+
+async function sendUserMode(ctx) {
+  await ctx.reply(buildUserCard(), {
+    parse_mode: "HTML",
+    ...getBackToMenuKeyboard(),
+  });
+}
+
+async function sendVipMode(ctx) {
+  await ctx.reply(buildVipCard(), {
+    parse_mode: "HTML",
+    ...getBackToMenuKeyboard(),
+  });
+}
+
+async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `💳 <b>MEMBERSHIP</b>
+    `🖥 <b>CHANNELS</b>
 
-<b>[ X/USER ]</b>
-8 days
-Price: <b>$5 USD</b>
-
-<b>[ V/VIP ]</b>
-30 days
-Price: <b>$15 USD</b>
-
-Choose your access on the website.`,
+Choose where to continue.`,
     {
       parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
+      ...getChannelsKeyboard(),
     }
   );
-
-  await ctx.reply("‎", getMainKeyboard());
 }
 
-async function sendAccessPanel(ctx, user) {
-  const active = isMembershipActive(user);
+async function startVideoCallFlow(ctx) {
+  const userId = String(ctx.from?.id || "");
 
-  if (!active) {
-    await ctx.reply(
-      `🔒 <b>ACCESS LOCKED</b>
-
-Type
-<b>X/USER</b>
-
-No active membership found.
-
-Go to the website and unlock access.`,
-      {
-        parse_mode: "HTML",
-        ...getInlineWebsiteButton(),
-      }
-    );
-
-    await ctx.reply("‎", getMainKeyboard());
+  if (!userId) {
+    await ctx.reply("Unable to identify your account.");
     return;
   }
 
+  pendingVideoRequests.set(userId, {
+    waitingForMedia: true,
+    invalidTextCount: 0,
+    createdAt: Date.now(),
+  });
+
+  await notifyAdminNewRequest(ctx);
+
   await ctx.reply(
-    `🔓 <b>ACCESS OPEN</b>
+    `📹 <b>Videocall request received</b>
 
-Type
-<b>${getUserMode(user)}</b>
-
-Valid until
-<b>${formatDate(user.membership_expires_at)}</b>
-
-Choose a section below.`,
+Send one photo or video to continue.`,
     {
       parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
+      reply_markup: { remove_keyboard: true },
     }
   );
-
-  await ctx.reply("‎", getAccessKeyboard());
 }
 
-async function sendChannelsPanel(ctx, user) {
-  await ctx.reply(
-    `🖥️ <b>CHANNELS</b>
-
-Type
-<b>${getUserMode(user)}</b>
-
-Private channel access
-Exclusive drops
-Locked sections
-Direct website entry`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendRefreshPanel(ctx, user) {
-  const active = isMembershipActive(user);
+async function completeMediaFlow(ctx, label = "File") {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
 
   await ctx.reply(
-    `🔄 <b>STATUS UPDATED</b>
+    `✅ <b>${escapeHtml(label)} received</b>
 
-Type
-<b>${getUserMode(user)}</b>
-
-Plan
-<b>${active ? getPlanLabel(user.plan) : "FREE"}</b>
-
-Access
-<b>${active ? "OPEN" : "LOCKED"}</b>
-
-Expires
-<b>${active ? formatDate(user.membership_expires_at) : "No active membership"}</b>`,
+Continue to the Zoom room below.`,
     {
       parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
+      ...getZoomKeyboard(),
     }
   );
-
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendFeedMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
-
-  await ctx.reply(
-    `📺 <b>FEED</b>
-
-Selected drops
-Public previews
-Featured content`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendVideoCloudsMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
-
-  await ctx.reply(
-    `🌩️ <b>VIDEOCLOUDS</b>
-
-Ambient room
-Visual session
-Cloud access enabled`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendPhotosMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
-
-  await ctx.reply(
-    `📸 <b>PHOTOS</b>
-
-Unlocked visual section
-Private gallery access`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendGiftsMessage(ctx, user) {
-  if (!isMembershipActive(user)) return sendAccessPanel(ctx, user);
-
-  await ctx.reply(
-    `🎁 <b>GIFTS</b>
-
-Support section
-Transfer section
-Additional access support`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
-  );
-
-  await ctx.reply("‎", getAccessKeyboard());
 }
 
 bot.start(async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+  const payload = (ctx.startPayload || "").trim();
+
+  if (payload === "videocall") {
+    await startVideoCallFlow(ctx);
+    return;
+  }
+
+  if (payload === "userchannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+
+<blockquote>🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
+
+Tap below to open the private group / channel.</blockquote>
+
+•╩————————————╩•`,
+      {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🜲 OPEN USER CHANNEL", url: "https://t.me/TU_ENLACE_USER" }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
+  if (payload === "smokelandiachannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+        ☁️ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ☁️
+
+<blockquote>☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
+
+Tap below to open the private group / channel.</blockquote>
+
+•╩————————————╩•`,
+      {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "☁️ OPEN SMOKELANDIA", url: "https://t.me/TU_ENLACE_SMOKELANDIA" }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
+  await sendMainMenu(ctx);
 });
 
 bot.command("help", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
+  await sendMainMenu(ctx);
+});
 
-  await ctx.reply(
-    `${BRAND}
+bot.command("videocall", async (ctx) => {
+  await startVideoCallFlow(ctx);
+});
 
-<b>Available commands</b>
+bot.action("mode_user", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendUserMode(ctx);
+});
 
-/start
-/help`,
-    {
-      parse_mode: "HTML",
-      ...getInlineWebsiteButton(),
-    }
+bot.action("mode_vip", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendVipMode(ctx);
+});
+
+bot.action("open_channels", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendChannelsPanel(ctx);
+});
+
+bot.action("videocall_start", async (ctx) => {
+  await ctx.answerCbQuery();
+  await startVideoCallFlow(ctx);
+});
+
+bot.action("back_main", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendMainMenu(ctx);
+});
+
+bot.on("photo", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (!pending?.waitingForMedia) return;
+
+  await notifyAdminMediaReceived(ctx, "Fotos");
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
   );
 
-  await ctx.reply("‎", getMainKeyboard());
-  await sendMainPanel(ctx, user);
+  await completeMediaFlow(ctx, "Photos");
 });
 
-bot.hears("⏳ Status", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendStatusPanel(ctx, user);
-});
+bot.on("video", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
 
-bot.hears("💳 Membership", async (ctx) => {
-  await sendMembershipPanel(ctx);
-});
+  if (!pending?.waitingForMedia) return;
 
-bot.hears("🔐 Access", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendAccessPanel(ctx, user);
-});
+  await notifyAdminMediaReceived(ctx, "Video");
 
-bot.hears("🖥️ Channels", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendChannelsPanel(ctx, user);
-});
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
+  );
 
-bot.hears("🔄 Refresh", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendRefreshPanel(ctx, user);
-});
-
-bot.hears("📺", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendFeedMessage(ctx, user);
-});
-
-bot.hears("🌩️", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendVideoCloudsMessage(ctx, user);
-});
-
-bot.hears("📸", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendPhotosMessage(ctx, user);
-});
-
-bot.hears("🎁", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendGiftsMessage(ctx, user);
-});
-
-bot.hears("↩️ [ BACK ]", async (ctx) => {
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+  await completeMediaFlow(ctx, "Video");
 });
 
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
-  const knownInputs = [
-    "⏳ Status",
-    "💳 Membership",
-    "🔐 Access",
-    "🖥️ Channels",
-    "🔄 Refresh",
-    "📺",
-    "🌩️",
-    "📸",
-    "🎁",
-    "↩️ [ BACK ]",
-    "/start",
-    "/help",
-  ];
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  const knownInputs = ["/start", "/help", "/videocall"];
 
   if (knownInputs.includes(text)) return;
 
-  const user = await getUserFromDb(ctx.from);
-  await sendMainPanel(ctx, user);
+  if (pending?.waitingForMedia) {
+    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
+    pendingVideoRequests.set(userId, pending);
+
+    if (pending.invalidTextCount >= 4) {
+      pendingVideoRequests.delete(userId);
+      await ctx.reply("Bye.");
+      return;
+    }
+
+    if (pending.invalidTextCount === 1) {
+      await ctx.reply("Send one photo or video to continue.");
+    }
+
+    return;
+  }
+
+  await ctx.reply("Use the menu.");
 });
 
 bot.catch((error) => {
