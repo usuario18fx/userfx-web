@@ -10,6 +10,9 @@ const ZOOM_URL =
 const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
 const SMOKELANDIA_BOT_URL = "https://t.me/Smokelandiabot?start=smokelandiachannel";
 
+const USER_GROUP_LINK = "https://t.me/TU_ENLACE_USER";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/TU_ENLACE_SMOKELANDIA";
+
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
@@ -43,22 +46,23 @@ function getMainMenuKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "[ X/USER ]", callback_data: "mode_user" },
-          { text: "[ V/VIP ]", callback_data: "mode_vip" },
-        ],
-        [
-          { text: "🌐 WEBSITE", url: WEBSITE_URL },
+          { text: "👑 X / USER", callback_data: "mode_user" },
+          { text: "🔥 V / VIP", callback_data: "mode_vip" },
         ],
         [
           { text: "📞 VIDEOCALL", callback_data: "videocall_start" },
           { text: "🖥 CHANNELS", callback_data: "open_channels" },
+        ],
+        [
+          { text: "🌐 WEBSITE", url: WEBSITE_URL },
+          { text: "🔄 REFRESH", callback_data: "refresh_menu" },
         ],
       ],
     },
   };
 }
 
-function getBackToMenuKeyboard() {
+function getBackKeyboard() {
   return {
     reply_markup: {
       inline_keyboard: [
@@ -72,7 +76,10 @@ function getZoomKeyboard() {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "📹 ENTER ZOOM", url: ZOOM_URL }],
+        [
+          { text: "📹 ENTER ZOOM", url: ZOOM_URL },
+          { text: "🌐 WEBSITE", url: WEBSITE_URL },
+        ],
         [{ text: "↩ BACK TO MENU", callback_data: "back_main" }],
       ],
     },
@@ -83,45 +90,46 @@ function getChannelsKeyboard() {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "🜲 USER BOT", url: USER_BOT_URL }],
-        [{ text: "☁️ SMOKELANDIA BOT", url: SMOKELANDIA_BOT_URL }],
-        [{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }],
-        [{ text: "↩ BACK TO MENU", callback_data: "back_main" }],
+        [
+          { text: "🜲 USER BOT", url: USER_BOT_URL },
+          { text: "☁️ SMOKELANDIA BOT", url: SMOKELANDIA_BOT_URL },
+        ],
+        [
+          { text: "🌐 OPEN WEBSITE", url: WEBSITE_URL },
+          { text: "↩ BACK", callback_data: "back_main" },
+        ],
       ],
     },
   };
 }
 
-function buildMainMenuText() {
-  return `𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄
+function buildWelcomeText() {
+  return `•╦————————————╦•
+        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
-<b>Exclusive access panel</b>
+<blockquote>Choose your mode and continue below.
 
-Mode
-<b>Choose below</b>
+ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
+ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
 
-Select your section.`;
+•╩————————————╩•`;
 }
 
 function buildUserCard() {
   return `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
-<blockquote>👑 ꜱᴛᴀᴛᴜꜱ ᴄᴀʀᴅ
-
-Plan
-└ X/USER
-
-Status
-└ Active
+<blockquote>👑 X / USER
 
 Price
 └ $3
 
-ꜰᴇᴀᴛᴜʀᴇꜱ ᴘʀᴇᴍɪᴜᴍ 🧩
-📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
-ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
-ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
+Status
+└ Active
+
+Premium access enabled.</blockquote>
 
 •╩————————————╩•`;
 }
@@ -130,24 +138,16 @@ function buildVipCard() {
   return `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
-<blockquote>🔥 ꜱᴛᴀᴛᴜꜱ ᴄᴀʀᴅ
+<blockquote>🔥 V / VIP
 
-Plan
-└ V/VIP
+Price
+└ $12
 
 Access
 └ Unlimited
 
 Status
-└ Active
-
-Price
-└ $12
-
-ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩
-📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
-ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
-ᴇɴᴊᴏʏ ɪᴛ ..</blockquote>
+└ Active</blockquote>
 
 •╩————————————╩•`;
 }
@@ -181,7 +181,7 @@ ID: <code>${escapeHtml(requester.id)}</code>`,
 }
 
 async function sendMainMenu(ctx) {
-  await ctx.reply(buildMainMenuText(), {
+  await ctx.reply(buildWelcomeText(), {
     parse_mode: "HTML",
     ...getMainMenuKeyboard(),
   });
@@ -190,14 +190,14 @@ async function sendMainMenu(ctx) {
 async function sendUserMode(ctx) {
   await ctx.reply(buildUserCard(), {
     parse_mode: "HTML",
-    ...getBackToMenuKeyboard(),
+    ...getBackKeyboard(),
   });
 }
 
 async function sendVipMode(ctx) {
   await ctx.reply(buildVipCard(), {
     parse_mode: "HTML",
-    ...getBackToMenuKeyboard(),
+    ...getBackKeyboard(),
   });
 }
 
@@ -247,7 +247,7 @@ async function completeMediaFlow(ctx, label = "File") {
   await ctx.reply(
     `✅ <b>${escapeHtml(label)} received</b>
 
-Continue to the Zoom room below.`,
+Continue below.`,
     {
       parse_mode: "HTML",
       ...getZoomKeyboard(),
@@ -268,16 +268,14 @@ bot.start(async (ctx) => {
       `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
-<blockquote>🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
-
-Tap below to open the private group / channel.</blockquote>
+<blockquote>Tap below to open the private User group / channel.</blockquote>
 
 •╩————————————╩•`,
       {
         parse_mode: "HTML",
         reply_markup: {
           inline_keyboard: [
-            [{ text: "🜲 OPEN USER CHANNEL", url: "https://t.me/TU_ENLACE_USER" }],
+            [{ text: "🜲 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
           ],
         },
       }
@@ -290,16 +288,14 @@ Tap below to open the private group / channel.</blockquote>
       `•╦————————————╦•
         ☁️ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ☁️
 
-<blockquote>☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
-
-Tap below to open the private group / channel.</blockquote>
+<blockquote>Tap below to open the private Smokelandia group / channel.</blockquote>
 
 •╩————————————╩•`,
       {
         parse_mode: "HTML",
         reply_markup: {
           inline_keyboard: [
-            [{ text: "☁️ OPEN SMOKELANDIA", url: "https://t.me/TU_ENLACE_SMOKELANDIA" }],
+            [{ text: "☁️ OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
           ],
         },
       }
@@ -320,17 +316,31 @@ bot.command("videocall", async (ctx) => {
 
 bot.action("mode_user", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendUserMode(ctx);
+  await ctx.editMessageText(buildUserCard(), {
+    parse_mode: "HTML",
+    ...getBackKeyboard(),
+  });
 });
 
 bot.action("mode_vip", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendVipMode(ctx);
+  await ctx.editMessageText(buildVipCard(), {
+    parse_mode: "HTML",
+    ...getBackKeyboard(),
+  });
 });
 
 bot.action("open_channels", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendChannelsPanel(ctx);
+  await ctx.editMessageText(
+    `🖥 <b>CHANNELS</b>
+
+Choose where to continue.`,
+    {
+      parse_mode: "HTML",
+      ...getChannelsKeyboard(),
+    }
+  );
 });
 
 bot.action("videocall_start", async (ctx) => {
@@ -338,9 +348,20 @@ bot.action("videocall_start", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
+bot.action("refresh_menu", async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.editMessageText(buildWelcomeText(), {
+    parse_mode: "HTML",
+    ...getMainMenuKeyboard(),
+  });
+});
+
 bot.action("back_main", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendMainMenu(ctx);
+  await ctx.editMessageText(buildWelcomeText(), {
+    parse_mode: "HTML",
+    ...getMainMenuKeyboard(),
+  });
 });
 
 bot.on("photo", async (ctx) => {
