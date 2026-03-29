@@ -7,7 +7,7 @@ export default function AlbumLockPanel() {
   const handleUnlock = () => {
     console.log("unlock code:", value);
   };
-
+ 
   return (
     <section className="fx-premiumSection">
       <header className="fx-topbar">
