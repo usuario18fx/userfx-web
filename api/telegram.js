@@ -6,8 +6,8 @@ const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 
-const USER_GROUP_LINK = "https://t.me/TU_ENLACE_USER";
-const SMOKELANDIA_GROUP_LINK = "https://t.me/TU_ENLACE_SMOKELANDIA";
+const USER_GROUP_LINK = "https://t.me/+U1V9FZh0neUxYWFh";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
