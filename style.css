@@ -97,17 +97,33 @@
     </nav>
   </header>
 
-  <main class="scene" id="galeria">
-    <section class="content">
-      <div class="left">
-        <h1 class="sigil">Ŧҳ</h1>
-        <p class="hint" style="color: var(--accent); font-weight: 500;">
-          PREMIUM CONTENT ACCESS
-        </p>
-        <p style="opacity: 0.7;">
-          Keep it lit, keep it real. Explore the visual experience.
-        </p>
+<main class="scene" id="galeria">
+  <section class="content premium-panel">
+    <div class="left">
+      <span class="eyebrow">Exclusive gallery</span>
+      <h1 class="sigil" aria-label="FX">Ŧҳ</h1>
+      <p class="hint">PREMIUM CONTENT ACCESS</p>
+      <p class="copy">
+        Keep it lit, keep it real. Unlock a curated visual experience made for members only.
+      </p>
+
+      <div class="actions">
+        <a href="#unlock" class="btn btn-primary">Unlock access</a>
+        <a href="#preview" class="btn btn-ghost">Preview vibe</a>
       </div>
+
+      <ul class="meta" role="listst">
+        >Private visuals</l/li>
+        >Members-only drops</l/li>
+        >High-res access</li>
+      </ul>
+    </div>
+
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+  </section>
+</main>
+
 
       <div class="right">
         <div class="galeria-book-3d" id="book">
