@@ -63,17 +63,9 @@
       border-radius: 24px;
       z-index: 5;
     }
-    .card-bg-photo {
-      position: absolute;
-      inset: 0;
-      background: url("/assets/user-photo-blur.jpg") center/cover no-repeat;
-      transform: scale(1.08);
-      filter: blur(16px) saturate(1.05) brightness(0.62);
+    .card-bg-photo { position: absolute; inset: 0; background: url("/assets/user-photo-blur.jpg") center/cover no-repeat; transform: scale(1.08); filter: blur(16px) saturate(1.05) brightness(0.62);
     }
-    .card-darken {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(5,5,5,0.28) 0%, rgba(5,5,5,0.72) 100%);
+    .card-darken { position: absolute;inset: 0;background: linear-gradient(180deg,rgba(5,5,5,0.28) 0%,rgba(5,5,5,0.72) 100%);
     }
     .lock-content {
       position: relative;
@@ -126,8 +118,7 @@
       color: rgba(255,255,255,0.9);
       text-shadow: 0 8px 20px rgba(0,0,0,0.35);
     }
-    .unlock-prefix-text {
-      opacity: 0.72;
+    .unlock-prefix-text { opacity: 0.72;
     }
     .unlock-suffix-text {
       color: #fff;
@@ -205,10 +196,7 @@
     }
     @media (max-width: 768px) 
       {
-      .content {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 2.5rem;
+      .content { grid-template-columns: 1fr;text-align: center; gap: 2.5rem;
       }
       .left {  max-width: none;
       }
@@ -262,7 +250,7 @@
                 <div clas="card-darken"></div>
                 <div class="lock-content">
                 <div class="lock-emoji">
-                  🔒
+                  🜲
                 </div>
                 <p class="lock-title">
                   LOCKED
@@ -287,8 +275,8 @@
   <p class="unlock-label">
       UNLOCK ALBUM
   </p>
-  <button id="unlockBtn" class="unlock-lockBtn" type="button" aria-label="Unlock album">
-    🔓
+  <button id="unlockBtn" class="unlock-lockBtn unlock-lockBtn--main" type="button" aria-label="Unlock album">
+  🔒
   </button>
   <p id="unlockMsg" class="unlock-msg">
   </p>
