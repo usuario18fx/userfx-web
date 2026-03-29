@@ -37,6 +37,31 @@
       font-family: "Outfit", sans-serif;
     }
 
+
+.unlock-help-top {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.88);
+  text-align: center;
+  font-weight: 600;
+}
+
+.unlock-hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: -2px;
+  margin-bottom: 0;
+}
+
+.unlock-arrow {
+  font-size: 1.45rem;
+  color: var(--accent);
+  animation: unlockArrowPulse 1.6s ease-in-out infinite;
+}qemj
+
+
     .unlock-input--prefix {
       flex: 1 1 auto;
       opacity: 0.9;
