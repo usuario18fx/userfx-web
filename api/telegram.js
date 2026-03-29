@@ -91,11 +91,25 @@ function getBackKeyboard() {
   };
 }
 
+function getVipModeKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "💳 $12", url: VIP_PAYMENT_URL },
+          { text: "💬", url: CONTACT_URL },
+        ],
+        [{ text: "⏎", callback_data: "back_main" }],
+      ],
+    },
+  };
+}
+
 function getUserModeKeyboard() {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "💳 $3", url: USER_PAYMENT_URL }],
+        [{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }],
         [{ text: "⏎", callback_data: "back_main" }],
       ],
     },
@@ -107,8 +121,8 @@ function getVipModeKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "💳 $12", url: VIP_PAYMENT_URL },
-          { text: "💬", url: CONTACT_URL },
+          { text: "⭐ 1200 XTR", callback_data: "buy_vip_stars" },
+          { text: "💬", url: "https://t.me/User18fx" },
         ],
         [{ text: "⏎", callback_data: "back_main" }],
       ],
@@ -162,39 +176,39 @@ function buildWelcomeText() {
 •╩————————————╩•`;
 }
 
-function buildUserCard() {
-  return `•╦————————————╦•
-        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-
-<blockquote>👑 X / USER
-
-Price
-└ $3
-
-Status
-└ Active
-
-Premium access enabled.</blockquote>
-
-•╩————————————╩•`;
-}
-
 function buildVipCard() {
   return `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-
 <blockquote>🔥 V / VIP
 
-Price
-└ $12
-
-Access
-└ Unlimited
-
-Status
-└ Active</blockquote>
-
+⇀ Price  $12
+⇀ Access  Unlimited
+⇀ Status  Active</blockquote>
 •╩————————————╩•`;
+}
+
+
+async function sendVipStarsInvoice(ctx) {
+  await ctx.replyWithInvoice({
+    title: "V / VIP",
+    description: "Unlimited access",
+    payload: "membership_vip",
+    currency: "XTR",
+    prices: [{ label: "V / VIP", amount: 1200 }],
+    provider_token: "",
+    start_parameter: "buy-vip-stars",
+  });
+}
+async function sendUserStarsInvoice(ctx) {
+  await ctx.replyWithInvoice({
+    title: "X / USER",
+    description: "Premium access",
+    payload: "membership_user",
+    currency: "XTR",
+    prices: [{ label: "X / USER", amount: 300 }],
+    provider_token: "",
+    start_parameter: "buy-user-stars",
+  });
 }
 
 async function notifyAdminNewRequest(ctx) {
@@ -232,19 +246,21 @@ async function sendMainMenu(ctx) {
   });
 }
 
-async function sendUserMode(ctx) {
-  await ctx.reply(buildUserCard(), {
-    parse_mode: "HTML",
-    ...getUserModeKeyboard(),
-  });
-}
-
 async function sendVipMode(ctx) {
   await ctx.reply(buildVipCard(), {
     parse_mode: "HTML",
     ...getVipModeKeyboard(),
   });
 }
+bot.action("buy_user_stars", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendUserStarsInvoice(ctx);
+});
+
+bot.action("buy_vip_stars", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendVipStarsInvoice(ctx);
+});
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
@@ -359,20 +375,34 @@ bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.action("mode_user", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.editMessageText(buildUserCard(), {
-    parse_mode: "HTML",
-    ...getUserModeKeyboard(),
-  });
-});
-
 bot.action("mode_vip", async (ctx) => {
   await ctx.answerCbQuery();
   await ctx.editMessageText(buildVipCard(), {
     parse_mode: "HTML",
     ...getVipModeKeyboard(),
   });
+});
+
+
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
+});
+
+bot.on("successful_payment", async (ctx) => {
+  const payment = ctx.message.successful_payment;
+  const payload = payment.invoice_payload;
+
+  if (payload === "membership_user") {
+    // activar plan User👑 / X-USER
+    // expires_at = ahora + 3 días
+  }
+
+  if (payload === "membership_vip") {
+    // activar plan User🔥 / V-VIP
+    // expires_at = ahora + 1 mes
+  }
+
+  await ctx.reply("✅ Payment received. Access enabled.");
 });
 
 bot.action("open_channels", async (ctx) => {
