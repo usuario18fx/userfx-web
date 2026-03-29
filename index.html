@@ -428,76 +428,34 @@
               <div class="lock-emoji">🔒</div>
               <p class="lock-title">LOCKED</p>
 
-              <div id="unlockBox" class="unlock-box">
-                <p class="unlock-codeText">
-                  <span class="unlock-prefix-text">FX-USER01-</span>
-                  <strong class="unlock-suffix-text">AX01</strong>
-                </p>
+            <div id="unlockBox" class="unlock-box">
+  <p class="unlock-help-top">Enter the last 4 characters.</p>
 
-                <div class="unlock-hintRow">
-                  <span class="unlock-arrow">↘</span>
-                  <span class="unlock-hintText">put here</span>
-                </div>
+  <p class="unlock-codeText">
+    <span class="unlock-prefix-text">FX-USER01-</span>
+    <strong class="unlock-suffix-text">AX01</strong>
+  </p>
 
-                <input
-                  id="accessCodeSuffix"
-                  class="unlock-input-minimal"
-                  type="text"
-                  maxlength="4"
-                  placeholder="____"
-                  autocomplete="off"
-                />
+  <div class="unlock-hintRow">
+    <span class="unlock-arrow">↙</span>
+  </div>
 
-                <p class="unlock-label">Unlock album</p>
+  <input
+    id="accessCodeSuffix"
+    class="unlock-input-minimal"
+    type="text"
+    maxlength="4"
+    placeholder="____"
+    autocomplete="off"
+  />
 
-                <button id="unlockBtn" class="unlock-lockBtn" type="button" aria-label="Unlock album">
-                  🔓
-                </button>
+  <p class="unlock-help-bottom">put here</p>
 
-                <p id="unlockMsg" class="unlock-msg"></p>
-              </div>
-            </div>
-          </div>
+  <p class="unlock-label">UNLOCK ALBUM</p>
 
-          <div class="hand-hint">👆</div>
-        </div>
-      </div>
-    </section>
-  </main>
+  <button id="unlockBtn" class="unlock-lockBtn" type="button" aria-label="Unlock album">
+    🔓
+  </button>
 
-  <footer class="footer">
-    USER | <span style="color: var(--primary);">𝐅ㄨ🜲</span> |
-    <span id="year"></span> © ALL RIGHTS RESERVED
-  </footer>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    const book = document.getElementById("book");
-
-    if (book) {
-      book.addEventListener("mousemove", (e) => {
-        const rect = book.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const xc = rect.width / 2;
-        const yc = rect.height / 2;
-
-        const dx = x - xc;
-        const dy = y - yc;
-
-        book.style.transform =
-          `perspective(1000px) rotateY(${dx / 14}deg) rotateX(${-dy / 14}deg)`;
-      });
-
-      book.addEventListener("mouseleave", () => {
-        book.style.transform =
-          "perspective(1000px) rotateY(0deg) rotateX(0deg)";
-      });
-    }
-  </script>
-
-  <script type="module" src="./app.js"></script>
-</body>
-</html>
+  <p id="unlockMsg" class="unlock-msg"></p>
+</div>
