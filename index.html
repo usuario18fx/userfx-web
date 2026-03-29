@@ -227,7 +227,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
+    }
+
+    .unlock-help-top,
+    .unlock-help-bottom {
+      margin: 0;
+      font-size: 0.68rem;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.65);
+      text-align: center;
+    }
+
+    .unlock-help-top {
+      margin-bottom: 2px;
     }
 
     .unlock-codeText {
@@ -251,21 +266,16 @@
     .unlock-hintRow {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-top: -2px;
+      justify-content: center;
+      width: 100%;
+      margin-top: -6px;
+      margin-bottom: -6px;
     }
 
     .unlock-arrow {
-      font-size: 1.3rem;
-      color: var(--accent);
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, 0.65);
       animation: unlockArrowPulse 1.6s ease-in-out infinite;
-    }
-
-    .unlock-hintText {
-      font-size: 0.76rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.52);
     }
 
     @keyframes unlockArrowPulse {
@@ -299,7 +309,7 @@
     }
 
     .unlock-label {
-      margin: 6px 0 0;
+      margin: 4px 0 0;
       font-size: 0.92rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -340,26 +350,12 @@
       text-align: center;
     }
 
-    .hand-hint {
-      position: absolute;
-      bottom: 20px;
-      font-size: 1.5rem;
-      animation: bounce 2s infinite;
-      pointer-events: none;
-      z-index: 1;
-    }
-
     .footer {
       padding: 2rem;
       text-align: center;
       font-size: 0.8rem;
       letter-spacing: 1px;
       opacity: 0.6;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
     }
 
     @media (max-width: 768px) {
@@ -428,34 +424,77 @@
               <div class="lock-emoji">🔒</div>
               <p class="lock-title">LOCKED</p>
 
-            <div id="unlockBox" class="unlock-box">
-  <p class="unlock-help-top">Enter the last 4 characters.</p>
+              <div id="unlockBox" class="unlock-box">
+                <p class="unlock-help-top">Enter the last 4 characters.</p>
 
-  <p class="unlock-codeText">
-    <span class="unlock-prefix-text">FX-USER01-</span>
-    <strong class="unlock-suffix-text">AX01</strong>
-  </p>
+                <p class="unlock-codeText">
+                  <span class="unlock-prefix-text">FX-USER01-</span>
+                  <strong class="unlock-suffix-text">AX01</strong>
+                </p>
 
-  <div class="unlock-hintRow">
-    <span class="unlock-arrow">↙</span>
-  </div>
+                <div class="unlock-hintRow">
+                  <span class="unlock-arrow">↙</span>
+                </div>
 
-  <input
-    id="accessCodeSuffix"
-    class="unlock-input-minimal"
-    type="text"
-    maxlength="4"
-    placeholder="____"
-    autocomplete="off"
-  />
+                <input
+                  id="accessCodeSuffix"
+                  class="unlock-input-minimal"
+                  type="text"
+                  maxlength="4"
+                  placeholder="____"
+                  autocomplete="off"
+                />
 
-  <p class="unlock-help-bottom">put here</p>
+                <p class="unlock-help-bottom">put here</p>
 
-  <p class="unlock-label">UNLOCK ALBUM</p>
+                <p class="unlock-label">UNLOCK ALBUM</p>
 
-  <button id="unlockBtn" class="unlock-lockBtn" type="button" aria-label="Unlock album">
-    🔓
-  </button>
+                <button id="unlockBtn" class="unlock-lockBtn" type="button" aria-label="Unlock album">
+                  🔓
+                </button>
 
-  <p id="unlockMsg" class="unlock-msg"></p>
-</div>
+                <p id="unlockMsg" class="unlock-msg"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    USER | <span style="color: var(--primary);">𝐅ㄨ🜲</span> |
+    <span id="year"></span> © ALL RIGHTS RESERVED
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const book = document.getElementById("book");
+
+    if (book) {
+      book.addEventListener("mousemove", (e) => {
+        const rect = book.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+
+        const dx = x - xc;
+        const dy = y - yc;
+
+        book.style.transform =
+          `perspective(1000px) rotateY(${dx / 14}deg) rotateX(${-dy / 14}deg)`;
+      });
+
+      book.addEventListener("mouseleave", () => {
+        book.style.transform =
+          "perspective(1000px) rotateY(0deg) rotateX(0deg)";
+      });
+    }
+  </script>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
