@@ -23,25 +23,23 @@
       text-transform: uppercase;
       box-sizing: border-box;
       font-family: "Outfit", sans-serif;
+     }
+     .unlock-hintRow {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     width: 100%;
+     margin-top: -2px;
+    margin-bottom: 0;
+     }
+    .unlock-arrow {
+     font-size: 1.45rem;
+     color: var(--accent);
+     animation: unlockArrowPulse 1.6s ease-in-out infinite;
     }
-.unlock-hintRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: -2px;
-  margin-bottom: 0;
-}
-
-.unlock-arrow {
-  font-size: 1.45rem;
-  color: var(--accent);
-  animation: unlockArrowPulse 1.6s ease-in-out infinite;
-}qemj
     .unlock-input::placeholder {
       color: rgba(255,255,255,0.45);
     }
-
     .unlock-btn {
       min-height: 44px;
       padding: 12px 18px;
@@ -50,58 +48,49 @@
       cursor: pointer;
       font-weight: 800;
       letter-spacing: 0.06em;
-      text-transform: uppercase;
+      ext-transform: uppercase;
       font-family: "Outfit", sans-serif;
-    }
-
+     }
     .unlock-msg {
       min-height: 20px;
       font-size: 13px;
       color: rgba(255,255,255,0.82);
       text-align: center;
       margin: 0;
-    }
-
+     }
     .footer {
       padding: 2rem;
       text-align: center;
       font-size: 0.8rem;
       letter-spacing: 1px;
       opacity: 0.6;
-    }
-
+      }
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
-    }
-
+      }
     @media (max-width: 768px) {
       .content {
         grid-template-columns: 1fr;
         text-align: center;
       }
-
       .sigil {
         font-size: 4rem;
       }
-
       .galeria-book-3d {
         width: min(300px, 90vw);
-      }
-    }
+      }}
   </style>
-</head>
-
-<body>
+  </head>
+  <body>
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-text">
-        <div class="name">Fx 🜲</div>
-        <div class="tag">Exclusive Space</div>
-      </div>
-    </div>
-
-    <nav class="actions">
+  <div class="brand">
+  <div class="brand-text">
+  <div class="name">Fx 🜲</div>
+  <div class="tag">Exclusive Space</div>
+  </div>
+  </div>
+  <nav class="actions">
       <a href="https://t.me/User18fx" target="_blank" rel="noopener noreferrer">
         Contact Me ⌯⌲
       </a>
@@ -306,7 +295,7 @@
   font-size: 2.6rem;
   line-height: 1;
   margin-bottom: 16px;
-  filter: drop-shadow(0 0 16px rgba(255, 0, 85, 0.28));
+  filter: drop-shadow(0 0 16px rgba(255,255,255,0.95));
 }
 
 .lock-title {
@@ -502,17 +491,14 @@
   color: rgba(255,255,255,0.9);
   text-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
-
 .unlock-prefix-text {
   opacity: 0.72;
 }
-
 .unlock-suffix-text {
   color: #fff;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
-
 .unlock-hintRow {
   display: flex;
   align-items: center;
@@ -521,13 +507,11 @@
   margin-top: -6px;
   margin-bottom: -6px;
 }
-
 .unlock-arrow {
   font-size: 1.15rem;
   color: rgba(255, 255, 255, 0.65);
   animation: unlockArrowPulse 1.6s ease-in-out infinite;
 }
-
 .unlock-input-minimal {
   width: 120px;
   border: 0;
@@ -543,26 +527,20 @@
   outline: none;
   padding: 8px 0 10px;
 }
-
 .unlock-input-minimal::placeholder {
   color: rgba(255,255,255,0.24);
   letter-spacing: 0.18em;
 }
-
 .unlock-input-minimal:focus {
   border-bottom-color: var(--accent);
 }
-
 .unlock-label {
   margin: 4px 0 0;
   font-size: 0.92rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.82);
-}
-
-
-
+     }
     .scene {
       flex: 1;
       display: flex;
@@ -570,7 +548,6 @@
       justify-content: center;
       padding: 2rem;
     }
-
     .content {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -578,7 +555,6 @@
       max-width: 1100px;
       align-items: center;
     }
-
     .sigil {
       font-size: 6rem;
       margin: 0;
@@ -586,12 +562,10 @@
       filter: drop-shadow(0 0 15px var(--primary));
       animation: float 4s ease-in-out infinite;
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-20px); }
     }
-
     .galeria-book-3d {
       width: 300px;
       height: 400px;
@@ -607,7 +581,6 @@
       backdrop-filter: blur(5px);
       transition: transform 0.2s ease;
     }
-
     .lock-overlay {
       position: absolute;
       inset: 0;
@@ -622,9 +595,8 @@
         rgba(5, 5, 5, 0.35) 0%,
         rgba(5, 5, 5, 0.72) 100%
       );
-      z-index: 5;
-    }
-
+        z-index: 5;
+      }
     .lock {
       width: 50px;
       height: 50px;
@@ -633,46 +605,34 @@
       -webkit-mask: url("https://raw.githubusercontent.com/google/material-design-icons/master/src/action/lock/materialicons/24px.svg") no-repeat center;
       animation: pulse 2s infinite;
       margin-bottom: 8px;
-    }5rem; animation: bounce 2s infinite;"
-          >
+    }5rem; animation: bounce 2s infinite;">
             👆
           </div>
         </div>
       </div>
-    </section>
+  </section>
   </main>
-
   <footer class="footer">
     USER | <span style="color: var(--primary);">𝐅ㄨ🜲</span> |
-    <span id="year"></span> © ALL RIGHTS RESERVED
+  <span id="year"></span> © ALL RIGHTS RESERVED
   </footer>
+  <script> document.getElementById("year").textContent = new Date().getFullYear();
+        const book = document.getElementById("book");
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    const book = document.getElementById("book");
-
-    if (book) {
-      book.addEventListener("mousemove", (e) => {
+    if (book) { book.addEventListener("mousemove", (e) => {
         const rect = book.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
         const xc = rect.width / 2;
         const yc = rect.height / 2;
-
         const dx = x - xc;
         const dy = y - yc;
-
         book.style.transform = perspective(1000px) rotateY(${dx / 10}deg) rotateX(${-dy / 10}deg);
       });
-
-      book.addEventListener("mouseleave", () => {
+        book.addEventListener("mouseleave", () => {
         book.style.transform = "perspective(1000px) rotateY(0deg) rotateX(0deg)";
-      });
-    }
+      });}
   </script>
-
   <script type="module" src="./app.js"></script>
 </body>
 </html>
