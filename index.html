@@ -21,52 +21,25 @@
     .topbar {  display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; backdrop-filter: blur(10px);background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid var(--glass); position: sticky; top: 0; z-index: 100;}
     .brand-text .name { font-size: 1.5rem;  font-weight: 800; background: linear-gradient(45deg, #fff,var(--primary)); -webkit-background-clip: text;  -webkit-text-fill-color: transparent;text-shadow: 0 10px 20px rgba(255, 0, 85, 0.3); } .tag { font-size: 0.7rem;  text-transform: uppercase;  letter-spacing: 2px; color: var(--accent);  opacity: 0.9;
     }
-    .actions a {  text-decoration: none; color: white; background: var(--glass); padding: 0.7rem 1.2rem; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.25s ease; font-weight: 500;  font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center;
+    .actions a { text-decoration: none; color: white; background: var(--glass); padding: 0.7rem 1.2rem; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.25s ease; font-weight: 500;  font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center;
     }
     .actions a:hover { background: white; color: black; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transform: translateY(-2px);
     }
-    .scene { flex: 1; display: flex;
-      align-items: center; justify-content: center;
-      padding: 2rem;
+    .scene { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;
     }
-    .content {
-      width: 100%;
-      max-width: 1100px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
+    .content { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
     }
     .left { max-width: 460px;
     }
-    .sigil {
-      font-size: 6rem;
-      margin: 0 0 1rem;
-      line-height: 1;
-      filter: drop-shadow(0 0 15px var(--primary));
-      animation: float 4s ease-in-out infinite;
+    .sigil { font-size: 6rem; margin: 0 0 1rem; line-height: 1; filter: drop-shadow(0 0 15px var(--primary)); animation: float 4s ease-in-out infinite;
     }
-    .hint {
-      margin: 0 0 1rem;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: 0.02em;
+    .hint { margin: 0 0 1rem; color: var(--accent);font-weight: 700; font-size: 1rem; letter-spacing: 0.02em;
     }
-    .desc {
-      margin: 0;
-      opacity: 0.78;
-      font-size: 1rem;
-      line-height: 1.6;
+    .desc { margin: 0; opacity: 0.78; font-size: 1rem; line-height: 1.6;
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    @keyframes float {  0%, 100% { transform: translateY(0); }  50% { transform: translateY(-20px); }
     }
-
-    .right {
-      display: flex;
-      justify-content: center;
+    .right { display: flex;  justify-content: center;
     }
     .galeria-book-3d {
       width: 320px;
@@ -207,22 +180,7 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.82);
     }
-    .unlock-lockBtn {
-      width: 82px;
-      height: 82px;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.14);
-      color: #fff;
-      font-size: 2rem;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      box-shadow:
-        0 12px 30px rgba(0,0,0,0.28),
-        inset 0 0 0 1px rgba(255,255,255,0.12);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-      backdrop-filter: blur(10px);
+    .unlock-lockBtn { width: 82px; height: 82px;border: 0; border-radius: 999px; background: rgba(255,255,255,0.14);color: #fff;ont-size: 2rem;cursor: pointer; display: grid; place-items: center; box-shadow: 0 12px 30px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.12);transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;  backdrop-filter: blur(10px);
     }
     .unlock-lockBtn:hover {
       transform: translateY(-2px) scale(1.03);
@@ -245,17 +203,16 @@
       letter-spacing: 1px;
       opacity: 0.6;
     }
-    @media (max-width: 768px) {
+    @media (max-width: 768px) 
+      {
       .content {
         grid-template-columns: 1fr;
         text-align: center;
         gap: 2.5rem;
       }
-      .left {
-        max-width: none;
+      .left {  max-width: none;
       }
-      .sigil {
-        font-size: 4.5rem;
+      .sigil { font-size: 4.5rem;
       }
       .galeria-book-3d {
         width: min(320px, 92vw);
@@ -265,8 +222,7 @@
       .actions a {
         padding: 0.65rem 1rem;
         font-size: 0.85rem;
-                }
-                }
+                } }
                 </style>
                 </head>
                 <body>
@@ -304,7 +260,6 @@
                 <div class="lock-overlay" id="lockOverlay">
                 <div class="card-bg-photo"></div>
                 <div clas="card-darken"></div>
-
                 <div class="lock-content">
                 <div class="lock-emoji">
                   🔒
@@ -313,7 +268,7 @@
                   LOCKED
                 </p>
                 <div id="unlockBox" class="unlock-box">
-                <p class="unlock-help-top">/p>
+                <p class="unlock-help-top">
                 <p class="unlock-codeText">
                 <span class="unlock-prefix-text">
                     FX/USER01/
@@ -328,7 +283,7 @@
                 <input id="accessCodeSuffix" class="un autocomplete="off"/>
   <p class="unlock-help-bottom">
       Enter the last 4 characters
-  <</p>
+  </p>
   <p class="unlock-label">
       UNLOCK ALBUM
   </p>
