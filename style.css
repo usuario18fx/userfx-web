@@ -3,17 +3,6 @@
       50% { transform: scale(1.1); opacity: 0.7; }
       100% { transform: scale(1); opacity: 1; }
     }
-
-    .unlock-box {
-      margin-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-      width: 100%;
-      max-width: 260px;
-    }
-
     .unlock-codeRow {
       display: flex;
       gap: 10px;
@@ -21,7 +10,6 @@
       align-items: center;
       width: 100%;
     }
-
     .unlock-input {
       min-height: 44px;
       padding: 12px 14px;
@@ -36,16 +24,6 @@
       box-sizing: border-box;
       font-family: "Outfit", sans-serif;
     }
-
-
-.unlock-help-top {
-  margin: 0 0 2px;
-  font-size: 0.95rem;
-  color: rgba(255,255,255,0.88);
-  text-align: center;
-  font-weight: 600;
-}
-
 .unlock-hintRow {
   display: flex;
   align-items: center;
@@ -60,19 +38,6 @@
   color: var(--accent);
   animation: unlockArrowPulse 1.6s ease-in-out infinite;
 }qemj
-
-
-    .unlock-input--prefix {
-      flex: 1 1 auto;
-      opacity: 0.9;
-    }
-
-    .unlock-input--suffix {
-      width: 90px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-    }
-
     .unlock-input::placeholder {
       color: rgba(255,255,255,0.45);
     }
@@ -368,10 +333,6 @@
   text-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
 
-.unlock-prefix-text {
-  opacity: 0.72;
-}
-
 .unlock-suffix-text {
   color: #fff;
   font-weight: 800;
@@ -470,29 +431,6 @@
   text-align: center;
 }
 
-.unlock-help-top,
-.unlock-help-bottom {
-  margin: 0;
-  font-size: 0.74rem;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
-  text-align: center;
-}
-
-.unlock-help-top {
-  margin-bottom: 2px;
-}
-
-.unlock-codeText {
-  margin: 0;
-  font-size: 1.15rem;
-  letter-spacing: 0.03em;
-  color: rgba(255,255,255,0.9);
-  text-shadow: 0 8px 20px rgba(0,0,0,0.35);
-}
-
 .unlock-hintRow {
   display: flex;
   align-items: center;
@@ -533,6 +471,95 @@
   border-bottom-color: var(--accent);
 }
 
+.unlock-box {
+  width: 100%;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.unlock-help-top,
+.unlock-help-bottom {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}
+
+.unlock-help-top {
+  margin-bottom: 2px;
+}
+
+.unlock-codeText {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.unlock-prefix-text {
+  opacity: 0.72;
+}
+
+.unlock-suffix-text {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.unlock-hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: -6px;
+  margin-bottom: -6px;
+}
+
+.unlock-arrow {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.65);
+  animation: unlockArrowPulse 1.6s ease-in-out infinite;
+}
+
+.unlock-input-minimal {
+  width: 120px;
+  border: 0;
+  border-bottom: 2px solid rgba(255,255,255,0.28);
+  background: transparent;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  padding: 8px 0 10px;
+}
+
+.unlock-input-minimal::placeholder {
+  color: rgba(255,255,255,0.24);
+  letter-spacing: 0.18em;
+}
+
+.unlock-input-minimal:focus {
+  border-bottom-color: var(--accent);
+}
+
+.unlock-label {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+}
 
 
 
