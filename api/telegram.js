@@ -9,7 +9,7 @@ if (!BOT_TOKEN) {
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const BRAND = "𝐔𝐬𝐞𝐫 Ŧҳ 🜲";
+const BRAND = "𝐔𝐬𝐞𝐫Ŧҳ 🜲";
 
 const MEMBERSHIPS = {
   userfx: {
