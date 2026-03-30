@@ -13,6 +13,7 @@ export default function AlbumLockPanel() {
     const suffix = value.trim().toUpperCase();
 
     if (suffix.length !== 4) {
+      setUnlocked(false);
       setStatus("Enter 4 characters.");
       return;
     }
@@ -77,8 +78,12 @@ export default function AlbumLockPanel() {
         </div>
 
         <div className="fx-cardSide">
-          <div className="fx-lockCardShell">
-            <article className="fx-lockCard">
+          <div
+            className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}
+          >
+            <article
+              className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}
+            >
               <div className="fx-crown">♕</div>
 
               <div className="fx-lockHead">
@@ -86,7 +91,8 @@ export default function AlbumLockPanel() {
               </div>
 
               <div className="fx-lockUser">
-                {fixedPrefix} <strong>{value || "AX01"}</strong>
+                {fixedPrefix}
+                <strong>{value || "AX01"}</strong>
               </div>
 
               <div className="fx-lockArrow">↙</div>
@@ -116,14 +122,14 @@ export default function AlbumLockPanel() {
 
               <button
                 type="button"
-                className="fx-lockOnlyBtn"
+                className={`fx-lockOnlyBtn ${
+                  unlocked ? "fx-lockOnlyBtnUnlocked" : ""
+                }`}
                 aria-label="Unlock album"
                 onClick={handleUnlock}
                 disabled={loading}
               >
-                <span className="fx-lockEmoji">
-                  {unlocked ? "🔓" : "🔒"}
-                </span>
+                <span className="fx-lockEmoji">{unlocked ? "🔓" : "🔒"}</span>
               </button>
 
               {status ? <div className="fx-statusText">{status}</div> : null}
