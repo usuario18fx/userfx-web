@@ -14,7 +14,7 @@ export default function AlbumLockPanel() {
 
     if (suffix.length !== 4) {
       setUnlocked(false);
-      setStatus("ENTER 4 CHARACTERS");
+      setStatus("Enter 4 characters.");
       return;
     }
 
@@ -25,27 +25,27 @@ export default function AlbumLockPanel() {
       const res = await fetch("/api/track", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           prefix: fixedPrefix,
-          suffix
-        })
+          suffix,
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         setUnlocked(false);
-        setStatus((data.error || "INVALID CODE").toUpperCase());
+        setStatus(data.error || "Invalid code.");
         return;
       }
 
       setUnlocked(true);
-      setStatus("ACCESS GRANTED");
+      setStatus("Access granted.");
     } catch {
       setUnlocked(false);
-      setStatus("SERVER ERROR");
+      setStatus("Server error.");
     } finally {
       setLoading(false);
     }
@@ -83,16 +83,20 @@ export default function AlbumLockPanel() {
         </div>
 
         <div className="fx-cardSide">
-          <div className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}>
-            <article className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}>
-              <div className="fx-crown">{unlocked ? "♕" : "♕"}</div>
+          <div
+            className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}
+          >
+            <article
+              className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}
+            >
+              <div className="fx-crown">♕</div>
 
               <div className="fx-lockHead">
                 {unlocked ? "UNLOCKED" : "LOCKED"}
               </div>
 
               <div className="fx-lockUser">
-                <span>{fixedPrefix}</span>
+                {fixedPrefix}
                 <strong>{value || "AX01"}</strong>
               </div>
 
@@ -124,7 +128,9 @@ export default function AlbumLockPanel() {
 
               <button
                 type="button"
-                className={`fx-lockOnlyBtn ${unlocked ? "fx-lockOnlyBtnUnlocked" : ""}`}
+                className={`fx-lockOnlyBtn ${
+                  unlocked ? "fx-lockOnlyBtnUnlocked" : ""
+                }`}
                 aria-label="Unlock album"
                 onClick={handleUnlock}
                 disabled={loading}
@@ -132,11 +138,7 @@ export default function AlbumLockPanel() {
                 <span className="fx-lockEmoji">{unlocked ? "🔓" : "🔒"}</span>
               </button>
 
-              {status ? (
-                <div className={`fx-statusText ${unlocked ? "is-ok" : "is-bad"}`}>
-                  {status}
-                </div>
-              ) : null}
+              {status ? <div className="fx-statusText">{status}</div> : null}
             </article>
           </div>
         </div>
