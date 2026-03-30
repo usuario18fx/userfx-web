@@ -14,7 +14,7 @@ export default function AlbumLockPanel() {
 
     if (suffix.length !== 4) {
       setUnlocked(false);
-      setStatus("Enter 4 characters.");
+      setStatus("ENTER 4 CHARACTERS");
       return;
     }
 
@@ -25,27 +25,27 @@ export default function AlbumLockPanel() {
       const res = await fetch("/api/track", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           prefix: fixedPrefix,
-          suffix,
-        }),
+          suffix
+        })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         setUnlocked(false);
-        setStatus(data.error || "Invalid code.");
+        setStatus((data.error || "INVALID CODE").toUpperCase());
         return;
       }
 
       setUnlocked(true);
-      setStatus("Access granted.");
+      setStatus("ACCESS GRANTED");
     } catch {
       setUnlocked(false);
-      setStatus("Server error.");
+      setStatus("SERVER ERROR");
     } finally {
       setLoading(false);
     }
@@ -59,9 +59,14 @@ export default function AlbumLockPanel() {
           <div className="fx-brandSub">EXCLUSIVE SPACE</div>
         </div>
 
-        <button type="button" className="fx-contactBtn">
+        <a
+          className="fx-contactBtn"
+          href="https://t.me/User18fx"
+          target="_blank"
+          rel="noreferrer"
+        >
           Contact Me ≡▹
-        </button>
+        </a>
       </header>
 
       <div className="fx-premiumGrid">
@@ -80,14 +85,14 @@ export default function AlbumLockPanel() {
         <div className="fx-cardSide">
           <div className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}>
             <article className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}>
-              <div className="fx-crown">♕</div>
+              <div className="fx-crown">{unlocked ? "♕" : "♕"}</div>
 
               <div className="fx-lockHead">
                 {unlocked ? "UNLOCKED" : "LOCKED"}
               </div>
 
               <div className="fx-lockUser">
-                {fixedPrefix}
+                <span>{fixedPrefix}</span>
                 <strong>{value || "AX01"}</strong>
               </div>
 
@@ -100,6 +105,7 @@ export default function AlbumLockPanel() {
                 maxLength={4}
                 inputMode="text"
                 autoComplete="off"
+                placeholder="____"
                 onChange={(e) =>
                   setValue(
                     e.target.value
@@ -126,7 +132,11 @@ export default function AlbumLockPanel() {
                 <span className="fx-lockEmoji">{unlocked ? "🔓" : "🔒"}</span>
               </button>
 
-              {status ? <div className="fx-statusText">{status}</div> : null}
+              {status ? (
+                <div className={`fx-statusText ${unlocked ? "is-ok" : "is-bad"}`}>
+                  {status}
+                </div>
+              ) : null}
             </article>
           </div>
         </div>
