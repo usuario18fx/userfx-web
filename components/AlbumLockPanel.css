@@ -102,10 +102,16 @@
   font-weight: 600;
 }
 
-.fx-cardSide {
+.fx-cardSide,
+.right {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.right {
+  position: relative;
+  min-width: 0;
 }
 
 .fx-lockCardShell {
@@ -316,23 +322,275 @@
   text-transform: uppercase;
 }
 
+/* =========================
+   LIQUID DEVICE COMPLETO
+   ========================= */
+
+.galeria-book-3d {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  --lift: 0px;
+  --hover-rx: 0deg;
+  --hover-ry: 0deg;
+
+  position: relative;
+  width: min(320px, 90vw);
+  height: 420px;
+  margin-inline: auto;
+  outline: none;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow, filter;
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    filter 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+
+  transform:
+    perspective(1600px)
+    translateY(var(--lift))
+    rotateX(calc(var(--rx) + var(--hover-rx)))
+    rotateY(calc(var(--ry) + var(--hover-ry)));
+}
+
+.galeria-book-3d:hover {
+  --lift: -12px;
+  --hover-rx: 4deg;
+  --hover-ry: 0deg;
+}
+
+.galeria-book-3d:focus-visible {
+  --lift: -10px;
+  --hover-rx: 3deg;
+  --hover-ry: 0deg;
+}
+
+.liquid-device {
+  --device-thickness: 10px;
+  --device-glow: rgba(255, 255, 255, 0.12);
+  --liquid-shine: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+
+  position: relative;
+  border-radius: 36px;
+  background:
+    var(--liquid-shine),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+  box-shadow:
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.16),
+    0 28px 64px -12px rgba(0, 0, 0, 0.45),
+    0 16px 32px -8px rgba(0, 0, 0, 0.25),
+    0 0 48px rgba(255, 255, 255, 0.08),
+    inset 0 -4px 24px rgba(255, 255, 255, 0.25),
+    inset 4px 0 24px rgba(0, 0, 0, 0.15),
+    inset -4px 0 24px rgba(0, 0, 0, 0.15);
+}
+
+.liquid-device:hover {
+  box-shadow:
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.22),
+    0 48px 96px -16px rgba(0, 0, 0, 0.55),
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 64px rgba(255, 255, 255, 0.14),
+    inset 0 -6px 32px rgba(255, 255, 255, 0.35),
+    inset 6px 0 32px rgba(0, 0, 0, 0.2),
+    inset -6px 0 32px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-device:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(0, 242, 255, 0.4),
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.22),
+    0 48px 96px -16px rgba(0, 0, 0, 0.55),
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 64px rgba(0, 242, 255, 0.18),
+    inset 0 -6px 32px rgba(255, 255, 255, 0.35),
+    inset 6px 0 32px rgba(0, 0, 0, 0.2),
+    inset -6px 0 32px rgba(0, 0, 0, 0.2);
+}
+
+.galeria-book-3d.is-unlocked .liquid-device,
+.galeria-book-3d.is-unlocked {
+  filter: drop-shadow(0 24px 48px rgba(0, 242, 255, 0.18));
+}
+
+.device-bezel {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 24px rgba(255, 255, 255, 0.05);
+}
+
+.device-screen {
+  position: absolute;
+  inset: calc(var(--device-thickness) + 8px);
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(8, 10, 12, 0.92), rgba(2, 3, 5, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 40px rgba(255, 255, 255, 0.02);
+}
+
+.screen-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at var(--mx) var(--my),
+      rgba(255, 255, 255, 0.16),
+      transparent 24%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 36%,
+      rgba(255, 255, 255, 0.03) 68%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 18px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-overlay-unlocked {
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 242, 255, 0.06),
+    transparent 72%
+  );
+}
+
+.lock-overlay .fx-lockCardShell {
+  width: min(100%, 340px);
+  margin: 0 auto;
+}
+
+.device-bottom-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 5;
+  width: 30%;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.device-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  z-index: -1;
+  width: 82%;
+  height: 56px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.42) 0%,
+    transparent 72%
+  );
+  filter: blur(12px);
+}
+
+.hand-hint {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3;
+  font-size: 24px;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: fxHandFloat 2.4s ease-in-out infinite;
+}
+
+.fx-codeForm {
+  display: contents;
+}
+
 @keyframes fxLockFloat {
-  0% { transform: translate3d(0, 0, 0) rotate(-2deg); }
-  50% { transform: translate3d(0, -5px, 0) rotate(1.4deg); }
-  100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -5px, 0) rotate(1.4deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
 }
 
 @keyframes fxUnlockPop {
-  0% { transform: scale(1); opacity: 1; }
-  60% { transform: scale(1.18); opacity: 0.95; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.18);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes fxCardDriftReverse {
-  0% { transform: translate3d(15px, 9px, 0) rotateX(-2deg) rotateY(5.2deg) rotateZ(-0.8deg); }
-  30% { transform: translate3d(8px, -7px, 0) rotateX(-0.8deg) rotateY(2.2deg) rotateZ(-0.25deg); }
-  60% { transform: translate3d(-7px, 10px, 0) rotateX(1deg) rotateY(-3.5deg) rotateZ(0.4deg); }
-  100% { transform: translate3d(-16px, -10px, 0) rotateX(2deg) rotateY(-5.8deg) rotateZ(0.85deg); }
+  0% {
+    transform: translate3d(15px, 9px, 0) rotateX(-2deg) rotateY(5.2deg) rotateZ(-0.8deg);
+  }
+  30% {
+    transform: translate3d(8px, -7px, 0) rotateX(-0.8deg) rotateY(2.2deg) rotateZ(-0.25deg);
+  }
+  60% {
+    transform: translate3d(-7px, 10px, 0) rotateX(1deg) rotateY(-3.5deg) rotateZ(0.4deg);
+  }
+  100% {
+    transform: translate3d(-16px, -10px, 0) rotateX(2deg) rotateY(-5.8deg) rotateZ(0.85deg);
+  }
+}
+
+@keyframes fxHandFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
 }
 
 @media (max-width: 1180px) {
@@ -350,7 +608,8 @@
     font-size: 1.7rem;
   }
 
-  .fx-cardSide {
+  .fx-cardSide,
+  .right {
     justify-content: flex-start;
   }
 }
@@ -382,5 +641,10 @@
 
   .fx-copyText {
     font-size: 0.95rem;
+  }
+
+  .galeria-book-3d {
+    width: min(300px, 92vw);
+    height: 396px;
   }
 }
