@@ -306,10 +306,7 @@ ID: <code>${escapeHtml(requester.id)}</code>`,
 }
 
 async function sendMainMenu(ctx) {
-  await ctx.replyWithVideo(WELCOME_VIDEO_URL, {
-    caption: buildWelcomeCaption(),
-    ...getMainKeyboard(),
-  });
+  await ctx.reply("BOT ONLINE", getMainKeyboard());
 }
 
 async function sendUserMode(ctx) {
