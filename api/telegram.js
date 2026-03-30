@@ -19,6 +19,7 @@ const WELCOME_VIDEO_URL = "https://fx.smokelandia.app/assets/welcome.mp4";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
+// if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -545,6 +546,7 @@ bot.hears("⏎", async (ctx) => {
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendUserStarsInvoice(ctx);
+console.log("CHAT ID:", ctx.chat.id, "USER ID:", ctx.from.id);
 });
 
 bot.action("buy_vip_stars", async (ctx) => {
