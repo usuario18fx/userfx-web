@@ -647,4 +647,16 @@
     width: min(300px, 92vw);
     height: 396px;
   }
+
+.fx-statusText {
+  margin-top: 16px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.48rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+  
 }
