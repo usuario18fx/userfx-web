@@ -3,7 +3,7 @@ import { Telegraf, Markup } from "telegraf";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
-const WEBSITE_URL = "https://userfx-web.vercel.app";
+const WEBSITE_URL = "https://fx.smokelandia.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 
@@ -15,7 +15,6 @@ const SMOKELANDIA_BOT_URL = "https://t.me/Smokelandiabot?start=smokelandiachanne
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
-const WEBSITE_URL = "https://fx.smokelandia.app";
 const WELCOME_VIDEO_URL = "https://fx.smokelandia.app/assets/welcome.mp4";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
