@@ -43,7 +43,7 @@ export default function AlbumLockPanel() {
 
       setUnlocked(true);
       setStatus("Access granted.");
-    } catch (error) {
+    } catch {
       setUnlocked(false);
       setStatus("Server error.");
     } finally {
@@ -78,12 +78,8 @@ export default function AlbumLockPanel() {
         </div>
 
         <div className="fx-cardSide">
-          <div
-            className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}
-          >
-            <article
-              className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}
-            >
+          <div className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}>
+            <article className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}>
               <div className="fx-crown">♕</div>
 
               <div className="fx-lockHead">
@@ -122,9 +118,7 @@ export default function AlbumLockPanel() {
 
               <button
                 type="button"
-                className={`fx-lockOnlyBtn ${
-                  unlocked ? "fx-lockOnlyBtnUnlocked" : ""
-                }`}
+                className={`fx-lockOnlyBtn ${unlocked ? "fx-lockOnlyBtnUnlocked" : ""}`}
                 aria-label="Unlock album"
                 onClick={handleUnlock}
                 disabled={loading}
