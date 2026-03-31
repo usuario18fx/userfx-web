@@ -86,7 +86,7 @@ function getPlanDisplay(userId) {
 
   if (!membership) {
     return {
-      label: "X / USER",
+      label: "[X-user]",
       price: "$3",
       access: "Premium",
       status: "Inactive",
@@ -96,7 +96,7 @@ function getPlanDisplay(userId) {
 
   if (membership.planKey === "vip") {
     return {
-      label: "V / VIP",
+      label: "[V-vip]",
       price: "$12",
       access: "Unlimited",
       status: "Active",
@@ -105,7 +105,7 @@ function getPlanDisplay(userId) {
   }
 
   return {
-    label: "X / USER",
+    label: "[X-user]",
     price: "$3",
     access: "Premium",
     status: "Active",
@@ -116,7 +116,7 @@ function getPlanDisplay(userId) {
 function getMainKeyboard() {
   return Markup.keyboard(
     [
-      ["👑 X / USER", "🔥 V / VIP"],
+      ["👑[X-user]", "🔥[V-vip],
       ["📞 VIDEOCALL", "🖥 CHANNELS"],
       ["🌐 WEBSITE", "↺"],
     ],
@@ -169,14 +169,11 @@ function getChannelsInlineKeyboard() {
           { text: "🤖🌩️", url: SMOKELANDIA_BOT_URL },
         ],
         [
-          { text: "📺", url: USER_GROUP_LINK },
-          { text: "📺", url: SMOKELANDIA_GROUP_LINK },
         ],
       ],
     },
   };
 }
-
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
@@ -220,17 +217,10 @@ function buildUserCard(userId) {
 
   return `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-
-👑 X / USER
-
-Price
-└ ${plan.price}
-
-Status
-└ ${plan.status}
-
-Premium access enabled.
-
+👑 [X-user]
+⇀Price    $3
+⇀Status  Inactive
+⇀Premium access enabled.
 •╩————————————╩•`;
 }
 
@@ -239,28 +229,20 @@ function buildVipCard(userId) {
 
   return `•╦————————————╦•
         🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-
-🔥 V / VIP
-
-Price
-└ ${plan.label === "V / VIP" ? "$12" : "$12"}
-
-Access
-└ Unlimited
-
-Status
-└ ${plan.label === "V / VIP" ? plan.status : "Inactive"}
-
+ 🔥[V-vip] 
+⇀ Price   $12
+⇀ Access  ilimit 
+⇀ Status Inactive
 •╩————————————╩•`;
 }
 
 async function sendUserStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "X / USER",
+    title: "[X-user]",
     description: "Premium access",
     payload: "membership_user",
     currency: "XTR",
-    prices: [{ label: "X / USER", amount: 300 }],
+    prices: [{ label: "[X-user]", amount: 300 }],
     provider_token: "",
     start_parameter: "buy-user-stars",
   });
@@ -268,11 +250,11 @@ async function sendUserStarsInvoice(ctx) {
 
 async function sendVipStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "V / VIP",
+    title: "[V-vip]",
     description: "Unlimited access",
     payload: "membership_vip",
     currency: "XTR",
-    prices: [{ label: "V / VIP", amount: 1200 }],
+    prices: [{ label: "[V-vip] ", amount: 1200 }],
     provider_token: "",
     start_parameter: "buy-vip-stars",
   });
