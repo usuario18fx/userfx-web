@@ -260,17 +260,34 @@ async function sendVipStarsInvoice(ctx) {
   });
 }
 
+function getAdminVideoRequestInlineKeyboard(requesterId) {
+  return Markup.inlineKeyboard([
+    [{ text: "💬 Mi chat", url: CONTACT_URL }],
+    [{ text: "⏎ Regresar al menú", callback_data: `video_back_${requesterId}` }],
+  ]);
+}
+
+function getAdminVideoRequestInlineKeyboard(requesterId) {
+  return Markup.inlineKeyboard([
+    [{ text: "💬 Mi chat", url: CONTACT_URL }],
+    [{ text: "⏎ Back to the menu", callback_data: `video_back_${requesterId}` }],
+  ]);
+}
+
 async function notifyAdminNewRequest(ctx) {
   const requester = getRequesterData(ctx.from);
 
   await bot.telegram.sendMessage(
     ADMIN_CHAT_ID,
-    `📞 <b>Nueva solicitud de videollamada</b>
+    `📞 <b>New call request just came in</b>
 
 Nombre: <b>${escapeHtml(requester.fullName)}</b>
 Usuario: <b>${escapeHtml(requester.username)}</b>
 ID: <code>${escapeHtml(requester.id)}</code>`,
-    { parse_mode: "HTML" }
+    {
+      parse_mode: "HTML",
+      ...getAdminVideoRequestInlineKeyboard(requester.id),
+    }
   );
 }
 
@@ -408,7 +425,7 @@ async function startVideoCallFlow(ctx) {
   await ctx.reply(
     `📹 Videocall request received
 
-Send one photo or video to continue.`,
+Send one nude pic/video to continue...It’s gonna be a Zoom video call, are you ready?`,
     {
       reply_markup: { remove_keyboard: true },
     }
@@ -572,6 +589,19 @@ bot.on("photo", async (ctx) => {
   );
 
   await completeMediaFlow(ctx, "Photos");
+});
+
+bot.action(/^video_back_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Usuario devuelto al menú");
+
+  const requesterId = ctx.match[1];
+  pendingVideoRequests.delete(String(requesterId));
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    buildWelcomeCaption(),
+    getMainKeyboard()
+  );
 });
 
 bot.on("video", async (ctx) => {
