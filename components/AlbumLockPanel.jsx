@@ -21,7 +21,8 @@ export default function AlbumLockPanel() {
     try {
       setLoading(true);
       setStatus("");
-const res = await fetch("/api/verify", {
+
+      const res = await fetch("/api/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,8 +50,6 @@ const res = await fetch("/api/verify", {
       setLoading(false);
     }
   };
-
-  
 
   return (
     <section className="fx-premiumSection">
