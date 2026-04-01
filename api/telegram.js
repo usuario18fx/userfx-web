@@ -199,15 +199,16 @@ function getVipPaymentInlineKeyboard() {
 }
 
 function buildWelcomeCaption() {
-  return `•╦————————————╦•
-🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+  return 
+`•╦————————————╦•
+ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
 
 Choose your mode and continue below.
 
-ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩
-📲 ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
-ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
-ᴇɴᴊᴏʏ ɪᴛ ..
+🧩ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+📹ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
+🔥ᴇɴᴊᴏʏ ɪᴛ ..
 
 •╩————————————╩•`;
 }
@@ -216,7 +217,7 @@ function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 👑 ${plan.label}
 ⇀ Price   $3
 ⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
@@ -258,13 +259,6 @@ async function sendVipStarsInvoice(ctx) {
     provider_token: "",
     start_parameter: "buy-vip-stars",
   });
-}
-
-function getAdminVideoRequestInlineKeyboard(requesterId) {
-  return Markup.inlineKeyboard([
-    [{ text: "💬 Mi chat", url: CONTACT_URL }],
-    [{ text: "⏎ Regresar al menú", callback_data: `video_back_${requesterId}` }],
-  ]);
 }
 
 function getAdminVideoRequestInlineKeyboard(requesterId) {
