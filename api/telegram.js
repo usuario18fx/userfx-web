@@ -167,8 +167,8 @@ function getChannelsInlineKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "🤖👑", url: USER_BOT_URL },
-          { text: "🤖🌩️", url: SMOKELANDIA_BOT_URL },
+          { text: "ᴡᴇʙꜱɪᴛᴇ ᴜꜱᴇʀŦҳ", url: USER_BOT_URL },
+          { text: "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_BOT_URL },
         ],
       ],
     },
@@ -263,8 +263,8 @@ async function sendVipStarsInvoice(ctx) {
 
 function getAdminVideoRequestInlineKeyboard(requesterId) {
   return Markup.inlineKeyboard([
-    [{ text: "💬 Mi chat", url: CONTACT_URL }],
-    [{ text: "⏎ Back to the menu", callback_data: `video_back_${requesterId}` }],
+    [{ text: "💬", url: CONTACT_URL }],
+    [{ text: "↩", callback_data: `video_back_${requesterId}` }],
   ]);
 }
 
@@ -532,7 +532,7 @@ bot.hears("🎁", async (ctx) => {
   await sendGiftsMessage(ctx);
 });
 
-bot.hears("⏎", async (ctx) => {
+bot.hears("↩", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
@@ -634,7 +634,7 @@ bot.on("text", async (ctx) => {
     "🌩️",
     "📸",
     "🎁",
-    "⏎",
+    "↩",
   ];
 
   if (knownInputs.includes(text)) return;
