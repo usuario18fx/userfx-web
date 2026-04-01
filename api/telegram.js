@@ -119,7 +119,7 @@ function getMainKeyboard() {
   return Markup.keyboard(
     [
       ["👑 [X-user]", "🔥 [V-vip]"],
-      ["📞 VIDEOCALL", "🖥 CHANNELS"],
+      ["📞 VIDEOCALL", "📺 CHANNELS"],
       ["🌐 WEBSITE", "↺"],
     ],
     { columns: 2 }
@@ -133,9 +133,9 @@ function getBackKeyboard() {
 function getAccessKeyboard() {
   return Markup.keyboard(
     [
-      ["📺", "🌩️"],
+      ["📺", "☁️"],
       ["📸", "🎁"],
-      ["⏎"],
+      ["←"],
     ],
     { columns: 2 }
   ).resize();
@@ -154,7 +154,7 @@ function getZoomKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "📹 ENTER ZOOM", url: ZOOM_URL },
+          { text: "📞 ENTER ZOOM", url: ZOOM_URL },
           { text: "🌐 WEBSITE", url: WEBSITE_URL },
         ],
       ],
@@ -217,7 +217,7 @@ function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-     ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 👑 ${plan.label}
 ⇀ Price   $3
 ⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
@@ -229,7 +229,7 @@ function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-     ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 🔥 [V-vip]
 ⇀ Price   $12
 ⇀ Status  ${plan.planKey === "vip" ? plan.status : "Inactive"}
