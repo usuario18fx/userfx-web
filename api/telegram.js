@@ -264,7 +264,7 @@ async function sendVipStarsInvoice(ctx) {
 function getAdminVideoRequestInlineKeyboard(requesterId) {
   return Markup.inlineKeyboard([
     [{ text: "💬", url: CONTACT_URL }],
-    [{ text: "↩", callback_data: `video_back_${requesterId}` }],
+    [{ text: "↙", callback_data: `video_back_${requesterId}` }],
   ]);
 }
 
@@ -319,7 +319,7 @@ async function sendVipMode(ctx) {
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `🖥 CHANNELS
+    `📺 CHANNELS
 
 Choose where to continue.`,
     {
@@ -347,7 +347,7 @@ async function sendRefreshPanel(ctx) {
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `📺 FEED
+    `📋 FEED
 
 Selected drops
 Public previews
@@ -361,7 +361,7 @@ Featured content`,
 
 async function sendCloudsMessage(ctx) {
   await ctx.reply(
-    `🌩️ CLOUDS
+    `☁️ CLOUDS
 
 Ambient room
 Visual session
@@ -504,7 +504,7 @@ bot.hears("📞 VIDEOCALL", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("🖥 CHANNELS", async (ctx) => {
+bot.hears("📺 CHANNELS", async (ctx) => {
   await sendChannelsPanel(ctx);
 });
 
@@ -516,11 +516,11 @@ bot.hears("↺", async (ctx) => {
   await sendRefreshPanel(ctx);
 });
 
-bot.hears("📺", async (ctx) => {
+bot.hears("📋", async (ctx) => {
   await sendFeedMessage(ctx);
 });
 
-bot.hears("🌩️", async (ctx) => {
+bot.hears("☁️", async (ctx) => {
   await sendCloudsMessage(ctx);
 });
 
@@ -532,7 +532,7 @@ bot.hears("🎁", async (ctx) => {
   await sendGiftsMessage(ctx);
 });
 
-bot.hears("↩", async (ctx) => {
+bot.hears("↙", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
@@ -627,14 +627,14 @@ bot.on("text", async (ctx) => {
     "👑 [X-user]",
     "🔥 [V-vip]",
     "📞 VIDEOCALL",
-    "🖥 CHANNELS",
+    "📺 CHANNELS",
     "🌐 WEBSITE",
     "↺",
-    "📺",
-    "🌩️",
+    "📋",
+    "☁️",
     "📸",
     "🎁",
-    "↩",
+    "↙",
   ];
 
   if (knownInputs.includes(text)) return;
