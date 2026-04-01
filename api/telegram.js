@@ -167,7 +167,7 @@ function getChannelsInlineKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "ᴡᴇʙꜱɪᴛᴇ ᴜꜱᴇʀŦҳ", url: USER_BOT_URL },
+          { text: "ᴜꜱᴇʀ🜲Ŧҳ", url: USER_BOT_URL },
           { text: "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_BOT_URL },
         ],
       ],
