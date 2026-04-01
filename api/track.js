@@ -8,13 +8,6 @@ export default async function handler(req, res) {
 
   console.log("VISIT IP:", ip);
 
-  return res.status(200).json({
-    ok: true,
-    ip,
-  });
-}
-
-export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
@@ -23,11 +16,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prefix, suffix } =
-      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    const body =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
 
-    const safePrefix = String(prefix || "").trim().toUpperCase();
-    const safeSuffix = String(suffix || "").trim().toUpperCase();
+    const safePrefix = String(body.prefix || "").trim().toUpperCase();
+    const safeSuffix = String(body.suffix || "").trim().toUpperCase();
 
     if (!safePrefix || !safeSuffix) {
       return res.status(400).json({
@@ -56,12 +49,14 @@ export default async function handler(req, res) {
       return res.status(200).json({
         ok: true,
         code: fullCode,
+        ip,
       });
     }
 
     return res.status(401).json({
       ok: false,
       error: "Invalid code.",
+      ip,
     });
   } catch (error) {
     return res.status(500).json({
