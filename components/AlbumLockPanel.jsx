@@ -51,6 +51,8 @@ export default function AlbumLockPanel() {
     }
   };
 
+  
+
   return (
     <section className="fx-premiumSection">
       <header className="fx-topbar">
