@@ -481,11 +481,11 @@ bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("👑 X / USER", async (ctx) => {
+bot.hears("👑[X-user]", async (ctx) => {
   await sendUserMode(ctx);
 });
 
-bot.hears("🔥 V / VIP", async (ctx) => {
+bot.hears("🔥[V-vip]", async (ctx) => {
   await sendVipMode(ctx);
 });
 
@@ -600,8 +600,8 @@ bot.on("text", async (ctx) => {
     "/start",
     "/help",
     "/videocall",
-    "👑 X / USER",
-    "🔥 V / VIP",
+    "👑 [X-user]",
+    "🔥 [V-vip]",
     "📞 VIDEOCALL",
     "🖥 CHANNELS",
     "🌐 WEBSITE",
