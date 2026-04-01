@@ -264,7 +264,7 @@ async function sendVipStarsInvoice(ctx) {
 function getAdminVideoRequestInlineKeyboard(requesterId) {
   return Markup.inlineKeyboard([
     [{ text: "💬", url: CONTACT_URL }],
-    [{ text: "↙", callback_data: `video_back_${requesterId}` }],
+    [{ text: "←", callback_data: `video_back_${requesterId}` }],
   ]);
 }
 
@@ -504,11 +504,11 @@ bot.hears("📞 VIDEOCALL", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("📺 CHANNELS", async (ctx) => {
+bot.hears(/^🖥️?\s*CHANNELS$/, async (ctx) => {
   await sendChannelsPanel(ctx);
 });
 
-bot.hears("🌐 WEBSITE", async (ctx) => {
+bot.hears(/^🌐\s*WEBSITE$/, async (ctx) => {
   await sendWebsitePanel(ctx);
 });
 
@@ -532,7 +532,7 @@ bot.hears("🎁", async (ctx) => {
   await sendGiftsMessage(ctx);
 });
 
-bot.hears("↙", async (ctx) => {
+bot.hears("←", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
@@ -634,10 +634,16 @@ bot.on("text", async (ctx) => {
     "☁️",
     "📸",
     "🎁",
-    "↙",
+    "←",
   ];
 
-  if (knownInputs.includes(text)) return;
+  if (
+    knownInputs.includes(text) ||
+    /^🖥️?\s*CHANNELS$/.test(text) ||
+    /^🌐\s*WEBSITE$/.test(text)
+  ) {
+    return;
+  }
 
   if (pending?.waitingForMedia) {
     pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
