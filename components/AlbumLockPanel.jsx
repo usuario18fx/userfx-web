@@ -55,7 +55,7 @@ export default function AlbumLockPanel() {
     <section className="fx-premiumSection">
       <header className="fx-topbar">
         <div className="fx-brand">
-          <div className="fx-brandTitle">Fx♕</div>
+          <div className="fx-brandTitle">Fx🜲</div>
           <div className="fx-brandSub">EXCLUSIVE SPACE</div>
         </div>
 
@@ -89,7 +89,7 @@ export default function AlbumLockPanel() {
             <article
               className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}
             >
-              <div className="fx-crown">♕</div>
+              <div className="fx-crown">🜲</div>
 
               <div className="fx-lockHead">
                 {unlocked ? "UNLOCKED" : "LOCKED"}
