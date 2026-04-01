@@ -6,20 +6,17 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const WEBSITE_URL = "https://fx.smokelandia.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
-
 const CONTACT_URL = "https://t.me/User18fx";
 
 const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
-const SMOKELANDIA_BOT_URL = "https://t.me/Smokelandiabot?start=smokelandiachannel";
+const SMOKELANDIA_BOT_URL =
+  "https://t.me/Smokelandiabot?start=smokelandiachannel";
 
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
-const WELCOME_VIDEO_URL = "https://fx.smokelandia.app/assets/welcome.mp4";
-
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
-// if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -31,6 +28,7 @@ if (!globalThis.__fxPendingVideoRequests) {
 }
 
 const memberships = globalThis.__fxMemberships || new Map();
+
 if (!globalThis.__fxMemberships) {
   globalThis.__fxMemberships = memberships;
 }
@@ -53,6 +51,7 @@ function getRequesterData(from) {
 
 function getMembership(userId) {
   const current = memberships.get(String(userId));
+
   if (!current) return null;
 
   if (current.expiresAt && Date.now() > current.expiresAt) {
@@ -91,6 +90,7 @@ function getPlanDisplay(userId) {
       access: "Premium",
       status: "Inactive",
       emoji: "👑",
+      planKey: "user",
     };
   }
 
@@ -101,6 +101,7 @@ function getPlanDisplay(userId) {
       access: "Unlimited",
       status: "Active",
       emoji: "🔥",
+      planKey: "vip",
     };
   }
 
@@ -110,13 +111,14 @@ function getPlanDisplay(userId) {
     access: "Premium",
     status: "Active",
     emoji: "👑",
+    planKey: "user",
   };
 }
 
 function getMainKeyboard() {
   return Markup.keyboard(
     [
-      ["👑[X-user]", "🔥[V-vip],
+      ["👑 [X-user]", "🔥 [V-vip]"],
       ["📞 VIDEOCALL", "🖥 CHANNELS"],
       ["🌐 WEBSITE", "↺"],
     ],
@@ -168,12 +170,11 @@ function getChannelsInlineKeyboard() {
           { text: "🤖👑", url: USER_BOT_URL },
           { text: "🤖🌩️", url: SMOKELANDIA_BOT_URL },
         ],
-        [
-        ],
       ],
     },
   };
 }
+
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
@@ -200,12 +201,12 @@ function getVipPaymentInlineKeyboard() {
 
 function buildWelcomeCaption() {
   return `•╦————————————╦•
-        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 
 Choose your mode and continue below.
 
 ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ 🧩
-📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+📲 ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ 📹
 ᴇɴᴊᴏʏ ɪᴛ ..
 
@@ -216,11 +217,11 @@ function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-👑 [X-user]
-⇀Price    $3
-⇀Status  Inactive
-⇀Premium access enabled.
+🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+👑 ${plan.label}
+⇀ Price   $3
+⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
+⇀ Access  Premium
 •╩————————————╩•`;
 }
 
@@ -228,11 +229,11 @@ function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-        🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
- 🔥[V-vip] 
+🜲 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+🔥 [V-vip]
 ⇀ Price   $12
-⇀ Access  ilimit 
-⇀ Status Inactive
+⇀ Status  ${plan.planKey === "vip" ? plan.status : "Inactive"}
+⇀ Access  Unlimited
 •╩————————————╩•`;
 }
 
@@ -254,7 +255,7 @@ async function sendVipStarsInvoice(ctx) {
     description: "Unlimited access",
     payload: "membership_vip",
     currency: "XTR",
-    prices: [{ label: "[V-vip] ", amount: 1200 }],
+    prices: [{ label: "[V-vip]", amount: 1200 }],
     provider_token: "",
     start_parameter: "buy-vip-stars",
   });
@@ -289,7 +290,7 @@ ID: <code>${escapeHtml(requester.id)}</code>`,
 }
 
 async function sendMainMenu(ctx) {
-  await ctx.reply("BOT ONLINE", getMainKeyboard());
+  await ctx.reply(buildWelcomeCaption(), getMainKeyboard());
 }
 
 async function sendUserMode(ctx) {
@@ -481,11 +482,11 @@ bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("👑[X-user]", async (ctx) => {
+bot.hears("👑 [X-user]", async (ctx) => {
   await sendUserMode(ctx);
 });
 
-bot.hears("🔥[V-vip]", async (ctx) => {
+bot.hears("🔥 [V-vip]", async (ctx) => {
   await sendVipMode(ctx);
 });
 
@@ -528,7 +529,7 @@ bot.hears("⏎", async (ctx) => {
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendUserStarsInvoice(ctx);
-console.log("CHAT ID:", ctx.chat.id, "USER ID:", ctx.from.id);
+  console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
 });
 
 bot.action("buy_vip_stars", async (ctx) => {
