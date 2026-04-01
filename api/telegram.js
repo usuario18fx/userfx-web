@@ -180,7 +180,6 @@ function getUserPaymentInlineKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }],
-        [{ text: "💬", url: CONTACT_URL }],
       ],
     },
   };
