@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./AlbumLockPanel.css";
 
 export default function AlbumLockPanel() {
@@ -8,6 +8,15 @@ export default function AlbumLockPanel() {
   const [unlocked, setUnlocked] = useState(false);
 
   const fixedPrefix = "FX/USER01/";
+
+  useEffect(() => {
+    fetch("/api/track", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).catch(() => {});
+  }, []);
 
   const handleUnlock = async () => {
     const suffix = value.trim().toUpperCase();
