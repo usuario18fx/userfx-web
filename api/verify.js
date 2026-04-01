@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     req.socket?.remoteAddress ||
     "unknown";
 
-  console.log("VISIT IP:", ip);
+  console.log("VERIFY IP:", ip);
 
   if (req.method !== "POST") {
     return res.status(405).json({
