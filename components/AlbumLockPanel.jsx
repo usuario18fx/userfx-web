@@ -21,8 +21,7 @@ export default function AlbumLockPanel() {
     try {
       setLoading(true);
       setStatus("");
-
-      const res = await fetch("/api/track", {
+const res = await fetch("/api/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
