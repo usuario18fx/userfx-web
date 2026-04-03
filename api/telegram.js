@@ -20,8 +20,7 @@ if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const pendingVideoRequests =
-  globalThis.__fxPendingVideoRequests || new Map();
+const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
 
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
@@ -178,9 +177,7 @@ function getChannelsInlineKeyboard() {
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [
-        [{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }],
-      ],
+      inline_keyboard: [[{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }]],
     },
   };
 }
@@ -199,8 +196,7 @@ function getVipPaymentInlineKeyboard() {
 }
 
 function buildWelcomeCaption() {
-  return 
-`•╦————————————╦•
+  return `•╦————————————╦•
  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
 
 Choose your mode and continue below.
@@ -418,7 +414,8 @@ async function startVideoCallFlow(ctx) {
   await ctx.reply(
     `📹 Videocall request received
 
-Send one nude pic/video to continue...It’s gonna be a Zoom video call, are you ready?`,
+Send one photo or video to continue.
+It’s gonna be a Zoom video call, are you ready?`,
     {
       reply_markup: { remove_keyboard: true },
     }
@@ -669,15 +666,6 @@ bot.catch((error) => {
 });
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    return res.status(200).json({
-      ok: true,
-      method: req.method,
-      message: "Telegram endpoint alive",
-    });
-  }
-
-export default async function handler(req, res) {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
     req.headers["x-real-ip"] ||
@@ -690,16 +678,18 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
+      method: req.method,
+      message: "Telegram endpoint alive",
       ip,
-      message: "alive",
     });
   }
-  
+
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
       method: req.method,
+      ip,
     });
   }
 
@@ -709,13 +699,17 @@ export default async function handler(req, res) {
 
     await bot.handleUpdate(update);
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({
+      ok: true,
+      ip,
+    });
   } catch (error) {
     console.error("TELEGRAM HANDLER ERROR:", error);
     return res.status(500).json({
       ok: false,
       error: "handler_error",
       details: String(error?.message || error),
+      ip,
     });
   }
 }
