@@ -3,13 +3,13 @@
   min-height: 100vh;
   overflow: hidden;
   background:
-    radial-gradient(circle at 16% 28%, rgba(124, 0, 44, 0.18), transparent 34%),
-    radial-gradient(circle at 84% 74%, rgba(0, 234, 255, 0.08), transparent 30%),
+    radial-gradient(circle at 14% 24%, rgba(122, 0, 46, 0.18), transparent 30%),
+    radial-gradient(circle at 84% 68%, rgba(0, 255, 255, 0.08), transparent 28%),
     linear-gradient(
       90deg,
-      rgba(34, 0, 12, 0.42) 0%,
-      rgba(0, 0, 0, 0.92) 36%,
-      rgba(0, 18, 22, 0.88) 100%
+      rgba(37, 0, 10, 0.45) 0%,
+      rgba(0, 0, 0, 0.9) 35%,
+      rgba(0, 19, 22, 0.86) 100%
     ),
     #030608;
 }
@@ -19,9 +19,9 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 142px 142px;
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 114px 114px;
   opacity: 0.22;
   pointer-events: none;
 }
@@ -32,237 +32,241 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 14px 52px 0;
+  padding: 18px 42px 0;
 }
 
 .fx-brandTitle {
-  color: #ff8fab;
-  font-size: 1.16rem;
+  color: #ff8fb0;
+  font-size: 1.18rem;
   font-weight: 800;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 
 .fx-brandSub {
-  margin-top: 8px;
+  margin-top: 6px;
   color: #00eaff;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
 }
 
 .fx-contactBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 206px;
-  height: 76px;
-  padding: 0 26px;
+  min-width: 204px;
+  height: 64px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.03);
   color: rgba(255, 255, 255, 0.96);
-  text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 10px 30px rgba(0, 0, 0, 0.24);
+    0 10px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(14px);
+  cursor: pointer;
 }
 
 .fx-premiumGrid {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(420px, 1fr) 520px;
-  gap: 84px;
+  grid-template-columns: minmax(440px, 1fr) 520px;
+  gap: 70px;
   align-items: center;
-  min-height: calc(100vh - 140px);
-  padding: 18px 90px 76px;
+  min-height: calc(100vh - 170px);
+  padding: 30px 110px 90px;
 }
 
 .fx-copySide {
-  align-self: end;
-  padding: 0 0 104px 46px;
+  align-self: center;
+  padding-top: 48px;
 }
 
 .fx-copyTitle {
   margin: 0 0 18px;
-  color: #00ddff;
-  font-size: clamp(2.8rem, 5.1vw, 4.1rem);
-  line-height: 0.98;
-  font-weight: 900;
-  letter-spacing: -0.05em;
+  color: #00eaff;
+  font-size: 2.25rem;
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .fx-copyText {
-  max-width: 640px;
+  max-width: 650px;
   margin: 0;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 0.98rem;
+  font-size: 1.05rem;
   line-height: 1.45;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-.fx-cardSide {
+.fx-cardSide,
+.right {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.right {
+  position: relative;
+  min-width: 0;
+}
+
 .fx-lockCardShell {
   position: relative;
   width: 100%;
-  max-width: 494px;
-  animation: fxCardDriftReverse 8.8s ease-in-out infinite alternate;
+  max-width: 400px;
+  animation: fxCardDriftReverse 9.4s ease-in-out infinite alternate;
   transform-origin: 50% 50%;
   will-change: transform;
-  transition: transform 420ms ease, filter 420ms ease;
-}
-
-.fx-lockCardShell:hover {
-  animation: none;
-  transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  transition: transform 450ms ease, filter 450ms ease, opacity 450ms ease;
 }
 
 .fx-shellUnlocked {
   animation: none;
-  transform: scale(1.015);
-  filter: drop-shadow(0 0 26px rgba(0, 242, 255, 0.16));
+  transform: scale(1.02) rotate(0deg);
+  filter: drop-shadow(0 0 28px rgba(0, 242, 255, 0.22));
 }
 
 .fx-lockCard {
   position: relative;
-  min-height: 640px;
-  padding: 44px 54px 50px;
-  border-radius: 32px;
+  min-height: 560px;
+  padding: 34px 34px 40px;
+  border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    radial-gradient(circle at 18% 14%, rgba(255, 54, 120, 0.07), transparent 30%),
-    radial-gradient(circle at 82% 82%, rgba(0, 255, 255, 0.055), transparent 34%),
-    rgba(12, 19, 24, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    radial-gradient(circle at 16% 14%, rgba(255, 66, 122, 0.08), transparent 31%),
+    radial-gradient(circle at 80% 82%, rgba(0, 255, 255, 0.06), transparent 36%),
+    rgba(14, 21, 25, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow:
-    0 32px 76px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.025);
+    0 28px 70px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(18px);
   overflow: hidden;
-  transition: border-color 420ms ease, box-shadow 420ms ease;
+  transition: transform 450ms ease, box-shadow 450ms ease, border-color 450ms ease;
 }
 
 .fx-cardUnlocked {
-  border-color: rgba(0, 242, 255, 0.16);
+  border-color: rgba(0, 242, 255, 0.18);
   box-shadow:
-    0 34px 86px rgba(0, 0, 0, 0.34),
-    0 0 0 1px rgba(0, 242, 255, 0.06),
-    0 0 28px rgba(0, 242, 255, 0.1);
+    0 30px 80px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(0, 242, 255, 0.08),
+    0 0 36px rgba(0, 242, 255, 0.12);
 }
 
 .fx-lockCard::before {
   content: "";
   position: absolute;
-  inset: -18%;
+  inset: -14%;
   background:
-    radial-gradient(circle at 20% 18%, rgba(255, 0, 98, 0.05), transparent 26%),
-    radial-gradient(circle at 82% 78%, rgba(0, 233, 255, 0.05), transparent 28%);
-  filter: blur(26px);
+    radial-gradient(circle at 20% 20%, rgba(255, 0, 98, 0.06), transparent 24%),
+    radial-gradient(circle at 82% 78%, rgba(0, 233, 255, 0.06), transparent 28%);
+  filter: blur(24px);
   pointer-events: none;
 }
 
-.fx-crown {
-  margin: 0 0 18px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 2.3rem;
-  line-height: 1;
-}
-
 .fx-lockHead {
-  margin: 0 0 34px;
+  position: relative;
+  margin: 0 0 28px;
   text-align: center;
   color: rgba(255, 255, 255, 0.95);
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.42em;
 }
 
 .fx-lockUser {
-  margin: 0 0 14px;
+  position: relative;
+  margin: 0 0 12px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.48);
-  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
   line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .fx-lockUser strong {
-  margin-left: 2px;
-  color: rgba(255, 255, 255, 0.98);
-  font-weight: 900;
+  color: rgba(255, 255, 255, 0.96);
+  font-weight: 800;
 }
 
 .fx-lockArrow {
-  margin: 0 0 18px;
+  position: relative;
+  margin: 0 0 16px;
   text-align: center;
   color: rgba(255, 255, 255, 0.38);
-  font-size: 1.52rem;
+  font-size: 1.4rem;
   line-height: 1;
 }
 
-.fx-lockInput {
-  display: block;
-  width: 100%;
-  max-width: 314px;
-  height: 36px;
-  margin: 0 auto 10px;
-  padding: 0 10px;
-  border: 0;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.24);
+.fx-codeDisplay {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.fx-codeChar {
+  min-width: 34px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.36);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.fx-codeCharFilled {
   color: #ffffff;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 0.24em;
-  outline: none;
-  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.14);
 }
 
-.fx-lockInput::placeholder {
-  color: rgba(255, 255, 255, 0.24);
-  letter-spacing: 0.2em;
-}
-
-.fx-lockInput:focus {
-  border-bottom-color: #00eaff;
+.fx-codeInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .fx-lockHint {
-  margin: 0 0 18px;
+  position: relative;
+  margin: 0 0 16px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 0.38rem;
-  line-height: 1.1;
-  font-weight: 800;
-  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.24rem;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  transform: scale(0.6);
+  transform-origin: center;
 }
 
 .fx-unlockTitle {
-  margin: 0 0 16px;
+  position: relative;
+  margin: 0 0 18px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.87);
+  font-size: 0.54rem;
   line-height: 1;
-  font-weight: 800;
-  letter-spacing: 0.26em;
+  font-weight: 700;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
 }
 
 .fx-lockOnlyBtn {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
@@ -276,9 +280,9 @@
 
 .fx-lockEmoji {
   display: inline-block;
-  font-size: 1.34rem;
+  font-size: 1.16rem;
   line-height: 1;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.22));
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.28));
   animation: fxLockFloat 3.2s ease-in-out infinite;
   transform-origin: 50% 50%;
 }
@@ -287,16 +291,21 @@
   animation: fxUnlockPop 420ms ease-out both;
 }
 
-.fx-statusText {
+.fx-status {
   min-height: 18px;
-  margin-top: 16px;
+  margin: 14px 0 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.48rem;
-  line-height: 1.2;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.fx-status.is-success {
+  color: #92ffd7;
+}
+
+.fx-status.is-error {
+  color: #ffd2d9;
 }
 
 .fx-footer {
@@ -304,13 +313,232 @@
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 0 20px 16px;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 0.42rem;
+  padding: 0 20px 18px;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.48rem;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+}
+
+/* =========================
+   LIQUID DEVICE COMPLETO
+   ========================= */
+
+.galeria-book-3d {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  --lift: 0px;
+  --hover-rx: 0deg;
+  --hover-ry: 0deg;
+
+  position: relative;
+  width: min(320px, 90vw);
+  height: 420px;
+  margin-inline: auto;
+  outline: none;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow, filter;
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    filter 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+
+  transform:
+    perspective(1600px)
+    translateY(var(--lift))
+    rotateX(calc(var(--rx) + var(--hover-rx)))
+    rotateY(calc(var(--ry) + var(--hover-ry)));
+}
+
+.galeria-book-3d:hover {
+  --lift: -12px;
+  --hover-rx: 4deg;
+  --hover-ry: 0deg;
+}
+
+.galeria-book-3d:focus-visible {
+  --lift: -10px;
+  --hover-rx: 3deg;
+  --hover-ry: 0deg;
+}
+
+.liquid-device {
+  --device-thickness: 10px;
+  --device-glow: rgba(255, 255, 255, 0.12);
+  --liquid-shine: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+
+  position: relative;
+  border-radius: 36px;
+  background:
+    var(--liquid-shine),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+  box-shadow:
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.16),
+    0 28px 64px -12px rgba(0, 0, 0, 0.45),
+    0 16px 32px -8px rgba(0, 0, 0, 0.25),
+    0 0 48px rgba(255, 255, 255, 0.08),
+    inset 0 -4px 24px rgba(255, 255, 255, 0.25),
+    inset 4px 0 24px rgba(0, 0, 0, 0.15),
+    inset -4px 0 24px rgba(0, 0, 0, 0.15);
+}
+
+.liquid-device:hover {
+  box-shadow:
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.22),
+    0 48px 96px -16px rgba(0, 0, 0, 0.55),
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 64px rgba(255, 255, 255, 0.14),
+    inset 0 -6px 32px rgba(255, 255, 255, 0.35),
+    inset 6px 0 32px rgba(0, 0, 0, 0.2),
+    inset -6px 0 32px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-device:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(0, 242, 255, 0.4),
+    0 0 0 var(--device-thickness) rgba(255, 255, 255, 0.22),
+    0 48px 96px -16px rgba(0, 0, 0, 0.55),
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 64px rgba(0, 242, 255, 0.18),
+    inset 0 -6px 32px rgba(255, 255, 255, 0.35),
+    inset 6px 0 32px rgba(0, 0, 0, 0.2),
+    inset -6px 0 32px rgba(0, 0, 0, 0.2);
+}
+
+.galeria-book-3d.is-unlocked .liquid-device,
+.galeria-book-3d.is-unlocked {
+  filter: drop-shadow(0 24px 48px rgba(0, 242, 255, 0.18));
+}
+
+.device-bezel {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 24px rgba(255, 255, 255, 0.05);
+}
+
+.device-screen {
+  position: absolute;
+  inset: calc(var(--device-thickness) + 8px);
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(8, 10, 12, 0.92), rgba(2, 3, 5, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 40px rgba(255, 255, 255, 0.02);
+}
+
+.screen-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at var(--mx) var(--my),
+      rgba(255, 255, 255, 0.16),
+      transparent 24%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 36%,
+      rgba(255, 255, 255, 0.03) 68%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 18px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-overlay-unlocked {
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 242, 255, 0.06),
+    transparent 72%
+  );
+}
+
+.lock-overlay .fx-lockCardShell {
+  width: min(100%, 340px);
+  margin: 0 auto;
+}
+
+.device-bottom-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 5;
+  width: 30%;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.device-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  z-index: -1;
+  width: 82%;
+  height: 56px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.42) 0%,
+    transparent 72%
+  );
+  filter: blur(12px);
+}
+
+.hand-hint {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3;
+  font-size: 24px;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: fxHandFloat 2.4s ease-in-out infinite;
+}
+
+.fx-codeForm {
+  display: contents;
 }
 
 @keyframes fxLockFloat {
@@ -318,7 +546,7 @@
     transform: translate3d(0, 0, 0) rotate(-2deg);
   }
   50% {
-    transform: translate3d(0, -4px, 0) rotate(1.4deg);
+    transform: translate3d(0, -5px, 0) rotate(1.4deg);
   }
   100% {
     transform: translate3d(0, 0, 0) rotate(-2deg);
@@ -331,7 +559,7 @@
     opacity: 1;
   }
   60% {
-    transform: scale(1.16);
+    transform: scale(1.18);
     opacity: 0.95;
   }
   100% {
@@ -342,16 +570,26 @@
 
 @keyframes fxCardDriftReverse {
   0% {
-    transform: translate3d(12px, 8px, 0) rotateX(-1.8deg) rotateY(4.8deg) rotateZ(-0.7deg);
+    transform: translate3d(15px, 9px, 0) rotateX(-2deg) rotateY(5.2deg) rotateZ(-0.8deg);
   }
-  35% {
-    transform: translate3d(6px, -6px, 0) rotateX(-0.8deg) rotateY(2deg) rotateZ(-0.2deg);
+  30% {
+    transform: translate3d(8px, -7px, 0) rotateX(-0.8deg) rotateY(2.2deg) rotateZ(-0.25deg);
   }
-  65% {
-    transform: translate3d(-6px, 8px, 0) rotateX(0.9deg) rotateY(-3deg) rotateZ(0.35deg);
+  60% {
+    transform: translate3d(-7px, 10px, 0) rotateX(1deg) rotateY(-3.5deg) rotateZ(0.4deg);
   }
   100% {
-    transform: translate3d(-13px, -9px, 0) rotateX(1.8deg) rotateY(-5deg) rotateZ(0.75deg);
+    transform: translate3d(-16px, -10px, 0) rotateX(2deg) rotateY(-5.8deg) rotateZ(0.85deg);
+  }
+}
+
+@keyframes fxHandFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
   }
 }
 
@@ -359,57 +597,54 @@
   .fx-premiumGrid {
     grid-template-columns: 1fr;
     gap: 44px;
-    padding: 24px 28px 70px;
+    padding: 30px 28px 80px;
   }
 
   .fx-copySide {
-    padding: 0;
-  }
-
-  .fx-copyTitle {
-    font-size: 2.1rem;
-  }
-
-  .fx-cardSide {
-    justify-content: flex-start;
-  }
-
-  .fx-lockCard {
-    min-height: 580px;
-  }
-}
-
-@media (max-width: 640px) {
-  .fx-topbar {
-    padding: 14px 18px 0;
-    gap: 16px;
-  }
-
-  .fx-contactBtn {
-    min-width: 154px;
-    height: 56px;
-    font-size: 0.84rem;
-    padding: 0 18px;
-  }
-
-  .fx-premiumGrid {
-    padding: 18px 18px 56px;
+    padding-top: 10px;
   }
 
   .fx-copyTitle {
     font-size: 1.7rem;
   }
 
-  .fx-copyText {
-    font-size: 0.92rem;
+  .fx-cardSide,
+  .right {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .fx-topbar {
+    padding: 18px 18px 0;
+    gap: 16px;
+  }
+
+  .fx-contactBtn {
+    min-width: 146px;
+    height: 52px;
+    font-size: 0.82rem;
+  }
+
+  .fx-premiumGrid {
+    padding: 24px 18px 60px;
   }
 
   .fx-lockCard {
-    min-height: 540px;
-    padding: 30px 24px 34px;
+    min-height: 520px;
+    padding: 28px 22px 32px;
   }
 
-  .fx-lockInput {
-    max-width: 240px;
+  .fx-copyTitle {
+    font-size: 1.35rem;
+  }
+
+  .fx-copyText {
+    font-size: 0.95rem;
+  }
+
+  .galeria-book-3d {
+    width: min(300px, 92vw);
+    height: 396px;
   }
 }
