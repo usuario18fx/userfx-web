@@ -677,6 +677,24 @@ export default async function handler(req, res) {
     });
   }
 
+export default async function handler(req, res) {
+  const ip =
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.headers["x-real-ip"] ||
+    req.headers["x-vercel-forwarded-for"] ||
+    "unknown";
+
+  console.log("IP:", ip);
+  console.log("HEADERS:", req.headers);
+
+  if (req.method === "GET") {
+    return res.status(200).json({
+      ok: true,
+      ip,
+      message: "alive",
+    });
+  }
+  
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
