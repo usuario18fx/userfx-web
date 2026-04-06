@@ -1,161 +1,238 @@
-import React, { useEffect, useState } from "react";
-import "./AlbumLockPanel.css";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "./AlbumLockPanel.module.css";
 
-export default function AlbumLockPanel() {
-  const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
+interface AlbumLockPanelProps {
+  unlockCode?: string;           // The correct 4-char code
+  albumTitle?: string;           // e.g. "AX01"
+  userPath?: string;             // e.g. "FX/USER01"
+  onUnlock?: () => void;         // Callback on success
+}
 
-  const fixedPrefix = "FX/USER01/";
+type PanelState = "locked" | "error" | "unlocked";
 
+export default function AlbumLockPanel({
+  unlockCode = "FX01",
+  albumTitle = "AX01",
+  userPath = "FX/USER01",
+  onUnlock,
+}: AlbumLockPanelProps) {
+  const [chars, setChars] = useState<string[]>(["", "", "", ""]);
+  const [panelState, setPanelState] = useState<PanelState>("locked");
+  const [glitchActive, setGlitchActive] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Periodic glitch on LOCKED text
   useEffect(() => {
-    fetch("/api/track", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).catch(() => {});
-  }, []);
+    if (panelState === "unlocked") return;
+    const interval = setInterval(() => {
+      setGlitchActive(true);
+      setTimeout(() => setGlitchActive(false), 300);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [panelState]);
 
-  const handleUnlock = async () => {
-    const suffix = value.trim().toUpperCase();
+  const handleChange = useCallback(
+    (index: number, value: string) => {
+      if (panelState !== "locked") return;
+      const char = value.slice(-1).toUpperCase();
+      const next = [...chars];
+      next[index] = char;
+      setChars(next);
 
-    if (suffix.length !== 4) {
-      setUnlocked(false);
-      setStatus("Enter 4 characters.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setStatus("");
-
-      const res = await fetch("/api/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prefix: fixedPrefix,
-          suffix,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setUnlocked(false);
-        setStatus(data.error || "Invalid code.");
-        return;
+      if (char && index < 3) {
+        inputRefs.current[index + 1]?.focus();
       }
 
-      setUnlocked(true);
-      setStatus("Access granted.");
-    } catch {
-      setUnlocked(false);
-      setStatus("Server error.");
-    } finally {
-      setLoading(false);
+      // Auto-submit when last box filled
+      if (index === 3 && char) {
+        const code = [...next.slice(0, 3), char].join("");
+        if (code.length === 4) submit(code, next);
+      }
+    },
+    [chars, panelState]
+  );
+
+  const handleKeyDown = useCallback(
+    (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Backspace" && !chars[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
+      if (e.key === "Enter") {
+        const code = chars.join("");
+        if (code.length === 4) submit(code, chars);
+      }
+    },
+    [chars]
+  );
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      e.preventDefault();
+      const pasted = e.clipboardData.getData("text").trim().toUpperCase().slice(0, 4);
+      const next = [...chars];
+      pasted.split("").forEach((c, i) => { next[i] = c; });
+      setChars(next);
+      if (pasted.length === 4) submit(pasted, next);
+      else inputRefs.current[pasted.length]?.focus();
+    },
+    [chars]
+  );
+
+  const submit = (code: string, currentChars: string[]) => {
+    if (code === unlockCode.toUpperCase()) {
+      setPanelState("unlocked");
+      setTimeout(() => onUnlock?.(), 900);
+    } else {
+      setPanelState("error");
+      setTimeout(() => {
+        setPanelState("locked");
+        setChars(["", "", "", ""]);
+        inputRefs.current[0]?.focus();
+      }, 900);
     }
   };
 
+  const resetPanel = () => {
+    setPanelState("locked");
+    setChars(["", "", "", ""]);
+    setTimeout(() => inputRefs.current[0]?.focus(), 50);
+  };
+
   return (
-    <section className="fx-premiumSection">
-      <header className="fx-topbar">
-        <div className="fx-brand">
-          <div className="fx-brandTitle">Fx🜲</div>
-          <div className="fx-brandSub">EXCLUSIVE SPACE</div>
-        </div>
-
-        <a
-          className="fx-contactBtn"
-          href="https://t.me/User18fx"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Contact Me ≡▹
-        </a>
-      </header>
-
-      <div className="fx-premiumGrid">
-        <div className="fx-copySide">
-          <h2 className="fx-copyTitle">
-            {unlocked ? "ACCESS GRANTED" : "PREMIUM CONTENT ACCESS"}
-          </h2>
-
-          <p className="fx-copyText">
-            {unlocked
-              ? "The album is now unlocked."
-              : "Keep it lit, keep it real. Explore the visual experience."}
-          </p>
-        </div>
-
-        <div className="fx-cardSide">
-          <div
-            className={`fx-lockCardShell ${unlocked ? "fx-shellUnlocked" : ""}`}
-          >
-            <article
-              className={`fx-lockCard ${unlocked ? "fx-cardUnlocked" : ""}`}
-            >
-              <div className="fx-crown">🜲</div>
-
-              <div className="fx-lockHead">
-                {unlocked ? "UNLOCKED" : "LOCKED"}
-              </div>
-
-              <div className="fx-lockUser">
-                {fixedPrefix}
-                <strong>{value || "AX01"}</strong>
-              </div>
-
-              <div className="fx-lockArrow">↙</div>
-
-              <input
-                className="fx-lockInput"
-                type="text"
-                value={value}
-                maxLength={4}
-                inputMode="text"
-                autoComplete="off"
-                placeholder="____"
-                onChange={(e) =>
-                  setValue(
-                    e.target.value
-                      .toUpperCase()
-                      .replace(/[^A-Z0-9]/g, "")
-                      .slice(0, 4)
-                  )
-                }
-              />
-
-              <div className="fx-lockHint">ENTER THE LAST 4 CHARACTERS</div>
-
-              <div className="fx-unlockTitle">
-                {loading ? "CHECKING..." : "UNLOCK ALBUM"}
-              </div>
-
-              <button
-                type="button"
-                className={`fx-lockOnlyBtn ${
-                  unlocked ? "fx-lockOnlyBtnUnlocked" : ""
-                }`}
-                aria-label="Unlock album"
-                onClick={handleUnlock}
-                disabled={loading}
+    <div className={styles.wrapper}>
+      <motion.div
+        className={`${styles.card} ${panelState === "error" ? styles.cardError : ""} ${panelState === "unlocked" ? styles.cardUnlocked : ""}`}
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {/* Crown / lock icon */}
+        <div className={styles.topIcon}>
+          <AnimatePresence mode="wait">
+            {panelState === "unlocked" ? (
+              <motion.span
+                key="unlocked"
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className={styles.iconUnlocked}
               >
-                <span className="fx-lockEmoji">{unlocked ? "🔓" : "🔒"}</span>
-              </button>
-
-              {status ? <div className="fx-statusText">{status}</div> : null}
-            </article>
-          </div>
+                ✦
+              </motion.span>
+            ) : (
+              <motion.span key="crown" className={styles.iconCrown}>♛</motion.span>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
 
-      <footer className="fx-footer">
-        | USER | 𝐅ㄨ🜲 2026 | © ALL RIGHTS RESERVED |
-      </footer>
-    </section>
+        {/* Title */}
+        <h1 className={`${styles.title} ${glitchActive ? styles.glitch : ""}`} data-text="LOCKED">
+          <AnimatePresence mode="wait">
+            {panelState === "unlocked" ? (
+              <motion.span
+                key="u"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={styles.titleUnlocked}
+              >
+                UNLOCKED
+              </motion.span>
+            ) : (
+              <motion.span key="l">LOCKED</motion.span>
+            )}
+          </AnimatePresence>
+        </h1>
+
+        {/* Album path */}
+        <div className={styles.path}>
+          <span className={styles.pathDim}>{userPath}/</span>
+          <span className={styles.pathBold}>{albumTitle}</span>
+        </div>
+
+        {/* Separator */}
+        <div className={styles.separator}>
+          <span />
+          <span className={styles.sepDot} />
+          <span />
+        </div>
+
+        {/* 4-box input */}
+        <AnimatePresence>
+          {panelState !== "unlocked" && (
+            <motion.div
+              className={styles.inputRow}
+              animate={panelState === "error" ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : { x: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {chars.map((char, i) => (
+                <input
+                  key={i}
+                  ref={(el) => { inputRefs.current[i] = el; }}
+                  className={`${styles.charBox} ${char ? styles.charBoxFilled : ""} ${panelState === "error" ? styles.charBoxError : ""}`}
+                  maxLength={2}
+                  value={char}
+                  onChange={(e) => handleChange(i, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(i, e)}
+                  onPaste={handlePaste}
+                  autoFocus={i === 0}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <p className={styles.hint}>
+          {panelState === "error"
+            ? "CÓDIGO INCORRECTO"
+            : panelState === "unlocked"
+            ? "ACCESO CONCEDIDO"
+            : "ENTER THE LAST 4 CHARACTERS"}
+        </p>
+
+        {/* Action button */}
+        <AnimatePresence mode="wait">
+          {panelState === "unlocked" ? (
+            <motion.button
+              key="back"
+              className={styles.btnSecondary}
+              onClick={resetPanel}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              ← VOLVER
+            </motion.button>
+          ) : (
+            <motion.button
+              key="unlock"
+              className={`${styles.btn} ${panelState === "error" ? styles.btnError : ""}`}
+              onClick={() => {
+                const code = chars.join("");
+                if (code.length === 4) submit(code, chars);
+              }}
+              whileTap={{ scale: 0.96 }}
+            >
+              UNLOCK ALBUM
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* Lock icon */}
+        <motion.div
+          className={styles.lockIcon}
+          animate={
+            panelState === "unlocked"
+              ? { rotate: [0, -15, 0], scale: [1, 1.2, 1] }
+              : {}
+          }
+          transition={{ duration: 0.4 }}
+        >
+          {panelState === "unlocked" ? "🔓" : panelState === "error" ? "🔒" : "🔒"}
+        </motion.div>
+      </motion.div>
+    </div>
   );
 }
