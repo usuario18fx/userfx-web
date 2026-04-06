@@ -1,78 +1,56 @@
 import { Telegraf, Markup } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const WEBSITE_URL = "https://userfx-web.vercel.app";
 
-if (!BOT_TOKEN) {
-  throw new Error("Missing BOT_TOKEN");
-}
+const WEBSITE_URL = "https://userfx-web.vercel.app";
+const ZOOM_URL = "https://zoom.us/j/XXXXXXX"; // ← TU LINK REAL
+const TELEGRAM_CALL_URL = "https://t.me/User18fx"; // ← tu user
+
+if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const BRAND = "𝐅𝐗 | 𝐖𝐄𝐁𝐒𝐈𝐓𝐄";
-const PLAN_NAME = "🔷 userFX";
-const EXPIRES_AT = "Mar 25, 2026 · 08:13 a.m.";
-const STATUS = "Verified";
-const ACCESS_STATE = "Active";
-
 /* =========================
-   KEYBOARDS
+   CONFIG
 ========================= */
 
-function getMainKeyboard() {
-  return Markup.keyboard(
-    [
-      ["💳 Membership", "⭐ Stars"],
-      ["🔐 Access", "🖥️ Channels"],
-      ["💬 Contact", "🔄 Refresh"],
-    ],
-    { columns: 2 }
-  ).resize();
-}
+const PLAN_NAME = "🔥 FX VIP";
+const PRICE_STARS = 500;
 
-function getAccessKeyboard() {
-  return Markup.keyboard(
-    [
-      ["📺 Feed", "🌩️ VideoClouds"],
-      ["📸 Photos", "🎁 Gifts"],
-      ["↩️ Back"],
-    ],
-    { columns: 2 }
-  ).resize();
-}
+/* =========================
+   INLINE UI
+========================= */
 
-function getMainInlineKeyboard() {
+function mainInline() {
   return Markup.inlineKeyboard([
     [
-      Markup.button.callback("💳 Membership", "membership"),
+      Markup.button.url("📞 Zoom Call", ZOOM_URL),
+      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
+    ],
+    [
+      Markup.button.callback("🔥 Buy Access", "buy"),
       Markup.button.callback("⭐ Stars", "stars"),
     ],
     [
       Markup.button.callback("🔐 Access", "access"),
-      Markup.button.callback("🖥️ Channels", "channels"),
-    ],
-    [
-      Markup.button.webApp("🌐 Open Website", WEBSITE_URL),
-    ],
-    [
-      Markup.button.callback("💬 Contact", "contact"),
-      Markup.button.callback("🔄 Refresh", "refresh"),
+      Markup.button.webApp("🌐 Enter Site", WEBSITE_URL),
     ],
   ]);
 }
 
-function getAccessInlineKeyboard() {
+function accessInline() {
   return Markup.inlineKeyboard([
     [
       Markup.button.callback("📺 Feed", "feed"),
-      Markup.button.callback("🌩️ VideoClouds", "videoclouds"),
+      Markup.button.callback("📸 Photos", "photos"),
     ],
     [
-      Markup.button.callback("📸 Photos", "photos"),
+      Markup.button.callback("🌩️ VideoClouds", "cloud"),
       Markup.button.callback("🎁 Gifts", "gifts"),
     ],
     [
-      Markup.button.webApp("🌐 Enter Site", WEBSITE_URL),
+      Markup.button.url("📞 Zoom Call", ZOOM_URL),
+      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
     ],
     [
       Markup.button.callback("↩️ Back", "main"),
@@ -80,359 +58,131 @@ function getAccessInlineKeyboard() {
   ]);
 }
 
-function getChannelsInlineKeyboard() {
-  return Markup.inlineKeyboard([
-    [Markup.button.url("🌐 Website", WEBSITE_URL)],
-    [Markup.button.callback("↩️ Back", "main")],
-  ]);
-}
-
-function getContactInlineKeyboard() {
-  return Markup.inlineKeyboard([
-    [Markup.button.url("💬 Contact Support", "https://t.me/User18fx")],
-    [Markup.button.callback("↩️ Back", "main")],
-  ]);
-}
-
 /* =========================
-   SAFE SEND HELPERS
+   START (VIDEO + CTA)
 ========================= */
 
-async function replyWithMenu(ctx, text, extra = {}) {
-  await ctx.reply(text, {
-    parse_mode: "HTML",
-    ...extra,
-  });
-}
+bot.start(async (ctx) => {
+  await ctx.replyWithVideo(
+    { url: "https://tu-video.mp4" }, // ← TU VIDEO
+    {
+      caption: `🎥 Down to a video call?
 
-async function editOrReply(ctx, text, extra = {}) {
-  const payload = {
-    parse_mode: "HTML",
-    ...extra,
-  };
+Here’s the link, hop on whenever you’re ready.
 
-  try {
-    if (ctx.callbackQuery?.message) {
-      await ctx.editMessageText(text, payload);
-      return;
+🔥 ${PLAN_NAME}`,
+      ...mainInline(),
     }
-  } catch (error) {
-    console.error("EDIT MESSAGE FALLBACK:", error);
-  }
-
-  await ctx.reply(text, payload);
-}
+  );
+});
 
 /* =========================
    PANELS
 ========================= */
 
-async function sendMainPanel(ctx) {
-  const text = `${BRAND}
+async function sendMain(ctx) {
+  await ctx.editMessageCaption?.(
+    `🔥 <b>FX ACCESS</b>
 
-<b>Exclusive access panel</b>
-
-Premium content, private sections, and direct entry.
-
-Choose a section below.`;
-
-  await editOrReply(ctx, text, getMainInlineKeyboard());
-  await ctx.reply("‎", getMainKeyboard());
+Premium access panel.`,
+    {
+      parse_mode: "HTML",
+      ...mainInline(),
+    }
+  ).catch(async () => {
+    await ctx.reply(
+      `🔥 <b>FX ACCESS</b>`,
+      {
+        parse_mode: "HTML",
+        ...mainInline(),
+      }
+    );
+  });
 }
 
-async function sendMembershipPanel(ctx) {
-  const text = `💳 <b>MEMBERSHIP</b>
+async function sendAccess(ctx) {
+  await ctx.editMessageText(
+    `🔐 <b>ACCESS OPEN</b>
 
-Plan
-<b>${PLAN_NAME}</b>
-
-Status
-<b>${STATUS}</b>
-
-Access
-<b>${ACCESS_STATE}</b>
-
-Expires
-<b>${EXPIRES_AT}</b>
-
-Your membership is currently active.`;
-
-  await editOrReply(ctx, text, Markup.inlineKeyboard([
-    [
-      Markup.button.callback("⭐ Buy Stars", "stars"),
-      Markup.button.callback("🔄 Refresh", "refresh"),
-    ],
-    [
-      Markup.button.webApp("🌐 Open Website", WEBSITE_URL),
-    ],
-    [
-      Markup.button.callback("↩️ Back", "main"),
-    ],
-  ]));
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendStarsPanel(ctx) {
-  const text = `⭐ <b>STARS</b>
-
-Telegram Stars section.
-
-Here you can later connect:
-• buy stars
-• sell stars
-• wallet
-• premium upgrades
-
-Right now this is the visual entry panel.`;
-
-  await editOrReply(ctx, text, Markup.inlineKeyboard([
-    [
-      Markup.button.callback("💳 Membership", "membership"),
-      Markup.button.callback("🔄 Refresh", "refresh"),
-    ],
-    [
-      Markup.button.webApp("🌐 Open Website", WEBSITE_URL),
-    ],
-    [
-      Markup.button.callback("↩️ Back", "main"),
-    ],
-  ]));
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendAccessPanel(ctx) {
-  const text = `🔐 <b>ACCESS OPEN</b>
-
-Plan
-<b>${PLAN_NAME}</b>
-
-Status
-<b>${ACCESS_STATE}</b>
-
-Valid until
-<b>${EXPIRES_AT}</b>
-
-Choose a section below.`;
-
-  await editOrReply(ctx, text, getAccessInlineKeyboard());
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendChannelsPanel(ctx) {
-  const text = `🖥️ <b>CHANNELS</b>
-
-Private channel access
-Exclusive drops
-Locked sections
-Direct website entry
-
-Use the button below to enter.`;
-
-  await editOrReply(ctx, text, getChannelsInlineKeyboard());
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendRefreshPanel(ctx) {
-  const text = `🔄 <b>STATUS UPDATED</b>
-
-Plan
-<b>${PLAN_NAME}</b>
-
-Status
-<b>${STATUS}</b>
-
-Access
-<b>${ACCESS_STATE}</b>
-
-Expires
-<b>${EXPIRES_AT}</b>`;
-
-  await editOrReply(ctx, text, getMainInlineKeyboard());
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendFeedMessage(ctx) {
-  const text = `📺 <b>FEED</b>
-
-Selected drops
-Public previews
-Featured content`;
-
-  await editOrReply(ctx, text, getAccessInlineKeyboard());
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendVideoCloudsMessage(ctx) {
-  const text = `🌩️ <b>VIDEOCLOUDS</b>
-
-Ambient room
-Visual session
-Cloud access enabled`;
-
-  await editOrReply(ctx, text, getAccessInlineKeyboard());
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendPhotosMessage(ctx) {
-  const text = `📸 <b>PHOTOS</b>
-
-Unlocked visual section
-Private gallery access`;
-
-  await editOrReply(ctx, text, getAccessInlineKeyboard());
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendGiftsMessage(ctx) {
-  const text = `🎁 <b>GIFTS</b>
-
-Support section
-Transfer section
-Additional access support`;
-
-  await editOrReply(ctx, text, getAccessInlineKeyboard());
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendContactPanel(ctx) {
-  const text = `💬 <b>CONTACT</b>
-
-Direct support available.
-
-Tap the button below to open the chat.`;
-
-  await editOrReply(ctx, text, getContactInlineKeyboard());
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-/* =========================
-   START / COMMANDS
-========================= */
-
-bot.start(async (ctx) => {
-  await sendMainPanel(ctx);
-});
-
-bot.command("help", async (ctx) => {
-  await replyWithMenu(
-    ctx,
-    `${BRAND}
-
-<b>Available commands</b>
-
-/start
-/help`,
-    getMainInlineKeyboard()
+Plan: ${PLAN_NAME}`,
+    {
+      parse_mode: "HTML",
+      ...accessInline(),
+    }
   );
-
-  await ctx.reply("‎", getMainKeyboard());
-});
+}
 
 /* =========================
-   TEXT BUTTONS
+   PAYMENT (STARS)
 ========================= */
 
-bot.hears("💳 Membership", async (ctx) => {
-  await sendMembershipPanel(ctx);
+bot.action("buy", async (ctx) => {
+  await ctx.answerCbQuery();
+
+  await ctx.replyWithInvoice({
+    title: PLAN_NAME,
+    description: "Full access to Fx Website",
+    payload: "fx_vip",
+    provider_token: "",
+    currency: "XTR",
+    prices: [{ label: "FX VIP", amount: PRICE_STARS }],
+  });
 });
 
-bot.hears("⭐ Stars", async (ctx) => {
-  await sendStarsPanel(ctx);
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
 });
 
-bot.hears("🔐 Access", async (ctx) => {
-  await sendAccessPanel(ctx);
-});
+bot.on("successful_payment", async (ctx) => {
+  await ctx.reply(
+    `✅ <b>PAYMENT SUCCESSFUL</b>
 
-bot.hears("🖥️ Channels", async (ctx) => {
-  await sendChannelsPanel(ctx);
-});
-
-bot.hears("💬 Contact", async (ctx) => {
-  await sendContactPanel(ctx);
-});
-
-bot.hears("🔄 Refresh", async (ctx) => {
-  await sendRefreshPanel(ctx);
-});
-
-bot.hears("📺 Feed", async (ctx) => {
-  await sendFeedMessage(ctx);
-});
-
-bot.hears("🌩️ VideoClouds", async (ctx) => {
-  await sendVideoCloudsMessage(ctx);
-});
-
-bot.hears("📸 Photos", async (ctx) => {
-  await sendPhotosMessage(ctx);
-});
-
-bot.hears("🎁 Gifts", async (ctx) => {
-  await sendGiftsMessage(ctx);
-});
-
-bot.hears("↩️ Back", async (ctx) => {
-  await sendMainPanel(ctx);
+Access granted.`,
+    {
+      parse_mode: "HTML",
+      ...Markup.inlineKeyboard([
+        [Markup.button.webApp("🔥 ENTER NOW", WEBSITE_URL)],
+      ]),
+    }
+  );
 });
 
 /* =========================
-   INLINE CALLBACKS
+   ACTIONS
 ========================= */
 
 bot.action("main", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendMainPanel(ctx);
-});
-
-bot.action("membership", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendMembershipPanel(ctx);
-});
-
-bot.action("stars", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendStarsPanel(ctx);
+  await sendMain(ctx);
 });
 
 bot.action("access", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendAccessPanel(ctx);
+  await sendAccess(ctx);
 });
 
-bot.action("channels", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendChannelsPanel(ctx);
-});
-
-bot.action("contact", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendContactPanel(ctx);
-});
-
-bot.action("refresh", async (ctx) => {
-  await ctx.answerCbQuery("Updated");
-  await sendRefreshPanel(ctx);
+bot.action("stars", async (ctx) => {
+  await ctx.answerCbQuery("Use Buy Access");
 });
 
 bot.action("feed", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendFeedMessage(ctx);
-});
-
-bot.action("videoclouds", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendVideoCloudsMessage(ctx);
+  await ctx.reply("📺 Feed unlocked");
 });
 
 bot.action("photos", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendPhotosMessage(ctx);
+  await ctx.reply("📸 Photos unlocked");
+});
+
+bot.action("cloud", async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.reply("🌩️ Cloud active");
 });
 
 bot.action("gifts", async (ctx) => {
   await ctx.answerCbQuery();
-  await sendGiftsMessage(ctx);
+  await ctx.reply("🎁 Gifts section");
 });
 
 /* =========================
@@ -440,32 +190,10 @@ bot.action("gifts", async (ctx) => {
 ========================= */
 
 bot.on("text", async (ctx) => {
-  const text = (ctx.message.text || "").trim();
-
-  const knownInputs = [
-    "💳 Membership",
-    "⭐ Stars",
-    "🔐 Access",
-    "🖥️ Channels",
-    "💬 Contact",
-    "🔄 Refresh",
-    "📺 Feed",
-    "🌩️ VideoClouds",
-    "📸 Photos",
-    "🎁 Gifts",
-    "↩️ Back",
-    "/start",
-    "/help",
-  ];
-
-  if (knownInputs.includes(text)) return;
-
-  await sendMainPanel(ctx);
+  await ctx.reply("Use /start");
 });
 
-bot.catch((error) => {
-  console.error("TELEGRAF ERROR:", error);
-});
+bot.catch(console.error);
 
 /* =========================
    VERCEL HANDLER
@@ -473,19 +201,7 @@ bot.catch((error) => {
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    return res.status(200).json({
-      ok: true,
-      method: req.method,
-      message: "Telegram endpoint alive",
-    });
-  }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "method_not_allowed",
-      method: req.method,
-    });
+    return res.status(200).json({ ok: true });
   }
 
   try {
@@ -493,15 +209,9 @@ export default async function handler(req, res) {
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
     await bot.handleUpdate(update);
-
     return res.status(200).json({ ok: true });
-  } catch (error) {
-    console.error("TELEGRAM HANDLER ERROR:", error);
-
-    return res.status(500).json({
-      ok: false,
-      error: "handler_error",
-      details: String(error?.message || error),
-    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "handler_error" });
   }
 }
