@@ -155,7 +155,7 @@ function getVideoCallKeyboard() {
       inline_keyboard: [
         [
           { text: "🔵 ᴇɴᴛᴇʀ ᴢᴏᴏᴍ", url: ZOOM_URL },
-          { text: "📞 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍM", url: TELEGRAM_CALL_URL },
+          { text: "📞 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ", url: TELEGRAM_CALL_URL },
         ],
         [{ text: "🌐 ᴡᴇʙꜱɪᴛᴇ", url: WEBSITE_URL }],
       ],
@@ -199,7 +199,7 @@ function getVipPaymentInlineKeyboard() {
 
 function buildWelcomeCaption() {
   return `•╦————————————╦•
- ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
+•      ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
 
 📹ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
        🔹 ᴢᴏᴏᴍ ʀᴏᴏᴍꜱ【ᴍx-ᴇᴜᴀ-ᴄᴀ】
@@ -213,8 +213,9 @@ function buildWelcomeCaption() {
 function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return `•╦————————————╦•
-           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+  return 
+`•╦————————————╦•
+• ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 👑 [𝐗-𝐮𝐬𝐞𝐫]
 ⇀ ᴘʀɪᴄᴇ   $3
 ⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "user" ? plan.status : "Inactive"}
@@ -226,7 +227,7 @@ function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
-           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+ •          ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 🔥 [𝐕-𝐯𝐢𝐩]
 ⇀ ᴘʀɪᴄᴇ   $12
 ⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "vip" ? plan.status : "Inactive"}
