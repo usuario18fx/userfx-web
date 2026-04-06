@@ -1,4 +1,4 @@
-import { Telegraf, Markup } from "telegraf";
+import { Telegraf, Markup, Input } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
@@ -315,10 +315,29 @@ async function sendMainMenu(ctx) {
   await ctx.reply(buildWelcomeCaption(), getMainKeyboard());
 }
 
+async function sendHelpMessage(ctx) {
+  await ctx.replyWithPhoto(
+    Input.fromLocalFile("./assets/help.jpeg"),
+    {
+      caption: `•╦————————————╦•
+🆘 ʜᴇʟᴘ
+
+Choose your mode and continue below.
+•╩————————————╩•`,
+    }
+  );
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
 async function sendUserMode(ctx) {
-  await ctx.reply(buildUserCard(ctx.from?.id), {
-    ...getUserPaymentInlineKeyboard(),
-  });
+  await ctx.replyWithVideo(
+    Input.fromLocalFile("./assets/welcome.mp4"),
+    {
+      caption: buildUserCard(ctx.from?.id),
+      ...getUserPaymentInlineKeyboard(),
+    }
+  );
   await ctx.reply("‎", getBackKeyboard());
 }
 
@@ -409,15 +428,16 @@ Private gallery access.
 }
 
 async function sendGiftsMessage(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
+  await ctx.replyWithPhoto(
+    Input.fromLocalFile("./assets/gifts.jpeg"),
+    {
+      caption: `•╦————————————╦•
 🎁 ɢɪꜰᴛꜱ
 
 Support section
 Transfer section
 Additional access support
 •╩————————————╩•`,
-    {
       ...getWebsiteInlineKeyboard(),
     }
   );
@@ -440,14 +460,15 @@ async function startVideoCallFlow(ctx) {
 
   await notifyAdminNewRequest(ctx);
 
-  await ctx.reply(
-    `•╦————————————╦•
+  await ctx.replyWithPhoto(
+    Input.fromLocalFile("./assets/videocall.jpeg"),
+    {
+      caption: `•╦————————————╦•
 📹 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ
 
 Send one photo or video to continue.
 Choose Zoom or Telegram after approval.
 •╩————————————╩•`,
-    {
       reply_markup: { remove_keyboard: true },
     }
   );
@@ -518,7 +539,7 @@ Tap below to open the private Smokelandia channel.
 });
 
 bot.command("help", async (ctx) => {
-  await sendMainMenu(ctx);
+  await sendHelpMessage(ctx);
 });
 
 bot.command("videocall", async (ctx) => {
