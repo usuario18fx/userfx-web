@@ -3,8 +3,8 @@ import { Telegraf, Markup } from "telegraf";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
 const WEBSITE_URL = "https://userfx-web.vercel.app";
-const ZOOM_URL = "https://zoom.us/j/XXXXXXX"; // ← TU LINK REAL
-const TELEGRAM_CALL_URL = "https://t.me/User18fx"; // ← tu user
+const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1"; 
+const TELEGRAM_CALL_URL = "https://t.me/call/s39BEL0fLj-4PUttM0ZHOV2DB1gx";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 
