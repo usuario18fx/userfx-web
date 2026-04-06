@@ -16,7 +16,7 @@ const SMOKELANDIA_BOT_URL =
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
-/* BOTONES ESTABLES */
+/* BOTONES SIMPLES Y ESTABLES */
 const BTN_USER = "👑 [X-user]";
 const BTN_VIP = "🔥 [V-vip]";
 const BTN_VIDEOCALL = "📞 VIDEOCALL";
@@ -36,11 +36,13 @@ if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 const bot = new Telegraf(BOT_TOKEN);
 
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
+
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
 
 const memberships = globalThis.__fxMemberships || new Map();
+
 if (!globalThis.__fxMemberships) {
   globalThis.__fxMemberships = memberships;
 }
@@ -63,6 +65,7 @@ function getRequesterData(from) {
 
 function getMembership(userId) {
   const current = memberships.get(String(userId));
+
   if (!current) return null;
 
   if (current.expiresAt && Date.now() > current.expiresAt) {
@@ -208,7 +211,7 @@ function getVipPaymentInlineKeyboard() {
   };
 }
 
-/* AQUÍ SÍ PUEDES DEJAR TU FUENTE FANCY */
+/* ESTILO FANCY SOLO EN MENSAJES */
 function buildWelcomeCaption() {
   return `•╦————————————╦•
  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
@@ -328,9 +331,11 @@ async function sendVipMode(ctx) {
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `📺 CHANNELS
+    `•╦————————————╦•
+📺 ᴄʜᴀɴɴᴇʟꜱ
 
-Choose where to continue.`,
+Choose where to continue.
+•╩————————————╩•`,
     {
       ...getChannelsInlineKeyboard(),
     }
@@ -340,9 +345,11 @@ Choose where to continue.`,
 
 async function sendWebsitePanel(ctx) {
   await ctx.reply(
-    `🌐 WEBSITE
+    `•╦————————————╦•
+🌐 ᴡᴇʙꜱɪᴛᴇ
 
-Open the site below.`,
+Open the site below.
+•╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -356,11 +363,13 @@ async function sendRefreshPanel(ctx) {
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `📋 FEED
+    `•╦————————————╦•
+📋 ꜰᴇᴇᴅ
 
 Selected drops
 Public previews
-Featured content`,
+Featured content
+•╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -370,11 +379,13 @@ Featured content`,
 
 async function sendCloudsMessage(ctx) {
   await ctx.reply(
-    `☁️ CLOUDS
+    `•╦————————————╦•
+☁️ ᴄʟᴏᴜᴅꜱ
 
 Ambient room
 Visual session
-Cloud access enabled`,
+Cloud access enabled
+•╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -384,10 +395,12 @@ Cloud access enabled`,
 
 async function sendPhotosMessage(ctx) {
   await ctx.reply(
-    `📸 PHOTOS
+    `•╦————————————╦•
+📸 ᴘʜᴏᴛᴏꜱ
 
 New pics every week.
-Private gallery access.`,
+Private gallery access.
+•╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -397,11 +410,13 @@ Private gallery access.`,
 
 async function sendGiftsMessage(ctx) {
   await ctx.reply(
-    `🎁 GIFTS
+    `•╦————————————╦•
+🎁 ɢɪꜰᴛꜱ
 
 Support section
 Transfer section
-Additional access support`,
+Additional access support
+•╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -426,10 +441,12 @@ async function startVideoCallFlow(ctx) {
   await notifyAdminNewRequest(ctx);
 
   await ctx.reply(
-    `📹 Videocall request received
+    `•╦————————————╦•
+📹 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ
 
 Send one photo or video to continue.
-Choose Zoom or Telegram after approval.`,
+Choose Zoom or Telegram after approval.
+•╩————————————╩•`,
     {
       reply_markup: { remove_keyboard: true },
     }
@@ -441,9 +458,11 @@ async function completeMediaFlow(ctx, label = "File") {
   pendingVideoRequests.delete(userId);
 
   await ctx.reply(
-    `✅ ${escapeHtml(label)} received
+    `•╦————————————╦•
+✅ ${escapeHtml(label)} ʀᴇᴄᴇɪᴠᴇᴅ
 
-Continue below.`,
+Continue below.
+•╩————————————╩•`,
     {
       ...getVideoCallKeyboard(),
     }
@@ -461,9 +480,11 @@ bot.start(async (ctx) => {
 
   if (payload === "userchannel") {
     await ctx.reply(
-      `🜲 USER ENTRY
+      `•╦————————————╦•
+🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
 
-Tap below to open the private User channel.`,
+Tap below to open the private User channel.
+•╩————————————╩•`,
       {
         reply_markup: {
           inline_keyboard: [
@@ -477,9 +498,11 @@ Tap below to open the private User channel.`,
 
   if (payload === "smokelandiachannel") {
     await ctx.reply(
-      `☁️ SMOKELANDIA ENTRY
+      `•╦————————————╦•
+☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
 
-Tap below to open the private Smokelandia channel.`,
+Tap below to open the private Smokelandia channel.
+•╩————————————╩•`,
       {
         reply_markup: {
           inline_keyboard: [
@@ -553,6 +576,7 @@ bot.hears(BTN_EXIT, async (ctx) => {
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendUserStarsInvoice(ctx);
+  console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
 });
 
 bot.action("buy_vip_stars", async (ctx) => {
@@ -598,6 +622,19 @@ bot.on("photo", async (ctx) => {
   await completeMediaFlow(ctx, "Photos");
 });
 
+bot.action(/^video_back_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Usuario devuelto al menú");
+
+  const requesterId = ctx.match[1];
+  pendingVideoRequests.delete(String(requesterId));
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    buildWelcomeCaption(),
+    getMainKeyboard()
+  );
+});
+
 bot.on("video", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
@@ -613,19 +650,6 @@ bot.on("video", async (ctx) => {
   );
 
   await completeMediaFlow(ctx, "Video");
-});
-
-bot.action(/^video_back_(.+)$/, async (ctx) => {
-  await ctx.answerCbQuery("Usuario devuelto al menú");
-
-  const requesterId = ctx.match[1];
-  pendingVideoRequests.delete(String(requesterId));
-
-  await bot.telegram.sendMessage(
-    requesterId,
-    buildWelcomeCaption(),
-    getMainKeyboard()
-  );
 });
 
 bot.on("text", async (ctx) => {
@@ -685,6 +709,9 @@ export default async function handler(req, res) {
     req.headers["x-real-ip"] ||
     req.headers["x-vercel-forwarded-for"] ||
     "unknown";
+
+  console.log("IP:", ip);
+  console.log("HEADERS:", req.headers);
 
   if (req.method === "GET") {
     return res.status(200).json({
