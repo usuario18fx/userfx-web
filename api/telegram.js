@@ -1,207 +1,206 @@
 import { Telegraf, Markup } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
 const WEBSITE_URL = "https://userfx-web.vercel.app";
-const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1"; 
-const TELEGRAM_CALL_URL = "https://t.me/call/s39BEL0fLj-4PUttM0ZHOV2DB1gx";
+
+const ZOOM_URL =
+  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
+
+const TELEGRAM_CALL_URL = "https://t.me/User18fx";
+
+const CONTACT_URL = "https://t.me/User18fx";
+
+const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
+const SMOKELANDIA_BOT_URL =
+  "https://t.me/Smokelandiabot?start=smokelandiachannel";
+
+const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
+if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
-/* =========================
-   CONFIG
-========================= */
-
-const PLAN_NAME = "🔥 FX VIP";
-const PRICE_STARS = 500;
-
-/* =========================
-   INLINE UI
-========================= */
-
-function mainInline() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-    ],
-    [
-      Markup.button.callback("🔥 Buy Access", "buy"),
-      Markup.button.callback("⭐ Stars", "stars"),
-    ],
-    [
-      Markup.button.callback("🔐 Access", "access"),
-      Markup.button.webApp("🌐 Enter Site", WEBSITE_URL),
-    ],
-  ]);
+const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
+if (!globalThis.__fxPendingVideoRequests) {
+  globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
 
-function accessInline() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("📺 Feed", "feed"),
-      Markup.button.callback("📸 Photos", "photos"),
-    ],
-    [
-      Markup.button.callback("🌩️ VideoClouds", "cloud"),
-      Markup.button.callback("🎁 Gifts", "gifts"),
-    ],
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-    ],
-    [
-      Markup.button.callback("↩️ Back", "main"),
-    ],
-  ]);
+const memberships = globalThis.__fxMemberships || new Map();
+if (!globalThis.__fxMemberships) {
+  globalThis.__fxMemberships = memberships;
 }
 
-/* =========================
-   START (VIDEO + CTA)
-========================= */
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function getRequesterData(from) {
+  const fullName =
+    `${from?.first_name || ""} ${from?.last_name || ""}`.trim() || "No name";
+  const username = from?.username ? `@${from.username}` : "sin_username";
+  const id = String(from?.id || "");
+  return { fullName, username, id };
+}
+
+function setMembership(userId, planKey) {
+  const now = Date.now();
+  const expiresAt =
+    planKey === "vip"
+      ? now + 30 * 24 * 60 * 60 * 1000
+      : now + 3 * 24 * 60 * 60 * 1000;
+
+  memberships.set(String(userId), {
+    planKey,
+    expiresAt,
+    paidAt: now,
+  });
+}
+
+function getMainKeyboard() {
+  return Markup.keyboard(
+    [
+      ["👑 [X-user]", "🔥 [V-vip]"],
+      ["📞 VIDEOCALL", "📺 CHANNELS"],
+      ["🌐 WEBSITE", "↺"],
+    ],
+    { columns: 2 }
+  ).resize();
+}
+
+function getBackKeyboard() {
+  return Markup.keyboard([["⏎"]]).resize();
+}
+
+function getZoomKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "📞 ZOOM CALL", url: ZOOM_URL },
+          { text: "💬 TELEGRAM CALL", url: TELEGRAM_CALL_URL },
+        ],
+        [{ text: "🌐 WEBSITE", url: WEBSITE_URL }],
+      ],
+    },
+  };
+}
+
+async function notifyAdminNewRequest(ctx) {
+  const r = getRequesterData(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📞 New call request
+
+Nombre: ${escapeHtml(r.fullName)}
+Usuario: ${escapeHtml(r.username)}
+ID: ${r.id}`
+  );
+}
+
+async function sendMainMenu(ctx) {
+  await ctx.reply("Welcome", getMainKeyboard());
+}
+
+async function startVideoCallFlow(ctx) {
+  const userId = String(ctx.from?.id || "");
+
+  pendingVideoRequests.set(userId, {
+    waitingForMedia: true,
+  });
+
+  await notifyAdminNewRequest(ctx);
+
+  await ctx.reply(
+    "Send 1 photo or video to continue.",
+    { reply_markup: { remove_keyboard: true } }
+  );
+}
+
+async function completeMediaFlow(ctx) {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
+
+  await ctx.reply(
+    "Access granted. Choose call type.",
+    {
+      ...getZoomKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getBackKeyboard());
+}
 
 bot.start(async (ctx) => {
-  await ctx.replyWithVideo(
-    { url: "https://tu-video.mp4" }, // ← TU VIDEO
-    {
-      caption: `🎥 Down to a video call?
+  await sendMainMenu(ctx);
+});
 
-Here’s the link, hop on whenever you’re ready.
+bot.hears("📞 VIDEOCALL", async (ctx) => {
+  await startVideoCallFlow(ctx);
+});
 
-🔥 ${PLAN_NAME}`,
-      ...mainInline(),
-    }
+bot.hears("↺", async (ctx) => {
+  await sendMainMenu(ctx);
+});
+
+bot.on("photo", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+  if (!pending?.waitingForMedia) return;
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
   );
+
+  await completeMediaFlow(ctx);
 });
 
-/* =========================
-   PANELS
-========================= */
+bot.on("video", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+  if (!pending?.waitingForMedia) return;
 
-async function sendMain(ctx) {
-  await ctx.editMessageCaption?.(
-    `🔥 <b>FX ACCESS</b>
-
-Premium access panel.`,
-    {
-      parse_mode: "HTML",
-      ...mainInline(),
-    }
-  ).catch(async () => {
-    await ctx.reply(
-      `🔥 <b>FX ACCESS</b>`,
-      {
-        parse_mode: "HTML",
-        ...mainInline(),
-      }
-    );
-  });
-}
-
-async function sendAccess(ctx) {
-  await ctx.editMessageText(
-    `🔐 <b>ACCESS OPEN</b>
-
-Plan: ${PLAN_NAME}`,
-    {
-      parse_mode: "HTML",
-      ...accessInline(),
-    }
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
   );
-}
 
-/* =========================
-   PAYMENT (STARS)
-========================= */
-
-bot.action("buy", async (ctx) => {
-  await ctx.answerCbQuery();
-
-  await ctx.replyWithInvoice({
-    title: PLAN_NAME,
-    description: "Full access to Fx Website",
-    payload: "fx_vip",
-    provider_token: "",
-    currency: "XTR",
-    prices: [{ label: "FX VIP", amount: PRICE_STARS }],
-  });
+  await completeMediaFlow(ctx);
 });
-
-bot.on("pre_checkout_query", async (ctx) => {
-  await ctx.answerPreCheckoutQuery(true);
-});
-
-bot.on("successful_payment", async (ctx) => {
-  await ctx.reply(
-    `✅ <b>PAYMENT SUCCESSFUL</b>
-
-Access granted.`,
-    {
-      parse_mode: "HTML",
-      ...Markup.inlineKeyboard([
-        [Markup.button.webApp("🔥 ENTER NOW", WEBSITE_URL)],
-      ]),
-    }
-  );
-});
-
-/* =========================
-   ACTIONS
-========================= */
-
-bot.action("main", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendMain(ctx);
-});
-
-bot.action("access", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendAccess(ctx);
-});
-
-bot.action("stars", async (ctx) => {
-  await ctx.answerCbQuery("Use Buy Access");
-});
-
-bot.action("feed", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply("📺 Feed unlocked");
-});
-
-bot.action("photos", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply("📸 Photos unlocked");
-});
-
-bot.action("cloud", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply("🌩️ Cloud active");
-});
-
-bot.action("gifts", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.reply("🎁 Gifts section");
-});
-
-/* =========================
-   FALLBACK
-========================= */
 
 bot.on("text", async (ctx) => {
-  await ctx.reply("Use /start");
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (pending?.waitingForMedia) {
+    await ctx.reply("Send media only.");
+    return;
+  }
+
+  await ctx.reply("Use menu.", getMainKeyboard());
 });
 
-bot.catch(console.error);
-
-/* =========================
-   VERCEL HANDLER
-========================= */
+bot.catch((err) => {
+  console.error(err);
+});
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
     return res.status(200).json({ ok: true });
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ ok: false });
   }
 
   try {
@@ -209,9 +208,10 @@ export default async function handler(req, res) {
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
     await bot.handleUpdate(update);
+
     return res.status(200).json({ ok: true });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "handler_error" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false });
   }
 }
