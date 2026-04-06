@@ -96,31 +96,31 @@ function getPlanDisplay(userId) {
 
   if (membership.planKey === "vip") {
     return {
-      label: "[V-vip]",
+      label: "[𝐕-𝐯𝐢𝐩]",
       price: "$12",
       access: "Unlimited",
-      status: "Active",
+      status: "ᴀᴄᴛɪᴠᴇ",
       emoji: "🔥",
-      planKey: "vip",
+      planKey: "𝐯𝐢𝐩p",
     };
   }
 
   return {
-    label: "[X-user]",
+    label: "[𝐗-𝐮𝐬𝐞𝐫]",
     price: "$3",
-    access: "Premium",
-    status: "Active",
+    access: "ᴘʀᴇᴍɪᴜᴍ",
+    status: "ᴀᴄᴛɪᴠᴇ",
     emoji: "👑",
-    planKey: "user",
+    planKey: "𝐮𝐬𝐞𝐫",
   };
 }
 
 function getMainKeyboard() {
   return Markup.keyboard(
     [
-      ["👑 [X-user]", "🔥 [V-vip]"],
-      ["📞 VIDEOCALL", "📺 CHANNELS"],
-      ["🌐 WEBSITE", "↺"],
+      ["👑 [𝐗-𝐮𝐬𝐞𝐫]", "🔥 [𝐕-𝐯𝐢𝐩]"],
+      ["📞ᴠɪᴅᴇᴏᴄᴀʟʟ", "📺 ᴄʜᴀɴɴᴇʟꜱ"],
+      ["🜲 ᴡᴇʙꜱɪᴛᴇ", "↺"],
     ],
     { columns: 2 }
   ).resize();
@@ -144,7 +144,7 @@ function getAccessKeyboard() {
 function getWebsiteInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }]],
+      inline_keyboard: [[{ text: "🌐 ᴏᴘᴇɴ ᴡᴇʙꜱɪᴛᴇ", url: WEBSITE_URL }]],
     },
   };
 }
@@ -154,10 +154,10 @@ function getVideoCallKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "📞 ENTER ZOOM", url: ZOOM_URL },
-          { text: "💬 OPEN TELEGRAM", url: TELEGRAM_CALL_URL },
+          { text: "🔵 ᴇɴᴛᴇʀ ᴢᴏᴏᴍ", url: ZOOM_URL },
+          { text: "📞 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍM", url: TELEGRAM_CALL_URL },
         ],
-        [{ text: "🌐 WEBSITE", url: WEBSITE_URL }],
+        [{ text: "🌐 ᴡᴇʙꜱɪᴛᴇ", url: WEBSITE_URL }],
       ],
     },
   };
@@ -179,7 +179,7 @@ function getChannelsInlineKeyboard() {
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }]],
+      inline_keyboard: [[{ text: "⭐ 300 xᴛʀ", callback_data: "buy_user_stars" }]],
     },
   };
 }
@@ -189,7 +189,7 @@ function getVipPaymentInlineKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "⭐ 1200 XTR", callback_data: "buy_vip_stars" },
+          { text: "⭐ 1200 xᴛʀ", callback_data: "buy_vip_stars" },
           { text: "💬", url: CONTACT_URL },
         ],
       ],
@@ -200,11 +200,11 @@ function getVipPaymentInlineKeyboard() {
 function buildWelcomeCaption() {
   return `•╦————————————╦•
  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
-Choose your mode and continue below.
+
 📹ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
-         🔹 ᴢᴏᴏᴍ ʀᴏᴏᴍꜱ【ᴍx-ᴇᴜᴀ-ᴄᴀ】
-         🔹ᴄᴏɴᴛᴇɴᴛ ᴘɴᴘ ᴇxᴄʟᴜꜱɪᴠᴇ    
-🔹ɴᴇᴡ ᴡᴇʙꜱɪᴛᴇ
+       🔹 ᴢᴏᴏᴍ ʀᴏᴏᴍꜱ【ᴍx-ᴇᴜᴀ-ᴄᴀ】
+    🔹ᴄᴏɴᴛᴇɴᴛ ᴘɴᴘ ᴇxᴄʟᴜꜱɪᴠᴇ    
+  🔹ɴᴇᴡ ᴡᴇʙꜱɪᴛᴇ
 ⇃ ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ📲   
           🔥ᴇɴᴊᴏʏ ɪᴛ ..
 •╩————————————╩•`;
@@ -215,10 +215,10 @@ function buildUserCard(userId) {
 
   return `•╦————————————╦•
            ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-👑 ${plan.label}
-⇀ Price   $3
-⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
-⇀ Access  Premium
+👑 [𝐗-𝐮𝐬𝐞𝐫]
+⇀ ᴘʀɪᴄᴇ   $3
+⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "user" ? plan.status : "Inactive"}
+⇀ ᴀᴄᴄᴇꜱ ᴘʀᴇᴍɪᴜᴍ
 •╩————————————╩•`;
 }
 
@@ -227,20 +227,20 @@ function buildVipCard(userId) {
 
   return `•╦————————————╦•
            ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-🔥 [V-vip]
-⇀ Price   $12
-⇀ Status  ${plan.planKey === "vip" ? plan.status : "Inactive"}
-⇀ Access  Unlimited
+🔥 [𝐕-𝐯𝐢𝐩]
+⇀ ᴘʀɪᴄᴇ   $12
+⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "vip" ? plan.status : "Inactive"}
+⇀ ᴀᴄᴄᴇꜱꜱ ᴜɴʟɪᴍɪᴛᴇᴅ
 •╩————————————╩•`;
 }
 
 async function sendUserStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "[X-user]",
+    title: "[𝐗-𝐮𝐬𝐞𝐫]",
     description: "Premium access",
     payload: "membership_user",
     currency: "XTR",
-    prices: [{ label: "[X-user]", amount: 300 }],
+    prices: [{ label: "[𝐗-𝐮𝐬𝐞𝐫]", amount: 300 }],
     provider_token: "",
     start_parameter: "buy-user-stars",
   });
@@ -248,11 +248,11 @@ async function sendUserStarsInvoice(ctx) {
 
 async function sendVipStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "[V-vip]",
+    title: "[𝐕-𝐯𝐢𝐩]",
     description: "Unlimited access",
     payload: "membership_vip",
     currency: "XTR",
-    prices: [{ label: "[V-vip]", amount: 1200 }],
+    prices: [{ label: "[𝐕-𝐯𝐢𝐩]", amount: 1200 }],
     provider_token: "",
     start_parameter: "buy-vip-stars",
   });
@@ -269,7 +269,7 @@ async function notifyAdminNewRequest(ctx) {
 
   await bot.telegram.sendMessage(
     ADMIN_CHAT_ID,
-    `📞 <b>New call request just came in</b>
+    `📞 <b>ɴᴇᴡ ᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴊᴜꜱᴛ ᴄᴀᴍᴇ ɪɴ</b>
 
 Nombre: <b>${escapeHtml(requester.fullName)}</b>
 Usuario: <b>${escapeHtml(requester.username)}</b>
@@ -315,9 +315,7 @@ async function sendVipMode(ctx) {
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `📺 CHANNELS
-
-Choose where to continue.`,
+    `📺 ᴄʜᴀɴɴᴇʟꜱ`,
     {
       ...getChannelsInlineKeyboard(),
     }
@@ -327,7 +325,7 @@ Choose where to continue.`,
 
 async function sendWebsitePanel(ctx) {
   await ctx.reply(
-    `🌐 WEBSITE
+    ` 🜲 ᴡᴇʙꜱɪᴛᴇ
 
 Open the site below.`,
     {
@@ -343,7 +341,7 @@ async function sendRefreshPanel(ctx) {
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `📋 FEED
+    `📋 ꜰᴇᴇᴅ
 
 Selected drops
 Public previews
@@ -357,11 +355,11 @@ Featured content`,
 
 async function sendCloudsMessage(ctx) {
   await ctx.reply(
-    `☁️ CLOUDS
+    `☁️ᴄʟᴏᴜᴅꜱ
 
-Ambient room
-Visual session
-Cloud access enabled`,
+ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ 
+ᴠɪꜱᴜᴀʟ ꜱᴇꜱꜱɪᴏɴ 
+ᴄʟᴏᴜᴅ ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇ`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -371,10 +369,9 @@ Cloud access enabled`,
 
 async function sendPhotosMessage(ctx) {
   await ctx.reply(
-    `📸 PHOTOS
-
-New pics every week.
-Private gallery access.`,
+    `📸 ɢᴀʟʟᴇʀʏ
+ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ. 
+ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ.`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -384,11 +381,11 @@ Private gallery access.`,
 
 async function sendGiftsMessage(ctx) {
   await ctx.reply(
-    `🎁 GIFTS
+    `🎁 ɢɪꜰᴛꜱ
 
-Support section
-Transfer section
-Additional access support`,
+ ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ 
+ ᴛʀᴀɴꜱꜰᴇʀ ꜱᴇᴄᴛɪᴏɴ 
+ᴀᴅᴅɪᴛɪᴏɴᴀʟ ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀt`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -413,10 +410,9 @@ async function startVideoCallFlow(ctx) {
   await notifyAdminNewRequest(ctx);
 
   await ctx.reply(
-    `📹 Videocall request received
-
-Send one photo or video to continue.
-Choose Zoom or Telegram after approval.`,
+    `🔴 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ;
+   ꜱᴇɴᴅ ᴍᴇ ᴀɴʏ ɴᴜᴅᴇ ᴘɪᴄ/ᴠɪᴅᴇᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. 
+   ᴄʜᴏᴏꜱᴇ ᴢᴏᴏᴍ ᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀꜰᴛᴇʀ ᴀᴘᴘʀᴏᴠᴀʟ.`,
     {
       reply_markup: { remove_keyboard: true },
     }
@@ -441,7 +437,7 @@ Continue below.`,
 bot.start(async (ctx) => {
   const payload = (ctx.startPayload || "").trim();
 
-  if (payload === "videocall") {
+  if (payload === "ᴠɪᴅᴇᴏᴄᴀʟʟ") {
     await startVideoCallFlow(ctx);
     return;
   }
@@ -454,7 +450,7 @@ Tap below to open the private User channel.`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
+            [{ text: "📺 ᴏᴘᴇɴ ᴜꜱᴇʀ ᴄʜᴀɴɴᴇʟ", url: USER_GROUP_LINK }],
           ],
         },
       }
@@ -470,7 +466,7 @@ Tap below to open the private Smokelandia channel.`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
+            [{ text: "📺 ᴏᴘᴇɴ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
           ],
         },
       }
@@ -485,27 +481,27 @@ bot.command("help", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
-bot.command("videocall", async (ctx) => {
+bot.command("ᴠɪᴅᴇᴏᴄᴀʟʟ", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("👑 [X-user]", async (ctx) => {
+bot.hears("👑 [x-ᴜꜱᴇʀ]", async (ctx) => {
   await sendUserMode(ctx);
 });
 
-bot.hears("🔥 [V-vip]", async (ctx) => {
+bot.hears("🔥 [𝐕-𝐯𝐢𝐩]", async (ctx) => {
   await sendVipMode(ctx);
 });
 
-bot.hears("📞 VIDEOCALL", async (ctx) => {
+bot.hears("📞 ᴠɪᴅᴇᴏᴄᴀʟʟ", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears(/^📺?\s*CHANNELS$/, async (ctx) => {
+bot.hears("📺 ᴄʜᴀɴɴᴇʟꜱ" , async (ctx) => {
   await sendChannelsPanel(ctx);
 });
 
-bot.hears(/^🌐\s*WEBSITE$/, async (ctx) => {
+bot.hears( "🌐 ᴡᴇʙꜱɪᴛᴇ", async (ctx) => {
   await sendWebsitePanel(ctx);
 });
 
@@ -533,7 +529,7 @@ bot.hears("←", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
-bot.hears("⏎", async (ctx) => {
+bot.hears("←", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
@@ -625,11 +621,11 @@ bot.on("text", async (ctx) => {
     "/start",
     "/help",
     "/videocall",
-    "👑 [X-user]",
-    "🔥 [V-vip]",
-    "📞 VIDEOCALL",
-    "📺 CHANNELS",
-    "🌐 WEBSITE",
+    "👑 [𝐗-𝐮𝐬𝐞𝐫]",
+    "🔥 [𝐕-𝐯𝐢𝐩]",
+    "📞 ᴠɪᴅᴇᴏᴄᴀʟʟL",
+    "📺 ᴄʜᴀɴɴᴇʟꜱ",
+    "🌐 ᴡᴇʙꜱɪᴛᴇE",
     "↺",
     "📋",
     "☁️",
@@ -641,8 +637,8 @@ bot.on("text", async (ctx) => {
 
   if (
     knownInputs.includes(text) ||
-    /^📺?\s*CHANNELS$/.test(text) ||
-    /^🌐\s*WEBSITE$/.test(text)
+    /^📺?\s*ᴄʜᴀɴɴᴇʟꜱ$/.test(text) ||
+    /^🌐\s*ᴡᴇʙꜱɪᴛᴇ$/.test(text)
   ) {
     return;
   }
