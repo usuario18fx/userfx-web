@@ -1,5 +1,3 @@
-/* AlbumLockPanel.module.css */
-
 .wrapper {
   display: flex;
   align-items: center;
@@ -9,7 +7,12 @@
   font-family: "Courier New", monospace;
 }
 
-/* ── Card ── */
+/* Card enter animation */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .card {
   position: relative;
   width: 340px;
@@ -25,7 +28,11 @@
     0 0 60px rgba(194, 24, 91, 0.12),
     0 0 120px rgba(0, 96, 100, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.cardIn {
+  animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .cardError {
@@ -42,7 +49,7 @@
   border-color: rgba(0, 229, 255, 0.2);
 }
 
-/* ── Top icon ── */
+/* Top icon */
 .topIcon {
   height: 24px;
   display: flex;
@@ -57,9 +64,15 @@
 .iconUnlocked {
   font-size: 18px;
   color: #00e5ff;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ── Title + glitch ── */
+@keyframes popIn {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Title */
 .title {
   font-size: 22px;
   font-weight: 700;
@@ -68,6 +81,7 @@
   margin: 0;
   position: relative;
   user-select: none;
+  transition: color 0.3s;
 }
 
 .titleUnlocked {
@@ -88,23 +102,21 @@
   100% { text-shadow: none; transform: translate(0); }
 }
 
-/* ── Path ── */
+/* Path */
 .path {
   font-size: 13px;
   letter-spacing: 1px;
   color: #ffffff;
 }
 
-.pathDim {
-  opacity: 0.4;
-}
+.pathDim { opacity: 0.4; }
 
 .pathBold {
   font-weight: 700;
   color: #ffffff;
 }
 
-/* ── Separator ── */
+/* Separator */
 .separator {
   display: flex;
   align-items: center;
@@ -126,10 +138,25 @@
   background: rgba(0, 229, 255, 0.4) !important;
 }
 
-/* ── 4-box input ── */
+/* 4-box input */
 .inputRow {
   display: flex;
   gap: 10px;
+}
+
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-8px); }
+  30%  { transform: translateX(8px); }
+  45%  { transform: translateX(-6px); }
+  60%  { transform: translateX(6px); }
+  75%  { transform: translateX(-3px); }
+  90%  { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.45s ease both;
 }
 
 .charBox {
@@ -142,7 +169,6 @@
   font-family: "Courier New", monospace;
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
   outline: none;
@@ -168,7 +194,7 @@
   box-shadow: 0 0 0 3px rgba(255, 50, 80, 0.1) !important;
 }
 
-/* ── Hint text ── */
+/* Hint */
 .hint {
   font-size: 10px;
   letter-spacing: 2px;
@@ -178,7 +204,10 @@
   transition: color 0.2s;
 }
 
-/* ── Buttons ── */
+.hintError { color: rgba(255, 50, 80, 0.7); }
+.hintSuccess { color: rgba(0, 229, 255, 0.7); }
+
+/* Buttons */
 .btn {
   width: 100%;
   padding: 14px;
@@ -191,7 +220,7 @@
   font-weight: 700;
   letter-spacing: 3px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.1s;
 }
 
 .btn:hover {
@@ -199,6 +228,8 @@
   background: rgba(0, 229, 255, 0.06);
   color: #00e5ff;
 }
+
+.btn:active { transform: scale(0.97); }
 
 .btnError {
   border-color: rgba(255, 50, 80, 0.4) !important;
@@ -217,13 +248,23 @@
   transition: color 0.2s;
 }
 
-.btnSecondary:hover {
-  color: rgba(255, 255, 255, 0.7);
-}
+.btnSecondary:hover { color: rgba(255, 255, 255, 0.7); }
 
-/* ── Lock icon ── */
+/* Lock icon */
 .lockIcon {
   font-size: 20px;
   margin-top: -4px;
   opacity: 0.85;
+  transition: transform 0.3s;
+}
+
+@keyframes lockPop {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(1.25) rotate(-15deg); }
+  60%  { transform: scale(0.95) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.lockPop {
+  animation: lockPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
