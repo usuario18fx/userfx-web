@@ -317,7 +317,7 @@ async function sendMainMenu(ctx) {
 
 async function sendHelpMessage(ctx) {
   await ctx.replyWithPhoto(
-    Input.fromLocalFile("./assets/help.jpeg"),
+    Input.fromLocalFile("./assets/help.jpg"),
     {
       caption: `•╦————————————╦•
 🆘 ʜᴇʟᴘ
@@ -429,7 +429,7 @@ Private gallery access.
 
 async function sendGiftsMessage(ctx) {
   await ctx.replyWithPhoto(
-    Input.fromLocalFile("./assets/gifts.jpeg"),
+    Input.fromLocalFile("./assets/gifts.jpg"),
     {
       caption: `•╦————————————╦•
 🎁 ɢɪꜰᴛꜱ
