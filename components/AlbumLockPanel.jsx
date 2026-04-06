@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import styles from "./AlbumLockPanel.module.css";
 
 export default function AlbumLockPanel({
@@ -9,11 +8,11 @@ export default function AlbumLockPanel({
   onUnlock,
 }) {
   const [chars, setChars] = useState(["", "", "", ""]);
-  const [panelState, setPanelState] = useState("locked"); // "locked" | "error" | "unlocked"
+  const [panelState, setPanelState] = useState("locked");
   const [glitchActive, setGlitchActive] = useState(false);
+  const [shaking, setShaking] = useState(false);
   const inputRefs = useRef([]);
 
-  // Periodic glitch on LOCKED text
   useEffect(() => {
     if (panelState === "unlocked") return;
     const interval = setInterval(() => {
@@ -24,12 +23,14 @@ export default function AlbumLockPanel({
   }, [panelState]);
 
   const submit = useCallback(
-    (code, currentChars) => {
+    (code) => {
       if (code.toUpperCase() === unlockCode.toUpperCase()) {
         setPanelState("unlocked");
         setTimeout(() => onUnlock?.(), 900);
       } else {
         setPanelState("error");
+        setShaking(true);
+        setTimeout(() => setShaking(false), 500);
         setTimeout(() => {
           setPanelState("locked");
           setChars(["", "", "", ""]);
@@ -47,14 +48,10 @@ export default function AlbumLockPanel({
       const next = [...chars];
       next[index] = char;
       setChars(next);
-
-      if (char && index < 3) {
-        inputRefs.current[index + 1]?.focus();
-      }
-
+      if (char && index < 3) inputRefs.current[index + 1]?.focus();
       if (index === 3 && char) {
         const code = [...next.slice(0, 3), char].join("");
-        if (code.length === 4) submit(code, next);
+        if (code.length === 4) submit(code);
       }
     },
     [chars, panelState, submit]
@@ -62,12 +59,11 @@ export default function AlbumLockPanel({
 
   const handleKeyDown = useCallback(
     (index, e) => {
-      if (e.key === "Backspace" && !chars[index] && index > 0) {
+      if (e.key === "Backspace" && !chars[index] && index > 0)
         inputRefs.current[index - 1]?.focus();
-      }
       if (e.key === "Enter") {
         const code = chars.join("");
-        if (code.length === 4) submit(code, chars);
+        if (code.length === 4) submit(code);
       }
     },
     [chars, submit]
@@ -80,7 +76,7 @@ export default function AlbumLockPanel({
       const next = ["", "", "", ""];
       pasted.split("").forEach((c, i) => { next[i] = c; });
       setChars(next);
-      if (pasted.length === 4) submit(pasted, next);
+      if (pasted.length === 4) submit(pasted);
       else inputRefs.current[pasted.length]?.focus();
     },
     [submit]
@@ -94,102 +90,70 @@ export default function AlbumLockPanel({
 
   return (
     <div className={styles.wrapper}>
-      <motion.div
+      <div
         className={[
           styles.card,
           panelState === "error" ? styles.cardError : "",
           panelState === "unlocked" ? styles.cardUnlocked : "",
+          styles.cardIn,
         ].join(" ")}
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Top icon */}
         <div className={styles.topIcon}>
-          <AnimatePresence mode="wait">
-            {panelState === "unlocked" ? (
-              <motion.span
-                key="unlocked"
-                initial={{ scale: 0, rotate: -20 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className={styles.iconUnlocked}
-              >
-                ✦
-              </motion.span>
-            ) : (
-              <motion.span key="crown" className={styles.iconCrown}>♛</motion.span>
-            )}
-          </AnimatePresence>
+          <span className={panelState === "unlocked" ? styles.iconUnlocked : styles.iconCrown}>
+            {panelState === "unlocked" ? "✦" : "♛"}
+          </span>
         </div>
 
-        {/* Title */}
-        <h1 className={`${styles.title} ${glitchActive ? styles.glitch : ""}`}>
-          <AnimatePresence mode="wait">
-            {panelState === "unlocked" ? (
-              <motion.span
-                key="u"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={styles.titleUnlocked}
-              >
-                UNLOCKED
-              </motion.span>
-            ) : (
-              <motion.span key="l">LOCKED</motion.span>
-            )}
-          </AnimatePresence>
+        <h1
+          className={[
+            styles.title,
+            glitchActive ? styles.glitch : "",
+            panelState === "unlocked" ? styles.titleUnlocked : "",
+          ].join(" ")}
+        >
+          {panelState === "unlocked" ? "UNLOCKED" : "LOCKED"}
         </h1>
 
-        {/* Album path */}
         <div className={styles.path}>
           <span className={styles.pathDim}>{userPath}/</span>
           <span className={styles.pathBold}>{albumTitle}</span>
         </div>
 
-        {/* Separator */}
         <div className={styles.separator}>
           <span />
           <span className={styles.sepDot} />
           <span />
         </div>
 
-        {/* 4-box input */}
-        <AnimatePresence>
-          {panelState !== "unlocked" && (
-            <motion.div
-              className={styles.inputRow}
-              animate={
-                panelState === "error"
-                  ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }
-                  : { x: 0 }
-              }
-              transition={{ duration: 0.4 }}
-            >
-              {chars.map((char, i) => (
-                <input
-                  key={i}
-                  ref={(el) => { inputRefs.current[i] = el; }}
-                  className={[
-                    styles.charBox,
-                    char ? styles.charBoxFilled : "",
-                    panelState === "error" ? styles.charBoxError : "",
-                  ].join(" ")}
-                  maxLength={2}
-                  value={char}
-                  onChange={(e) => handleChange(i, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(i, e)}
-                  onPaste={handlePaste}
-                  autoFocus={i === 0}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {panelState !== "unlocked" && (
+          <div className={[styles.inputRow, shaking ? styles.shake : ""].join(" ")}>
+            {chars.map((char, i) => (
+              <input
+                key={i}
+                ref={(el) => { inputRefs.current[i] = el; }}
+                className={[
+                  styles.charBox,
+                  char ? styles.charBoxFilled : "",
+                  panelState === "error" ? styles.charBoxError : "",
+                ].join(" ")}
+                maxLength={2}
+                value={char}
+                onChange={(e) => handleChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                onPaste={handlePaste}
+                autoFocus={i === 0}
+                autoComplete="off"
+                spellCheck={false}
+              />
+            ))}
+          </div>
+        )}
 
-        <p className={styles.hint}>
+        <p className={[
+          styles.hint,
+          panelState === "error" ? styles.hintError : "",
+          panelState === "unlocked" ? styles.hintSuccess : "",
+        ].join(" ")}>
           {panelState === "error"
             ? "CÓDIGO INCORRECTO"
             : panelState === "unlocked"
@@ -197,50 +161,26 @@ export default function AlbumLockPanel({
             : "ENTER THE LAST 4 CHARACTERS"}
         </p>
 
-        {/* Action button */}
-        <AnimatePresence mode="wait">
-          {panelState === "unlocked" ? (
-            <motion.button
-              key="back"
-              className={styles.btnSecondary}
-              onClick={resetPanel}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              ← VOLVER
-            </motion.button>
-          ) : (
-            <motion.button
-              key="unlock"
-              className={[
-                styles.btn,
-                panelState === "error" ? styles.btnError : "",
-              ].join(" ")}
-              onClick={() => {
-                const code = chars.join("");
-                if (code.length === 4) submit(code, chars);
-              }}
-              whileTap={{ scale: 0.96 }}
-            >
-              UNLOCK ALBUM
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {panelState === "unlocked" ? (
+          <button className={styles.btnSecondary} onClick={resetPanel}>
+            ← VOLVER
+          </button>
+        ) : (
+          <button
+            className={[styles.btn, panelState === "error" ? styles.btnError : ""].join(" ")}
+            onClick={() => {
+              const code = chars.join("");
+              if (code.length === 4) submit(code);
+            }}
+          >
+            UNLOCK ALBUM
+          </button>
+        )}
 
-        {/* Lock icon */}
-        <motion.div
-          className={styles.lockIcon}
-          animate={
-            panelState === "unlocked"
-              ? { rotate: [0, -15, 0], scale: [1, 1.2, 1] }
-              : {}
-          }
-          transition={{ duration: 0.4 }}
-        >
+        <div className={[styles.lockIcon, panelState === "unlocked" ? styles.lockPop : ""].join(" ")}>
           {panelState === "unlocked" ? "🔓" : "🔒"}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }
