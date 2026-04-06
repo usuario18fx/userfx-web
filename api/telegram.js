@@ -16,19 +16,31 @@ const SMOKELANDIA_BOT_URL =
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
+/* BOTONES ESTABLES */
+const BTN_USER = "👑 [X-user]";
+const BTN_VIP = "🔥 [V-vip]";
+const BTN_VIDEOCALL = "📞 VIDEOCALL";
+const BTN_CHANNELS = "📺 CHANNELS";
+const BTN_WEBSITE = "🌐 WEBSITE";
+const BTN_REFRESH = "↺";
+const BTN_FEED = "📋";
+const BTN_CLOUDS = "☁️";
+const BTN_PHOTOS = "📸";
+const BTN_GIFTS = "🎁";
+const BTN_BACK = "←";
+const BTN_EXIT = "⏎";
+
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
-
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
 
 const memberships = globalThis.__fxMemberships || new Map();
-
 if (!globalThis.__fxMemberships) {
   globalThis.__fxMemberships = memberships;
 }
@@ -51,7 +63,6 @@ function getRequesterData(from) {
 
 function getMembership(userId) {
   const current = memberships.get(String(userId));
-
   if (!current) return null;
 
   if (current.expiresAt && Date.now() > current.expiresAt) {
@@ -96,46 +107,46 @@ function getPlanDisplay(userId) {
 
   if (membership.planKey === "vip") {
     return {
-      label: "[𝐕-𝐯𝐢𝐩]",
+      label: "[V-vip]",
       price: "$12",
       access: "Unlimited",
-      status: "ᴀᴄᴛɪᴠᴇ",
+      status: "Active",
       emoji: "🔥",
-      planKey: "𝐯𝐢𝐩p",
+      planKey: "vip",
     };
   }
 
   return {
-    label: "[𝐗-𝐮𝐬𝐞𝐫]",
+    label: "[X-user]",
     price: "$3",
-    access: "ᴘʀᴇᴍɪᴜᴍ",
-    status: "ᴀᴄᴛɪᴠᴇ",
+    access: "Premium",
+    status: "Active",
     emoji: "👑",
-    planKey: "𝐮𝐬𝐞𝐫",
+    planKey: "user",
   };
 }
 
 function getMainKeyboard() {
   return Markup.keyboard(
     [
-      ["👑 [𝐗-𝐮𝐬𝐞𝐫]", "🔥 [𝐕-𝐯𝐢𝐩]"],
-      ["📞ᴠɪᴅᴇᴏᴄᴀʟʟ", "📺 ᴄʜᴀɴɴᴇʟꜱ"],
-      ["🜲 ᴡᴇʙꜱɪᴛᴇ", "↺"],
+      [BTN_USER, BTN_VIP],
+      [BTN_VIDEOCALL, BTN_CHANNELS],
+      [BTN_WEBSITE, BTN_REFRESH],
     ],
     { columns: 2 }
   ).resize();
 }
 
 function getBackKeyboard() {
-  return Markup.keyboard([["⏎"]]).resize();
+  return Markup.keyboard([[BTN_EXIT]]).resize();
 }
 
 function getAccessKeyboard() {
   return Markup.keyboard(
     [
-      ["📺", "☁️"],
-      ["📸", "🎁"],
-      ["←"],
+      [BTN_FEED, BTN_CLOUDS],
+      [BTN_PHOTOS, BTN_GIFTS],
+      [BTN_BACK],
     ],
     { columns: 2 }
   ).resize();
@@ -144,7 +155,7 @@ function getAccessKeyboard() {
 function getWebsiteInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "🌐 ᴏᴘᴇɴ ᴡᴇʙꜱɪᴛᴇ", url: WEBSITE_URL }]],
+      inline_keyboard: [[{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }]],
     },
   };
 }
@@ -154,10 +165,10 @@ function getVideoCallKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "🔵 ᴇɴᴛᴇʀ ᴢᴏᴏᴍ", url: ZOOM_URL },
-          { text: "📞 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ", url: TELEGRAM_CALL_URL },
+          { text: "📞 ENTER ZOOM", url: ZOOM_URL },
+          { text: "💬 OPEN TELEGRAM", url: TELEGRAM_CALL_URL },
         ],
-        [{ text: "🌐 ᴡᴇʙꜱɪᴛᴇ", url: WEBSITE_URL }],
+        [{ text: "🌐 WEBSITE", url: WEBSITE_URL }],
       ],
     },
   };
@@ -179,7 +190,7 @@ function getChannelsInlineKeyboard() {
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "⭐ 300 xᴛʀ", callback_data: "buy_user_stars" }]],
+      inline_keyboard: [[{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }]],
     },
   };
 }
@@ -189,7 +200,7 @@ function getVipPaymentInlineKeyboard() {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "⭐ 1200 xᴛʀ", callback_data: "buy_vip_stars" },
+          { text: "⭐ 1200 XTR", callback_data: "buy_vip_stars" },
           { text: "💬", url: CONTACT_URL },
         ],
       ],
@@ -197,29 +208,30 @@ function getVipPaymentInlineKeyboard() {
   };
 }
 
+/* AQUÍ SÍ PUEDES DEJAR TU FUENTE FANCY */
 function buildWelcomeCaption() {
   return `•╦————————————╦•
-•      ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
+ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
 
+Choose your mode and continue below.
+
+🧩ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
+📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 📹ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
-       🔹 ᴢᴏᴏᴍ ʀᴏᴏᴍꜱ【ᴍx-ᴇᴜᴀ-ᴄᴀ】
-    🔹ᴄᴏɴᴛᴇɴᴛ ᴘɴᴘ ᴇxᴄʟᴜꜱɪᴠᴇ    
-  🔹ɴᴇᴡ ᴡᴇʙꜱɪᴛᴇ
-⇃ ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ📲   
-          🔥ᴇɴᴊᴏʏ ɪᴛ ..
+🔥ᴇɴᴊᴏʏ ɪᴛ ..
+
 •╩————————————╩•`;
 }
 
 function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return 
-`•╦————————————╦•
-• ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-👑 [𝐗-𝐮𝐬𝐞𝐫]
-⇀ ᴘʀɪᴄᴇ   $3
-⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "user" ? plan.status : "Inactive"}
-⇀ ᴀᴄᴄᴇꜱ ᴘʀᴇᴍɪᴜᴍ
+  return `•╦————————————╦•
+           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+👑 ${plan.label}
+⇀ Price   $3
+⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
+⇀ Access  Premium
 •╩————————————╩•`;
 }
 
@@ -227,21 +239,21 @@ function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
   return `•╦————————————╦•
- •          ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
-🔥 [𝐕-𝐯𝐢𝐩]
-⇀ ᴘʀɪᴄᴇ   $12
-⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "vip" ? plan.status : "Inactive"}
-⇀ ᴀᴄᴄᴇꜱꜱ ᴜɴʟɪᴍɪᴛᴇᴅ
+           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+🔥 [V-vip]
+⇀ Price   $12
+⇀ Status  ${plan.planKey === "vip" ? plan.status : "Inactive"}
+⇀ Access  Unlimited
 •╩————————————╩•`;
 }
 
 async function sendUserStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "[𝐗-𝐮𝐬𝐞𝐫]",
+    title: "[X-user]",
     description: "Premium access",
     payload: "membership_user",
     currency: "XTR",
-    prices: [{ label: "[𝐗-𝐮𝐬𝐞𝐫]", amount: 300 }],
+    prices: [{ label: "[X-user]", amount: 300 }],
     provider_token: "",
     start_parameter: "buy-user-stars",
   });
@@ -249,11 +261,11 @@ async function sendUserStarsInvoice(ctx) {
 
 async function sendVipStarsInvoice(ctx) {
   await ctx.replyWithInvoice({
-    title: "[𝐕-𝐯𝐢𝐩]",
+    title: "[V-vip]",
     description: "Unlimited access",
     payload: "membership_vip",
     currency: "XTR",
-    prices: [{ label: "[𝐕-𝐯𝐢𝐩]", amount: 1200 }],
+    prices: [{ label: "[V-vip]", amount: 1200 }],
     provider_token: "",
     start_parameter: "buy-vip-stars",
   });
@@ -270,7 +282,7 @@ async function notifyAdminNewRequest(ctx) {
 
   await bot.telegram.sendMessage(
     ADMIN_CHAT_ID,
-    `📞 <b>ɴᴇᴡ ᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴊᴜꜱᴛ ᴄᴀᴍᴇ ɪɴ</b>
+    `📞 <b>New call request just came in</b>
 
 Nombre: <b>${escapeHtml(requester.fullName)}</b>
 Usuario: <b>${escapeHtml(requester.username)}</b>
@@ -316,7 +328,9 @@ async function sendVipMode(ctx) {
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `📺 ᴄʜᴀɴɴᴇʟꜱ`,
+    `📺 CHANNELS
+
+Choose where to continue.`,
     {
       ...getChannelsInlineKeyboard(),
     }
@@ -326,7 +340,7 @@ async function sendChannelsPanel(ctx) {
 
 async function sendWebsitePanel(ctx) {
   await ctx.reply(
-    ` 🜲 ᴡᴇʙꜱɪᴛᴇ
+    `🌐 WEBSITE
 
 Open the site below.`,
     {
@@ -342,7 +356,7 @@ async function sendRefreshPanel(ctx) {
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `📋 ꜰᴇᴇᴅ
+    `📋 FEED
 
 Selected drops
 Public previews
@@ -356,11 +370,11 @@ Featured content`,
 
 async function sendCloudsMessage(ctx) {
   await ctx.reply(
-    `☁️ᴄʟᴏᴜᴅꜱ
+    `☁️ CLOUDS
 
-ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ 
-ᴠɪꜱᴜᴀʟ ꜱᴇꜱꜱɪᴏɴ 
-ᴄʟᴏᴜᴅ ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇ`,
+Ambient room
+Visual session
+Cloud access enabled`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -370,9 +384,10 @@ async function sendCloudsMessage(ctx) {
 
 async function sendPhotosMessage(ctx) {
   await ctx.reply(
-    `📸 ɢᴀʟʟᴇʀʏ
-ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ. 
-ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ.`,
+    `📸 PHOTOS
+
+New pics every week.
+Private gallery access.`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -382,11 +397,11 @@ async function sendPhotosMessage(ctx) {
 
 async function sendGiftsMessage(ctx) {
   await ctx.reply(
-    `🎁 ɢɪꜰᴛꜱ
+    `🎁 GIFTS
 
- ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ 
- ᴛʀᴀɴꜱꜰᴇʀ ꜱᴇᴄᴛɪᴏɴ 
-ᴀᴅᴅɪᴛɪᴏɴᴀʟ ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀt`,
+Support section
+Transfer section
+Additional access support`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -411,9 +426,10 @@ async function startVideoCallFlow(ctx) {
   await notifyAdminNewRequest(ctx);
 
   await ctx.reply(
-    `🔴 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ;
-   ꜱᴇɴᴅ ᴍᴇ ᴀɴʏ ɴᴜᴅᴇ ᴘɪᴄ/ᴠɪᴅᴇᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. 
-   ᴄʜᴏᴏꜱᴇ ᴢᴏᴏᴍ ᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀꜰᴛᴇʀ ᴀᴘᴘʀᴏᴠᴀʟ.`,
+    `📹 Videocall request received
+
+Send one photo or video to continue.
+Choose Zoom or Telegram after approval.`,
     {
       reply_markup: { remove_keyboard: true },
     }
@@ -438,7 +454,7 @@ Continue below.`,
 bot.start(async (ctx) => {
   const payload = (ctx.startPayload || "").trim();
 
-  if (payload === "ᴠɪᴅᴇᴏᴄᴀʟʟ") {
+  if (payload === "videocall") {
     await startVideoCallFlow(ctx);
     return;
   }
@@ -451,7 +467,7 @@ Tap below to open the private User channel.`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📺 ᴏᴘᴇɴ ᴜꜱᴇʀ ᴄʜᴀɴɴᴇʟ", url: USER_GROUP_LINK }],
+            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
           ],
         },
       }
@@ -467,7 +483,7 @@ Tap below to open the private Smokelandia channel.`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📺 ᴏᴘᴇɴ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
+            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
           ],
         },
       }
@@ -482,62 +498,61 @@ bot.command("help", async (ctx) => {
   await sendMainMenu(ctx);
 });
 
-bot.command("ᴠɪᴅᴇᴏᴄᴀʟʟ", async (ctx) => {
+bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("👑 [x-ᴜꜱᴇʀ]", async (ctx) => {
+bot.hears(BTN_USER, async (ctx) => {
   await sendUserMode(ctx);
 });
 
-bot.hears("🔥 [𝐕-𝐯𝐢𝐩]", async (ctx) => {
+bot.hears(BTN_VIP, async (ctx) => {
   await sendVipMode(ctx);
 });
 
-bot.hears("📞 ᴠɪᴅᴇᴏᴄᴀʟʟ", async (ctx) => {
+bot.hears(BTN_VIDEOCALL, async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears("📺 ᴄʜᴀɴɴᴇʟꜱ" , async (ctx) => {
+bot.hears(BTN_CHANNELS, async (ctx) => {
   await sendChannelsPanel(ctx);
 });
 
-bot.hears( "🌐 ᴡᴇʙꜱɪᴛᴇ", async (ctx) => {
+bot.hears(BTN_WEBSITE, async (ctx) => {
   await sendWebsitePanel(ctx);
 });
 
-bot.hears("↺", async (ctx) => {
+bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
 });
 
-bot.hears("📋", async (ctx) => {
+bot.hears(BTN_FEED, async (ctx) => {
   await sendFeedMessage(ctx);
 });
 
-bot.hears("☁️", async (ctx) => {
+bot.hears(BTN_CLOUDS, async (ctx) => {
   await sendCloudsMessage(ctx);
 });
 
-bot.hears("📸", async (ctx) => {
+bot.hears(BTN_PHOTOS, async (ctx) => {
   await sendPhotosMessage(ctx);
 });
 
-bot.hears("🎁", async (ctx) => {
+bot.hears(BTN_GIFTS, async (ctx) => {
   await sendGiftsMessage(ctx);
 });
 
-bot.hears("←", async (ctx) => {
+bot.hears(BTN_BACK, async (ctx) => {
   await sendMainMenu(ctx);
 });
 
-bot.hears("←", async (ctx) => {
+bot.hears(BTN_EXIT, async (ctx) => {
   await sendMainMenu(ctx);
 });
 
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendUserStarsInvoice(ctx);
-  console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
 });
 
 bot.action("buy_vip_stars", async (ctx) => {
@@ -583,19 +598,6 @@ bot.on("photo", async (ctx) => {
   await completeMediaFlow(ctx, "Photos");
 });
 
-bot.action(/^video_back_(.+)$/, async (ctx) => {
-  await ctx.answerCbQuery("Usuario devuelto al menú");
-
-  const requesterId = ctx.match[1];
-  pendingVideoRequests.delete(String(requesterId));
-
-  await bot.telegram.sendMessage(
-    requesterId,
-    buildWelcomeCaption(),
-    getMainKeyboard()
-  );
-});
-
 bot.on("video", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
@@ -613,6 +615,19 @@ bot.on("video", async (ctx) => {
   await completeMediaFlow(ctx, "Video");
 });
 
+bot.action(/^video_back_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Usuario devuelto al menú");
+
+  const requesterId = ctx.match[1];
+  pendingVideoRequests.delete(String(requesterId));
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    buildWelcomeCaption(),
+    getMainKeyboard()
+  );
+});
+
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
@@ -622,25 +637,21 @@ bot.on("text", async (ctx) => {
     "/start",
     "/help",
     "/videocall",
-    "👑 [𝐗-𝐮𝐬𝐞𝐫]",
-    "🔥 [𝐕-𝐯𝐢𝐩]",
-    "📞 ᴠɪᴅᴇᴏᴄᴀʟʟL",
-    "📺 ᴄʜᴀɴɴᴇʟꜱ",
-    "🌐 ᴡᴇʙꜱɪᴛᴇE",
-    "↺",
-    "📋",
-    "☁️",
-    "📸",
-    "🎁",
-    "←",
-    "⏎",
+    BTN_USER,
+    BTN_VIP,
+    BTN_VIDEOCALL,
+    BTN_CHANNELS,
+    BTN_WEBSITE,
+    BTN_REFRESH,
+    BTN_FEED,
+    BTN_CLOUDS,
+    BTN_PHOTOS,
+    BTN_GIFTS,
+    BTN_BACK,
+    BTN_EXIT,
   ];
 
-  if (
-    knownInputs.includes(text) ||
-    /^📺?\s*ᴄʜᴀɴɴᴇʟꜱ$/.test(text) ||
-    /^🌐\s*ᴡᴇʙꜱɪᴛᴇ$/.test(text)
-  ) {
+  if (knownInputs.includes(text)) {
     return;
   }
 
@@ -674,9 +685,6 @@ export default async function handler(req, res) {
     req.headers["x-real-ip"] ||
     req.headers["x-vercel-forwarded-for"] ||
     "unknown";
-
-  console.log("IP:", ip);
-  console.log("HEADERS:", req.headers);
 
   if (req.method === "GET") {
     return res.status(200).json({
