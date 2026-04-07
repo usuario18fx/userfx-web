@@ -20,7 +20,7 @@ const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 const BTN_USER = "👑 [X-user]";
 const BTN_VIP = "🔥 [V-vip]";
 const BTN_VIDEOCALL = "📞 VIDEOCALL";
-const BTN_CHANNELS = "📺 CHANNELS";
+const BTN_CHANNELS = "📺";
 const BTN_WEBSITE = "🌐 WEBSITE";
 const BTN_REFRESH = "↺";
 const BTN_FEED = "📋";
@@ -213,40 +213,39 @@ function getVipPaymentInlineKeyboard() {
 
 /* ESTILO FANCY SOLO EN MENSAJES */
 function buildWelcomeCaption() {
-  return `•╦————————————╦•
+  return 
+`•╦————————————╦•
  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
-
-Choose your mode and continue below.
-
 🧩ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
 📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 📹ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
 🔥ᴇɴᴊᴏʏ ɪᴛ ..
-
 •╩————————————╩•`;
 }
 
 function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return `•╦————————————╦•
-           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+  return 
+`•╦————————————╦•
+  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 👑 ${plan.label}
-⇀ Price   $3
-⇀ Status  ${plan.planKey === "user" ? plan.status : "Inactive"}
-⇀ Access  Premium
+⇀ ᴘʀɪᴄᴇ $3 
+⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "user" ? plan.status : "Inactive"}
+⇀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇᴅ.
 •╩————————————╩•`;
 }
 
 function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return `•╦————————————╦•
-           ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+  return 
+`•╦————————————╦•
+ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 🔥 [V-vip]
-⇀ Price   $12
-⇀ Status  ${plan.planKey === "vip" ? plan.status : "Inactive"}
-⇀ Access  Unlimited
+⇀ ᴘʀɪᴄᴇ   $12
+⇀ ꜱᴛᴀᴛᴜꜱ  ${plan.planKey === "vip" ? plan.status : "Inactive"}
+⇀ ᴀᴄᴄᴇꜱꜱ ᴜɴʟɪᴍɪᴛᴇᴅ
 •╩————————————╩•`;
 }
 
@@ -416,9 +415,8 @@ async function sendPhotosMessage(ctx) {
   await ctx.reply(
     `•╦————————————╦•
 📸 ᴘʜᴏᴛᴏꜱ
-
-New pics every week.
-Private gallery access.
+ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ.
+ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ.
 •╩————————————╩•`,
     {
       ...getWebsiteInlineKeyboard(),
@@ -466,8 +464,8 @@ async function startVideoCallFlow(ctx) {
       caption: `•╦————————————╦•
 📹 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ
 
-Send one photo or video to continue.
-Choose Zoom or Telegram after approval.
+ꜱᴇɴᴅ ᴏɴᴇ ɴᴜᴅᴇ ᴘɪᴄ/ᴠɪᴅᴇᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. 
+ᴄʜᴏᴏꜱᴇ ᴢᴏᴏᴍ ᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀꜰᴛᴇʀ ᴀᴘᴘʀᴏᴠᴀʟ.
 •╩————————————╩•`,
       reply_markup: { remove_keyboard: true },
     }
