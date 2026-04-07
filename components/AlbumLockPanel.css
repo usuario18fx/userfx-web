@@ -4,267 +4,34 @@
   justify-content: center;
   min-height: 100vh;
   background: #07070d;
-  font-family: "Courier New", monospace;
-}
-
-/* Card enter animation */
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .card {
-  position: relative;
-  width: 340px;
-  background: #0f0f18;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
-  padding: 36px 32px 32px;
+  width: 320px;
+  padding: 30px;
+  background: #111;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  box-shadow:
-    0 0 60px rgba(194, 24, 91, 0.12),
-    0 0 120px rgba(0, 96, 100, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-.cardIn {
-  animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.cardError {
-  box-shadow:
-    0 0 40px rgba(255, 50, 80, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 50, 80, 0.3);
-}
-
-.cardUnlocked {
-  box-shadow:
-    0 0 60px rgba(0, 229, 255, 0.2),
-    inset 0 1px 0 rgba(0, 229, 255, 0.08);
-  border-color: rgba(0, 229, 255, 0.2);
-}
-
-/* Top icon */
-.topIcon {
-  height: 24px;
-  display: flex;
-  align-items: center;
-}
-
-.iconCrown {
-  font-size: 16px;
-  color: rgba(233, 30, 140, 0.6);
-}
-
-.iconUnlocked {
-  font-size: 18px;
-  color: #00e5ff;
-  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes popIn {
-  from { transform: scale(0) rotate(-20deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-/* Title */
-.title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: #ffffff;
-  margin: 0;
-  position: relative;
-  user-select: none;
-  transition: color 0.3s;
-}
-
-.titleUnlocked {
-  color: #00e5ff;
-  letter-spacing: 4px;
-}
-
-.glitch {
-  animation: glitch 0.3s steps(2) forwards;
-}
-
-@keyframes glitch {
-  0%   { text-shadow: 2px 0 #e91e8c, -2px 0 #00e5ff; transform: translate(0); }
-  20%  { text-shadow: -3px 0 #e91e8c, 3px 0 #00e5ff; transform: translate(-2px, 1px); }
-  40%  { text-shadow: 3px 0 #e91e8c, -3px 0 #00e5ff; transform: translate(2px, -1px); }
-  60%  { text-shadow: -2px 0 #e91e8c, 2px 0 #00e5ff; transform: translate(-1px, 0); }
-  80%  { text-shadow: 2px 0 #e91e8c, -2px 0 #00e5ff; transform: translate(1px, 1px); }
-  100% { text-shadow: none; transform: translate(0); }
-}
-
-/* Path */
-.path {
-  font-size: 13px;
-  letter-spacing: 1px;
-  color: #ffffff;
-}
-
-.pathDim { opacity: 0.4; }
-
-.pathBold {
-  font-weight: 700;
-  color: #ffffff;
-}
-
-/* Separator */
-.separator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.separator span {
-  flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.sepDot {
-  flex: 0 !important;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(0, 229, 255, 0.4) !important;
-}
-
-/* 4-box input */
-.inputRow {
+.row {
   display: flex;
   gap: 10px;
 }
 
-@keyframes shake {
-  0%   { transform: translateX(0); }
-  15%  { transform: translateX(-8px); }
-  30%  { transform: translateX(8px); }
-  45%  { transform: translateX(-6px); }
-  60%  { transform: translateX(6px); }
-  75%  { transform: translateX(-3px); }
-  90%  { transform: translateX(3px); }
-  100% { transform: translateX(0); }
-}
-
-.shake {
-  animation: shake 0.45s ease both;
-}
-
-.charBox {
-  width: 52px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
-  font-size: 22px;
-  font-weight: 700;
+.box {
+  width: 50px;
+  height: 50px;
   text-align: center;
-  text-transform: uppercase;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-  caret-color: #00e5ff;
-}
-
-.charBox:focus {
-  border-color: rgba(0, 229, 255, 0.5);
-  background: rgba(0, 229, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.08);
-}
-
-.charBoxFilled {
-  border-color: rgba(0, 229, 255, 0.35);
-  color: #00e5ff;
-}
-
-.charBoxError {
-  border-color: rgba(255, 50, 80, 0.5) !important;
-  background: rgba(255, 50, 80, 0.08) !important;
-  color: #ff3250 !important;
-  box-shadow: 0 0 0 3px rgba(255, 50, 80, 0.1) !important;
-}
-
-/* Hint */
-.hint {
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: rgba(255, 255, 255, 0.3);
-  margin: -6px 0 0;
-  text-align: center;
-  transition: color 0.2s;
-}
-
-.hintError { color: rgba(255, 50, 80, 0.7); }
-.hintSuccess { color: rgba(0, 229, 255, 0.7); }
-
-/* Buttons */
-.btn {
-  width: 100%;
-  padding: 14px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.1s;
-}
-
-.btn:hover {
-  border-color: rgba(0, 229, 255, 0.4);
-  background: rgba(0, 229, 255, 0.06);
-  color: #00e5ff;
-}
-
-.btn:active { transform: scale(0.97); }
-
-.btnError {
-  border-color: rgba(255, 50, 80, 0.4) !important;
-  color: #ff3250 !important;
-}
-
-.btnSecondary {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.3);
-  font-family: "Courier New", monospace;
-  font-size: 11px;
-  letter-spacing: 2px;
-  cursor: pointer;
-  padding: 8px;
-  transition: color 0.2s;
-}
-
-.btnSecondary:hover { color: rgba(255, 255, 255, 0.7); }
-
-/* Lock icon */
-.lockIcon {
   font-size: 20px;
-  margin-top: -4px;
-  opacity: 0.85;
-  transition: transform 0.3s;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
 }
 
-@keyframes lockPop {
-  0%   { transform: scale(1) rotate(0deg); }
-  30%  { transform: scale(1.25) rotate(-15deg); }
-  60%  { transform: scale(0.95) rotate(5deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-
-.lockPop {
-  animation: lockPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+.gallery video {
+  width: 100%;
+  border-radius: 10px;
 }
