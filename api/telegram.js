@@ -237,7 +237,7 @@ function buildUserCard(userId) {
 }
 
 function buildVipCard(userId) {
-  const plan = getPlanDisplay(userId);
+  const plan = getPlanDisplay(userId);("./assets/USERFX-ID18V20.jpg"),
 
   return 
 `•╦————————————╦•
@@ -316,7 +316,7 @@ async function sendMainMenu(ctx) {
 
 async function sendHelpMessage(ctx) {
   await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/help.mp4"),
+    Input.fromLocalFile("./assets/help.jpg"),
     {
       caption: `•╦————————————╦•
 🆘 ʜᴇʟᴘ
@@ -331,7 +331,7 @@ Choose your mode and continue below.
 
 async function sendUserMode(ctx) {
   await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/welcome.mp4"),
+    Input.fromLocalFile("./assets/FX-Y24V01.mp4"),
     {
       caption: buildUserCard(ctx.from?.id),
       ...getUserPaymentInlineKeyboard(),
@@ -397,6 +397,7 @@ Featured content
 
 async function sendCloudsMessage(ctx) {
   await ctx.reply(
+Input.fromLocalFile("./assets/welcome1.png"),
     `•╦————————————╦•
 ☁️ ᴄʟᴏᴜᴅꜱ
 
@@ -427,7 +428,7 @@ async function sendPhotosMessage(ctx) {
 
 async function sendGiftsMessage(ctx) {
   await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/gifts.mp4"),
+    Input.fromLocalFile("./assets/gifts.jpg"),
     {
       caption: `•╦————————————╦•
 🎁 ɢɪꜰᴛꜱ
