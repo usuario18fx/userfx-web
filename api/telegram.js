@@ -1,94 +1,148 @@
-import { Telegraf, Markup, Input } from "telegraf";
+import { Telegraf, Markup } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
-
-const WEBSITE_URL = "https://userfx-web.vercel.app";
-const ZOOM_URL =
-  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
-const CONTACT_URL = "https://t.me/User18fx";
-const TELEGRAM_CALL_URL = "https://t.me/User18fx";
-
-const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
-const SMOKELANDIA_BOT_URL =
-  "https://t.me/Smokelandiabot?start=smokelandiachannel";
-
-const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
-const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
-
-/* BOTONES SIMPLES Y ESTABLES */
-const BTN_USER = "👑 [X-user]";
-const BTN_VIP = "🔥 [V-vip]";
-const BTN_VIDEOCALL = "📞 VIDEOCALL";
-const BTN_CHANNELS = "📺";
-const BTN_WEBSITE = "🌐 WEBSITE";
-const BTN_REFRESH = "↺";
-const BTN_FEED = "📋";
-const BTN_CLOUDS = "☁️";
-const BTN_PHOTOS = "📸";
-const BTN_GIFTS = "🎁";
-const BTN_BACK = "←";
-const BTN_EXIT = "⏎";
 
 if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
+/* === VIDEO SOURCES (usar URLs directas .mp4 o file_id de Telegram) === */
+const VIDEOS = {
+  USER: "https://your-cdn.com/user.mp4",
+  VIDEOCALL: "https://your-cdn.com/videocall.mp4",
+  HELP: "https://your-cdn.com/help.mp4",
+  GIFTS: "https://your-cdn.com/gifts.mp4",
+};
 
-if (!globalThis.__fxPendingVideoRequests) {
-  globalThis.__fxPendingVideoRequests = pendingVideoRequests;
+/* === UI === */
+function mainKb() {
+  return Markup.keyboard([
+    ["💳 Membership"],
+    ["🔐 Access", "🖥️"],
+    ["📞 Video Call"],
+    ["❓"],
+    ["🎁 Gifts"],
+  ]).resize();
 }
 
-const memberships = globalThis.__fxMemberships || new Map();
+/* === CORE HANDLERS === */
 
-if (!globalThis.__fxMemberships) {
-  globalThis.__fxMemberships = memberships;
+async function sendUserPanel(ctx) {
+  await ctx.replyWithVideo(
+    { url: VIDEOS.USER },
+    {
+      caption: `👤 <b>X-USER PANEL</b>
+
+Private access node
+Identity verified
+Session active`,
+      parse_mode: "HTML",
+    }
+  );
+
+  await ctx.reply("‎", mainKb());
 }
 
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+async function sendVideoCall(ctx) {
+  await ctx.replyWithVideo(
+    { url: VIDEOS.VIDEOCALL },
+    {
+      caption: `📞 <b>VIDEO CALL</b>
+
+Direct session channel
+Encrypted stream ready`,
+      parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "↗ JOIN CALL", url: "https://your-zoom-or-telegram-link.com" }],
+        ],
+      },
+    }
+  );
 }
 
-function getRequesterData(from) {
-  const firstName = from?.first_name || "";
-  const lastName = from?.last_name || "";
-  const fullName = `${firstName} ${lastName}`.trim() || "No name";
-  const username = from?.username ? `@${from.username}` : "sin_username";
-  const id = String(from?.id || "");
-  return { fullName, username, id };
+async function sendHelp(ctx) {
+  await ctx.replyWithVideo(
+    { url: VIDEOS.HELP },
+    {
+      caption: `❓ <b>HELP</b>
+
+System guidance
+Command reference
+Access instructions`,
+      parse_mode: "HTML",
+    }
+  );
 }
 
-function getMembership(userId) {
-  const current = memberships.get(String(userId));
+async function sendGifts(ctx) {
+  await ctx.replyWithVideo(
+    { url: VIDEOS.GIFTS },
+    {
+      caption: `🎁 <b>GIFTS</b>
 
-  if (!current) return null;
+Support channel
+Transfer node
+Unlock boosters`,
+      parse_mode: "HTML",
+    }
+  );
+}
 
-  if (current.expiresAt && Date.now() > current.expiresAt) {
-    memberships.delete(String(userId));
-    return null;
+/* === ROUTING === */
+
+bot.start(async (ctx) => {
+  await sendUserPanel(ctx);
+});
+
+bot.hears("📞 Video Call", async (ctx) => {
+  await sendVideoCall(ctx);
+});
+
+bot.hears("❓", async (ctx) => {
+  await sendHelp(ctx);
+});
+
+bot.hears("🎁 Gifts", async (ctx) => {
+  await sendGifts(ctx);
+});
+
+/* fallback */
+bot.on("text", async (ctx) => {
+  await sendUserPanel(ctx);
+});
+
+/* === ERROR === */
+bot.catch((err) => {
+  console.error(err);
+});
+
+/* === VERCEL HANDLER === */
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    return res.status(200).json({ ok: true });
   }
 
-  return current;
+  if (req.method !== "POST") {
+    return res.status(405).end();
+  }
+
+  try {
+    const update =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    await bot.handleUpdate(update);
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false });
+  }
 }
 
-function setMembership(userId, planKey) {
-  const now = Date.now();
 
-  const expiresAt =
-    planKey === "vip"
-      ? now + 30 * 24 * 60 * 60 * 1000
-      : now + 3 * 24 * 60 * 60 * 1000;
 
-  const membership = {
-    planKey,
-    expiresAt,
-    paidAt: now,
-  };
+}
 
   memberships.set(String(userId), membership);
   return membership;
@@ -319,7 +373,7 @@ async function sendHelpMessage(ctx) {
     Input.fromLocalFile("./assets/help.jpg"),
     {
       caption: `•╦————————————╦•
-🆘 ʜᴇʟᴘ
+❓ ʜᴇʟᴘ
 
 Choose your mode and continue below.
 •╩————————————╩•`,
@@ -501,13 +555,13 @@ bot.start(async (ctx) => {
     await ctx.reply(
       `•╦————————————╦•
 🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
-
-Tap below to open the private User channel.
+Tap below to open the 
+private User channel.
 •╩————————————╩•`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
+            [{ text: "📺", url: USER_GROUP_LINK }],
           ],
         },
       }
@@ -539,143 +593,107 @@ Tap below to open the private Smokelandia channel.
 bot.command("help", async (ctx) => {
   await sendHelpMessage(ctx);
 });
-
 bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
-
 bot.hears(BTN_USER, async (ctx) => {
   await sendUserMode(ctx);
 });
-
 bot.hears(BTN_VIP, async (ctx) => {
   await sendVipMode(ctx);
 });
-
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
   await startVideoCallFlow(ctx);
 });
-
 bot.hears(BTN_CHANNELS, async (ctx) => {
   await sendChannelsPanel(ctx);
 });
-
 bot.hears(BTN_WEBSITE, async (ctx) => {
   await sendWebsitePanel(ctx);
 });
-
 bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
 });
-
 bot.hears(BTN_FEED, async (ctx) => {
   await sendFeedMessage(ctx);
 });
-
 bot.hears(BTN_CLOUDS, async (ctx) => {
   await sendCloudsMessage(ctx);
 });
-
 bot.hears(BTN_PHOTOS, async (ctx) => {
   await sendPhotosMessage(ctx);
 });
-
 bot.hears(BTN_GIFTS, async (ctx) => {
   await sendGiftsMessage(ctx);
 });
-
 bot.hears(BTN_BACK, async (ctx) => {
   await sendMainMenu(ctx);
 });
-
 bot.hears(BTN_EXIT, async (ctx) => {
   await sendMainMenu(ctx);
 });
-
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendUserStarsInvoice(ctx);
   console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
 });
-
 bot.action("buy_vip_stars", async (ctx) => {
   await ctx.answerCbQuery();
   await sendVipStarsInvoice(ctx);
 });
-
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
-
 bot.on("successful_payment", async (ctx) => {
   const payment = ctx.message.successful_payment;
   const payload = payment.invoice_payload;
   const userId = String(ctx.from?.id || "");
-
   if (payload === "membership_user") {
     setMembership(userId, "user");
   }
-
   if (payload === "membership_vip") {
     setMembership(userId, "vip");
   }
-
-  await ctx.reply("✅ Payment received. Access enabled.");
+  await ctx.reply("✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ. ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇᴅ.");
   await ctx.reply("‎", getBackKeyboard());
 });
-
 bot.on("photo", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
-
   if (!pending?.waitingForMedia) return;
-
   await notifyAdminMediaReceived(ctx, "Fotos");
-
   await bot.telegram.forwardMessage(
     ADMIN_CHAT_ID,
     ctx.chat.id,
     ctx.message.message_id
   );
-
   await completeMediaFlow(ctx, "Photos");
 });
-
 bot.action(/^video_back_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("Usuario devuelto al menú");
-
   const requesterId = ctx.match[1];
   pendingVideoRequests.delete(String(requesterId));
-
   await bot.telegram.sendMessage(
     requesterId,
     buildWelcomeCaption(),
     getMainKeyboard()
-  );
-});
-
+  );});
 bot.on("video", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
-
   if (!pending?.waitingForMedia) return;
-
   await notifyAdminMediaReceived(ctx, "Video");
-
   await bot.telegram.forwardMessage(
     ADMIN_CHAT_ID,
     ctx.chat.id,
     ctx.message.message_id
   );
-
   await completeMediaFlow(ctx, "Video");
 });
-
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
-
   const knownInputs = [
     "/start",
     "/help",
@@ -693,45 +711,35 @@ bot.on("text", async (ctx) => {
     BTN_BACK,
     BTN_EXIT,
   ];
-
   if (knownInputs.includes(text)) {
     return;
   }
-
   if (pending?.waitingForMedia) {
     pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
     pendingVideoRequests.set(userId, pending);
-
     if (pending.invalidTextCount >= 4) {
       pendingVideoRequests.delete(userId);
       await ctx.reply("Bye.");
       return;
     }
-
     if (pending.invalidTextCount === 1) {
       await ctx.reply("Send one photo or video to continue.");
     }
-
     return;
   }
-
   await ctx.reply("Use the keyboard.");
 });
-
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
 });
-
 export default async function handler(req, res) {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
     req.headers["x-real-ip"] ||
     req.headers["x-vercel-forwarded-for"] ||
     "unknown";
-
   console.log("IP:", ip);
   console.log("HEADERS:", req.headers);
-
   if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
@@ -740,20 +748,16 @@ export default async function handler(req, res) {
       ip,
     });
   }
-
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
       method: req.method,
       ip,
-    });
-  }
-
+    });}
   try {
     const update =
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
     await bot.handleUpdate(update);
 
     return res.status(200).json({
@@ -765,8 +769,5 @@ export default async function handler(req, res) {
     return res.status(500).json({
       ok: false,
       error: "handler_error",
-      details: String(error?.message || error),
-      ip,
-    });
-  }
-}
+      details: String(error?.message || error),ip,
+    });}}
