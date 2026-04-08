@@ -36,13 +36,11 @@ if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 const bot = new Telegraf(BOT_TOKEN);
 
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
-
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
 
 const memberships = globalThis.__fxMemberships || new Map();
-
 if (!globalThis.__fxMemberships) {
   globalThis.__fxMemberships = memberships;
 }
@@ -65,7 +63,6 @@ function getRequesterData(from) {
 
 function getMembership(userId) {
   const current = memberships.get(String(userId));
-
   if (!current) return null;
 
   if (current.expiresAt && Date.now() > current.expiresAt) {
@@ -78,18 +75,12 @@ function getMembership(userId) {
 
 function setMembership(userId, planKey) {
   const now = Date.now();
-
   const expiresAt =
     planKey === "vip"
       ? now + 30 * 24 * 60 * 60 * 1000
       : now + 3 * 24 * 60 * 60 * 1000;
 
-  const membership = {
-    planKey,
-    expiresAt,
-    paidAt: now,
-  };
-
+  const membership = { planKey, expiresAt, paidAt: now };
   memberships.set(String(userId), membership);
   return membership;
 }
@@ -211,10 +202,8 @@ function getVipPaymentInlineKeyboard() {
   };
 }
 
-/* ESTILO FANCY SOLO EN MENSAJES */
 function buildWelcomeCaption() {
-  return 
-`•╦————————————╦•
+  return `•╦————————————╦•
  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
 🧩ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
 📲ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
@@ -225,9 +214,7 @@ function buildWelcomeCaption() {
 
 function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
-
-  return 
-`•╦————————————╦•
+  return `•╦————————————╦•
   ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 👑 ${plan.label}
 ⇀ ᴘʀɪᴄᴇ $3 
@@ -237,10 +224,8 @@ function buildUserCard(userId) {
 }
 
 function buildVipCard(userId) {
-  const plan = getPlanDisplay(userId);("./assets/USERFX-ID18V20.jpg"),
-
-  return 
-`•╦————————————╦•
+  const plan = getPlanDisplay(userId);
+  return `•╦————————————╦•
 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
 🔥 [V-vip]
 ⇀ ᴘʀɪᴄᴇ   $12
@@ -249,460 +234,12 @@ function buildVipCard(userId) {
 •╩————————————╩•`;
 }
 
-async function sendUserStarsInvoice(ctx) {
-  await ctx.replyWithInvoice({
-    title: "[X-user]",
-    description: "Premium access",
-    payload: "membership_user",
-    currency: "XTR",
-    prices: [{ label: "[X-user]", amount: 300 }],
-    provider_token: "",
-    start_parameter: "buy-user-stars",
-  });
-}
-
-async function sendVipStarsInvoice(ctx) {
-  await ctx.replyWithInvoice({
-    title: "[V-vip]",
-    description: "Unlimited access",
-    payload: "membership_vip",
-    currency: "XTR",
-    prices: [{ label: "[V-vip]", amount: 1200 }],
-    provider_token: "",
-    start_parameter: "buy-vip-stars",
-  });
-}
-
-function getAdminVideoRequestInlineKeyboard(requesterId) {
-  return Markup.inlineKeyboard([
-    [{ text: "←", callback_data: `video_back_${requesterId}` }],
-  ]);
-}
-
-async function notifyAdminNewRequest(ctx) {
-  const requester = getRequesterData(ctx.from);
-
-  await bot.telegram.sendMessage(
-    ADMIN_CHAT_ID,
-    `📞 <b>New call request just came in</b>
-
-Nombre: <b>${escapeHtml(requester.fullName)}</b>
-Usuario: <b>${escapeHtml(requester.username)}</b>
-ID: <code>${escapeHtml(requester.id)}</code>`,
-    {
-      parse_mode: "HTML",
-      ...getAdminVideoRequestInlineKeyboard(requester.id),
-    }
-  );
-}
-
-async function notifyAdminMediaReceived(ctx, label = "Fotos") {
-  const requester = getRequesterData(ctx.from);
-
-  await bot.telegram.sendMessage(
-    ADMIN_CHAT_ID,
-    `📷 <b>${escapeHtml(label)} recibidas</b>
-
-Nombre: <b>${escapeHtml(requester.fullName)}</b>
-Usuario: <b>${escapeHtml(requester.username)}</b>
-ID: <code>${escapeHtml(requester.id)}</code>`,
-    { parse_mode: "HTML" }
-  );
-}
-
 async function sendMainMenu(ctx) {
   await ctx.reply(buildWelcomeCaption(), getMainKeyboard());
 }
 
-async function sendHelpMessage(ctx) {
-  await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/help.jpg"),
-    {
-      caption: `•╦————————————╦•
-🆘 ʜᴇʟᴘ
-•╩————————————╩•`,
-    }
-  );
-
-  await ctx.reply("‎", getMainKeyboard());
-}
-
-async function sendUserMode(ctx) {
-  await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/FX-Y24V01.mp4"),
-    {
-      caption: buildUserCard(ctx.from?.id),
-      ...getUserPaymentInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getBackKeyboard());
-}
-
-async function sendVipMode(ctx) {
-  await ctx.reply(buildVipCard(ctx.from?.id), {
-    ...getVipPaymentInlineKeyboard(),
-  });
-  await ctx.reply("‎", getBackKeyboard());
-}
-
-async function sendChannelsPanel(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
-📺 ᴄʜᴀɴɴᴇʟꜱ
-•╩————————————╩•`,
-    {
-      ...getChannelsInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getBackKeyboard());
-}
-
-async function sendWebsitePanel(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
-🌐 ᴡᴇʙꜱɪᴛᴇ
-Open the site below.
-•╩————————————╩•`,
-    {
-      ...getWebsiteInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getBackKeyboard());
-}
-
-async function sendRefreshPanel(ctx) {
-  await sendMainMenu(ctx);
-}
-
-async function sendFeedMessage(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
-📋 ꜰᴇᴇᴅ
-
-Selected drops
-Public previews
-Featured content
-•╩————————————╩•`,
-    {
-      ...getWebsiteInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendCloudsMessage(ctx) {
-  await ctx.reply(
-Input.fromLocalFile("./assets/welcome1.png"),
-    `•╦————————————╦•
-☁️ CLOUDS 
-ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ ᴠɪꜱᴜᴀʟ
-ꜱᴇꜱꜱɪᴏɴ ᴄʟᴏᴜᴅ ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇᴅ
-•╩————————————╩•`,
-    {
-      ...getWebsiteInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendPhotosMessage(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
-📸 ᴘʜᴏᴛᴏꜱ
-ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ.
-ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ.
-•╩————————————╩•`,
-    {
-      ...getWebsiteInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function sendGiftsMessage(ctx) {
-  await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/gifts.jpg"),
-    {
-      caption: `•╦————————————╦•
-🎁 ɢɪꜰᴛꜱ
-ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
-ꜱᴇᴄᴛɪᴏɴ ᴀᴅᴅɪᴛɪᴏɴᴀʟ 
-ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀᴛ
-•╩————————————╩•`,
-     ...getWebsiteInlineKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getAccessKeyboard());
-}
-
-async function startVideoCallFlow(ctx) {
-  const userId = String(ctx.from?.id || "");
-
-  if (!userId) {
-    await ctx.reply("Unable to identify your account.");
-    return;
-  }
-
-  pendingVideoRequests.set(userId, {
-    waitingForMedia: true,
-    invalidTextCount: 0,
-    createdAt: Date.now(),
-  });
-
-  await notifyAdminNewRequest(ctx);
-
-  await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/videocall.mp4"),
-    {
-      caption: `•╦————————————╦•
-ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ 
-📹 
-ꜱᴇɴᴅ ᴍᴇ ᴏɴᴇ ɴᴜᴅᴇ ᴘɪᴄ/ᴠɪᴅᴇᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. 
-ᴄʜᴏᴏꜱᴇ ᴢᴏᴏᴍ ᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀꜰᴛᴇʀ ᴀᴘʀʀᴏᴠᴀʟ
- •╩————————————╩•`,
-      reply_markup: { remove_keyboard: true },
-    }
-  );
-}
-
-async function completeMediaFlow(ctx, label = "File") {
-  const userId = String(ctx.from?.id || "");
-  pendingVideoRequests.delete(userId);
-
-  await ctx.reply(
-    `•╦————————————╦•
-✅ ${escapeHtml(label)} ʀᴇᴄᴇɪᴠᴇᴅ
-
-Continue below.
-•╩————————————╩•`,
-    {
-      ...getVideoCallKeyboard(),
-    }
-  );
-  await ctx.reply("‎", getBackKeyboard());
-}
-
 bot.start(async (ctx) => {
-  const payload = (ctx.startPayload || "").trim();
-
-  if (payload === "videocall") {
-    await startVideoCallFlow(ctx);
-    return;
-  }
-
-  if (payload === "userchannel") {
-    await ctx.reply(`•╦————————————╦•
-   🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
-•╩————————————╩•`,
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
-          ],
-        },
-      }
-    );
-    return;
-  }
-
-  if (payload === "smokelandiachannel") {
-    await ctx.reply(`•╦————————————╦•
-☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
-•╩————————————╩•`,
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
-          ],
-        },
-      }
-    );
-    return;
-  }
-
   await sendMainMenu(ctx);
-});
-
-bot.command("help", async (ctx) => {
-  await sendHelpMessage(ctx);
-});
-
-bot.command("videocall", async (ctx) => {
-  await startVideoCallFlow(ctx);
-});
-
-bot.hears(BTN_USER, async (ctx) => {
-  await sendUserMode(ctx);
-});
-
-bot.hears(BTN_VIP, async (ctx) => {
-  await sendVipMode(ctx);
-});
-
-bot.hears(BTN_VIDEOCALL, async (ctx) => {
-  await startVideoCallFlow(ctx);
-});
-
-bot.hears(BTN_CHANNELS, async (ctx) => {
-  await sendChannelsPanel(ctx);
-});
-
-bot.hears(BTN_WEBSITE, async (ctx) => {
-  await sendWebsitePanel(ctx);
-});
-
-bot.hears(BTN_REFRESH, async (ctx) => {
-  await sendRefreshPanel(ctx);
-});
-
-bot.hears(BTN_FEED, async (ctx) => {
-  await sendFeedMessage(ctx);
-});
-
-bot.hears(BTN_CLOUDS, async (ctx) => {
-  await sendCloudsMessage(ctx);
-});
-
-bot.hears(BTN_PHOTOS, async (ctx) => {
-  await sendPhotosMessage(ctx);
-});
-
-bot.hears(BTN_GIFTS, async (ctx) => {
-  await sendGiftsMessage(ctx);
-});
-
-bot.hears(BTN_BACK, async (ctx) => {
-  await sendMainMenu(ctx);
-});
-
-bot.hears(BTN_EXIT, async (ctx) => {
-  await sendMainMenu(ctx);
-});
-
-bot.action("buy_user_stars", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendUserStarsInvoice(ctx);
-  console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
-});
-
-bot.action("buy_vip_stars", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendVipStarsInvoice(ctx);
-});
-
-bot.on("pre_checkout_query", async (ctx) => {
-  await ctx.answerPreCheckoutQuery(true);
-});
-
-bot.on("successful_payment", async (ctx) => {
-  const payment = ctx.message.successful_payment;
-  const payload = payment.invoice_payload;
-  const userId = String(ctx.from?.id || "");
-
-  if (payload === "membership_user") {
-    setMembership(userId, "user");
-  }
-
-  if (payload === "membership_vip") {
-    setMembership(userId, "vip");
-  }
-
-  await ctx.reply("✅ Payment received. Access enabled.");
-  await ctx.reply("‎", getBackKeyboard());
-});
-
-bot.on("photo", async (ctx) => {
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
-
-  if (!pending?.waitingForMedia) return;
-
-  await notifyAdminMediaReceived(ctx, "Fotos");
-
-  await bot.telegram.forwardMessage(
-    ADMIN_CHAT_ID,
-    ctx.chat.id,
-    ctx.message.message_id
-  );
-
-  await completeMediaFlow(ctx, "Photos");
-});
-
-bot.action(/^video_back_(.+)$/, async (ctx) => {
-  await ctx.answerCbQuery("Usuario devuelto al menú");
-
-  const requesterId = ctx.match[1];
-  pendingVideoRequests.delete(String(requesterId));
-
-  await bot.telegram.sendMessage(
-    requesterId,
-    buildWelcomeCaption(),
-    getMainKeyboard()
-  );
-});
-
-bot.on("video", async (ctx) => {
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
-
-  if (!pending?.waitingForMedia) return;
-
-  await notifyAdminMediaReceived(ctx, "Video");
-
-  await bot.telegram.forwardMessage(
-    ADMIN_CHAT_ID,
-    ctx.chat.id,
-    ctx.message.message_id
-  );
-
-  await completeMediaFlow(ctx, "Video");
-});
-
-bot.on("text", async (ctx) => {
-  const text = (ctx.message.text || "").trim();
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
-
-  const knownInputs = [
-    "/start",
-    "/help",
-    "/videocall",
-    BTN_USER,
-    BTN_VIP,
-    BTN_VIDEOCALL,
-    BTN_CHANNELS,
-    BTN_WEBSITE,
-    BTN_REFRESH,
-    BTN_FEED,
-    BTN_CLOUDS,
-    BTN_PHOTOS,
-    BTN_GIFTS,
-    BTN_BACK,
-    BTN_EXIT,
-  ];
-
-  if (knownInputs.includes(text)) {
-    return;
-  }
-
-  if (pending?.waitingForMedia) {
-    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
-    pendingVideoRequests.set(userId, pending);
-
-    if (pending.invalidTextCount >= 4) {
-      pendingVideoRequests.delete(userId);
-      await ctx.reply("Bye.");
-      return;
-    }
-
-    if (pending.invalidTextCount === 1) {
-      await ctx.reply("Send one photo or video to continue.");
-    }
-
-    return;
-  }
-
-  await ctx.reply("Use the keyboard.");
 });
 
 bot.catch((error) => {
@@ -710,31 +247,8 @@ bot.catch((error) => {
 });
 
 export default async function handler(req, res) {
-  const ip =
-    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
-    req.headers["x-real-ip"] ||
-    req.headers["x-vercel-forwarded-for"] ||
-    "unknown";
-
-  console.log("IP:", ip);
-  console.log("HEADERS:", req.headers);
-
   if (req.method === "GET") {
-    return res.status(200).json({
-      ok: true,
-      method: req.method,
-      message: "Telegram endpoint alive",
-      ip,
-    });
-  }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "method_not_allowed",
-      method: req.method,
-      ip,
-    });
+    return res.status(200).json({ ok: true });
   }
 
   try {
@@ -743,17 +257,9 @@ export default async function handler(req, res) {
 
     await bot.handleUpdate(update);
 
-    return res.status(200).json({
-      ok: true,
-      ip,
-    });
+    return res.status(200).json({ ok: true });
   } catch (error) {
     console.error("TELEGRAM HANDLER ERROR:", error);
-    return res.status(500).json({
-      ok: false,
-      error: "handler_error",
-      details: String(error?.message || error),
-      ip,
-    });
+    return res.status(500).json({ ok: false });
   }
-}                                                                                                                                                                                     import { useState, useRef, useEffect, useCallback } from "react";
+}
