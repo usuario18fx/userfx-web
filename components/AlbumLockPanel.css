@@ -29,6 +29,11 @@
   background: #222;
   border: 1px solid #444;
   color: #fff;
+  outline: none;
+}
+
+.box:focus {
+  border-color: #888;
 }
 
 .gallery video {
