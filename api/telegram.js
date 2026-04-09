@@ -1,22 +1,22 @@
-import { Telegraf, Markup } from "telegraf";
+import { Telegraf, Markup, Input } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
-
-if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const CONTACT_URL = "https://t.me/User18fx";
 const TELEGRAM_CALL_URL = "https://t.me/User18fx";
+
 const USER_BOT_URL = "https://t.me/User18fxbot?start=userchannel";
 const SMOKELANDIA_BOT_URL =
   "https://t.me/Smokelandiabot?start=smokelandiachannel";
+
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
 
+/* BOTONES */
 const BTN_USER = "👑 [X-user]";
 const BTN_VIP = "🔥 [V-vip]";
 const BTN_VIDEOCALL = "📞 VIDEOCALL";
@@ -30,8 +30,16 @@ const BTN_GIFTS = "🎁";
 const BTN_BACK = "←";
 const BTN_EXIT = "⏎";
 
+if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
+if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
+
 const bot = new Telegraf(BOT_TOKEN);
-bot.telegram.webhookReply = false;
+
+/* ESTADO EN MEMORIA */
+const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
+if (!globalThis.__fxPendingVideoRequests) {
+  globalThis.__fxPendingVideoRequests = pendingVideoRequests;
+}
 
 const memberships = globalThis.__fxMemberships || new Map();
 if (!globalThis.__fxMemberships) {
@@ -42,9 +50,7 @@ function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replaceAll(">", "&gt;");
 }
 
 function getRequesterData(from) {
@@ -58,6 +64,7 @@ function getRequesterData(from) {
 
 function getMembership(userId) {
   const current = memberships.get(String(userId));
+
   if (!current) return null;
 
   if (current.expiresAt && Date.now() > current.expiresAt) {
@@ -70,12 +77,18 @@ function getMembership(userId) {
 
 function setMembership(userId, planKey) {
   const now = Date.now();
+
   const expiresAt =
     planKey === "vip"
       ? now + 30 * 24 * 60 * 60 * 1000
       : now + 3 * 24 * 60 * 60 * 1000;
 
-  const membership = { planKey, expiresAt, paidAt: now };
+  const membership = {
+    planKey,
+    expiresAt,
+    paidAt: now,
+  };
+
   memberships.set(String(userId), membership);
   return membership;
 }
@@ -87,7 +100,9 @@ function getPlanDisplay(userId) {
     return {
       label: "[X-user]",
       price: "$3",
+      access: "Premium",
       status: "Inactive",
+      emoji: "👑",
       planKey: "user",
     };
   }
@@ -96,7 +111,9 @@ function getPlanDisplay(userId) {
     return {
       label: "[V-vip]",
       price: "$12",
+      access: "Unlimited",
       status: "Active",
+      emoji: "🔥",
       planKey: "vip",
     };
   }
@@ -104,200 +121,454 @@ function getPlanDisplay(userId) {
   return {
     label: "[X-user]",
     price: "$3",
+    access: "Premium",
     status: "Active",
+    emoji: "👑",
     planKey: "user",
   };
 }
 
-function mainKeyboard() {
-  return Markup.keyboard([
-    [BTN_USER, BTN_VIP],
-    [BTN_VIDEOCALL, BTN_CHANNELS],
-    [BTN_WEBSITE, BTN_REFRESH],
-  ]).resize();
+function getMainKeyboard() {
+  return Markup.keyboard(
+    [
+      [BTN_USER, BTN_VIP],
+      [BTN_VIDEOCALL, BTN_CHANNELS],
+      [BTN_WEBSITE, BTN_REFRESH],
+    ],
+    { columns: 2 }
+  ).resize();
 }
 
-function accessKeyboard() {
-  return Markup.keyboard([
-    [BTN_FEED, BTN_CLOUDS],
-    [BTN_PHOTOS, BTN_GIFTS],
-    [BTN_BACK, BTN_EXIT],
-  ]).resize();
-}
-
-function simpleKeyboard() {
+function getBackKeyboard() {
   return Markup.keyboard([[BTN_EXIT]]).resize();
 }
 
-function websiteInlineKeyboard() {
-  return Markup.inlineKeyboard([
-    [Markup.button.url("🌐 OPEN WEBSITE", WEBSITE_URL)],
-  ]);
-}
-
-function videoInlineKeyboard() {
-  return Markup.inlineKeyboard([
+function getAccessKeyboard() {
+  return Markup.keyboard(
     [
-      Markup.button.url("📞 ENTER ZOOM", ZOOM_URL),
-      Markup.button.url("💬 OPEN TELEGRAM", TELEGRAM_CALL_URL),
+      [BTN_FEED, BTN_CLOUDS],
+      [BTN_PHOTOS, BTN_GIFTS],
+      [BTN_BACK],
     ],
-    [Markup.button.url("🌐 WEBSITE", WEBSITE_URL)],
-  ]);
+    { columns: 2 }
+  ).resize();
 }
 
-function channelsInlineKeyboard() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.url("ᴜꜱᴇʀ🜲Ŧҳ", USER_BOT_URL),
-      Markup.button.url("ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", SMOKELANDIA_BOT_URL),
-    ],
-    [
-      Markup.button.url("👥 USER GROUP", USER_GROUP_LINK),
-      Markup.button.url("🔥 SMOKELANDIA GROUP", SMOKELANDIA_GROUP_LINK),
-    ],
-  ]);
+function getWebsiteInlineKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [[{ text: "🌐 OPEN WEBSITE", url: WEBSITE_URL }]],
+    },
+  };
 }
 
-function userPaymentKeyboard() {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback("⭐ 300 XTR", "buy_user_stars")],
-  ]);
+function getVideoCallKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "📞 ENTER ZOOM", url: ZOOM_URL },
+          { text: "💬 OPEN TELEGRAM", url: TELEGRAM_CALL_URL },
+        ],
+        [{ text: "🌐 WEBSITE", url: WEBSITE_URL }],
+      ],
+    },
+  };
 }
 
-function vipPaymentKeyboard() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("⭐ 1200 XTR", "buy_vip_stars"),
-      Markup.button.url("💬 CONTACT", CONTACT_URL),
-    ],
-  ]);
+function getChannelsInlineKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "ᴜꜱᴇʀ🜲Ŧҳ", url: USER_BOT_URL },
+          { text: "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_BOT_URL },
+        ],
+      ],
+    },
+  };
 }
 
-function welcomeText() {
-  return `
-<b>•╦————————————╦•</b>
-<b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲</b>
-🧩 <i>features ilimit</i>
-📲 <i>new pics every week</i>
-📹 <i>access to video-chat</i>
-🔥 <i>enjoy it ..</i>
-<b>•╩————————————╩•</b>
-`.trim();
+function getUserPaymentInlineKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [[{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }]],
+    },
+  };
 }
 
-function userCard(userId) {
+function getVipPaymentInlineKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "⭐ 1200 XTR", callback_data: "buy_vip_stars" },
+          { text: "💬", url: CONTACT_URL },
+        ],
+      ],
+    },
+  };
+}
+
+function buildWelcomeCaption() {
+  return `•╦————————————╦•
+🧩 ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
+📲 ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+📹 ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
+🔥 ᴇɴᴊᴏʏ ɪᴛ ..
+•╩————————————╩•`;
+}
+
+function buildUserCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return `
-<b>•╦————————————╦•</b>
-<b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲</b>
-<b>👑 ${escapeHtml(plan.label)}</b>
-⇀ <i>price $3</i>
-⇀ <i>status ${escapeHtml(plan.planKey === "user" ? plan.status : "Inactive")}</i>
-⇀ <i>premium access enabled</i>
-<b>•╩————————————╩•</b>
-`.trim();
+  return `•╦————————————╦•
+ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+👑 ${plan.label}
+⇀ ᴘʀɪᴄᴇ $3
+⇀ ꜱᴛᴀᴛᴜꜱ ${plan.planKey === "user" ? plan.status : "Inactive"}
+⇀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇᴅ
+•╩————————————╩•`;
 }
 
-function vipCard(userId) {
+function buildVipCard(userId) {
   const plan = getPlanDisplay(userId);
 
-  return `
-<b>•╦————————————╦•</b>
-<b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲</b>
-<b>🔥 [V-vip]</b>
-⇀ <i>price $12</i>
-⇀ <i>status ${escapeHtml(plan.planKey === "vip" ? plan.status : "Inactive")}</i>
-⇀ <i>access unlimited</i>
-<b>•╩————————————╩•</b>
-`.trim();
+  return `•╦————————————╦•
+ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ 🜲
+🔥 [V-vip]
+⇀ ᴘʀɪᴄᴇ $12
+⇀ ꜱᴛᴀᴛᴜꜱ ${plan.planKey === "vip" ? plan.status : "Inactive"}
+⇀ ᴀᴄᴄᴇꜱꜱ ᴜɴʟɪᴍɪᴛᴇᴅ
+•╩————————————╩•`;
 }
 
-async function sendHtml(ctx, text, extra = {}) {
-  return ctx.reply(text, {
-    parse_mode: "HTML",
-    ...extra,
+async function sendUserStarsInvoice(ctx) {
+  await ctx.replyWithInvoice({
+    title: "[X-user]",
+    description: "Premium access",
+    payload: "membership_user",
+    currency: "XTR",
+    prices: [{ label: "[X-user]", amount: 300 }],
+    provider_token: "",
+    start_parameter: "buy-user-stars",
   });
 }
 
-async function notifyAdmin(ctx, title) {
+async function sendVipStarsInvoice(ctx) {
+  await ctx.replyWithInvoice({
+    title: "[V-vip]",
+    description: "Unlimited access",
+    payload: "membership_vip",
+    currency: "XTR",
+    prices: [{ label: "[V-vip]", amount: 1200 }],
+    provider_token: "",
+    start_parameter: "buy-vip-stars",
+  });
+}
+
+function getAdminVideoRequestInlineKeyboard(requesterId) {
+  return Markup.inlineKeyboard([
+    [{ text: "←", callback_data: `video_back_${requesterId}` }],
+  ]);
+}
+
+async function notifyAdminNewRequest(ctx) {
   const requester = getRequesterData(ctx.from);
 
-  const text = `
-<b>${escapeHtml(title)}</b>
-<b>Name:</b> ${escapeHtml(requester.fullName)}
-<b>Username:</b> ${escapeHtml(requester.username)}
-<b>ID:</b> <code>${escapeHtml(requester.id)}</code>
-`.trim();
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📞 <b>New call request just came in</b>
 
-  return bot.telegram.sendMessage(ADMIN_CHAT_ID, text, {
-    parse_mode: "HTML",
-  });
+Nombre: <b>${escapeHtml(requester.fullName)}</b>
+Usuario: <b>${escapeHtml(requester.username)}</b>
+ID: <code>${escapeHtml(requester.id)}</code>`,
+    {
+      parse_mode: "HTML",
+      ...getAdminVideoRequestInlineKeyboard(requester.id),
+    }
+  );
+}
+
+async function notifyAdminMediaReceived(ctx, label = "Fotos") {
+  const requester = getRequesterData(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📷 <b>${escapeHtml(label)} recibidas</b>
+
+Nombre: <b>${escapeHtml(requester.fullName)}</b>
+Usuario: <b>${escapeHtml(requester.username)}</b>
+ID: <code>${escapeHtml(requester.id)}</code>`,
+    { parse_mode: "HTML" }
+  );
 }
 
 async function sendMainMenu(ctx) {
-  await sendHtml(ctx, welcomeText(), mainKeyboard());
+  await ctx.reply(buildWelcomeCaption(), getMainKeyboard());
+}
+
+async function sendHelpMessage(ctx) {
+  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/help.jpg"), {
+    caption: `•╦————————————╦•
+ʜᴇʟᴘ
+🆘 
+•╩————————————╩•`,
+  });
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
+async function sendUserMode(ctx) {
+  await ctx.replyWithVideo(Input.fromLocalFile("./assets/FX-Y24V01.mp4"), {
+    caption: buildUserCard(ctx.from?.id),
+    ...getUserPaymentInlineKeyboard(),
+  });
+
+  await ctx.reply("‎", getBackKeyboard());
+}
+
+async function sendVipMode(ctx) {
+  await ctx.reply(buildVipCard(ctx.from?.id), {
+    ...getVipPaymentInlineKeyboard(),
+  });
+
+  await ctx.reply("‎", getBackKeyboard());
+}
+
+async function sendChannelsPanel(ctx) {
+  await ctx.reply(
+    `•╦————————————╦•
+ᴄʜᴀɴɴᴇʟꜱ
+📺 
+•╩————————————╩•`,
+    {
+      ...getChannelsInlineKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getBackKeyboard());
+}
+
+async function sendWebsitePanel(ctx) {
+  await ctx.reply(
+    `•╦————————————╦•
+ᴡᴇʙꜱɪᴛᴇ
+🌐
+⤸ Open the site below.
+•╩————————————╩•`,
+    {
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getBackKeyboard());
+}
+
+async function sendRefreshPanel(ctx) {
+  await sendMainMenu(ctx);
+}
+
+async function sendFeedMessage(ctx) {
+  await ctx.reply(
+    `•╦————————————╦•
+ꜰᴇᴇᴅ
+📋
+Selected drops
+Public previews
+Featured content
+•╩————————————╩•`,
+    {
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendCloudsMessage(ctx) {
+  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/welcome1.png"), {
+    caption: `•╦————————————╦•
+ᴄʟᴏᴜᴅꜱ
+☁️
+Ambient room
+Visual session
+Cloud access enabled
+•╩————————————╩•`,
+    ...getWebsiteInlineKeyboard(),
+  });
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendPhotosMessage(ctx) {
+  await ctx.reply(
+    `•╦————————————╦•
+ᴘʜᴏᴛᴏꜱ
+📸
+ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ
+•╩————————————╩•`,
+    {
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function sendGiftsMessage(ctx) {
+  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/gifts.jpg"), {
+    caption: `•╦————————————╦•
+🎁 ɢɪꜰᴛꜱ
+ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
+ꜱᴇᴄᴛɪᴏɴ ᴀᴅᴅɪᴛɪᴏɴᴀʟ
+ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀᴛ
+•╩————————————╩•`,
+    ...getWebsiteInlineKeyboard(),
+  });
+
+  await ctx.reply("‎", getAccessKeyboard());
+}
+
+async function startVideoCallFlow(ctx) {
+  const userId = String(ctx.from?.id || "");
+
+  if (!userId) {
+    await ctx.reply("Unable to identify your account.");
+    return;
+  }
+
+  pendingVideoRequests.set(userId, {
+    waitingForMedia: true,
+    invalidTextCount: 0,
+    createdAt: Date.now(),
+  });
+
+ await notifyAdminNewRequest(ctx);
+
+  await ctx.replyWithVideo(Input.fromLocalFile("./assets/videocall.mp4"), {
+    caption: `•╦————————————╦•
+ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+📹
+ꜱᴇɴᴅ ᴏɴᴇ ɴᴜᴅᴇ ᴘɪᴄ/ᴠɪᴅᴇᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ
+ᴄʜᴏᴏꜱᴇ ᴢᴏᴏᴍ ᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀꜰᴛᴇʀ ᴀᴘᴘʀᴏᴠᴀʟ
+•╩————————————╩•`,
+    reply_markup: { remove_keyboard: true },
+  });
+}
+
+async function completeMediaFlow(ctx, label = "File") {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
+
+  await ctx.reply(
+    `•╦————————————╦•
+✅ ${escapeHtml(label)} ʀᴇᴄᴇɪᴠᴇᴅ
+
+Continue below.
+•╩————————————╩•`,
+    {
+      ...getVideoCallKeyboard(),
+    }
+  );
+
+  await ctx.reply("‎", getBackKeyboard());
 }
 
 bot.start(async (ctx) => {
+  const payload = (ctx.startPayload || "").trim();
+
+  if (payload === "videocall") {
+    await startVideoCallFlow(ctx);
+    return;
+  }
+
+  if (payload === "userchannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
+•╩————————————╩•`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
+  if (payload === "smokelandiachannel") {
+    await ctx.reply(
+      `•╦————————————╦•
+☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
+•╩————————————╩•`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
+          ],
+        },
+      }
+    );
+    return;
+  }
+
   await sendMainMenu(ctx);
+});
+
+bot.command("help", async (ctx) => {
+  await sendHelpMessage(ctx);
+});
+
+bot.command("videocall", async (ctx) => {
+  await startVideoCallFlow(ctx);
 });
 
 bot.hears(BTN_USER, async (ctx) => {
-  await sendHtml(ctx, userCard(ctx.from.id), userPaymentKeyboard());
+  await sendUserMode(ctx);
 });
 
 bot.hears(BTN_VIP, async (ctx) => {
-  await sendHtml(ctx, vipCard(ctx.from.id), vipPaymentKeyboard());
+  await sendVipMode(ctx);
 });
 
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
-  await notifyAdmin(ctx, "📞 Video call request");
-  await sendHtml(
-    ctx,
-    "<b>📞 VIDEOCALL</b>\n<i>Choose how you want to connect.</i>",
-    videoInlineKeyboard()
-  );
+  await startVideoCallFlow(ctx);
 });
 
 bot.hears(BTN_CHANNELS, async (ctx) => {
-  await sendHtml(
-    ctx,
-    "<b>📺 CHANNELS</b>\n<i>Select one of the available channels or groups.</i>",
-    channelsInlineKeyboard()
-  );
+  await sendChannelsPanel(ctx);
 });
 
 bot.hears(BTN_WEBSITE, async (ctx) => {
-  await sendHtml(
-    ctx,
-    "<b>🌐 WEBSITE</b>\n<i>Open the official website using the button below.</i>",
-    websiteInlineKeyboard()
-  );
+  await sendWebsitePanel(ctx);
 });
 
 bot.hears(BTN_REFRESH, async (ctx) => {
-  await sendMainMenu(ctx);
+  await sendRefreshPanel(ctx);
 });
 
 bot.hears(BTN_FEED, async (ctx) => {
-  await sendHtml(ctx, "<b>📋 FEED</b>", simpleKeyboard());
+  await sendFeedMessage(ctx);
 });
 
 bot.hears(BTN_CLOUDS, async (ctx) => {
-  await sendHtml(ctx, "<b>☁️ CLOUDS</b>", simpleKeyboard());
+  await sendCloudsMessage(ctx);
 });
 
 bot.hears(BTN_PHOTOS, async (ctx) => {
-  await sendHtml(ctx, "<b>📸 PHOTOS</b>", simpleKeyboard());
+  await sendPhotosMessage(ctx);
 });
 
 bot.hears(BTN_GIFTS, async (ctx) => {
-  await sendHtml(ctx, "<b>🎁 GIFTS</b>", simpleKeyboard());
+  await sendGiftsMessage(ctx);
 });
 
 bot.hears(BTN_BACK, async (ctx) => {
-  await sendHtml(ctx, "<b>↩️ ACCESS PANEL</b>", accessKeyboard());
+  await sendMainMenu(ctx);
 });
 
 bot.hears(BTN_EXIT, async (ctx) => {
@@ -306,39 +577,128 @@ bot.hears(BTN_EXIT, async (ctx) => {
 
 bot.action("buy_user_stars", async (ctx) => {
   await ctx.answerCbQuery();
-  setMembership(ctx.from.id, "user");
-  await notifyAdmin(ctx, "🧾 User purchase");
-  await sendHtml(ctx, userCard(ctx.from.id), accessKeyboard());
+  await sendUserStarsInvoice(ctx);
+  console.log("CHAT ID:", ctx.chat?.id, "USER ID:", ctx.from?.id);
 });
 
 bot.action("buy_vip_stars", async (ctx) => {
   await ctx.answerCbQuery();
-  setMembership(ctx.from.id, "vip");
-  await notifyAdmin(ctx, "🧾 VIP purchase");
-  await sendHtml(ctx, vipCard(ctx.from.id), accessKeyboard());
+  await sendVipStarsInvoice(ctx);
 });
 
-bot.on("message", async (ctx, next) => {
-  const incomingText = ctx.message?.text;
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
+});
 
-  if (incomingText === "👑 [X-user]") return next();
-  if (incomingText === "🔥 [V-vip]") return next();
-  if (incomingText === "📞 VIDEOCALL") return next();
-  if (incomingText === "📺") return next();
-  if (incomingText === "🌐 WEBSITE") return next();
-  if (incomingText === "↺") return next();
-  if (incomingText === "📋") return next();
-  if (incomingText === "☁️") return next();
-  if (incomingText === "📸") return next();
-  if (incomingText === "🎁") return next();
-  if (incomingText === "←") return next();
-  if (incomingText === "⏎") return next();
+bot.on("successful_payment", async (ctx) => {
+  const payment = ctx.message.successful_payment;
+  const payload = payment.invoice_payload;
+  const userId = String(ctx.from?.id || "");
 
-  await sendHtml(
-    ctx,
-    `<b>DEBUG</b>\n<code>${escapeHtml(String(incomingText || "no-text"))}</code>`,
-    mainKeyboard()
+  if (payload === "membership_user") {
+    setMembership(userId, "user");
+  }
+
+  if (payload === "membership_vip") {
+    setMembership(userId, "vip");
+  }
+
+  await ctx.reply("✅ Payment received. Access enabled.");
+  await ctx.reply("‎", getBackKeyboard());
+});
+
+bot.on("photo", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (!pending?.waitingForMedia) return;
+
+  await notifyAdminMediaReceived(ctx, "Fotos");
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
   );
+
+  await completeMediaFlow(ctx, "Photos");
+});
+
+bot.on("video", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (!pending?.waitingForMedia) return;
+
+  await notifyAdminMediaReceived(ctx, "Video");
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
+  );
+
+  await completeMediaFlow(ctx, "Video");
+});
+
+bot.action(/^video_back_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Usuario devuelto al menú");
+
+  const requesterId = ctx.match[1];
+  pendingVideoRequests.delete(String(requesterId));
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    buildWelcomeCaption(),
+    getMainKeyboard()
+  );
+});
+
+bot.on("text", async (ctx) => {
+  const text = (ctx.message.text || "").trim();
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  const knownInputs = [
+    "/start",
+    "/help",
+    "/videocall",
+    BTN_USER,
+    BTN_VIP,
+    BTN_VIDEOCALL,
+    BTN_CHANNELS,
+    BTN_WEBSITE,
+    BTN_REFRESH,
+    BTN_FEED,
+    BTN_CLOUDS,
+    BTN_PHOTOS,
+    BTN_GIFTS,
+    BTN_BACK,
+    BTN_EXIT,
+  ];
+
+  if (knownInputs.includes(text)) {
+    return;
+  }
+
+  if (pending?.waitingForMedia) {
+    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
+    pendingVideoRequests.set(userId, pending);
+
+    if (pending.invalidTextCount >= 4) {
+      pendingVideoRequests.delete(userId);
+      await ctx.reply("Bye.");
+      return;
+    }
+
+    if (pending.invalidTextCount === 1) {
+      await ctx.reply("Send one photo or video to continue.");
+    }
+
+    return;
+  }
+
+  await ctx.reply("Use the keyboard.");
 });
 
 bot.catch((error) => {
@@ -346,12 +706,31 @@ bot.catch((error) => {
 });
 
 export default async function handler(req, res) {
+  const ip =
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.headers["x-real-ip"] ||
+    req.headers["x-vercel-forwarded-for"] ||
+    "unknown";
+
+  console.log("IP:", ip);
+  console.log("HEADERS:", req.headers);
+
   if (req.method === "GET") {
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({
+      ok: true,
+      method: req.method,
+      message: "Telegram endpoint alive",
+      ip,
+    });
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "Method not allowed" });
+    return res.status(405).json({
+      ok: false,
+      error: "method_not_allowed",
+      method: req.method,
+      ip,
+    });
   }
 
   try {
@@ -359,9 +738,18 @@ export default async function handler(req, res) {
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
     await bot.handleUpdate(update);
-    return res.status(200).json({ ok: true });
+
+    return res.status(200).json({
+      ok: true,
+      ip,
+    });
   } catch (error) {
     console.error("TELEGRAM HANDLER ERROR:", error);
-    return res.status(500).json({ ok: false, error: "Internal server error" });
+    return res.status(500).json({
+      ok: false,
+      error: "handler_error",
+      details: String(error?.message || error),
+      ip,
+    });
   }
 }
