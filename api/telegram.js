@@ -1,3 +1,4 @@
+import path from "path";
 import { Telegraf, Markup, Input } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -36,6 +37,8 @@ if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
+
+const asset = (file) => path.join(process.cwd(), "assets", file);
 
 /* ESTADO EN MEMORIA */
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
@@ -350,7 +353,7 @@ async function sendMainMenu(ctx) {
 }
 
 async function sendHelpMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/help.jpg"), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("help.jpg")), {
     caption: `🆘
 ʜᴇʟᴘ`,
   });
@@ -359,7 +362,7 @@ async function sendHelpMessage(ctx) {
 }
 
 async function sendUserMode(ctx) {
-  await ctx.replyWithVideo(Input.fromLocalFile("./assets/FX-Y24V01.mp4"), {
+  await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
     caption: buildUserCard(ctx.from?.id),
     ...getUserPaymentInlineKeyboard(),
   });
@@ -418,19 +421,22 @@ async function sendFeedMessage(ctx) {
 }
 
 async function sendCloudsMessage(ctx) {
-  await ctx.replyWithVideo(Input.fromLocalFile("./assets/welcome-smkl.mp4"), {
-    caption: `ᴄʟᴏᴜᴅꜱ
+  await ctx.replyWithVideo(
+    Input.fromLocalFile(asset("welcome-smkl.mp4")),
+    {
+      caption: `ᴄʟᴏᴜᴅꜱ
 ☁️
 ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ`,
-    ...getWebsiteInlineKeyboard(),
-  });
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
 
   await ctx.reply("‎", getAccessKeyboard());
 }
 
 async function sendPhotosMessage(ctx) {
   await ctx.replyWithPhoto(
-    Input.fromLocalFile("./assets/USERFX-ID18V20.jpg"),
+    Input.fromLocalFile(asset("USERFX-ID18V20.jpg")),
     {
       caption: `ᴘʜᴏᴛᴏꜱ
 📸
@@ -444,7 +450,7 @@ async function sendPhotosMessage(ctx) {
 }
 
 async function sendGiftsMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/gifts.jpg"), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("gifts.jpg")), {
     caption: `🎁
 ɢɪꜰᴛꜱ
 ➥ ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
@@ -474,7 +480,7 @@ async function startVideoCallFlow(ctx) {
 
   await notifyAdminNewRequest(ctx);
 
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/videocall.jpeg"), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpeg")), {
     caption: `•╦————————————╦•
 ꜱᴇɴᴅ ᴏɴᴇ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ɴᴏᴡ
 😏
@@ -540,7 +546,7 @@ bot.start(async (ctx) => {
 
   if (payload === "smokelandiachannel") {
     await ctx.replyWithVideo(
-      Input.fromLocalFile("./assets/welcome-smkl.mp4"),
+      Input.fromLocalFile(asset("welcome-smkl.mp4")),
       {
         caption: `☁️
 ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`,
