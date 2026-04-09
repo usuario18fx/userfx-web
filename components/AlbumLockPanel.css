@@ -77,7 +77,8 @@
   transform: translateY(-1px);
 }
 
-.locked {}
+.locked {
+}
 
 .error .box {
   border-color: #ff4d6d;
@@ -85,7 +86,8 @@
   animation: shake 0.28s ease-in-out 2;
 }
 
-.unlocked {}
+.unlocked {
+}
 
 .message {
   min-height: 22px;
@@ -122,15 +124,19 @@
   0% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-4px);
   }
+
   50% {
     transform: translateX(4px);
   }
+
   75% {
     transform: translateX(-3px);
   }
+
   100% {
     transform: translateX(0);
   }
