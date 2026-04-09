@@ -29,7 +29,6 @@ const BTN_PHOTOS = "📸 PHOTOS";
 const BTN_GIFTS = "🎁 GIFTS";
 const BTN_BACK = "← BACK";
 const BTN_EXIT = "⏎ MENU";
-
 const BTN_SEND_PHOTO_VIDEO = "📤 SEND PHOTO / VIDEO";
 const BTN_CANCEL_VIDEO = "✖ CANCEL";
 
@@ -222,14 +221,18 @@ function getVideoPlatformInlineKeyboard() {
 }
 
 function getAdminVideoRequestInlineKeyboard(requesterId) {
-  return Markup.inlineKeyboard([
-    [
-      {
-        text: "← RETURN USER TO MENU",
-        callback_data: `video_back_${requesterId}`,
-      },
-    ],
-  ]);
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "← RETURN USER TO MENU",
+            callback_data: `video_back_${requesterId}`,
+          },
+        ],
+      ],
+    },
+  };
 }
 
 function getAdminApprovalKeyboard(requesterId) {
@@ -415,9 +418,7 @@ async function sendFeedMessage(ctx) {
 }
 
 async function sendCloudsMessage(ctx) {
-  await ctx.replyWithVideo(
-    Input.fromLocalFile("./assets/welcome-smkl.mp4"),
-    {
+  await ctx.replyWithVideo(Input.fromLocalFile("./assets/welcome-smkl.mp4"), {
     caption: `ᴄʟᴏᴜᴅꜱ
 ☁️
 ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ`,
@@ -428,13 +429,16 @@ async function sendCloudsMessage(ctx) {
 }
 
 async function sendPhotosMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/USERFX-ID18V20.jpg"), {
-    caption: `ᴘʜᴏᴛᴏꜱ
+  await ctx.replyWithPhoto(
+    Input.fromLocalFile("./assets/USERFX-ID18V20.jpg"),
+    {
+      caption: `ᴘʜᴏᴛᴏꜱ
 📸
 ➥ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 ➥ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ`,
-    ...getWebsiteInlineKeyboard(),
-  });
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
 
   await ctx.reply("‎", getAccessKeyboard());
 }
@@ -482,29 +486,6 @@ ZOOM / TELEGRAM
   });
 
   await ctx.reply("‎", getVideoRequestKeyboard());
-}
-
-async function askPlatformAfterMedia(ctx, mediaLabel = "Media") {
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
-
-  if (!pending) return;
-
-  pending.waitingForMedia = false;
-  pending.awaitingAdminApproval = false;
-  pending.waitingForPlatform = true;
-  pendingVideoRequests.set(userId, pending);
-
-  await ctx.reply(
-    `•╦————————————╦•
-✅ ${escapeHtml(mediaLabel)} ʀᴇᴄᴇɪᴠᴇᴅ
-Approved to continue.
-Choose your call platform below.
-•╩————————————╩•`,
-    {
-      ...getVideoPlatformInlineKeyboard(),
-    }
-  );
 }
 
 async function sendSelectedPlatformLink(ctx, platform) {
@@ -558,10 +539,11 @@ bot.start(async (ctx) => {
   }
 
   if (payload === "smokelandiachannel") {
-    await ctx.reply(
-      `☁️ 
-ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`,
+    await ctx.replyWithVideo(
+      Input.fromLocalFile("./assets/welcome-smkl.mp4"),
       {
+        caption: `☁️
+ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`,
         reply_markup: {
           inline_keyboard: [
             [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
@@ -661,6 +643,7 @@ bot.action("buy_vip_stars", async (ctx) => {
 
 bot.action("choose_platform_zoom", async (ctx) => {
   await ctx.answerCbQuery();
+
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
 
@@ -674,6 +657,7 @@ bot.action("choose_platform_zoom", async (ctx) => {
 
 bot.action("choose_platform_telegram", async (ctx) => {
   await ctx.answerCbQuery();
+
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
 
@@ -726,6 +710,19 @@ bot.action(/^reject_video_(.+)$/, async (ctx) => {
 
 Return to menu.
 •╩————————————╩•`,
+    getMainKeyboard()
+  );
+});
+
+bot.action(/^video_back_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("User returned to menu");
+
+  const requesterId = String(ctx.match[1]);
+  pendingVideoRequests.delete(requesterId);
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    buildWelcomeCaption(),
     getMainKeyboard()
   );
 });
@@ -804,19 +801,6 @@ bot.on("video", async (ctx) => {
 Your request is now under review.
 Wait for approval.
 •╩————————————╩•`
-  );
-});
-
-bot.action(/^video_back_(.+)$/, async (ctx) => {
-  await ctx.answerCbQuery("User returned to menu");
-
-  const requesterId = ctx.match[1];
-  pendingVideoRequests.delete(String(requesterId));
-
-  await bot.telegram.sendMessage(
-    requesterId,
-    buildWelcomeCaption(),
-    getMainKeyboard()
   );
 });
 
