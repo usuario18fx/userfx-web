@@ -415,7 +415,9 @@ async function sendFeedMessage(ctx) {
 }
 
 async function sendCloudsMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/welcome1.png"), {
+  await ctx.replyWithVideo(
+    Input.fromLocalFile("./assets/welcome-smkl.mp4"),
+    {
     caption: `ᴄʟᴏᴜᴅꜱ
 ☁️
 ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ`,
