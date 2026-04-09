@@ -389,7 +389,7 @@ async function sendCloudsMessage(ctx) {
 }
 
 async function sendPhotosMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/photos.jpg"), {
+  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/USERFX-ID18V20.jpg"), {
     caption: `ᴘʜᴏᴛᴏꜱ
 📸
 ➥ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
@@ -430,7 +430,7 @@ async function startVideoCallFlow(ctx) {
 
   await notifyAdminNewRequest(ctx);
 
-  await ctx.replyWithVideo(Input.fromLocalFile("./assets/videocall.mp4"), {
+  await ctx.replyWithVideo(Input.fromLocalFile("./assets/videocall.jpeg"), {
     caption: `•╦————————————╦•
 ꜱᴇɴᴅ ᴏɴᴇ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ɴᴏᴡ
 😏
