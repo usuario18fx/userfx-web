@@ -77,9 +77,7 @@
   transform: translateY(-1px);
 }
 
-.locked .box {
-  border-color: #3a3a48;
-}
+.locked {}
 
 .error .box {
   border-color: #ff4d6d;
@@ -87,9 +85,7 @@
   animation: shake 0.28s ease-in-out 2;
 }
 
-.unlocked .card {
-  max-width: 720px;
-}
+.unlocked {}
 
 .message {
   min-height: 22px;
