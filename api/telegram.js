@@ -309,23 +309,19 @@ async function sendMainMenu(ctx) {
 }
 
 async function sendHelpMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/help.jpg"), {
+   await ctx.reply("‎", getMainKeyboard());
     caption: `•╦————————————╦•
 ʜᴇʟᴘ
 🆘 
 •╩————————————╩•`,
   });
-
-  await ctx.reply("‎", getMainKeyboard());
 }
 
 async function sendUserMode(ctx) {
-  await ctx.replyWithVideo(Input.fromLocalFile("./assets/FX-Y24V01.mp4"), {
+  await ctx.reply("‎", getBackKeyboard());
     caption: buildUserCard(ctx.from?.id),
     ...getUserPaymentInlineKeyboard(),
   });
-
-  await ctx.reply("‎", getBackKeyboard());
 }
 
 async function sendVipMode(ctx) {
@@ -338,10 +334,8 @@ async function sendVipMode(ctx) {
 
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
-    `•╦————————————╦•
-ᴄʜᴀɴɴᴇʟꜱ
-📺 
-•╩————————————╩•`,
+    `ᴄʜᴀɴɴᴇʟꜱ
+📺`,
     {
       ...getChannelsInlineKeyboard(),
     }
@@ -387,7 +381,7 @@ Featured content
 }
 
 async function sendCloudsMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/welcome1.png"), {
+await ctx.reply("‎", getAccessKeyboard());
     caption: `•╦————————————╦•
 ᴄʟᴏᴜᴅꜱ
 ☁️
@@ -397,8 +391,6 @@ Cloud access enabled
 •╩————————————╩•`,
     ...getWebsiteInlineKeyboard(),
   });
-
-  await ctx.reply("‎", getAccessKeyboard());
 }
 
 async function sendPhotosMessage(ctx) {
@@ -418,7 +410,7 @@ async function sendPhotosMessage(ctx) {
 }
 
 async function sendGiftsMessage(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/gifts.jpg"), {
+  await ctx.reply("‎", getAccessKeyboard());
     caption: `•╦————————————╦•
 🎁 ɢɪꜰᴛꜱ
 ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
@@ -427,8 +419,6 @@ async function sendGiftsMessage(ctx) {
 •╩————————————╩•`,
     ...getWebsiteInlineKeyboard(),
   });
-
-  await ctx.reply("‎", getAccessKeyboard());
 }
 
 async function startVideoCallFlow(ctx) {
@@ -446,7 +436,6 @@ async function startVideoCallFlow(ctx) {
   });
 
  await notifyAdminNewRequest(ctx);
-
   await ctx.replyWithVideo(Input.fromLocalFile("./assets/videocall.mp4"), {
     caption: `•╦————————————╦•
 ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ʀᴇᴄᴇɪᴠᴇᴅ
