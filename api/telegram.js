@@ -188,7 +188,9 @@ function getChannelsInlineKeyboard() {
 function getUserPaymentInlineKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }]],
+      inline_keyboard: [
+        [{ text: "⭐ 300 XTR", callback_data: "buy_user_stars" }],
+      ],
     },
   };
 }
@@ -213,6 +215,36 @@ function getVideoPlatformInlineKeyboard() {
         [
           { text: "📞 ZOOM", callback_data: "choose_platform_zoom" },
           { text: "💬 TELEGRAM", callback_data: "choose_platform_telegram" },
+        ],
+      ],
+    },
+  };
+}
+
+function getAdminVideoRequestInlineKeyboard(requesterId) {
+  return Markup.inlineKeyboard([
+    [
+      {
+        text: "← RETURN USER TO MENU",
+        callback_data: `video_back_${requesterId}`,
+      },
+    ],
+  ]);
+}
+
+function getAdminApprovalKeyboard(requesterId) {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "✅ APPROVE", callback_data: `approve_video_${requesterId}` },
+          { text: "❌ REJECT", callback_data: `reject_video_${requesterId}` },
+        ],
+        [
+          {
+            text: "← RETURN USER TO MENU",
+            callback_data: `video_back_${requesterId}`,
+          },
         ],
       ],
     },
@@ -274,12 +306,6 @@ async function sendVipStarsInvoice(ctx) {
   });
 }
 
-function getAdminVideoRequestInlineKeyboard(requesterId) {
-  return Markup.inlineKeyboard([
-    [{ text: "← RETURN USER TO MENU", callback_data: `video_back_${requesterId}` }],
-  ]);
-}
-
 async function notifyAdminNewRequest(ctx) {
   const requester = getRequesterData(ctx.from);
 
@@ -306,8 +332,13 @@ async function notifyAdminMediaReceived(ctx, label = "Media") {
 
 Nombre: <b>${escapeHtml(requester.fullName)}</b>
 Usuario: <b>${escapeHtml(requester.username)}</b>
-ID: <code>${escapeHtml(requester.id)}</code>`,
-    { parse_mode: "HTML" }
+ID: <code>${escapeHtml(requester.id)}</code>
+
+Approve or reject below.`,
+    {
+      parse_mode: "HTML",
+      ...getAdminApprovalKeyboard(requester.id),
+    }
   );
 }
 
@@ -342,19 +373,25 @@ async function sendVipMode(ctx) {
 }
 
 async function sendChannelsPanel(ctx) {
-  await ctx.reply(`📺 
-ᴄʜᴀɴɴᴇʟꜱ`, {
-    ...getChannelsInlineKeyboard(),
-  });
+  await ctx.reply(
+    `📺 
+ᴄʜᴀɴɴᴇʟꜱ`,
+    {
+      ...getChannelsInlineKeyboard(),
+    }
+  );
 
   await ctx.reply("‎", getBackKeyboard());
 }
 
 async function sendWebsitePanel(ctx) {
-  await ctx.reply(`🌐 
-ᴡᴇʙꜱɪᴛᴇ`, {
-    ...getWebsiteInlineKeyboard(),
-  });
+  await ctx.reply(
+    `🌐 
+ᴡᴇʙꜱɪᴛᴇ`,
+    {
+      ...getWebsiteInlineKeyboard(),
+    }
+  );
 
   await ctx.reply("‎", getBackKeyboard());
 }
@@ -423,6 +460,7 @@ async function startVideoCallFlow(ctx) {
 
   pendingVideoRequests.set(userId, {
     waitingForMedia: true,
+    awaitingAdminApproval: false,
     waitingForPlatform: false,
     invalidTextCount: 0,
     createdAt: Date.now(),
@@ -430,7 +468,7 @@ async function startVideoCallFlow(ctx) {
 
   await notifyAdminNewRequest(ctx);
 
-  await ctx.replyWithVideo(Input.fromLocalFile("./assets/videocall.jpeg"), {
+  await ctx.replyWithPhoto(Input.fromLocalFile("./assets/videocall.jpeg"), {
     caption: `•╦————————————╦•
 ꜱᴇɴᴅ ᴏɴᴇ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ɴᴏᴡ
 😏
@@ -451,6 +489,7 @@ async function askPlatformAfterMedia(ctx, mediaLabel = "Media") {
   if (!pending) return;
 
   pending.waitingForMedia = false;
+  pending.awaitingAdminApproval = false;
   pending.waitingForPlatform = true;
   pendingVideoRequests.set(userId, pending);
 
@@ -517,14 +556,17 @@ bot.start(async (ctx) => {
   }
 
   if (payload === "smokelandiachannel") {
-    await ctx.reply(`☁️ 
-ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`, {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
-        ],
-      },
-    });
+    await ctx.reply(
+      `☁️ 
+ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
+          ],
+        },
+      }
+    );
     return;
   }
 
@@ -539,11 +581,11 @@ bot.command("videocall", async (ctx) => {
   await startVideoCallFlow(ctx);
 });
 
-bot.hears(BTN_USER, async (ctx) => {
+bot.hears(["👑 [X-user]", "👑 X-user", "[X-user]", "X-user"], async (ctx) => {
   await sendUserMode(ctx);
 });
 
-bot.hears(BTN_VIP, async (ctx) => {
+bot.hears(["🔥 [V-vip]", "🔥 V-vip", "[V-vip]", "V-vip"], async (ctx) => {
   await sendVipMode(ctx);
 });
 
@@ -641,6 +683,51 @@ bot.action("choose_platform_telegram", async (ctx) => {
   await sendSelectedPlatformLink(ctx, "telegram");
 });
 
+bot.action(/^approve_video_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Approved");
+
+  const requesterId = String(ctx.match[1]);
+  const pending = pendingVideoRequests.get(requesterId);
+
+  if (!pending) {
+    await ctx.reply("Request no longer exists.");
+    return;
+  }
+
+  pending.awaitingAdminApproval = false;
+  pending.waitingForPlatform = true;
+  pendingVideoRequests.set(requesterId, pending);
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    `•╦————————————╦•
+✅ Approved
+
+Choose your call platform below.
+•╩————————————╩•`,
+    {
+      ...getVideoPlatformInlineKeyboard(),
+    }
+  );
+});
+
+bot.action(/^reject_video_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Rejected");
+
+  const requesterId = String(ctx.match[1]);
+  pendingVideoRequests.delete(requesterId);
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    `•╦————————————╦•
+❌ Request not approved
+
+Return to menu.
+•╩————————————╩•`,
+    getMainKeyboard()
+  );
+});
+
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
@@ -668,6 +755,10 @@ bot.on("photo", async (ctx) => {
 
   if (!pending?.waitingForMedia) return;
 
+  pending.waitingForMedia = false;
+  pending.awaitingAdminApproval = true;
+  pendingVideoRequests.set(userId, pending);
+
   await notifyAdminMediaReceived(ctx, "Photo");
 
   await bot.telegram.forwardMessage(
@@ -676,7 +767,14 @@ bot.on("photo", async (ctx) => {
     ctx.message.message_id
   );
 
-  await askPlatformAfterMedia(ctx, "Photo");
+  await ctx.reply(
+    `•╦————————————╦•
+✅ Photo received
+
+Your request is now under review.
+Wait for approval.
+•╩————————————╩•`
+  );
 });
 
 bot.on("video", async (ctx) => {
@@ -684,6 +782,10 @@ bot.on("video", async (ctx) => {
   const pending = pendingVideoRequests.get(userId);
 
   if (!pending?.waitingForMedia) return;
+
+  pending.waitingForMedia = false;
+  pending.awaitingAdminApproval = true;
+  pendingVideoRequests.set(userId, pending);
 
   await notifyAdminMediaReceived(ctx, "Video");
 
@@ -693,7 +795,14 @@ bot.on("video", async (ctx) => {
     ctx.message.message_id
   );
 
-  await askPlatformAfterMedia(ctx, "Video");
+  await ctx.reply(
+    `•╦————————————╦•
+✅ Video received
+
+Your request is now under review.
+Wait for approval.
+•╩————————————╩•`
+  );
 });
 
 bot.action(/^video_back_(.+)$/, async (ctx) => {
@@ -732,6 +841,12 @@ bot.on("text", async (ctx) => {
     BTN_EXIT,
     BTN_SEND_PHOTO_VIDEO,
     BTN_CANCEL_VIDEO,
+    "👑 X-user",
+    "[X-user]",
+    "X-user",
+    "🔥 V-vip",
+    "[V-vip]",
+    "V-vip",
   ];
 
   if (knownInputs.includes(text)) {
