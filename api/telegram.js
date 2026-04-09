@@ -220,13 +220,10 @@ function getVideoPlatformInlineKeyboard() {
 }
 
 function buildWelcomeCaption() {
-  return `•╦————————————╦•
-ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ Ŧҳ🜲
-🧩 ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
+  return `🧩 ꜰᴇᴀᴛᴜʀᴇꜱ ɪʟɪᴍɪᴛ
 📲 ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
 📹 ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴠɪᴅᴇᴏ-ᴄʜᴀᴛ
-🔥 ᴇɴᴊᴏʏ ɪᴛ
-•╩————————————╩•`;
+🔥 ᴇɴᴊᴏʏ ɪᴛ`;
 }
 
 function buildUserCard(userId) {
@@ -320,9 +317,8 @@ async function sendMainMenu(ctx) {
 
 async function sendHelpMessage(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile("./assets/help.jpg"), {
-    caption: `•╦—————————╦•
-🆘 ʜᴇʟᴘ
-•╩—————————╩•`,
+    caption: `🆘
+ʜᴇʟᴘ`,
   });
 
   await ctx.reply("‎", getMainKeyboard());
@@ -346,27 +342,19 @@ async function sendVipMode(ctx) {
 }
 
 async function sendChannelsPanel(ctx) {
-  await ctx.reply(
-    `📺 
-ᴄʜᴀɴɴᴇʟꜱ`,
-    {
-      ...getChannelsInlineKeyboard(),
-    }
-  );
+  await ctx.reply(`📺 
+ᴄʜᴀɴɴᴇʟꜱ`, {
+    ...getChannelsInlineKeyboard(),
+  });
 
   await ctx.reply("‎", getBackKeyboard());
 }
 
 async function sendWebsitePanel(ctx) {
-  await ctx.reply(
-    `•╦————————————╦•
-🌐 ᴡᴇʙꜱɪᴛᴇ
-ᴏᴘᴇɴ ᴛʜᴇ ꜱɪᴛᴇ ʙᴇʟᴏᴡ.
-•╩————————————╩•`,
-    {
-      ...getWebsiteInlineKeyboard(),
-    }
-  );
+  await ctx.reply(`🌐 
+ᴡᴇʙꜱɪᴛᴇ`, {
+    ...getWebsiteInlineKeyboard(),
+  });
 
   await ctx.reply("‎", getBackKeyboard());
 }
@@ -377,13 +365,10 @@ async function sendRefreshPanel(ctx) {
 
 async function sendFeedMessage(ctx) {
   await ctx.reply(
-    `•╦————————————╦•
-📋 ꜰᴇᴇᴅ
-
-ꜱᴇʟᴇᴄᴛᴇᴅ ᴅʀᴏᴘꜱ
-ᴘᴜʙʟɪᴄ ᴘʀᴇᴠɪᴇᴡꜱ 
-ꜰᴇᴀᴛᴜʀᴇᴅ ᴄᴏɴᴛᴇɴᴛ
-•╩————————————╩•`,
+    `📋 ꜰᴇᴇᴅ
+➥ ꜱᴇʟᴇᴄᴛᴇᴅ ᴅʀᴏᴘꜱ
+➥ ᴘᴜʙʟɪᴄ ᴘʀᴇᴠɪᴇᴡꜱ
+➥ ꜰᴇᴀᴛᴜʀᴇᴅ ᴄᴏɴᴛᴇɴᴛ`,
     {
       ...getWebsiteInlineKeyboard(),
     }
@@ -394,13 +379,9 @@ async function sendFeedMessage(ctx) {
 
 async function sendCloudsMessage(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile("./assets/welcome1.png"), {
-    caption: `•╦————————————╦•
-ᴄʟᴏᴜᴅꜱ
-☁️ 
-ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ 
-ᴠɪꜱᴜᴀʟ ꜱᴇꜱꜱɪᴏɴ ᴄʟᴏᴜᴅ 
-ᴀᴄᴄᴇꜱꜱ ᴇɴᴀʙʟᴇᴅ
-•╩————————————╩•`,
+    caption: `ᴄʟᴏᴜᴅꜱ
+☁️
+ᴀᴍʙɪᴇɴᴛ ʀᴏᴏᴍ`,
     ...getWebsiteInlineKeyboard(),
   });
 
@@ -409,12 +390,10 @@ async function sendCloudsMessage(ctx) {
 
 async function sendPhotosMessage(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile("./assets/photos.jpg"), {
-    caption: `•╦————————————╦•
-ᴘʜᴏᴛᴏꜱ
-📸 
-ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
-ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ
-•╩————————————╩•`,
+    caption: `ᴘʜᴏᴛᴏꜱ
+📸
+➥ɴᴇᴡ ᴘɪᴄꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ
+➥ᴘʀɪᴠᴀᴛᴇ ɢᴀʟʟᴇʀʏ ᴀᴄᴄᴇꜱꜱ`,
     ...getWebsiteInlineKeyboard(),
   });
 
@@ -423,12 +402,11 @@ async function sendPhotosMessage(ctx) {
 
 async function sendGiftsMessage(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile("./assets/gifts.jpg"), {
-    caption: `•╦————————————╦•
-🎁 ɢɪꜰᴛꜱ
-ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
-ꜱᴇᴄᴛɪᴏɴ ᴀᴅᴅɪᴛɪᴏɴᴀʟ
-ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀᴛ
-•╩————————————╩•`,
+    caption: `🎁
+ɢɪꜰᴛꜱ
+➥ ꜱᴜᴘᴘᴏʀᴛ ꜱᴇᴄᴛɪᴏɴ ᴛʀᴀɴꜱꜰᴇʀ
+➥ ꜱᴇᴄᴛɪᴏɴ ᴀᴅᴅɪᴛɪᴏɴᴀʟ
+➥ ᴀᴄᴄᴇꜱꜱ ꜱᴜᴘᴘᴏʀᴛ`,
     ...getWebsiteInlineKeyboard(),
   });
 
@@ -456,23 +434,14 @@ async function startVideoCallFlow(ctx) {
     caption: `•╦————————————╦•
 ꜱᴇɴᴅ ᴏɴᴇ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ɴᴏᴡ
 😏
-ꜰɪʀꜱᴛ, ʏᴏᴜʀ ᴍᴜʟᴛɪᴍᴇᴅɪᴀ ᴍᴀᴛᴇʀɪᴀʟ ᴡɪʟʟ ʙᴇ ʀᴇᴠɪᴇᴡᴇᴅ. 
+ꜰɪʀꜱᴛ, ʏᴏᴜʀ ᴍᴜʟᴛɪᴍᴇᴅɪᴀ ᴍᴀᴛᴇʀɪᴀʟ ᴡɪʟʟ ʙᴇ ʀᴇᴠɪᴇᴡᴇᴅ.
 ᴛʜᴇɴ ʏᴏᴜ ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴠɪᴅᴇᴏ ᴘʟᴀᴛꜰᴏʀᴍ..
 two buttons:
 ZOOM / TELEGRAM
-
 •╩————————————╩•`,
   });
 
-  await ctx.reply(
-    `•╦————————————╦•
-ꜱᴇɴᴅ ᴏɴᴇ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ɴᴏᴡ
-😏
-ꜰɪʀꜱᴛ, ʏᴏᴜʀ ᴍᴜʟᴛɪᴍᴇᴅɪᴀ ᴍᴀᴛᴇʀɪᴀʟ ᴡɪʟʟ ʙᴇ ʀᴇᴠɪᴇᴡᴇᴅ. 
-ᴛʜᴇɴ ʏᴏᴜ ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴠɪᴅᴇᴏ ᴘʟᴀᴛꜰᴏʀᴍ..
-•╩————————————╩•`,
-    getVideoRequestKeyboard()
-  );
+  await ctx.reply("‎", getVideoRequestKeyboard());
 }
 
 async function askPlatformAfterMedia(ctx, mediaLabel = "Media") {
@@ -503,11 +472,8 @@ async function sendSelectedPlatformLink(ctx, platform) {
 
   if (platform === "zoom") {
     await ctx.reply(
-      `•╦————————————╦•
-🔷 ᴢᴏᴏᴍ ꜱᴇʟᴇᴄᴛᴇᴅ
-
-Tap below to open your videocall link.
-•╩————————————╩•`,
+      `🔷 ᴢᴏᴏᴍ ꜱᴇʟᴇᴄᴛᴇᴅ
+ᴛᴀᴘ ʙᴇʟᴏᴡ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ʟɪɴᴋ.`,
       {
         reply_markup: {
           inline_keyboard: [[{ text: "🔷 ENTER ZOOM", url: ZOOM_URL }]],
@@ -516,10 +482,8 @@ Tap below to open your videocall link.
     );
   } else {
     await ctx.reply(
-      `•╦————————————╦•
-📞 ᴛᴇʟᴇɢʀᴀᴍ ꜱᴇʟᴇᴄᴛᴇᴅ
-Tap below to open your videocall link.
-•╩————————————╩•`,
+      `📞 ᴛᴇʟᴇɢʀᴀᴍ ꜱᴇʟᴇᴄᴛᴇᴅ
+ᴛᴀᴘ ʙᴇʟᴏᴡ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ʟɪɴᴋ.`,
       {
         reply_markup: {
           inline_keyboard: [
@@ -542,34 +506,25 @@ bot.start(async (ctx) => {
   }
 
   if (payload === "userchannel") {
-    await ctx.reply(
-      `•╦————————————╦•
-🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ
-•╩————————————╩•`,
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
-          ],
-        },
-      }
-    );
+    await ctx.reply(`🜲 ᴜꜱᴇʀ ᴇɴᴛʀʏ`, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "📺 OPEN USER CHANNEL", url: USER_GROUP_LINK }],
+        ],
+      },
+    });
     return;
   }
 
   if (payload === "smokelandiachannel") {
-    await ctx.reply(
-      `•╦————————————╦•
-☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ
-•╩————————————╩•`,
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
-          ],
-        },
-      }
-    );
+    await ctx.reply(`☁️ 
+ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ ᴇɴᴛʀʏ`, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "📺 OPEN SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }],
+        ],
+      },
+    });
     return;
   }
 
