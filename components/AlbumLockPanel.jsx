@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import styles from "componentes/AlbumLockPanel.module.css";
+import styles from "./AlbumLockPanel.module.css";
 
 const CODE_LENGTH = 4;
 const ACCESS_CODE = "FX01";
