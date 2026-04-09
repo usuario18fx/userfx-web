@@ -6,127 +6,127 @@ const ACCESS_CODE = "FX01";
 
 export default function AlbumLockPanel({ onUnlock }) {
   const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
-  const [state, setState] = useState("locked");
-  const refs = useRef([]);
+  const [status, setStatus] = useState("locked");
+  const inputsRef = useRef([]);
 
   const focusInput = useCallback((index) => {
     if (index >= 0 && index < CODE_LENGTH) {
-      refs.current[index]?.focus();
-      refs.current[index]?.select?.();
+      inputsRef.current[index]?.focus();
+      inputsRef.current[index]?.select?.();
     }
   }, []);
 
-  const resetPanel = useCallback(() => {
+  const resetInputs = useCallback(() => {
     setChars(Array(CODE_LENGTH).fill(""));
-    setState("locked");
+    setStatus("locked");
     focusInput(0);
   }, [focusInput]);
 
-  const submit = useCallback(
-    (code) => {
-      const normalized = code.toUpperCase();
+  const submitCode = useCallback(
+    (value) => {
+      if (value.length !== CODE_LENGTH) return;
 
-      if (normalized.length < CODE_LENGTH) return;
-
-      if (normalized === ACCESS_CODE) {
-        setState("unlocked");
-        setTimeout(() => onUnlock?.(), 500);
-      } else {
-        setState("error");
+      if (value === ACCESS_CODE) {
+        setStatus("unlocked");
         setTimeout(() => {
-          resetPanel();
+          onUnlock?.();
+        }, 500);
+      } else {
+        setStatus("error");
+        setTimeout(() => {
+          resetInputs();
         }, 700);
       }
     },
-    [onUnlock, resetPanel]
+    [onUnlock, resetInputs]
   );
 
   const handleChange = useCallback(
-    (index, value) => {
-      const val = value.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
-      const next = [...chars];
-      next[index] = val;
-      setChars(next);
+    (index, rawValue) => {
+      const value = rawValue.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const nextChars = [...chars];
+      nextChars[index] = value;
+      setChars(nextChars);
 
-      if (val && index < CODE_LENGTH - 1) {
+      if (value && index < CODE_LENGTH - 1) {
         focusInput(index + 1);
       }
 
-      if (next.every(Boolean)) {
-        submit(next.join(""));
+      if (nextChars.every(Boolean)) {
+        submitCode(nextChars.join(""));
       }
     },
-    [chars, focusInput, submit]
+    [chars, focusInput, submitCode]
   );
 
   const handleKeyDown = useCallback(
-    (e, index) => {
-      if (e.key === "Backspace") {
-        e.preventDefault();
+    (event, index) => {
+      if (event.key === "Backspace") {
+        event.preventDefault();
 
-        const next = [...chars];
+        const nextChars = [...chars];
 
         if (chars[index]) {
-          next[index] = "";
-          setChars(next);
+          nextChars[index] = "";
+          setChars(nextChars);
           return;
         }
 
         if (index > 0) {
-          next[index - 1] = "";
-          setChars(next);
+          nextChars[index - 1] = "";
+          setChars(nextChars);
           focusInput(index - 1);
         }
 
         return;
       }
 
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
         focusInput(index - 1);
         return;
       }
 
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
         focusInput(index + 1);
         return;
       }
 
-      if (e.key === "Enter") {
-        e.preventDefault();
-        submit(chars.join(""));
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitCode(chars.join(""));
       }
     },
-    [chars, focusInput, submit]
+    [chars, focusInput, submitCode]
   );
 
   const handlePaste = useCallback(
-    (e) => {
-      e.preventDefault();
+    (event) => {
+      event.preventDefault();
 
-      const pasted = e.clipboardData
+      const pastedValue = event.clipboardData
         .getData("text")
         .toUpperCase()
         .replace(/[^A-Z0-9]/g, "")
         .slice(0, CODE_LENGTH);
 
-      if (!pasted) return;
+      if (!pastedValue) return;
 
-      const next = Array(CODE_LENGTH).fill("");
-      pasted.split("").forEach((char, index) => {
-        next[index] = char;
+      const nextChars = Array(CODE_LENGTH).fill("");
+      pastedValue.split("").forEach((char, index) => {
+        nextChars[index] = char;
       });
 
-      setChars(next);
+      setChars(nextChars);
 
-      if (next.every(Boolean)) {
-        submit(next.join(""));
+      if (nextChars.every(Boolean)) {
+        submitCode(nextChars.join(""));
       } else {
-        focusInput(pasted.length);
+        focusInput(pastedValue.length);
       }
     },
-    [focusInput, submit]
+    [focusInput, submitCode]
   );
 
   useEffect(() => {
@@ -134,11 +134,11 @@ export default function AlbumLockPanel({ onUnlock }) {
   }, [focusInput]);
 
   return (
-    <div className={`${styles.wrapper} ${styles[state] || ""}`}>
-      <div className={styles.card}>
+    <div className={styles.wrapper}>
+      <div className={`${styles.card} ${styles[status] || ""}`}>
         <h2 className={styles.title}>Private Album</h2>
 
-        {state !== "unlocked" && (
+        {status !== "unlocked" && (
           <>
             <p className={styles.subtitle}>
               Enter the 4-character access code to unlock the album.
@@ -148,16 +148,16 @@ export default function AlbumLockPanel({ onUnlock }) {
               {chars.map((char, index) => (
                 <input
                   key={index}
-                  ref={(el) => {
-                    refs.current[index] = el;
+                  ref={(element) => {
+                    inputsRef.current[index] = element;
                   }}
                   type="text"
                   inputMode="text"
                   autoComplete={index === 0 ? "one-time-code" : "off"}
                   maxLength={1}
                   value={char}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onChange={(event) => handleChange(index, event.target.value)}
+                  onKeyDown={(event) => handleKeyDown(event, index)}
                   className={styles.box}
                   aria-label={`Character ${index + 1} of ${CODE_LENGTH}`}
                 />
@@ -165,7 +165,7 @@ export default function AlbumLockPanel({ onUnlock }) {
             </div>
 
             <p className={styles.message}>
-              {state === "error" ? (
+              {status === "error" ? (
                 <span className={styles.errorText}>
                   Incorrect code. Try again.
                 </span>
@@ -176,7 +176,7 @@ export default function AlbumLockPanel({ onUnlock }) {
           </>
         )}
 
-        {state === "unlocked" && (
+        {status === "unlocked" && (
           <>
             <p className={`${styles.message} ${styles.successText}`}>
               Album unlocked successfully.
