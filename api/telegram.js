@@ -11,7 +11,7 @@ const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const CONTACT_URL = "https://t.me/User18fx";
-const TELEGRAM_CALL_URL = "https://t.me/User18fx";
+const TELEGRAM_CALL_URL = "https://t.me/call/rtu5X70fLj_nW8ocvd8C3vH6OxA";
 
 const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
 const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
