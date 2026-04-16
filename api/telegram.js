@@ -29,11 +29,12 @@ const BTN_CANCEL_VIDEO = "✖ CANCEL";
 const BTN_CHANNEL_USERFX = "Userfx";
 const BTN_CHANNEL_SMKL = "Smokelandia";
 
-if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
-if (!SUPABASE_URL) throw new Error("Missing SUPABASE_URL");
+if (!BOT_TOKEN) throw new Error("8167348143:AAGa2bK15uUyTzD1Hv1suZaONk4JX0kdDgU");
+if (!ADMIN_CHAT_ID) throw new Error("1059987389");
+if (!SUPABASE_URL) throw new Error("https://fovyxpzkwyhdwkmxmdco.supabase.co
+");
 if (!SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
+  throw new Error("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvdnl4cHprd3loZHdrbXhtZGNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODk5ODY5NiwiZXhwIjoyMDc0NTc0Njk2fQ.j7glSUIIj2Lx6k_in11XHLeYCtlc9F0-7XQzT6JepOQ");
 }
 
 const bot = new Telegraf(BOT_TOKEN);
