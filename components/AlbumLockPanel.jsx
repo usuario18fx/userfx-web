@@ -4,7 +4,8 @@ import styles from "./AlbumLockPanel.module.css";
 const CODE_LENGTH = 4;
 const ACCESS_CODE = "FX01";
 
-export default function AlbumLockPanel({ onUnlock }: { onUnlock?: () => void }) {
+export default function
+  AlbumLockPanel({ onUnlock } ...
   const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
   const [status, setStatus] = useState<"locked" | "error" | "unlocked">("locked");
   const [activeTab, setActiveTab] = useState<"FX-USER01-" | "AX01">("FX-USER01-");
