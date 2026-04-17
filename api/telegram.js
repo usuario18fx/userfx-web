@@ -4,7 +4,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN;
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
-const TELEGRAM_CALL_URL = "https://t.me/User18fx";
+const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
 
 if (!BOT_TOKEN) {
   throw new Error("Missing BOT_TOKEN");
@@ -14,7 +14,7 @@ const bot = new Telegraf(BOT_TOKEN);
 
 const PLAN_NAME = "🔥 FX VIP";
 const PRICE_STARS = 500;
-const VIDEO_URL = "https://userfx-web.vercel.app/welcome-smkl.mp4";
+const VIDEO_URL = "https://userfx-web.vercel.app/assets/websiteFx.mp4";
 
 function mainInline() {
   return Markup.inlineKeyboard([
