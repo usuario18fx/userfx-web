@@ -14,7 +14,7 @@ const bot = new Telegraf(BOT_TOKEN);
 
 const PLAN_NAME = "🔥 FX VIP";
 const PRICE_STARS = 500;
-const VIDEO_URL = "https://userfx-web.vercel.app/welcome.mp4";
+const VIDEO_URL = "https://userfx-web.vercel.app/welcome-smkl.mp4";
 
 function mainInline() {
   return Markup.inlineKeyboard([
