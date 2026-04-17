@@ -4,20 +4,13 @@ import styles from "./AlbumLockPanel.module.css";
 const CODE_LENGTH = 4;
 const ACCESS_CODE = "FX01";
 
-type AlbumLockPanelProps = {
-  onUnlock?: () => void;
-};
+export default function AlbumLockPanel({ onUnlock }) {
+  const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
+  const [status, setStatus] = useState("locked");
+  const [activeTab, setActiveTab] = useState("FX-USER01-");
+  const inputsRef = useRef([]);
 
-type Status = "locked" | "error" | "unlocked";
-type TabOption = "FX-USER01-" | "AX01";
-
-export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
-  const [chars, setChars] = useState<string[]>(Array(CODE_LENGTH).fill(""));
-  const [status, setStatus] = useState<Status>("locked");
-  const [activeTab, setActiveTab] = useState<TabOption>("FX-USER01-");
-  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-
-  const focusInput = useCallback((index: number) => {
+  const focusInput = useCallback((index) => {
     if (index >= 0 && index < CODE_LENGTH) {
       inputsRef.current[index]?.focus();
       inputsRef.current[index]?.select?.();
@@ -31,7 +24,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
   }, [focusInput]);
 
   const submitCode = useCallback(
-    (value: string) => {
+    (value) => {
       if (value.length !== CODE_LENGTH) return;
 
       if (value === ACCESS_CODE) {
@@ -50,7 +43,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
   );
 
   const handleChange = useCallback(
-    (index: number, rawValue: string) => {
+    (index, rawValue) => {
       const value = rawValue.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
       const nextChars = [...chars];
       nextChars[index] = value;
@@ -63,7 +56,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
   );
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    (e, index) => {
       if (e.key === "Backspace") {
         e.preventDefault();
         const nextChars = [...chars];
@@ -103,7 +96,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
   );
 
   const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLDivElement>) => {
+    (e) => {
       e.preventDefault();
 
       const pastedValue = e.clipboardData
@@ -151,36 +144,24 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
       </header>
 
       <main className={styles.main}>
-        <div
-          className={`${styles.card} ${
-            status === "error" ? styles.cardError : ""
-          } ${status === "unlocked" ? styles.cardUnlocked : ""}`}
-        >
+        <div className={`${styles.card} ${status === "error" ? styles.cardError : ""} ${status === "unlocked" ? styles.cardUnlocked : ""}`}>
           {status !== "unlocked" ? (
             <>
               <div className={styles.lockIcon}>
                 <svg viewBox="0 0 24 24" width="36" height="36" fill="none">
                   <rect x="5" y="11" width="14" height="10" rx="2" fill="#e8336d" />
-                  <path
-                    d="M8 11V7a4 4 0 0 1 8 0v4"
-                    stroke="#e8336d"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#e8336d" strokeWidth="2" strokeLinecap="round" fill="none" />
                 </svg>
               </div>
 
               <p className={styles.lockedLabel}>LOCKED</p>
 
               <div className={styles.tabs}>
-                {(["FX-USER01-", "AX01"] as const).map((tab) => (
+                {["FX-USER01-", "AX01"].map((tab) => (
                   <button
                     key={tab}
                     type="button"
-                    className={`${styles.tab} ${
-                      activeTab === tab ? styles.tabActive : ""
-                    }`}
+                    className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ""}`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}
@@ -202,9 +183,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
                     value={char}
                     onChange={(e) => handleChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
-                    className={`${styles.codeBox} ${
-                      status === "error" ? styles.codeBoxError : ""
-                    }`}
+                    className={`${styles.codeBox} ${status === "error" ? styles.codeBoxError : ""}`}
                     aria-label={`Character ${index + 1} of ${CODE_LENGTH}`}
                   />
                 ))}
@@ -228,7 +207,6 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
             <>
               <div className={styles.successIcon}>✓</div>
               <p className={styles.successMsg}>Album unlocked</p>
-
               <div className={styles.gallery}>
                 <video
                   src="/videos/album.mp4"
@@ -246,8 +224,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
 
       <footer className={styles.footer}>
         <span>
-          𝐔𝐬𝐞𝐫| <span className={styles.footerFx}>Ŧҳ 🜲</span> | 2026 © ALL RIGHTS
-          RESERVED
+          𝐔𝐬𝐞𝐫| <span className={styles.footerFx}>Ŧҳ 🜲</span> | 2026 © ALL RIGHTS RESERVED
         </span>
         <span className={styles.footerBot}>@User18Fx_bot</span>
       </footer>
