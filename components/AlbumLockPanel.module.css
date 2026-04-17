@@ -1,183 +1,123 @@
-/* ─── BASE: FONDO DE LADRILLO OSCURO ─────────────────── */
+/* ─── BASE: LA PARED DE LADRILLO REALISTA ─────────────────── */
 .page {
   min-height: 100vh;
-  /* Fondo con patrón de ladrillo negro */
   background-color: #050505;
+  /* Degradado para simular la iluminación direccional (luz desde arriba) */
   background-image: 
-    linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)),
-    url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40" viewBox="0 0 80 40"><rect width="80" height="40" fill="%23050505"/><rect x="0" y="0" width="78" height="18" rx="1" fill="%23111"/><rect x="40" y="20" width="78" height="18" rx="1" fill="%23111"/></svg>');
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.05) 0%, transparent 50%),
+    linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.85)),
+    url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="45" viewBox="0 0 100 45"><rect width="100" height="45" fill="%23050505"/><rect x="1" y="1" width="94" height="20" rx="2" fill="%230a0a0a" stroke="%231a1a1a" stroke-width="0.5"/><rect x="48" y="23" width="94" height="20" rx="2" fill="%230a0a0a" stroke="%231a1a1a" stroke-width="0.5"/></svg>');
   background-repeat: repeat;
-  background-size: 80px 40px;
+  background-size: 100px 45px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: "Arial", sans-serif;
-  color: #f0f0f0;
-  overflow-x: hidden;
 }
 
-/* ─── HERO BRAND: COMPOSICIÓN TIPO POSTER ─────────── */
+/* ─── HERO BRAND: COMPOSICIÓN POSTER ────────────────────── */
 .heroBrand {
   width: 100%;
-  padding: 80px 24px 60px;
+  padding-top: 100px;
+  padding-bottom: 80px;
   display: flex;
   justify-content: center;
-  position: relative;
-  /* Brillo azul sutil que viene de la corona */
-  background: radial-gradient(circle at 60% 30%, rgba(30, 80, 150, 0.15) 0%, transparent 60%);
+  perspective: 1000px; /* Para efecto 3D sutil */
 }
 
 .heroInner {
   position: relative;
   display: flex;
-  align-items: flex-end; /* Alineación base para los textos */
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
-/* "USER" — Plata Cromado */
+/* "USER" - Efecto Biselado Metálico */
 .heroUser {
-  font-family: "Arial Black", sans-serif;
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  background: linear-gradient(180deg, #ffffff 10%, #a0a0a0 45%, #444 50%, #888 55%, #eee 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.8));
-  margin-bottom: 5px; /* Ajuste para alinear con la F */
+  font-family: "Garamond", "Georgia", serif; /* Fuente más elegante */
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 400;
+  color: #d1d1d1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  /* Efecto de borde metálico 3D */
+  text-shadow: 
+    -1px -1px 0 #fff, 
+    1px 1px 0 #000,
+    0 0 15px rgba(255,255,255,0.2);
+  filter: drop-shadow(4px 4px 10px rgba(0,0,0,0.9));
 }
 
-/* "FX" — Azul 3D Profundo */
-.heroRight {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-}
-
+/* "FX" - Azul Profundo Industrial */
 .heroFx {
   font-family: "Arial Black", sans-serif;
-  font-size: clamp(5rem, 18vw, 10rem);
+  font-size: clamp(6rem, 20vw, 12rem);
   font-weight: 900;
   line-height: 0.8;
   letter-spacing: -0.05em;
-  background: linear-gradient(165deg, #7ab8e8 10%, #1e5a9a 40%, #081a30 90%);
+  color: #1a3f6e; /* Azul base oscuro */
+  background: linear-gradient(180deg, #3a7fc0 0%, #1a3f6e 50%, #051529 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* El "glow" azul de fondo */
   filter: 
-    drop-shadow(5px 5px 0px rgba(0,0,0,0.9))
-    drop-shadow(0 0 30px rgba(58, 127, 192, 0.4));
+    drop-shadow(0 0 40px rgba(58, 127, 192, 0.3))
+    drop-shadow(10px 10px 2px rgba(0,0,0,0.8));
 }
 
-/* Corona Azul Brillante */
+/* Corona: Posición exacta sobre la X */
 .crownWrap {
   position: absolute;
-  top: -35px;
-  right: -5px;
+  top: -20px;
+  right: -30px;
+  width: 100px;
+  filter: 
+    drop-shadow(0 0 10px #6aaee8)
+    brightness(1.2);
+  transform: rotate(10deg);
   z-index: 10;
-  width: clamp(50px, 12vw, 90px);
-  filter: drop-shadow(0 0 15px rgba(106, 174, 232, 0.8));
-  animation: crownFloat 4s ease-in-out infinite;
 }
 
-@keyframes crownFloat {
-  0%, 100% { transform: translateY(0) rotate(2deg); }
-  50% { transform: translateY(-8px) rotate(-2deg); }
-}
-
-/* Rosa Roja Centrada Abajo */
+/* Rosa: Centrada y solapada abajo */
 .roseWrap {
   position: absolute;
-  bottom: -45px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: clamp(140px, 25vw, 220px);
+  bottom: -40px;
+  left: 35%; /* Ajustado para que nazca entre USER y FX */
+  width: 220px;
   z-index: 20;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
-  animation: roseAppear 1.2s ease-out;
+  filter: drop-shadow(0 15px 25px rgba(0,0,0,1));
+  transition: transform 0.3s ease;
 }
 
-@keyframes roseAppear {
-  from { opacity: 0; transform: translateX(-50%) translateY(30px) scale(0.9); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+.roseWrap:hover {
+  transform: scale(1.05);
 }
 
-/* ─── CARD DE DESBLOQUEO: DISEÑO MODERNO ───────────── */
+/* ─── CARD DE ACCESO (MÁS MINIMALISTA) ─────────────────── */
 .main {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
+  margin-top: 40px;
   z-index: 30;
 }
 
 .card {
-  width: 100%;
-  max-width: 400px;
-  background: rgba(10, 10, 12, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 40px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.9);
 }
 
+/* Inputs de código estilo "Cyber" */
 .codeBox {
-  width: 55px;
-  height: 65px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #000;
   border: 1px solid #333;
-  border-radius: 12px;
-  color: #fff;
-  font-size: 1.8rem;
-  font-weight: 800;
-  transition: all 0.2s;
+  color: #6aaee8; /* Texto azul cian como la corona */
+  font-family: 'Courier New', monospace;
+  box-shadow: inset 0 0 10px rgba(106, 174, 232, 0.1);
 }
 
 .codeBox:focus {
-  border-color: #6aaee8; /* Azul como la corona */
-  background: rgba(106, 174, 232, 0.05);
-  box-shadow: 0 0 15px rgba(106, 174, 232, 0.3);
-  outline: none;
-}
-
-.unlockBtn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1e5a9a, #0d2d55);
-  color: white;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-  transition: transform 0.2s;
-}
-
-.unlockBtn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.2);
-}
-
-/* ─── FOOTER & OTROS ─────────────────────────────── */
-.header {
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  position: absolute;
-  top: 0;
-}
-
-.footer {
-  padding: 30px;
-  color: #555;
-  font-size: 0.7rem;
-  text-align: center;
+  border-color: #6aaee8;
+  box-shadow: 0 0 15px rgba(106, 174, 232, 0.4);
 }
