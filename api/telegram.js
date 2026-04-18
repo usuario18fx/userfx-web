@@ -1,226 +1,315 @@
-import { Telegraf, Markup } from "telegraf";
-// --- CONFIGURACIÓN ---
-const CONFIG = {
-  TOKEN: process.env.BOT_TOKEN,
-  URLS: {
-    WEBSITE: "https://userfx-web.vercel.app",
-    SMOKELANDIA: "https://smokelandia.app",
-    ZOOM: "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1",
-    TELEGRAM_CALL: "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY",
-    VIDEO_INTRO: "https://userfx-web.vercel.app/assets/websiteFx.mp4"
-  },
-  PLANS: {
-    USER: {
-      NAME: "🧊 USER",
-      PRICE: 100,
-      DURATION_DAYS: 1
-    },
-    VIP: {
-      NAME: "👑 FX VIP",
-      PRICE: 500,
-      DURATION_DAYS: 21
-   }}};
-if (!CONFIG.TOKEN) throw new Error("Missing BOT_TOKEN");
-const bot = new Telegraf(CONFIG.TOKEN);
-// --- DICCIONARIO DE TEXTOS ---
-const MESSAGES = {
-  WELCOME: `<b>Welcome to USER FX</b>\n\n🎥 <i>Down to a video call?</i>\nHere’s the link, hop on whenever you’re ready.\n\n<b>Ready for more?</b>\nChoose an option below.`,
-  MAIN: `<b>╔════════════════╗\n     FX | EXCLUSIVE SPACE\n╚════════════════╝</b>\n\nPremium access panel. Use the buttons below to navigate our private sections.`,
-  VIP: `<b>👑 VIP STATUS</b>\n\n<b>Plan:</b> <code>${CONFIG.PLANS.VIP.NAME}</code>\n<b>Price:</b> ${CONFIG.PLANS.VIP.PRICE} Stars\n<b>Duration:</b> ${CONFIG.PLANS.VIP.DURATION_DAYS} days\n\n<b>Benefits:</b>\n• Full Premium Access\n• Priority Website Entry\n• Instant Call Connection\n• Unique access code\n\n<i>Upgrade your experience now.</i>`,
-  USER: `<b>🧊 USER PANEL</b>\n\n<b>Plan:</b> <code>${CONFIG.PLANS.USER.NAME}</code>\n<b>Price:</b> ${CONFIG.PLANS.USER.PRICE} Stars\n<b>Duration:</b> Single visual session\n\nYour basic entry point. Jump into a call or unlock your website access.`,
-  PLANS_INFO: `<b>CHOOSE YOUR ACCESS PLAN</b>\n\n────────────────\n<b>${CONFIG.PLANS.USER.NAME} Access</b>: ${CONFIG.PLANS.USER.PRICE} Stars\n<i>Valid for 1 visual session (Single Use).</i>\n\n────────────────\n<b>${CONFIG.PLANS.VIP.NAME} Access</b>: ${CONFIG.PLANS.VIP.PRICE} Stars\n<i>Full access for ${CONFIG.PLANS.VIP.DURATION_DAYS} days (${CONFIG.PLANS.VIP.DURATION_DAYS / 7} weeks).</i>\n\nChoose below to pay:`,
-  CHANNELS: `<b>🌐 CHANNELS</b>\n\nChoose where you want to enter:`,
-  SECTIONS: {
-    access: `<b>🔐 ACCESS GRANTED</b>\nSelect a private category:`,
-    feed: `<b>📺 FEED</b>\n────────────────\n• Selected drops\n• Public previews\n• Featured content`,
-    photos: `<b>📸 PHOTOS</b>\n────────────────\n• Unlocked visual section\n• Private gallery access`,
-    cloud: `<b>🌩️ VIDEOCLOUDS</b>\n────────────────\n• Ambient room\n• Visual session\n• Cloud access enabled`,
-    gifts: `<b>🎁 GIFTS</b>\n────────────────\n• Support & Tips\n• Additional access support`
-  }};
-// --- CONSTRUCTOR DE TECLADOS ---
-const UI = {
-  buttons: {
-    calls: [
-      Markup.button.url("📞 Zoom", CONFIG.URLS.ZOOM),
-      Markup.button.url("💬 Telegram", CONFIG.URLS.TELEGRAM_CALL)
-    ],
-    back: Markup.button.callback("« BACK TO MENU", "main"),
-    refresh: Markup.button.callback("↻ REFRESH", "main"),
-    channels: Markup.button.callback("🌐 CHANNELS", "channels")
-  },
-  main: () =>
-    Markup.inlineKeyboard([
-      UI.buttons.calls,
-      [Markup.button.callback("🔥 GET FULL ACCESS", "plans")],
-      [
-        Markup.button.callback("⚡ VIP", "vip"),
-        Markup.button.callback("👑 USER", "user")
-      ],
-      [UI.buttons.channels],
-      [UI.buttons.refresh]
-    ]),
-  channelsLinks: () =>
-    Markup.inlineKeyboard([
-      [Markup.button.url("🜲 USER FX", CONFIG.URLS.WEBSITE)],
-      [Markup.button.url("☁️ SMOKELANDIA", CONFIG.URLS.SMOKELANDIA)],
-      [UI.buttons.back]
-    ]),
-  sections: () =>
-    Markup.inlineKeyboard([
-      [
-        Markup.button.callback("📺 FEED", "view_feed"),
-        Markup.button.callback("📸 PHOTOS", "view_photos")
-      ],
-      [
-        Markup.button.callback("🌩️ CLOUD", "view_cloud"),
-        Markup.button.callback("🎁 GIFTS", "view_gifts")
-      ],
-      UI.buttons.calls,
-      [UI.buttons.back]
-    ]),
-  vip: () =>
-    Markup.inlineKeyboard([
-      [Markup.button.callback(`🔥 BUY VIP (${CONFIG.PLANS.VIP.PRICE})`, "buy_vip")],
-      UI.buttons.calls,
-      [UI.buttons.back]]),
-  user: () =>
-    Markup.inlineKeyboard([
-      [Markup.button.callback("👑 BUY USER ACCESS", "buy_user")],
-      [Markup.button.callback("🔐 OPEN SECTIONS", "view_access")],
-      UI.buttons.calls,
-      [UI.buttons.back]
-    ]),
-  choosePlan: () =>
-    Markup.inlineKeyboard([
-      [
-        Markup.button.callback(`👑 USER (${CONFIG.PLANS.USER.PRICE})`, "buy_user"),
-        Markup.button.callback(`⚡ VIP (${CONFIG.PLANS.VIP.PRICE})`, "buy_vip")
-      ],
-      [UI.buttons.back]
-   ])};
-// --- FUNCIONES AUXILIARES ---
-async function updateUI(ctx, text, keyboard) {
-  const payload = {
-    parse_mode: "HTML",
-    disable_web_page_preview: true,
-    ...keyboard
-  };
-  try {
-    if (ctx.callbackQuery) {
-      if (ctx.callbackQuery.message?.caption) {
-        return await ctx.editMessageCaption(text, payload);
-      }
-      return await ctx.editMessageText(text, payload);
-    }
-    return await ctx.reply(text, payload);
-  } catch (e) {
-    return await ctx.reply(text, payload);
-  }}
-async function generateAndSaveCodeInDB(telegramId, planType) {
-  const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-  const newCode = `AX01-${randomSuffix}`;
-  const now = new Date();
-  const durationDays =
-    planType === "vip"
-      ? CONFIG.PLANS.VIP.DURATION_DAYS
-      : CONFIG.PLANS.USER.DURATION_DAYS;
-  const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
-  console.log(
-    `[DB MOCK] Saved code ${newCode} for user ${telegramId} | plan=${planType} | expires=${expiresAt.toISOString()}`
-  );
-  return newCode;
-  }
-// --- COMANDOS ---
-bot.start(async (ctx) => {
-  await ctx.replyWithVideo(
-    { url: CONFIG.URLS.VIDEO_INTRO },
-    { caption: MESSAGES.WELCOME,parse_mode: "HTML",...UI.main()
-    });});
-// --- ACCIONES UI ---
-bot.action("main", (ctx) => updateUI(ctx, MESSAGES.MAIN, UI.main()));
-bot.action("vip", (ctx) => updateUI(ctx, MESSAGES.VIP, UI.vip()));
-bot.action("user", (ctx) => updateUI(ctx, MESSAGES.USER, UI.user()));
-bot.action("plans", (ctx) => updateUI(ctx, MESSAGES.PLANS_INFO, UI.choosePlan()));
-bot.action("channels", (ctx) => updateUI(ctx, MESSAGES.CHANNELS, UI.channelsLinks()));
-// --- SECCIONES DINÁMICAS ---
-bot.action(/^view_(.+)$/, (ctx) => {
-  const section = ctx.match[1];
-  const message = MESSAGES.SECTIONS[section];
-  if (!message) {
-    return updateUI(ctx, MESSAGES.MAIN, UI.main());
-  }
-  return updateUI(ctx, message, UI.sections());
-});
-// --- PAGOS DINÁMICOS POR PLAN ---
-bot.action(/^buy_(.+)$/, async (ctx) => {
-  const planKey = ctx.match[1].toUpperCase();
-  const plan = CONFIG.PLANS[planKey];
-  if (!plan) {
-    return await ctx.answerCbQuery("Error: Invalid Plan");
-  }
-  await ctx.answerCbQuery(`Opening Payment for ${plan.NAME}`);
-  await ctx.replyWithInvoice({
-    title: plan.NAME,
-    description:
-      planKey === "VIP"
-        ? `Access to USER FX Website for ${CONFIG.PLANS.VIP.DURATION_DAYS} days`
-        : "Access to USER FX Website for a single visual session",
-    payload: `fx_access_${planKey.toLowerCase()}`,
-    provider_token: "",
-    currency: "XTR",
-    prices: [
-      {
-        label: plan.NAME,
-        amount: plan.PRICE
-      }
-    ]
-  });
-});
-// --- PRE CHECKOUT ---
-bot.on("pre_checkout_query", (ctx) => ctx.answerPreCheckoutQuery(true));
-// --- PAGO EXITOSO ---
-bot.on("successful_payment", async (ctx) => {
-  const paymentInfo = ctx.message.successful_payment;
-  const planType = paymentInfo.invoice_payload.replace("fx_access_", "");
-  let uniqueAccessCode = "ERROR-GENERATING";
-  try {
-    uniqueAccessCode = await generateAndSaveCodeInDB(ctx.from.id, planType);
-  } catch (error) {
-    console.error("CRITICAL ERROR GENERATING CODE:", error);
-    return await ctx.reply(
-      "❌ There was a critical error generating your access code. Please contact support."
-    );
-  }
-  const isVip = planType === "vip";
-  const planName = isVip ? CONFIG.PLANS.VIP.NAME : CONFIG.PLANS.USER.NAME;
-  const validityText = isVip
-    ? `valid for ${CONFIG.PLANS.VIP.DURATION_DAYS} days`
-    : "valid for a single user session";
+import path from "path";
+import { Telegraf, Markup, Input } from "telegraf";
 
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+
+const ZOOM_URL =
+  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
+const TELEGRAM_CALL_URL = "https://t.me/User18fx";
+
+if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
+if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
+
+const bot = new Telegraf(BOT_TOKEN);
+const asset = (file) => path.join(process.cwd(), "assets", file);
+
+const pendingVideoRequests =
+  globalThis.__fxPendingVideoRequests || new Map();
+
+if (!globalThis.__fxPendingVideoRequests) {
+  globalThis.__fxPendingVideoRequests = pendingVideoRequests;
+}
+
+const BTN_VIDEOCALL = "📞 Videocall";
+const BTN_BACK = "↩️ Back";
+const BTN_CANCEL = "✖ Cancel";
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function getUserMeta(from) {
+  const firstName = from?.first_name || "";
+  const lastName = from?.last_name || "";
+  const fullName = `${firstName} ${lastName}`.trim() || "No name";
+  const username = from?.username ? `@${from.username}` : "sin_username";
+  const id = String(from?.id || "");
+  return { fullName, username, id };
+}
+
+function getMainKeyboard() {
+  return Markup.keyboard([[BTN_VIDEOCALL], [BTN_BACK]], {
+    columns: 1,
+  }).resize();
+}
+
+function getPendingPhotoKeyboard() {
+  return Markup.keyboard([[BTN_CANCEL]], {
+    columns: 1,
+  }).resize();
+}
+
+function getApprovedVideocallButtons() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "📞 Zoom", url: ZOOM_URL },
+          { text: "💬 Telegram", url: TELEGRAM_CALL_URL },
+        ],
+      ],
+    },
+  };
+}
+
+function getAdminApprovalButtons(requesterId) {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✅ Approve",
+            callback_data: `approve_video_${requesterId}`,
+          },
+          {
+            text: "❌ Reject",
+            callback_data: `reject_video_${requesterId}`,
+          },
+        ],
+      ],
+    },
+  };
+}
+
+async function safeDeleteMessage(ctx) {
+  try {
+    await ctx.deleteMessage();
+  } catch {
+    // no-op
+  }
+}
+
+async function sendMainMenu(ctx) {
   await ctx.reply(
-    `✅ <b>PAYMENT CONFIRMED</b>\n\nYour <b>${planName}</b> access is active.\n\nHere is your unique access code:\n───────────────────\n<code>${uniqueAccessCode}</code>\n───────────────────\nThis code is ${validityText}. Use it on the website.`,
+    `FX | EXCLUSIVE SPACE
+
+Premium access panel.
+Use the buttons below to navigate our private sections.`,
+    getMainKeyboard()
+  );
+}
+
+async function openVideocallFlow(ctx) {
+  const userId = String(ctx.from?.id || "");
+  if (!userId) return;
+
+  pendingVideoRequests.set(userId, {
+    waitingForPhoto: true,
+    awaitingAdminApproval: false,
+    invalidTextCount: 0,
+    createdAt: Date.now(),
+  });
+
+  await safeDeleteMessage(ctx);
+
+  await ctx.replyWithVideo(Input.fromLocalFile(asset("websiteFx.mp4")), {
+    caption: `To unlock videocall options, send one clear photo for identity check.
+
+After approval, you will receive the videocall buttons.`,
+    ...getPendingPhotoKeyboard(),
+  });
+
+  const user = getUserMeta(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📞 <b>New videocall request</b>
+
+Name: <b>${escapeHtml(user.fullName)}</b>
+Username: <b>${escapeHtml(user.username)}</b>
+ID: <code>${escapeHtml(user.id)}</code>
+
+Waiting for identity photo.`,
+    { parse_mode: "HTML" }
+  );
+}
+
+async function notifyAdminPhotoReceived(ctx) {
+  const user = getUserMeta(ctx.from);
+
+  await bot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    `📸 <b>Videocall photo received</b>
+
+Name: <b>${escapeHtml(user.fullName)}</b>
+Username: <b>${escapeHtml(user.username)}</b>
+ID: <code>${escapeHtml(user.id)}</code>
+
+Approve or reject below.`,
     {
       parse_mode: "HTML",
-      ...Markup.inlineKeyboard([
-        [Markup.button.url("🜲 USER FX", CONFIG.URLS.WEBSITE)],
-        [Markup.button.url("☁️ SMOKELANDIA", CONFIG.URLS.SMOKELANDIA)],
-        [UI.buttons.back]
-      ])
-
+      ...getAdminApprovalButtons(user.id),
     }
   );
-});
-// --- HANDLER SERVERLESS / WEBHOOK ---
-export default async function handler(req, res) {
-  if (req.method === "POST") {
-    try {
-      await bot.handleUpdate(req.body);
-      res.status(200).send("OK");
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Error");
+}
+
+async function sendApprovedVideocallFlow(userId) {
+  await bot.telegram.sendMessage(
+    userId,
+    `✅ Approved
+
+Your identity was verified.`
+  );
+
+  await bot.telegram.sendPhoto(
+    userId,
+    Input.fromLocalFile(asset("videocall.jpeg")),
+    {
+      caption: `Choose your videocall option below.`,
+      ...getApprovedVideocallButtons(),
     }
-  } else {
-    res.status(200).json({ status: "Bot is running" });
+  );
+
+  await bot.telegram.sendMessage(userId, "Return to menu anytime.", getMainKeyboard());
+}
+
+bot.start(async (ctx) => {
+  await sendMainMenu(ctx);
+});
+
+bot.hears(BTN_VIDEOCALL, async (ctx) => {
+  await openVideocallFlow(ctx);
+});
+
+bot.hears(BTN_CANCEL, async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
+  await sendMainMenu(ctx);
+});
+
+bot.hears(BTN_BACK, async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  pendingVideoRequests.delete(userId);
+  await sendMainMenu(ctx);
+});
+
+bot.on("photo", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (!pending?.waitingForPhoto) return;
+
+  pending.waitingForPhoto = false;
+  pending.awaitingAdminApproval = true;
+  pendingVideoRequests.set(userId, pending);
+
+  await notifyAdminPhotoReceived(ctx);
+
+  await bot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
+  );
+
+  await ctx.reply(
+    `✅ Photo received.
+
+Your videocall request is under review.`
+  );
+});
+
+bot.action(/^approve_video_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Approved");
+
+  const requesterId = String(ctx.match[1]);
+  const pending = pendingVideoRequests.get(requesterId);
+
+  if (!pending) {
+    await ctx.reply("Request not found.");
+    return;
+  }
+
+  pendingVideoRequests.delete(requesterId);
+  await sendApprovedVideocallFlow(requesterId);
+});
+
+bot.action(/^reject_video_(.+)$/, async (ctx) => {
+  await ctx.answerCbQuery("Rejected");
+
+  const requesterId = String(ctx.match[1]);
+  pendingVideoRequests.delete(requesterId);
+
+  await bot.telegram.sendMessage(
+    requesterId,
+    `❌ Request not approved.`,
+    getMainKeyboard()
+  );
+});
+
+bot.on("text", async (ctx) => {
+  const text = (ctx.message.text || "").trim();
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  const knownInputs = ["/start", BTN_VIDEOCALL, BTN_BACK, BTN_CANCEL];
+  if (knownInputs.includes(text)) return;
+
+  if (pending?.waitingForPhoto) {
+    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
+    pendingVideoRequests.set(userId, pending);
+
+    if (pending.invalidTextCount >= 4) {
+      pendingVideoRequests.delete(userId);
+      await ctx.reply("Request closed.");
+      await sendMainMenu(ctx);
+      return;
+    }
+
+    await ctx.reply("Send one photo to receive the videocall options.");
+    return;
+  }
+
+  await sendMainMenu(ctx);
+});
+
+bot.catch((error) => {
+  console.error("TELEGRAF ERROR:", error);
+});
+
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    return res.status(200).json({
+      ok: true,
+      method: req.method,
+      message: "Telegram endpoint alive",
+    });
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      ok: false,
+      error: "method_not_allowed",
+      method: req.method,
+    });
+  }
+
+  try {
+    const update =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    await bot.handleUpdate(update);
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    console.error("TELEGRAM HANDLER ERROR:", error);
+    return res.status(500).json({
+      ok: false,
+      error: "handler_error",
+      details: String(error?.message || error),
+    });
   }
 }
