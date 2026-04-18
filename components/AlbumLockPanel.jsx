@@ -14,14 +14,15 @@ export default function AlbumLockPanel({
   const [activeTab, setActiveTab] = useState("FX-USER01-");
   const inputsRef = useRef([]);
 
-  const normalizedCode = useMemo(() => {
-    return String(accessCode).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, CODE_LENGTH);
-  }, [accessCode]);
+  const normalizedCode = useMemo(() =>
+    String(accessCode).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, CODE_LENGTH),
+    [accessCode]
+  );
 
-  const focusInput = useCallback((index) => {
-    if (index < 0 || index >= CODE_LENGTH) return;
-    inputsRef.current[index]?.focus();
-    inputsRef.current[index]?.select();
+  const focusInput = useCallback((i) => {
+    if (i < 0 || i >= CODE_LENGTH) return;
+    inputsRef.current[i]?.focus();
+    inputsRef.current[i]?.select();
   }, []);
 
   const resetInputs = useCallback(() => {
@@ -42,23 +43,23 @@ export default function AlbumLockPanel({
     window.setTimeout(() => resetInputs(), 760);
   }, [normalizedCode, onUnlock, resetInputs]);
 
-  const handleChange = useCallback((index, raw) => {
+  const handleChange = useCallback((i, raw) => {
     const v = raw.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
-    const next = [...chars]; next[index] = v; setChars(next);
-    if (v && index < CODE_LENGTH - 1) focusInput(index + 1);
+    const next = [...chars]; next[i] = v; setChars(next);
+    if (v && i < CODE_LENGTH - 1) focusInput(i + 1);
     if (next.every(Boolean)) submitCode(next.join(""));
   }, [chars, focusInput, submitCode]);
 
-  const handleKeyDown = useCallback((e, index) => {
+  const handleKeyDown = useCallback((e, i) => {
     if (e.key === "Backspace") {
       e.preventDefault();
       const next = [...chars];
-      if (chars[index]) { next[index] = ""; setChars(next); return; }
-      if (index > 0) { next[index - 1] = ""; setChars(next); focusInput(index - 1); }
+      if (chars[i]) { next[i] = ""; setChars(next); return; }
+      if (i > 0) { next[i - 1] = ""; setChars(next); focusInput(i - 1); }
       return;
     }
-    if (e.key === "ArrowLeft")  { e.preventDefault(); focusInput(index - 1); return; }
-    if (e.key === "ArrowRight") { e.preventDefault(); focusInput(index + 1); return; }
+    if (e.key === "ArrowLeft")  { e.preventDefault(); focusInput(i - 1); return; }
+    if (e.key === "ArrowRight") { e.preventDefault(); focusInput(i + 1); return; }
     if (e.key === "Enter")      { e.preventDefault(); submitCode(chars.join("")); }
   }, [chars, focusInput, submitCode]);
 
@@ -74,68 +75,70 @@ export default function AlbumLockPanel({
 
   useEffect(() => { focusInput(0); }, [focusInput]);
 
-  /* ── UNLOCKED: full screen video ── */
+  /* ── UNLOCKED ── */
   if (status === "unlocked") {
     return (
       <div className={styles.unlockedRoot}>
-        <div className={styles.unlockedBadge}>
-          <span className={styles.unlockedKicker}>ACCESS GRANTED</span>
+        <div className={styles.unlockedGlow} />
+        <div className={styles.unlockedHeader}>
+          <span className={styles.unlockedBadge}>✦ ACCESS GRANTED</span>
         </div>
         {videoSrc ? (
           <video
             src={videoSrc}
-            controls
-            autoPlay
-            playsInline
-            preload="metadata"
+            controls autoPlay playsInline preload="metadata"
             className={styles.unlockedVideo}
           />
         ) : (
           <div className={styles.unlockedEmpty}>
+            <div className={styles.unlockedEmptyIcon}>♛</div>
             <span className={styles.unlockedEmptyTitle}>ALBUM UNLOCKED</span>
-            <span className={styles.unlockedEmptyText}>
-              Pass your content via <code>videoSrc</code> prop.
-            </span>
+            <span className={styles.unlockedEmptyText}>Pass your content via <code>videoSrc</code> prop.</span>
           </div>
         )}
       </div>
     );
   }
 
-  /* ── LOCKED: overlay on wallpaper ── */
+  /* ── LOCKED ── */
   return (
     <section
       className={styles.root}
-      style={{ "--album-wallpaper": `url(${wallpaper})` }}
+      style={{ "--wp": `url(${wallpaper})` }}
     >
-      {/* Wallpaper */}
-      <div className={styles.wallpaper} />
+      {/* — Background — */}
+      <div className={styles.wp} />
       <div className={styles.vignette} />
+      <div className={styles.scanlines} />
 
-      {/* ── TOP ZONE: "EXCLUSIVE ACCESS" label over brick area ── */}
-      <div className={styles.topZone}>
-        <span className={styles.topKicker}>EXCLUSIVE ACCESS</span>
-        <span className={styles.topPill}>USER FX</span>
-      </div>
-
-      {/* ── MID ZONE: code prefix label — sits on the dark "F" bar ── */}
-      <div className={styles.midZone}>
-        <span className={styles.midPrefix}>FX-USER01-</span>
-      </div>
-
-      {/* ── BOTTOM ZONE: below the rose / dark steps area ── */}
-      <div className={styles.bottomZone}>
-
-        {/* Lock + title */}
-        <div className={styles.lockRow}>
-          <div className={styles.lockIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-              <rect x="5" y="11" width="14" height="10" rx="2.2" fill="currentColor" />
-              <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            </svg>
-          </div>
-          <h2 className={styles.title}>LOCKED ACCESS</h2>
+      {/* — Top HUD — */}
+      <div className={styles.hud}>
+        <div className={styles.hudLeft}>
+          <span className={styles.hudDot} />
+          <span className={styles.hudLabel}>EXCLUSIVE ACCESS</span>
         </div>
+        <div className={styles.hudRight}>
+          <span className={styles.hudPill}>USER FX</span>
+        </div>
+      </div>
+
+      {/* — Lock badge + title: sits over the logo center — */}
+      <div className={styles.lockBadge}>
+        <div className={styles.lockIconWrap}>
+          <div className={styles.lockPulse} />
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" className={styles.lockSvg}>
+            <rect x="5" y="11" width="14" height="10" rx="2.2" fill="currentColor" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+          </svg>
+        </div>
+        <h2 className={styles.lockTitle}>LOCKED ACCESS</h2>
+      </div>
+
+      {/* — Input panel: dark steps below the rose — */}
+      <div className={`${styles.inputPanel} ${status === "error" ? styles.inputPanelError : ""}`}>
+
+        {/* Decorative top line */}
+        <div className={styles.panelTopLine} />
 
         {/* Tabs */}
         <div className={styles.tabRow}>
@@ -146,47 +149,54 @@ export default function AlbumLockPanel({
               className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ""}`}
               onClick={() => setActiveTab(tab)}
             >
+              {activeTab === tab && <span className={styles.tabDot} />}
               {tab}
             </button>
           ))}
+          <span className={styles.tabSpacer} />
+          <span className={styles.tabPrefix}>{activeTab}</span>
         </div>
 
-        {/* Code inputs */}
+        {/* Code row */}
         <div className={styles.codeRow} onPaste={handlePaste}>
           {chars.map((char, i) => (
-            <input
-              key={i}
-              ref={(el) => { inputsRef.current[i] = el; }}
-              type="text"
-              inputMode="text"
-              autoComplete={i === 0 ? "one-time-code" : "off"}
-              maxLength={1}
-              value={char}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, i)}
-              className={`${styles.codeBox} ${status === "error" ? styles.codeBoxError : ""}`}
-              aria-label={`Character ${i + 1} of ${CODE_LENGTH}`}
-            />
+            <div key={i} className={styles.codeCell}>
+              <input
+                ref={(el) => { inputsRef.current[i] = el; }}
+                type="text"
+                inputMode="text"
+                autoComplete={i === 0 ? "one-time-code" : "off"}
+                maxLength={1}
+                value={char}
+                onChange={(e) => handleChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, i)}
+                className={`${styles.codeBox} ${status === "error" ? styles.codeBoxError : ""}`}
+                aria-label={`Character ${i + 1} of ${CODE_LENGTH}`}
+              />
+              {/* Glow under focused/filled cell */}
+              {char && <div className={styles.cellGlow} />}
+            </div>
           ))}
         </div>
 
         {status === "error" && (
-          <p className={styles.errorText}>Incorrect code. Try again.</p>
+          <p className={styles.errorText}>✕ Incorrect code — try again</p>
         )}
 
-        {/* CTA */}
+        {/* CTA button */}
         <button
           type="button"
           className={styles.unlockBtn}
           onClick={() => submitCode(chars.join(""))}
         >
-          UNLOCK ALBUM
+          <span className={styles.unlockBtnShine} />
+          <span className={styles.unlockBtnText}>UNLOCK ALBUM</span>
         </button>
 
-        <p className={styles.hint}>↑ Enter the last 4 characters</p>
+        <p className={styles.hint}>Enter the last 4 characters of your code</p>
       </div>
 
-      {/* Footer */}
+      {/* — Footer — */}
       <div className={styles.footer}>
         <span>USER | <span className={styles.footerFx}>FX♛</span> | 2026 © ALL RIGHTS RESERVED</span>
         <span className={styles.footerBot}>@User18Fx_bot</span>
