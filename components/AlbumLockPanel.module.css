@@ -1,11 +1,65 @@
-/* ─── BASE: PARED DE LADRILLO REALISTA ─────────────────── */
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  z-index: 30;
+  perspective: 1200px; 
+}
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #0a0a0cd1;
+  backdrop-filter: blur(18px); 
+  border: 1px solid #ffffff0f;
+  border-radius: 28px;
+  padding: 50px 35px;
+  box-shadow: 0 45px 90px #000000f2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  transition: transform 0.3s ease, 
+  box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px) 
+  rotateX(2deg); /*Efecto 3D*/
+  box-shadow: 0 55px 110px #000000;
+}
+.codeRow {/*Campos de Código*/
+  display: flex;
+  gap: 15px; 
+}
+.codeBox {
+  width: 60px;
+  height: 70px;
+  background: #00000099;
+  border: 2px solid #222;
+  border-radius: 14px;
+  color: #6aaee8; 
+  font-weight: 800;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+.codeBox:focus {
+  border-color: #6aaee8;
+  background: #6aaee814;
+  box-shadow: 0 0 20px #6aaee866;
+  outline: none;
+  transform: scale(1.15); /*Efecto"resaltado"*/
+}
+@keyframes btnPulse {
+  0% { box-shadow: 0 12px 25px #1a3f6e80; }
+  50% { box-shadow: 0 12px 40px #6aaee8b3; }
+  100% { box-shadow: 0 12px 25px #1a3f6e80; }
+}
 .page {
   min-height: 100vh;
   background-color: #030303;
-  /* Fondo con iluminación direccional y ladrillo texturizado */
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08) 0%, transparent 60%),
-    linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
+    radial-gradient(circle at 50% 30%, #ffffff14 0%, transparent 60%),
+    linear-gradient(#000000d9, #000000f2),
     url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40" viewBox="0 0 100 40"><rect width="100" height="40" fill="%23050505"/><rect x="2" y="2" width="94" height="16" rx="1" fill="%230a0a0a" stroke="%23111" stroke-width="0.5"/><rect x="52" y="22" width="94" height="16" rx="1" fill="%230a0a0a" stroke="%23111" stroke-width="0.5"/></svg>');
   background-repeat: repeat;
   background-size: 100px 40px;
@@ -14,8 +68,6 @@
   align-items: center;
   overflow-x: hidden;
 }
-
-/* ─── HERO BRAND: COMPOSICIÓN TIPO PÓSTER ──────────────── */
 .heroBrand {
   width: 100%;
   padding: 100px 20px 60px;
@@ -23,32 +75,27 @@
   justify-content: center;
   position: relative;
 }
-
 .heroInner {
   position: relative;
   display: flex;
-  align-items: center; /* Centrado vertical para que USER y FX se vean nivelados */
+  align-items: center; 
   justify-content: center;
   gap: 20px;
 }
-
-/* "USER" — Plata Cromado con Bisel */
-.heroUser {
+.heroUser {     /*USER*/
   font-family: "Garamond", "Georgia", serif; /* Fuente más fina como el póster */
   font-size: clamp(3rem, 10vw, 5rem);
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: #e0e0e0;
-  /* Efecto metálico 3D real */
+  /*Efecto metálico 3D real*/
   background: linear-gradient(180deg, #fff 0%, #a0a0a0 48%, #444 52%, #888 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.9));
+  filter: drop-shadow(4px 4px 8px #000000e6);
 }
-
-/* "FX" — Azul 3D con Brillo Interno */
-.heroFx {
+.heroFx {   /*"FX"*/
   font-family: "Arial Black", sans-serif;
   font-size: clamp(6.5rem, 22vw, 13rem);
   font-weight: 900;
@@ -58,12 +105,10 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: 
-    drop-shadow(8px 12px 2px rgba(0,0,0,0.9)) /* Sombra proyectada en la pared */
-    drop-shadow(0 0 40px rgba(74, 144, 226, 0.3)); /* Resplandor azul */
+  drop-shadow(8px 12px 2px #000000e6) /*Sombra proyectada en la pared */
+  drop-shadow(0 0 40px #4a90e24d); /*Resplandor azul */
 }
-
-/* Corona Azul: Sobre la esquina de la X */
-.crownWrap {
+.crownWrap {      /*Corona AZUL*/
   position: absolute;
   top: -25px;
   right: -25px;
@@ -71,51 +116,43 @@
   z-index: 10;
   transform: rotate(12deg);
   filter: 
-    drop-shadow(0 0 15px rgba(106, 174, 232, 0.8))
+    drop-shadow(0 0 15px #6aaee8cc)
     brightness(1.2);
 }
-
-/* Rosa Roja: Centrada y con profundidad */
-.roseWrap {
+.roseWrap { /*Rosa Roja*/
   position: absolute;
   bottom: -45px;
   left: 45%; 
   transform: translateX(-50%);
   width: clamp(180px, 30vw, 280px);
   z-index: 20;
-  filter: drop-shadow(0 20px 30px rgba(0,0,0,1));
+  filter: drop-shadow(0 20px 30px #000000);
 }
-
-/* ─── CARD DE ACCESO: ESTILO CRISTAL OSCURO ───────────── */
-.main {
+.main {          /*CARD DE ACCESO*/
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 40px 20px;
   z-index: 30;
 }
-
 .card {
   width: 100%;
   max-width: 420px;
-  background: rgba(10, 10, 12, 0.85); /* Fondo muy oscuro pero traslúcido */
+  background: #0a0a0cd9; /*Fondo traslúcido*/
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid #ffffff0d;
   border-radius: 24px;
   padding: 45px 35px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+  box-shadow: 0 40px 80px #000000e6;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25px;
 }
-
-/* Inputs de Código: Minimalistas y oscuros */
-.codeRow {
+.codeRow {         /*Inputs de Código*/
   display: flex;
   gap: 12px;
 }
-
 .codeBox {
   width: 55px;
   height: 65px;
@@ -128,30 +165,31 @@
   text-align: center;
   transition: all 0.2s;
 }
-
 .codeBox:focus {
   border-color: #4a90e2;
-  background: rgba(74, 144, 226, 0.05);
-  box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+  background: #4a90e20d;
+  box-shadow: 0 0 15px #4a90e24d;
   outline: none;
 }
-
-/* Botón de Desbloqueo: Azul para combinar con FX */
-.unlockBtn {
+.unlockBtn {       /*Botón de Desbloqueo*/
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #1a3f6e, #0d2d55);
+  padding: 18px;
+  background: linear-gradient(135deg,
+   #0262e0, #0d2d55);
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   color: white;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: 0.3s;
+  box-shadow: 0 8px 15px #00000066;
+  transition: transform 0.2s ease, 
+  box-shadow 0.2s ease;
 }
-
-.unlockBtn:hover {
+.unlockBtn:hover {      /*Efecto*/
   filter: brightness(1.2);
-  box-shadow: 0 0 20px rgba(26, 63, 110, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px #1a3f6e80;
+  animation: btnPulse 1.5s infinite;  /*pulso*/
 }
