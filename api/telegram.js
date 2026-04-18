@@ -40,7 +40,7 @@ if (!globalThis.__fxPaidUsers) {
 const BTN_VIDEOCALL = "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_GET_FULL_ACCESS = "🔥 ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
 const BTN_VIP = "⚡ ᴠɪᴘ";
-const BTN_USER = "👑 𝐔𝐬𝐞𝐫 Ŧҳ";
+const BTN_USER = "👑 𝐔𝐬𝐞𝐫🜲Ŧҳ";
 const BTN_CHANNELS = "📺 ᴄʜᴀɴɴᴇʟꜱ";
 const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
 
@@ -52,8 +52,8 @@ const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
 const BTN_PAY_STARS_VIP = "⭐ ᴘᴀʏ ᴠɪᴘ";
 const BTN_PAY_STARS_USER = "⭐ ᴘᴀʏ ᴜꜱᴇʀ";
 
-const BTN_SMOKELANDIA = "☁️ｓｍｏｋｅｌａｎｄｉａ";
-const BTN_USERFX_SITE = "👑 𝐔𝐬𝐞𝐫 Ŧҳ ᴡᴇʙꜱɪᴛᴇ";
+const BTN_SMOKELANDIA = "☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
+const BTN_USERFX_SITE = "👑 𝐔𝐬𝐞𝐫🜲Ŧҳ";
 const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
 
 function escapeHtml(value = "") {
@@ -156,7 +156,7 @@ function getUserFxChannelButton() {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "👑 ᴇɴᴛᴇʀ 𝐔𝐬𝐞𝐫 Ŧҳ", url: USER_GROUP_LINK }],
+        [{ text: "👑 ᴇɴᴛᴇʀ 𝐔𝐬𝐞𝐫🜲Ŧҳ", url: USER_GROUP_LINK }],
       ],
     },
   };
@@ -215,7 +215,7 @@ async function sendVipPanel(ctx) {
 
 async function sendUserPanel(ctx) {
   await ctx.reply(
-    `👑 𝐔𝐬𝐞𝐫 Ŧҳ
+    `👑 𝐔𝐬𝐞𝐫🜲Ŧҳ
 
 ᴜɴʟᴏᴄᴋ ᴜꜱᴇʀ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.`,
     getStarsUserKeyboard()
@@ -233,7 +233,7 @@ async function sendChannelsPanel(ctx) {
 
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasUser } = getAccessState(ctx.from?.id);
-  const tier = hasVip ? "⚡ ᴠɪᴘ" : hasUser ? "👑 𝐔𝐬𝐞𝐫 Ŧҳ" : "ɴᴏ ᴘʟᴀɴ";
+  const tier = hasVip ? "⚡ ᴠɪᴘ" : hasUser ? "👑 𝐔𝐬𝐞𝐫🜲Ŧҳ" : "ɴᴏ ᴘʟᴀɴ";
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
 
@@ -244,7 +244,7 @@ async function sendRefreshPanel(ctx) {
 
 async function sendSmokelandiaChannelPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("USERFX-ID18V20.jpg")), {
-    caption: `☁️ｓｍｏｋｅｌａｎｄｉａ
+    caption: `☁️ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.`,
     ...getSmokelandiaChannelButton(),
@@ -255,7 +255,7 @@ async function sendSmokelandiaChannelPanel(ctx) {
 
 async function sendUserFxChannelPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpeg")), {
-    caption: `👑 𝐔𝐬𝐞𝐫 Ŧҳ
+    caption: `👑 𝐔𝐬𝐞𝐫🜲Ŧҳ
 
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.`,
     ...getUserFxChannelButton(),
