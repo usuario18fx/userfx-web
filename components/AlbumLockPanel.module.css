@@ -317,13 +317,13 @@
   border: 0;
   border-radius: 15px;
   background: linear-gradient(
-    180deg,
+    12deg,
     #a8e8ff 0%,
     #64c6ff 24%,
     #1c8af6 70%,
     #1070d8 100% );
   color: #03111e;
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -426,7 +426,7 @@
   animation: unlockedGlowPulse 3s ease-in-out infinite;
 }
 @keyframes unlockedGlowPulse {
-  0%,100% { opacity: 0.6; }
+  0%,100% { opacity: 0.9; }
   50%     { opacity: 1; }
 }
 .unlockedHeader {
