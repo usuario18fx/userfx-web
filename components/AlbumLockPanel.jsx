@@ -81,7 +81,7 @@ export default function AlbumLockPanel({
       <div className={styles.unlockedRoot}>
         <div className={styles.unlockedGlow} />
         <div className={styles.unlockedHeader}>
-          <span className={styles.unlockedBadge}>✦ ACCESS GRANTED</span>
+          <span className={styles.unlockedBadge}>✦ 𝐀𝐂𝐂𝐄𝐒𝐒 𝐆𝐑𝐀𝐍𝐓𝐄𝐃</span>
         </div>
         {videoSrc ? (
           <video
@@ -91,7 +91,7 @@ export default function AlbumLockPanel({
           />
         ) : (
           <div className={styles.unlockedEmpty}>
-            <div className={styles.unlockedEmptyIcon}>♛</div>
+            <div className={styles.unlockedEmptyIcon}>🜲</div>
             <span className={styles.unlockedEmptyTitle}>ALBUM UNLOCKED</span>
             <span className={styles.unlockedEmptyText}>Pass your content via <code>videoSrc</code> prop.</span>
           </div>
@@ -115,10 +115,10 @@ export default function AlbumLockPanel({
       <div className={styles.hud}>
         <div className={styles.hudLeft}>
           <span className={styles.hudDot} />
-          <span className={styles.hudLabel}>EXCLUSIVE ACCESS</span>
+          <span className={styles.hudLabel}>ᴇxᴄʟᴜꜱɪᴠᴇ ᴀᴄᴄᴇꜱꜱ</span>
         </div>
         <div className={styles.hudRight}>
-          <span className={styles.hudPill}>USER FX</span>
+          <span className={styles.hudPill}>ɴᴇᴡ ɴᴜᴅᴇꜱ ᴇᴠᴇʀʏ ᴡᴇᴇᴋ.</span>
         </div>
       </div>
 
@@ -131,7 +131,7 @@ export default function AlbumLockPanel({
             <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
           </svg>
         </div>
-        <h2 className={styles.lockTitle}>LOCKED ACCESS</h2>
+        <h2 className={styles.lockTitle}>𝐋𝐎𝐂𝐊𝐄𝐃 𝐀𝐂𝐂𝐄𝐒𝐒</h2>
       </div>
 
       {/* — Input panel: dark steps below the rose — */}
@@ -180,7 +180,7 @@ export default function AlbumLockPanel({
         </div>
 
         {status === "error" && (
-          <p className={styles.errorText}>✕ Incorrect code — try again</p>
+          <p className={styles.errorText}>✕ ɪɴᴄᴏʀʀᴇᴄᴛ ᴄᴏᴅᴇ — try again</p>
         )}
 
         {/* CTA button */}
@@ -190,15 +190,15 @@ export default function AlbumLockPanel({
           onClick={() => submitCode(chars.join(""))}
         >
           <span className={styles.unlockBtnShine} />
-          <span className={styles.unlockBtnText}>UNLOCK ALBUM</span>
+          <span className={styles.unlockBtnText}>𝐔𝐍𝐋𝐎𝐂𝐊 𝐀𝐋𝐁𝐔𝐌</span>
         </button>
 
-        <p className={styles.hint}>Enter the last 4 characters of your code</p>
+        <p className={styles.hint}>ᴇɴᴛᴇʀ ᴛʜᴇ ʟᴀꜱᴛ 4 ᴄʜᴀʀᴀᴄᴛᴇʀꜱ ᴏꜰ ʏᴏᴜʀ ᴄᴏᴅᴇ</p>
       </div>
 
       {/* — Footer — */}
       <div className={styles.footer}>
-        <span>USER | <span className={styles.footerFx}>FX♛</span> | 2026 © ALL RIGHTS RESERVED</span>
+        <span>USER | <span className={styles.footerFx}>Ŧҳ🜲</span> | 2026 © ALL RIGHTS RESERVED</span>
         <span className={styles.footerBot}>@User18Fx_bot</span>
       </div>
     </section>
