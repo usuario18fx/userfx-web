@@ -5,6 +5,7 @@ const CONFIG = {
   TOKEN: process.env.BOT_TOKEN,
   URLS: {
     WEBSITE: "https://userfx-web.vercel.app",
+    SMOKELANDIA: "https://smokelandia.app",
     ZOOM: "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1",
     TELEGRAM_CALL: "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY",
     VIDEO_INTRO: "https://userfx-web.vercel.app/assets/websiteFx.mp4"
@@ -38,6 +39,8 @@ const MESSAGES = {
 
   PLANS_INFO: `<b>CHOOSE YOUR ACCESS PLAN</b>\n\n────────────────\n<b>${CONFIG.PLANS.USER.NAME} Access</b>: ${CONFIG.PLANS.USER.PRICE} Stars\n<i>Valid for 1 visual session (Single Use).</i>\n\n────────────────\n<b>${CONFIG.PLANS.VIP.NAME} Access</b>: ${CONFIG.PLANS.VIP.PRICE} Stars\n<i>Full access for ${CONFIG.PLANS.VIP.DURATION_DAYS} days (${CONFIG.PLANS.VIP.DURATION_DAYS / 7} weeks).</i>\n\nChoose below to pay:`,
 
+  CHANNELS: `<b>🌐 CHANNELS</b>\n\nChoose where you want to enter:`,
+
   SECTIONS: {
     access: `<b>🔐 ACCESS GRANTED</b>\nSelect a private category:`,
     feed: `<b>📺 FEED</b>\n────────────────\n• Selected drops\n• Public previews\n• Featured content`,
@@ -56,7 +59,7 @@ const UI = {
     ],
     back: Markup.button.callback("« BACK TO MENU", "main"),
     refresh: Markup.button.callback("↻ REFRESH", "main"),
-    web: Markup.button.webApp("🌐 OPEN WEBSITE", CONFIG.URLS.WEBSITE)
+    channels: Markup.button.callback("🌐 CHANNELS", "channels")
   },
 
   main: () =>
@@ -64,11 +67,18 @@ const UI = {
       UI.buttons.calls,
       [Markup.button.callback("🔥 GET FULL ACCESS", "plans")],
       [
-        Markup.button.callback("👑 VIP", "vip"),
-        Markup.button.callback("🧊 USER", "user")
+        Markup.button.callback("⚡ VIP", "vip"),
+        Markup.button.callback("👑 USER", "user")
       ],
-      [UI.buttons.web],
+      [UI.buttons.channels],
       [UI.buttons.refresh]
+    ]),
+
+  channelsLinks: () =>
+    Markup.inlineKeyboard([
+      [Markup.button.url("🜲 USER FX", CONFIG.URLS.WEBSITE)],
+      [Markup.button.url("☁️ SMOKELANDIA", CONFIG.URLS.SMOKELANDIA)],
+      [UI.buttons.back]
     ]),
 
   sections: () =>
@@ -94,7 +104,7 @@ const UI = {
 
   user: () =>
     Markup.inlineKeyboard([
-      [Markup.button.callback("🧊 BUY USER ACCESS", "buy_user")],
+      [Markup.button.callback("👑 BUY USER ACCESS", "buy_user")],
       [Markup.button.callback("🔐 OPEN SECTIONS", "view_access")],
       UI.buttons.calls,
       [UI.buttons.back]
@@ -103,8 +113,8 @@ const UI = {
   choosePlan: () =>
     Markup.inlineKeyboard([
       [
-        Markup.button.callback(`🧊 USER (${CONFIG.PLANS.USER.PRICE})`, "buy_user"),
-        Markup.button.callback(`👑 VIP (${CONFIG.PLANS.VIP.PRICE})`, "buy_vip")
+        Markup.button.callback(`👑 USER (${CONFIG.PLANS.USER.PRICE})`, "buy_user"),
+        Markup.button.callback(`⚡ VIP (${CONFIG.PLANS.VIP.PRICE})`, "buy_vip")
       ],
       [UI.buttons.back]
     ])
@@ -125,6 +135,7 @@ async function updateUI(ctx, text, keyboard) {
       }
       return await ctx.editMessageText(text, payload);
     }
+
     return await ctx.reply(text, payload);
   } catch (e) {
     return await ctx.reply(text, payload);
@@ -178,6 +189,7 @@ bot.action("main", (ctx) => updateUI(ctx, MESSAGES.MAIN, UI.main()));
 bot.action("vip", (ctx) => updateUI(ctx, MESSAGES.VIP, UI.vip()));
 bot.action("user", (ctx) => updateUI(ctx, MESSAGES.USER, UI.user()));
 bot.action("plans", (ctx) => updateUI(ctx, MESSAGES.PLANS_INFO, UI.choosePlan()));
+bot.action("channels", (ctx) => updateUI(ctx, MESSAGES.CHANNELS, UI.channelsLinks()));
 
 // --- SECCIONES DINÁMICAS ---
 bot.action(/^view_(.+)$/, (ctx) => {
@@ -250,7 +262,8 @@ bot.on("successful_payment", async (ctx) => {
     {
       parse_mode: "HTML",
       ...Markup.inlineKeyboard([
-        [Markup.button.webApp("🔥 ENTER & UNLOCK", CONFIG.URLS.WEBSITE)],
+        [Markup.button.url("🜲 USER FX", CONFIG.URLS.WEBSITE)],
+        [Markup.button.url("☁️ SMOKELANDIA", CONFIG.URLS.SMOKELANDIA)],
         [UI.buttons.back]
       ])
     }
