@@ -1,5 +1,4 @@
 /* ════════════════    AlbumLockPanel.css ════════════════════════ */
-/* ── Root ── */
 .root {
   position: relative;
   width: 100%;
@@ -11,9 +10,7 @@
   font-family: "DM Sans", "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-
-/* ── Wallpaper ── */
-.wp {
+.wp {              /* ── Wallpaper ── */
   position: absolute;
   inset: 0;
   background-image: var(--wp);
@@ -23,14 +20,12 @@
   filter: brightness(0.84) contrast(1.1) saturate(1.08);
   will-change: transform;
 }
-
-/* Cinematic vignette — keeps logo visible,
-   darkens just the bottom where inputs live */
 .vignette {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 120% 60% at 50% 0%, transparent 30%, rgba(0,0,0,0.45) 100%),
+    radial-gradient(ellipse 120% 60% 
+  at 50% 0%, transparent 30%, rgba(0,0,0,0.45) 100%),
     linear-gradient(to bottom,
       rgba(0,0,0,0.30)  0%,
       rgba(0,0,0,0.02) 8%,
@@ -38,12 +33,9 @@
       transparent      54%,
       rgba(0,0,0,0.50) 66%,
       rgba(0,0,0,0.82) 80%,
-      rgba(0,0,0,0.92) 100%
-    );
+      rgba(0,0,0,0.92) 100%);
 }
-
-/* Subtle CRT scanlines for "premium dark" feel */
-.scanlines {
+.scanlines {/* Subtle CRT scanlines for "premium dark" feel */
   position: absolute;
   inset: 0;
   background-image: repeating-linear-gradient(
@@ -57,9 +49,7 @@
   z-index: 2;
   opacity: 0.5;
 }
-
-/* ── HUD — top of screen ── */
-.hud {
+.hud {               /* ── HUD — top of screen ── */
   position: absolute;
   top: 0;
   left: 0;
@@ -72,13 +62,11 @@
   border-bottom: 1px solid rgba(137,216,255,0.06);
   background: linear-gradient(to bottom, rgba(0,0,0,0.42), transparent);
 }
-
 .hudLeft {
   display: flex;
   align-items: center;
   gap: 7px;
 }
-
 /* Animated status dot */
 .hudDot {
   display: block;
@@ -87,14 +75,11 @@
   border-radius: 50%;
   background: #89d8ff;
   box-shadow: 0 0 6px #89d8ff, 0 0 12px rgba(137,216,255,0.5);
-  animation: dotBlink 2.4s ease-in-out infinite;
-}
-
+  animation: dotBlink 2.4s ease-in-out infinite;}
 @keyframes dotBlink {
   0%, 100% { opacity: 1; box-shadow: 0 0 6px #89d8ff, 0 0 12px rgba(137,216,255,0.5); }
   50%       { opacity: 0.4; box-shadow: 0 0 2px #89d8ff; }
 }
-
 .hudLabel {
   font-size: 0.58rem;
   font-weight: 700;
@@ -103,7 +88,6 @@
   color: rgba(137,216,255,0.92);
   text-shadow: 0 0 14px rgba(137,216,255,0.4), 0 2px 10px rgba(0,0,0,1);
 }
-
 .hudPill {
   display: inline-flex;
   align-items: center;
@@ -119,9 +103,7 @@
   color: #e2f6ff;
   text-shadow: 0 2px 10px rgba(0,0,0,1);
 }
-
-/* ── Lock badge — centered over logo ── */
-.lockBadge {
+.lockBadge {/* ── Lock badge — centered over logo ── */
   position: absolute;
   top: 16%;
   left: 0;
@@ -133,7 +115,6 @@
   gap: 10px;
   padding: 0 18px;
 }
-
 .lockIconWrap {
   position: relative;
   display: inline-grid;
@@ -142,29 +123,24 @@
   height: 36px;
   flex-shrink: 0;
 }
-
-/* Pulsing ring around lock icon */
-.lockPulse {
+.lockPulse {             /* Pulsing ring around lock icon */
   position: absolute;
   inset: -4px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,65,111,0.4);
+  border-radius: 60%;
+  border: 2px solid rgba(255,65,111,0.4);
   animation: lockPulse 2.2s ease-out infinite;
 }
-
 @keyframes lockPulse {
   0%   { transform: scale(1);    opacity: 0.8; }
-  70%  { transform: scale(1.55); opacity: 0;   }
-  100% { transform: scale(1.55); opacity: 0;   }
+  70%  { transform: scale(1.55); opacity: 50;   }
+  100% { transform: scale(1.55); opacity: 22;   }
 }
-
 .lockSvg {
   color: #ff416f;
   filter: drop-shadow(0 0 8px rgba(255,65,111,0.7));
   position: relative;
   z-index: 1;
 }
-
 .lockTitle {
   margin: 0;
   font-size: clamp(1.3rem, 5.5vw, 1.9rem);
@@ -172,16 +148,13 @@
   letter-spacing: 0.03em;
   color: #ffffff;
   line-height: 1;
-  /* Emboss effect: light top shadow, dark bottom */
   text-shadow:
     0 1px 0   rgba(255,255,255,0.12),
     0 -1px 0  rgba(0,0,0,0.8),
     0 2px 20px rgba(0,0,0,1),
     0 0  30px  rgba(0,0,0,0.9);
 }
-
-/* ── Input panel — bottom zone ── */
-.inputPanel {
+.inputPanel {                   /* ── Input panel — bottom zone ── */
   position: absolute;
   bottom: 52px; /* above footer */
   left: 0;
@@ -192,9 +165,7 @@
   flex-direction: column;
   gap: 10px;
 }
-
-/* Thin neon top border */
-.panelTopLine {
+.panelTopLine {         /* Thin neon top border */
   width: 100%;
   height: 1px;
   background: linear-gradient(
@@ -203,16 +174,11 @@
     rgba(137,216,255,0.35) 30%,
     rgba(137,216,255,0.60) 50%,
     rgba(137,216,255,0.35) 70%,
-    transparent
-  );
+    transparent);
   box-shadow: 0 0 8px rgba(137,216,255,0.25);
   margin-bottom: 2px;
 }
-
-.inputPanelError {
-  animation: shakePan 0.4s ease;
-}
-
+.inputPanelError { animation: shakePan 0.4s ease;}
 @keyframes shakePan {
   0%,100% { transform: translateX(0); }
   20%     { transform: translateX(-5px); }
@@ -220,14 +186,11 @@
   60%     { transform: translateX(-3px); }
   80%     { transform: translateX(3px); }
 }
-
-/* ── Tabs ── */
-.tabRow {
+.tabRow {/* ── Tabs ── */
   display: flex;
   align-items: center;
   gap: 7px;
 }
-
 .tab {
   appearance: none;
   display: inline-flex;
@@ -259,7 +222,6 @@
   box-shadow: 0 0 10px rgba(137,216,255,0.1), inset 0 0 10px rgba(137,216,255,0.04);
   text-shadow: 0 0 8px rgba(137,216,255,0.3), 0 2px 10px rgba(0,0,0,0.9);
 }
-
 .tabDot {
   display: block;
   width: 4px;
@@ -269,9 +231,7 @@
   box-shadow: 0 0 5px #89d8ff;
   flex-shrink: 0;
 }
-
 .tabSpacer { flex: 1; }
-
 .tabPrefix {
   font-size: 0.60rem;
   font-weight: 700;
@@ -280,30 +240,25 @@
   color: rgba(137,216,255,0.95);
   text-shadow: 0 0 10px rgba(137,216,255,0.35), 0 2px 10px rgba(0,0,0,1);
 }
-
-/* ── Code inputs ── */
-.codeRow {
+.codeRow {            /* ── Code inputs ── */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 9px;
-  width: 100%;
+  gap: 5px;
+  width: 60%;
 }
-
-.codeCell {
-  position: relative;
+.codeCell { position: relative;
 }
-
 .codeBox {
-  width: 100%;
-  height: 52px;
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 14px;
+  width: 70%;
+  height: 50px;
+  border: 2px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
   /* Slightly opaque — brick texture shows through */
   background: rgba(5, 12, 22, 0.52);
   outline: none;
   text-align: center;
   font-size: 1.18rem;
-  font-weight: 900;
+  font-weight: 950;
   color: #ffffff;
   text-transform: uppercase;
   text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,1);
@@ -313,7 +268,6 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 14px rgba(0,0,0,0.3);
   transition: border-color 160ms, background 160ms, box-shadow 160ms, transform 130ms;
 }
-
 .codeBox:focus {
   border-color: rgba(137,216,255,0.55);
   background: rgba(8,25,45,0.58);
@@ -324,7 +278,6 @@
     0 0 16px rgba(137,216,255,0.12),
     0 6px 16px rgba(0,0,0,0.35);
 }
-
 .codeBoxError {
   border-color: rgba(255,65,111,0.55);
   background: rgba(45,5,18,0.52);
@@ -333,7 +286,6 @@
     0 0 0 3px rgba(255,65,111,0.08),
     0 0 14px rgba(255,65,111,0.14);
 }
-
 /* Neon glow under filled cell */
 .cellGlow {
   position: absolute;
@@ -344,14 +296,11 @@
   border-radius: 999px;
   background: rgba(137,216,255,0.55);
   box-shadow: 0 0 8px rgba(137,216,255,0.6), 0 0 16px rgba(137,216,255,0.3);
-  animation: cellGlowFade 0.3s ease-out;
-}
-
+  animation: cellGlowFade 0.3s ease-out;}
 @keyframes cellGlowFade {
   from { opacity: 0; transform: scaleX(0.4); }
   to   { opacity: 1; transform: scaleX(1); }
 }
-
 .errorText {
   margin: -4px 0 -2px;
   font-size: 0.76rem;
@@ -360,9 +309,7 @@
   text-shadow: 0 0 10px rgba(255,65,111,0.4), 0 2px 10px rgba(0,0,0,0.9);
   text-align: center;
 }
-
-/* ── Unlock button ── */
-.unlockBtn {
+.unlockBtn {              /* ── Unlock button ── */
   appearance: none;
   position: relative;
   width: 100%;
@@ -374,8 +321,7 @@
     #a8e8ff 0%,
     #64c6ff 24%,
     #1c8af6 70%,
-    #1070d8 100%
-  );
+    #1070d8 100% );
   color: #03111e;
   font-size: 0.72rem;
   font-weight: 900;
@@ -390,7 +336,6 @@
     inset 0 -1px 0 rgba(0,0,0,0.15);
   transition: transform 160ms, filter 160ms, box-shadow 160ms;
 }
-
 .unlockBtn:hover {
   transform: translateY(-2px);
   filter: brightness(1.06);
@@ -400,42 +345,35 @@
     inset 0 1px 0 rgba(255,255,255,0.42),
     inset 0 -1px 0 rgba(0,0,0,0.15);
 }
-
 .unlockBtn:active {
   transform: translateY(0);
   filter: brightness(0.97);
 }
-
-/* Animated shine sweep on the button */
-.unlockBtnShine {
+.unlockBtnShine {     /* Animated shine sweep on the button */
   position: absolute;
   top: 0; bottom: 0;
   left: -70%;
-  width: 50%;
+  width: 60%;
   background: linear-gradient(
     100deg,
     transparent 0%,
-    rgba(255,255,255,0) 30%,
-    rgba(255,255,255,0.28) 50%,
-    rgba(255,255,255,0) 70%,
-    transparent 100%
-  );
-  transform: skewX(-18deg);
-  animation: btnShine 3.5s ease-in-out infinite;
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0.28) 60%,
+    rgba(255,255,255,0) 80%,
+    transparent 90% );
+  transform: skewX(-7deg);
+  animation: btnShine 7.5s ease-in-out infinite;
 }
-
 @keyframes btnShine {
   0%   { left: -70%; opacity: 0; }
   10%  { opacity: 1; }
   40%  { left: 130%; opacity: 0; }
   100% { left: 130%; opacity: 0; }
 }
-
 .unlockBtnText {
   position: relative;
   z-index: 1;
 }
-
 .hint {
   margin: -4px 0 0;
   font-size: 0.66rem;
@@ -443,9 +381,7 @@
   text-shadow: 0 2px 10px rgba(0,0,0,0.9);
   text-align: center;
 }
-
-/* ── Footer ── */
-.footer {
+.footer {                  /* ── Footer ── */
   position: absolute;
   bottom: 0;
   left: 0; right: 0;
@@ -456,22 +392,21 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  border-top: 1px solid 
+    rgba(255,255,255,0.05);
+  background: linear-gradient(to top, 
+    rgba(0,0,0,0.5), transparent);
   font-size: 0.57rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   color: rgba(255,255,255,0.26);
-  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+  text-shadow: 0 2px 8px
+    rgba(0,0,0,0.9);
 }
-
 .footerFx  { color: rgba(232,51,109,0.75); }
-.footerBot { font-size: 0.59rem; color: rgba(255,255,255,0.18); }
-
-/* ══════════════════════
-   UNLOCKED — full screen
-   ══════════════════════ */
-.unlockedRoot {
+.footerBot { font-size: 0.59rem; color:
+    rgba(255,255,255,0.18); }
+.unlockedRoot {            /*   UNLOCKED  */
   position: relative;
   width: 100%;
   height: 100dvh;
@@ -482,7 +417,6 @@
   align-items: stretch;
   overflow: hidden;
 }
-
 .unlockedGlow {
   position: absolute;
   inset: 0;
@@ -491,12 +425,10 @@
   z-index: 1;
   animation: unlockedGlowPulse 3s ease-in-out infinite;
 }
-
 @keyframes unlockedGlowPulse {
   0%,100% { opacity: 0.6; }
   50%     { opacity: 1; }
 }
-
 .unlockedHeader {
   position: absolute;
   top: 14px;
@@ -505,7 +437,6 @@
   display: flex;
   justify-content: center;
 }
-
 .unlockedBadge {
   display: inline-flex;
   align-items: center;
@@ -524,7 +455,6 @@
   font-family: "DM Sans", "Inter", system-ui, sans-serif;
   box-shadow: 0 0 14px rgba(125,255,142,0.12);
 }
-
 .unlockedVideo {
   width: 100%;
   height: 100%;
@@ -532,7 +462,6 @@
   display: block;
   background: #000;
 }
-
 .unlockedEmpty {
   flex: 1;
   display: flex;
@@ -544,19 +473,16 @@
   font-family: "DM Sans", "Inter", system-ui, sans-serif;
   color: #f5f9ff;
 }
-
 .unlockedEmptyIcon {
   font-size: 3rem;
   color: #7dff8e;
   text-shadow: 0 0 24px rgba(125,255,142,0.6);
   animation: iconFloat 3s ease-in-out infinite;
 }
-
 @keyframes iconFloat {
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-6px); }
 }
-
 .unlockedEmptyTitle {
   font-size: 1.5rem;
   font-weight: 900;
@@ -565,30 +491,22 @@
   color: #7dff8e;
   text-shadow: 0 0 20px rgba(125,255,142,0.5);
 }
-
 .unlockedEmptyText {
   font-size: 0.88rem;
   line-height: 1.6;
   color: rgba(245,249,255,0.58);
   text-align: center;
 }
-
 .unlockedEmptyText code {
   color: #fff;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-
-/* ── Responsive ── */
-@media (max-width: 380px) {
+@media (max-width: 380px) {           /* ── Responsive ── */
   .codeBox   { height: 46px; font-size: 1.06rem; }
   .unlockBtn { height: 46px; font-size: 0.68rem; }
-  .inputPanel { gap: 8px; }
-}
-
+  .inputPanel { gap: 8px; }}
 @media (min-height: 780px) {
-  .lockBadge { top: 18%; }
-}
-
+  .lockBadge { top: 18%; }}
 @media (max-height: 620px) {
   .lockBadge { top: 12%; }
   .codeBox   { height: 44px; }
