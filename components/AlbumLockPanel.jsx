@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import styles from "./UserFxAccessPanel.module.css";
+import styles from "./AlbumLockPanel.module.css";
 
 const CODE_LENGTH = 4;
 
@@ -14,18 +14,16 @@ function CrownSVG() {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="ufx-crown-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id="alp-crown-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#c8e6ff" />
           <stop offset="40%" stopColor="#6aaee8" />
           <stop offset="100%" stopColor="#1a3f6e" />
         </linearGradient>
-
-        <linearGradient id="ufx-crown-shine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="alp-crown-shine" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
           <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
-
-        <filter id="ufx-crown-glow">
+        <filter id="alp-crown-glow">
           <feGaussianBlur stdDeviation="1.5" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -40,8 +38,8 @@ function CrownSVG() {
         width="64"
         height="14"
         rx="3"
-        fill="url(#ufx-crown-grad)"
-        filter="url(#ufx-crown-glow)"
+        fill="url(#alp-crown-grad)"
+        filter="url(#alp-crown-glow)"
       />
       <rect
         x="8"
@@ -49,7 +47,7 @@ function CrownSVG() {
         width="64"
         height="14"
         rx="3"
-        fill="url(#ufx-crown-shine)"
+        fill="url(#alp-crown-shine)"
       />
 
       {[18, 32, 48, 62].map((x) => (
@@ -66,18 +64,18 @@ function CrownSVG() {
 
       <polygon
         points="8,38 20,10 32,28"
-        fill="url(#ufx-crown-grad)"
-        filter="url(#ufx-crown-glow)"
+        fill="url(#alp-crown-grad)"
+        filter="url(#alp-crown-glow)"
       />
       <polygon
         points="24,38 40,4 56,38"
-        fill="url(#ufx-crown-grad)"
-        filter="url(#ufx-crown-glow)"
+        fill="url(#alp-crown-grad)"
+        filter="url(#alp-crown-glow)"
       />
       <polygon
         points="48,38 60,10 72,38"
-        fill="url(#ufx-crown-grad)"
-        filter="url(#ufx-crown-glow)"
+        fill="url(#alp-crown-grad)"
+        filter="url(#alp-crown-glow)"
       />
 
       <circle
@@ -110,7 +108,7 @@ function CrownSVG() {
 
       <polygon
         points="24,38 40,4 56,38"
-        fill="url(#ufx-crown-shine)"
+        fill="url(#alp-crown-shine)"
         opacity="0.5"
       />
     </svg>
@@ -127,17 +125,15 @@ function RoseSVG() {
       aria-hidden="true"
     >
       <defs>
-        <radialGradient id="ufx-petal-center" cx="50%" cy="50%" r="50%">
+        <radialGradient id="alp-petal-center" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#ff3d6b" />
           <stop offset="100%" stopColor="#9b0026" />
         </radialGradient>
-
-        <radialGradient id="ufx-petal-outer" cx="40%" cy="40%" r="60%">
+        <radialGradient id="alp-petal-outer" cx="40%" cy="40%" r="60%">
           <stop offset="0%" stopColor="#e8335a" />
           <stop offset="100%" stopColor="#7a001e" />
         </radialGradient>
-
-        <filter id="ufx-rose-glow">
+        <filter id="alp-rose-glow">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -183,7 +179,7 @@ function RoseSVG() {
         fill="#8b001e"
         transform="rotate(-20 62 42)"
         opacity="0.8"
-        filter="url(#ufx-rose-glow)"
+        filter="url(#alp-rose-glow)"
       />
       <ellipse
         cx="88"
@@ -201,7 +197,7 @@ function RoseSVG() {
         cy="48"
         rx="20"
         ry="15"
-        fill="url(#ufx-petal-outer)"
+        fill="url(#alp-petal-outer)"
         transform="rotate(-15 58 48)"
       />
       <ellipse
@@ -209,7 +205,7 @@ function RoseSVG() {
         cy="46"
         rx="20"
         ry="15"
-        fill="url(#ufx-petal-outer)"
+        fill="url(#alp-petal-outer)"
         transform="rotate(15 92 46)"
       />
       <ellipse cx="75" cy="42" rx="16" ry="20" fill="#c8002f" opacity="0.9" />
@@ -219,7 +215,7 @@ function RoseSVG() {
         cy="52"
         rx="17"
         ry="13"
-        fill="url(#ufx-petal-outer)"
+        fill="url(#alp-petal-outer)"
         transform="rotate(-8 63 52)"
         opacity="0.95"
       />
@@ -228,12 +224,12 @@ function RoseSVG() {
         cy="52"
         rx="17"
         ry="13"
-        fill="url(#ufx-petal-outer)"
+        fill="url(#alp-petal-outer)"
         transform="rotate(8 87 52)"
         opacity="0.95"
       />
 
-      <ellipse cx="75" cy="50" rx="13" ry="11" fill="url(#ufx-petal-center)" />
+      <ellipse cx="75" cy="50" rx="13" ry="11" fill="url(#alp-petal-center)" />
       <ellipse cx="75" cy="50" rx="8" ry="7" fill="#ff1a4f" opacity="0.9" />
       <ellipse cx="73" cy="48" rx="4" ry="3" fill="#ff6b8a" opacity="0.5" />
       <ellipse
@@ -249,7 +245,7 @@ function RoseSVG() {
   );
 }
 
-export default function UserFxAccessPanel({
+export default function AlbumLockPanel({
   onUnlock,
   accessCode = "FX01",
   videoSrc = "/videos/album.mp4",
