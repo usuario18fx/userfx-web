@@ -4,6 +4,7 @@ import { Telegraf, Markup, Input } from "telegraf";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
+const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const TELEGRAM_CALL_URL = "https://t.me/User18fx";
@@ -22,8 +23,16 @@ if (!globalThis.__fxPendingVideoRequests) {
 }
 
 const BTN_VIDEOCALL = "📞 Videocall";
-const BTN_BACK = "↩️ Back";
+const BTN_GET_FULL_ACCESS = "🔥 GET FULL ACCESS";
+const BTN_VIP = "⚡ VIP";
+const BTN_USER = "👑 USER";
+const BTN_CHANNELS = "🌐 CHANNELS";
+const BTN_REFRESH = "↻ REFRESH";
+
+const BTN_ZOOM = "📞 Zoom";
+const BTN_TELEGRAM = "💬 Telegram";
 const BTN_CANCEL = "✖ Cancel";
+const BTN_BACK_MENU = "↩ Back to Menu";
 
 function escapeHtml(value = "") {
   return String(value)
@@ -42,9 +51,16 @@ function getUserMeta(from) {
 }
 
 function getMainKeyboard() {
-  return Markup.keyboard([[BTN_VIDEOCALL], [BTN_BACK]], {
-    columns: 1,
-  }).resize();
+  return Markup.keyboard(
+    [
+      [BTN_VIDEOCALL],
+      [BTN_GET_FULL_ACCESS],
+      [BTN_VIP, BTN_USER],
+      [BTN_CHANNELS],
+      [BTN_REFRESH],
+    ],
+    { columns: 2 }
+  ).resize();
 }
 
 function getPendingPhotoKeyboard() {
@@ -53,15 +69,20 @@ function getPendingPhotoKeyboard() {
   }).resize();
 }
 
-function getApprovedVideocallButtons() {
+function getApprovedVideocallKeyboard() {
+  return Markup.keyboard(
+    [
+      [BTN_ZOOM, BTN_TELEGRAM],
+      [BTN_BACK_MENU],
+    ],
+    { columns: 2 }
+  ).resize();
+}
+
+function getInlineWebsiteButton() {
   return {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "📞 Zoom", url: ZOOM_URL },
-          { text: "💬 Telegram", url: TELEGRAM_CALL_URL },
-        ],
-      ],
+      inline_keyboard: [[{ text: "↗ ENTER SITE", url: WEBSITE_URL }]],
     },
   };
 }
@@ -89,18 +110,80 @@ async function safeDeleteMessage(ctx) {
   try {
     await ctx.deleteMessage();
   } catch {
-    // no-op
+    // ignore
   }
 }
 
-async function sendMainMenu(ctx) {
+async function sendMainPanel(ctx) {
   await ctx.reply(
     `FX | EXCLUSIVE SPACE
 
-Premium access panel.
-Use the buttons below to navigate our private sections.`,
-    getMainKeyboard()
+Premium access panel. Use the buttons below to navigate our private sections.`,
+    {
+      ...getMainKeyboard(),
+    }
   );
+}
+
+async function sendMembershipPanel(ctx) {
+  await ctx.reply(
+    `🔥 FULL ACCESS
+
+Choose your access tier and continue from the website.`,
+    {
+      ...getInlineWebsiteButton(),
+      parse_mode: "HTML",
+    }
+  );
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
+async function sendVipPanel(ctx) {
+  await ctx.reply(
+    `⚡ VIP
+
+VIP route selected.`,
+    {
+      ...getInlineWebsiteButton(),
+      parse_mode: "HTML",
+    }
+  );
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
+async function sendUserPanel(ctx) {
+  await ctx.reply(
+    `👑 USER
+
+USER route selected.`,
+    {
+      ...getInlineWebsiteButton(),
+      parse_mode: "HTML",
+    }
+  );
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
+async function sendChannelsPanel(ctx) {
+  await ctx.reply(
+    `🌐 CHANNELS
+
+Private channels and routes are available from the website.`,
+    {
+      ...getInlineWebsiteButton(),
+      parse_mode: "HTML",
+    }
+  );
+
+  await ctx.reply("‎", getMainKeyboard());
+}
+
+async function sendRefreshPanel(ctx) {
+  await ctx.reply(`↻ STATUS UPDATED`);
+  await ctx.reply("‎", getMainKeyboard());
 }
 
 async function openVideocallFlow(ctx) {
@@ -165,20 +248,15 @@ async function sendApprovedVideocallFlow(userId) {
 Your identity was verified.`
   );
 
-  await bot.telegram.sendPhoto(
+  await bot.telegram.sendMessage(
     userId,
-    Input.fromLocalFile(asset("videocall.jpeg")),
-    {
-      caption: `Choose your videocall option below.`,
-      ...getApprovedVideocallButtons(),
-    }
+    `Videocall options unlocked.`,
+    getApprovedVideocallKeyboard()
   );
-
-  await bot.telegram.sendMessage(userId, "Return to menu anytime.", getMainKeyboard());
 }
 
 bot.start(async (ctx) => {
-  await sendMainMenu(ctx);
+  await sendMainPanel(ctx);
 });
 
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
@@ -188,13 +266,55 @@ bot.hears(BTN_VIDEOCALL, async (ctx) => {
 bot.hears(BTN_CANCEL, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
-  await sendMainMenu(ctx);
+  await sendMainPanel(ctx);
 });
 
-bot.hears(BTN_BACK, async (ctx) => {
+bot.hears(BTN_BACK_MENU, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
-  await sendMainMenu(ctx);
+  await sendMainPanel(ctx);
+});
+
+bot.hears(BTN_ZOOM, async (ctx) => {
+  await ctx.reply(
+    `Open Zoom here: ${ZOOM_URL}`,
+    {
+      reply_markup: {
+        inline_keyboard: [[{ text: "📞 OPEN ZOOM", url: ZOOM_URL }]],
+      },
+    }
+  );
+});
+
+bot.hears(BTN_TELEGRAM, async (ctx) => {
+  await ctx.reply(
+    `Open Telegram here: ${TELEGRAM_CALL_URL}`,
+    {
+      reply_markup: {
+        inline_keyboard: [[{ text: "💬 OPEN TELEGRAM", url: TELEGRAM_CALL_URL }]],
+      },
+    }
+  );
+});
+
+bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
+  await sendMembershipPanel(ctx);
+});
+
+bot.hears(BTN_VIP, async (ctx) => {
+  await sendVipPanel(ctx);
+});
+
+bot.hears(BTN_USER, async (ctx) => {
+  await sendUserPanel(ctx);
+});
+
+bot.hears(BTN_CHANNELS, async (ctx) => {
+  await sendChannelsPanel(ctx);
+});
+
+bot.hears(BTN_REFRESH, async (ctx) => {
+  await sendRefreshPanel(ctx);
 });
 
 bot.on("photo", async (ctx) => {
@@ -255,7 +375,20 @@ bot.on("text", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
 
-  const knownInputs = ["/start", BTN_VIDEOCALL, BTN_BACK, BTN_CANCEL];
+  const knownInputs = [
+    "/start",
+    BTN_VIDEOCALL,
+    BTN_GET_FULL_ACCESS,
+    BTN_VIP,
+    BTN_USER,
+    BTN_CHANNELS,
+    BTN_REFRESH,
+    BTN_ZOOM,
+    BTN_TELEGRAM,
+    BTN_CANCEL,
+    BTN_BACK_MENU,
+  ];
+
   if (knownInputs.includes(text)) return;
 
   if (pending?.waitingForPhoto) {
@@ -265,7 +398,7 @@ bot.on("text", async (ctx) => {
     if (pending.invalidTextCount >= 4) {
       pendingVideoRequests.delete(userId);
       await ctx.reply("Request closed.");
-      await sendMainMenu(ctx);
+      await sendMainPanel(ctx);
       return;
     }
 
@@ -273,7 +406,7 @@ bot.on("text", async (ctx) => {
     return;
   }
 
-  await sendMainMenu(ctx);
+  await sendMainPanel(ctx);
 });
 
 bot.catch((error) => {
