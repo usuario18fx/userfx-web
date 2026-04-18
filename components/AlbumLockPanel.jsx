@@ -1,3 +1,4 @@
+
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./AlbumLockPanel.module.css";
 import wallpaper from "../assets/wallpaper.jpg";
