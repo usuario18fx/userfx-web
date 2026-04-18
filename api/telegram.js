@@ -1,365 +1,144 @@
 import { Telegraf, Markup } from "telegraf";
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const WEBSITE_URL = "https://userfx-web.vercel.app";
-const ZOOM_URL =
-  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
-const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
+// --- CONFIGURACIÓN ---
+const CONFIG = {
+  TOKEN: process.env.BOT_TOKEN,
+  URLS: {
+    WEBSITE: "https://userfx-web.vercel.app",
+    ZOOM: "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1",
+    TELEGRAM_CALL: "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY",
+    VIDEO_INTRO: "https://userfx-web.vercel.app/assets/websiteFx.mp4"
+  },
+  PLAN: {
+    NAME: "🔥 FX VIP",
+    PRICE: 500
+  }
+};
 
-if (!BOT_TOKEN) {
-  throw new Error("Missing BOT_TOKEN");
-} // ➡️⬇️↕️↗️⬆️⬅️
+if (!CONFIG.TOKEN) throw new Error("Missing BOT_TOKEN");
+const bot = new Telegraf(CONFIG.TOKEN);
 
-const bot = new Telegraf(BOT_TOKEN);
+// --- DICCIONARIO DE TEXTOS (UI/UX) ---
+const MESSAGES = {
+  WELCOME: `<b>Welcome to USER FX</b>\n\n🎥 <i>Down to a video call?</i>\nHere’s the link, hop on whenever you’re ready.\n\n<b>Ready for more?</b>\nChoose an option below.`,
+  MAIN: `<b>╔════════════════╗\n     FX | EXCLUSIVE SPACE\n╚════════════════╝</b>\n\nPremium access panel. Use the buttons below to navigate our private sections.`,
+  VIP: `<b>👑 VIP STATUS</b>\n\n<b>Plan:</b> <code>${CONFIG.PLAN.NAME}</code>\n\n<b>Benefits:</b>\n• Full Premium Access\n• Priority Website Entry\n• Instant Call Connection\n\n<i>Upgrade your experience now.</i>`,
+  USER: `<b>🧊 USER PANEL</b>\n\nYour basic entry point. Jump into a call or explore the unlocked sections below.`,
+  SECTIONS: {
+    access: `<b>🔐 ACCESS GRANTED</b>\nSelect a private category:`,
+    feed: `<b>📺 FEED</b>\n────────────────\n• Selected drops\n• Public previews\n• Featured content`,
+    photos: `<b>📸 PHOTOS</b>\n────────────────\n• Unlocked visual section\n• Private gallery access`,
+    cloud: `<b>🌩️ VIDEOCLOUDS</b>\n────────────────\n• Ambient room\n• Visual session\n• Cloud access enabled`,
+    gifts: `<b>🎁 GIFTS</b>\n────────────────\n• Support & Tips\n• Additional access support`
+  }
+};
 
-const PLAN_NAME = "🔥 FX VIP";
-const PRICE_STARS = 500;
-const VIDEO_URL = "https://userfx-web.vercel.app/assets/websiteFx.mp4";
-
-function mainInline() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
+// --- CONSTRUCTOR DE TECLADOS ---
+const UI = {
+  buttons: {
+    calls: [
+      Markup.button.url("📞 Zoom", CONFIG.URLS.ZOOM),
+      Markup.button.url("💬 Telegram", CONFIG.URLS.TELEGRAM_CALL)
     ],
-    [Markup.button.callback("🔥 BUY ACCESS", "buy")],
-    [
-      Markup.button.callback("👑 VIP", "vip"),
-      Markup.button.callback("🧊 USER", "user"),
-    ],
-    [Markup.button.webApp("🌐 OPEN WEBSITE", WEBSITE_URL)],
-    [Markup.button.callback("↻ REFRESH", "main")],
-  ]);
-} // ➡️⬇️↕️↗️⬆️⬅️
+    back: Markup.button.callback("« BACK TO MENU", "main"),
+    refresh: Markup.button.callback("↻ REFRESH", "main"),
+    web: Markup.button.webApp("🌐 OPEN WEBSITE", CONFIG.URLS.WEBSITE)
+  },
 
-function accessInline() {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("📺 FEED", "feed"),
-      Markup.button.callback("📸 PHOTOS", "photos"),
-    ],
-    [
-      Markup.button.callback("🌩️ VIDEOCLOUDS", "cloud"),
-      Markup.button.callback("🎁 GIFTS", "gifts"),
-    ],
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-    ],
-    [Markup.button.webApp("🌐 OPEN WEBSITE", WEBSITE_URL)],
-    [Markup.button.callback("↩ BACK", "main")],
-  ]);
-} // ➡️⬇️↕️↗️⬆️⬅️
+  main: () => Markup.inlineKeyboard([
+    UI.buttons.calls,
+    [Markup.button.callback("🔥 GET FULL ACCESS", "buy")],
+    [Markup.button.callback("👑 VIP", "vip"), Markup.button.callback("🧊 USER", "user")],
+    [UI.buttons.web],
+    [UI.buttons.refresh]
+  ]),
 
-function vipInline() {
-  return Markup.inlineKeyboard([
+  sections: () => Markup.inlineKeyboard([
+    [Markup.button.callback("📺 FEED", "view_feed"), Markup.button.callback("📸 PHOTOS", "view_photos")],
+    [Markup.button.callback("🌩️ CLOUD", "view_cloud"), Markup.button.callback("🎁 GIFTS", "view_gifts")],
+    UI.buttons.calls,
+    [UI.buttons.back]
+  ]),
+
+  vip: () => Markup.inlineKeyboard([
     [Markup.button.callback("🔥 BUY VIP ACCESS", "buy")],
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-    ],
-    [Markup.button.webApp("🌐 OPEN WEBSITE", WEBSITE_URL)],
-    [Markup.button.callback("↩ BACK", "main")],
-  ]);
-} // ➡️⬇️↕️↗️⬆️⬅️
+    UI.buttons.calls,
+    [UI.buttons.back]
+  ]),
 
-function userInline() {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback("🔐 OPEN ACCESS", "access")],
-    [
-      Markup.button.url("📞 Zoom Call", ZOOM_URL),
-      Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-    ],
-    [Markup.button.webApp("🌐 OPEN WEBSITE", WEBSITE_URL)],
-    [Markup.button.callback("↩ BACK", "main")],
-  ]);
-} // ➡️⬇️↕️↗️⬆️⬅️
+  user: () => Markup.inlineKeyboard([
+    [Markup.button.callback("🔐 OPEN SECTIONS", "view_access")],
+    UI.buttons.calls,
+    [UI.buttons.back]
+  ])
+};
 
-async function safeEditOrReply(ctx, text, extra) {
-  const payload = {
-    parse_mode: "HTML",
-    disable_web_page_preview: true,
-    ...extra,
-  };
-
+// --- FUNCIONES AUXILIARES ---
+async function updateUI(ctx, text, keyboard) {
+  const payload = { parse_mode: "HTML", disable_web_page_preview: true, ...keyboard };
   try {
-    if (ctx.callbackQuery?.message?.text) {
-      await ctx.editMessageText(text, payload);
-      return;
-    } // ➡️⬇️↕️↗️⬆️⬅️
-
-    if (ctx.callbackQuery?.message?.caption) {
-      await ctx.editMessageCaption(text, payload);
-      return;
-    } // ➡️⬇️↕️↗️⬆️⬅️
-  } catch (error) {
-    console.error("EDIT FALLBACK:", error);
-  } // ➡️⬇️↕️↗️⬆️⬅️
-
-  await ctx.reply(text, payload);
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendStartVideo(ctx) {
-  await ctx.replyWithVideo(
-    { url: VIDEO_URL },
-    {
-      caption: `🎥 <b>Down to a video call?</b>
-
-Here’s the link, hop on whenever you’re ready.
-
-Still horny?
-
-Choose an option below.`,
-      parse_mode: "HTML",
-      ...mainInline(),
+    if (ctx.callbackQuery) {
+      // Intentar editar según el tipo de mensaje (con media o texto solo)
+      if (ctx.callbackQuery.message.caption) return await ctx.editMessageCaption(text, payload);
+      return await ctx.editMessageText(text, payload);
     }
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
+    return await ctx.reply(text, payload);
+  } catch (e) {
+    return await ctx.reply(text, payload);
+  }
+}
 
-async function sendMain(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `🔥 <b>FX | WEBSITE</b>
-
-Premium access panel.
-
-Use the call buttons, buy access, or open the site directly.`,
-    mainInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendVip(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `👑 <b>VIP ACCESS</b>
-
-Plan
-<b>${PLAN_NAME}</b>
-
-Includes:
-• premium access
-• direct website entry
-• fast call entry
-
-Use the button below to continue.`,
-    vipInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendUser(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `🧊 <b>X-USER</b>
-
-Basic entry panel.
-
-You can open the website, jump into a video call, or continue to access sections.`,
-    userInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendAccess(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `🔐 <b>ACCESS OPEN</b>
-
-Plan
-<b>${PLAN_NAME}</b>
-
-Choose a section below.`,
-    accessInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendFeed(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `📺 <b>FEED</b>
-
-Selected drops
-Public previews
-Featured content`,
-    accessInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendPhotos(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `📸 <b>PHOTOS</b>
-
-Unlocked visual section
-Private gallery access`,
-    accessInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendCloud(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `🌩️ <b>VIDEOCLOUDS</b>
-
-Ambient room
-Visual session
-Cloud access enabled`,
-    accessInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
-async function sendGifts(ctx) {
-  await safeEditOrReply(
-    ctx,
-    `🎁 <b>GIFTS</b>
-
-Support section
-Transfer section
-Additional access support`,
-    accessInline()
-  );
-} // ➡️⬇️↕️↗️⬆️⬅️
-
+// --- MANEJADORES DE COMANDOS ---
 bot.start(async (ctx) => {
-  await sendStartVideo(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.command("help", async (ctx) => {
-  await ctx.reply(
-    `FX | WEBSITE
-
-Commands available:
-/start
-/help`,
-    {
-      disable_web_page_preview: true,
-      ...mainInline(),
-    }
+  await ctx.replyWithVideo(
+    { url: CONFIG.URLS.VIDEO_INTRO },
+    { caption: MESSAGES.WELCOME, parse_mode: "HTML", ...UI.main() }
   );
-}); // ➡️⬇️↕️↗️⬆️⬅️
+});
 
-bot.action("main", async (ctx) => {
-  await ctx.answerCbQuery("Updated");
-  await sendMain(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
+bot.action("main", (ctx) => updateUI(ctx, MESSAGES.MAIN, UI.main()));
+bot.action("vip", (ctx) => updateUI(ctx, MESSAGES.VIP, UI.vip()));
+bot.action("user", (ctx) => updateUI(ctx, MESSAGES.USER, UI.user()));
 
-bot.action("vip", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendVip(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
+// Manejador dinámico para secciones
+bot.action(/^view_(.+)$/, (ctx) => {
+  const section = ctx.match[1];
+  updateUI(ctx, MESSAGES.SECTIONS[section], UI.sections());
+});
 
-bot.action("user", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendUser(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.action("access", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendAccess(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.action("feed", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendFeed(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.action("photos", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendPhotos(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.action("cloud", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendCloud(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.action("gifts", async (ctx) => {
-  await ctx.answerCbQuery();
-  await sendGifts(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
+// --- SISTEMA DE PAGOS ---
 bot.action("buy", async (ctx) => {
   await ctx.answerCbQuery();
-
   await ctx.replyWithInvoice({
-    title: PLAN_NAME,
-    description: "Full access to Fx Website",
+    title: CONFIG.PLAN.NAME,
+    description: "Full Premium access to USER FX Website",
     payload: "fx_vip_access",
-    provider_token: "",
+    provider_token: "", // Telegram Stars
     currency: "XTR",
-    prices: [{ label: PLAN_NAME, amount: PRICE_STARS }],
+    prices: [{ label: CONFIG.PLAN.NAME, amount: CONFIG.PLAN.PRICE }],
   });
-}); // ➡️⬇️↕️↗️⬆️⬅️
+});
 
-bot.on("pre_checkout_query", async (ctx) => {
-  await ctx.answerPreCheckoutQuery(true);
-}); // ➡️⬇️↕️↗️⬆️⬅️
+bot.on("pre_checkout_query", (ctx) => ctx.answerPreCheckoutQuery(true));
 
 bot.on("successful_payment", async (ctx) => {
-  const amount = ctx.message.successful_payment.total_amount;
-
   await ctx.reply(
-    `✅ <b>PAYMENT SUCCESSFUL</b>
-
-Amount
-<b>${amount} Stars</b>
-
-Access granted.`,
-    {
-      parse_mode: "HTML",
-      ...Markup.inlineKeyboard([
-        [Markup.button.webApp("🔥 ENTER NOW", WEBSITE_URL)],
-        [
-          Markup.button.url("📞 Zoom Call", ZOOM_URL),
-          Markup.button.url("💬 Telegram Call", TELEGRAM_CALL_URL),
-        ],
-      ]),
-    }
+    `✅ <b>PAYMENT CONFIRMED</b>\n\nYour access to <b>${CONFIG.PLAN.NAME}</b> is now active.`,
+    { parse_mode: "HTML", ...UI.user() }
   );
-}); // ➡️⬇️↕️↗️⬆️⬅️
+});
 
-bot.on("text", async (ctx) => {
-  const text = (ctx.message.text || "").trim();
-
-  if (text === "/start" || text === "/help") {
-    return;
-  } // ➡️⬇️↕️↗️⬆️⬅️
-
-  await sendMain(ctx);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
-bot.catch((error) => {
-  console.error("TELEGRAF ERROR:", error);
-}); // ➡️⬇️↕️↗️⬆️⬅️
-
+// --- WEBHOOK / SERVERLESS HANDLER ---
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    return res.status(200).json({
-      ok: true,
-      message: "Telegram endpoint alive",
-    });
-  } // ➡️⬇️↕️↗️⬆️⬅️
-
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "method_not_allowed",
-      method: req.method,
-    });
-  } // ➡️⬇️↕️↗️⬆️⬅️
-
-  try {
-    const update =
-      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
-    await bot.handleUpdate(update);
-
-    return res.status(200).json({ ok: true });
-  } catch (error) {
-    console.error("TELEGRAM HANDLER ERROR:", error);
-
-    return res.status(500).json({
-      ok: false,
-      error: "handler_error",
-      details: String(error?.message || error),
-    });
-  } // ➡️⬇️↕️↗️⬆️⬅️
-} // ➡️⬇️↕️↗️⬆️⬅️
+  if (req.method === "POST") {
+    try {
+      await bot.handleUpdate(req.body);
+      res.status(200).send("OK");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error");
+    }
+  } else {
+    res.status(200).json({ status: "Bot is running" });
+  }
+}
