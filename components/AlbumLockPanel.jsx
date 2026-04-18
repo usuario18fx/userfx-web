@@ -3,23 +3,19 @@ import styles from "./AlbumLockPanel.module.css";
 
 const CODE_LENGTH = 4;
 const ACCESS_CODE = "FX01";
-const PREFIXES = ["FX-USER01-", "AX01"] as const;
+const PREFIXES = ["FX-USER01-", "AX01"];
 const HERO_POSTER_URL = "/assets/userfx-poster.jpg";
 
-type AlbumLockPanelProps = {
-  onUnlock?: () => void;
-};
+export default function AlbumLockPanel({ onUnlock }) {
+  const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
+  const [status, setStatus] = useState("locked");
+  const [activeTab, setActiveTab] = useState("FX-USER01-");
+  const inputsRef = useRef([]);
 
-export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
-  const [chars, setChars] = useState<string[]>(Array(CODE_LENGTH).fill(""));
-  const [status, setStatus] = useState<"locked" | "error" | "unlocked">("locked");
-  const [activeTab, setActiveTab] = useState<(typeof PREFIXES)[number]>("FX-USER01-");
-  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-
-  const focusInput = useCallback((index: number) => {
+  const focusInput = useCallback((index) => {
     if (index < 0 || index >= CODE_LENGTH) return;
     inputsRef.current[index]?.focus();
-    inputsRef.current[index]?.select();
+    inputsRef.current[index]?.select?.();
   }, []);
 
   const resetInputs = useCallback(() => {
@@ -29,12 +25,14 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
   }, [focusInput]);
 
   const submitCode = useCallback(
-    (value: string) => {
+    (value) => {
       if (value.length !== CODE_LENGTH) return;
 
       if (value === ACCESS_CODE) {
         setStatus("unlocked");
-        window.setTimeout(() => onUnlock?.(), 480);
+        window.setTimeout(() => {
+          onUnlock?.();
+        }, 480);
         return;
       }
 
@@ -43,11 +41,11 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
         resetInputs();
       }, 680);
     },
-    [onUnlock, resetInputs],
+    [onUnlock, resetInputs]
   );
 
   const handleChange = useCallback(
-    (index: number, rawValue: string) => {
+    (index, rawValue) => {
       const value = rawValue.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
       const nextChars = [...chars];
       nextChars[index] = value;
@@ -61,11 +59,11 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
         submitCode(nextChars.join(""));
       }
     },
-    [chars, focusInput, submitCode],
+    [chars, focusInput, submitCode]
   );
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    (event, index) => {
       if (event.key === "Backspace") {
         event.preventDefault();
         const nextChars = [...chars];
@@ -102,11 +100,11 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
         submitCode(chars.join(""));
       }
     },
-    [chars, focusInput, submitCode],
+    [chars, focusInput, submitCode]
   );
 
   const handlePaste = useCallback(
-    (event: React.ClipboardEvent<HTMLDivElement>) => {
+    (event) => {
       event.preventDefault();
 
       const pastedValue = event.clipboardData
@@ -131,7 +129,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
 
       focusInput(pastedValue.length);
     },
-    [focusInput, submitCode],
+    [focusInput, submitCode]
   );
 
   useEffect(() => {
@@ -140,8 +138,8 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
 
   return (
     <section className={styles.page}>
-      <div className={styles.backdrop} />
-      <div className={styles.vignette} />
+      <div className={styles.backdrop}></div>
+      <div className={styles.vignette}></div>
 
       <header className={styles.header}>
         <div className={styles.brandMeta}>
@@ -185,13 +183,13 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
             <>
               <div className={styles.lockBadge}>
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" aria-hidden="true">
-                  <rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor" />
+                  <rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"></rect>
                   <path
                     d="M8 11V7a4 4 0 0 1 8 0v4"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
-                  />
+                  ></path>
                 </svg>
               </div>
 
@@ -257,7 +255,7 @@ export default function AlbumLockPanel({ onUnlock }: AlbumLockPanelProps) {
                   playsInline
                   preload="metadata"
                   className={styles.video}
-                />
+                ></video>
               </div>
             </>
           )}
