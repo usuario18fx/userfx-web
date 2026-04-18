@@ -1,11 +1,4 @@
-/* ═══════════════════════════════════════════
-   AlbumLockPanel — "painted on wall" variant
-   Panel sits in the dark lower zone of the
-   wallpaper. Zero opaque backgrounds — every
-   surface is transparent/frosted so the brick
-   texture bleeds through naturally.
-   ═══════════════════════════════════════════ */
-
+/* ════════════════  AlbumLockPanel.css════════════════ */
 :root {
   --alp-text:        #f5f9ff;
   --alp-text-dim:    rgba(245, 249, 255, 0.72);
