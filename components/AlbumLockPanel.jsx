@@ -3,14 +3,6 @@ import styles from "./UserFxAccessPanel.module.css";
 
 const CODE_LENGTH = 4;
 
-type AccessStatus = "locked" | "error" | "unlocked";
-
-interface UserFxAccessPanelProps {
-  onUnlock?: () => void;
-  accessCode?: string;
-  videoSrc?: string;
-}
-
 function CrownSVG() {
   return (
     <svg
@@ -261,17 +253,18 @@ export default function UserFxAccessPanel({
   onUnlock,
   accessCode = "FX01",
   videoSrc = "/videos/album.mp4",
-}: UserFxAccessPanelProps) {
-  const [chars, setChars] = useState<string[]>(Array(CODE_LENGTH).fill(""));
-  const [status, setStatus] = useState<AccessStatus>("locked");
-  const [activeTab, setActiveTab] = useState<string>("FX-USER01-");
-  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+}) {
+  const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
+  const [status, setStatus] = useState("locked");
+  const [activeTab, setActiveTab] = useState("FX-USER01-");
+  const inputsRef = useRef([]);
 
-  const focusInput = useCallback((index: number) => {
+  const focusInput = useCallback((index) => {
     if (index < 0 || index >= CODE_LENGTH) return;
     const input = inputsRef.current[index];
-    input?.focus();
-    input?.select();
+    if (!input) return;
+    input.focus();
+    input.select();
   }, []);
 
   const resetInputs = useCallback(() => {
@@ -281,13 +274,13 @@ export default function UserFxAccessPanel({
   }, [focusInput]);
 
   const submitCode = useCallback(
-    (value: string) => {
+    (value) => {
       if (value.length !== CODE_LENGTH) return;
 
-      if (value === accessCode.toUpperCase()) {
+      if (value === String(accessCode).toUpperCase()) {
         setStatus("unlocked");
         window.setTimeout(() => {
-          onUnlock?.();
+          if (onUnlock) onUnlock();
         }, 450);
         return;
       }
@@ -301,7 +294,7 @@ export default function UserFxAccessPanel({
   );
 
   const handleChange = useCallback(
-    (index: number, rawValue: string) => {
+    (index, rawValue) => {
       const value = rawValue.slice(-1).toUpperCase().replace(/[^A-Z0-9]/g, "");
       const nextChars = [...chars];
       nextChars[index] = value;
@@ -319,7 +312,7 @@ export default function UserFxAccessPanel({
   );
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    (event, index) => {
       if (event.key === "Backspace") {
         event.preventDefault();
         const nextChars = [...chars];
@@ -359,7 +352,7 @@ export default function UserFxAccessPanel({
   );
 
   const handlePaste = useCallback(
-    (event: React.ClipboardEvent<HTMLDivElement>) => {
+    (event) => {
       event.preventDefault();
 
       const pastedValue = event.clipboardData
@@ -380,7 +373,7 @@ export default function UserFxAccessPanel({
       if (nextChars.every(Boolean)) {
         submitCode(nextChars.join(""));
       } else {
-        focusInput(pastedValue.length);
+        focusInput(Math.min(pastedValue.length, CODE_LENGTH - 1));
       }
     },
     [focusInput, submitCode]
