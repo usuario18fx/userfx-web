@@ -5,7 +5,7 @@ const CODE_LENGTH = 4;
 export default function AlbumLockPanel({ onUnlock, accessCode = "FX01", videoSrc = "", }) {
   const [chars, setChars] = useState(Array(CODE_LENGTH).fill(""));
   const [status, setStatus] = useState("locked");
-  const [activeTab, setActiveTab] = useState("FX-USER01");
+  const [activeTab, setActiveTab] = useState("FX-USER01-");
   const inputsRef = useRef([]);
   const normalizedCode = useMemo(() =>
     String(accessCode).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, CODE_LENGTH),
