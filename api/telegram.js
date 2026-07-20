@@ -504,52 +504,38 @@ bot.on("photo", async (ctx) => {
     ADMIN_CHAT_ID,
     ctx.chat.id,
     ctx.message.message_id
-  );
-
+  ) ;
   await ctx.reply(
     `✅ ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
-
 ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ɪꜱ ᴜɴᴅᴇʀ ʀᴇᴠɪᴇᴡ.`
-  );
-}); // ➡️
-
+  ) ; } ) ;
 bot.on("message", async (ctx, next) => {
   if (ctx.message?.successful_payment) {
     await handleSuccessfulPayment(ctx);
     return;
   }
-
   await next();
-}); // ⬇️
-
+} ) ;
 bot.action(/^approve_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("ᴀᴘᴘʀᴏᴠᴇᴅ");
-
   const requesterId = String(ctx.match[1]);
   const pending = pendingVideoRequests.get(requesterId);
-
   if (!pending) {
     await ctx.reply("ʀᴇQᴜᴇꜱᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ.");
     return;
   }
-
   pendingVideoRequests.delete(requesterId);
   await sendApprovedVideocallFlow(requesterId);
-}); // ↕️
-
+   } ) ;
 bot.action(/^reject_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("ʀᴇᴊᴇᴄᴛᴇᴅ");
-
   const requesterId = String(ctx.match[1]);
   pendingVideoRequests.delete(requesterId);
-
   await bot.telegram.sendMessage(
     requesterId,
-    `⏳ ɪ'ᴍ ʙᴜꜱʏ ʀɪɢʜᴛ ɴᴏᴡ. ᴛʀʏ ᴀɢᴀɪɴ ꜱᴏᴏɴ.`,
+    `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
     getMainKeyboard()
-  );
-}); // ↗️
-
+  ) ; } ) ;
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
@@ -576,52 +562,40 @@ bot.on("text", async (ctx) => {
   ];
 
   if (knownInputs.includes(text)) return;
-
   if (pending?.waitingForPhoto) {
     pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
     pendingVideoRequests.set(userId, pending);
-
-    if (pending.invalidTextCount >= 4) {
+  if (pending.invalidTextCount >= 4) {
       pendingVideoRequests.delete(userId);
       await ctx.reply("ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ.");
       await sendMainPanel(ctx);
       return;
     }
-
     await ctx.reply("ʜᴏʟᴅ ᴜᴘ 😏 ʟᴇᴍᴍᴇ ꜱᴇᴇ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ.");
     return;
   }
-
   await sendMainPanel(ctx);
-}); // ⬆️
-
+} ) ;
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
-}); // ⬅️
-
+} ) ; 
 export default async function handler(req, res) {
   if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
       method: req.method,
       message: "Telegram endpoint alive",
-    });
-  }
-
+  } ) ; }
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
       method: req.method,
-    });
-  }
-
+  } ) ; }
   try {
     const update =
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
     await bot.handleUpdate(update);
-
     return res.status(200).json({ ok: true });
   } catch (error) {
     console.error("TELEGRAM HANDLER ERROR:", error);
@@ -629,6 +603,4 @@ export default async function handler(req, res) {
       ok: false,
       error: "handler_error",
       details: String(error?.message || error),
-    });
-  }
-} // ➡️
+    } ) ; } } 
