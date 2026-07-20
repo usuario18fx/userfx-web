@@ -278,9 +278,8 @@ async function openVideocallFlow(ctx) {
   await safeDeleteMessage(ctx);
 
   await ctx.replyWithVideo(Input.fromLocalFile(asset("websiteFx.mp4")), {
-    caption: `ᴛᴏ ᴜɴʟᴏᴄᴋ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ, ꜱᴇɴᴅ ᴏɴᴇ ᴄʟᴇᴀʀ ᴘʜᴏᴛᴏ ꜰᴏʀ ɪᴅᴇɴᴛɪᴛʏ ᴄʜᴇᴄᴋ.
-
-ᴀꜰᴛᴇʀ ᴀᴘᴘʀᴏᴠᴀʟ, ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
+    caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
+ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
     ...getPendingPhotoKeyboard(),
   });
 
@@ -294,7 +293,7 @@ Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
 
-Waiting for identity photo.`,
+ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ʏᴏᴜ ᴘʜᴏᴛᴏ.`,
     { parse_mode: "HTML" }
   );
 } // ➡️
@@ -309,8 +308,7 @@ async function notifyAdminPhotoReceived(ctx) {
 Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
-
-Approve or reject below.`,
+ᴀᴘᴘʀᴏᴠᴇ ᴏʀ ʀᴇᴊᴇᴄᴛ ʙᴇʟᴏᴡ.`,
     {
       parse_mode: "HTML",
       ...getAdminApprovalButtons(user.id),
@@ -321,69 +319,54 @@ Approve or reject below.`,
 async function sendApprovedVideocallFlow(userId) {
   await bot.telegram.sendMessage(
     userId,
-    `✅ ᴀᴘᴘʀᴏᴠᴇᴅ
-
-ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
+    `✅ ᴀᴘᴘʀᴏᴠᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
   );
-
   await bot.telegram.sendMessage(
     userId,
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
     getApprovedVideocallKeyboard()
-  );
-} // ↕️
-
+  ) ; }
 async function sendVipInvoice(ctx) {
   if (!ctx.chat?.id) return;
 
   await ctx.telegram.callApi("sendInvoice", {
     chat_id: ctx.chat.id,
-    title: "⚡ VIP ACCESS",
-    description: "VIP access with Telegram Stars.",
+    title: "⚡ 𝐕𝐈𝐏 ACCESS",
+    description: "𝐕𝐈𝐏 ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ 𝐒𝐓𝐀𝐑𝐒.",
     payload: VIP_PAYLOAD,
     currency: "XTR",
-    prices: [{ label: "VIP ACCESS", amount: VIP_STARS_PRICE }],
+    prices: [{ label: "𝐕𝐈𝐏 ACCESS", amount: VIP_STARS_PRICE }],
     start_parameter: VIP_PAYLOAD,
-  });
-} // ↗️
-
+  } ) ; }
 async function sendUserInvoice(ctx) {
   if (!ctx.chat?.id) return;
-
   await ctx.telegram.callApi("sendInvoice", {
     chat_id: ctx.chat.id,
-    title: "👑 USER FX ACCESS",
+    title: "USER 🜲FX ACCESS",
     description: "User access with Telegram Stars.",
     payload: USER_PAYLOAD,
     currency: "XTR",
     prices: [{ label: "USER FX ACCESS", amount: USER_STARS_PRICE }],
     start_parameter: USER_PAYLOAD,
-  });
-} // ⬆️
-
+  } ) ; } 
 async function handleSuccessfulPayment(ctx) {
   const payment = ctx.message?.successful_payment;
   if (!payment) return;
-
   const userId = String(ctx.from?.id || "");
   const chargeId = payment.telegram_payment_charge_id;
-
   if (payment.invoice_payload === VIP_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "vip",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
-    });
-
+  } ) ;
     await ctx.reply(
       `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-
 ʏᴏᴜʀ ᴠɪᴘ ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard()
-    );
+    ) ;
     return;
   }
-
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "user",
@@ -396,97 +379,72 @@ async function handleSuccessfulPayment(ctx) {
 
 ʏᴏᴜʀ ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard()
-    );
-  }
-} // ⬅️
-
+    ) ; } } 
 bot.start(async (ctx) => {
   await sendMainPanel(ctx);
-}); // ➡️
-
+} ) ;
 bot.command("paysupport", async (ctx) => {
   await ctx.reply(
     `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
-
 ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`
-  );
-}); // ⬇️
-
+  ) ; } ) ;
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
   await openVideocallFlow(ctx);
-}); // ↕️
-
+} ) ;
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
   await sendMembershipPanel(ctx);
-}); // ↗️
-
+} ) ;
 bot.hears(BTN_VIP, async (ctx) => {
   await sendVipPanel(ctx);
-}); // ⬆️
-
+} ) ;
 bot.hears(BTN_USER, async (ctx) => {
   await sendUserPanel(ctx);
-}); // ⬅️
-
+} ) ;
 bot.hears(BTN_CHANNELS, async (ctx) => {
   await sendChannelsPanel(ctx);
-}); // ➡️
-
+} ) ;
 bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
-}); // ⬇️
-
+} ) ;
 bot.hears(BTN_PAY_STARS_VIP, async (ctx) => {
   await sendVipInvoice(ctx);
-}); // ↕️
+} ) ;
 
 bot.hears(BTN_PAY_STARS_USER, async (ctx) => {
   await sendUserInvoice(ctx);
-}); // ↗️
-
+} ) ;
 bot.hears(BTN_SMOKELANDIA, async (ctx) => {
   await sendSmokelandiaChannelPanel(ctx);
-}); // ⬆️
-
+} ) ;
 bot.hears(BTN_USERFX_SITE, async (ctx) => {
   await sendUserFxChannelPanel(ctx);
-}); // ⬅️
-
+} ) ;
 bot.hears(BTN_CHANNELS_BACK, async (ctx) => {
   await sendMainPanel(ctx);
-}); // ➡️
-
+} ) ;
 bot.hears(BTN_CANCEL, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-}); // ⬇️
-
+} ) ;
 bot.hears(BTN_BACK_MENU, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-}); // ↕️
-
+} ) ;
 bot.hears(BTN_ZOOM, async (ctx) => {
   await ctx.reply(`ᴏᴘᴇɴ ᴢᴏᴏᴍ ʜᴇʀᴇ: ${ZOOM_URL}`, {
     reply_markup: {
       inline_keyboard: [[{ text: "📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ", url: ZOOM_URL }]],
-    },
-  });
-}); // ↗️
-
+    } , } ) ;} ) ;
 bot.hears(BTN_TELEGRAM, async (ctx) => {
   await ctx.reply(`ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ʜᴇʀᴇ: ${TELEGRAM_CALL_URL}`, {
     reply_markup: {
       inline_keyboard: [[{ text: "💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ", url: TELEGRAM_CALL_URL }]],
-    },
-  });
-}); // ⬆️
-
+    } , } ) ; } ) ;
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
-}); // ⬅️
+   } ) ;
 
 bot.on("photo", async (ctx) => {
   const userId = String(ctx.from?.id || "");
