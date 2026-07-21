@@ -7,8 +7,8 @@ const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
-const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
-const SMOKELANDIA_GROUP_LINK = "https://t.me/+E4X5V3IlygxhMGQx";
+const USER_GROUP_LINK = "https://t.me/+2P62YW1Pt441NDUx";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/+RFGSPa85SR43Mzgx";
 
 const VIP_STARS_PRICE = 1500;
 const USER_STARS_PRICE = 500;
@@ -271,32 +271,42 @@ async function openVideocallFlow(ctx) {
 
   const user = getUserMeta(ctx.from);
 
-  await bot.telegram.sendMessage(
-    ADMIN_CHAT_ID,
-    `📞 <b>New videocall request</b>
+  try {
+    await bot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      `📞 <b>New videocall request</b>
 Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
-ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ʏᴏᴜ ᴘʜᴏᴛᴏ.`,
-    { parse_mode: "HTML" }
-  );
+
+Chat ID usuario: <code>${escapeHtml(userId)}</code>
+Esperando su foto...`,
+      { parse_mode: "HTML" }
+    );
+  } catch (error) {
+    console.error("ADMIN NOTIFY ERROR:", error);
+  }
 }
 
 async function notifyAdminPhotoReceived(ctx) {
   const user = getUserMeta(ctx.from);
 
-  await bot.telegram.sendMessage(
-    ADMIN_CHAT_ID,
-    `📸 <b>Videocall photo received</b>
+  try {
+    await bot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      `📸 <b>Videocall photo received</b>
 Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
 ᴀᴘᴘʀᴏᴠᴇ ᴏʀ ʀᴇᴊᴇᴄᴛ ʙᴇʟᴏᴡ.`,
-    {
-      parse_mode: "HTML",
-      ...getAdminApprovalButtons(user.id),
-    }
-  );
+      {
+        parse_mode: "HTML",
+        ...getAdminApprovalButtons(user.id),
+      }
+    );
+  } catch (error) {
+    console.error("ADMIN PHOTO NOTIFY ERROR:", error);
+  }
 }
 
 async function sendApprovedVideocallFlow(userId) {
