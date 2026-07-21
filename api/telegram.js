@@ -198,85 +198,87 @@ async function sendMembershipPanel(ctx) {
 ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
 ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`,
     getMainKeyboard()
-  );
-}
-
+  );}
 async function sendVipPanel(ctx) {
   await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
     caption: `ᴠɪᴘ⚡ ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
-  });
-}
-
+  });}
 async function sendUserPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("userFX.jpg")), {
     caption: `ᴜꜱᴇʀ👑 ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsUserKeyboard().reply_markup,
-  });
-}
-
+  });}
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
 ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
     getChannelsKeyboard()
-  );
-}
-
+  );}
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasUser } = getAccessState(ctx.from?.id);
   const tier = hasVip ? "⚡ᴠɪᴘ" : hasUser ? "𝐔𝐬𝐞𝐫🜲Ŧҳ" : "ɴᴏ ᴘʟᴀɴ";
-
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
 ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
     getMainKeyboard()
-  );
-}
-
+  );}
 async function sendSmokelandiaChannelPanel(ctx) {
   // Enviar solo un mensaje con la foto y el botón
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("USERFX-ID18V20.jpg")), {
     caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.
-
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getSmokelandiaChannelButton(),
-  });
-}
-
+  });}
 async function sendUserFxChannelPanel(ctx) {
   // Enviar solo un mensaje con la foto y el botón
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpg")), {
     caption: `🜲 𝐔𝐬𝐞𝐫 Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
-
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getUserFxChannelButton(),
-  });
-}
+  });}
 
+  
 async function openVideocallFlow(ctx) {
+  console.log("① Entró a openVideocallFlow");
+
   const userId = String(ctx.from?.id || "");
+
+  console.log("② Usuario ID:", userId);
+
   if (!userId) return;
 
-  pendingVideoRequests.set(userId, {
-    waitingForPhoto: true,
-    awaitingAdminApproval: false,
-    invalidTextCount: 0,
-    createdAt: Date.now(),
-  });
+console.log("③ Guardando solicitud");
 
-  await safeDeleteMessage(ctx);
+pendingVideoRequests.set(userId, {
+  waitingForPhoto: true,
+  awaitingAdminApproval: false,
+  invalidTextCount: 0,
+  createdAt: Date.now(),
+});
 
-  await ctx.replyWithVideo(Input.fromLocalFile(asset("websiteFx.mp4")), {
+console.log("④ Solicitud guardada");
+
+
+  console.log("⑤ Eliminando mensaje");
+
+await safeDeleteMessage(ctx);
+
+console.log("⑥ Mensaje eliminado");
+
+console.log("⑦ Enviando video");
+
+await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), { 
+
     caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
     ...getPendingPhotoKeyboard(),
   });
+  console.log("⑧ Video enviado");
 
   const user = getUserMeta(ctx.from);
-
   try {
     await bot.telegram.sendMessage(
       ADMIN_CHAT_ID,
@@ -284,16 +286,12 @@ async function openVideocallFlow(ctx) {
 Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
-
 Chat ID usuario: <code>${escapeHtml(userId)}</code>
 Esperando su foto...`,
-      { parse_mode: "HTML" }
-    );
+      { parse_mode: "HTML" }  );
   } catch (error) {
     console.error("ADMIN NOTIFY ERROR:", error);
-  }
-}
-
+  }}
 async function notifyAdminPhotoReceived(ctx) {
   const user = getUserMeta(ctx.from);
 
@@ -308,13 +306,10 @@ ID: <code>${escapeHtml(user.id)}</code>
       {
         parse_mode: "HTML",
         ...getAdminApprovalButtons(user.id),
-      }
-    );
+      } );
   } catch (error) {
     console.error("ADMIN PHOTO NOTIFY ERROR:", error);
-  }
-}
-
+  }}
 async function sendApprovedVideocallFlow(userId) {
   // Enviar primero el mensaje de aprobación
   await bot.telegram.sendMessage(
@@ -322,17 +317,14 @@ async function sendApprovedVideocallFlow(userId) {
     `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
 ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
   );
-
   // Luego enviar el mensaje con los botones de videollamada
   await bot.telegram.sendMessage(
     userId,
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-    
+  
 Elije una opción para comenzar la videollamada:`,
     getApprovedVideocallKeyboard()
-  );
-}
-
+  );}
 async function sendVipInvoice(ctx) {
   if (!ctx.chat?.id) return;
 
@@ -344,12 +336,9 @@ async function sendVipInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "𝐕𝐈𝐏 ACCESS", amount: VIP_STARS_PRICE }],
     start_parameter: VIP_PAYLOAD,
-  });
-}
-
+  });}
 async function sendUserInvoice(ctx) {
   if (!ctx.chat?.id) return;
-
   await ctx.telegram.callApi("sendInvoice", {
     chat_id: ctx.chat.id,
     title: "USER 🜲FX ACCESS",
@@ -358,23 +347,18 @@ async function sendUserInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "USER FX ACCESS", amount: USER_STARS_PRICE }],
     start_parameter: USER_PAYLOAD,
-  });
-}
-
+  });}
 async function handleSuccessfulPayment(ctx) {
   const payment = ctx.message?.successful_payment;
   if (!payment) return;
-
   const userId = String(ctx.from?.id || "");
   const chargeId = payment.telegram_payment_charge_id;
-
   if (payment.invoice_payload === VIP_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "vip",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
     });
-
     await ctx.reply(
       `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
 ʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
@@ -382,23 +366,17 @@ async function handleSuccessfulPayment(ctx) {
     );
     return;
   }
-
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "user",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
     });
-
     await ctx.reply(
       `✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-
 ʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard()
-    );
-  }
-}
-
+  );}}
 bot.start(async (ctx) => {
   await sendMainPanel(ctx);
 });
@@ -407,13 +385,23 @@ bot.command("paysupport", async (ctx) => {
   await ctx.reply(
     `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`
-  );
-});
+  );});
 
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
-  await openVideocallFlow(ctx);
-});
-
+  console.log("🟢 BTN_VIDEOCALL detectado");
+  console.log("Usuario:", ctx.from?.id);
+  console.log("Texto:", ctx.message?.text);
+  try {
+    await ctx.reply("✅ bot.hears funcionando");
+    await openVideocallFlow(ctx);
+    console.log("✅ openVideocallFlow terminó");
+  } catch (error) {
+    console.error("❌ ERROR openVideocallFlow");
+    console.error(error);
+    await ctx.reply(
+      "ERROR:\n" +
+      (error?.stack || error?.message || String(error))
+  );}});
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
   await sendMembershipPanel(ctx);
 });
