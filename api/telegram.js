@@ -165,24 +165,22 @@ async function sendMembershipPanel(ctx) {
 }
 async function sendVipPanel(ctx) {
   await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
-    caption: `ᴠɪᴘ⚡ ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-  });
-  await ctx.reply("‎", getStarsVipKeyboard());
-}
-
+    caption: `ᴠɪᴘ⚡ 
+    
+  ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ★`,
+    ...getStarsVipKeyboard(),
+  } ) ; }
 async function sendUserPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("userFX.jpg")), {
     caption: `ᴜꜱᴇʀ👑 ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-  });
-  await ctx.reply("‎", getStarsUserKeyboard());
-}
+    ...getStarsUserKeyboard(),
+  } ) ; }
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
 ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
     getChannelsKeyboard(),
-  );
-}
+  ) ; }
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasUser } = getAccessState(ctx.from?.id);
   const tier = hasVip ? "⚡ᴠɪᴘ" : hasUser ? "𝐔𝐬𝐞𝐫🜲Ŧҳ" : "ɴᴏ ᴘʟᴀɴ";
@@ -190,24 +188,23 @@ async function sendRefreshPanel(ctx) {
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
 ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
     getMainKeyboard(),
-  );
-}
+  ) ; }
 async function sendSmokelandiaChannelPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("USERFX-ID18V20.jpg")), {
     caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.`,
     ...getSmokelandiaChannelButton(),
-  });
+  } ) ;
   await ctx.reply("‎", getChannelsKeyboard());
-}
+  }
 async function sendUserFxChannelPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpg")), {
     caption: `🜲 𝐔𝐬𝐞𝐫 Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.`,
     ...getUserFxChannelButton(),
-  });
+  } ) ;
   await ctx.reply("‎", getChannelsKeyboard());
-}
+ }
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId) return;
@@ -246,20 +243,17 @@ ID: <code>${escapeHtml(user.id)}</code>
     {
       parse_mode: "HTML",
       ...getAdminApprovalButtons(user.id),
-    },
-  );
-}
+    } , ) ; }
 async function sendApprovedVideocallFlow(userId) {
   await bot.telegram.sendMessage(
     userId,
     `✅ ᴀᴘᴘʀᴏᴠᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`,
-  );
+  ) ;
   await bot.telegram.sendMessage(
     userId,
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
     getApprovedVideocallKeyboard(),
-  );
-}
+  ) ; }
 async function sendVipInvoice(ctx) {
   if (!ctx.chat?.id) return;
   await ctx.telegram.callApi("sendInvoice", {
@@ -270,8 +264,7 @@ async function sendVipInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "𝐕𝐈𝐏 ACCESS", amount: VIP_STARS_PRICE }],
     start_parameter: VIP_PAYLOAD,
-  });
-}
+  } ) ;}
 async function sendUserInvoice(ctx) {
   if (!ctx.chat?.id) return;
   await ctx.telegram.callApi("sendInvoice", {
@@ -282,8 +275,7 @@ async function sendUserInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "USER FX ACCESS", amount: USER_STARS_PRICE }],
     start_parameter: USER_PAYLOAD,
-  });
-}
+  } ) ; }
 async function handleSuccessfulPayment(ctx) {
   const payment = ctx.message?.successful_payment;
   if (!payment) return;
@@ -295,100 +287,88 @@ async function handleSuccessfulPayment(ctx) {
       tier: "vip",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
-    });
-
+    } ) ;
     await ctx.reply(
       `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
 ʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard(),
-    );
+    ) ;
     return;
   }
-
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "ᴜꜱᴇʀ",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
-    });
-
+    } ) ;
     await ctx.reply(
       `✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-
-
-
 ʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard(),
-    );
-  }
-}
+    ) ; } } 
 bot.start(async (ctx) => {
   await sendMainPanel(ctx);
-});
+} ) ;
 bot.command("paysupport", async (ctx) => {
   await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
-});
+} ) ;
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
   await openVideocallFlow(ctx);
-});
+} ) ;
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
   await sendMembershipPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_VIP, async (ctx) => {
   await sendVipPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_USER, async (ctx) => {
   await sendUserPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_CHANNELS, async (ctx) => {
   await sendChannelsPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_PAY_STARS_VIP, async (ctx) => {
   await sendVipInvoice(ctx);
-});
+} ) ;
 bot.hears(BTN_PAY_STARS_USER, async (ctx) => {
   await sendUserInvoice(ctx);
-});
+} ) ;
 bot.hears(BTN_SMOKELANDIA, async (ctx) => {
   await sendSmokelandiaChannelPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_USERFX_SITE, async (ctx) => {
   await sendUserFxChannelPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_CHANNELS_BACK, async (ctx) => {
   await sendMainPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_CANCEL, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_BACK_MENU, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-});
+} ) ;
 bot.hears(BTN_ZOOM, async (ctx) => {
   await ctx.reply(`ᴏᴘᴇɴ ᴢᴏᴏᴍ ʜᴇʀᴇ: ${ZOOM_URL}`, {
     reply_markup: {
       inline_keyboard: [[{ text: "📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ", url: ZOOM_URL }]],
-    },
-  });
-});
+    } , } ) ; } );
 bot.hears(BTN_TELEGRAM, async (ctx) => {
   await ctx.reply(`ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ʜᴇʀᴇ: ${TELEGRAM_CALL_URL}`, {
     reply_markup: {
       inline_keyboard: [[{ text: "💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ", url: TELEGRAM_CALL_URL }]],
-    },
-  });
-});
+    } , } ) ; } ) ;
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
-});
+} ) ;
 bot.on("photo", async (ctx) => {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
