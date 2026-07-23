@@ -477,29 +477,56 @@ Haz clic en el botón para iniciar la videollamada por Telegram:`, {
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 });
-
 bot.on("photo", async (ctx) => {
+
+  console.log("📸 PHOTO EVENT");
+
   const userId = String(ctx.from?.id || "");
+
+  console.log("USER:", userId);
+
+  console.log(
+    "MAP:",
+    Array.from(pendingVideoRequests.entries())
+  );
+
   const pending = pendingVideoRequests.get(userId);
 
-  if (!pending?.waitingForPhoto) return;
+  console.log("PENDING:", pending);
+
+  if (!pending?.waitingForPhoto) {
+    console.log("❌ NO PENDING REQUEST");
+    return;
+  }
 
   pending.waitingForPhoto = false;
   pending.awaitingAdminApproval = true;
+
   pendingVideoRequests.set(userId, pending);
 
-  await notifyAdminPhotoReceived(ctx);
+  try {
+    await notifyAdminPhotoReceived(ctx);
+    console.log("✅ notifyAdminPhotoReceived OK");
+  } catch (err) {
+    console.error(err);
+  }
 
-  await bot.telegram.forwardMessage(
-    ADMIN_CHAT_ID,
-    ctx.chat.id,
-    ctx.message.message_id
-  );
+  try {
+    await bot.telegram.forwardMessage(
+      ADMIN_CHAT_ID,
+      ctx.chat.id,
+      ctx.message.message_id
+    );
+
+    console.log("✅ FOTO REENVIADA");
+  } catch (err) {
+    console.error(err);
+  }
 
   await ctx.reply(
-    `✅ ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
-ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ɪꜱ ᴜɴᴅᴇʀ ʀᴇᴠɪᴇᴡ.`
+    "✅ Photo received. Waiting for approval."
   );
+
 });
 
 bot.on("message", async (ctx, next) => {
