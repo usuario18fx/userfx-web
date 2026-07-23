@@ -2,7 +2,16 @@ import path from "path";
 import { Telegraf, Markup, Input } from "telegraf";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+
+if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
+if (!ADMIN_BOT_TOKEN) throw new Error("Missing ADMIN_BOT_TOKEN");
+if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
+
+const bot = new Telegraf(BOT_TOKEN);
+const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
+
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL =
   "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
@@ -12,14 +21,9 @@ const SMOKELANDIA_GROUP_LINK = "https://t.me/+RFGSPa85SR43Mzgx";
 
 const VIP_STARS_PRICE = 1500;
 const USER_STARS_PRICE = 500;
-
 const VIP_PAYLOAD = "vip_fx_access";
 const USER_PAYLOAD = "user_fx_access";
 
-if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
-if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
-
-const bot = new Telegraf(BOT_TOKEN);
 
 const asset = (file) => path.join(process.cwd(), "assets", file);
 
@@ -280,8 +284,8 @@ await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
 
   const user = getUserMeta(ctx.from);
   try {
-    await bot.telegram.sendMessage(
-      ADMIN_CHAT_ID,
+    await adminBot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
       `📞 <b>New videocall request</b>
 Name: <b>${escapeHtml(user.fullName)}</b>
 Username: <b>${escapeHtml(user.username)}</b>
@@ -296,7 +300,7 @@ async function notifyAdminPhotoReceived(ctx) {
   const user = getUserMeta(ctx.from);
 
   try {
-    await bot.telegram.sendMessage(
+    await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
       `📸 <b>Videocall photo received</b>
 Name: <b>${escapeHtml(user.fullName)}</b>
@@ -512,11 +516,11 @@ bot.on("photo", async (ctx) => {
   }
 
   try {
-    await bot.telegram.forwardMessage(
-      ADMIN_CHAT_ID,
-      ctx.chat.id,
-      ctx.message.message_id
-    );
+   await adminBot.telegram.forwardMessage(
+    ADMIN_CHAT_ID,
+    ctx.chat.id,
+    ctx.message.message_id
+);
 
     console.log("✅ FOTO REENVIADA");
   } catch (err) {
