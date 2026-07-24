@@ -500,37 +500,38 @@ bot.on("photo", async (ctx) => {
 
   if (!pending?.waitingForPhoto) {
     console.log("❌ NO PENDING REQUEST");
-    return;
-  }
-
+    return;}
   pending.waitingForPhoto = false;
   pending.awaitingAdminApproval = true;
-
   pendingVideoRequests.set(userId, pending);
+try {
+  const photo = ctx.message.photo.at(-1);
 
-  try {
-    await notifyAdminPhotoReceived(ctx);
-    console.log("✅ notifyAdminPhotoReceived OK");
-  } catch (err) {
-    console.error(err);
-  }
+  const user = getUserMeta(ctx.from);
 
-  try {
-   await adminBot.telegram.forwardMessage(
+  await adminBot.telegram.sendPhoto(
     ADMIN_CHAT_ID,
-    ctx.chat.id,
-    ctx.message.message_id
-);
+    photo.file_id,
+    {
+      caption:
+`📞 New videocall request
+Name: ${user.fullName}
+Username: ${user.username}
+ID: ${user.id}
+Approve or reject:`,
 
-    console.log("✅ FOTO REENVIADA");
-  } catch (err) {
-    console.error(err);
-  }
+      ...getAdminApprovalButtons(user.id),
+    }
+  );
+  console.log("✅ FOTO + BOTONES ENVIADOS");
 
+} catch (err) {
+  console.error("SEND PHOTO ERROR");
+  console.error(err);
+}
   await ctx.reply(
     "✅ Photo received. Waiting for approval."
   );
-
 });
 
 bot.on("message", async (ctx, next) => {
