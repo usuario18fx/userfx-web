@@ -503,6 +503,28 @@ bot.on("pre_checkout_query", async (ctx) => {
 bot.on("photo", async (ctx) => {
 
   console.log("📸 PHOTO EVENT");
+console.log("1");
+
+const photo = ctx.message.photo.at(-1);
+
+console.log("2");
+
+const user = getUserMeta(ctx.from);
+
+console.log("3");
+
+await adminBot.telegram.sendPhoto(
+  ADMIN_CHAT_ID,
+  photo.file_id,
+  {
+    caption: "TEST",
+    ...getAdminApprovalButtons(user.id),
+  }
+);
+
+console.log("4");
+
+  console.log("📸 PHOTO EVENT");
 
   const userId = String(ctx.from?.id || "");
 
