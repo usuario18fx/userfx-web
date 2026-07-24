@@ -602,6 +602,10 @@ bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
 });
 
+adminBot.command("myid", async (ctx) => {
+  await ctx.reply(`chat_id: ${ctx.chat.id}`);
+});
+
 adminBot.action(/^approve_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("✅ ᴀᴘᴘʀᴏᴠᴇᴅ");
 
