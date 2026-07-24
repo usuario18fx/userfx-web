@@ -39,7 +39,7 @@ const BTN_VIP = "⚡ᴠɪᴘ";
 const BTN_USER = "👑ᴜꜱᴇʀ";
 const BTN_CHANNELS = "📺ᴄʜᴀɴɴᴇʟꜱ";
 const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
-const BTN_ZOOM = "📞 ᴢᴏᴏᴍ";
+const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
 const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
 const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
@@ -111,21 +111,21 @@ function getSmokelandiaChannelButton() {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "☁️ ᴇɴᴛᴇʀ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
-        [{ text: "↽ ʀᴇɢʀᴇꜱᴀʀ", callback_data: "back_to_channels" }],
+        [{ text: "☁️ᴇɴᴛᴇʀ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
+        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
 ] , } , } ; }
 function getUserFxChannelButton() {
   return {
     reply_markup: {
       inline_keyboard: [
         [{ text: "🜲 ᴇɴᴛᴇʀ 𝐔𝐬𝐞𝐫 Ŧҳ", url: USER_GROUP_LINK }],
-        [{ text: "↽ ʀᴇɢʀᴇꜱᴀʀ", callback_data: "back_to_channels" }],
+        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
 ] , } , } ; }
 function getAccessState(userId) {
   const entry = paidUsers.get(String(userId));
   return {
-    hasVip: entry?.tier === "vip",
-    hasUser: entry?.tier === "user" || entry?.tier === "vip",
+    hasVip: entry?.tier === "ᴠɪᴘ",
+    hasUser: entry?.tier === "ᴜꜱᴇʀ" || entry?.tier === "vip",
 } ; }
 async function safeDeleteMessage(ctx) {
   try {
@@ -154,12 +154,14 @@ async function sendMembershipPanel(ctx) {
 ) ; }
 async function sendVipPanel(ctx) {
   await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
-    caption: `ᴠɪᴘ⚡ ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
+    caption: `ᴠɪᴘ⚡ 
+    ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
 } ) ; }
 async function sendUserPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("userFX.jpg")), {
-    caption: `ᴜꜱᴇʀ👑 ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
+    caption: `ᴜꜱᴇʀ👑 
+    ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsUserKeyboard().reply_markup,
 } ) ; }
 async function sendChannelsPanel(ctx) {
@@ -186,7 +188,7 @@ async function sendSmokelandiaChannelPanel(ctx) {
 } ) ; }
 async function sendUserFxChannelPanel(ctx) {
   await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpg")), {
-    caption: `🜲 𝐔𝐬𝐞𝐫 Ŧҳ
+    caption: `𝐔𝐬𝐞𝐫 🜲Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getUserFxChannelButton(),
@@ -229,7 +231,7 @@ async function sendApprovedVideocallFlow(userId) {
   await bot.telegram.sendMessage(
     userId,
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-Elije una opción para comenzar la videollamada:`,
+ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
     getApprovedVideocallKeyboard()
 ) ; }
 async function sendVipInvoice(ctx) {
@@ -248,7 +250,7 @@ async function sendUserInvoice(ctx) {
   await ctx.telegram.callApi("sendInvoice", {
     chat_id: ctx.chat.id,
     title: "USER 🜲FX ACCESS",
-    description: "User access with Telegram Stars.",
+    description: "ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
     payload: USER_PAYLOAD,
     currency: "XTR",
     prices: [{ label: "USER FX ACCESS", amount: USER_STARS_PRICE }],
@@ -274,7 +276,7 @@ async function handleSuccessfulPayment(ctx) {
 }
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
-      tier: "user",
+      tier: "ᴜꜱᴇʀ",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
 } ) ;
@@ -357,7 +359,7 @@ Haz clic en el botón para unirte a la videollamada por Zoom:`,
 bot.hears(BTN_TELEGRAM, async (ctx) => {
   await ctx.reply(
     `💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ
-Haz clic en el botón para iniciar la videollamada por Telegram:`,
+ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ:`,
     { reply_markup: { inline_keyboard: [
     [{ text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL }],
 ] , } , } ) ; } ) ;
@@ -421,7 +423,7 @@ bot.on("text", async (ctx) => {
   await sendMainPanel(ctx);
     return;
 }
-  await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ 😏 ʟᴇᴍᴍᴇ ꜱᴇᴇ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ."
+  await ctx.reply("📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ."
 ) ;
     return;
 }
@@ -453,7 +455,7 @@ adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
     `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
 {
   reply_markup: { inline_keyboard: [
-          [{ text: "🔔 Notificarme", callback_data: `notify_me_${requesterId}` }],
+[ { text: "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", callback_data: `notify_me_${requesterId}` }],
 ] , } , } ) ; } ) ;
 adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
