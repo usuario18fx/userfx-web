@@ -382,6 +382,25 @@ async function handleSuccessfulPayment(ctx) {
       getMainKeyboard()
   );}}
 bot.start(async (ctx) => {
+  try {
+  const me = await adminBot.telegram.getMe();
+
+  console.log("ADMIN BOT:");
+  console.log(me);
+
+  console.log("ADMIN_CHAT_ID:", ADMIN_CHAT_ID);
+
+  await adminBot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+    "✅ TEST DESDE ADMIN BOT"
+  );
+
+  console.log("MENSAJE ENVIADO");
+
+} catch (err) {
+  console.error("ADMIN TEST ERROR");
+  console.error(err);
+}
   await sendMainPanel(ctx);
 });
 
