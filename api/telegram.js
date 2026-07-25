@@ -517,33 +517,25 @@ async function handleMedia(ctx, type) {
 
   try {
     const user = getUserMeta(ctx.from);
-    let fileId;
-    let apiMethod;
-
-    if (type === "photo") {
-      fileId = ctx.message.photo.at(-1).file_id;
-      apiMethod = "sendPhoto";
-    } else if (type === "video") {
-      fileId = ctx.message.video.file_id;
-      apiMethod = "sendVideo";
-    } else {
-      return;
-    }
 
     console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
     console.log("HANDLE MEDIA TYPE:", type);
-    console.log("HANDLE MEDIA FILE ID:", fileId);
 
-    await adminBot.telegram.callApi(apiMethod, {
-      chat_id: ADMIN_CHAT_ID,
-      [type]: fileId,
-      caption: `📞 New videocall request
-Name: ${user.fullName}
-Username: ${user.username}
-ID: ${user.id}
-Approve or reject:`,
-      reply_markup: getAdminApprovalButtons(user.id).reply_markup,
-    });
+    await bot.telegram.copyMessage(
+      ADMIN_CHAT_ID,
+      ctx.chat.id,
+      ctx.message.message_id,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${user.id}` },
+              { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${user.id}` },
+            ],
+          ],
+        },
+      }
+    );
   } catch (err) {
     console.error("SEND MEDIA ERROR:", err);
   }
@@ -551,7 +543,6 @@ Approve or reject:`,
 
 bot.on("photo", (ctx) => handleMedia(ctx, "photo"));
 bot.on("video", (ctx) => handleMedia(ctx, "video"));
-
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
