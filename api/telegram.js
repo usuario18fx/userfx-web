@@ -1,14 +1,10 @@
 import path from "path";
 import { Telegraf, Markup, Input } from "telegraf";
-
 export const config = {
   api: {
     bodyParser: true,
-  },
-};
-
+} , } ;
 export const maxDuration = 60;
-
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
@@ -18,7 +14,7 @@ if (!ADMIN_BOT_TOKEN) throw new Error("Missing ADMIN_BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
-const adminBot = new Telegraf(ADMIN_BOT_TOKEN); // Corregido: quitado el $ 
+const adminBot = new Telegraf(ADMIN_BOT_TOKEN); 
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
@@ -30,18 +26,19 @@ const USER_STARS_PRICE = 500;
 const VIP_PAYLOAD = "vip_fx_access";
 const USER_PAYLOAD = "user_fx_access";
 
-const asset = (file) => path.join(process.cwd(), "assets", file);
+const TIER_VIP = "ᴠɪᴘ";
+const TIER_USER = "ᴜꜱᴇʀ";
 
+const asset = (file) => path.join(process.cwd(), "assets", file);
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
+
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
-
 const paidUsers = globalThis.__fxPaidUsers || new Map();
 if (!globalThis.__fxPaidUsers) {
   globalThis.__fxPaidUsers = paidUsers;
 }
-
 const BTN_VIDEOCALL = "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_GET_FULL_ACCESS = "🔥 ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
 const BTN_VIP = "⚡ᴠɪᴘ";
@@ -57,14 +54,12 @@ const BTN_PAY_STARS_USER = "⭐ ᴘᴀʏ ᴜꜱᴇʀ";
 const BTN_SMOKELANDIA = "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬𝐞𝐫🜲Ŧҳ";
 const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
-
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 }
-
 function getUserMeta(from) {
   const firstName = from?.first_name || "";
   const lastName = from?.last_name || "";
@@ -73,24 +68,19 @@ function getUserMeta(from) {
   const id = String(from?.id || "");
   return { fullName, username, id };
 }
-
 function getMainKeyboard() {
   return Markup.keyboard(
-    [
-      [BTN_VIDEOCALL],
+    [ [BTN_VIDEOCALL],
       [BTN_GET_FULL_ACCESS],
       [BTN_VIP, BTN_USER],
       [BTN_CHANNELS],
-      [BTN_REFRESH],
-    ],
+      [BTN_REFRESH],],
     { columns: 2 }
   ).resize();
 }
-
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([[BTN_CANCEL]], { columns: 1 }).resize();
 }
-
 function getApprovedVideocallKeyboard() {
   return Markup.keyboard(
     [
@@ -100,19 +90,16 @@ function getApprovedVideocallKeyboard() {
     { columns: 2 }
   ).resize();
 }
-
 function getStarsVipKeyboard() {
   return Markup.keyboard([[BTN_PAY_STARS_VIP], [BTN_BACK_MENU]], {
     columns: 1,
   }).resize();
 }
-
 function getStarsUserKeyboard() {
   return Markup.keyboard([[BTN_PAY_STARS_USER], [BTN_BACK_MENU]], {
     columns: 1,
   }).resize();
 }
-
 function getChannelsKeyboard() {
   return Markup.keyboard(
     [
@@ -122,7 +109,6 @@ function getChannelsKeyboard() {
     { columns: 2 }
   ).resize();
 }
-
 function getAdminApprovalButtons(requesterId) {
   return {
     reply_markup: {
@@ -130,56 +116,38 @@ function getAdminApprovalButtons(requesterId) {
         [
           { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${requesterId}` },
           { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${requesterId}` },
-        ],
-      ],
-    },
-  };
-}
-
+] , ] , } , } ; }
 function getSmokelandiaChannelButton() {
   return {
     reply_markup: {
       inline_keyboard: [
         [{ text: "☁️ᴇɴᴛᴇʀ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
         [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
-      ],
-    },
-  };
-}
-
+] , } , } ; }
 function getUserFxChannelButton() {
   return {
     reply_markup: {
       inline_keyboard: [
         [{ text: "🜲 ᴇɴᴛᴇʀ 𝐔𝐬𝐞𝐫 Ŧҳ", url: USER_GROUP_LINK }],
         [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
-      ],
-    },
-  };
-}
-
+] , } , } ; }
 function getAccessState(userId) {
   const entry = paidUsers.get(String(userId));
   return {
-    hasVip: entry?.tier === "ᴠɪᴘ",
-    hasUser: entry?.tier === "ᴜꜱᴇʀ" || entry?.tier === "vip",
-  };
-}
-
+    hasVip: entry?.tier === TIER_VIP,
+    hasUser: entry?.tier === TIER_USER || entry?.tier === TIER_VIP,
+  } ; }
 async function safeDeleteMessage(ctx) {
   try {
     await ctx.deleteMessage();
   } catch (e) {}
 }
-
 async function sendMainPanel(ctx) {
   await ctx.reply(
     `Ŧҳ | ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ
 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ. ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
     getMainKeyboard()
-  );
-}
-
+) ; }
 async function sendMembershipPanel(ctx) {
   await ctx.reply(
     `🔥 ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ
@@ -304,7 +272,7 @@ async function handleSuccessfulPayment(ctx) {
   const chargeId = payment.telegram_payment_charge_id;
   if (payment.invoice_payload === VIP_PAYLOAD) {
     paidUsers.set(userId, {
-      tier: "vip",
+      tier: TIER_VIP,
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
 } ) ;
@@ -317,7 +285,7 @@ async function handleSuccessfulPayment(ctx) {
 }  
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
-      tier: "ᴜꜱᴇʀ",
+     tier: TIER_USER,
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
 } ) ;
