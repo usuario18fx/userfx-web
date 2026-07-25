@@ -426,51 +426,33 @@ bot.hears(BTN_CANCEL, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_BACK_MENU, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_ZOOM, async (ctx) => {
   await ctx.reply(
     `📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ
 Haz clic en el botón para unirte a la videollamada por Zoom:`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL }],
-        ],
-      },
-    }
-  );
-});
-
+    { reply_markup: { inline_keyboard: [
+    [ { text:"📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL }],
+] , } , } ) ; } ) ;
 bot.hears(BTN_TELEGRAM, async (ctx) => {
   await ctx.reply(
     `💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ
 ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ:`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL }],
-        ],
-      },
-    }
-  );
-});
-
+   { reply_markup: { inline_keyboard: [
+   [ { text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL }],
+] , } , } ) ; } ) ;
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
-});
-
+} ) ;
 // --- MANEJO DE FOTO Y VIDEO UNIFICADO ---
 async function handleMedia(ctx, type) {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
-
   if (pending?.waitingForPhoto) {
     pending.waitingForPhoto = false;
     pending.awaitingAdminApproval = true;
@@ -478,7 +460,6 @@ async function handleMedia(ctx, type) {
   } else {
     return; // Si no está esperando foto, no hace nada
   }
-
   try {
     const user = getUserMeta(ctx.from);
     let fileId;
@@ -493,26 +474,20 @@ async function handleMedia(ctx, type) {
     } else {
       return;
     }
-
     await adminBot.telegram.callApi(apiMethod, {
       chat_id: ADMIN_CHAT_ID,
       [type]: fileId,
       caption: `📞 New videocall request\nName: ${user.fullName}\nUsername: ${user.username}\nID: ${user.id}\nApprove or reject:`,
       reply_markup: getAdminApprovalButtons(user.id).reply_markup,
-    });
-  } catch (err) {
+    } ) ; } catch (err) {
     console.error("SEND MEDIA ERROR:", err);
-  }
-}
-
+} }
 bot.on("photo", (ctx) => handleMedia(ctx, "photo"));
 bot.on("video", (ctx) => handleMedia(ctx, "video"));
-
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
-  
   const knownInputs = [
     "/start",
     "/paysupport",
@@ -532,9 +507,7 @@ bot.on("text", async (ctx) => {
     BTN_USERFX_SITE,
     BTN_CHANNELS_BACK,
   ];
-  
   if (knownInputs.includes(text)) return;
-  
   if (pending?.waitingForPhoto) {
     pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
     pendingVideoRequests.set(userId, pending);
@@ -546,22 +519,17 @@ bot.on("text", async (ctx) => {
     }
     await ctx.reply("📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ.");
     return;
-  }
-  
+}
   await sendMainPanel(ctx);
-});
-
+} ) ;
 bot.on("successful_payment", handleSuccessfulPayment);
-
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
-});
-
+} ) ;
 // --- ADMIN BOT HANDLERS ---
 adminBot.command("myid", async (ctx) => {
   await ctx.reply(`chat_id: ${ctx.chat.id}`);
-});
-
+} ) ;
 adminBot.action(/^approve_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("✅ ᴀᴘᴘʀᴏᴠᴇᴅ");
   const requesterId = String(ctx.match[1]);
@@ -572,8 +540,7 @@ adminBot.action(/^approve_video_(.+)$/, async (ctx) => {
   }
   pendingVideoRequests.delete(requesterId);
   await sendApprovedVideocallFlow(requesterId);
-});
-
+} ) ;
 adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("❌ ʀᴇᴊᴇᴄᴛᴇᴅ");
   const requesterId = String(ctx.match[1]);
@@ -581,36 +548,28 @@ adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
   await bot.telegram.sendMessage(
     requesterId,
     `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", callback_data: `notify_me_${requesterId}` }],
-        ],
-      },
-    }
-  );
-});
-
+    { reply_markup: { inline_keyboard: [
+    [{ text: "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", callback_data: `notify_me_${requesterId}` }],
+] , } , } ) ; } ) ;
 adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
-});
-
+} ) ;
 // --- WEBHOOK HANDLER ---
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(200).send("OK");
-  }
-  
-  res.status(200).send("OK");
-  
+  }  
   try {
-    const fullUrl = req.headers["x-forwarded-uri"] || req.url || "";
+    const fullUrl = (req.headers["x-forwarded-uri"] || req.url) || "";
     if (fullUrl.includes("admin=true")) {
       await adminBot.handleUpdate(req.body);
     } else {
       await bot.handleUpdate(req.body);
     }
+    // Respondemos a Telegram SOLO DESPUÉS de procesar todo
+    return res.status(200).send("OK");
   } catch (error) {
     console.error("BOT HANDLE UPDATE ERROR:", error);
-  }
-}
+    // Aun si hay error, respondemos 200 para que Telegram no siga reintentando
+    return res.status(200).send("OK");
+  } }
