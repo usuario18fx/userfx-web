@@ -16,6 +16,8 @@ if (!BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
 if (!ADMIN_BOT_TOKEN) throw new Error("Missing ADMIN_BOT_TOKEN");
 if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
+console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
+
 const bot = new Telegraf(BOT_TOKEN);
 const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
 
@@ -377,6 +379,8 @@ async function handleSuccessfulPayment(ctx) {
 
 bot.start(async (ctx) => {
   try {
+    console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
+
     adminBot.telegram
       .sendMessage(ADMIN_CHAT_ID, "✅ TEST DESDE ADMIN BOT")
       .catch((err) => {
@@ -410,11 +414,6 @@ bot.hears(BTN_VIDEOCALL, async (ctx) => {
 
     await ctx.reply(`❌ DEBUG VIDEOCALL: ${detail}`);
   }
-});
-
-bot.on("video", async (ctx, next) => {
-  console.log("VIDEO FILE ID:", ctx.message.video.file_id);
-  return next();
 });
 
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
@@ -532,6 +531,10 @@ async function handleMedia(ctx, type) {
       return;
     }
 
+    console.log("HANDLE MEDIA ADMIN_CHAT_ID:", ADMIN_CHAT_ID);
+    console.log("HANDLE MEDIA TYPE:", type);
+    console.log("HANDLE MEDIA FILE ID:", fileId);
+
     await adminBot.telegram.callApi(apiMethod, {
       chat_id: ADMIN_CHAT_ID,
       [type]: fileId,
@@ -544,6 +547,14 @@ Approve or reject:`,
     });
   } catch (err) {
     console.error("SEND MEDIA ERROR:", err);
+
+    try {
+      await adminBot.telegram.sendMessage(
+        ADMIN_CHAT_ID,
+        `❌ SEND MEDIA ERROR
+${err?.response?.description || err?.message || String(err)}`
+      );
+    } catch (_) {}
   }
 }
 
