@@ -271,13 +271,10 @@ async function openVideocallFlow(ctx) {
     createdAt: Date.now(),
   });
 
-  await ctx.replyWithVideo(
-    "r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO",
-    {
-      caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
+  await ctx.reply(
+    `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
-      ...getPendingPhotoKeyboard(),
-    }
+    getPendingPhotoKeyboard()
   );
 
   const user = getUserMeta(ctx.from);
@@ -413,6 +410,11 @@ bot.hears(BTN_VIDEOCALL, async (ctx) => {
 
     await ctx.reply(`❌ DEBUG VIDEOCALL: ${detail}`);
   }
+});
+
+bot.on("video", async (ctx, next) => {
+  console.log("VIDEO FILE ID:", ctx.message.video.file_id);
+  return next();
 });
 
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
