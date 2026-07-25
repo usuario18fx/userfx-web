@@ -404,7 +404,14 @@ bot.hears(BTN_VIDEOCALL, async (ctx) => {
     await openVideocallFlow(ctx);
   } catch (error) {
     console.error("ERROR openVideocallFlow:", error);
-    await ctx.reply("❌ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ. ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.");
+
+    const detail =
+      error?.response?.description ||
+      error?.description ||
+      error?.message ||
+      String(error);
+
+    await ctx.reply(`❌ DEBUG VIDEOCALL: ${detail}`);
   }
 });
 
