@@ -163,13 +163,13 @@ async function sendMembershipPanel(ctx) {
     getMainKeyboard()
   ) ; }
 async function sendVipPanel(ctx) {
-await ctx.replyWithVideo(Input.byFileId("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g"), {
+await ctx.replyWithVideo("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g", {
     caption: `ᴠɪᴘ⚡ 
     ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
   } ) ; }
 async function sendUserPanel(ctx) {
-  await ctx.replyWithPhoto(Input.byFileId("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT"), {
+ await ctx.replyWithPhoto("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT", {
     caption: `ᴜꜱᴇʀ👑 
     ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsUserKeyboard().reply_markup,
@@ -189,14 +189,14 @@ async function sendRefreshPanel(ctx) {
     getMainKeyboard()
   ) ; }
 async function sendSmokelandiaChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.byFileId("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ"), {
+  await ctx.replyWithPhoto("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ", {
     caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getSmokelandiaChannelButton(),
   } ) ; }
 async function sendUserFxChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.byFileId("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115"), {
+  await ctx.replyWithPhoto("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115", {
     caption: `𝐔𝐬𝐞𝐫 🜲Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
@@ -212,7 +212,8 @@ async function openVideocallFlow(ctx) {
     createdAt: Date.now(),
   } ) ;
   await safeDeleteMessage(ctx);
-  await ctx.replyWithVideo(Input.byFileId("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO"), {  caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
+  await ctx.replyWithVideo("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO", {
+    caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
     ...getPendingPhotoKeyboard(),
   } ) ;
@@ -457,7 +458,7 @@ adminBot.action(/^approve_video_(.+)$/, async (ctx) => {
   if (!pending) {
     await ctx.reply("ʀᴇQᴜᴇꜱᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ.");
     return;
-  }
+}
   pendingVideoRequests.delete(requesterId);
   await sendApprovedVideocallFlow(requesterId);
 } ) ;
@@ -470,14 +471,14 @@ adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
     `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
     { reply_markup: { inline_keyboard: [
     [{ text: "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", callback_data: `notify_me_${requesterId}` }],
-] , } , } ) ; } ) ;
+    ] , } , } ) ; } ) ;
 adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
-} ) ;
+    } ) ;
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(200).send("OK");
-  }  
+   }  
   try {
     const fullUrl = (req.headers["x-forwarded-uri"] || req.url) || "";
     if (fullUrl.includes("admin=true")) {
@@ -486,7 +487,7 @@ export default async function handler(req, res) {
       await bot.handleUpdate(req.body);
     }
     return res.status(200).send("OK");
-  } catch (error) {
+    } catch (error) {
     console.error("BOT HANDLE UPDATE ERROR:", error);
     return res.status(200).send("OK");
   } }
