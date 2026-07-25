@@ -169,12 +169,15 @@ await ctx.replyWithVideo("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_j
     ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
   } ) ; }
-async function sendUserPanel(ctx) {
- await ctx.replyWithPhoto("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT", {
-    caption: `ᴜꜱᴇʀ👑 
-    ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-    reply_markup: getStarsUserKeyboard().reply_markup,
-  } ) ; }
+async function sendUserFxChannelPanel(ctx) {
+  await ctx.replyWithVideo(
+    "r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115",
+    {
+      caption: `𝐔𝐬𝐞𝐫 🜲Ŧҳ
+ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
+👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
+      ...getUserFxChannelButton(),
+} ) ; }
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
@@ -190,11 +193,13 @@ async function sendRefreshPanel(ctx) {
     getMainKeyboard()
   ) ; }
 async function sendSmokelandiaChannelPanel(ctx) {
-  await ctx.replyWithPhoto("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ", {
-    caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
+  await ctx.replyWithVideo(
+    "r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ",
+    {
+      caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
-    ...getSmokelandiaChannelButton(),
+      ...getSmokelandiaChannelButton(),
   } ) ; }
 async function sendUserFxChannelPanel(ctx) {
   await ctx.replyWithPhoto("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115", {
