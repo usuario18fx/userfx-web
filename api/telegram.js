@@ -578,6 +578,7 @@ bot.action(/^notify_me_(.+)$/, async (ctx) => {
 
   try {
     const user = getUserMeta(ctx.from);
+
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
       `🔔 <b>Notify request</b>
@@ -586,6 +587,23 @@ Username: <b>${escapeHtml(user.username)}</b>
 ID: <code>${escapeHtml(user.id)}</code>
 Target: <code>${escapeHtml(requesterId)}</code>`,
       { parse_mode: "HTML" }
+    );
+
+    await bot.telegram.sendMessage(
+      requesterId,
+      "SURE! INGRESA A MI CANAL PARA QUE CHEQUES MIS ACTUALIZACIONES.",
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "▶ MI CANAL",
+                url: "https://t.me/tu_canal_aqui",
+              },
+            ],
+          ],
+        },
+      }
     );
   } catch (err) {
     console.error("NOTIFY_ME ERROR:", err);
