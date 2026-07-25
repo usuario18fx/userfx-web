@@ -381,8 +381,7 @@ bot.start(async (ctx) => {
   try {
     console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
 
-    adminBot.telegram
-      .sendMessage(ADMIN_CHAT_ID, "✅ TEST DESDE ADMIN BOT")
+    adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "✅ TEST DESDE ADMIN BOT")
       .catch((err) => {
         console.error("ADMIN TEST ERROR:", err);
       });
@@ -531,7 +530,7 @@ async function handleMedia(ctx, type) {
       return;
     }
 
-    console.log("HANDLE MEDIA ADMIN_CHAT_ID:", ADMIN_CHAT_ID);
+    console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
     console.log("HANDLE MEDIA TYPE:", type);
     console.log("HANDLE MEDIA FILE ID:", fileId);
 
@@ -547,14 +546,6 @@ Approve or reject:`,
     });
   } catch (err) {
     console.error("SEND MEDIA ERROR:", err);
-
-    try {
-      await adminBot.telegram.sendMessage(
-        ADMIN_CHAT_ID,
-        `❌ SEND MEDIA ERROR
-${err?.response?.description || err?.message || String(err)}`
-      );
-    } catch (_) {}
   }
 }
 
