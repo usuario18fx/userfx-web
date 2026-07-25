@@ -193,33 +193,25 @@ async function sendMembershipPanel(ctx) {
 ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
 ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`,
     getMainKeyboard()
-  );
-}
-
+  ) ; }
 async function sendVipPanel(ctx) {
-  await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
+  await ctx.replyWithVideo(Input.fromLocalFile(asset("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g")), {
     caption: `ᴠɪᴘ⚡ 
     ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
-  });
-}
-
+  } ) ; }
 async function sendUserPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("userFX.jpg")), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT")), {
     caption: `ᴜꜱᴇʀ👑 
     ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsUserKeyboard().reply_markup,
-  });
-}
-
+  } ) ; }
 async function sendChannelsPanel(ctx) {
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
 ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
     getChannelsKeyboard()
-  );
-}
-
+  ) ; }
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasUser } = getAccessState(ctx.from?.id);
   const tier = hasVip ? "⚡ᴠɪᴘ" : hasUser ? "𝐔𝐬𝐞𝐫🜲Ŧҳ" : "ɴᴏ ᴘʟᴀɴ";
@@ -227,27 +219,21 @@ async function sendRefreshPanel(ctx) {
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
 ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
     getMainKeyboard()
-  );
-}
-
+  ) ; }
 async function sendSmokelandiaChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("USERFX-ID18V20.jpg")), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ")), {
     caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getSmokelandiaChannelButton(),
-  });
-}
-
+  } ) ; }
 async function sendUserFxChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("videocall.jpg")), {
+  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115")), {
     caption: `𝐔𝐬𝐞𝐫 🜲Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getUserFxChannelButton(),
-  });
-}
-
+  } ) ; }
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId) return;
@@ -256,14 +242,13 @@ async function openVideocallFlow(ctx) {
     awaitingAdminApproval: false,
     invalidTextCount: 0,
     createdAt: Date.now(),
-  });
+  } ) ;
   await safeDeleteMessage(ctx);
-  await ctx.replyWithVideo(Input.fromLocalFile(asset("FX-Y24V01.mp4")), {
+  await ctx.replyWithVideo(Input.fromLocalFile(asset("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO")), {
     caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
     ...getPendingPhotoKeyboard(),
-  });
-  
+  } ) ;
   const user = getUserMeta(ctx.from);
   try {
     await adminBot.telegram.sendMessage(
@@ -278,23 +263,19 @@ Esperando su foto...`,
     );
   } catch (err) {
     console.error("ADMIN ERROR:", err);
-  }
-}
-
+} }
 async function sendApprovedVideocallFlow(userId) {
   await bot.telegram.sendMessage(
     userId,
     `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
 ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
-  );
+) ;
   await bot.telegram.sendMessage(
     userId,
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
 ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
     getApprovedVideocallKeyboard()
-  );
-}
-
+) ; }
 async function sendVipInvoice(ctx) {
   if (!ctx.chat?.id) return;
   await ctx.telegram.callApi("sendInvoice", {
@@ -305,9 +286,7 @@ async function sendVipInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "𝐕𝐈𝐏 ACCESS", amount: VIP_STARS_PRICE }],
     start_parameter: VIP_PAYLOAD,
-  });
-}
-
+} ) ; }
 async function sendUserInvoice(ctx) {
   if (!ctx.chat?.id) return;
   await ctx.telegram.callApi("sendInvoice", {
@@ -318,110 +297,87 @@ async function sendUserInvoice(ctx) {
     currency: "XTR",
     prices: [{ label: "USER FX ACCESS", amount: USER_STARS_PRICE }],
     start_parameter: USER_PAYLOAD,
-  });
-}
-
+} ) ; }
 async function handleSuccessfulPayment(ctx) {
   const payment = ctx.message?.successful_payment;
   if (!payment) return;
   const userId = String(ctx.from?.id || "");
   const chargeId = payment.telegram_payment_charge_id;
-  
   if (payment.invoice_payload === VIP_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "vip",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
-    });
+} ) ;
     await ctx.reply(
       `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
 ʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard()
-    );
+) ;
     return;
-  }
-  
+}  
   if (payment.invoice_payload === USER_PAYLOAD) {
     paidUsers.set(userId, {
       tier: "ᴜꜱᴇʀ",
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
-    });
+} ) ;
     await ctx.reply(
       `✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ
 ʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       getMainKeyboard()
-    );
-  }
-}
-
+) ; } }
 bot.start(async (ctx) => {
   try {
     adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "✅ TEST DESDE ADMIN BOT").catch(err => {
       console.error("ADMIN TEST ERROR:", err);
-    });
+} ) ;
     await sendMainPanel(ctx);
   } catch (error) {
     console.error("ERROR in bot.start:", error);
-  }
-});
-
+} } ) ;
 bot.command("paysupport", async (ctx) => {
   await ctx.reply(
     `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`
-  );
-});
-
+) ; } ) ;
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
   try {
     await openVideocallFlow(ctx);
   } catch (error) {
     console.error("ERROR openVideocallFlow:", error);
     await ctx.reply("ERROR:\n" + (error?.stack || error?.message || String(error)));
-  }
-});
-
+} } ) ;
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
   await sendMembershipPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_VIP, async (ctx) => {
   await sendVipPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_USER, async (ctx) => {
   await sendUserPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_CHANNELS, async (ctx) => {
   await sendChannelsPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_PAY_STARS_VIP, async (ctx) => {
   await sendVipInvoice(ctx);
-});
-
+} ) ;
 bot.hears(BTN_PAY_STARS_USER, async (ctx) => {
   await sendUserInvoice(ctx);
-});
-
+} ) ;
 bot.hears(BTN_SMOKELANDIA, async (ctx) => {
   await sendSmokelandiaChannelPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_USERFX_SITE, async (ctx) => {
   await sendUserFxChannelPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_CHANNELS_BACK, async (ctx) => {
   await sendMainPanel(ctx);
-});
-
+} ) ;
 bot.hears(BTN_CANCEL, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
@@ -449,7 +405,6 @@ bot.hears(BTN_TELEGRAM, async (ctx) => {
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);
 } ) ;
-// --- MANEJO DE FOTO Y VIDEO UNIFICADO ---
 async function handleMedia(ctx, type) {
   const userId = String(ctx.from?.id || "");
   const pending = pendingVideoRequests.get(userId);
@@ -458,13 +413,12 @@ async function handleMedia(ctx, type) {
     pending.awaitingAdminApproval = true;
     pendingVideoRequests.set(userId, pending);
   } else {
-    return; // Si no está esperando foto, no hace nada
+    return;
   }
   try {
     const user = getUserMeta(ctx.from);
     let fileId;
     let apiMethod;
-
     if (type === "photo") {
       fileId = ctx.message.photo.at(-1).file_id;
       apiMethod = "sendPhoto";
@@ -526,7 +480,6 @@ bot.on("successful_payment", handleSuccessfulPayment);
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
 } ) ;
-// --- ADMIN BOT HANDLERS ---
 adminBot.command("myid", async (ctx) => {
   await ctx.reply(`chat_id: ${ctx.chat.id}`);
 } ) ;
@@ -554,7 +507,6 @@ adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
 adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
 } ) ;
-// --- WEBHOOK HANDLER ---
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(200).send("OK");
@@ -566,10 +518,8 @@ export default async function handler(req, res) {
     } else {
       await bot.handleUpdate(req.body);
     }
-    // Respondemos a Telegram SOLO DESPUÉS de procesar todo
     return res.status(200).send("OK");
   } catch (error) {
     console.error("BOT HANDLE UPDATE ERROR:", error);
-    // Aun si hay error, respondemos 200 para que Telegram no siga reintentando
     return res.status(200).send("OK");
   } }
