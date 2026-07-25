@@ -1,8 +1,7 @@
 import path from "path";
 import { Telegraf, Markup, Input } from "telegraf";
 export const config = {
-  api: {
-    bodyParser: true,
+  api: { bodyParser: true,
 } , } ;
 export const maxDuration = 60;
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -15,6 +14,10 @@ if (!ADMIN_CHAT_ID) throw new Error("Missing ADMIN_CHAT_ID");
 
 const bot = new Telegraf(BOT_TOKEN);
 const adminBot = new Telegraf(ADMIN_BOT_TOKEN); 
+
+bot.telegram.webhookReply = false;
+adminBot.telegram.webhookReply = false;
+
 const WEBSITE_URL = "https://userfx-web.vercel.app";
 const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
 const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
@@ -28,14 +31,12 @@ const USER_PAYLOAD = "user_fx_access";
 
 const TIER_VIP = "ᴠɪᴘ";
 const TIER_USER = "ᴜꜱᴇʀ";
-
 const asset = (file) => path.join(process.cwd(), "assets", file);
 const pendingVideoRequests = globalThis.__fxPendingVideoRequests || new Map();
-
+const paidUsers = globalThis.__fxPaidUsers || new Map();
 if (!globalThis.__fxPendingVideoRequests) {
   globalThis.__fxPendingVideoRequests = pendingVideoRequests;
 }
-const paidUsers = globalThis.__fxPaidUsers || new Map();
 if (!globalThis.__fxPaidUsers) {
   globalThis.__fxPaidUsers = paidUsers;
 }
@@ -211,7 +212,7 @@ async function openVideocallFlow(ctx) {
     invalidTextCount: 0,
     createdAt: Date.now(),
   } ) ;
-  await safeDeleteMessage(ctx);
+
   await ctx.replyWithVideo("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO", {
     caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
@@ -297,7 +298,8 @@ async function handleSuccessfulPayment(ctx) {
 ) ; } }
 bot.start(async (ctx) => {
   try {
-    adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "✅ TEST DESDE ADMIN BOT").catch(err => {
+    adminBot.telegram.sendMessage(ADMIN_CHAT_ID, 
+      "✅ TEST DESDE ADMIN BOT").catch(err => {
       console.error("ADMIN TEST ERROR:", err);
 } ) ;
     await sendMainPanel(ctx);
@@ -314,7 +316,7 @@ bot.hears(BTN_VIDEOCALL, async (ctx) => {
     await openVideocallFlow(ctx);
   } catch (error) {
     console.error("ERROR openVideocallFlow:", error);
-    await ctx.reply("ERROR:\n" + (error?.stack || error?.message || String(error)));
+    await ctx.reply("❌ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ. ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.");
 } } ) ;
 bot.hears(BTN_GET_FULL_ACCESS, async (ctx) => {
   await sendMembershipPanel(ctx);
@@ -439,12 +441,31 @@ bot.on("text", async (ctx) => {
       await sendMainPanel(ctx);
       return;
     }
-    await ctx.reply("📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ.");
+    await ctx.reply(
+      "📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ."
+    ) ;
     return;
 }
   await sendMainPanel(ctx);
 } ) ;
 bot.on("successful_payment", handleSuccessfulPayment);
+bot.action(/^notify_me_(.+)$/, async (ctx) => {
+  const requesterId = String(ctx.match[1]);
+  await ctx.answerCbQuery("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.");
+  await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
+  try {
+    const user = getUserMeta(ctx.from);
+  await adminBot.telegram.sendMessage(
+    ADMIN_CHAT_ID,
+      `🔔 <b>Notify request</b>
+Name: <b>${escapeHtml(user.fullName)}</b>
+Username: <b>${escapeHtml(user.username)}</b>
+ID: <code>${escapeHtml(user.id)}</code>
+Target: <code>${escapeHtml(requesterId)}</code>`,
+      { parse_mode: "HTML" }
+) ; } catch (err) {
+    console.error("NOTIFY_ME ERROR:", err);
+} } ) ;
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
 } ) ;
@@ -453,41 +474,48 @@ adminBot.command("myid", async (ctx) => {
 } ) ;
 adminBot.action(/^approve_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("✅ ᴀᴘᴘʀᴏᴠᴇᴅ");
+  await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
   const requesterId = String(ctx.match[1]);
   const pending = pendingVideoRequests.get(requesterId);
   if (!pending) {
     await ctx.reply("ʀᴇQᴜᴇꜱᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ.");
     return;
-}
+  }
   pendingVideoRequests.delete(requesterId);
   await sendApprovedVideocallFlow(requesterId);
 } ) ;
 adminBot.action(/^reject_video_(.+)$/, async (ctx) => {
   await ctx.answerCbQuery("❌ ʀᴇᴊᴇᴄᴛᴇᴅ");
+  await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
   const requesterId = String(ctx.match[1]);
   pendingVideoRequests.delete(requesterId);
+  const notifyKeyboard = Markup.inlineKeyboard([
+    [Markup.button.callback("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", `notify_me_${requesterId}`)]
+  ] ) ;
   await bot.telegram.sendMessage(
     requesterId,
     `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
-    { reply_markup: { inline_keyboard: [
-    [{ text: "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", callback_data: `notify_me_${requesterId}` }],
-    ] , } , } ) ; } ) ;
+    {
+      reply_markup: notifyKeyboard.reply_markup,
+} ) ; } ) ;
 adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
-    } ) ;
+} ) ;
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(200).send("OK");
-   }  
+  }
   try {
-    const fullUrl = (req.headers["x-forwarded-uri"] || req.url) || "";
-    if (fullUrl.includes("admin=true")) {
-      await adminBot.handleUpdate(req.body);
+    const secret = req.headers["x-telegram-bot-api-secret-token"];
+    const update = req.body;
+    if (secret === "ADMIN") {
+      await adminBot.handleUpdate(update);
     } else {
-      await bot.handleUpdate(req.body);
+      await bot.handleUpdate(update);
     }
     return res.status(200).send("OK");
-    } catch (error) {
+  } catch (error) {
     console.error("BOT HANDLE UPDATE ERROR:", error);
     return res.status(200).send("OK");
-  } }
+  }
+}
