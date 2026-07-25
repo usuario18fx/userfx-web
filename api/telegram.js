@@ -179,6 +179,7 @@ async function sendMembershipPanel(ctx) {
 ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹
 
 
+
 ⚡ ʙᴇɴᴇꜰɪᴛꜱ
 ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
 ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
@@ -521,6 +522,7 @@ async function handleMedia(ctx, type) {
 
 bot.on("photo", (ctx) => handleMedia(ctx, "photo"));
 bot.on("video", (ctx) => handleMedia(ctx, "video"));
+
 bot.on("text", async (ctx) => {
   const text = (ctx.message.text || "").trim();
   const userId = String(ctx.from?.id || "");
