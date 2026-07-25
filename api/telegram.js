@@ -195,13 +195,13 @@ async function sendMembershipPanel(ctx) {
     getMainKeyboard()
   ) ; }
 async function sendVipPanel(ctx) {
-  await ctx.replyWithVideo(Input.fromLocalFile(asset("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g")), {
+await ctx.replyWithVideo(Input.byFileId("Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g"), {
     caption: `ᴠɪᴘ⚡ 
     ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsVipKeyboard().reply_markup,
   } ) ; }
 async function sendUserPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT")), {
+  await ctx.replyWithPhoto(Input.byFileId("r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT"), {
     caption: `ᴜꜱᴇʀ👑 
     ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
     reply_markup: getStarsUserKeyboard().reply_markup,
@@ -221,14 +221,14 @@ async function sendRefreshPanel(ctx) {
     getMainKeyboard()
   ) ; }
 async function sendSmokelandiaChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ")), {
+  await ctx.replyWithPhoto(Input.byFileId("r_JpgGY0aBXgoy_Z1N3eCm6DhtRVMOwJo1t-6WdfOSjxO1DUlEmJ8EZlhoe7RbdZ"), {
     caption: `☁️ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ
 ᴘʀɪᴠᴀᴛᴇ ꜱᴍᴏᴋᴇ ʀᴏᴏᴍ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
     ...getSmokelandiaChannelButton(),
   } ) ; }
 async function sendUserFxChannelPanel(ctx) {
-  await ctx.replyWithPhoto(Input.fromLocalFile(asset("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115")), {
+  await ctx.replyWithPhoto(Input.byFileId("r_JpgGY0aBXgoy_Z1N3eCnTh6i7FHfvdhebbpDPlZre1iHU9iYT44Aj4lCVXv115"), {
     caption: `𝐔𝐬𝐞𝐫 🜲Ŧҳ
 ᴘʀɪᴠᴀᴛᴇ ʀᴏᴜᴛᴇ ʀᴇᴀᴅʏ.
 👇 ᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴇɴᴛʀᴀʀ`,
@@ -244,8 +244,7 @@ async function openVideocallFlow(ctx) {
     createdAt: Date.now(),
   } ) ;
   await safeDeleteMessage(ctx);
-  await ctx.replyWithVideo(Input.fromLocalFile(asset("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO")), {
-    caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
+  await ctx.replyWithVideo(Input.byFileId("r7iZgQjb73xKY4_5WH2Dbft9Sce8ewjP-qi-Ixd6-Fb4763Otmx06wVngbnnWMzO"), {  caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ..
 ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
     ...getPendingPhotoKeyboard(),
   } ) ;
