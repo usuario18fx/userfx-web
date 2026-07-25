@@ -591,14 +591,14 @@ Target: <code>${escapeHtml(requesterId)}</code>`,
 
     await bot.telegram.sendMessage(
       requesterId,
-      "SURE! INGRESA A MI CANAL PARA QUE CHEQUES MIS ACTUALIZACIONES.",
+      "ꜰᴏʀ ꜱᴜʀᴇ! ꜱᴡɪɴɢ ʙʏ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ꜱᴇᴇ ᴡʜᴀᴛ'ꜱ ɴᴇᴡ..",
       {
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: "▶ MI CANAL",
-                url: "https://t.me/tu_canal_aqui",
+                text: "𝐔𝐬𝐞𝐫 Ŧҳ 🜲",
+                url: "https://t.me/+v57jkAGn3DA0NWJh",
               },
             ],
           ],
