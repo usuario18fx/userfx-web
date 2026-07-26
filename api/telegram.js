@@ -55,8 +55,6 @@ const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
 const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
 const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
-const BTN_PAY_STARS_VIP = "⭐ ᴘᴀʏ ᴠɪᴘ";
-const BTN_PAY_STARS_USER = "⭐ ᴘᴀʏ ᴜꜱᴇʀ";
 const BTN_SMOKELANDIA = "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬𝐞𝐫🜲Ŧҳ";
 const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
@@ -104,22 +102,6 @@ function getApprovedVideocallKeyboard() {
   ).resize();
 }
 
-function getStarsVipKeyboard() {
-  // Cambiado a inline keyboard para que funcione correctamente
-  return Markup.inlineKeyboard([
-    [Markup.button.callback("⭐ ᴘᴀʏ ᴠɪᴘ ✪", "pay_vip_stars")],
-    [Markup.button.callback("↽ ʙᴀᴄᴋ", "back_to_main")],
-  ]);
-}
-
-function getStarsUserKeyboard() {
-  // Cambiado a inline keyboard para que funcione correctamente
-  return Markup.inlineKeyboard([
-    [Markup.button.callback("⭐ ᴘᴀʏ ᴜꜱᴇʀ ✪", "pay_user_stars")],
-    [Markup.button.callback("↽ ʙᴀᴄᴋ", "back_to_main")],
-  ]);
-}
-
 function getChannelsKeyboard() {
   return Markup.keyboard(
     [
@@ -130,14 +112,26 @@ function getChannelsKeyboard() {
   ).resize();
 }
 
-function getAdminApprovalButtons(requesterId) {
+// FUNCIONES CORREGIDAS PARA USAR INLINE KEYBOARDS
+function getStarsVipKeyboard() {
   return {
     reply_markup: {
-      inline_keyboard: [[
-        { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${requesterId}` },
-        { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${requesterId}` },
-      ]],
-    },
+      inline_keyboard: [
+        [{ text: "⭐ ᴘᴀʏ ᴠɪᴘ ✪", callback_data: "pay_vip_stars" }],
+        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_main" }]
+      ]
+    }
+  };
+}
+
+function getStarsUserKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "⭐ ᴘᴀʏ ᴜꜱᴇʀ ✪", callback_data: "pay_user_stars" }],
+        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_main" }]
+      ]
+    }
   };
 }
 
@@ -146,9 +140,9 @@ function getSmokelandiaChannelButton() {
     reply_markup: {
       inline_keyboard: [
         [{ text: "☁️ᴇɴᴛᴇʀ ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
-        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
-      ],
-    },
+        [{ text: "↽ ʙᴀᴄᴋ ᴛᴏ ᴄʜᴀɴɴᴇʟꜱ", callback_data: "back_to_channels" }]
+      ]
+    }
   };
 }
 
@@ -157,8 +151,19 @@ function getUserFxChannelButton() {
     reply_markup: {
       inline_keyboard: [
         [{ text: "🜲 ᴇɴᴛᴇʀ 𝐔𝐬𝐞𝐫 Ŧҳ", url: USER_GROUP_LINK }],
-        [{ text: "↽ ʙᴀᴄᴋ", callback_data: "back_to_channels" }],
-      ],
+        [{ text: "↽ ʙᴀᴄᴋ ᴛᴏ ᴄʜᴀɴɴᴇʟꜱ", callback_data: "back_to_channels" }]
+      ]
+    }
+  };
+}
+
+function getAdminApprovalButtons(requesterId) {
+  return {
+    reply_markup: {
+      inline_keyboard: [[
+        { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${requesterId}` },
+        { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${requesterId}` },
+      ]],
     },
   };
 }
@@ -201,7 +206,7 @@ async function sendVipPanel(ctx) {
     {
       caption: `ᴠɪᴘ⚡
 ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-      reply_markup: getStarsVipKeyboard().reply_markup,
+      ...getStarsVipKeyboard(),
     }
   );
 }
@@ -212,7 +217,7 @@ async function sendUserPanel(ctx) {
     {
       caption: `ᴜꜱᴇʀ👑
 ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-      reply_markup: getStarsUserKeyboard().reply_markup,
+      ...getStarsUserKeyboard(),
     }
   );
 }
@@ -313,6 +318,7 @@ async function sendApprovedVideocallFlow(userId) {
 async function sendVipInvoice(ctx) {
   if (!ctx.chat?.id) {
     console.error("No chat ID available");
+    await ctx.reply("❌ Error: No se pudo procesar el pago.");
     return;
   }
 
@@ -328,13 +334,14 @@ async function sendVipInvoice(ctx) {
     });
   } catch (error) {
     console.error("Error sending VIP invoice:", error);
-    await ctx.reply("❌ Error al procesar el pago. Por favor intenta de nuevo.");
+    await ctx.reply("❌ Error al procesar el pago VIP. Por favor intenta de nuevo.");
   }
 }
 
 async function sendUserInvoice(ctx) {
   if (!ctx.chat?.id) {
     console.error("No chat ID available");
+    await ctx.reply("❌ Error: No se pudo procesar el pago.");
     return;
   }
 
@@ -350,7 +357,7 @@ async function sendUserInvoice(ctx) {
     });
   } catch (error) {
     console.error("Error sending User invoice:", error);
-    await ctx.reply("❌ Error al procesar el pago. Por favor intenta de nuevo.");
+    await ctx.reply("❌ Error al procesar el pago USER. Por favor intenta de nuevo.");
   }
 }
 
@@ -414,6 +421,7 @@ bot.command("paysupport", async (ctx) => {
   );
 });
 
+// ============ PERSISTENT KEYBOARD HANDLERS ============
 bot.hears(BTN_VIDEOCALL, async (ctx) => {
   try {
     await openVideocallFlow(ctx);
@@ -444,15 +452,6 @@ bot.hears(BTN_REFRESH, async (ctx) => {
   await sendRefreshPanel(ctx);
 });
 
-// Estos hears ya no son necesarios porque usamos actions
-// bot.hears(BTN_PAY_STARS_VIP, async (ctx) => {
-//   await sendVipInvoice(ctx);
-// });
-
-// bot.hears(BTN_PAY_STARS_USER, async (ctx) => {
-//   await sendUserInvoice(ctx);
-// });
-
 bot.hears(BTN_SMOKELANDIA, async (ctx) => {
   await sendSmokelandiaChannelPanel(ctx);
 });
@@ -475,33 +474,6 @@ bot.hears(BTN_BACK_MENU, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   pendingVideoRequests.delete(userId);
   await sendMainPanel(ctx);
-});
-
-// ============ ACTIONS (Callback queries) ============
-
-// Action para pagar VIP
-bot.action("pay_vip_stars", async (ctx) => {
-  await ctx.answerCbQuery(); // Respuesta rápida al callback
-  await sendVipInvoice(ctx);
-});
-
-// Action para pagar USER
-bot.action("pay_user_stars", async (ctx) => {
-  await ctx.answerCbQuery(); // Respuesta rápida al callback
-  await sendUserInvoice(ctx);
-});
-
-// Action para volver al menú principal
-bot.action("back_to_main", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.deleteMessage().catch(() => {});
-  await sendMainPanel(ctx);
-});
-
-bot.action("back_to_channels", async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.deleteMessage().catch(() => {});
-  await sendChannelsPanel(ctx);
 });
 
 bot.hears(BTN_ZOOM, async (ctx) => {
@@ -528,97 +500,41 @@ bot.hears(BTN_TELEGRAM, async (ctx) => {
   );
 });
 
-bot.on("pre_checkout_query", async (ctx) => {
-  await ctx.answerPreCheckoutQuery(true);
+// ============ INLINE KEYBOARD ACTIONS (CALLBACKS) ============
+
+// Acciones para pagos
+bot.action("pay_vip_stars", async (ctx) => {
+  await ctx.answerCbQuery(); // Responde al callback para evitar "loading"
+  await sendVipInvoice(ctx);
 });
 
-async function handleMedia(ctx, type) {
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
+bot.action("pay_user_stars", async (ctx) => {
+  await ctx.answerCbQuery();
+  await sendUserInvoice(ctx);
+});
 
-  if (pending?.waitingForPhoto) {
-    pending.waitingForPhoto = false;
-    pending.awaitingAdminApproval = true;
-    pendingVideoRequests.set(userId, pending);
-  } else {
-    return;
-  }
-
+// Acciones para navegación
+bot.action("back_to_main", async (ctx) => {
+  await ctx.answerCbQuery();
   try {
-    const user = getUserMeta(ctx.from);
-    console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
-    console.log("HANDLE MEDIA TYPE:", type);
-
-    await bot.telegram.copyMessage(
-      ADMIN_CHAT_ID,
-      ctx.chat.id,
-      ctx.message.message_id,
-      {
-        reply_markup: {
-          inline_keyboard: [[
-            { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${user.id}` },
-            { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${user.id}` },
-          ]],
-        },
-      }
-    );
-  } catch (err) {
-    console.error("SEND MEDIA ERROR:", err);
+    await ctx.deleteMessage();
+  } catch (e) {
+    // Si no se puede eliminar, continuar
   }
-}
-
-bot.on("photo", (ctx) => handleMedia(ctx, "photo"));
-bot.on("video", (ctx) => handleMedia(ctx, "video"));
-
-bot.on("text", async (ctx) => {
-  const text = (ctx.message.text || "").trim();
-  const userId = String(ctx.from?.id || "");
-  const pending = pendingVideoRequests.get(userId);
-
-  const knownInputs = [
-    "/start",
-    "/paysupport",
-    BTN_VIDEOCALL,
-    BTN_GET_FULL_ACCESS,
-    BTN_VIP,
-    BTN_USER,
-    BTN_CHANNELS,
-    BTN_REFRESH,
-    BTN_ZOOM,
-    BTN_TELEGRAM,
-    BTN_CANCEL,
-    BTN_BACK_MENU,
-    // BTN_PAY_STARS_VIP, // Ya no está en el teclado persistente
-    // BTN_PAY_STARS_USER, // Ya no está en el teclado persistente
-    BTN_SMOKELANDIA,
-    BTN_USERFX_SITE,
-    BTN_CHANNELS_BACK,
-  ];
-
-  if (knownInputs.includes(text)) return;
-
-  if (pending?.waitingForPhoto) {
-    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
-    pendingVideoRequests.set(userId, pending);
-
-    if (pending.invalidTextCount >= 4) {
-      pendingVideoRequests.delete(userId);
-      await ctx.reply("❌ ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ.");
-      await sendMainPanel(ctx);
-      return;
-    }
-
-    await ctx.reply(
-      "📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ."
-    );
-    return;
-  }
-
   await sendMainPanel(ctx);
 });
 
-bot.on("successful_payment", handleSuccessfulPayment);
+bot.action("back_to_channels", async (ctx) => {
+  await ctx.answerCbQuery();
+  try {
+    await ctx.deleteMessage();
+  } catch (e) {
+    // Si no se puede eliminar, continuar
+  }
+  await sendChannelsPanel(ctx);
+});
 
+// Acciones para videocall
 bot.action(/^notify_me_(.+)$/, async (ctx) => {
   const requesterId = String(ctx.match[1]);
 
@@ -695,10 +611,103 @@ bot.action(/^reject_video_(.+)$/, async (ctx) => {
   );
 });
 
+// ============ PRE_CHECKOUT Y PAYMENT ============
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
+});
+
+bot.on("successful_payment", handleSuccessfulPayment);
+
+// ============ MEDIA HANDLERS ============
+async function handleMedia(ctx, type) {
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  if (pending?.waitingForPhoto) {
+    pending.waitingForPhoto = false;
+    pending.awaitingAdminApproval = true;
+    pendingVideoRequests.set(userId, pending);
+  } else {
+    return;
+  }
+
+  try {
+    const user = getUserMeta(ctx.from);
+    console.log("ADMIN_CHAT_ID ACTIVE:", ADMIN_CHAT_ID);
+    console.log("HANDLE MEDIA TYPE:", type);
+
+    await bot.telegram.copyMessage(
+      ADMIN_CHAT_ID,
+      ctx.chat.id,
+      ctx.message.message_id,
+      {
+        reply_markup: {
+          inline_keyboard: [[
+            { text: "✅ ᴀᴘᴘʀᴏᴠᴇ", callback_data: `approve_video_${user.id}` },
+            { text: "❌ ʀᴇᴊᴇᴄᴛ", callback_data: `reject_video_${user.id}` },
+          ]],
+        },
+      }
+    );
+  } catch (err) {
+    console.error("SEND MEDIA ERROR:", err);
+  }
+}
+
+bot.on("photo", (ctx) => handleMedia(ctx, "photo"));
+bot.on("video", (ctx) => handleMedia(ctx, "video"));
+
+// ============ TEXT HANDLER ============
+bot.on("text", async (ctx) => {
+  const text = (ctx.message.text || "").trim();
+  const userId = String(ctx.from?.id || "");
+  const pending = pendingVideoRequests.get(userId);
+
+  const knownInputs = [
+    "/start",
+    "/paysupport",
+    BTN_VIDEOCALL,
+    BTN_GET_FULL_ACCESS,
+    BTN_VIP,
+    BTN_USER,
+    BTN_CHANNELS,
+    BTN_REFRESH,
+    BTN_ZOOM,
+    BTN_TELEGRAM,
+    BTN_CANCEL,
+    BTN_BACK_MENU,
+    BTN_SMOKELANDIA,
+    BTN_USERFX_SITE,
+    BTN_CHANNELS_BACK,
+  ];
+
+  if (knownInputs.includes(text)) return;
+
+  if (pending?.waitingForPhoto) {
+    pending.invalidTextCount = (pending.invalidTextCount || 0) + 1;
+    pendingVideoRequests.set(userId, pending);
+
+    if (pending.invalidTextCount >= 4) {
+      pendingVideoRequests.delete(userId);
+      await ctx.reply("❌ ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ.");
+      await sendMainPanel(ctx);
+      return;
+    }
+
+    await ctx.reply(
+      "📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ, ᴛʜᴇɴ ɪ'ʟʟ ꜱᴇɴᴅ ᴛʜᴇ ʟɪɴᴋꜱ ᴛᴏ ᴄᴀʟʟ ᴍᴇ."
+    );
+    return;
+  }
+
+  await sendMainPanel(ctx);
+});
+
 bot.catch((error) => {
   console.error("TELEGRAF ERROR:", error);
 });
 
+// ============ ADMIN BOT ============
 adminBot.command("myid", async (ctx) => {
   await ctx.reply(`chat_id: ${ctx.chat.id}`);
 });
@@ -707,6 +716,7 @@ adminBot.catch((error) => {
   console.error("ADMIN TELEGRAF ERROR:", error);
 });
 
+// ============ EXPORT ============
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(200).send("OK");
