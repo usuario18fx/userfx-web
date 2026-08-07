@@ -1,15 +1,13 @@
 {
-  "name": "userfx-telegram-bot",
-  "version": "1.0.0",
+  "name": "userfx-web",
   "private": true,
   "type": "module",
   "scripts": {
-  "dev": "vercel_dep",
-  "deploy":"vercel --prod",
-  "build": "vite build"
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.0",
+    "@supabase/supabase-js": "^2.49.4",
     "dotenv": "^16.4.5",
     "grammy": "^1.30.0",
     "pg": "^8.12.0",
