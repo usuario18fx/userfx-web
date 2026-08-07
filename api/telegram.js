@@ -50,7 +50,7 @@ const BTN_SMOKELANDIA = "ꜱᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬𝐞𝐫🜲Ŧҳ";
 const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
 function escapeHtml(value = "") {
-  return String(value)
+return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
@@ -106,19 +106,19 @@ function getAccessState(userId) {
   } ; }
 // =================== PANEL FUNCTIONS (con try-catch) ===================
 async function typing(ctx, action = "typing") {
-  const delay = 800 + Math.floor(Math.random() * 1800);
-  await ctx.sendChatAction(action);
-  await new Promise(resolve => setTimeout(resolve, delay));
-}
+  const delay = 800 + Math.floor(Math.random() * 1800) ;
+  await ctx.sendChatAction(action) ;
+  await new Promise(resolve => setTimeout(resolve, delay) ) ;
+  }
 async function sendMainPanel(ctx) {
-  await typing(ctx);
+  await typing(ctx) ;
   await ctx.reply(
     `Ŧҳ | ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ
 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ. ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
-    getMainKeyboard()
-) ; }
+    getMainKeyboard( )
+  ) ; }
 async function sendMembershipPanel(ctx) {
-  await typing(ctx);
+  await typing(ctx) ;
   await ctx.reply(
     `🔥 ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ
 
@@ -132,7 +132,7 @@ async function sendMembershipPanel(ctx) {
 ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
 ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`,
     getMainKeyboard()
-  );}
+  ) ; }
   async function sendVipPanel(ctx) {
     try {
     await ctx.replyWithVideo(
@@ -218,47 +218,52 @@ async function sendSmokelandiaChannelPanel(ctx) {
     getMainKeyboard()
   ) ; }
   async function openVideocallFlow(ctx) {
-    const userId = String(ctx.from?.id || "");
-    if (!userId) return;
-    pendingVideoRequests.set(userId, {
-      waitingForPhoto: true,
-      awaitingAdminApproval: false,
-      invalidTextCount: 0,
-      createdAt: Date.now(),
-  } ) ;
-  await typing(ctx, "upload_video");
-  await ctx.replyWithVideo(
-    Input.fromLocalFile(asset("FX-Y24V01.mp4")),
+  const userId = String(ctx.from?.id || "");
+  if (!userId) return;
+  pendingVideoRequests.set(userId, {
+    waitingForPhoto: true,
+    awaitingAdminApproval: false,
+    invalidTextCount: 0,
+    createdAt: Date.now(),
+    } ) ;
+    await typing(ctx, "upload_video");
+    await ctx.replyWithVideo(
+    Input.fromLocalFile(assets("FX-Y24V01.mp4")),
     { caption: `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ? ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ...
-      ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
-     ...getPendingPhotoKeyboard(),
-    });
-  const user = getUserMeta(ctx.from);
-  try {
-    await typing(
+        ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
+    ...getPendingPhotoKeyboard(),
+    } ) ;
+    const user = getUserMeta(ctx.from);
+    try { await typing(
     { sendChatAction: (action) =>
-          adminBot.telegram.sendChatAction(ADMIN_CHAT_ID, action),
-    },
-      "typing" 
+        adminBot.telegram.sendChatAction(ADMIN_CHAT_ID, action),
+    } , "typing"
     ) ;
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
       `📞 <b>New videocall request
-    </b>
-    Name: <b>${escapeHtml(user.fullName) }
-    </b>
-    Username: <b>${escapeHtml(user.username) } 
-    </b>
-    ID: <code>${escapeHtml(user.id) }
-    </code>
-    Chat ID usuario: <code>${escapeHtml(userId) }
-    </code>
-    Esperando su foto...`,
- { parse_mode: "HTML",
- } );
+     </b>
+     Name: <b>${escapeHtml(user.fullName) }
+     </b>
+     Username: <b>${escapeHtml(user.username) }
+     </b>
+     ID: <code>${escapeHtml(user.id) }
+     </code>
+     ᴄʜᴀᴛ ɪᴅ ᴜꜱᴇʀ: <code>${escapeHtml(userId) }
+     </code>
+     ᴇꜱᴘᴇʀᴀɴᴅᴏ ꜱᴜ ꜰᴏᴛᴏ...`,
+  { parse_mode: "HTML",
+  } ) ;
   } catch (err) {
     console.error("ADMIN ERROR:", err);
-  }}
+  } }
+  async function sendApprovedVideocallFlow(userId) {
+  await bot.telegram.sendMessage(
+    userId,`✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ\nʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
+  ) ;
+  await bot.telegram.sendMessage( userId, `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.\nᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
+    getApprovedVideocallKeyboard()
+  ) ; }
   async function typing(ctx, action = "typing") {
   const delay = 800 + Math.floor(Math.random() * 1800);
   await ctx.sendChatAction(action);
