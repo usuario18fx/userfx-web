@@ -323,11 +323,11 @@ async function sendSmokelandiaChannelPanel(ctx) {
   ) ;
   return;
   }
-  if (payment.invoice_payload === USER_PAYLOAD) {
+  if ( payment.invoice_payload === USER_PAYLOAD) {
       paidUsers.set(userId, {
       tier: TIER_USER,
       telegramPaymentChargeId: chargeId,
-      paidAt: Date.now(),
+      paidAt: Date.now () ,
   } ) ;
   await ctx.reply(`✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ\nʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, 
     getMainKeyboard( )
