@@ -275,113 +275,110 @@ async function sendApprovedVideocallFlow( serId
 async function sendVipInvoice(ctx) {
   const chatId = ctx.chat?.id || ctx.callbackQuery?.message?.chat?.id;
       if (!chatId) { logger.error( "NO CHAT ID VIP INVOICE"
-      ) ;
+  ) ;
       return;
-      }
+  }
       try { await ctx.telegram.callApi( "sendInvoice",
-      {        
+  {        
       chat_id: chatId,
       title: "VIP ACCESS",
       description:"ᴠɪᴘ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
       payload: VIP_PAYLOAD,
       currency: "XTR",
       prices: [
-      {
+  {
       label: "VIP ACCESS",
       amount: VIP_STARS_PRICE,
-      } , ] , } ) ;
-      }  catch (error) {logger.error(  "VIP INVOICE ERROR",
-      {
-      message: error?.message,
-       } ) ; 
+  } , ] , } ) ;
+  }  catch (error) {logger.error(  "VIP INVOICE ERROR",
+  { message: error?.message,
+  } ) ; 
       await ctx.reply( "❌ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-      ) ; } }
+  ) ; } }
 async function sendUserInvoice(ctx) {
   const chatId =  ctx.chat?.id ||  ctx.callbackQuery?.message?.chat?.id;
-      if (!chatId) {  logger.error( "NO CHAT ID USER INVOICE"
-      ) ;
+  if (!chatId) {  logger.error( "NO CHAT ID USER INVOICE"
+  ) ;
       return;
-      }
+  }
       try { await ctx.telegram.callApi(  "sendInvoice",      
-    { chat_id: chatId,
+  { chat_id: chatId,
       title: "USER FX ACCESS",
       description:  "ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
       payload: USER_PAYLOAD,
       currency: "XTR",
       prices: [
-      {
-      label: "USER FX ACCESS",
-      amount: USER_STARS_PRICE,
-     } , ] , } ) ;
-     } catch (error) { logger.error(  "USER INVOICE ERROR",
-     { message: error?.message,
-     } ) ; 
+  { label: "USER FX ACCESS", amount: USER_STARS_PRICE,
+  } , ] , } ) ;
+  } catch (error) { logger.error(  "USER INVOICE ERROR",
+   { message: error?.message,
+  } ) ; 
      await ctx.reply( "❌ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-     ) ; } }
+  ) ; } }
 // =================== PAYMENT ===================
 async function handleSuccessfulPayment(  ctx
-) {
+  )  {
   const payment =  ctx.message?.successful_payment; if (!payment) {  return;
   }
   const userId = String(ctx.from?.id || "");
   const chargeId = payment.telegram_payment_charge_id;
   const data = { telegramPaymentChargeId:  chargeId, paidAt: Date.now(),
-     } ;
+  } ;
      if ( payment.invoice_payload === VIP_PAYLOAD
-     ) {
+  ) {
     const entry = { ...data, tier: TIER_VIP,
-    };
+  };
      paidUsers.set( userId, entry
-    ) ;
+  ) ;
        await setPaidUser( userId, entry
-       ) ;
+  ) ;
        await ctx.reply( `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ\nʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, getMainKeyboard()
-       ) ;
+  ) ;
         return;
-       }
+  }
   if ( payment.invoice_payload === USER_PAYLOAD
-       ) {
+  ) {
   const entry = {...data, tier: TIER_USER,
-       } ;
+  } ;
        paidUsers.set( userId, entry
-       ) ;
+  ) ;
        await setPaidUser( userId, entry
-       ) ;
+  ) ;
        await ctx.reply(`✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ\nʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, getMainKeyboard()
-       ) ; } }
+  ) ; } }
 // =================== START ===================
    bot.start(async (ctx) => { try { await sendMainPanel(ctx);
-    } catch (error) { logger.error( "START ERROR",{ message: error?.message,
-    } ) ; } } ) ;
+  } catch (error) { logger.error( "START ERROR",{ message: error?.message,
+  } ) ; } } ) ;
 // =================== SUPPORT ===================
    bot.command( "paysupport", async (ctx) => { 
      await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ\nꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`
-    ) ; } ) ; 
+  ) ; } ) ; 
 // =================== PAYMENT ACTIONS ===================
   bot.action( "pay_vip_stars", async (ctx) => { try {
       await ctx.answerCbQuery();
       await sendVipInvoice(ctx);
-      } catch (error) { logger.error( "PAY VIP ERROR",
-      { message: error?.message,
-      } ) ; } } ) ;
+  } catch (error) { logger.error( "PAY VIP ERROR",
+  { message: error?.message,
+  } ) ; } } ) ;
 bot.action("pay_user_stars", async (ctx) => { try {
       await ctx.answerCbQuery();
       await sendUserInvoice(ctx);
-      } catch (error) {logger.error( "PAY USER ERROR",
-      { message: error?.message,
-      } ) ; } } ) ;
+  } catch (error) {logger.error( "PAY USER ERROR",
+  { message: error?.message,
+  } ) ; } } ) ;
 // =================== BACK ===================
 bot.action("back_to_main",async (ctx) => { try {
       await ctx.answerCbQuery();
       await ctx.deleteMessage().catch(() => { } ) ;
       await sendMainPanel(ctx);
-    } catch (error) { logger.error( "BACK MAIN ERROR",
+  } catch (error) { logger.error( "BACK MAIN ERROR",
       { message: error?.message,
-} ) ; } } ) ;
+  } ) ; } } ) ;
 // ================= PRE CHECKOUT ===================
 bot.on( "pre_checkout_query", async (ctx) => {
     await ctx.answerPreCheckoutQuery( true
-) ; } ) ;
+  ) ; } ) ;
 // =================== MEDIA ===================
 async function handleMedia(ctx) {
  const userId = String(ctx.from?.id || "");
@@ -394,222 +391,201 @@ async function handleMedia(ctx) {
   pendingVideoRequests.set(userId, pending
   ); try {
   const user = getUserMeta(ctx.from);
-    await bot.telegram.copyMessage( ADMIN_CHAT_ID,ctx.chat.id,ctx.message.message_id,
-      { reply_markup: { inline_keyboard: [
-       [ {
-       text: "✓ ᴀᴘᴘʀᴏᴠᴇ",
-       callback_data:
-      `approve_video_${user.id}`,
-       } , {
+  await bot.telegram.copyMessage( ADMIN_CHAT_ID,ctx.chat.id,ctx.message.message_id,
+  { reply_markup: { inline_keyboard: [
+  [ { text: "✓ ᴀᴘᴘʀᴏᴠᴇ", callback_data:`approve_video_${user.id}`,
+  } , {
        text: "✘ ʀᴇᴊᴇᴄᴛ",callback_data: `reject_video_${user.id}`,
-       } , ] , ] , } , } ) ;
-       } catch (error) {logger.error( "SEND MEDIA ERROR",
+  } , ] , ] , } , } ) ;
+  } catch (error) {logger.error( "SEND MEDIA ERROR",
        { message: error?.message,
-       } ) ; } }
+  } ) ; } }
     bot.on( "photo",(ctx) => handleMedia(ctx)
-       ) ;
+  ) ;
     bot.on( "video",(ctx) => handleMedia(ctx)
-       ) ;
+  ) ;
 // =================== TEXT ===================
     bot.on( "text", async (ctx) => { const text = (ctx.message.text || "") .trim();
     const userId = String(ctx.from?.id || "");
     const pending = pendingVideoRequests.get( userId
-       ) ;
+  ) ;
     try {
        if ( text === BTN_VIDEOCALL
-      ) {
+  ) {
       return await openVideocallFlow( ctx
-      ) ; }
+  ) ; }
       if ( text === BTN_GET_FULL_ACCESS
-      ) {
+  ) {
       return await sendMembershipPanel( ctx
-        ) ; }
+  ) ; }
       if ( text === BTN_VIP
-      ) {
+  ) {
       return await sendVipPanel( ctx
-      ) ; }
+  ) ; }
       if ( text === BTN_USER
-      ) {
+  ) {
       return await sendUserPanel( ctx
-      ) ; }
+  ) ; }
       if ( text === BTN_CHANNELS
-      ) {
+  ) {
       return await sendChannelsPanel( ctx
-      ) ; }
+  ) ; }
       if ( text === BTN_REFRESH
-      ) {
+  ) {
          return await sendRefreshPanel( ctx
-      ) ; }
+  ) ; }
       if ( text === BTN_CANCEL
-           ) {
-            pendingVideoRequests.delete( userId
-            ) ;
+  ) { pendingVideoRequests.delete( userId
+  ) ;
       return await sendMainPanel( ctx
-            ) ; }
+  ) ; }
       if ( text === BTN_BACK_MENU
-            ) {
-            pendingVideoRequests.delete( userId
-            ) ;
+  ) { pendingVideoRequests.delete( userId
+  ) ;
       return await sendMainPanel( ctx
-            ) ; }
+  ) ; }
       if ( text === BTN_ZOOM
-           ) {
+  ) {
       return await ctx.reply(`📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-          {  reply_markup: { inline_keyboard: [
-          [ { text: "📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL,
-          } , ] , ] , } , } ) ; }
+  {  reply_markup: { inline_keyboard: [
+ [ { text: "📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL,
+  } , ] , ] , } , } ) ; }
        if ( text === BTN_TELEGRAM
-          ) {
+  ) {
           return await ctx.reply(  `💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-          {
-          reply_markup: { inline_keyboard: [
-          [  {
-          text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+        { reply_markup: { inline_keyboard: [
+      [ { text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
           url:   TELEGRAM_CALL_URL,
-         } , ] , ] , } , } ) ; }
+  } , ] , ] , } , } ) ; }
       if (text.startsWith("/")) {
         return;
-        }
+  }
       if (pending?.waitingForPhoto) {
           pending.invalidTextCount =
          (pending.invalidTextCount || 0) + 1;
           pendingVideoRequests.set( userId, pending
-         ) ;
+  ) ;
       if (
           pending.invalidTextCount >= 4
-          ) {
+  ) {
           pendingVideoRequests.delete( userId
-          ) ;
+  ) ;
           await ctx.reply( "✘ ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ."
-          ) ;
+  ) ;
          await sendMainPanel(ctx);
          return;
-         }
+  }
          await ctx.reply(  "📸😏ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ."
-         ) ;
+  ) ;
          return;
-         }
+  }
          await sendMainPanel(ctx);
-         } catch (error) {  logger.error( "TEXT HANDLER ERROR",
-         {  message: error?.message,
-         } ) ; } } ) ;
+  } catch (error) {  logger.error( "TEXT HANDLER ERROR",
+  {  message: error?.message,
+  } ) ; } } ) ;
 // =================== PAYMENT EVENT ===================
      bot.on( "successful_payment", handleSuccessfulPayment
-         ) ;
+  ) ;
 // =================== ADMIN APPROVE ===================
       bot.action(/^approve_video_(.+)$/, async (ctx) => {
        if ( String(ctx.from.id) !== String(ADMIN_CHAT_ID)
-       ) {
+  ) {
        await ctx.answerCbQuery( "❌ Unauthorized"
-       ) ;
+  ) ;
        return;
-       }
+  }
       await ctx.answerCbQuery( "✅ ᴀᴘᴘʀᴏᴠᴇᴅ"
-      ) ;
+  ) ;
       await ctx.editMessageReplyMarkup( { inline_keyboard: [],
-      } ) ;
+  } ) ;
   const requesterId = String(ctx.match[1] ) ;
   const pending =  pendingVideoRequests.get( requesterId
-      ) ;
+  ) ;
        if (!pending) { await ctx.reply( "ʀᴇQᴜᴇꜱᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ."
-      ) ;
+  ) ;
       return;
-    }
+  }
     pendingVideoRequests.delete( requesterId
-    ) ;
+  ) ;
     await sendApprovedVideocallFlow( requesterId
-    ) ; } ) ;
+  ) ; } ) ;
 // =================== ADMIN REJECT ===================
     bot.action( /^reject_video_(.+)$/, async (ctx) => {
     if ( String(ctx.from.id) !== String(ADMIN_CHAT_ID)
-    )  {
+  )  {
     await ctx.answerCbQuery( "❌ Unauthorized"
-    ) ;
+  ) ;
     return;
-    }
+  }
     await ctx.answerCbQuery( "❌ ʀᴇᴊᴇᴄᴛᴇᴅ"
-    ) ;
+  ) ;
     await ctx.editMessageReplyMarkup( { inline_keyboard: [],
-    } ) ;
+  } ) ;
   const requesterId = String(ctx.match[1]) ; pendingVideoRequests.delete( requesterId
-    ) ;
+  ) ;
   const keyboard =  Markup.inlineKeyboard( [ [ Markup.button.callback("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", `notify_me_${requesterId}`
-    ) , ] , ] ) ;
+  ) , ] , ] ) ;
     await bot.telegram.sendMessage( requesterId, `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ. ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
-    {
-    reply_markup: keyboard.reply_markup,
-    } ) ; } ) ;
+  { reply_markup: keyboard.reply_markup,
+  } ) ; } ) ;
 // =================== ADMIN NOTIFY ===================
     bot.action(/^notify_me_(.+)$/, async (ctx) => { const requesterId = String(ctx.match[1]); await ctx.answerCbQuery("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ."
-    ) ;
+  ) ;
     await ctx.editMessageReplyMarkup({inline_keyboard: [],
-    } ) ;
+  } ) ;
     try {  const user = getUserMeta(ctx.from);
     await adminBot.telegram.sendMessage( ADMIN_CHAT_ID, `🔔 <b>Notify request</b>\nName: <b>${escapeHtml(user.fullName)}</b>\nUsername: <b>${escapeHtml(user.username)}</b>\nID: <code>${escapeHtml(user.id)}</code>\nTarget: <code>${escapeHtml(requesterId)}</code>`,
     { parse_mode: "HTML",
-    } ) ;
+   } ) ;
     await bot.telegram.sendMessage( requesterId, "ꜰᴏʀ ꜱᴜʀᴇ! ꜱᴡɪɴɢ ʙʏ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ꜱᴇᴇ ᴡʜᴀᴛ'ꜱ ɴᴇᴡ..",
-    {reply_markup: { inline_keyboard: [
-    [ {
+  {reply_markup: { inline_keyboard: [
+  [ {
     text:"𝐔𝐬𝐞𝐫 Ŧҳ 🜲",
     url:"https://t.me/+v57jkAGn3DA0NWJh",
-    } , ] , ] , } ,  }  ) ;
-    } catch (error) { logger.error( "NOTIFY ERROR",
+  } , ] , ] , } ,  }  ) ;
+  } catch (error) { logger.error( "NOTIFY ERROR",
     { message: error?.message,
-    } ) ; }}  ) ; 
+  } ) ; }}  ) ; 
 // =================== ERROR HANDLERS ===================
     bot.catch((error) => { logger.error( "BOT ERROR",
     { message: error?.message,  stack: error?.stack,
-    } ) ; } ) ; 
+  } ) ; } ) ; 
     adminBot.catch((error) => {  logger.error( "ADMIN BOT ERROR",
     { message: error?.message, stack: error?.stack,
-    } ) ; } ) ;
+  } ) ; } ) ;
 // =================== ADMIN COMMAND ===================
     adminBot.command( "myid",  async (ctx) => {
     await ctx.reply(  `chat_id: ${ctx.chat.id}`
-    ) ; } ) ;
+  ) ; } ) ;
 // =================== WEBHOOK ===================
-    export default async function handler( req, res
-    ) {
-    if (req.method === "GET") {
-    return res
-    .status(200)
-    .send("Telegram webhook online");
-     }
-     if (req.method !== "POST") {
-    return res
-      .status(405) .json( { error: "Method not allowed",
-    } ) ; } 
-    try {
-    const secret = req.headers[ "x-telegram-bot-api-secret-token"
-    ] ; 
-    if (!secret) { logger.warn(  "WEBHOOK REQUEST WITHOUT SECRET"
-    ) ;
-    return res .status(401) .json ( { error: "Missing webhook secret",
-    } ) ; }
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(200).send("OK");
+  }
+  try {
+    const secret = req.headers["x-telegram-bot-api-secret-token"];
+    if (!secret) {
+      logger.warn("WEBHOOK REQUEST WITHOUT SECRET");
+      return res.status(401).json({
+        error: "Missing webhook secret",
+  } ) ; }
     const update = req.body;
-    // =================== ADMIN BOT ===================
-    if ( secret === ADMIN_WEBHOOK_SECRET
-    ) {
-    await adminBot.handleUpdate( update
-    ) ;
-    return res  .status(200) .send("OK");
-    }
-    // =================== USER BOT ===================
-    if (  secret === WEBHOOK_SECRET
-    ) {
-      await bot.handleUpdate( update
-    ) ;
-      return res .status(200)  .send("OK");
-    }
-    // =================== INVALID ===================
-    logger.warn("INVALID WEBHOOK SECRET"
-    ) ;
-    return res .status(401).json({error: "Invalid webhook secret",
-    } ) ; 
-     } catch (error) {
-    logger.error( "WEBHOOK ERROR",
-    { message: error?.message, stack: error?.stack,
-    } ) ;
-    return res .status(200) .send("OK");
-    } }
+    if (secret === ADMIN_WEBHOOK_SECRET) {
+      await adminBot.handleUpdate(update);
+      return res.status(200).send("OK");
+  }
+    if (secret === WEBHOOK_SECRET) {
+      await bot.handleUpdate(update);
+      return res.status(200).send("OK");
+  }
+    logger.warn("INVALID WEBHOOK SECRET");
+    return res.status(401).json({
+      error: "Unauthorized",
+  } ) ;
+  } catch (error) {
+    logger.error("BOT HANDLE UPDATE ERROR", {
+      message: error?.message,
+      stack: error?.stack,
+  } ) ;
+    return res.status(200).send("OK");
+  } } 
