@@ -89,34 +89,48 @@ const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬𝐞𝐫 🜲∓ҳ";
 const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
 // =================== UTILS ===================
+async function trackButtonClick(ctx, buttonName) {
+const user = getUserMeta(ctx.from);
+  if (!user.id) return;
+ const data = {
+    fullName: user.fullName,
+    username: user.username,
+    id: user.id,
+    button: buttonName,
+    clickedAt: new Date().toISOString(),
+};
+await redis.set(
+    `button_click:${user.id}:${Date.now()}`,
+    JSON.stringify(data)
+);}
 function escapeHtml(value = "") {
   return String(value)
-     .replaceAll("&", "&amp;")
-     .replaceAll("<", "&lt;")
-     .replaceAll(">", "&gt;") ; }
-function getUserMeta(from) {
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;") ;
+}
+  function getUserMeta(from) {
   const firstName = from?.first_name || "";
   const lastName = from?.last_name || "";
   const fullName = `${firstName} ${lastName}`.trim() || "No name";
   const username = from?.username
     ? `@${from.username}`
     : "sin_username";
-  const id = String(from?.id || "") ;
+  const id = String(from?.id || "" ) ;
   return { fullName, username, id, } ;
-   }
+}
 function assets(filename) { return path.join( process.cwd(), "assets", filename ) ;
- }
+}
 // =================== RATE LIMIT ===================
 const rateLimiter = new Map();
 function checkRateLimit( userId, limit = 5, window = 60000 )
-  { 
-    const now = Date.now();
+{ const now = Date.now();
   const requests = rateLimiter.get(userId) || [];
   const recent = requests.filter((time) => now - time < window ) ;
   if (recent.length >= limit) { return false; }
   recent.push(now); rateLimiter.set( userId, recent ) ;
   return true;
-    }
+}
 // =================== KEYBOARDS ===================
 function getMainKeyboard() {
   return Markup.keyboard([
@@ -145,14 +159,14 @@ function getStarsUserKeyboard() { return Markup.inlineKeyboard([
     [ Markup.button.callback( "↽ ʙᴀᴄᴋ", "back_to_main" ) , ] , ] ) ; 
   }
 function getChannelsKeyboard() {
-  return Markup.keyboard([
-    [ BTN_SMOKELANDIA, BTN_USERFX_SITE, ] ,
-    [ BTN_CHANNELS_BACK ] ,] ) 
+  return Markup.keyboard 
+  ( [ [ BTN_SMOKELANDIA, BTN_USERFX_SITE, ] ,
+    [ BTN_CHANNELS_BACK ] , ] ) 
     .resize ( ) ;
   }
  function getAccessState(userId) 
  { const entry = paidUsers.get(String(userId));
-  return {  hasVip: entry?.tier === TIER_VIP, hasUser: entry?.tier === TIER_USER || entry?.tier === TIER_VIP, } ; 
+  return { hasVip: entry?.tier === TIER_VIP, hasUser: entry?.tier === TIER_USER || entry?.tier === TIER_VIP, } ; 
   }
 // =================== TYPING ===================
 async function typing( ctx, action = "typing" )
@@ -396,47 +410,40 @@ bot.on( "pre_checkout_query", async (ctx) => {
   bot.on( "text", async (ctx) => { const text = (ctx.message.text || "") .trim();
   const userId = String(ctx.from?.id || "") ;
   const pending = pendingVideoRequests.get( userId ) ;
-  try { if ( text === BTN_VIDEOCALL
-  ) { return await openVideocallFlow( ctx) ; 
-  }
-  if ( text === BTN_GET_FULL_ACCESS
-  ) { return await sendMembershipPanel( ctx ) ; 
-  }
-  if ( text === BTN_VIP
-  ) { return await sendVipPanel( ctx ) ; 
-  } 
-  if ( text === BTN_USER
-  ) 
-  { return await sendUserPanel( ctx ) ;  
-  } 
+  try { 
+  if ( text === BTN_VIDEOCALL ) 
+       await trackButtonClick(ctx, "USER FX");
+     { return await openVideocallFlow( ctx) ; }
+  if ( text === BTN_GET_FULL_ACCESS ) 
+     { return await sendMembershipPanel( ctx ) ; }
+  if ( text === BTN_VIP ) 
+     { return await sendVipPanel( ctx ) ; } 
+  if ( text === BTN_USER ) 
+     { return await sendUserPanel( ctx ) ; } 
   if ( text === BTN_CHANNELS ) 
-  { return await sendChannelsPanel( ctx ) ;
-  } 
-  if ( text === BTN_REFRESH ) ç
-  { return await sendRefreshPanel( ctx ) ;
-  }  
-  if ( text === BTN_CANCEL) 
-  { pendingVideoRequests.delete( userId ) ;
-  return await sendMainPanel( ctx ) ;
-  } 
+       await trackButtonClick(ctx, "USER FX");
+     { return await sendChannelsPanel( ctx ) ; } 
+  if ( text === BTN_REFRESH ) 
+     { return await sendRefreshPanel( ctx ) ; }  
+  if ( text === BTN_CANCEL ) 
+     { pendingVideoRequests.delete( userId ) ;
+       return await sendMainPanel( ctx ) ; } 
   if ( text === BTN_BACK_MENU ) 
-  { pendingVideoRequests.delete( userId) ;
-  return await sendMainPanel( ctx) ; 
-  }
+     { pendingVideoRequests.delete( userId) ;
+       return await sendMainPanel( ctx) ; }
   if ( text === BTN_ZOOM ) 
-  { return await ctx.reply(`📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-  { reply_markup: { inline_keyboard: [ [ { text: "📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL, } , ] ,
- ] , } , } ) ; 
-  }
+     { return await ctx.reply (`📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
+     { reply_markup: { inline_keyboard: [ [ { text: "📹ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL, } , ] ,
+     ] , } , } ) ; 
+     }
   if ( text === BTN_TELEGRAM ) 
-  {
-  return await ctx.reply(`💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-  { reply_markup: { inline_keyboard: 
-  [ [ { text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL,
-  } , ] , ] , } , } ) ; 
-  }
+     { return await ctx.reply(`💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
+     { reply_markup: { inline_keyboard: 
+     [ [ { text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL,
+     } , ] , ] , } , } ) ; 
+     }
   if (text.startsWith("/")) { return;
-  }
+     }
   if ( pending?.waitingForPhoto) 
      { pending.invalidTextCount =
      ( pending.invalidTextCount || 0) + 1 ;
@@ -510,6 +517,40 @@ bot.on( "pre_checkout_query", async (ctx) => {
   {  reply_markup: keyboard.reply_markup,
   } ) ; 
   } ) ;
+// =================== BOT REPORT ===================
+  bot.command("report", async (ctx) => {
+  if (String(ctx.from?.id) !== String(ADMIN_CHAT_ID)) {
+  return;
+  }
+  try {
+  const keys = await redis.keys ("button_click:*") ;
+  if (keys.length === 0) {
+  await ctx.reply("📊 No button clicks recorded yet.") ; 
+  return ; }
+  const values = await redis.mget(...keys) ;
+  const clicks = values
+    .filter(Boolean)
+    .map ( (value) => JSON.parse(value))
+    .sort ( (a, b) =>
+          new Date(b.clickedAt) .getTime () -
+          new Date(a.clickedAt).getTime ()
+     ) ;
+  let report = `📊 <b>BUTTON CLICK REPORT</b>\n\n`;
+  clicks.forEach((click, index) => {
+  report +=
+        `<b>${index + 1}. ${escapeHtml(click.fullName)}</b>\n` +
+        `Username: ${escapeHtml(click.username)}\n` +
+        `ID: <code>${escapeHtml(click.id)}</code>\n` +
+        `Button: <b>${escapeHtml(click.button)}</b>\n` +
+        `Date: ${escapeHtml(click.clickedAt)}\n\n`;
+  } ) ;
+  if (report.length > 4000) 
+     { report = report.slice(0, 4000) ; } 
+   await ctx.reply(report, { parse_mode: "HTML" , } ) ;
+   } catch (error) {
+   logger.error("REPORT ERROR:", error);
+   await ctx.reply("❌ Error generating report.");
+   } } );
 // =================== USER NOTIFY ===================
 bot.action(/^notify_me_(\d+)$/, async (ctx) => {
   const requesterId = String(ctx.match[1] ) ;
@@ -552,7 +593,7 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
 // =================== ADMIN COMMAND ===================
   adminBot.command( "myid",  async (ctx) => {
   await ctx.reply(  `chat_id: ${ctx.chat.id}` ) ; 
-} ) ;
+  } ) ;
 // =================== WEBHOOK ===================
 export default async function handler(req, res) {
   if (req.method !== "POST") {

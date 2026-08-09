@@ -3,10 +3,8 @@ export default async function handler(req, res) {
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
     req.socket?.remoteAddress ||
     "unknown";
-
-  console.log("TRACK VISIT IP:", ip);
-
+     console.log("TRACK VISIT IP:", ip);
   return res.status(200).json({
-    ok: true,
-  });
+      ok: true,
+  } ) ;
 }

@@ -56,7 +56,12 @@ export default function AlbumLockPanel({ onUnlock, accessCode = "FX01", videoSrc
     if (next.every(Boolean)) submitCode(next.join(""));
     else focusInput(Math.min(p.length, CODE_LENGTH - 1));
   }, [focusInput, submitCode]);
-  useEffect(() => { focusInput(0); }, [focusInput]);
+
+   useEffect(() => { focusInput(0); }, [focusInput] ) ;
+   useEffect(() => {  fetch("/api/track-visit", {
+     method: "POST", headers: { "Content-Type": "application/json",},
+     body: JSON.stringify({ page: "album", } ) , } ) 
+     .catch(() => {} ) ; }, [ ] ) ;
   /* ── UNLOCKED ── */
   if (status === "unlocked") {
     return (
