@@ -1,7 +1,6 @@
 import { Telegraf, Markup, Input } from "telegraf";
 import Redis from "ioredis";
 import winston from "winston";
-import path from "path";
 
 // ======================================================
 // LOGGER
@@ -12,15 +11,8 @@ const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [
     new winston.transports.Console(),
-
-    new winston.transports.File({
-      filename: "error.log",
-      level: "error",
-    }),
-
-    new winston.transports.File({
-      filename: "combined.log",
-    }),
+    // Nunca File transports en Vercel: el fs es read-only fuera de /tmp.
+    // Vercel ya captura console.* en Runtime Logs — no necesitas más.
   ],
 });
 
