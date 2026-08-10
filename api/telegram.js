@@ -367,7 +367,15 @@ function getApprovedVideocallKeyboard() {
     [BTN_BACK_MENU],
   ]).resize();
 }
-
+function getVideocallInlineKeyboard() {
+  return {
+    inline_keyboard: [
+      [{ text: BTN_ZOOM,
+          url: ZOOM_URL,},
+        { text: BTN_TELEGRAM,
+          url: TELEGRAM_CALL_URL,},
+      ],],};
+}
 function getStarsVipKeyboard() {
   return Markup.inlineKeyboard([
     [
@@ -711,28 +719,33 @@ Chat ID User:
 }
 
 // =================== APPROVED VIDEOCALL ===================
-
-async function sendApprovedVideocallFlow(
-  userId
-) {
-  await bot.telegram.sendMessage(
-    userId,
-    `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
-
+async function sendApprovedVideocallFlow(userId) {
+  const targetUserId = String(userId);
+  try {
+    await bot.telegram.sendMessage(
+      targetUserId,
+      `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
 ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
-  );
-
-  await bot.telegram.sendMessage(
-    userId,
-    `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-
+    );
+    await bot.telegram.sendMessage(
+      targetUserId,
+      `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
 ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
-    getApprovedVideocallKeyboard()
-  );
-}
-
+    {
+        reply_markup: getVideocallInlineKeyboard(),
+    });
+    logger.info("VIDEOCALL OPTIONS SENT", {
+      userId: targetUserId,
+    });
+    } catch (error) {
+    logger.error("SEND APPROVED VIDEOCALL ERROR", {
+      userId: targetUserId,
+      message: error?.message,
+      description: error?.response?.description,
+      stack: error?.stack,
+    });
+    }}
 // =================== INVOICES ===================
-
 async function sendVipInvoice(ctx) {
   const chatId =
     ctx.chat?.id ||
@@ -769,26 +782,20 @@ async function sendVipInvoice(ctx) {
       message: error?.message,
       stack: error?.stack,
     });
-
     await ctx.reply(
       "❌ ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-    );
-  }
-}
-
+);
+}}
 async function sendUserInvoice(ctx) {
   const chatId =
     ctx.chat?.id ||
     ctx.callbackQuery?.message?.chat?.id;
-
   if (!chatId) {
     logger.error(
       "NO CHAT ID USER INVOICE"
     );
-
     return;
   }
-
   try {
     await ctx.telegram.callApi(
       "sendInvoice",
@@ -803,22 +810,16 @@ async function sendUserInvoice(ctx) {
           {
             label: "USER FX ACCESS",
             amount: USER_STARS_PRICE,
-          },
-        ],
-      }
-    );
+  },],});
   } catch (error) {
     logger.error("USER INVOICE ERROR", {
       message: error?.message,
       stack: error?.stack,
     });
-
     await ctx.reply(
       "❌ ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-    );
-  }
-}
-
+  );
+  }}
 async function sendStars130Invoice(
   userId
 ) {
@@ -838,10 +839,7 @@ async function sendStars130Invoice(
             label: "VIDEOCALL ACCESS",
             amount:
               STARS_130_PRICE,
-          },
-        ],
-      }
-    );
+  },],});
   } catch (error) {
     logger.error(
       "130 STARS INVOICE ERROR",
@@ -849,97 +847,70 @@ async function sendStars130Invoice(
         userId,
         message: error?.message,
         stack: error?.stack,
-      }
-    );
-
+  });
     await bot.telegram.sendMessage(
       userId,
       "❌ ᴇʀʀᴏʀ ᴄʀᴇᴀᴛɪɴɢ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ."
-    );
-  }
-}
-
+  );
+  }}
 // =================== PAYMENT ===================
-
 async function handleSuccessfulPayment(
   ctx
 ) {
   const payment =
     ctx.message?.successful_payment;
-
   if (!payment) {
     return;
   }
-
   const userId =
     String(ctx.from?.id || "");
-
   if (!userId) {
-    return;
-  }
-
+    return;}
   const chargeId =
     payment.telegram_payment_charge_id;
-
   const payload =
     payment.invoice_payload;
-
   logger.info(
     "SUCCESSFUL PAYMENT",
-    {
-      userId,
+    { userId,
       payload,
       chargeId,
-    }
-  );
-
+    });
   // =================== VIDEOCALL 130 ===================
-
   if (
     payload ===
     STARS_130_PAYLOAD
   ) {
     const request =
       await getVideoRequest(userId);
-
-    if (
-      !request ||
+    if ( !request ||
       request.status !==
         "awaiting_payment"
     ) {
       logger.warn(
         "130 PAYMENT WITHOUT VALID REQUEST",
-        {
-          userId,
+        { userId,
           payload,
-        }
-      );
-
+      });
       await ctx.reply(
         "⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴡᴀꜱ ꜰᴏᴜɴᴅ.\n\nᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ."
       );
-
       return;
     }
-
     await setVideoRequest(
       userId,
-      {
-        ...request,
+      { ...request,
         status: "paid",
         paidAt: Date.now(),
         telegramPaymentChargeId:
           chargeId,
-      }
-    );
-
+      });
     await ctx.reply(
-      `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
-
-📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
-      getApprovedVideocallKeyboard()
-    );
-
+  `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
+ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
+  { reply_markup: getVideocallInlineKeyboard(),
+  });
     return;
   }
 
