@@ -161,83 +161,45 @@ async function setPaidUser(userId, data) {
 // ======================================================
 // VIDEO REQUEST STATE
 // ======================================================
-
 async function getVideoRequest(userId) {
   return redisGetJson(
     `video_request:${String(userId)}`
-  );
+);
 }
-
 async function setVideoRequest(userId, data) {
   return redisSetJson(
     `video_request:${String(userId)}`,
     data,
     60 * 60 * 6
-  );
-}
-
+  );}
 async function deleteVideoRequest(userId) {
   await redisDelete(
     `video_request:${String(userId)}`
-  );
-}
-
+  );}
 // ======================================================
 // BOTS
-// ======================================================
-
 const bot = new Telegraf(BOT_TOKEN);
 const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
-
 bot.telegram.webhookReply = false;
 adminBot.telegram.webhookReply = false;
-
-// ======================================================
-// URLS
-// IMPORTANTE:
-// AQUÍ DEBEN SER URLs DIRECTAS.
-// NO USAR [texto](url)
-// ======================================================
-
-const ZOOM_URL =
-  "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
-
-const TELEGRAM_CALL_URL =
-  "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
-
-const SMOKELANDIA_GROUP_LINK =
-  "https://t.me/SmokelandiaFx_bot";
-
-const USER_GROUP_LINK =
-  "https://t.me/+v57jkAGn3DA0NWJh";
-
-const USERFX_SITE_URL =
-  "https://userfx-web.vercel.app";
-
-// ======================================================
-// PRICES / PAYLOADS
-// ======================================================
-
+const ZOOM_URL = "https://us05web.zoom.us/j/9010970018?pwd=VUANDTsbsJf01iOHFikQvEad4L0xtW.1";
+const TELEGRAM_CALL_URL = "https://t.me/call/KigSDr0fLj8wlqJ9nmPlrUP9cPY";
+const SMOKELANDIA_GROUP_LINK = "https://t.me/SmokelandiaFx_bot";
+const USER_GROUP_LINK = "https://t.me/+v57jkAGn3DA0NWJh";
+const USERFX_SITE_URL = "https://userfx-web.vercel.app";
 const VIP_STARS_PRICE = 1500;
 const USER_STARS_PRICE = 500;
-
 const STARS_130_PAYLOAD =
   "videocall_access_130";
-
 const STARS_130_PRICE = 130;
-
 const VIP_PAYLOAD =
   "vip_fx_access";
-
 const USER_PAYLOAD =
   "user_fx_access";
-
 const TIER_VIP =
   "ᴠɪᴘ";
-
 const TIER_USER =
   "ᴜꜱᴇʀ";
-
 // ======================================================
 // BUTTONS
 // ======================================================
@@ -293,7 +255,6 @@ function escapeHtml(value = "") {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
-
 function getUserMeta(from) {
   const firstName =
     from?.first_name || "";
@@ -776,8 +737,7 @@ async function openVideocallFlow(ctx) {
   // SEND VIDEO TO USER
   // ----------------------------------------------------
 
-  try {
-    await ctx.replyWithVideo(
+  try {   await ctx.reply(
       Input.fromLocalFile(
         assets("FX-Y24V01.mp4")
       ),
@@ -2277,19 +2237,20 @@ adminBot.catch((error) => {
  } );
 });
 // WEBHOOK
-export default async function handler(
-  req,
-  res
-) {
-  if (
-    req.method === "GET"
-  ) {
+export default async function handler(req, res) {
+
+  // 👇 AGREGA ESTO AQUÍ
+  logger.info("INCOMING REQUEST", {
+    method: req.method,
+    secret: req.headers["x-telegram-bot-api-secret-token"],
+  });
+
+  if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
-      service:
-        "telegram-webhook",
+      service: "telegram-webhook",
       status: "online",
- });
+    });
   }
   if (
     req.method !== "POST"
