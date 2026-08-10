@@ -264,8 +264,8 @@ async function trackButtonClick(ctx, buttonName) {
       "EX",
       60 * 60 * 24 * 30
    ) ;
-  } catch (error) { logger.error("TRACK BUTTON ERROR", {
- message: error?.message,
+   } catch (error) { logger.error("TRACK BUTTON ERROR", {
+   message: error?.message,
    } ) ;
    } }
 // RATE LIMIT
@@ -275,8 +275,8 @@ async function checkRateLimit(
   windowSeconds = 300
   ) {
   try {
-    const key = `rate_limit:videocall:${String(userId)}`;
-    const count = await redis.incr(key);
+  const key = `rate_limit:videocall:${String(userId)}`;
+  const count = await redis.incr(key);
   if (count === 1) {
   await redis.expire(key, windowSeconds);
   }
@@ -286,8 +286,7 @@ async function checkRateLimit(
       message: error?.message,
   } ) ;
   return true;
-  }
-  }
+  } }
 // KEYBOARDS
 function getMainKeyboard() {
   return Markup.keyboard([
@@ -321,17 +320,14 @@ function getStarsVipKeyboard() {
     [Markup.button.callback( "⭐ ᴘᴀʏ ᴠɪᴘ ✪", "pay_vip_stars"
   ) , ] ,
   [Markup.button.callback( "↽ ʙᴀᴄᴋ", "back_to_main"
-  ) , ] ,
-  ] ) ;
+  ) , ] , ] ) ;
   }
 function getStarsUserKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback( "⭐ ᴘᴀʏ ᴜꜱᴇʀ ✪", "pay_user_stars"
   ) , ] , 
   [Markup.button.callback( "↽ ʙᴀᴄᴋ", "back_to_main"
-  ) ,
-  ] , 
-  ] ) ;
+  ) , ] , ] ) ;
   }
 function getChannelsKeyboard() {
   return Markup.keyboard([
@@ -360,21 +356,26 @@ async function sendMainPanel(ctx) {
     await typing(ctx);
     await ctx.reply(
       `Ŧҳ | ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ
-      ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
-      ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`, getMainKeyboard() ) ;
+    ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
+    ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
+    getMainKeyboard()
+    ) ;
     } catch (error) {
+    const errorCode = error?.response?.error_code;
+    const description = error?.response?.description || "";
     if (
-      error?.response?.error_code === 403 &&
-      error?.response?.description?.includes("bot was blocked by the user")
+    errorCode === 403 &&
+    description.includes("bot was blocked by the user")
     ) {
-      console.log("TELEGRAM USER BLOCKED BOT", {
-      userId: ctx.from?.id,
-      username: ctx.from?.username
+    logger.warn("TELEGRAM USER BLOCKED BOT", {
+    userId: ctx.from?.id || null,
+    username: ctx.from?.username || null,
+    errorCode,
+    description,
     } ) ;
-      return;
-    }
+    return; }
     throw error;
-    } }
+    } } 
 // MEMBERSHIP
 async function sendMembershipPanel(ctx) {
   await typing(ctx);
@@ -536,66 +537,45 @@ async function sendApprovedVideocallFlow(userId) {
   }
   try {
   await ctx.telegram.callApi("sendInvoice",
-      {
-        chat_id: chatId,
+      { chat_id: chatId,
         title: "VIP ACCESS",
         description: "ᴠɪᴘ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: VIP_PAYLOAD,
         currency: "XTR",
         prices: [
-     {
-            label: "VIP ACCESS",
-            amount: VIP_STARS_PRICE,
-      } , ] , } ) ;
-  } catch (error) {
-    logger.error("VIP INVOICE ERROR", {
-      message: error?.message,
-      description:
-        error?.response?.description,
+     {  label: "VIP ACCESS",
+        amount: VIP_STARS_PRICE,
+     } , ] , } ) ;
+  } catch (error) { logger.error("VIP INVOICE ERROR", {
+      message: error?.message, description:error?.response?.description,
      } ) ;
      } }
-async function sendUserInvoice(ctx) {
+  async function sendUserInvoice(ctx) {
   const chatId =
-    ctx.chat?.id ||
-    ctx.callbackQuery?.message?.chat?.id;
-
-  if (!chatId) {
+      ctx.chat?.id ||
+      ctx.callbackQuery?.message?.chat?.id;
+    if (!chatId) {
     return;
-  }
-
-  try {
-    await ctx.telegram.callApi(
-      "sendInvoice",
-      {
-        chat_id: chatId,
+       }
+    try {
+    await ctx.telegram.callApi("sendInvoice",
+      { chat_id: chatId,
         title: "USER FX ACCESS",
         description:
           "ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: USER_PAYLOAD,
         currency: "XTR",
         prices: [
-          {
-            label: "USER FX ACCESS",
-            amount: USER_STARS_PRICE,
-          },
-        ],
-      }
-    );
-  } catch (error) {
-    logger.error("USER INVOICE ERROR", {
-      message: error?.message,
-      description:
-        error?.response?.description,
-    });
-  }
-}
-
+      { label: "USER FX ACCESS", amount: USER_STARS_PRICE, } , ] , }
+      ) ;
+  } catch (error) {logger.error("USER INVOICE ERROR", {message: error?.message,description: error?.response?.description,
+    } ) ;
+    } }
 async function sendStars130Invoice(userId) {
   try {
     await bot.telegram.callApi(
       "sendInvoice",
-      {
-        chat_id: userId,
+      { chat_id: userId,
         title: "VIDEOCALL ACCESS",
         description:
           "Access to the videocall service.",
@@ -603,144 +583,80 @@ async function sendStars130Invoice(userId) {
         currency: "XTR",
         prices: [
           {
-            label: "VIDEOCALL ACCESS",
-            amount: STARS_130_PRICE,
-          },
-        ],
-      }
-    );
+        label: "VIDEOCALL ACCESS",
+        amount: STARS_130_PRICE,
+          } , ] , } );
   } catch (error) {
     logger.error(
       "130 STARS INVOICE ERROR",
-      {
-        userId,
-        message: error?.message,
-      }
-    );
-  }
-}
-
-// ======================================================
-// PAYMENT
-// ======================================================
-
+      {userId, message: error?.message,}
+      ) ;
+      } } 
+// PAYMENT 
 async function handleSuccessfulPayment(ctx) {
   const payment =
     ctx.message?.successful_payment;
-
   if (!payment) {
     return;
-  }
-
-  const userId = String(
-    ctx.from?.id || ""
-  );
-
-  if (!userId) {
-    return;
-  }
-
-  const chargeId =
-    payment.telegram_payment_charge_id;
-
-  const payload =
-    payment.invoice_payload;
-
-  logger.info("SUCCESSFUL PAYMENT", {
-    userId,
-    payload,
-    chargeId,
-  });
-
-  if (
-    await hasProcessedPayment(chargeId)
-  ) {
+   }
+  const userId = String( ctx.from?.id || ""
+  ) ;
+  if (!userId) { return;
+    }
+  const chargeId = payment.telegram_payment_charge_id;
+  const payload = payment.invoice_payload;
+  logger.info("SUCCESSFUL PAYMENT", { userId, payload,chargeId,
+   } ) ;
+  if ( await hasProcessedPayment(chargeId)
+   ) {
     logger.warn("DUPLICATE PAYMENT", {
       userId,
       payload,
       chargeId,
-    });
-
+    } ) ;
     return;
-  }
-
-  await markPaymentProcessed(chargeId);
-
-  // ==================================================
-  // VIDEOCALL 130
-  // ==================================================
-
+    }
+    await markPaymentProcessed(chargeId);
+// VIDEOCALL 130 
   if (payload === STARS_130_PAYLOAD) {
-    const request =
-      await getVideoRequest(userId);
-
-    if (
-      !request ||
-      request.status !==
+  const request =
+  await getVideoRequest(userId);
+  if ( !request ||
+        request.status !==
         REQUEST_STATUS.AWAITING_PAYMENT
     ) {
-      await ctx.reply(
-        `⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴡᴀꜱ ꜰᴏᴜɴᴅ.
-
-ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`
-      );
-
-      return;
-    }
-
-    await setVideoRequest(
-      userId,
-      {
-        ...request,
-        status: REQUEST_STATUS.PAID,
-        paidAt: Date.now(),
-        telegramPaymentChargeId:
-          chargeId,
-      }
-    );
-
-    await ctx.reply(
-      `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
-
+  await ctx.reply(
+  `⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴡᴀꜱ ꜰᴏᴜɴᴅ.
+  ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`
+    ) ;
+    return; }
+    await setVideoRequest( userId,
+    { ...request,
+      status: REQUEST_STATUS.PAID,
+      paidAt: Date.now(),
+      telegramPaymentChargeId: chargeId,
+    } ) ;
+    await ctx.reply(`✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
 📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
-      {
-        reply_markup:
-          getVideocallInlineKeyboard(),
-      }
-    );
-
-    return;
-  }
-
-  // ==================================================
+      {reply_markup: getVideocallInlineKeyboard() , } ) ;
+    return; }
   // VIP
-  // ==================================================
-
   if (payload === VIP_PAYLOAD) {
     await setPaidUser(userId, {
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
       tier: TIER_VIP,
-    });
-
-    await ctx.reply(
-      `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-
-ʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`,
-      getMainKeyboard()
-    );
-
-    return;
-  }
-
-  if (payload === USER_PAYLOAD) {
-    await setPaidUser(userId, {
-      telegramPaymentChargeId: chargeId,
-      paidAt: Date.now(),
-      tier: TIER_USER,
     } ) ;
-    await ctx.reply(
-      `✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, getMainKeyboard()
+    await ctx.reply( `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
+    ʏᴏᴜʀ "ᴠɪᴘ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, getMainKeyboard()
+    ) ;
+    return; }
+    if (payload === USER_PAYLOAD) {
+    await setPaidUser(userId, {
+    telegramPaymentChargeId: chargeId,
+    paidAt: Date.now(),
+    tier: TIER_USER, } ) ;
+    await ctx.reply(`✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ "ᴜꜱᴇʀ" ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ᴜɴʟᴏᴄᴋᴇᴅ.`, getMainKeyboard()
     ) ;
     } }
 // START
@@ -766,7 +682,7 @@ bot.action( "pay_vip_stars", async (ctx) => {
         message: error?.message,
     } ) ;
     } } ) ;
-bot.action( "pay_user_stars", async (ctx) => {
+bot.action("pay_user_stars", async (ctx) => {
     try {
       await ctx.answerCbQuery();
       await sendUserInvoice(ctx);
@@ -776,7 +692,7 @@ bot.action( "pay_user_stars", async (ctx) => {
     } ) ;
     } } ) ;
 // BACK MAIN
-bot.action( "back_to_main", async (ctx) => {
+bot.action("back_to_main", async (ctx) => {
     try {
       await ctx.answerCbQuery();
       try {
@@ -787,7 +703,7 @@ bot.action( "back_to_main", async (ctx) => {
     } catch (error) {logger.error("BACK MAIN ERROR", {message: error?.message, } ) ;
     } } ) ;
 // PRE CHECKOUT
-bot.on( "pre_checkout_query", async (ctx) => {
+bot.on("pre_checkout_query", async (ctx) => {
     try { await ctx.answerPreCheckoutQuery(true);
     } catch (error) { logger.error( "PRE CHECKOUT ERROR",
    { message: error?.message, } ) ;
@@ -1258,7 +1174,7 @@ export default async function handler(req, res) {
     contentType: req.headers["content-type"] || null,
     contentLength: req.headers["content-length"] || null,
     secretPresent: Boolean(
-      req.headers["x-telegram-bot-api-secret-token"]
+    req.headers["x-telegram-bot-api-secret-token"]
     ) ,
     } ) ;
   // GET = HEALTH CHECK 
