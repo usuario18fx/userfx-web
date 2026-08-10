@@ -3,13 +3,16 @@
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
+
 import styles from "./AlbumLockPanel.module.css";
+
 const CODE_LENGTH = 4;
+
 type Status = "locked" | "verifying" | "error" | "unlocked";
+
 type ErrKind = "invalid" | "used" | "ratelimit";
 
 type AlbumLockPanelProps = {
@@ -35,6 +38,7 @@ function getFingerprint(): string {
     ].join("|");
 
     let h = 5381;
+
     for (let i = 0; i < raw.length; i++) {
       h = ((h << 5) + h + raw.charCodeAt(i)) | 0;
     }
@@ -54,26 +58,47 @@ export default function AlbumLockPanel({
   const [chars, setChars] = useState<string[]>(
     Array(CODE_LENGTH).fill("")
   );
-  const [status, setStatus] = useState<Status>("locked");
-  const [errKind, setErrKind] = useState<ErrKind>("invalid");
-  const [retryAfter, setRetryAfter] = useState(0);
-  const [activeTab, setActiveTab] = useState("FX-USER01-");
 
-  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+  const [status, setStatus] = useState<Status>("locked");
+
+  const [errKind, setErrKind] =
+    useState<ErrKind>("invalid");
+
+  const [retryAfter, setRetryAfter] = useState(0);
+
+  const [activeTab, setActiveTab] =
+    useState("FX-USER01-");
+
+  const inputsRef = useRef<
+    Array<HTMLInputElement | null>
+  >([]);
+
   const consumedPrefill = useRef<string | null>(null);
 
+  /* ── Focus ─────────────────────────────────────────────── */
+
   const focusInput = useCallback((index: number) => {
-    if (index < 0 || index >= CODE_LENGTH) return;
+    if (index < 0 || index >= CODE_LENGTH) {
+      return;
+    }
+
     inputsRef.current[index]?.focus();
     inputsRef.current[index]?.select();
   }, []);
+
+  /* ── Reset ─────────────────────────────────────────────── */
 
   const resetInputs = useCallback(() => {
     setChars(Array(CODE_LENGTH).fill(""));
     setStatus("locked");
     setRetryAfter(0);
-    setTimeout(() => focusInput(0), 0);
+
+    setTimeout(() => {
+      focusInput(0);
+    }, 0);
   }, [focusInput]);
+
+  /* ── Submit code ───────────────────────────────────────── */
 
   const submitCode = useCallback(
     async (value: string) => {
@@ -86,12 +111,20 @@ export default function AlbumLockPanel({
         clean.length !== CODE_LENGTH ||
         status === "verifying" ||
         status === "unlocked"
-      ) return;
+      ) {
+        return;
+      }
+
       setStatus("verifying");
+
       try {
         const res = await fetch("/api/verify", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
           body: JSON.stringify({
             code: clean,
             fingerprint: getFingerprint(),
@@ -105,36 +138,50 @@ export default function AlbumLockPanel({
             data.error === "used"
               ? "used"
               : data.error === "ratelimit"
-              ? "ratelimit"
-              : "invalid";
+                ? "ratelimit"
+                : "invalid";
 
           setErrKind(kind);
 
           if (kind === "ratelimit") {
-            setRetryAfter(Number(data.retryAfter ?? 60));
+            setRetryAfter(
+              Number(data.retryAfter ?? 60)
+            );
           }
 
           setStatus("error");
 
           setTimeout(() => {
-            if (kind !== "ratelimit") resetInputs();
+            if (kind !== "ratelimit") {
+              resetInputs();
+            }
           }, 900);
 
           return;
         }
 
         setStatus("unlocked");
-        window.dispatchEvent(new Event("vault:unlocked"));
 
-        setTimeout(() => onUnlock?.(), 420);
+        window.dispatchEvent(
+          new Event("vault:unlocked")
+        );
+
+        setTimeout(() => {
+          onUnlock?.();
+        }, 420);
       } catch {
         setErrKind("invalid");
         setStatus("error");
-        setTimeout(resetInputs, 900);
+
+        setTimeout(() => {
+          resetInputs();
+        }, 900);
       }
     },
     [status, resetInputs, onUnlock]
   );
+
+  /* ── Input change ──────────────────────────────────────── */
 
   const handleChange = useCallback(
     (index: number, raw: string) => {
@@ -144,10 +191,15 @@ export default function AlbumLockPanel({
         .replace(/[^A-Z0-9]/g, "");
 
       const next = [...chars];
+
       next[index] = value;
+
       setChars(next);
 
-      if (value && index < CODE_LENGTH - 1) {
+      if (
+        value &&
+        index < CODE_LENGTH - 1
+      ) {
         focusInput(index + 1);
       }
 
@@ -158,42 +210,62 @@ export default function AlbumLockPanel({
     [chars, focusInput, submitCode]
   );
 
+  /* ── Keyboard navigation ──────────────────────────────── */
+
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    (
+      e: React.KeyboardEvent<HTMLInputElement>,
+      index: number
+    ) => {
       if (e.key === "Backspace") {
         e.preventDefault();
+
         const next = [...chars];
 
         if (chars[index]) {
           next[index] = "";
           setChars(next);
+
           return;
         }
 
         if (index > 0) {
           next[index - 1] = "";
+
           setChars(next);
+
           focusInput(index - 1);
         }
+
+        return;
       }
 
       if (e.key === "ArrowLeft") {
         e.preventDefault();
+
         focusInput(index - 1);
+
+        return;
       }
 
       if (e.key === "ArrowRight") {
         e.preventDefault();
+
         focusInput(index + 1);
+
+        return;
       }
 
       if (e.key === "Enter") {
         e.preventDefault();
+
         submitCode(chars.join(""));
       }
     },
     [chars, focusInput, submitCode]
   );
+
+  /* ── Paste ─────────────────────────────────────────────── */
 
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLInputElement>) => {
@@ -205,102 +277,405 @@ export default function AlbumLockPanel({
         .replace(/[^A-Z0-9]/g, "")
         .slice(-CODE_LENGTH);
 
-      if (!pasted) return;
+      if (!pasted) {
+        return;
+      }
 
-      const next = Array.from({ length: CODE_LENGTH }, (_, i) => pasted[i] || "");
+      const next = Array.from(
+        { length: CODE_LENGTH },
+        (_, i) => pasted[i] || ""
+      );
+
       setChars(next);
 
       if (next.every(Boolean)) {
         submitCode(next.join(""));
       } else {
-        focusInput(Math.min(pasted.length, CODE_LENGTH - 1));
+        focusInput(
+          Math.min(
+            pasted.length,
+            CODE_LENGTH - 1
+          )
+        );
       }
     },
     [focusInput, submitCode]
   );
 
+  /* ── Initial focus ────────────────────────────────────── */
+
   useEffect(() => {
     focusInput(0);
   }, [focusInput]);
 
+  /* ── Prefill ──────────────────────────────────────────── */
+
   useEffect(() => {
-    if (retryAfter <= 0) return;
+    if (!prefill) {
+      return;
+    }
+
+    if (consumedPrefill.current === prefill) {
+      return;
+    }
+
+    consumedPrefill.current = prefill;
+
+    const clean = prefill
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, CODE_LENGTH);
+
+    if (!clean) {
+      return;
+    }
+
+    const next = Array.from(
+      { length: CODE_LENGTH },
+      (_, i) => clean[i] || ""
+    );
+
+    setChars(next);
+
+    if (next.every(Boolean)) {
+      submitCode(next.join(""));
+    } else {
+      setTimeout(() => {
+        focusInput(
+          Math.min(
+            clean.length,
+            CODE_LENGTH - 1
+          )
+        );
+      }, 0);
+    }
+  }, [prefill, focusInput, submitCode]);
+
+  /* ── Rate-limit countdown ─────────────────────────────── */
+
+  useEffect(() => {
+    if (retryAfter <= 0) {
+      return;
+    }
 
     const timer = setInterval(() => {
-      setRetryAfter((v) => (v <= 1 ? 0 : v - 1));
+      setRetryAfter((value) =>
+        value <= 1 ? 0 : value - 1
+      );
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+    };
   }, [retryAfter]);
 
-  // 🔓 UNLOCKED VIEW
+  /* ── Unlocked view ────────────────────────────────────── */
+
   if (status === "unlocked") {
     return (
-      <section className={styles.unlocked}>
-        <div className={styles.unlockedInner}>
-          <div className={styles.unlockedLabel}>
+      <section
+        className={styles.unlockedRoot}
+      >
+        <div
+          className={styles.unlockedGlow}
+        />
+
+        <header
+          className={styles.unlockedHeader}
+        >
+          <div
+            className={styles.unlockedBadge}
+          >
             ✦ USER FX · ACCESS GRANTED
           </div>
+        </header>
 
-          {videoSrc ? (
-            <video
-              src={videoSrc}
-              controls
-              autoPlay
-              playsInline
-              className={styles.video}
-            />
-          ) : (
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            controls
+            autoPlay
+            playsInline
+            className={styles.unlockedVideo}
+          />
+        ) : (
+          <div
+            className={styles.unlockedEmpty}
+          >
+            <div
+              className={
+                styles.unlockedEmptyIcon
+              }
+            >
+              ✦
+            </div>
+
+            <div
+              className={
+                styles.unlockedEmptyTitle
+              }
+            >
+              ACCESS GRANTED
+            </div>
+
+            <p
+              className={
+                styles.unlockedEmptyText
+              }
+            >
+              El acceso fue verificado
+              correctamente.
+            </p>
+
             <button
+              type="button"
               className={styles.enterButton}
               onClick={() => onUnlock?.()}
             >
               ENTRAR →
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </section>
     );
   }
 
-  // 🔒 LOCKED VIEW
+  /* ── Locked view ───────────────────────────────────────── */
+
   return (
     <section className={styles.root}>
-      <div className={styles.content}>
-        <h1 className={styles.title}>LOCKED ACCESS</h1>
+      <div className={styles.wp} />
+      <div className={styles.vignette} />
+      <div className={styles.scanlines} />
+
+      {/* HUD */}
+
+      <header className={styles.hud}>
+        <div className={styles.hudLeft}>
+          <span
+            className={styles.hudDot}
+          />
+
+          <span
+            className={styles.hudLabel}
+          >
+            SECURE SESSION
+          </span>
+        </div>
+
+        <span
+          className={styles.hudPill}
+        >
+          {activeTab}
+        </span>
+      </header>
+
+      {/* Lock badge */}
+
+      <div className={styles.lockBadge}>
+        <div
+          className={styles.lockIconWrap}
+        >
+          <span
+            className={styles.lockPulse}
+          />
+
+          <svg
+            className={styles.lockSvg}
+            width="25"
+            height="25"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect
+              x="4"
+              y="10"
+              width="16"
+              height="11"
+              rx="2"
+            />
+
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+        </div>
+
+        <h1 className={styles.lockTitle}>
+          LOCKED ACCESS
+        </h1>
+      </div>
+
+      {/* Input panel */}
+
+      <div
+        className={`${styles.inputPanel} ${
+          status === "error"
+            ? styles.inputPanelError
+            : ""
+        }`}
+      >
+        <div
+          className={styles.panelTopLine}
+        />
+
+        {/* Tabs */}
+
+        <div className={styles.tabRow}>
+          <button
+            type="button"
+            className={`${styles.tab} ${
+              activeTab === "FX-USER01-"
+                ? styles.tabActive
+                : ""
+            }`}
+            onClick={() =>
+              setActiveTab("FX-USER01-")
+            }
+          >
+            <span
+              className={styles.tabDot}
+            />
+
+            FX-USER01-
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.tab} ${
+              activeTab === "VAULT"
+                ? styles.tabActive
+                : ""
+            }`}
+            onClick={() =>
+              setActiveTab("VAULT")
+            }
+          >
+            VAULT
+          </button>
+
+          <span
+            className={styles.tabSpacer}
+          />
+
+          <span
+            className={styles.tabPrefix}
+          >
+            ACCESS
+          </span>
+        </div>
+
+        {/* Code */}
 
         <div className={styles.codeRow}>
           {chars.map((char, i) => (
-            <input
+            <div
               key={i}
-              ref={(el) => {
-                inputsRef.current[i] = el;
-              }}
-              value={char}
-              maxLength={1}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, i)}
-              onPaste={handlePaste}
-              className={styles.codeBox}
-            />
+              className={styles.codeCell}
+            >
+              <input
+                ref={(el) => {
+                  inputsRef.current[i] = el;
+                }}
+                type="text"
+                inputMode="text"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                value={char}
+                maxLength={1}
+                aria-label={`Código ${i + 1}`}
+                disabled={
+                  status === "verifying"
+                }
+                onChange={(e) =>
+                  handleChange(
+                    i,
+                    e.target.value
+                  )
+                }
+                onKeyDown={(e) =>
+                  handleKeyDown(e, i)
+                }
+                onPaste={handlePaste}
+                className={`${styles.codeBox} ${
+                  status === "error"
+                    ? styles.codeBoxError
+                    : ""
+                }`}
+              />
+
+              {char && (
+                <span
+                  className={styles.cellGlow}
+                />
+              )}
+            </div>
           ))}
         </div>
 
+        {/* Error */}
+
         {status === "error" && (
-          <p className={styles.errorText}>
+          <p
+            className={styles.errorText}
+          >
             {errKind === "ratelimit"
               ? `Espera ${retryAfter}s`
               : ERR_TEXT[errKind]}
           </p>
         )}
 
+        {/* Unlock */}
+
         <button
-          onClick={() => submitCode(chars.join(""))}
+          type="button"
+          onClick={() =>
+            submitCode(chars.join(""))
+          }
           className={styles.unlockBtn}
+          disabled={
+            status === "verifying" ||
+            retryAfter > 0
+          }
         >
-          UNLOCK
+          <span
+            className={
+              styles.unlockBtnShine
+            }
+          />
+
+          <span
+            className={
+              styles.unlockBtnText
+            }
+          >
+            {status === "verifying"
+              ? "VERIFYING..."
+              : "UNLOCK"}
+          </span>
         </button>
+
+        <p className={styles.hint}>
+          Introduce la llave de acceso de
+          4 caracteres
+        </p>
       </div>
+{/* Footer */}
+      <footer className={styles.footer}>
+        <div>
+          <span className={styles.footerFx}>
+            FX
+          </span>{" "}
+          · PRIVATE ACCESS SYSTEM
+        </div>
+        <div className={styles.footerBot}>
+          SESSION ENCRYPTED · ONE-TIME KEY
+        </div>
+      </footer>
     </section>
   );
 }
