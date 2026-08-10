@@ -365,29 +365,40 @@ async function typing(ctx) {
 // MAIN PANEL
 async function sendMainPanel(ctx) {
   try {
+    logger.info("MAIN PANEL: TYPING START");
+
     await typing(ctx);
+
+    logger.info("MAIN PANEL: TYPING SUCCESS");
+
     await ctx.reply(
       `Ŧҳ | ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ
-    ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
-    ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
-    getMainKeyboard()
-    ) ;
-    } catch (error) {
+
+
+ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
+
+
+ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
+      getMainKeyboard()
+    );
+
+    logger.info("MAIN PANEL: REPLY SUCCESS");
+
+  } catch (error) {
     const errorCode = error?.response?.error_code;
     const description = error?.response?.description || "";
-    if (
-    errorCode === 403 &&
-    description.includes("bot was blocked by the user")
-    ) {
-    logger.warn("TELEGRAM USER BLOCKED BOT", {
-    userId: ctx.from?.id || null,
-    username: ctx.from?.username || null,
-    errorCode,
-    description,
-    } ) ;
-    return; }
+
+    logger.error("MAIN PANEL ERROR", {
+      errorCode,
+      description,
+      message: error?.message,
+      userId: ctx.from?.id || null,
+      chatId: ctx.chat?.id || null,
+    });
+
     throw error;
-    } } 
+  }
+}
 // MEMBERSHIP
 async function sendMembershipPanel(ctx) {
   await typing(ctx);
