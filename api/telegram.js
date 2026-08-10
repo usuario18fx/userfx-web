@@ -2043,22 +2043,17 @@ adminBot.catch((error) => {
 // ======================================================
 // WEBHOOK HANDLER
 // ======================================================
+export default async function handler(req, res) {
+  logger.info("TELEGRAM WEBHOOK REQUEST", {
+    method: req.method,
+    secretPresent: Boolean(
+      req.headers["x-telegram-bot-api-secret-token"]
+    ),
+  });
 
-export default async function handler(
-  req,
-  res
-) {
-  logger.info(
-    "TELEGRAM WEBHOOK REQUEST",
-    {
-      method: req.method,
-      url: req.url,
-    }
-  );
-
-  // ----------------------------------------------------
+  // ==================================================
   // HEALTH CHECK
-  // ----------------------------------------------------
+  // ==================================================
 
   if (req.method === "GET") {
     return res.status(200).json({
@@ -2068,9 +2063,9 @@ export default async function handler(
     });
   }
 
-  // ----------------------------------------------------
-  // POST ONLY
-  // ----------------------------------------------------
+  // ==================================================
+  // ONLY POST
+  // ==================================================
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -2081,54 +2076,85 @@ export default async function handler(
 
   try {
     const secret =
-      req.headers[
-        "x-telegram-bot-api-secret-token"
-      ];
+      req.headers["x-telegram-bot-api-secret-token"];
+
+    // ==================================================
+    // SECRET
+    // ==================================================
 
     if (!secret) {
-      logger.warn(
-        "NO TELEGRAM SECRET"
-      );
+      logger.warn("WEBHOOK REQUEST WITHOUT SECRET");
 
       return res.status(401).json({
         ok: false,
-        error:
-          "missing_webhook_secret",
+        error: "missing_webhook_secret",
       });
     }
+
+    // ==================================================
+    // CHECK SECRET
+    // ==================================================
+
+    const isAdmin =
+      secret === ADMIN_WEBHOOK_SECRET;
+
+    const isUser =
+      secret === WEBHOOK_SECRET;
+
+    if (!isAdmin && !isUser) {
+      logger.warn("INVALID WEBHOOK SECRET");
+
+      return res.status(401).json({
+        ok: false,
+        error: "unauthorized",
+      });
+    }
+
+    // ==================================================
+    // BODY
+    // ==================================================
 
     let update = req.body;
 
     if (typeof update === "string") {
       try {
         update = JSON.parse(update);
-      } catch {
+      } catch (error) {
+        logger.error("BODY JSON PARSE ERROR", {
+          message: error?.message,
+        });
+
         return res.status(400).json({
           ok: false,
-          error:
-            "invalid_json",
+          error: "invalid_json",
         });
       }
     }
 
-    if (!update) {
+    if (!update || typeof update !== "object") {
+      logger.error("EMPTY OR INVALID UPDATE", {
+        bodyType: typeof update,
+      });
+
       return res.status(400).json({
         ok: false,
-        error: "empty_update",
+        error: "invalid_update",
       });
     }
 
-    // --------------------------------------------------
-    // ADMIN BOT
-    // --------------------------------------------------
+    logger.info("TELEGRAM UPDATE RECEIVED", {
+      bot: isAdmin ? "admin" : "user",
+      updateId: update.update_id,
+      hasMessage: Boolean(update.message),
+      hasCallback: Boolean(update.callback_query),
+    });
 
-    if (
-      secret ===
-      ADMIN_WEBHOOK_SECRET
-    ) {
-      await adminBot.handleUpdate(
-        update
-      );
+    // ==================================================
+    // ADMIN BOT
+    // ==================================================
+
+    if (isAdmin) {
+      await adminBot.handleUpdate(update);
 
       return res.status(200).json({
         ok: true,
@@ -2136,43 +2162,29 @@ export default async function handler(
       });
     }
 
-    // --------------------------------------------------
+    // ==================================================
     // USER BOT
-    // --------------------------------------------------
+    // ==================================================
 
-    if (
-      secret ===
-      WEBHOOK_SECRET
-    ) {
-      await bot.handleUpdate(update);
+    await bot.handleUpdate(update);
 
-      return res.status(200).json({
-        ok: true,
-        bot: "user",
-      });
-    }
-
-    logger.warn(
-      "INVALID TELEGRAM SECRET"
-    );
-
-    return res.status(401).json({
-      ok: false,
-      error: "unauthorized",
+    return res.status(200).json({
+      ok: true,
+      bot: "user",
     });
-} catch (error) {
-  logger.error("BOT HANDLE UPDATE ERROR", {
-    message: error?.message,
-    stack: error?.stack,
-    description: error?.response?.description,
-  });
+  } catch (error) {
+    logger.error("BOT HANDLE UPDATE ERROR", {
+      message: error?.message,
+      stack: error?.stack,
+      description: error?.response?.description,
+    });
 
-  return res.status(500).json({
-    ok: false,
-    error: "telegram_handler_error",
-    message: error?.message || "unknown_error",
-    description: error?.response?.description || null,
-    stack: error?.stack || null,
-  });
-}
+    return res.status(500).json({
+      ok: false,
+      error: "telegram_handler_error",
+      message: error?.message || "unknown_error",
+      description:
+        error?.response?.description || null,
+    });
+  }
 }
