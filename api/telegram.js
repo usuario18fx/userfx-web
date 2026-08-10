@@ -9,6 +9,7 @@ const logger = winston.createLogger({
    } ) ;
 // ENV 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+
 const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
 
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
@@ -54,67 +55,66 @@ if (missingEnv.length > 0) {
   ) ;
   } 
 // REDIS 
-const redis = new Redis(REDIS_URL, {
+  const redis = new Redis(REDIS_URL, {
   maxRetriesPerRequest: 2,
   enableReadyCheck: true,
-} ) ;
-redis.on("error", (error) => { 
+  } ) ;
+ redis.on("error", (error) => {
   logger.error("REDIS ERROR", {
     message: error?.message,
     stack: error?.stack,
-} ) ;
+  });
+});
 redis.on("connect", () => {
   logger.info("REDIS CONNECT");
-} ) ;
+});
+
 redis.on("ready", () => {
   logger.info("REDIS READY");
-} ) ;
+});
+
 redis.on("close", () => {
   logger.warn("REDIS CLOSE");
-} ) ;
-} ) ;
+});
 // REDIS HELPERS 
 async function redisGetJson(key) {
   try {
-    const value = await redis.get(key);
-
-    if (!value) {
-      return null;
-    }
-
-    return JSON.parse(value);
+const value = await redis.get(key);
+  if (!value) {
+   return null;
+  }
+  return JSON.parse(value);
   } catch (error) {
     logger.error("REDIS GET ERROR", {
       key,
       message: error?.message,
-    } ) ;
-    return null;
+  } ) ;
+  return null;
   } }
 async function redisSetJson(key, value, ttl = null) {
   try {
     const serialized = JSON.stringify(value);
-    if (ttl) {
-      await redis.set(key, serialized, "EX", ttl);
-    } else {
-      await redis.set(key, serialized);
-    }
-    return true;
+  if (ttl) {
+  await redis.set(key, serialized, "EX", ttl);
+  } else {
+  await redis.set(key, serialized);
+  }
+  return true;
   } catch (error) {
     logger.error("REDIS SET ERROR", {
       key,
       message: error?.message,
-    } ) ;
-    return false;
+  } ) ;
+  return false;
   } }
 async function redisDelete(key) {
   try {
-    await redis.del(key);
-  } catch (error) {
-    logger.error("REDIS DELETE ERROR", {
+  await redis.del(key);
+  }catch (error) { logger.error("REDIS DELETE ERROR", {
       key,
       message: error?.message,
-    } ) ;
-   } }
+  } ) ;
+  } }
 async function scanKeys(pattern) {
   const keys = [];
   let cursor = "0";
@@ -366,39 +366,25 @@ async function typing(ctx) {
 async function sendMainPanel(ctx) {
   try {
     logger.info("MAIN PANEL: TYPING START");
-
     await typing(ctx);
-
     logger.info("MAIN PANEL: TYPING SUCCESS");
-
     await ctx.reply(
-      `Ŧҳ | ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ
-
-
-ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
-
-
-ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
+      `𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
+    ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
+    ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
       getMainKeyboard()
     );
-
     logger.info("MAIN PANEL: REPLY SUCCESS");
-
-  } catch (error) {
-    const errorCode = error?.response?.error_code;
-    const description = error?.response?.description || "";
-
+    } catch (error) {
     logger.error("MAIN PANEL ERROR", {
-      errorCode,
-      description,
-      message: error?.message,
-      userId: ctx.from?.id || null,
-      chatId: ctx.chat?.id || null,
-    });
-
+    errorCode: error?.response?.error_code || null,
+    description: error?.response?.description || null,
+    message: error?.message || null,
+    userId: ctx.from?.id || null,
+    chatId: ctx.chat?.id || null,
+    } ) ;
     throw error;
-  }
-}
+    } }
 // MEMBERSHIP
 async function sendMembershipPanel(ctx) {
   await typing(ctx);
@@ -458,86 +444,86 @@ async function sendRefreshPanel(ctx) {
   ) ;
   }
 // VIDEOCALL FLOW 
-async function openVideocallFlow(ctx) {
+  async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId) {
-    return;
+  return;
   }
-  const allowed = await checkRateLimit(
-    userId,
-    3,
-    300
-    ) ;
-  if (!allowed) {
+  try { const allowed = await checkRateLimit( userId, 3, 300) ;
+    if (!allowed) {
     await ctx.reply(
-      "⏳ Please wait before requesting again."
-    ) ; 
+    "⏳ Please wait before requesting again."
+    ) ;
     return;
-   }
-  const currentRequest =
+    }
+    const currentRequest =
     await getVideoRequest(userId);
-  if (
-    currentRequest?.status ===
-      REQUEST_STATUS.WAITING_PHOTO ||
-    currentRequest?.status ===
-      REQUEST_STATUS.AWAITING_ADMIN ||
-    currentRequest?.status ===
-      REQUEST_STATUS.AWAITING_PAYMENT
-  ) {
+    if (
+      currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO ||
+      currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN ||
+      currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT
+    ) {
     await ctx.reply(
-      "⏳ You already have an active videocall request."
-  ) ;
-    return;
-  }
-  const user = getUserMeta(ctx.from);
-  await setVideoRequest(userId, {
-    userId,
-    fullName: user.fullName,
-    username: user.username,
-    status: REQUEST_STATUS.WAITING_PHOTO,
-    invalidTextCount: 0,
-    createdAt: Date.now(),
-  } ) ;
-  await ctx.reply(
-    `ʜᴏʟᴅ ᴜᴘ...
-ᴡᴇ ɴᴇᴇᴅ ᴀ ᴘʜᴏᴛᴏ ꜰɪʀꜱᴛ.
-ꜱᴇɴᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴇʀᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`,
-    getPendingPhotoKeyboard()
-  );
-  try {
-    await adminBot.telegram.sendMessage(
-      ADMIN_CHAT_ID,
-      `📞 NEW VIDEOCALL REQUEST
-Name:
-${escapeHtml(user.fullName) }
-Username:
-${escapeHtml(user.username) }
-ID:
-${escapeHtml(user.id) }
-Chat ID:
-${escapeHtml(userId) }
-Waiting for photo...`,
-    { parse_mode: "HTML", }
+    "⏳ You already have an active videocall request."
     ) ;
-    } catch (error) { logger.error("ADMIN REQUEST ERROR", { message: error?.message, } ) ;
-    } } 
+    return;
+    }
+    const user = getUserMeta(ctx.from);
+    const request = {
+      userId,
+      fullName: user.fullName,
+      username: user.username,
+      status: REQUEST_STATUS.WAITING_PHOTO,
+      invalidTextCount: 0,
+      createdAt: Date.now(),
+    } ;
+    await setVideoRequest(userId, request);
+    await ctx.reply(
+      `ʜᴏʟᴅ ᴜᴘ...
+     ᴡᴇ ɴᴇᴇᴅ ᴀ ᴘʜᴏᴛᴏ ꜰɪʀꜱᴛ.
+     ꜱᴇɴᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴇʀᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`,
+      getPendingPhotoKeyboard()
+    ) ;
+    logger.info("ADMIN REQUEST SEND START", { adminChatId: ADMIN_CHAT_ID, userId,
+    } ) ;
+    await adminBot.telegram.sendMessage( ADMIN_CHAT_ID,
+      `📞 <b>NEW VIDEOCALL REQUEST</b>
+Name:
+${escapeHtml(user.fullName)}
+Username:
+${escapeHtml(user.username)}
+ID:
+${escapeHtml(user.id)}
+Chat ID:
+${escapeHtml(userId)}
+⏳ Waiting for photo...`,
+    {parse_mode: "HTML",
+    });
+    logger.info("ADMIN REQUEST SEND SUCCESS", { adminChatId: ADMIN_CHAT_ID, userId,
+    });
+  } catch (error) {
+    logger.error("OPEN VIDEOCALL FLOW ERROR", {
+      userId,
+      errorCode: error?.response?.error_code || null,
+      description: error?.response?.description || null,
+      message: error?.message || null,
+      stack: error?.stack || null,
+    });
+    }}
 // APPROVED VIDEOCALL 
 async function sendApprovedVideocallFlow(userId) {
   const targetUserId = String(userId);
   try {
-    await bot.telegram.sendMessage(
-      targetUserId,
+  await bot.telegram.sendMessage( targetUserId,
       `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
-ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
+     ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
     ) ;
     await bot.telegram.sendMessage(
       targetUserId,
       `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
-      {
-        reply_markup:
-          getVideocallInlineKeyboard(),
-      });
+      ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
+      { reply_markup:getVideocallInlineKeyboard(),
+      } ) ;
     logger.info(
       "VIDEOCALL OPTIONS SENT",
       {userId: targetUserId,}
@@ -545,8 +531,7 @@ async function sendApprovedVideocallFlow(userId) {
   } catch (error) {
     logger.error(
     "SEND APPROVED VIDEOCALL ERROR",
-      {
-        userId: targetUserId,
+      { userId: targetUserId,
         message: error?.message,
         description:
         error?.response?.description,
@@ -585,7 +570,7 @@ async function sendApprovedVideocallFlow(userId) {
       { chat_id: chatId,
         title: "USER FX ACCESS",
         description:
-          "ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+        "ᴜꜱᴇʀ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: USER_PAYLOAD,
         currency: "XTR",
         prices: [
@@ -732,51 +717,80 @@ bot.on("pre_checkout_query", async (ctx) => {
    { message: error?.message, } ) ;
    } } ) ;
 // MEDIA 
-async function handleMedia(ctx) { const userId = String( ctx.from?.id || "" ) ;
+async function handleMedia(ctx) {
+  const userId = String(ctx.from?.id || "");
   if (!userId) {
-  return;
+    return;
   }
   const pending = await getVideoRequest(userId);
-  if ( !pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO ) {
-  return;
-  }
-  const updatedPending = {...pending, status: REQUEST_STATUS.AWAITING_ADMIN, invalidTextCount: 0, photoReceivedAt: Date.now () , } ;
-  await setVideoRequest( userId, updatedPending ) ;
-  try { const user = getUserMeta(ctx.from) ;
-    const adminKeyboard = Markup.inlineKeyboard ( [
-        [Markup.button.callback (
-             "⭐ ᴘᴀʏ 130 ꜱᴛᴀʀꜱ", `approve_stars_${user.id}` ) , ] ,
-        [Markup.button.callback(
-            "📞 ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ",
-            `approve_call_${user.id}` ) , ] ,
-        [Markup.button.callback(
-            "✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${user.id}` ) , ] ,
-  ] ) ;
-  await adminBot.telegram.sendMessage ( ADMIN_CHAT_ID,
+  if (
+    !pending ||
+    pending.status !== REQUEST_STATUS.WAITING_PHOTO
+    ) {
+    return;
+     }
+  const user = getUserMeta(ctx.from);
+  const updatedPending = {
+    ...pending,
+    status: REQUEST_STATUS.AWAITING_ADMIN,
+    invalidTextCount: 0,
+    photoReceivedAt: Date.now(),
+    } ;
+  await setVideoRequest(userId,updatedPending
+    ) ;
+  try {
+    const adminKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback("⭐ ᴘᴀʏ 130 ꜱᴛᴀʀꜱ",`approve_stars_${user.id}`
+    ) , ] ,
+      [Markup.button.callback("📞 ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ",`approve_call_${user.id}`
+    ) , ] ,
+      [Markup.button.callback("✘ ʀᴇᴊᴇᴄᴛ",`reject_video_${user.id}`
+    ) , ] , ] ) ;
+    await adminBot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
       `📸 <b>NEW PHOTO RECEIVED</b>
-  Name:
-  ${escapeHtml(user.fullName)}
-  Username:
-  ${escapeHtml(user.username)}
-  ID:
-  ${escapeHtml(user.id)}
-  The user's media is attached below.`,
-      {parse_mode: "HTML",
-       reply_markup: adminKeyboard.reply_markup , }
-  ) ;
-  await adminBot.telegram.copyMessage( ADMIN_CHAT_ID, ctx.chat.id, ctx.message.message_id
-  ) ;
-  await adminBot.telegram.sendMessage(
-    ADMIN_CHAT_ID, "Choose an action:",
-    {reply_markup: adminKeyboard.reply_markup,} ) ;
+Name:
+${escapeHtml(user.fullName)}
+Username:
+${escapeHtml(user.username)}
+ID:
+${escapeHtml(user.id)}
+Chat ID:
+${escapeHtml(userId)}
+📸 User photo is attached below.`,
+      {parse_mode: "HTML",}
+    ) ;
+    await adminBot.telegram.copyMessage(
+      ADMIN_CHAT_ID,
+      ctx.chat.id,
+      ctx.message.message_id
+    ) ;
+    await adminBot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      "Choose an action:",
+     {reply_markup: adminKeyboard.reply_markup,
+    } ) ;
     await ctx.reply(
-      `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ. ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`) ;
-    } catch (error) {
-    logger.error( "MEDIA HANDLER ERROR",
-    {message: error?.message,description:error?.response?.description, } ) ;
-    } }
-    bot.on("photo", handleMedia);
-    bot.on("video", handleMedia);
+      `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
+ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`
+    ) ;
+  } catch (error) {
+    logger.error(
+      "MEDIA HANDLER ERROR",
+      {
+        userId,
+        errorCode:
+          error?.response?.error_code || null,
+        description:
+          error?.response?.description || null,
+        message:
+          error?.message || null,
+        stack:
+          error?.stack || null,
+        adminChatId:
+          ADMIN_CHAT_ID || null,
+      } ) ;
+      } }
 // USER TEXT
     bot.on("text", async (ctx) => {
     const text = String(ctx.message?.text || "").trim() ;
@@ -1045,200 +1059,189 @@ adminBot.action(
         {requesterId,message:error?.message , }
     ) ;
     } } ) ;
-// ======================================================
 // REPORT
-// ======================================================
-
-bot.command(
-  "report",
-  async (ctx) => {
+   bot.command("report",async (ctx) => {
     if (!isAdmin(ctx)) {
-      return;
+    return;
     }
-
     try {
-      const keys =
-        await scanKeys(
-          "button_click:*"
-        );
-
-      if (!keys.length) {
-        await ctx.reply(
-          "📊 No button clicks recorded yet."
-        );
-
-        return;
-      }
-
-      const values =
-        await redis.mget(...keys);
-
-      const clicks = values
-        .filter(Boolean)
-        .map((value) => {
-          try {
-            return JSON.parse(value);
-          } catch {
-            return null;
-      } } )
-      .filter(Boolean)
-      .sort(
-      (a, b) => new Date( b.clickedAt ).getTime() -
-      new Date( a.clickedAt ).getTime()
-      );
-      let report =
-        "📊 <b>BUTTON CLICK REPORT</b>\n\n";
-      clicks.forEach( ( click, index ) => { report +=
-       `<b>${index + 1}. ${escapeHtml( click.fullName ) } </b>\n` +
-       `Username: ${escapeHtml( click.username ) } \n` +
-       `ID: <code>${escapeHtml( click.id ) } </code>\n` +
-       `Button: <b>${escapeHtml( click.button ) }</b>\n` +
-       `Date: ${escapeHtml( click.clickedAt) }\n\n`; } ) ;
-      const chunks = [];
-      while (report.length > 0) {
-        chunks.push(
-          report.slice(0, 3900)
-        ) ;
-        report = report.slice(3900) ; 
-          }
-      for (const chunk of chunks) {
-      await ctx.reply(
-      chunk,
-      { parse_mode: "HTML", } );
-      }
-    } catch (error) {
-      logger.error(
-        "REPORT ERROR",
-        {message: error?.message,
-      } ) ;
-      await ctx.reply(
-        "❌ Error generating report."
-      ) ;
-      } } ) ;
-// ADMIN ID 
-adminBot.command(
-  "myid",
-  async (ctx) => {
+    const keys = await scanKeys("button_click:*");
+    if (!keys.length) {
     await ctx.reply(
-      `chat_id: ${ctx.chat?.id}\nuser_id: ${ctx.from?.id}`
+    "📊 No button clicks recorded yet."
     ) ;
+    return;
+    }
+    const values = await redis.mget(...keys);
+    const clicks = values
+      .filter(Boolean)
+      .map((value) => {
+    try { return JSON.parse(value);
+    } catch {
+    return null;
+    } } )
+    .filter(Boolean)
+    .sort( (a, b) =>
+      new Date(b.clickedAt).getTime() -
+      new Date(a.clickedAt).getTime()
+    ) ;
+    let report =
+    "📊 <b>BUTTON CLICK REPORT</b>\n\n";
+    clicks.forEach((click, index) => {
+    report +=
+          `<b>${index + 1}. ${escapeHtml(click.fullName)}</b>\n` +
+          `Username: ${escapeHtml(click.username)}\n` +
+          `ID: <code>${escapeHtml(click.id)}</code>\n` +
+          `Button: <b>${escapeHtml(click.button)}</b>\n` +
+          `Date: ${escapeHtml(click.clickedAt)}\n\n`;
+    } ) ;
+    const chunks = [];
+    while (report.length > 0) {chunks.push(report.slice(0, 3900));report = report.slice(3900); 
+    }
+    for (const chunk of chunks) {
+    await ctx.reply(chunk,
+    {parse_mode: "HTML",
+    } ) ;
+    }
+    } catch (error) { logger.error("REPORT ERROR",
+    { message: error?.message,
+      stack: error?.stack,
    } ) ;
+    await ctx.reply(
+    "❌ Error generating report."
+   ) ;
+   } } ) ;
+// ADMIN ID 
+  adminBot.command( "myid",
+  async (ctx) => {
+  await ctx.reply(`chat_id: ${ctx.chat?.id}\nuser_id: ${ctx.from?.id}`
+  ) ;
+  } ) ;
 // ERROR HANDLERS 
 bot.catch((error) => {
   logger.error("BOT ERROR", {
     message: error?.message,
     stack: error?.stack,
     description:
-      error?.response?.description,
-    } ) ;
-   } ) ;
+    error?.response?.description,
+  } ) ;
+  } ) ;
 adminBot.catch((error) => {
   logger.error("ADMIN BOT ERROR", {
     message: error?.message,
     stack: error?.stack,
     description:
     error?.response?.description,
-    } ) ;
-   } ) ;
-// WEBHOOK HANDLER 
-export const config = {
-  api: {
-    bodyParser: false,
+  } ) ;
+  } ) ;
+/// WEBHOOK HANDLER
+export const config = {api: {bodyParser: false,
   } , } ;
-// READ RAW BODY 
+// READ RAW BODY
 function readRawBody(req) {
   return new Promise((resolve, reject) => {
-    let body = "";
-    req.setEncoding("utf8");
-    req.on("data", (chunk) => {
+  let body = "";req.setEncoding("utf8");req.on("data", (chunk) => {
       body += chunk;
-    } ) ;
-    req.on("end", () => {
-      resolve(body);
-    } ) ;
-    req.on("error", (error) => {
-    reject(error);
-    } ) ;
-  } ) ;
-  }
-// PARSE TELEGRAM BODY 
+   } ) ;
+    req.on("end", () => { resolve(body);
+   } ) ;
+    req.on("error", (error) => {reject(error);
+   } ) ;
+   } ) ;
+   }
+// PARSE TELEGRAM BODY
 function parseTelegramBody(rawBody) {
   if (rawBody === undefined || rawBody === null) {
-    throw new Error("Request body is empty") ;
-  } 
+    throw new Error("Request body is empty");
+  }
   if (typeof rawBody === "object") {
     return rawBody;
   }
-  let raw = String(rawBody) ;
-  // Elimina BOM UTF-8
-  raw = raw.replace(/^\uFEFF/, "") ;
-  // Elimina espacios/saltos de línea
-  raw = raw.trim() ;
-  if (!raw) {
-    throw new Error("Request body is empty") ;
-  }
-  // JSON normal
-  try {
-    return JSON.parse(raw);
-  } catch (firstError) { 
+  let raw = String(rawBody);
+  raw = raw.replace(/^\uFEFF/, "");
+  raw = raw.trim();
+    if (!raw) {
+    throw new Error("Request body is empty");
+    }
     try {
-    const decoded = JSON.parse(raw);
-    if (typeof decoded === "string") {
-        return JSON.parse(decoded);
+    return JSON.parse(raw);
+    } catch (firstError) {
+    try {
+      const decoded = JSON.parse(raw);
+      if (typeof decoded === "string") {
+      return JSON.parse(decoded);
     }
       return decoded;
-      } catch {
+    } catch {
       throw firstError;
-    } } } 
-// WEBHOOK HANDLER 
+    } } }
+// WEBHOOK HANDLER
 export default async function handler(req, res) {
   logger.info("TELEGRAM WEBHOOK REQUEST", {
     method: req.method,
     contentType: req.headers["content-type"] || null,
     contentLength: req.headers["content-length"] || null,
     secretPresent: Boolean(
-    req.headers["x-telegram-bot-api-secret-token"]
-    ) ,
-    } ) ;
-  // GET = HEALTH CHECK 
+      req.headers["x-telegram-bot-api-secret-token"]
+    ),
+  });
+
   if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
       service: "telegram-webhook",
       status: "online",
-    } ) ;
-    } 
-  // POST ONLY
+    });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
-    } ) ;
-    } 
-  // SECRET 
-  const incomingSecret =
-    req.headers["x-telegram-bot-api-secret-token"];
+    });
+  }
+
+  const incomingSecret = String(
+    req.headers["x-telegram-bot-api-secret-token"] || ""
+  ).trim();
+
+  const userSecret = String(WEBHOOK_SECRET || "").trim();
+  const adminSecret = String(ADMIN_WEBHOOK_SECRET || "").trim();
+
   const isAdmin =
-    incomingSecret &&
-    ADMIN_WEBHOOK_SECRET &&
-    incomingSecret === ADMIN_WEBHOOK_SECRET;
+    incomingSecret.length > 0 &&
+    adminSecret.length > 0 &&
+    incomingSecret === adminSecret;
+
   const isUser =
-    incomingSecret &&
-    WEBHOOK_SECRET &&
-    incomingSecret === WEBHOOK_SECRET;
+    incomingSecret.length > 0 &&
+    userSecret.length > 0 &&
+    incomingSecret === userSecret;
+
+  logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
+    incomingSecretPresent: Boolean(incomingSecret),
+    userSecretPresent: Boolean(userSecret),
+    adminSecretPresent: Boolean(adminSecret),
+    isUser,
+    isAdmin,
+  });
+
   if (!isAdmin && !isUser) {
     logger.warn("INVALID TELEGRAM WEBHOOK SECRET", {
       secretPresent: Boolean(incomingSecret),
-    } ) ;
+    });
+
     return res.status(401).json({
       ok: false,
       error: "unauthorized",
-    } ) ;
-    } 
-  // READ BODY 
+    });
+  }
+
   let rawBody;
+
   try {
     rawBody = await readRawBody(req);
+
     logger.info("TELEGRAM RAW BODY", {
       type: typeof rawBody,
       length:
@@ -1254,15 +1257,19 @@ export default async function handler(req, res) {
     logger.error("BODY READ ERROR", {
       message: error?.message || null,
       stack: error?.stack || null,
-    } ) ;
+    });
+
     return res.status(400).json({
       ok: false,
       error: "body_read_error",
-      message: error?.message || "Unable to read request body",
-    } ) ;
-    }
-// PARSE JSON 
+      message:
+        error?.message ||
+        "Unable to read request body",
+    });
+  }
+
   let update;
+
   try {
     update = parseTelegramBody(rawBody);
   } catch (error) {
@@ -1276,34 +1283,54 @@ export default async function handler(req, res) {
         typeof rawBody === "string"
           ? rawBody.length
           : null,
-    } ) ;
+    });
+
     return res.status(400).json({
       ok: false,
       error: "invalid_json",
       message:
         error?.message || "Invalid JSON",
-    } ) ;
-    } 
-  // VALIDATE UPDATE 
-    if ( !update || typeof update !== "object" || Array.isArray(update)
-    ) {
-    return res.status(400).json({ok: false,error: "invalid_update",
-    } ) ;
-    }
+    });
+  }
+
+  if (
+    !update ||
+    typeof update !== "object" ||
+    Array.isArray(update)
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: "invalid_update",
+    });
+  }
+
   logger.info("TELEGRAM UPDATE RECEIVED", {
     bot: isAdmin ? "admin" : "user",
     updateId: update.update_id ?? null,
     hasMessage: Boolean(update.message),
     hasCallback: Boolean(update.callback_query),
-   } );
-  // ADMIN BOT
+  });
+
   try {
     if (isAdmin) {
-      await adminBot.handleUpdate(update) ;
-      return res.status(200).json( { ok: true, bot: "admin", } ) ;
-    } 
-    // USER BOT 
+      logger.info("ROUTING UPDATE TO ADMIN BOT", {
+        updateId: update.update_id ?? null,
+      });
+
+      await adminBot.handleUpdate(update);
+
+      return res.status(200).json({
+        ok: true,
+        bot: "admin",
+      });
+    }
+
+    logger.info("ROUTING UPDATE TO USER BOT", {
+      updateId: update.update_id ?? null,
+    });
+
     await bot.handleUpdate(update);
+
     return res.status(200).json({
       ok: true,
       bot: "user",
@@ -1315,7 +1342,8 @@ export default async function handler(req, res) {
       stack: error?.stack || null,
       description:
         error?.response?.description || null,
-    } ) ;
+    });
+
     return res.status(500).json({
       ok: false,
       error: "telegram_handler_error",
@@ -1324,5 +1352,6 @@ export default async function handler(req, res) {
         error?.message || "unknown_error",
       description:
         error?.response?.description || null,
-    } ) ;
-    } }
+    });
+  }
+}
