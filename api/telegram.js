@@ -18,7 +18,7 @@ const logger = winston.createLogger({
 
 export const config = {
   api: {
-    bodyParser: true,
+    bodyParser: false,
   },
 };
 
@@ -2114,55 +2114,42 @@ export default async function handler(req, res) {
       });
     }
 
-    // ==================================================
-    // BODY
-    // ==================================================
+  // ==================================================
+// BODY
+// ==================================================
 
-    let update = req.body;
+let update = req.body;
 
-    // Vercel normalmente entrega req.body como objeto.
-    // Solo hacemos JSON.parse si realmente llegó como string.
+try {
+  if (!update) {
+    const chunks = [];
 
-    if (typeof update === "string") {
-      try {
-        update = JSON.parse(update);
-      } catch (error) {
-        logger.error("BODY JSON PARSE ERROR", {
-          message: error?.message,
-        });
-
-        return res.status(400).json({
-          ok: false,
-          error: "invalid_json",
-        });
-      }
+    for await (const chunk of req) {
+      chunks.push(
+        Buffer.isBuffer(chunk)
+          ? chunk
+          : Buffer.from(chunk)
+      );
     }
 
-    if (
-      !update ||
-      typeof update !== "object" ||
-      Array.isArray(update)
-    ) {
-      logger.error("EMPTY OR INVALID UPDATE", {
-        bodyType: typeof update,
-      });
+    const rawBody = Buffer.concat(chunks).toString("utf8");
 
-      return res.status(400).json({
-        ok: false,
-        error: "invalid_update",
-      });
-    }
+    update = JSON.parse(rawBody);
+  } else if (typeof update === "string") {
+    update = JSON.parse(update);
+  }
+} catch (error) {
+  logger.error("BODY JSON PARSE ERROR", {
+    message: error?.message,
+    stack: error?.stack,
+  });
 
-    logger.info("TELEGRAM UPDATE RECEIVED", {
-      bot: isAdmin ? "admin" : "user",
-      updateId: update.update_id,
-      hasMessage: Boolean(update.message),
-      hasCallback: Boolean(update.callback_query),
-      hasPhoto: Boolean(update.message?.photo),
-      hasSuccessfulPayment: Boolean(
-        update.message?.successful_payment
-      ),
-    });
+  return res.status(400).json({
+    ok: false,
+    error: "invalid_json",
+    message: error?.message || "Invalid JSON",
+  });
+}
 
     // ==================================================
     // ADMIN BOT
