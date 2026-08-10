@@ -1201,7 +1201,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const incomingSecret = String(
+ const incomingSecret = String(
   req.headers["x-telegram-bot-api-secret-token"] || ""
 ).trim();
 
@@ -1213,23 +1213,24 @@ const adminSecret = String(
   ADMIN_WEBHOOK_SECRET || ""
 ).trim();
 
-const isAdmin = true;
-const isUser = true;
+const isAdmin =
+  incomingSecret.length > 0 &&
+  adminSecret.length > 0 &&
+  incomingSecret === adminSecret;
+
+const isUser =
+  incomingSecret.length > 0 &&
+  userSecret.length > 0 &&
+  incomingSecret === userSecret;
 
 logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
   incomingSecretPresent: Boolean(incomingSecret),
   userSecretPresent: Boolean(userSecret),
   adminSecretPresent: Boolean(adminSecret),
   isUser,
-  isAdmin,
-});
-
+  isAdmin, 
+ });
  if (!isAdmin && !isUser) {
-  return res.status(401).json({
-    ok: false,
-    error: "unauthorized",
-  });
-}
   return res.status(401).json({
     ok: false,
     error: "unauthorized",
@@ -1249,7 +1250,7 @@ logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
           ? rawBody.slice(0, 300)
           : null,
     });
-  } catch (error) {
+    } catch (error) {
     logger.error("BODY READ ERROR", {
       message: error?.message || null,
       stack: error?.stack || null,
@@ -1262,13 +1263,11 @@ logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
         error?.message ||
         "Unable to read request body",
     });
-  }
-
-  let update;
-
-  try {
+    }
+    let update;
+    try {
     update = parseTelegramBody(rawBody);
-  } catch (error) {
+    } catch (error) {
     logger.error("BODY JSON PARSE ERROR", {
       message: error?.message || null,
       rawBody:
@@ -1279,50 +1278,50 @@ logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
         typeof rawBody === "string"
           ? rawBody.length
           : null,
-    });
-
+    } ) ;
     return res.status(400).json({
       ok: false,
       error: "invalid_json",
       message:
         error?.message || "Invalid JSON",
-    });
-  }
-
-  if (
+    } ) ; 
+    }
+    if (
     !update ||
     typeof update !== "object" ||
     Array.isArray(update)
-  ) {
-    return res.status(400).json({
+    ) {
+     return res.status(400).json({
       ok: false,
       error: "invalid_update",
-    });
-  }
-
+     } ) ;
+     }
   logger.info("TELEGRAM UPDATE RECEIVED", {
     bot: isAdmin ? "admin" : "user",
     updateId: update.update_id ?? null,
     hasMessage: Boolean(update.message),
     hasCallback: Boolean(update.callback_query),
-  });
-
-  try {
-  if (isAdmin) {
+     } ) ;
+// ADMIN BOT 
+    try {
+     if (isAdmin) {
+     logger.info("ROUTING UPDATE TO ADMIN BOT", {
+     updateId: update.update_id ?? null,
+     } ) ;
     await adminBot.handleUpdate(update);
-
     return res.status(200).json({
       ok: true,
       bot: "admin",
-    });
-  }
-
+      } ) ;
+       }
+       logger.info("ROUTING UPDATE TO USER BOT", {
+       updateId: update.update_id ?? null,
+       } ) ;
   await bot.handleUpdate(update);
-
   return res.status(200).json({
     ok: true,
     bot: "user",
-  });
+      } ) ;
 } catch (error) {
   logger.error("BOT HANDLE UPDATE ERROR", {
     name: error?.name || null,
@@ -1330,6 +1329,7 @@ logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
     stack: error?.stack || null,
     description: error?.response?.description || null,
   });
+
   return res.status(500).json({
     ok: false,
     error: "telegram_handler_error",
@@ -1337,4 +1337,5 @@ logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
     message: error?.message || "unknown_error",
     description: error?.response?.description || null,
   });
+}
 }
