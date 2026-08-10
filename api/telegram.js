@@ -58,7 +58,19 @@ const redis = new Redis(REDIS_URL, {
   maxRetriesPerRequest: 2,
   enableReadyCheck: true,
 } ) ;
-redis.on("error", (error) => { logger.error("REDIS ERROR", {message: error?.message,stack: error?.stack,
+redis.on("error", (error) => { 
+  logger.error("REDIS ERROR", {
+    message: error?.message,
+    stack: error?.stack,
+} ) ;
+redis.on("connect", () => {
+  logger.info("REDIS CONNECT");
+} ) ;
+redis.on("ready", () => {
+  logger.info("REDIS READY");
+} ) ;
+redis.on("close", () => {
+  logger.warn("REDIS CLOSE");
 } ) ;
 } ) ;
 // REDIS HELPERS 
