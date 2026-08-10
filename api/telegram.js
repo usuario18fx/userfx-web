@@ -1,7 +1,7 @@
-import { Telegraf, Markup, Input } from "telegraf";
+import { Telegraf, Markup } from "telegraf";
 import Redis from "ioredis";
 import winston from "winston";
-
+import path from "path";
 // ======================================================
 // LOGGER
 // ======================================================
@@ -9,15 +9,11 @@ import winston from "winston";
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    // Nunca File transports en Vercel: el fs es read-only fuera de /tmp.
-    // Vercel ya captura console.* en Runtime Logs — no necesitas más.
-  ],
+  transports: [new winston.transports.Console()],
 });
 
 // ======================================================
-// VERCEL CONFIG
+// VERCEL
 // ======================================================
 
 export const config = {
@@ -59,7 +55,7 @@ const USERFX_SITE_URL =
   "https://userfx-web.vercel.app";
 
 // ======================================================
-// ENV VALIDATION
+// VALIDATE ENV
 // ======================================================
 
 const requiredEnv = {
@@ -106,48 +102,38 @@ redis.on("error", (error) => {
 
 async function redisGetJson(key) {
   try {
-    const data = await redis.get(key);
+    const value = await redis.get(key);
 
-    if (!data) {
+    if (!value) {
       return null;
     }
 
-    return JSON.parse(data);
+    return JSON.parse(value);
   } catch (error) {
-    logger.error("REDIS GET JSON ERROR", {
+    logger.error("REDIS GET ERROR", {
       key,
       message: error?.message,
-      stack: error?.stack,
     });
 
     return null;
   }
 }
 
-async function redisSetJson(key, data, ttlSeconds = null) {
+async function redisSetJson(key, value, ttl = null) {
   try {
-    const serialized = JSON.stringify(data);
+    const serialized = JSON.stringify(value);
 
-    if (ttlSeconds) {
-      await redis.set(
-        key,
-        serialized,
-        "EX",
-        ttlSeconds
-      );
+    if (ttl) {
+      await redis.set(key, serialized, "EX", ttl);
     } else {
-      await redis.set(
-        key,
-        serialized
-      );
+      await redis.set(key, serialized);
     }
 
     return true;
   } catch (error) {
-    logger.error("REDIS SET JSON ERROR", {
+    logger.error("REDIS SET ERROR", {
       key,
       message: error?.message,
-      stack: error?.stack,
     });
 
     return false;
@@ -161,18 +147,12 @@ async function redisDelete(key) {
     logger.error("REDIS DELETE ERROR", {
       key,
       message: error?.message,
-      stack: error?.stack,
     });
   }
 }
 
-// ======================================================
-// REDIS SCAN
-// ======================================================
-
 async function scanKeys(pattern) {
   const keys = [];
-
   let cursor = "0";
 
   try {
@@ -197,7 +177,6 @@ async function scanKeys(pattern) {
     logger.error("REDIS SCAN ERROR", {
       pattern,
       message: error?.message,
-      stack: error?.stack,
     });
 
     return [];
@@ -205,33 +184,21 @@ async function scanKeys(pattern) {
 }
 
 // ======================================================
-// PAID USERS
+// DATA
 // ======================================================
 
 async function getPaidUser(userId) {
-  return redisGetJson(
-    `paid_user:${String(userId)}`
-  );
+  return redisGetJson(`paid_user:${String(userId)}`);
 }
 
 async function setPaidUser(userId, data) {
-  return redisSetJson(
-    `paid_user:${String(userId)}`,
-    data
-  );
+  return redisSetJson(`paid_user:${String(userId)}`, data);
 }
 
-// ======================================================
-// VIDEO REQUEST STATE
-// ======================================================
-
-const VIDEO_REQUEST_TTL =
-  60 * 60 * 6;
+const VIDEO_REQUEST_TTL = 60 * 60 * 6;
 
 async function getVideoRequest(userId) {
-  return redisGetJson(
-    `video_request:${String(userId)}`
-  );
+  return redisGetJson(`video_request:${String(userId)}`);
 }
 
 async function setVideoRequest(userId, data) {
@@ -243,9 +210,7 @@ async function setVideoRequest(userId, data) {
 }
 
 async function deleteVideoRequest(userId) {
-  await redisDelete(
-    `video_request:${String(userId)}`
-  );
+  await redisDelete(`video_request:${String(userId)}`);
 }
 
 // ======================================================
@@ -259,18 +224,13 @@ async function hasProcessedPayment(chargeId) {
 
   try {
     return Boolean(
-      await redis.exists(
-        `processed_payment:${String(chargeId)}`
-      )
+      await redis.exists(`processed_payment:${String(chargeId)}`)
     );
   } catch (error) {
-    logger.error(
-      "CHECK PAYMENT ERROR",
-      {
-        chargeId,
-        message: error?.message,
-      }
-    );
+    logger.error("PAYMENT CHECK ERROR", {
+      chargeId,
+      message: error?.message,
+    });
 
     return false;
   }
@@ -289,13 +249,10 @@ async function markPaymentProcessed(chargeId) {
       60 * 60 * 24 * 365
     );
   } catch (error) {
-    logger.error(
-      "MARK PAYMENT ERROR",
-      {
-        chargeId,
-        message: error?.message,
-      }
-    );
+    logger.error("PAYMENT MARK ERROR", {
+      chargeId,
+      message: error?.message,
+    });
   }
 }
 
@@ -316,26 +273,14 @@ adminBot.telegram.webhookReply = false;
 const VIP_STARS_PRICE = 1500;
 const USER_STARS_PRICE = 500;
 
-const STARS_130_PAYLOAD =
-  "videocall_access_130";
-
+const STARS_130_PAYLOAD = "videocall_access_130";
 const STARS_130_PRICE = 130;
 
-const VIP_PAYLOAD =
-  "vip_fx_access";
+const VIP_PAYLOAD = "vip_fx_access";
+const USER_PAYLOAD = "user_fx_access";
 
-const USER_PAYLOAD =
-  "user_fx_access";
-
-const TIER_VIP =
-  "ᴠɪᴘ";
-
-const TIER_USER =
-  "ᴜꜱᴇʀ";
-
-// ======================================================
-// REQUEST STATUS
-// ======================================================
+const TIER_VIP = "ᴠɪᴘ";
+const TIER_USER = "ᴜꜱᴇʀ";
 
 const REQUEST_STATUS = {
   WAITING_PHOTO: "waiting_photo",
@@ -349,44 +294,25 @@ const REQUEST_STATUS = {
 // BUTTONS
 // ======================================================
 
-const BTN_VIDEOCALL =
-  "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
+const BTN_VIDEOCALL = "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
+const BTN_GET_FULL_ACCESS = "🔥 ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
 
-const BTN_GET_FULL_ACCESS =
-  "🔥 ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
+const BTN_VIP = "⚡ᴠɪᴘ";
+const BTN_USER = "👑ᴜꜱᴇʀ";
 
-const BTN_VIP =
-  "⚡ᴠɪᴘ";
+const BTN_CHANNELS = "📺ᴄʜᴀɴɴᴇʟꜱ";
+const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
 
-const BTN_USER =
-  "👑ᴜꜱᴇʀ";
+const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
+const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 
-const BTN_CHANNELS =
-  "📺ᴄʜᴀɴɴᴇʟꜱ";
+const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
+const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
 
-const BTN_REFRESH =
-  "↻ ʀᴇꜰʀᴇꜱʜ";
+const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
+const BTN_USERFX_SITE = "𝐔𝐬𝐞𝐫 🜲∓ҳ";
 
-const BTN_ZOOM =
-  "🟦 ᴢᴏᴏᴍ";
-
-const BTN_TELEGRAM =
-  "💬 ᴛᴇʟᴇɢʀᴀᴍ";
-
-const BTN_CANCEL =
-  "✖ ᴄᴀɴᴄᴇʟ";
-
-const BTN_BACK_MENU =
-  "↽ ʙᴀᴄᴋ";
-
-const BTN_SMOKELANDIA =
-  "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
-
-const BTN_USERFX_SITE =
-  "𝐔𝐬𝐞𝐫 🜲∓ҳ";
-
-const BTN_CHANNELS_BACK =
-  "↽ ʙᴀᴄᴋ";
+const BTN_CHANNELS_BACK = "↽ ʙᴀᴄᴋ";
 
 // ======================================================
 // UTILITIES
@@ -394,68 +320,42 @@ const BTN_CHANNELS_BACK =
 
 function escapeHtml(value = "") {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function getUserMeta(from) {
-  const firstName =
-    from?.first_name || "";
-
-  const lastName =
-    from?.last_name || "";
+  const firstName = from?.first_name || "";
+  const lastName = from?.last_name || "";
 
   const fullName =
-    `${firstName} ${lastName}`.trim() ||
-    "No name";
+    `${firstName} ${lastName}`.trim() || "No name";
 
-  const username =
-    from?.username
-      ? `@${from.username}`
-      : "sin_username";
-
-  const id =
-    String(from?.id || "");
+  const username = from?.username
+    ? `@${from.username}`
+    : "sin_username";
 
   return {
     fullName,
     username,
-    id,
+    id: String(from?.id || ""),
   };
 }
 
-function assets(filename) {
-  return path.join(
-    process.cwd(),
-    "assets",
-    filename
-  );
-}
-
-// ======================================================
-// SAFE DELAY
-// ======================================================
-
 function sleep(ms) {
-  return new Promise(
-    (resolve) => setTimeout(resolve, ms)
-  );
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ======================================================
 // BUTTON TRACKING
 // ======================================================
 
-async function trackButtonClick(
-  ctx,
-  buttonName
-) {
+async function trackButtonClick(ctx, buttonName) {
   try {
-    const user =
-      getUserMeta(ctx.from);
+    const user = getUserMeta(ctx.from);
 
     if (!user.id) {
       return;
@@ -466,8 +366,7 @@ async function trackButtonClick(
       username: user.username,
       id: user.id,
       button: buttonName,
-      clickedAt:
-        new Date().toISOString(),
+      clickedAt: new Date().toISOString(),
     };
 
     await redis.set(
@@ -477,13 +376,9 @@ async function trackButtonClick(
       60 * 60 * 24 * 30
     );
   } catch (error) {
-    logger.error(
-      "TRACK BUTTON ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
+    logger.error("TRACK BUTTON ERROR", {
+      message: error?.message,
+    });
   }
 }
 
@@ -497,28 +392,19 @@ async function checkRateLimit(
   windowSeconds = 300
 ) {
   try {
-    const key =
-      `rate_limit:videocall:${String(userId)}`;
+    const key = `rate_limit:videocall:${String(userId)}`;
 
-    const count =
-      await redis.incr(key);
+    const count = await redis.incr(key);
 
     if (count === 1) {
-      await redis.expire(
-        key,
-        windowSeconds
-      );
+      await redis.expire(key, windowSeconds);
     }
 
     return count <= limit;
   } catch (error) {
-    logger.error(
-      "RATE LIMIT ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
+    logger.error("RATE LIMIT ERROR", {
+      message: error?.message,
+    });
 
     return true;
   }
@@ -551,10 +437,6 @@ function getApprovedVideocallKeyboard() {
   ]).resize();
 }
 
-// ======================================================
-// VIDEOCALL INLINE BUTTONS
-// ======================================================
-
 function getVideocallInlineKeyboard() {
   return {
     inline_keyboard: [
@@ -571,10 +453,6 @@ function getVideocallInlineKeyboard() {
     ],
   };
 }
-
-// ======================================================
-// STARS KEYBOARDS
-// ======================================================
 
 function getStarsVipKeyboard() {
   return Markup.inlineKeyboard([
@@ -610,19 +488,10 @@ function getStarsUserKeyboard() {
   ]);
 }
 
-// ======================================================
-// CHANNELS
-// ======================================================
-
 function getChannelsKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_SMOKELANDIA,
-      BTN_USERFX_SITE,
-    ],
-    [
-      BTN_CHANNELS_BACK,
-    ],
+    [BTN_SMOKELANDIA, BTN_USERFX_SITE],
+    [BTN_CHANNELS_BACK],
   ]).resize();
 }
 
@@ -631,17 +500,13 @@ function getChannelsKeyboard() {
 // ======================================================
 
 async function getAccessState(userId) {
-  const entry =
-    await getPaidUser(userId);
+  const entry = await getPaidUser(userId);
 
   return {
-    hasVip:
-      entry?.tier === TIER_VIP,
-
+    hasVip: entry?.tier === TIER_VIP,
     hasUser:
       entry?.tier === TIER_USER ||
       entry?.tier === TIER_VIP,
-
     entry,
   };
 }
@@ -650,27 +515,12 @@ async function getAccessState(userId) {
 // TYPING
 // ======================================================
 
-async function typing(
-  ctx,
-  action = "typing"
-) {
+async function typing(ctx) {
   try {
-    const delay =
-      500 +
-      Math.floor(
-        Math.random() * 900
-      );
-
-    await ctx.sendChatAction(action);
-
-    await sleep(delay);
-  } catch (error) {
-    logger.error(
-      "TYPING ERROR",
-      {
-        message: error?.message,
-      }
-    );
+    await ctx.sendChatAction("typing");
+    await sleep(300);
+  } catch {
+    // ignore
   }
 }
 
@@ -720,33 +570,16 @@ async function sendMembershipPanel(ctx) {
 
 async function sendVipPanel(ctx) {
   try {
-    await ctx.replyWithVideo(
-      "Gs1OgH5HZGzdmjgWmCalvexfhI4DGJN6FuJ-J7JlaLQUeB4c8Xw0_ju086n6YM_g",
-      {
-        caption:
-          `ᴠɪᴘ⚡
-
-ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-        reply_markup:
-          getStarsVipKeyboard()
-            .reply_markup,
-      }
-    );
-  } catch (error) {
-    logger.error(
-      "VIP PANEL ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
-
     await ctx.reply(
       `ᴠɪᴘ⚡
 
 ᴜɴʟᴏᴄᴋ "ᴠɪᴘ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
       getStarsVipKeyboard()
     );
+  } catch (error) {
+    logger.error("VIP PANEL ERROR", {
+      message: error?.message,
+    });
   }
 }
 
@@ -756,33 +589,16 @@ async function sendVipPanel(ctx) {
 
 async function sendUserPanel(ctx) {
   try {
-    await ctx.replyWithPhoto(
-      "r7iZgQjb73xKY4_5WH2DbV7GHk7P9zoC7RuHnB9wIHPQ_o0hbBcNyVhQA4uVN7GT",
-      {
-        caption:
-          `ᴜꜱᴇʀ👑
-
-ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
-        reply_markup:
-          getStarsUserKeyboard()
-            .reply_markup,
-      }
-    );
-  } catch (error) {
-    logger.error(
-      "USER PANEL ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
-
     await ctx.reply(
       `ᴜꜱᴇʀ👑
 
 ᴜɴʟᴏᴄᴋ "ᴜꜱᴇʀ" ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ ✪`,
       getStarsUserKeyboard()
     );
+  } catch (error) {
+    logger.error("USER PANEL ERROR", {
+      message: error?.message,
+    });
   }
 }
 
@@ -804,20 +620,14 @@ async function sendChannelsPanel(ctx) {
 // ======================================================
 
 async function sendRefreshPanel(ctx) {
-  const {
-    hasVip,
-    hasUser,
-  } =
-    await getAccessState(
-      ctx.from?.id
-    );
+  const { hasVip, hasUser } =
+    await getAccessState(ctx.from?.id);
 
-  const tier =
-    hasVip
-      ? "⚡ᴠɪᴘ"
-      : hasUser
-        ? "𝐔𝐬𝐞𝐫 🜲∓ҳ"
-        : "ɴᴏ ᴘʟᴀɴ";
+  const tier = hasVip
+    ? "⚡ᴠɪᴘ"
+    : hasUser
+      ? "𝐔𝐬𝐞𝐫 🜲∓ҳ"
+      : "ɴᴏ ᴘʟᴀɴ";
 
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
@@ -828,23 +638,21 @@ async function sendRefreshPanel(ctx) {
 }
 
 // ======================================================
-// VIDEOCALL REQUEST
+// VIDEOCALL FLOW
 // ======================================================
 
 async function openVideocallFlow(ctx) {
-  const userId =
-    String(ctx.from?.id || "");
+  const userId = String(ctx.from?.id || "");
 
   if (!userId) {
     return;
   }
 
-  const allowed =
-    await checkRateLimit(
-      userId,
-      3,
-      300
-    );
+  const allowed = await checkRateLimit(
+    userId,
+    3,
+    300
+  );
 
   if (!allowed) {
     await ctx.reply(
@@ -855,9 +663,7 @@ async function openVideocallFlow(ctx) {
   }
 
   const currentRequest =
-    await getVideoRequest(
-      userId
-    );
+    await getVideoRequest(userId);
 
   if (
     currentRequest?.status ===
@@ -874,68 +680,30 @@ async function openVideocallFlow(ctx) {
     return;
   }
 
-  const user =
-    getUserMeta(ctx.from);
+  const user = getUserMeta(ctx.from);
 
-  await setVideoRequest(
+  await setVideoRequest(userId, {
     userId,
-    {
-      userId,
-      fullName: user.fullName,
-      username: user.username,
-      status:
-        REQUEST_STATUS.WAITING_PHOTO,
-      invalidTextCount: 0,
-      createdAt: Date.now(),
-    }
+    fullName: user.fullName,
+    username: user.username,
+    status: REQUEST_STATUS.WAITING_PHOTO,
+    invalidTextCount: 0,
+    createdAt: Date.now(),
+  });
+
+  await ctx.reply(
+    `ʜᴏʟᴅ ᴜᴘ...
+
+ᴡᴇ ɴᴇᴇᴅ ᴀ ᴘʜᴏᴛᴏ ꜰɪʀꜱᴛ.
+
+ꜱᴇɴᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴇʀᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`,
+    getPendingPhotoKeyboard()
   );
-
-  // ----------------------------------------------------
-  // SEND VIDEO TO USER
-  // ----------------------------------------------------
-
-  try {
-    await ctx.replyWithVideo(
-      Input.fromLocalFile(
-        assets("FX-Y24V01.mp4")
-      ),
-      {
-        caption:
-          `ʜᴏʟᴅ ᴜᴘ, ʙᴇꜰᴏʀᴇ ᴡᴇ ᴋᴇᴇᴘ ɢᴏɪɴɢ, ᴄᴀɴ ɪ ᴘʟᴇᴀꜱᴇ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ?
-
-ɪ ᴡᴀɴɴᴀ ᴋɴᴏᴡ ᴡʜᴏ ɪ'ᴍ ᴛᴀʟᴋɪɴɢ ᴛᴏ...
-
-ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʙᴜᴛᴛᴏɴꜱ.`,
-        reply_markup:
-          getPendingPhotoKeyboard()
-            .reply_markup,
-      }
-    );
-  } catch (error) {
-    logger.error(
-      "SEND VIDEO ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
-
-    await ctx.reply(
-      `ʜᴏʟᴅ ᴜᴘ...
-
-ᴄᴀɴ ɪ ꜱᴇᴇ ᴀ ᴘɪᴄ ᴏꜰ ʏᴏᴜ?`,
-      getPendingPhotoKeyboard()
-    );
-  }
-
-  // ----------------------------------------------------
-  // NOTIFY ADMIN
-  // ----------------------------------------------------
 
   try {
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
-      `📞 New videocall request
+      `📞 <b>NEW VIDEOCALL REQUEST</b>
 
 Name:
 ${escapeHtml(user.fullName)}
@@ -944,24 +712,20 @@ Username:
 ${escapeHtml(user.username)}
 
 ID:
-${escapeHtml(user.id)}
+<code>${escapeHtml(user.id)}</code>
 
-Chat ID User:
-${escapeHtml(userId)}
+Chat ID:
+<code>${escapeHtml(userId)}</code>
 
-ᴇꜱᴘᴇʀᴀɴᴅᴏ ꜱᴜ ꜰᴏᴛᴏ...`,
+Waiting for photo...`,
       {
         parse_mode: "HTML",
       }
     );
   } catch (error) {
-    logger.error(
-      "ADMIN MESSAGE ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-      }
-    );
+    logger.error("ADMIN REQUEST ERROR", {
+      message: error?.message,
+    });
   }
 }
 
@@ -969,11 +733,8 @@ ${escapeHtml(userId)}
 // APPROVED VIDEOCALL
 // ======================================================
 
-async function sendApprovedVideocallFlow(
-  userId
-) {
-  const targetUserId =
-    String(userId);
+async function sendApprovedVideocallFlow(userId) {
+  const targetUserId = String(userId);
 
   try {
     await bot.telegram.sendMessage(
@@ -983,19 +744,6 @@ async function sendApprovedVideocallFlow(
 ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ ᴀᴘᴘʀᴏᴠᴇᴅ.`
     );
 
-    const keyboard =
-      getVideocallInlineKeyboard();
-
-    logger.info(
-      "SENDING VIDEOCALL KEYBOARD",
-      {
-        userId: targetUserId,
-        zoomUrl: ZOOM_URL,
-        telegramUrl:
-          TELEGRAM_CALL_URL,
-      }
-    );
-
     await bot.telegram.sendMessage(
       targetUserId,
       `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
@@ -1003,7 +751,7 @@ async function sendApprovedVideocallFlow(
 ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
       {
         reply_markup:
-          keyboard,
+          getVideocallInlineKeyboard(),
       }
     );
 
@@ -1021,7 +769,6 @@ async function sendApprovedVideocallFlow(
         message: error?.message,
         description:
           error?.response?.description,
-        stack: error?.stack,
       }
     );
   }
@@ -1037,10 +784,6 @@ async function sendVipInvoice(ctx) {
     ctx.callbackQuery?.message?.chat?.id;
 
   if (!chatId) {
-    logger.error(
-      "NO CHAT ID VIP INVOICE"
-    );
-
     return;
   }
 
@@ -1057,26 +800,17 @@ async function sendVipInvoice(ctx) {
         prices: [
           {
             label: "VIP ACCESS",
-            amount:
-              VIP_STARS_PRICE,
+            amount: VIP_STARS_PRICE,
           },
         ],
       }
     );
   } catch (error) {
-    logger.error(
-      "VIP INVOICE ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-        description:
-          error?.response?.description,
-      }
-    );
-
-    await ctx.reply(
-      "❌ ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-    );
+    logger.error("VIP INVOICE ERROR", {
+      message: error?.message,
+      description:
+        error?.response?.description,
+    });
   }
 }
 
@@ -1086,10 +820,6 @@ async function sendUserInvoice(ctx) {
     ctx.callbackQuery?.message?.chat?.id;
 
   if (!chatId) {
-    logger.error(
-      "NO CHAT ID USER INVOICE"
-    );
-
     return;
   }
 
@@ -1105,52 +835,36 @@ async function sendUserInvoice(ctx) {
         currency: "XTR",
         prices: [
           {
-            label:
-              "USER FX ACCESS",
-            amount:
-              USER_STARS_PRICE,
+            label: "USER FX ACCESS",
+            amount: USER_STARS_PRICE,
           },
         ],
       }
     );
   } catch (error) {
-    logger.error(
-      "USER INVOICE ERROR",
-      {
-        message: error?.message,
-        stack: error?.stack,
-        description:
-          error?.response?.description,
-      }
-    );
-
-    await ctx.reply(
-      "❌ ᴘᴀʏᴍᴇɴᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ ᴇʀʀᴏʀ."
-    );
+    logger.error("USER INVOICE ERROR", {
+      message: error?.message,
+      description:
+        error?.response?.description,
+    });
   }
 }
 
-async function sendStars130Invoice(
-  userId
-) {
+async function sendStars130Invoice(userId) {
   try {
     await bot.telegram.callApi(
       "sendInvoice",
       {
         chat_id: userId,
-        title:
-          "VIDEOCALL ACCESS",
+        title: "VIDEOCALL ACCESS",
         description:
           "Access to the videocall service.",
-        payload:
-          STARS_130_PAYLOAD,
+        payload: STARS_130_PAYLOAD,
         currency: "XTR",
         prices: [
           {
-            label:
-              "VIDEOCALL ACCESS",
-            amount:
-              STARS_130_PRICE,
+            label: "VIDEOCALL ACCESS",
+            amount: STARS_130_PRICE,
           },
         ],
       }
@@ -1161,13 +875,7 @@ async function sendStars130Invoice(
       {
         userId,
         message: error?.message,
-        stack: error?.stack,
       }
-    );
-
-    await bot.telegram.sendMessage(
-      userId,
-      "❌ ᴇʀʀᴏʀ ᴄʀᴇᴀᴛɪɴɢ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ."
     );
   }
 }
@@ -1176,9 +884,7 @@ async function sendStars130Invoice(
 // PAYMENT
 // ======================================================
 
-async function handleSuccessfulPayment(
-  ctx
-) {
+async function handleSuccessfulPayment(ctx) {
   const payment =
     ctx.message?.successful_payment;
 
@@ -1186,8 +892,9 @@ async function handleSuccessfulPayment(
     return;
   }
 
-  const userId =
-    String(ctx.from?.id || "");
+  const userId = String(
+    ctx.from?.id || ""
+  );
 
   if (!userId) {
     return;
@@ -1199,66 +906,39 @@ async function handleSuccessfulPayment(
   const payload =
     payment.invoice_payload;
 
-  logger.info(
-    "SUCCESSFUL PAYMENT",
-    {
+  logger.info("SUCCESSFUL PAYMENT", {
+    userId,
+    payload,
+    chargeId,
+  });
+
+  if (
+    await hasProcessedPayment(chargeId)
+  ) {
+    logger.warn("DUPLICATE PAYMENT", {
       userId,
       payload,
       chargeId,
-    }
-  );
-
-  // ----------------------------------------------------
-  // PREVENT DUPLICATE PAYMENT PROCESSING
-  // ----------------------------------------------------
-
-  if (
-    await hasProcessedPayment(
-      chargeId
-    )
-  ) {
-    logger.warn(
-      "DUPLICATE PAYMENT",
-      {
-        userId,
-        payload,
-        chargeId,
-      }
-    );
+    });
 
     return;
   }
 
-  await markPaymentProcessed(
-    chargeId
-  );
+  await markPaymentProcessed(chargeId);
 
-  // ====================================================
-  // VIDEOCALL 130 STARS
-  // ====================================================
+  // ----------------------------------------------------
+  // VIDEOCALL 130
+  // ----------------------------------------------------
 
-  if (
-    payload ===
-    STARS_130_PAYLOAD
-  ) {
+  if (payload === STARS_130_PAYLOAD) {
     const request =
-      await getVideoRequest(
-        userId
-      );
+      await getVideoRequest(userId);
 
     if (
       !request ||
       request.status !==
         REQUEST_STATUS.AWAITING_PAYMENT
     ) {
-      logger.warn(
-        "130 PAYMENT WITHOUT VALID REQUEST",
-        {
-          userId,
-          payload,
-        }
-      );
-
       await ctx.reply(
         `⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇQᴜᴇꜱᴛ ᴡᴀꜱ ꜰᴏᴜɴᴅ.
 
@@ -1272,8 +952,7 @@ async function handleSuccessfulPayment(
       userId,
       {
         ...request,
-        status:
-          REQUEST_STATUS.PAID,
+        status: REQUEST_STATUS.PAID,
         paidAt: Date.now(),
         telegramPaymentChargeId:
           chargeId,
@@ -1283,9 +962,7 @@ async function handleSuccessfulPayment(
     await ctx.reply(
       `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
 
-📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-
-ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ:`,
+📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
       {
         reply_markup:
           getVideocallInlineKeyboard(),
@@ -1295,24 +972,16 @@ async function handleSuccessfulPayment(
     return;
   }
 
-  // ====================================================
+  // ----------------------------------------------------
   // VIP
-  // ====================================================
+  // ----------------------------------------------------
 
-  if (
-    payload === VIP_PAYLOAD
-  ) {
-    const entry = {
-      telegramPaymentChargeId:
-        chargeId,
+  if (payload === VIP_PAYLOAD) {
+    await setPaidUser(userId, {
+      telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
       tier: TIER_VIP,
-    };
-
-    await setPaidUser(
-      userId,
-      entry
-    );
+    });
 
     await ctx.reply(
       `✅ ᴠɪᴘ ᴀᴄᴛɪᴠᴀᴛᴇᴅ
@@ -1324,24 +993,16 @@ async function handleSuccessfulPayment(
     return;
   }
 
-  // ====================================================
+  // ----------------------------------------------------
   // USER
-  // ====================================================
+  // ----------------------------------------------------
 
-  if (
-    payload === USER_PAYLOAD
-  ) {
-    const entry = {
-      telegramPaymentChargeId:
-        chargeId,
+  if (payload === USER_PAYLOAD) {
+    await setPaidUser(userId, {
+      telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
       tier: TIER_USER,
-    };
-
-    await setPaidUser(
-      userId,
-      entry
-    );
+    });
 
     await ctx.reply(
       `✅ "ᴜꜱᴇʀ" ᴀᴄᴛɪᴠᴀᴛᴇᴅ
@@ -1356,36 +1017,28 @@ async function handleSuccessfulPayment(
 // START
 // ======================================================
 
-bot.start(
-  async (ctx) => {
-    try {
-      await sendMainPanel(ctx);
-    } catch (error) {
-      logger.error(
-        "START ERROR",
-        {
-          message: error?.message,
-          stack: error?.stack,
-        }
-      );
-    }
+bot.start(async (ctx) => {
+  try {
+    await sendMainPanel(ctx);
+  } catch (error) {
+    logger.error("START ERROR", {
+      message: error?.message,
+      stack: error?.stack,
+    });
   }
-);
+});
 
 // ======================================================
 // SUPPORT
 // ======================================================
 
-bot.command(
-  "paysupport",
-  async (ctx) => {
-    await ctx.reply(
-      `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
+bot.command("paysupport", async (ctx) => {
+  await ctx.reply(
+    `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 
 ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`
-    );
-  }
-);
+  );
+});
 
 // ======================================================
 // PAYMENT ACTIONS
@@ -1396,18 +1049,11 @@ bot.action(
   async (ctx) => {
     try {
       await ctx.answerCbQuery();
-
       await sendVipInvoice(ctx);
     } catch (error) {
-      logger.error(
-        "PAY VIP ERROR",
-        {
-          message:
-            error?.message,
-          stack:
-            error?.stack,
-        }
-      );
+      logger.error("PAY VIP ERROR", {
+        message: error?.message,
+      });
     }
   }
 );
@@ -1417,24 +1063,17 @@ bot.action(
   async (ctx) => {
     try {
       await ctx.answerCbQuery();
-
       await sendUserInvoice(ctx);
     } catch (error) {
-      logger.error(
-        "PAY USER ERROR",
-        {
-          message:
-            error?.message,
-          stack:
-            error?.stack,
-        }
-      );
+      logger.error("PAY USER ERROR", {
+        message: error?.message,
+      });
     }
   }
 );
 
 // ======================================================
-// BACK TO MAIN
+// BACK MAIN
 // ======================================================
 
 bot.action(
@@ -1443,21 +1082,17 @@ bot.action(
     try {
       await ctx.answerCbQuery();
 
-      await ctx
-        .deleteMessage()
-        .catch(() => {});
+      try {
+        await ctx.deleteMessage();
+      } catch {
+        // ignore
+      }
 
       await sendMainPanel(ctx);
     } catch (error) {
-      logger.error(
-        "BACK MAIN ERROR",
-        {
-          message:
-            error?.message,
-          stack:
-            error?.stack,
-        }
-      );
+      logger.error("BACK MAIN ERROR", {
+        message: error?.message,
+      });
     }
   }
 );
@@ -1477,10 +1112,7 @@ bot.on(
       logger.error(
         "PRE CHECKOUT ERROR",
         {
-          message:
-            error?.message,
-          stack:
-            error?.stack,
+          message: error?.message,
         }
       );
     }
@@ -1492,17 +1124,16 @@ bot.on(
 // ======================================================
 
 async function handleMedia(ctx) {
-  const userId =
-    String(ctx.from?.id || "");
+  const userId = String(
+    ctx.from?.id || ""
+  );
 
   if (!userId) {
     return;
   }
 
   const pending =
-    await getVideoRequest(
-      userId
-    );
+    await getVideoRequest(userId);
 
   if (
     !pending ||
@@ -1517,8 +1148,7 @@ async function handleMedia(ctx) {
     status:
       REQUEST_STATUS.AWAITING_ADMIN,
     invalidTextCount: 0,
-    photoReceivedAt:
-      Date.now(),
+    photoReceivedAt: Date.now(),
   };
 
   await setVideoRequest(
@@ -1552,386 +1182,350 @@ async function handleMedia(ctx) {
         ],
       ]);
 
+    await adminBot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      `📸 <b>NEW PHOTO RECEIVED</b>
+
+Name:
+${escapeHtml(user.fullName)}
+
+Username:
+${escapeHtml(user.username)}
+
+ID:
+<code>${escapeHtml(user.id)}</code>
+
+The user's media is attached below.`,
+      {
+        parse_mode: "HTML",
+        reply_markup:
+          adminKeyboard.reply_markup,
+      }
+    );
+
+    // Forward/copy original media.
     await adminBot.telegram.copyMessage(
       ADMIN_CHAT_ID,
       ctx.chat.id,
-      ctx.message.message_id,
+      ctx.message.message_id
+    );
+
+    // Send buttons separately so they always remain visible.
+    await adminBot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      "Choose an action:",
       {
         reply_markup:
           adminKeyboard.reply_markup,
       }
     );
 
-    logger.info(
-      "MEDIA SENT TO ADMIN",
-      {
-        userId,
-        type:
-          ctx.message?.photo
-            ? "photo"
-            : "video",
-      }
+    await ctx.reply(
+      `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
+
+ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`
     );
   } catch (error) {
     logger.error(
-      "SEND MEDIA ERROR",
+      "MEDIA HANDLER ERROR",
       {
         message: error?.message,
-        stack: error?.stack,
+        description:
+          error?.response?.description,
       }
     );
   }
 }
 
-bot.on(
-  "photo",
-  handleMedia
-);
-
-bot.on(
-  "video",
-  handleMedia
-);
+bot.on("photo", handleMedia);
+bot.on("video", handleMedia);
 
 // ======================================================
-// TEXT
+// USER TEXT
 // ======================================================
 
-bot.on(
-  "text",
-  async (ctx) => {
-    const text =
-      (ctx.message.text || "")
-        .trim();
+bot.on("text", async (ctx) => {
+  const text =
+    String(ctx.message?.text || "").trim();
 
-    const userId =
-      String(ctx.from?.id || "");
+  const userId = String(
+    ctx.from?.id || ""
+  );
 
-    if (!userId) {
+  if (!userId) {
+    return;
+  }
+
+  try {
+    // --------------------------------------------------
+    // VIDEOCALL
+    // --------------------------------------------------
+
+    if (text === BTN_VIDEOCALL) {
+      await trackButtonClick(
+        ctx,
+        "VIDEOCALL"
+      );
+
+      return await openVideocallFlow(ctx);
+    }
+
+    // --------------------------------------------------
+    // FULL ACCESS
+    // --------------------------------------------------
+
+    if (
+      text === BTN_GET_FULL_ACCESS
+    ) {
+      await trackButtonClick(
+        ctx,
+        "FULL ACCESS"
+      );
+
+      return await sendMembershipPanel(
+        ctx
+      );
+    }
+
+    // --------------------------------------------------
+    // VIP
+    // --------------------------------------------------
+
+    if (text === BTN_VIP) {
+      await trackButtonClick(
+        ctx,
+        "VIP"
+      );
+
+      return await sendVipPanel(ctx);
+    }
+
+    // --------------------------------------------------
+    // USER
+    // --------------------------------------------------
+
+    if (text === BTN_USER) {
+      await trackButtonClick(
+        ctx,
+        "USER"
+      );
+
+      return await sendUserPanel(ctx);
+    }
+
+    // --------------------------------------------------
+    // CHANNELS
+    // --------------------------------------------------
+
+    if (text === BTN_CHANNELS) {
+      await trackButtonClick(
+        ctx,
+        "CHANNELS"
+      );
+
+      return await sendChannelsPanel(
+        ctx
+      );
+    }
+
+    // --------------------------------------------------
+    // REFRESH
+    // --------------------------------------------------
+
+    if (text === BTN_REFRESH) {
+      await trackButtonClick(
+        ctx,
+        "REFRESH"
+      );
+
+      return await sendRefreshPanel(
+        ctx
+      );
+    }
+
+    // --------------------------------------------------
+    // CANCEL
+    // --------------------------------------------------
+
+    if (text === BTN_CANCEL) {
+      await deleteVideoRequest(userId);
+
+      return await sendMainPanel(ctx);
+    }
+
+    // --------------------------------------------------
+    // BACK
+    // --------------------------------------------------
+
+    if (
+      text === BTN_BACK_MENU ||
+      text === BTN_CHANNELS_BACK
+    ) {
+      await deleteVideoRequest(userId);
+
+      return await sendMainPanel(ctx);
+    }
+
+    // --------------------------------------------------
+    // ZOOM
+    // --------------------------------------------------
+
+    if (text === BTN_ZOOM) {
+      return await ctx.reply(
+        "📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ",
+                  url: ZOOM_URL,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    }
+
+    // --------------------------------------------------
+    // TELEGRAM
+    // --------------------------------------------------
+
+    if (text === BTN_TELEGRAM) {
+      return await ctx.reply(
+        "💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text:
+                    "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+                  url:
+                    TELEGRAM_CALL_URL,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    }
+
+    // --------------------------------------------------
+    // CHANNELS
+    // --------------------------------------------------
+
+    if (
+      text === BTN_SMOKELANDIA
+    ) {
+      return await ctx.reply(
+        "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "↗ ᴏᴘᴇɴ",
+                  url:
+                    SMOKELANDIA_GROUP_LINK,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    }
+
+    if (
+      text === BTN_USERFX_SITE
+    ) {
+      return await ctx.reply(
+        "𝐔𝐬𝐞𝐫 🜲∓ҳ",
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "↗ ᴇɴᴛᴇʀ",
+                  url:
+                    USERFX_SITE_URL,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    }
+
+    // --------------------------------------------------
+    // COMMANDS
+    // --------------------------------------------------
+
+    if (text.startsWith("/")) {
       return;
     }
 
-    try {
-      // =================================================
-      // VIDEOCALL
-      // =================================================
+    // --------------------------------------------------
+    // WAITING PHOTO
+    // --------------------------------------------------
 
-      if (
-        text === BTN_VIDEOCALL
-      ) {
-        await trackButtonClick(
-          ctx,
-          "VIDEOCALL"
-        );
+    const pending =
+      await getVideoRequest(userId);
 
-        return await openVideocallFlow(
-          ctx
-        );
-      }
+    if (
+      pending?.status ===
+      REQUEST_STATUS.WAITING_PHOTO
+    ) {
+      const invalidTextCount =
+        Number(
+          pending.invalidTextCount || 0
+        ) + 1;
 
-      // =================================================
-      // FULL ACCESS
-      // =================================================
-
-      if (
-        text ===
-        BTN_GET_FULL_ACCESS
-      ) {
-        await trackButtonClick(
-          ctx,
-          "FULL ACCESS"
-        );
-
-        return await sendMembershipPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // VIP
-      // =================================================
-
-      if (
-        text === BTN_VIP
-      ) {
-        await trackButtonClick(
-          ctx,
-          "VIP"
-        );
-
-        return await sendVipPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // USER
-      // =================================================
-
-      if (
-        text === BTN_USER
-      ) {
-        await trackButtonClick(
-          ctx,
-          "USER"
-        );
-
-        return await sendUserPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // CHANNELS
-      // =================================================
-
-      if (
-        text === BTN_CHANNELS
-      ) {
-        await trackButtonClick(
-          ctx,
-          "CHANNELS"
-        );
-
-        return await sendChannelsPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // REFRESH
-      // =================================================
-
-      if (
-        text === BTN_REFRESH
-      ) {
-        await trackButtonClick(
-          ctx,
-          "REFRESH"
-        );
-
-        return await sendRefreshPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // CANCEL
-      // =================================================
-
-      if (
-        text === BTN_CANCEL
-      ) {
+      if (invalidTextCount >= 4) {
         await deleteVideoRequest(
           userId
-        );
-
-        return await sendMainPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // BACK
-      // =================================================
-
-      if (
-        text === BTN_BACK_MENU ||
-        text === BTN_CHANNELS_BACK
-      ) {
-        await deleteVideoRequest(
-          userId
-        );
-
-        return await sendMainPanel(
-          ctx
-        );
-      }
-
-      // =================================================
-      // ZOOM
-      // =================================================
-
-      if (
-        text === BTN_ZOOM
-      ) {
-        return await ctx.reply(
-          `📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:
-                      "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ",
-                    url:
-                      ZOOM_URL,
-                  },
-                ],
-              ],
-            },
-          }
-        );
-      }
-
-      // =================================================
-      // TELEGRAM
-      // =================================================
-
-      if (
-        text === BTN_TELEGRAM
-      ) {
-        return await ctx.reply(
-          `💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ`,
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:
-                      "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
-                    url:
-                      TELEGRAM_CALL_URL,
-                  },
-                ],
-              ],
-            },
-          }
-        );
-      }
-
-      // =================================================
-      // CHANNELS LINKS
-      // =================================================
-
-      if (
-        text ===
-        BTN_SMOKELANDIA
-      ) {
-        return await ctx.reply(
-          "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:
-                      "↗ ᴏᴘᴇɴ",
-                    url:
-                      SMOKELANDIA_GROUP_LINK,
-                  },
-                ],
-              ],
-            },
-          }
-        );
-      }
-
-      if (
-        text ===
-        BTN_USERFX_SITE
-      ) {
-        return await ctx.reply(
-          "𝐔𝐬𝐞𝐫 🜲∓ҳ",
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:
-                      "↗ ᴇɴᴛᴇʀ",
-                    url:
-                      USERFX_SITE_URL,
-                  },
-                ],
-              ],
-            },
-          }
-        );
-      }
-
-      // =================================================
-      // COMMANDS
-      // =================================================
-
-      if (
-        text.startsWith("/")
-      ) {
-        return;
-      }
-
-      // =================================================
-      // WAITING FOR PHOTO
-      // =================================================
-
-      const pending =
-        await getVideoRequest(
-          userId
-        );
-
-      if (
-        pending?.status ===
-        REQUEST_STATUS.WAITING_PHOTO
-      ) {
-        const invalidTextCount =
-          Number(
-            pending.invalidTextCount ||
-              0
-          ) + 1;
-
-        if (
-          invalidTextCount >= 4
-        ) {
-          await deleteVideoRequest(
-            userId
-          );
-
-          await ctx.reply(
-            "✘ ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ."
-          );
-
-          await sendMainPanel(
-            ctx
-          );
-
-          return;
-        }
-
-        await setVideoRequest(
-          userId,
-          {
-            ...pending,
-            invalidTextCount,
-          }
         );
 
         await ctx.reply(
-          "📸😏 ʜᴏʟᴅ ᴜᴘ... ʟᴇᴍᴍᴇ ꜱᴇᴇ ᴀɴʏ ᴘɪᴄᴛᴜʀᴇ ᴏꜰ ʏᴏᴜ ꜰɪʀꜱᴛ."
+          "✘ ʀᴇQᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ."
         );
 
-        return;
+        return await sendMainPanel(ctx);
       }
 
-      // =================================================
-      // DEFAULT
-      // =================================================
-
-      await sendMainPanel(
-        ctx
-      );
-    } catch (error) {
-      logger.error(
-        "TEXT HANDLER ERROR",
+      await setVideoRequest(
+        userId,
         {
-          message:
-            error?.message,
-          stack:
-            error?.stack,
+          ...pending,
+          invalidTextCount,
         }
       );
+
+      await ctx.reply(
+        "📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ꜰɪʀꜱᴛ."
+      );
+
+      return;
     }
+
+    // --------------------------------------------------
+    // DEFAULT
+    // --------------------------------------------------
+
+    await sendMainPanel(ctx);
+  } catch (error) {
+    logger.error(
+      "TEXT HANDLER ERROR",
+      {
+        message: error?.message,
+        stack: error?.stack,
+        description:
+          error?.response?.description,
+      }
+    );
   }
-);
+});
 
 // ======================================================
 // PAYMENT EVENT
@@ -1960,8 +1554,9 @@ function isAdmin(ctx) {
 adminBot.action(
   /^approve_stars_(\d+)$/,
   async (ctx) => {
-    const adminId =
-      String(ctx.from?.id || "");
+    const adminId = String(
+      ctx.from?.id || ""
+    );
 
     if (
       adminId !==
@@ -2016,17 +1611,6 @@ adminBot.action(
         }
       );
 
-      logger.info(
-        "ADMIN ACTION",
-        {
-          adminId,
-          action:
-            "approve_stars",
-          target:
-            requesterId,
-        }
-      );
-
       await bot.telegram.sendMessage(
         requesterId,
         `✅ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
@@ -2044,8 +1628,6 @@ adminBot.action(
           requesterId,
           message:
             error?.message,
-          stack:
-            error?.stack,
         }
       );
     }
@@ -2059,8 +1641,9 @@ adminBot.action(
 adminBot.action(
   /^approve_call_(\d+)$/,
   async (ctx) => {
-    const adminId =
-      String(ctx.from?.id || "");
+    const adminId = String(
+      ctx.from?.id || ""
+    );
 
     if (
       adminId !==
@@ -2110,19 +1693,7 @@ adminBot.action(
           ...pending,
           status:
             REQUEST_STATUS.APPROVED,
-          approvedAt:
-            Date.now(),
-        }
-      );
-
-      logger.info(
-        "ADMIN ACTION",
-        {
-          adminId,
-          action:
-            "approve_call",
-          target:
-            requesterId,
+          approvedAt: Date.now(),
         }
       );
 
@@ -2136,11 +1707,6 @@ adminBot.action(
           requesterId,
           message:
             error?.message,
-          description:
-            error?.response
-              ?.description,
-          stack:
-            error?.stack,
         }
       );
     }
@@ -2154,8 +1720,9 @@ adminBot.action(
 adminBot.action(
   /^reject_video_(\d+)$/,
   async (ctx) => {
-    const adminId =
-      String(ctx.from?.id || "");
+    const adminId = String(
+      ctx.from?.id || ""
+    );
 
     if (
       adminId !==
@@ -2199,17 +1766,6 @@ adminBot.action(
         requesterId
       );
 
-      logger.info(
-        "ADMIN ACTION",
-        {
-          adminId,
-          action:
-            "reject_video",
-          target:
-            requesterId,
-        }
-      );
-
       const keyboard =
         Markup.inlineKeyboard([
           [
@@ -2222,9 +1778,9 @@ adminBot.action(
 
       await bot.telegram.sendMessage(
         requesterId,
-        `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ ᴛᴏ ʜᴀᴠᴇ ꜱᴏᴍᴇ ꜰᴜɴ ᴡɪᴛʜ ᴀ ɢᴜʏ.
+        `⏳ ɪ'ᴍ ᴊᴜꜱᴛ ɢᴇᴛᴛɪɴɢ ʀᴇᴀᴅʏ.
 
-ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ`,
+ɪ ᴍɪɢʜᴛ ᴍᴇꜱꜱᴀɢᴇ ʏᴏᴜ ʟᴀᴛᴇʀ ɪꜰ ᴛʜᴀᴛ'ꜱ ᴄᴏᴏʟ.`,
         {
           reply_markup:
             keyboard.reply_markup,
@@ -2232,13 +1788,11 @@ adminBot.action(
       );
     } catch (error) {
       logger.error(
-        "REJECT VIDEO ERROR",
+        "REJECT ERROR",
         {
           requesterId,
           message:
             error?.message,
-          stack:
-            error?.stack,
         }
       );
     }
@@ -2246,7 +1800,7 @@ adminBot.action(
 );
 
 // ======================================================
-// USER NOTIFY
+// NOTIFY ME
 // ======================================================
 
 bot.action(
@@ -2271,7 +1825,7 @@ bot.action(
 
     try {
       await ctx.answerCbQuery(
-        "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ."
+        "ʏᴇᴀ🔥"
       );
 
       await ctx
@@ -2285,7 +1839,7 @@ bot.action(
 
       await adminBot.telegram.sendMessage(
         ADMIN_CHAT_ID,
-        `🔔 <b>Notify request</b>
+        `🔔 <b>NOTIFY REQUEST</b>
 
 Name:
 ${escapeHtml(user.fullName)}
@@ -2294,25 +1848,21 @@ Username:
 ${escapeHtml(user.username)}
 
 ID:
-${escapeHtml(user.id)}
+<code>${escapeHtml(user.id)}</code>
 
 Target:
-${escapeHtml(requesterId)}`,
+<code>${escapeHtml(requesterId)}</code>`,
         {
           parse_mode: "HTML",
         }
       );
 
-      await bot.telegram.sendVideo(
+      await bot.telegram.sendMessage(
         requesterId,
-        Input.fromLocalFile(
-          assets("videoSMKLFX.mp4")
-        ),
-        {
-          caption:
-            `ꜰᴏʀ ꜱᴜʀᴇ!
+        `ꜰᴏʀ ꜱᴜʀᴇ!
 
 ꜱᴡɪɴɢ ʙʏ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ꜱᴇᴇ ᴡʜᴀᴛ'ꜱ ɴᴇᴡ..`,
+        {
           reply_markup: {
             inline_keyboard: [
               [
@@ -2342,8 +1892,6 @@ ${escapeHtml(requesterId)}`,
           requesterId,
           message:
             error?.message,
-          stack:
-            error?.stack,
         }
       );
     }
@@ -2351,7 +1899,7 @@ ${escapeHtml(requesterId)}`,
 );
 
 // ======================================================
-// ADMIN REPORT
+// REPORT
 // ======================================================
 
 bot.command(
@@ -2367,9 +1915,7 @@ bot.command(
           "button_click:*"
         );
 
-      if (
-        keys.length === 0
-      ) {
+      if (!keys.length) {
         await ctx.reply(
           "📊 No button clicks recorded yet."
         );
@@ -2378,35 +1924,30 @@ bot.command(
       }
 
       const values =
-        await redis.mget(
-          ...keys
+        await redis.mget(...keys);
+
+      const clicks = values
+        .filter(Boolean)
+        .map((value) => {
+          try {
+            return JSON.parse(value);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .sort(
+          (a, b) =>
+            new Date(
+              b.clickedAt
+            ).getTime() -
+            new Date(
+              a.clickedAt
+            ).getTime()
         );
 
-      const clicks =
-        values
-          .filter(Boolean)
-          .map((value) => {
-            try {
-              return JSON.parse(
-                value
-              );
-            } catch {
-              return null;
-            }
-          })
-          .filter(Boolean)
-          .sort(
-            (a, b) =>
-              new Date(
-                b.clickedAt
-              ).getTime() -
-              new Date(
-                a.clickedAt
-              ).getTime()
-          );
-
       let report =
-        `📊 <b>BUTTON CLICK REPORT</b>\n\n`;
+        "📊 <b>BUTTON CLICK REPORT</b>\n\n";
 
       clicks.forEach(
         (click, index) => {
@@ -2429,12 +1970,9 @@ bot.command(
         }
       );
 
-      // Telegram message limit
       const chunks = [];
 
-      while (
-        report.length > 0
-      ) {
+      while (report.length > 0) {
         chunks.push(
           report.slice(0, 3900)
         );
@@ -2447,8 +1985,7 @@ bot.command(
         await ctx.reply(
           chunk,
           {
-            parse_mode:
-              "HTML",
+            parse_mode: "HTML",
           }
         );
       }
@@ -2458,8 +1995,6 @@ bot.command(
         {
           message:
             error?.message,
-          stack:
-            error?.stack,
         }
       );
 
@@ -2478,55 +2013,35 @@ adminBot.command(
   "myid",
   async (ctx) => {
     await ctx.reply(
-      `chat_id: ${ctx.chat.id}\nuser_id: ${ctx.from?.id}`
+      `chat_id: ${ctx.chat?.id}\nuser_id: ${ctx.from?.id}`
     );
   }
 );
 
 // ======================================================
-// BOT ERROR
+// ERROR HANDLERS
 // ======================================================
 
-bot.catch(
-  (error) => {
-    logger.error(
-      "BOT ERROR",
-      {
-        message:
-          error?.message,
-        stack:
-          error?.stack,
-        description:
-          error?.response
-            ?.description,
-      }
-    );
-  }
-);
+bot.catch((error) => {
+  logger.error("BOT ERROR", {
+    message: error?.message,
+    stack: error?.stack,
+    description:
+      error?.response?.description,
+  });
+});
+
+adminBot.catch((error) => {
+  logger.error("ADMIN BOT ERROR", {
+    message: error?.message,
+    stack: error?.stack,
+    description:
+      error?.response?.description,
+  });
+});
 
 // ======================================================
-// ADMIN BOT ERROR
-// ======================================================
-
-adminBot.catch(
-  (error) => {
-    logger.error(
-      "ADMIN BOT ERROR",
-      {
-        message:
-          error?.message,
-        stack:
-          error?.stack,
-        description:
-          error?.response
-            ?.description,
-      }
-    );
-  }
-);
-
-// ======================================================
-// WEBHOOK
+// WEBHOOK HANDLER
 // ======================================================
 
 export default async function handler(
@@ -2534,15 +2049,10 @@ export default async function handler(
   res
 ) {
   logger.info(
-    "INCOMING REQUEST",
+    "TELEGRAM WEBHOOK REQUEST",
     {
       method: req.method,
-      secretPresent:
-        Boolean(
-          req.headers[
-            "x-telegram-bot-api-secret-token"
-          ]
-        ),
+      url: req.url,
     }
   );
 
@@ -2550,28 +2060,22 @@ export default async function handler(
   // HEALTH CHECK
   // ----------------------------------------------------
 
-  if (
-    req.method === "GET"
-  ) {
+  if (req.method === "GET") {
     return res.status(200).json({
       ok: true,
-      service:
-        "telegram-webhook",
+      service: "telegram-webhook",
       status: "online",
     });
   }
 
   // ----------------------------------------------------
-  // ONLY POST
+  // POST ONLY
   // ----------------------------------------------------
 
-  if (
-    req.method !== "POST"
-  ) {
+  if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
-      error:
-        "method_not_allowed",
+      error: "method_not_allowed",
     });
   }
 
@@ -2583,7 +2087,7 @@ export default async function handler(
 
     if (!secret) {
       logger.warn(
-        "WEBHOOK REQUEST WITHOUT SECRET"
+        "NO TELEGRAM SECRET"
       );
 
       return res.status(401).json({
@@ -2593,16 +2097,24 @@ export default async function handler(
       });
     }
 
-    const update =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body;
+    let update = req.body;
+
+    if (typeof update === "string") {
+      try {
+        update = JSON.parse(update);
+      } catch {
+        return res.status(400).json({
+          ok: false,
+          error:
+            "invalid_json",
+        });
+      }
+    }
 
     if (!update) {
       return res.status(400).json({
         ok: false,
-        error:
-          "empty_update",
+        error: "empty_update",
       });
     }
 
@@ -2632,9 +2144,7 @@ export default async function handler(
       secret ===
       WEBHOOK_SECRET
     ) {
-      await bot.handleUpdate(
-        update
-      );
+      await bot.handleUpdate(update);
 
       return res.status(200).json({
         ok: true,
@@ -2642,37 +2152,27 @@ export default async function handler(
       });
     }
 
-    // --------------------------------------------------
-    // INVALID SECRET
-    // --------------------------------------------------
-
     logger.warn(
-      "INVALID WEBHOOK SECRET"
+      "INVALID TELEGRAM SECRET"
     );
 
     return res.status(401).json({
       ok: false,
-      error:
-        "unauthorized",
+      error: "unauthorized",
     });
-  } catch (error) {
-    logger.error(
-      "BOT HANDLE UPDATE ERROR",
-      {
-        message:
-          error?.message,
-        stack:
-          error?.stack,
-        description:
-          error?.response
-            ?.description,
-      }
-    );
+} catch (error) {
+  logger.error("BOT HANDLE UPDATE ERROR", {
+    message: error?.message,
+    stack: error?.stack,
+    description: error?.response?.description,
+  });
 
-    return res.status(500).json({
-      ok: false,
-      error:
-        "telegram_handler_error",
-    });
-  }
+  return res.status(500).json({
+    ok: false,
+    error: "telegram_handler_error",
+    message: error?.message || "unknown_error",
+    description: error?.response?.description || null,
+    stack: error?.stack || null,
+  });
+}
 }
