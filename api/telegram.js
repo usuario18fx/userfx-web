@@ -2113,31 +2113,30 @@ export default async function handler(req, res) {
         error: "unauthorized",
       });
     }
-
-  // ==================================================
+// ==================================================
 // BODY
 // ==================================================
 
-let update = req.body;
+let update;
 
 try {
-  if (!update) {
-    const chunks = [];
+  const chunks = [];
 
-    for await (const chunk of req) {
-      chunks.push(
-        Buffer.isBuffer(chunk)
-          ? chunk
-          : Buffer.from(chunk)
-      );
-    }
-
-    const rawBody = Buffer.concat(chunks).toString("utf8");
-
-    update = JSON.parse(rawBody);
-  } else if (typeof update === "string") {
-    update = JSON.parse(update);
+  for await (const chunk of req) {
+    chunks.push(
+      Buffer.isBuffer(chunk)
+        ? chunk
+        : Buffer.from(chunk)
+    );
   }
+
+  const rawBody = Buffer.concat(chunks).toString("utf8");
+
+  logger.info("RAW TELEGRAM BODY", {
+    length: rawBody.length,
+  });
+
+  update = JSON.parse(rawBody);
 } catch (error) {
   logger.error("BODY JSON PARSE ERROR", {
     message: error?.message,
@@ -2150,6 +2149,24 @@ try {
     message: error?.message || "Invalid JSON",
   });
 }
+
+if (!update || typeof update !== "object") {
+  logger.error("EMPTY OR INVALID UPDATE", {
+    bodyType: typeof update,
+  });
+
+  return res.status(400).json({
+    ok: false,
+    error: "invalid_update",
+  });
+}
+
+logger.info("TELEGRAM UPDATE RECEIVED", {
+  bot: isAdmin ? "admin" : "user",
+  updateId: update.update_id,
+  hasMessage: Boolean(update.message),
+  hasCallback: Boolean(update.callback_query),
+});
 
     // ==================================================
     // ADMIN BOT
