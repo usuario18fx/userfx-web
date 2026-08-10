@@ -149,16 +149,20 @@ async function setPaidUser(userId, data) {
 }
 const VIDEO_REQUEST_TTL = 60 * 60 * 6;
 async function getVideoRequest(userId) {
-  return redisGetJson(`video_request:${String(userId)} ` ) ;
+  return redisGetJson(`video_request:${String(userId)}`);
 }
 async function setVideoRequest(userId, data) {
-  return redisSetJson(`video_request:${String(userId)} ` ,
-    data,VIDEO_REQUEST_TTL
-  ) ;
-  }
+  return redisSetJson(
+    `video_request:${String(userId)}`,
+    data,
+    VIDEO_REQUEST_TTL
+  );
+}
 async function deleteVideoRequest(userId) {
-  await redisDelete(`video_request:${String(userId) } ` ) ;
-  }
+  const id = String(userId);
+  await redisDelete(`video_request:${id}`);
+  await redisDelete(`video_request:${id} `);
+}
 // PAYMENT IDEMPOTENCY 
 async function hasProcessedPayment(chargeId) {
   if (!chargeId) {
@@ -456,18 +460,17 @@ async function sendRefreshPanel(ctx) {
     ) ;
     return;
     }
-    const currentRequest =
-    await getVideoRequest(userId);
-    if (
-      currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO ||
-      currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN ||
-      currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT
-    ) {
-    await ctx.reply(
+    const currentRequest = await getVideoRequest(userId);
+if (
+  currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO ||
+  currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN ||
+  currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT
+) {
+  await ctx.reply(
     "⏳ You already have an active videocall request."
-    ) ;
-    return;
-    }
+  );
+  return;
+}
     const user = getUserMeta(ctx.from);
     const request = {
       userId,
@@ -1059,58 +1062,107 @@ adminBot.action(
         {requesterId,message:error?.message , }
     ) ;
     } } ) ;
-// REPORT
-   bot.command("report",async (ctx) => {
-    if (!isAdmin(ctx)) {
-    return;
+    // RESET VIDEOCALL REQUEST
+bot.command("resetvc", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+
+  try {
+    if (!userId) {
+      return;
     }
-    try {
-    const keys = await scanKeys("button_click:*");
-    if (!keys.length) {
+
+    const request = await getVideoRequest(userId);
+
+    if (!request) {
+      await ctx.reply("✅ No active videocall request found.");
+      return;
+    }
+
+    await deleteVideoRequest(userId);
+
     await ctx.reply(
-    "📊 No button clicks recorded yet."
-    ) ;
-    return;
+      `✅ Videocall request reset.\n\n` +
+      `Previous status: ${request.status || "unknown"}\n` +
+      `You can now request a new videocall.`
+    );
+
+    logger.info("VIDEOCALL REQUEST RESET", {
+      userId,
+      previousStatus: request.status || null,
+    });
+
+  } catch (error) {
+    logger.error("RESET VIDEOCALL ERROR", {
+      userId,
+      message: error?.message,
+      stack: error?.stack,
+    });
+
+    await ctx.reply("❌ Error resetting videocall request.");
+  }
+});
+// REPORT
+bot.command("report", async (ctx) => {
+  if (!isAdmin(ctx)) { return;
+  }
+  try {
+    const keys = await scanKeys("button_click:*");
+
+    if (!keys.length) {
+      await ctx.reply("📊 No button clicks recorded yet.");
+      return;
     }
+
     const values = await redis.mget(...keys);
+
     const clicks = values
       .filter(Boolean)
       .map((value) => {
-    try { return JSON.parse(value);
-    } catch {
-    return null;
-    } } )
-    .filter(Boolean)
-    .sort( (a, b) =>
-      new Date(b.clickedAt).getTime() -
-      new Date(a.clickedAt).getTime()
-    ) ;
-    let report =
-    "📊 <b>BUTTON CLICK REPORT</b>\n\n";
+        try {
+          return JSON.parse(value);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .sort(
+        (a, b) =>
+          new Date(b.clickedAt).getTime() -
+          new Date(a.clickedAt).getTime()
+      );
+
+    let report = "📊 BUTTON CLICK REPORT\n\n";
+
     clicks.forEach((click, index) => {
-    report +=
-          `<b>${index + 1}. ${escapeHtml(click.fullName)}</b>\n` +
-          `Username: ${escapeHtml(click.username)}\n` +
-          `ID: <code>${escapeHtml(click.id)}</code>\n` +
-          `Button: <b>${escapeHtml(click.button)}</b>\n` +
-          `Date: ${escapeHtml(click.clickedAt)}\n\n`;
-    } ) ;
+      report +=
+        `<b>${index + 1}. ${escapeHtml(click.fullName)}</b>\n` +
+        `Username: ${escapeHtml(click.username)}\n` +
+        `ID: <code>${escapeHtml(click.id)}</code>\n` +
+        `Button: <b>${escapeHtml(click.button)}</b>\n` +
+        `Date: ${escapeHtml(click.clickedAt)}\n\n`;
+    });
+
     const chunks = [];
-    while (report.length > 0) {chunks.push(report.slice(0, 3900));report = report.slice(3900); 
+
+    while (report.length > 0) {
+      chunks.push(report.slice(0, 3900));
+      report = report.slice(3900);
     }
+
     for (const chunk of chunks) {
-    await ctx.reply(chunk,
-    {parse_mode: "HTML",
-    } ) ;
+      await ctx.reply(chunk, {
+        parse_mode: "HTML",
+      });
     }
-    } catch (error) { logger.error("REPORT ERROR",
-    { message: error?.message,
+  } catch (error) {
+    logger.error("REPORT ERROR", {
+      message: error?.message,
       stack: error?.stack,
-   } ) ;
-    await ctx.reply(
-    "❌ Error generating report."
-   ) ;
-   } } ) ;
+    });
+
+    await ctx.reply("❌ Error generating report.");
+  }
+});
 // ADMIN ID 
   adminBot.command( "myid",
   async (ctx) => {
