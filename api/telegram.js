@@ -2043,6 +2043,10 @@ adminBot.catch((error) => {
 // ======================================================
 // WEBHOOK HANDLER
 // ======================================================
+// ======================================================
+// WEBHOOK HANDLER
+// ======================================================
+
 export default async function handler(req, res) {
   logger.info("TELEGRAM WEBHOOK REQUEST", {
     method: req.method,
@@ -2075,12 +2079,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const secret =
-      req.headers["x-telegram-bot-api-secret-token"];
-
     // ==================================================
     // SECRET
     // ==================================================
+
+    const secret =
+      req.headers["x-telegram-bot-api-secret-token"];
 
     if (!secret) {
       logger.warn("WEBHOOK REQUEST WITHOUT SECRET");
@@ -2116,6 +2120,9 @@ export default async function handler(req, res) {
 
     let update = req.body;
 
+    // Vercel normalmente entrega req.body como objeto.
+    // Solo hacemos JSON.parse si realmente llegó como string.
+
     if (typeof update === "string") {
       try {
         update = JSON.parse(update);
@@ -2131,7 +2138,11 @@ export default async function handler(req, res) {
       }
     }
 
-    if (!update || typeof update !== "object") {
+    if (
+      !update ||
+      typeof update !== "object" ||
+      Array.isArray(update)
+    ) {
       logger.error("EMPTY OR INVALID UPDATE", {
         bodyType: typeof update,
       });
@@ -2147,6 +2158,10 @@ export default async function handler(req, res) {
       updateId: update.update_id,
       hasMessage: Boolean(update.message),
       hasCallback: Boolean(update.callback_query),
+      hasPhoto: Boolean(update.message?.photo),
+      hasSuccessfulPayment: Boolean(
+        update.message?.successful_payment
+      ),
     });
 
     // ==================================================
@@ -2176,13 +2191,15 @@ export default async function handler(req, res) {
     logger.error("BOT HANDLE UPDATE ERROR", {
       message: error?.message,
       stack: error?.stack,
-      description: error?.response?.description,
+      description:
+        error?.response?.description,
     });
 
     return res.status(500).json({
       ok: false,
       error: "telegram_handler_error",
-      message: error?.message || "unknown_error",
+      message:
+        error?.message || "unknown_error",
       description:
         error?.response?.description || null,
     });
