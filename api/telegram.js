@@ -2188,20 +2188,20 @@ export default async function handler(req, res) {
       bot: "user",
     });
   } catch (error) {
-    logger.error("BOT HANDLE UPDATE ERROR", {
-      message: error?.message,
-      stack: error?.stack,
-      description:
-        error?.response?.description,
-    });
+  const details = {
+    name: error?.name || null,
+    message: error?.message || "unknown_error",
+    stack: error?.stack || null,
+    description: error?.response?.description || null,
+    response: error?.response || null,
+  };
 
-    return res.status(500).json({
-      ok: false,
-      error: "telegram_handler_error",
-      message:
-        error?.message || "unknown_error",
-      description:
-        error?.response?.description || null,
-    });
-  }
+  logger.error("BOT HANDLE UPDATE ERROR", details);
+
+  return res.status(500).json({
+    ok: false,
+    error: "telegram_handler_error",
+    ...details,
+  });
+}
 }
