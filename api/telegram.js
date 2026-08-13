@@ -426,14 +426,14 @@ async function markPaymentProcessed(chargeId) {
 
 const VIP_STARS_PRICE = 499;
 const USER_STARS_PRICE = 99;
-const MONTHLY_STARS_PRICE = 249;
+const PRO_STARS_PRICE = 249;
 
 const STARS_130_PAYLOAD = "videocall_access_130";
 const STARS_130_PRICE = 130;
 
 const VIP_PAYLOAD = "VIPX_DIRECT";
 const USER_PAYLOAD = "FX01_DIRECT";
-const MONTHLY_PAYLOAD = "AX01_DIRECT";
+const PRO_PAYLOAD = "AX01_DIRECT";
 
 const TIER_VIP = "ᴠɪᴘ";
 const TIER_USER = "ᴜꜱᴇʀ";
@@ -451,10 +451,10 @@ const REQUEST_STATUS = {
 // ======================================================
 
 const BTN_VIDEOCALL = "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
-const BTN_GET_FULL_ACCESS = "🔥 ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
-const BTN_VIP = "⚡ᴠɪᴘ";
-const BTN_USER = "👑ᴜꜱᴇʀ";
-const BTN_MONTHLY = "👑 ᴍᴏɴᴛʜʟʏ";
+const BTN_GET_FULL_ACCESS = "ɢᴇᴛ ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ";
+const BTN_VIP = "👑 ᴠɪᴘ";
+const BTN_USER = "⚡ ʙᴀꜱɪᴄ";
+const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "📺ᴄʜᴀɴɴᴇʟꜱ";
 const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
 
@@ -597,7 +597,7 @@ function getMainKeyboard() {
     [BTN_VIDEOCALL],
     [BTN_GET_FULL_ACCESS],
     [BTN_VIP, BTN_USER],
-    [BTN_MONTHLY],
+    [BTN_PRO],
     [BTN_CHANNELS],
     [BTN_REFRESH],
   ]).resize();
@@ -667,12 +667,12 @@ function getStarsUserKeyboard() {
   ]);
 }
 
-function getStarsMonthlyKeyboard() {
+function getStarsPROKeyboard() {
   return Markup.inlineKeyboard([
     [
       Markup.button.callback(
         "⭐ ❘ᴘᴀʏ𝐌ᴏɴᴛʜʟʏ❘",
-        "pay_monthly_stars"
+        "pay_PRO_stars"
       ),
     ],
     [
@@ -760,69 +760,53 @@ async function sendMembershipPanel(ctx) {
   await typing(ctx);
 
   await ctx.reply(
-    `🔥 ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ
-👑 ʙᴇɴᴇꜰɪᴛꜱ
+  `ꜰᴜʟʟ ᴀᴄᴄᴇꜱꜱ
+⚡ ʙᴀꜱɪᴄ
    ⇀ ᴘʀɪᴏʀɪᴛʏ ᴀᴄᴄᴇꜱꜱ
    ⇀ ᴘʀɪᴠᴀᴛᴇ ᴜɴʟᴏᴄᴋꜱ
    ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹
-⚡ ʙᴇɴᴇꜰɪᴛꜱ
+👑 ᴠɪᴘ
    ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
    ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
-   ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`,
-    getMainKeyboard()
+   ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³
+🔥 ᴘʀᴏ
+   ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
+   ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
+   ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ `, getMainKeyboard()
   );
-}
-
-// ======================================================
-// VIP
-// ======================================================
-
+  }
+//// VIP //
 async function sendVipPanel(ctx) {
   try {
     await ctx.reply(
       `ᴠɪᴘ⚡
-  ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`,
-      getStarsVipKeyboard()
+  ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`, getStarsVipKeyboard()
     );
   } catch (error) {
-    logger.error("VIP PANEL ERROR", {
-      ...getTelegramError(error),
+    logger.error("VIP PANEL ERROR", { ...getTelegramError(error),
     });
-  }
-}
-
-// ======================================================
-// USER
-// ======================================================
-
+    }}
+//// USER //
 async function sendUserPanel(ctx) {
   try {
     await ctx.reply(
       `ᴜꜱᴇʀ👑 
-      ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`,
-      getStarsUserKeyboard()
+      ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`, getStarsUserKeyboard()
     );
   } catch (error) {
-    logger.error("USER PANEL ERROR", {
-      ...getTelegramError(error),
+    logger.error("USER PANEL ERROR", {...getTelegramError(error),
     });
-  }
-}
-
-async function sendMonthlyPanel(ctx) {
+    }}
+async function sendPROPanel(ctx) {
   try {
     await ctx.reply(
       `ᴍᴏɴᴛʜʟʏ 👑
-      ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`,
-      getStarsMonthlyKeyboard()
+      ᴜɴʟᴏᴄᴋ ᴡɪᴛʜ ✪ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ`, getStarsPROKeyboard()
     );
   } catch (error) {
-    logger.error("MONTHLY PANEL ERROR", {
-      ...getTelegramError(error),
+    logger.error("PRO PANEL ERROR", {...getTelegramError(error),
     });
-  }
-}
-
+    }}
 // ======================================================
 // CHANNELS
 // ======================================================
@@ -1113,7 +1097,7 @@ async function sendUserInvoice(ctx) {
   }
 }
 
-async function sendMonthlyInvoice(ctx) {
+async function sendPROInvoice(ctx) {
   const chatId =
     ctx.chat?.id ||
     ctx.callbackQuery?.message?.chat?.id;
@@ -1129,18 +1113,18 @@ async function sendMonthlyInvoice(ctx) {
         chat_id: chatId,
         title: "𝐌𝐎𝐍𝐓𝐇𝐋𝐘 ᴀᴄᴄᴇss",
         description: "ᴍᴇɴsᴜᴀʟ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
-        payload: MONTHLY_PAYLOAD,
+        payload: PRO_PAYLOAD,
         currency: "XTR",
         prices: [
           {
             label: "𝐌𝐎𝐍𝐓𝐇𝐋𝐘 ᴀᴄᴄᴇss",
-            amount: MONTHLY_STARS_PRICE,
+            amount: PRO_STARS_PRICE,
           },
         ],
       }
     );
   } catch (error) {
-    logger.error("MONTHLY INVOICE ERROR", {
+    logger.error("PRO INVOICE ERROR", {
       ...getTelegramError(error),
     });
     throw error;
@@ -1294,10 +1278,10 @@ async function handleSuccessfulPayment(ctx) {
   }
 
   // ====================================================
-  // MONTHLY
+  // PRO
   // ====================================================
 
-  if (payload === MONTHLY_PAYLOAD) {
+  if (payload === PRO_PAYLOAD) {
     await setPaidUser(userId, {
       telegramPaymentChargeId: chargeId,
       paidAt: Date.now(),
@@ -1489,13 +1473,13 @@ bot.action(
 );
 
 bot.action(
-  "pay_monthly_stars",
+  "pay_pro_stars",
   async (ctx) => {
     try {
       await ctx.answerCbQuery();
-      await sendMonthlyInvoice(ctx);
+      await sendPROInvoice(ctx);
     } catch (error) {
-      logger.error("PAY MONTHLY ERROR", {
+      logger.error("PAY PRO ERROR", {
         ...getTelegramError(error),
       });
     }
@@ -1718,10 +1702,10 @@ const userId = String( ctx.from?.id || "");
       "𝐔𝐒𝐄𝐑");
     return await sendUserPanel(ctx);
      }
-//// MONTHLY // 
-    if (text === BTN_MONTHLY) {await trackButtonClick(ctx,
-      "MONTHLY");
-    return await sendMonthlyPanel(ctx);
+//// PRO // 
+    if (text === BTN_PRO) {await trackButtonClick(ctx,
+      "PRO");
+    return await sendPROPanel(ctx);
      }
 //// CHANNELS // 
     if (text === BTN_CHANNELS) {
