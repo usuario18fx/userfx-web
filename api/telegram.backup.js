@@ -40,7 +40,7 @@ const USER_GROUP_LINK =
 
 const USERFX_SITE_URL =
   process.env.USERFX_SITE_URL ||
-  "https://userfx-web.vercel.app";
+  "https://t.me/+v57jkAGn3DA0NWJh";
 
 // ======================================================
 // VALIDATE ENV
