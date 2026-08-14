@@ -1,8 +1,8 @@
+import { getPlan } from "./plans.js";
+import { db } from "../db/index.js";
+import { accessCodes, orders, unlocks } from "../db/schema.js";
+import { eq, and, sql, desc } from "drizzle-orm";
 import { randomBytes } from "crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
-import { db } from "@/db";
-import { accessCodes, orders, unlocks } from "@/db/schema";
-import { getPlan } from "@/lib/plans";
 
 export const SESSION_COOKIE = "vault_session";
 export const SESSION_HOURS = 72;

@@ -1,5 +1,5 @@
-import { getPlan } from "@/lib/plans";
-import type { orders } from "@/db/schema";
+import { getPlan } from "./plans.js";
+import type { orders } from "../db/schema.js";
 
 const API = "https://api.telegram.org";
 
