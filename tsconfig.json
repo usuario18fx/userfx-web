@@ -4,7 +4,6 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "moduleResolution": "Bundler",
-    "ignoreDeprecations": "6.0",
     "allowJs": true,
     "strict": true,
     "esModuleInterop": true,
