@@ -60,10 +60,9 @@ async function sendMediaSafe(ctx, kind, url, extra = {}) {
       chatId: ctx.chat?.id || null,
       ...getTelegramError(error),
     });
-    throw error;
+    return null; // ← swallow — the text panel still renders
   }
 }
-
 // // VAULT / WEBSITE PAYMENT RELAY //
 const VAULT_WEBHOOK_URL =
   process.env.VAULT_WEBHOOK_URL ||
@@ -481,7 +480,6 @@ function getStarsProKeyboard() {
 function getChannelsKeyboard() {
   return Markup.keyboard([[BTN_SMOKELANDIA, BTN_USERFX_SITE], [BTN_CHANNELS_BACK]]).resize();
 }
-
 // // ACCESS STATE //
 async function getAccessState(userId) {
   const entry = await getPaidUser(userId);
@@ -493,7 +491,6 @@ async function getAccessState(userId) {
     entry,
   };
 }
-
 // // PANELS //
 async function sendMainPanel(ctx) {
   try {
@@ -511,9 +508,19 @@ async function sendMainPanel(ctx) {
       userId: ctx.from?.id || null,
       chatId: ctx.chat?.id || null,
     });
-    throw error;
+    // Don't throw — at minimum, send the text panel so the bot is usable
+    try {
+      await ctx.reply(
+        `𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
+ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
+ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`,
+        getMainKeyboard()
+      );
+    } catch {
+    }
   }
 }
+///////////////
 async function sendMembershipPanel(ctx) {
   await typing(ctx);
   await ctx.reply(
