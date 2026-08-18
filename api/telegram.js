@@ -350,12 +350,12 @@ async function createAccessCode({
       (expiresAt - now) / 1000
     ) + 86400;
 
-  await redis.set(
-    codeKey(code),
-    JSON.stringify(record),
-    "EX",
-    ttlSeconds
-  );
+ await redis.set(
+  `fx:code:${code}`,
+  JSON.stringify(record),
+  "EX",
+  ttlSeconds
+);
 
   await redis.sadd(
     userCodesKey(userId),
