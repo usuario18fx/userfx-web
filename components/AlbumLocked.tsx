@@ -1,534 +1,330 @@
 ﻿"use client";
-
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
-import styles from "./AlbumLocked.module.css";
-
-const CODE_LENGTH = 4;
-const TABS = ["BS02-", "PX01-", "VX03-"] as const;
-
-const LOGO = "/assets/userfx-logo.png";
-const BRICK = "/assets/brick-wall.png";
-
-type Status = "locked" | "verifying" | "error" | "unlocked";
-type ErrKind = "invalid" | "used" | "ratelimit";
-type TabId = (typeof TABS)[number];
-
-type AlbumLockPanelProps = {
-  onUnlock?: () => void;
-  accessCode?: string;
-  videoSrc?: string;
-  prefill?: string | null;
-};
-
-const ERR_TEXT: Record<ErrKind, string> = {
-  invalid: "✕ CÓDIGO INCORRECTO — intenta de nuevo",
-  used: "✕ CÓDIGO YA USADO — cada llave abre una sola vez",
-  ratelimit: "✕ DEMASIADOS INTENTOS — espera unos segundos",
-};
-
-function getFingerprint(): string {
-  try {
-    const raw = [
-      navigator.userAgent,
-      screen.width,
-      screen.height,
-      Intl.DateTimeFormat().resolvedOptions().timeZone,
-    ].join("|");
-
-    let h = 5381;
-    for (let i = 0; i < raw.length; i++) {
-      h = ((h << 5) + h + raw.charCodeAt(i)) | 0;
-    }
-    return `fp_${(h >>> 0).toString(36)}`;
-  } catch {
-    return "fp_anon";
-  }
-}
-
-function formatUtcClock(date: Date) {
-  const hh = String(date.getUTCHours()).padStart(2, "0");
-  const mm = String(date.getUTCMinutes()).padStart(2, "0");
-  const ss = String(date.getUTCSeconds()).padStart(2, "0");
-  return `${hh}:${mm}:${ss} UTC`;
-}
-
-function Corner({ className }: { className?: string }) {
+  import React, { useEffect, useState } from "react";
+  import styles from "./AlbumLocked.module.css";
+  const LOGO = "/assets/userfx-logo.png";
+  const HUD_TOP =
+    "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT  ✦  NEW DROP EVERY FRIDAY · 22:00 UTC  ✦  PRIVATE ACCESS  ✦  NOCTURNA  ✦  ";
+  const HUD_BOTTOM =
+    "HOLD TO REVEAL  ✦  PRIVATE KEY BY DM  ✦  ACCESS IS NOT PUBLIC  ✦  USER FX 2026  ✦  ";
+  const STEPS = [
+    { n: "01",
+      title: "UNLOCK YOUR ACCESS",
+      text: "Each key unlocks the private collection for a set period of time.",},
+    { n: "02",
+      title: "REQUEST YOUR KEY",
+      text: "This pre does not generate codes. Ask for your private key by DM.",},
+    { n: "03",
+      title: "RECEIVE YOUR KEY",
+      text: "Once confirmed, you receive your personal code. Keep it safe.",},
+    { n: "04",
+      title: "OPEN THE VAULT",
+      text: "Enter the vault with your key. The door takes care of the rest.",},
+    ];
+const PATHS = [
+    { id: "BS02-",
+      name: "BASIC",
+      lines: ["Enter the vault", "BASIC drops", "Instant access"],
+      meta: "7 DAYS",},
+    { id: "PX01-",
+      name: "PRO",
+      lines: ["Unlock more", "PRO drops", "Private channels"],
+      meta: "30 DAYS",
+      hot: true,},
+    { id: "VX03-",
+      name: "VIP",
+      lines: ["No limits", "Full drops", "Private chat"],
+      meta: "90 DAYS",},
+    ];
+const INSIDE = [
+    "/images/pic01.png",
+    "/images/pic02.png",
+    "/images/pic03.png",
+    "/images/pic04.png",
+    "/images/pic05.png",
+    "/images/pic06.png",
+  ];
+const FAQ = [
+  { q: "How do I get a code?",
+    a: "This preview does not generate keys. Request yours by DM on Telegram.",},
+  { q: "Is access public?",
+    a: "No. The vault is reserved. You’ll need a private key.",},
+  { q: "Can I share my code?",
+    a: "No. Your key is personal and non-transferable.",},
+  { q: "What happens if I don’t receive my code?",
+    a: "Contact @User18Fx_bot and we’ll review your request.",
+  },];
+function Hud({
+  text,
+  reverse = false,
+  }:{
+  text: string;
+  reverse?: boolean;
+  }){
+  const line = text.repeat(6);
   return (
-    <svg
-      className={className}
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <path d="M1 9V1h8" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M5 12V5h7" stroke="currentColor" strokeWidth="0.75" opacity="0.45" />
-    </svg>
-  );
-}
-
-export default function AlbumLockPanel({
-  onUnlock,
-  accessCode = "",
-  videoSrc = "",
-  prefill = null,
-}: AlbumLockPanelProps) {
-  const [chars, setChars] = useState<string[]>(
-    Array(CODE_LENGTH).fill("")
-  );
-  const [status, setStatus] = useState<Status>("locked");
-  const [errKind, setErrKind] = useState<ErrKind>("invalid");
-  const [retryAfter, setRetryAfter] = useState(0);
-  const [activeTab, setActiveTab] = useState<TabId>("BS02-");
+        <div className={`${styles.hud} ${reverse ? styles.hudReverse : ""}`}>
+        <div className={styles.hudTrack}>
+        <span>{line}</span>
+        <span>{line}</span>
+        </div>
+        </div>
+       );}
+       function HoldShot({src, active,}:
+        { src: string;
+          active: boolean;
+        }) {
+        const [hold, setHold] = useState(false);
+  return (
+        <div className={`${styles.shot} ${active ? styles.slideOn : styles.slide} ${ hold ? styles.shotOpen : ""}`}
+          onContextMenu={(e) => e.preventDefault()}
+          onPointerDown={() => setHold(true)}
+          onPointerUp={() => setHold(false)}
+          onPointerLeave={() => setHold(false)}
+          onPointerCancel={() => setHold(false)}>
+        <img src={src} alt="" draggable={false} className={styles.shotImg} />
+        <div className={styles.shotCover} aria-hidden>
+        <span className={styles.shotLock}>🜲</span>
+        <span className={styles.shotHint}>HOLD TO REVEAL</span>
+        </div>
+        </div>
+        );
+      }
+function RoseMark() {
+  return (
+        <span className={styles.btnRose} aria-hidden>
+        <svg viewBox="0 0 32 32" width="16" height="16">
+        <path d="M16 26c-3-4.6-7.2-7.4-7.2-11.4 0-2.8 2.3-5 5.4-5 .9 0 1.7.3 2.4.9.7-.6 1.5-.9 2.4-.9 3.1 0 5.4 2.2 5.4 5 0 4-4.2 6.8-7.2 11.4z"
+              fill="#7a1528"/>
+        <path d="M16 12.2c1.6.5 2.5 1.9 2.9 3.3-1.3-.3-2.1 0-2.9.8-.8-.8-1.6-1.1-2.9-.8.4-1.4 1.3-2.8 2.9-3.3z"
+              fill="#c43b4e" />
+        <path d="M16 14.8c.8.5 1.2 1.3 1.2 2.1s-.5 1.6-1.2 2.1c-.7-.5-1.2-1.3-1.2-2.1s.5-1.6 1.2-2.1z"
+              fill="#e8a0aa"/>
+        </svg>
+        </span>
+        );
+      }
+export default function VaultHome() {
   const [clock, setClock] = useState("--:--:-- UTC");
-
   const [openPopup, setOpenPopup] = useState(false);
-
-  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-  const consumedPrefill = useRef<string | null>(null);
-
-  void accessCode;
-  void videoSrc;
+  const [faqOpen, setFaqOpen] = useState<number | null>(0);
+  const [slide, setSlide] = useState(0);
 
   useEffect(() => {
-    const tick = () => setClock(formatUtcClock(new Date()));
+    const tick = () => {
+      const d = new Date();
+      const p = (n: number) => String(n).padStart(2, "0");
+      setClock(
+        `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`
+      );
+    };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, []);
 
-  const focusInput = useCallback((index: number) => {
-    if (index < 0 || index >= CODE_LENGTH) return;
-    inputsRef.current[index]?.focus();
-    inputsRef.current[index]?.select();
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setSlide((s) => (s + 1) % INSIDE.length);
+    }, 3800);
+    return () => window.clearInterval(id);
   }, []);
 
-  const resetInputs = useCallback(() => {
-    setChars(Array(CODE_LENGTH).fill(""));
-    setStatus("locked");
-    setRetryAfter(0);
-    setTimeout(() => focusInput(0), 0);
-  }, [focusInput]);
-
-  const submitCode = useCallback(
-    async (value: string) => {
-      const clean = value
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "")
-        .slice(-CODE_LENGTH);
-
-      if (
-        clean.length !== CODE_LENGTH ||
-        status === "verifying" ||
-        status === "unlocked"
-      ) {
-        return;
-      }
-
-      setStatus("verifying");
-
-      try {
-        const res = await fetch("/api/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: clean,
-            prefix: activeTab,
-            fingerprint: getFingerprint(),
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.ok) {
-          const kind: ErrKind =
-            data.error === "used"
-              ? "used"
-              : data.error === "ratelimit"
-                ? "ratelimit"
-                : "invalid";
-
-          setErrKind(kind);
-          if (kind === "ratelimit") {
-            setRetryAfter(Number(data.retryAfter ?? 60));
-          }
-          setStatus("error");
-          setTimeout(() => {
-            if (kind !== "ratelimit") resetInputs();
-          }, 900);
-          return;
-        }
-
-        setStatus("unlocked");
-        window.dispatchEvent(new Event("vault:unlocked"));
-        setTimeout(() => onUnlock?.(), 420);
-      } catch {
-        setErrKind("invalid");
-        setStatus("error");
-        setTimeout(() => resetInputs(), 900);
-      }
-    },
-    [status, resetInputs, onUnlock, activeTab]
-  );
-
-  const handleChange = useCallback(
-    (index: number, raw: string) => {
-      const value = raw
-        .slice(-1)
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "");
-      const next = [...chars];
-      next[index] = value;
-      setChars(next);
-      if (value && index < CODE_LENGTH - 1) focusInput(index + 1);
-      if (next.every(Boolean)) submitCode(next.join(""));
-    },
-    [chars, focusInput, submitCode]
-  );
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-      if (e.key === "Backspace") {
-        e.preventDefault();
-        const next = [...chars];
-        if (chars[index]) {
-          next[index] = "";
-          setChars(next);
-          return;
-        }
-        if (index > 0) {
-          next[index - 1] = "";
-          setChars(next);
-          focusInput(index - 1);
-        }
-        return;
-      }
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        focusInput(index - 1);
-        return;
-      }
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        focusInput(index + 1);
-        return;
-      }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        submitCode(chars.join(""));
-      }
-    },
-    [chars, focusInput, submitCode]
-  );
-
-  const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      const pasted = e.clipboardData
-        .getData("text")
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "")
-        .slice(-CODE_LENGTH);
-      if (!pasted) return;
-      const next = Array.from(
-        { length: CODE_LENGTH },
-        (_, i) => pasted[i] || ""
-      );
-      setChars(next);
-      if (next.every(Boolean)) submitCode(next.join(""));
-      else focusInput(Math.min(pasted.length, CODE_LENGTH - 1));
-    },
-    [focusInput, submitCode]
-  );
-
-  useEffect(() => {
-    focusInput(0);
-  }, [focusInput]);
-
-  useEffect(() => {
-    if (!prefill || consumedPrefill.current === prefill) return;
-    consumedPrefill.current = prefill;
-    const clean = prefill
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, CODE_LENGTH);
-    if (!clean) return;
-    const next = Array.from(
-      { length: CODE_LENGTH },
-      (_, i) => clean[i] || ""
-    );
-    setChars(next);
-    if (next.every(Boolean)) submitCode(next.join(""));
-    else {
-      setTimeout(() => {
-        focusInput(Math.min(clean.length, CODE_LENGTH - 1));
-      }, 0);
-    }
-  }, [prefill, focusInput, submitCode]);
-
-  useEffect(() => {
-    if (retryAfter <= 0) return;
-    const timer = setInterval(() => {
-      setRetryAfter((value) => (value <= 1 ? 0 : value - 1));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [retryAfter]);
-
-  if (status === "unlocked") {
-    return (
-      <section className={styles.shell}>
-        <div className={styles.scanlines} />
-        <div className={styles.noise} />
-        <div className={styles.vignette} />
-        <div className={styles.unlockedWrap}>
-          <p className={styles.monoKicker}>𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
-          <h2 className={styles.unlockedTitle}>ACCESS GRANTED</h2>
-          <p className={styles.dim}>
-            Llave verificada. El Vault oficial sigue en pre-lanzamiento.
-          </p>
-          <button
-            type="button"
-            className={styles.unlockBtn}
-            onClick={() => onUnlock?.()}
-          >
-            CONTINUAR
-          </button>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className={styles.shell}>
-      <div className={styles.scanlines} />
-      <div className={styles.noise} />
-      <div className={styles.vignette} />
+    <main className={styles.page}>
+      <Hud text={HUD_TOP} />
 
       <header className={styles.header}>
-        <a href="#top" className={styles.headerBrand}>
-          <img src={LOGO} alt="USER FX" className={styles.headerLogo} />
-          <span className={styles.headerLive}>
-            <span className={styles.liveDot} />
-            <span>
-              ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</span>
-          </span>
-        </a>
+        <img src={LOGO} alt="USER FX" className={styles.logo} />
         <div className={styles.headerRight}>
           <time className={styles.clock}>{clock}</time>
-          <span className={styles.lockedPill}>
-            🜲 ʟᴏᴄᴋᴇᴅ</span>
+          <span className={styles.locked}>LOCKED</span>
         </div>
       </header>
 
-      <div className={styles.hero}>
-        <div className={styles.heroWash}>
-          <img src={BRICK} alt="" className={styles.brick} />
-          <div className={styles.blobBlue} />
-          <div className={styles.blobRose} />
-          <div className={styles.blobGold} />
-          <div className={styles.heroFade} />
+      <section className={styles.hero}>
+        <div className={styles.copy}>
+          <p className={styles.kicker}>
+            𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT · Nº01 NOCTURNA
+          </p>
+          <h1>
+            <span className={styles.hAccess}>ACCESS</span>
+            <span className={styles.hRestricted}>RESTRICTED.</span>
+          </h1>
+          <p className={styles.dim}>
+            There are images that were never meant to be seen.
+          </p>
+          <p className={styles.dim}>
+            Access is not public. You’ll need a <em>private key</em>.
+          </p>
         </div>
 
-        <div className={styles.grid}>
-          <div>
-            <div className={styles.logoWrap}>
-              <div className={styles.logoGlow} />
-              <img
-                src={LOGO}
-                alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗"
-                className={styles.heroLogo}
-              />
-              <div className={styles.logoLine} />
-            </div>
-
-            <p className={styles.kicker}>
-              <span className={styles.kickerRule} />
-              𝐔𝐒𝐄𝐑🜲𝓕𝐗 · ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ · ɴº𝟬𝟭 ɴᴏᴄᴛᴜʀɴᴀ
-            </p>
-
-            <h1 className={styles.title}>
-              <span className={styles.titleAccess}>
-                ᴀᴄᴄᴇꜱꜱ</span>
-              <span className={styles.titleRestricted}>
-                ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻
-                <span className={styles.dotBlue}>
-                  .</span>
-              </span>
-            </h1>
-
-            <p className={styles.dim}>
-              ᴛʜᴇʀᴇ ᴀʀᴇ ɪᴍᴀɢᴇꜱ ᴛʜᴀᴛ ᴡᴇʀᴇ ɴᴇᴠᴇʀ ᴍᴇᴀɴᴛ ᴛᴏ ʙᴇ ꜱᴇᴇɴ.
-            </p>
-            <p className={styles.dim}>
-              <span className={styles.bone}>
-                𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — Private Vault
-              </span>{" "}
-              ɪꜱ ᴀ ʀᴇꜱᴇʀᴠᴇᴅ ꜱᴘᴀᴄᴇ ꜰᴏʀ ᴛʜᴏꜱᴇ ᴡʜᴏ ᴡᴀɴᴛ ᴛᴏ ɢᴏ ᴀ ʟɪᴛᴛʟᴇ
-              ꜰᴜʀᴛʜᴇʀ. ᴛʜᴇ ᴏꜰꜰɪᴄɪᴀʟ ꜱɪᴛᴇ ɪꜱ ɪɴ ᴘʀᴇ-ʟᴀᴜɴᴄʜ.
-            </p>
-            <p className={styles.dim}>
-              ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴛ ᴘᴜʙʟɪᴄ. ʏᴏᴜ&apos;ʟʟ ɴᴇᴇᴅ ᴀ{" "}
-              <em className={styles.em}>ᴘʀɪᴠᴀᴛᴇ ᴋᴇʏ.</em>
-            </p>
-
-            <dl className={styles.spec}>
-              <div>
-                <dt>
-                  ʙʀᴀɴᴅ</dt>
-                <dd>
-                  𝐔𝐒𝐄𝐑 🜲𝓕𝐗</dd>
-              </div>
-              <div>
-                <dt>
-                  STATUS</dt>
-                <dd>
-                  PRE-LAUNCH</dd>
-              </div>
-              <div>
-                <dt>
-                  NEXT DROP</dt>
-                <dd>
-                  FRIDAY · 22:00 UTC</dd>
-              </div>
-              <div>
-                <dt>
-                  ACCESS</dt>
-                <dd>
-                  PRIVATE KEY</dd>
-              </div>
-              <div>
-                <dt>
-                  CODE</dt>
-                <dd>
-                  🜲 ∣ {activeTab} 
-                  ∣ ····</dd>
-              </div>
-            </dl>
-          </div>
-
-          <div className={styles.gateOuter}>
-            <div className={styles.frameBlue} />
-            <div className={styles.frameRose} />
-
-            <section className={styles.gate}>
-              <div className={styles.corners} aria-hidden>
-                <Corner className={styles.cTL} />
-                <Corner className={styles.cTR} />
-                <Corner className={styles.cBL} />
-                <Corner className={styles.cBR} />
-              </div>
-
-              <div className={styles.gateBrick}>
-                <img src={BRICK} alt="" />
-              </div>
-              <div className={styles.gateWash} />
-
-              <div className={styles.gateHead}>
-                <img src={LOGO} alt="" className={styles.gateLogo} />
-                <h2 className={styles.gateTitle}>LOCKED ACCESS</h2>
-              </div>
-
-              <div
-                className={`${styles.panel} ${
-                  status === "error" ? styles.panelError : ""
-                }`}
-              >
-                <div className={styles.tabs}>
-                  {TABS.map((tab) => (
-                    <button
-                      key={tab}
-                      type="button"
-                      className={`${styles.tab} ${
-                        activeTab === tab ? styles.tabOn : ""
-                      }`}
-                      onClick={() => setActiveTab(tab)}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-                  <span className={styles.tabGhost}>BS02-</span>
-                </div>
-
-                <div className={styles.codes}>
-                  {chars.map((char, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => {
-                        inputsRef.current[i] = el;
-                      }}
-                      type="text"
-                      inputMode="text"
-                      autoComplete="off"
-                      autoCapitalize="characters"
-                      spellCheck={false}
-                      value={char}
-                      maxLength={1}
-                      aria-label={`Código ${i + 1}`}
-                      disabled={status === "verifying"}
-                      onChange={(e) => handleChange(i, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, i)}
-                      onPaste={handlePaste}
-                      className={`${styles.box} ${
-                        status === "error" ? styles.boxErr : ""
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                {status === "error" && (
-                  <p className={styles.err}>
-                    {errKind === "ratelimit"
-                      ? `Espera ${retryAfter}s`
-                      : ERR_TEXT[errKind]}
-      </p>
-      )}
-      <button type="button" className={styles.unlockBtn} onClick={() => setOpenPopup(true)}>
-      <span className={styles.btnRose} aria-hidden>
-      <svg viewBox="0 0 32 32" width="18" height="18">
-      <path d="M16 26c-3-4.6-7.2-7.4-7.2-11.4 0-2.8 2.3-5 5.4-5 .9 0 1.7.3 2.4.9.7-.6 1.5-.9 2.4-.9 3.1 0 5.4 2.2 5.4 5 0 4-4.2 6.8-7.2 11.4z"
-            fill="#7a1528"/>
-      <path d="M16 12.2c1.6.5 2.5 1.9 2.9 3.3-1.3-.3-2.1 0-2.9.8-.8-.8-1.6-1.1-2.9-.8.4-1.4 1.3-2.8 2.9-3.3z"
-            fill="#c43b4e"/>
-      <path d="M16 14.8c.8.5 1.2 1.3 1.2 2.1s-.5 1.6-1.2 2.1c-.7-.5-1.2-1.3-1.2-2.1s.5-1.6 1.2-2.1z"
-            fill="#e8a0aa"/>
-      </svg>
-      </span>
-        ᴜɴʟᴏᴄᴋ ᴀʟʙᴜᴍ
-      </button>
-       {openPopup && (
-      <div className={styles.popup} onClick={() => setOpenPopup(false)}>
-      <div className={styles.popupContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-      <button type="button" className={styles.close}  onClick={() => setOpenPopup(false)} aria-label="Cerrar">
-        ×
-      </button>
-      <p className={styles.popupKicker}>𝐔𝐒𝐄𝐑🜲𝓕𝐗 ·  ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</p>
-      <h2>ᴀᴄᴄᴇꜱꜱ ʀᴇꜱᴛʀɪᴄᴛᴇᴅ</h2>
-      <p>
-        ʀᴇǫᴜᴇꜱᴛ ʏᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ᴄᴏᴅᴇ ʙʏ ꜱᴇɴᴅɪɴɢ ᴀ ᴅᴍ.
-        ᴛʜɪꜱ ᴘʀᴇ-ᴏʀᴅᴇʀ ᴅᴏᴇꜱ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ᴄᴏᴅᴇꜱ. ʀᴇǫᴜᴇꜱᴛ ʏᴏᴜʀ ᴋᴇʏ ᴠɪᴀ ᴅɪʀᴇᴄᴛ ᴅᴍ.
-      </p>
-      <a className={styles.unlockBtn} href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
-        ꜱᴇɴᴅ ᴅᴍ 
-     </a>
-     </div>
-     </div>
-      )}
-      <p className={styles.hint}>
-       ᴇɴᴛʀᴀ ʟᴏꜱ úʟᴛɪᴍᴏꜱ 4 ᴄᴀʀᴀᴄᴛᴇʀᴇꜱ ᴅᴇ ᴛᴜ ᴄóᴅɪɢᴏ
-      </p>
-      </div>
+        <aside className={styles.gate}>
+          <p className={styles.gateTitle}>LOCKED ACCESS</p>
+          <button
+            type="button"
+            className={styles.unlockBtn}
+            onClick={() => setOpenPopup(true)}
+          >
+            <RoseMark />
+            UNLOCK ALBUM
+          </button>
+          <p className={styles.hint}>SOLICITA TU CÓDIGO POR DM</p>
+        </aside>
       </section>
-      </div>
-      </div>
-      </div>
-    </section>
+
+      <Hud text={HUD_BOTTOM} reverse />
+
+      <section className={styles.block} id="protocol">
+        <p className={styles.secKicker}>◈ ACCESS PROTOCOL</p>
+        <h2 className={styles.secTitle}>
+          HOW TO UNLOCK <span>THE VAULT</span>
+        </h2>
+        <ol className={styles.steps}>
+          {STEPS.map((step) => (
+            <li key={step.n}>
+              <span className={styles.num}>{step.n}</span>
+              <div>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className={styles.block} id="path">
+        <p className={styles.secKicker}>◈ CHOOSE YOUR PATH</p>
+        <h2 className={styles.secTitle}>
+          CHOOSE YOUR <span>CODE</span>
+        </h2>
+        <div className={styles.paths}>
+          {PATHS.map((path) => (
+            <article
+              key={path.id}
+              className={`${styles.path} ${path.hot ? styles.pathHot : ""}`}
+            >
+              <p className={styles.pathId}>{path.id}</p>
+              <h3>{path.name}</h3>
+              <ul>
+                {path.lines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <p className={styles.pathMeta}>{path.meta}</p>
+              <button
+                type="button"
+                className={styles.unlockBtn}
+                onClick={() => setOpenPopup(true)}
+              >
+                REQUEST KEY
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.block} id="inside">
+        <p className={styles.secKicker}>◈ INSIDE THE VAULT</p>
+        <h2 className={styles.secTitle}>
+          WHAT&apos;S <span>INSIDE</span>
+        </h2>
+        <div className={styles.carousel}>
+          <button
+            type="button"
+            className={styles.arrow}
+            onClick={() =>
+              setSlide((s) => (s - 1 + INSIDE.length) % INSIDE.length)
+            }
+            aria-label="Anterior"
+          >
+            ‹
+          </button>
+          <div className={styles.stage}>
+            {INSIDE.map((src, i) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                className={i === slide ? styles.slideOn : styles.slide}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className={styles.arrow}
+            onClick={() => setSlide((s) => (s + 1) % INSIDE.length)}
+            aria-label="Siguiente"
+          >
+            ›
+          </button>
+        </div>
+        <div className={styles.dots}>
+          {INSIDE.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={i === slide ? styles.dotOn : styles.dot}
+              onClick={() => setSlide(i)}
+              aria-label={`Foto ${i + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.block} id="before">
+        <p className={styles.secKicker}>◈ PRIVATE INFORMATION</p>
+        <h2 className={styles.secTitle}>
+          BEFORE YOU <span>GET IN</span>
+        </h2>
+        <div className={styles.faq}>
+          {FAQ.map((item, i) => (
+            <div key={item.q} className={styles.faqItem}>
+              <button
+                type="button"
+                className={styles.faqBtn}
+                onClick={() => setFaqOpen(faqOpen === i ? null : i)}
+              >
+                <span className={styles.faqN}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>{item.q}</span>
+                <span>{faqOpen === i ? "–" : "+"}</span>
+              </button>
+              {faqOpen === i && <p className={styles.faqA}>{item.a}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {openPopup && (
+        <div className={styles.popup} onClick={() => setOpenPopup(false)}>
+          <div
+            className={styles.popupBox}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              type="button"
+              className={styles.close}
+              onClick={() => setOpenPopup(false)}
+            >
+              ×
+            </button>
+            <p className={styles.kicker}>𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
+            <h2>ACCESS RESTRICTED</h2>
+            <p className={styles.dim}>
+              Solicita tu código por DM directo.
+            </p>
+            <a className={styles.unlockBtn} href="https://t.me/User18Fx"  target="_blank"  rel="noreferrer" >
+              <RoseMark />
+              ABRIR DM
+            </a>
+            </div>
+            </div>
+      )}
+    </main>
   );
 }
+
 

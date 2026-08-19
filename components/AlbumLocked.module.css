@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
 .shell {
   --ink: #07060a;
   --ink2: #0d0b12;
@@ -12,13 +13,20 @@
   --line: rgba(236, 229, 216, 0.12);
   --display: "Cormorant Garamond", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
+
   position: relative;
   min-height: 100dvh;
-  background: var(--ink);
+  background-color: #07060a;
+  background-image:
+    radial-gradient(ellipse at center, rgba(7, 6, 10, 0.15), rgba(7, 6, 10, 0.55)),
+    url("/images/damask.png");
+  background-size: auto, 340px;
+  background-repeat: no-repeat, repeat;
   color: var(--bone);
   font-family: var(--display);
   overflow: hidden;
 }
+
 .scanlines,
 .noise,
 .vignette {
@@ -27,22 +35,27 @@
   inset: 0;
   z-index: 50;
 }
+
 .scanlines {
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
     transparent 2px,
-    rgba(0, 0, 0, 0.16) 3px );
+    rgba(0, 0, 0, 0.16) 3px
+  );
   opacity: 0.28;
 }
+
 .noise {
   opacity: 0.04;
   background-image: radial-gradient(rgba(255, 255, 255, 0.35) 0.5px, transparent 0.6px);
   background-size: 3px 3px;
 }
+
 .vignette {
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(7, 6, 10, 0.88) 92%);
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(7, 6, 10, 0.55) 100%);
 }
+
 .header {
   position: fixed;
   inset: 0 0 auto;
@@ -57,6 +70,7 @@
   padding: 0 20px;
   max-width: none;
 }
+
 .headerBrand {
   display: flex;
   align-items: center;
@@ -64,11 +78,13 @@
   text-decoration: none;
   color: inherit;
 }
+
 .headerLogo {
   height: 32px;
   width: auto;
   object-fit: contain;
 }
+
 .headerLive {
   display: none;
   align-items: center;
@@ -78,10 +94,13 @@
   letter-spacing: 0.28em;
   color: rgba(236, 229, 216, 0.7);
 }
+
 @media (min-width: 1024px) {
   .headerLive {
     display: flex;
-  }}
+  }
+}
+
 .liveDot {
   width: 6px;
   height: 6px;
@@ -89,11 +108,13 @@
   background: var(--rose);
   box-shadow: 0 0 10px rgba(192, 69, 90, 0.9);
 }
+
 .headerRight {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 .clock {
   display: none;
   font-family: var(--mono);
@@ -102,10 +123,13 @@
   color: var(--dim);
   font-variant-numeric: tabular-nums;
 }
+
 @media (min-width: 640px) {
   .clock {
     display: block;
-  }}
+  }
+}
+
 .lockedPill {
   display: inline-flex;
   align-items: center;
@@ -118,29 +142,35 @@
   font-size: 10px;
   letter-spacing: 0.22em;
 }
+
 .hero {
   position: relative;
   padding: 96px 20px 64px;
 }
+
 .heroWash {
   pointer-events: none;
   position: absolute;
   inset: 0;
 }
-.brick {
+
+.damask {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.3;
+  background-image: url("/images/damask.png");
+  background-size: 320px;
+  background-repeat: repeat;
+  opacity: 0.85;
+  filter: contrast(1.25) brightness(1.05);
 }
+
 .blobBlue,
 .blobRose,
 .blobGold {
   position: absolute;
   border-radius: 999px;
 }
+
 .blobBlue {
   left: -160px;
   top: -160px;
@@ -178,11 +208,8 @@
   gap: 48px;
 }
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: 1.05fr 0.95fr;
-    align-items: start;
-  }
-}
+  .grid { grid-template-columns: 1.05fr 0.95fr; align-items: start;
+  }}
 .logoWrap {
   position: relative;
   display: inline-block;
@@ -195,8 +222,7 @@
     ellipse at center,
     rgba(59, 130, 246, 0.32),
     rgba(192, 45, 90, 0.18) 40%,
-    transparent 72%
-  );
+    transparent 72%);
   filter: blur(24px);
 }
 .heroLogo {
@@ -332,12 +358,10 @@
   pointer-events: none;
   position: absolute;
   inset: 0;
-  opacity: 0.22;
-}
-.gateBrick img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background-image: url("/images/damask.png");
+  background-size: 240px;
+  background-repeat: repeat;
+  opacity: 0.8;
 }
 .gateWash {
   pointer-events: none;
@@ -447,15 +471,35 @@
 .unlockBtn {
   margin-top: 14px;
   width: 100%;
-  height: 48px;
-  border: 1px solid rgba(201, 162, 75, 0.55);
-  background: linear-gradient(180deg, #d4b15c 0%, #c9a24b 42%, #9a7833 100%);
+  height: 54px;
+  border: 1px solid #e8c56a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background:
+    linear-gradient(180deg, #f0d78a 0%, #c9a24b 48%, #8d6a28 100%);
   color: #1c1508;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.28em;
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 245, 210, 0.5),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+.btnRose {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #14080a;
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 75, 0.45),
+    0 0 10px rgba(163, 68, 85, 0.35);
 }
 .unlockBtn:disabled {
   opacity: 0.55;
@@ -485,64 +529,6 @@
 .monoKicker {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.28em;
-  color: rgba(191, 219, 254, 0.75);
-}
-/*Boton UNLOCK ALBUM*/
-.unlockBtn {
-  width: 100%;
-  height: 54px;
-  border: 1px solid #e8c56a;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: linear-gradient(180deg, #f0d78a 0%, #c9a24b 48%, #8d6a28 100%);
-  color: #1c1508;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  text-decoration: none;
-  cursor: pointer;
-}
-.btnRose {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #14080a;
-}
-.popup {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(7, 6, 10, 0.78);
-}
-.popupContent {
-  width: min(92%, 420px);
-  padding: 36px 28px 28px;
-  border: 1px solid rgba(236, 229, 216, 0.12);
-  background: #0d0b12;
-  text-align: center;
-  position: relative;
-}
-.close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  border: 0;
-  background: none;
-  color: #8d8499;
-  font-size: 28px;
-  cursor: pointer;
-}
-.popupKicker {
-  font-size: 10px;
   letter-spacing: 0.28em;
   color: rgba(191, 219, 254, 0.75);
 }
