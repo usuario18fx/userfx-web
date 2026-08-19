@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./style.css";
-import AlbumLockPanel from "./components/AlbumLockPanel";
+import AlbumLockPanel from "./components/AlbumLocked";
 function App() {
   return <AlbumLockPanel /> ;
 }

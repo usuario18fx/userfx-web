@@ -1,101 +1,71 @@
-import { useState } from "react";
-
-type User = {
-  userId: string;
-  plan: "vip" | "pro" | "basic" | string;
-  expiresAt: string | number | Date;
-  isExpired: boolean;
-};
+import { useState, type ReactNode } from "react";
 
 type Code = {
+  id: number;
   code: string;
-  data?: {
-    plan?: "vip" | "pro" | "basic" | string;
-    used?: boolean;
-  };
+  planId: string;
+  status: "active" | "used" | "revoked";
+  createdAt: string | Date;
+  usedAt: string | Date | null;
+  orderId: number | null;
+  note: string | null;
 };
 
-type DashboardData = {
-  totalUsers: number;
-  active: number;
-  expired: number;
-  flagged: number;
-  totalCodes: number;
-  users: User[];
+type AdminData = {
+  revenue: number;
+  paidOrders: number;
+  activeCodes: number;
+  unlocks: number;
   codes: Code[];
 };
 
 export default function App() {
-  const [data, setData] = useState<DashboardData>({
-    totalUsers: 0,
-    active: 0,
-    expired: 0,
-    flagged: 0,
-    totalCodes: 0,
-    users: [],
+  const [data] = useState<AdminData>({
+    revenue: 0,
+    paidOrders: 0,
+    activeCodes: 0,
+    unlocks: 0,
     codes: [],
   });
 
   return (
     <div className="space-y-8">
-      {/* STATS CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card label="Users" value={data.totalUsers} />
-        <Card label="Active" value={data.active} />
-        <Card label="Expired" value={data.expired} />
-        <Card label="Codes" value={data.totalCodes} />
-        <Card label="Fraud Flags" value={data.flagged} danger />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card label="Revenue" value={data.revenue} />
+        <Card label="Paid Orders" value={data.paidOrders} />
+        <Card label="Active Codes" value={data.activeCodes} />
+        <Card label="Unlocks" value={data.unlocks} />
       </div>
 
-      {/* USERS */}
-      <Section title="👤 USERS">
-        {data.users.length === 0 ? (
-          <EmptyState text="No users found." />
+      <Section title="🔑 ACCESS CODES">
+        {data.codes.length === 0 ? (
+          <p className="text-sm text-white/50">No codes found.</p>
         ) : (
-          data.users.map((u) => (
+          data.codes.map((code) => (
             <div
-              key={u.userId}
-              className="p-3 border border-white/10 rounded-lg flex justify-between"
+              key={code.id}
+              className="flex items-center justify-between rounded-lg border border-white/10 p-3"
             >
               <div>
-                <div className="text-sm font-bold">
-                  ID: {u.userId}
-                </div>
+                <div className="font-bold">{code.code}</div>
 
                 <div className="text-xs text-white/60">
-                  Plan: {badge(u.plan)} · Expires:{" "}
-                  {new Date(u.expiresAt).toLocaleString()}
+                  Plan: {badge(code.planId)} · Created:{" "}
+                  {new Date(code.createdAt).toLocaleString()}
                 </div>
               </div>
 
-              <div>
-                {u.isExpired ? (
-                  <span className="text-red-500 text-xs">EXPIRED</span>
-                ) : (
-                  <span className="text-green-500 text-xs">ACTIVE</span>
-                )}
-              </div>
-            </div>
-          ))
-        )}
-      </Section>
-
-      {/* CODES */}
-      <Section title="🔑 CODES">
-        {data.codes.length === 0 ? (
-          <EmptyState text="No codes found." />
-        ) : (
-          data.codes.map((c) => (
-            <div
-              key={c.code}
-              className="p-3 border border-white/10 rounded-lg"
-            >
-              <div className="text-sm font-bold">{c.code}</div>
-
-              <div className="text-xs text-white/60">
-                Plan: {badge(c.data?.plan ?? "")} · Used:{" "}
-                {c.data?.used ? "Yes" : "No"}
-              </div>
+              <span
+                className={
+                  code.status === "active"
+                    ? "text-xs text-green-400"
+                    : code.status === "used"
+                      ? "text-xs text-yellow-400"
+                      : "text-xs text-red-400"
+                }
+              >
+                {code.status.toUpperCase()}
+              </span>
             </div>
           ))
         )}
@@ -104,23 +74,9 @@ export default function App() {
   );
 }
 
-/* ---------------- UI HELPERS ---------------- */
-
-function Card({
-  label,
-  value,
-  danger = false,
-}: {
-  label: string;
-  value: number;
-  danger?: boolean;
-}) {
+function Card({ label, value }: { label: string; value: number }) {
   return (
-    <div
-      className={`p-4 rounded-lg border ${
-        danger ? "border-red-500/50" : "border-white/10"
-      }`}
-    >
+    <div className="rounded-lg border border-white/10 p-4">
       <div className="text-xs text-white/50">{label}</div>
       <div className="text-xl font-bold">{value}</div>
     </div>
@@ -132,21 +88,13 @@ function Section({
   children,
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <div>
-      <h2 className="text-sm text-white/60 mb-3">{title}</h2>
+    <section>
+      <h2 className="mb-3 text-sm text-white/60">{title}</h2>
       <div className="space-y-2">{children}</div>
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="p-3 text-sm text-white/40 border border-white/10 rounded-lg">
-      {text}
-    </div>
+    </section>
   );
 }
 
@@ -159,6 +107,6 @@ function badge(plan: string) {
     case "basic":
       return "⚡ BASIC";
     default:
-      return "—";
+      return plan || "—";
   }
 }
