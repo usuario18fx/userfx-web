@@ -573,7 +573,7 @@ const REQUEST_STATUS = {
 // ======================================================
 
 const BTN_VIDEOCALL =
-  "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
+  "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 
 const BTN_VIP =
   "👑 ᴠɪᴘ";
@@ -585,7 +585,7 @@ const BTN_PRO =
   "🔥 ᴘʀᴏ";
 
 const BTN_CHANNELS =
-  "📺ᴄʜᴀɴɴᴇʟꜱ";
+  "ᴄʜᴀɴɴᴇʟꜱ";
 
 const BTN_REFRESH =
   "↻ ʀᴇꜰʀᴇꜱʜ";

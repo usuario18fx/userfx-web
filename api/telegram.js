@@ -450,11 +450,11 @@ const REQUEST_STATUS = {
 // ======================================================
 // BUTTONS
 // ======================================================
-const BTN_VIDEOCALL = "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ";
+const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
 const BTN_BASIC = "⚡ ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
-const BTN_CHANNELS = "📺ᴄʜᴀɴɴᴇʟꜱ";
+const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
 const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
 const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
 const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
