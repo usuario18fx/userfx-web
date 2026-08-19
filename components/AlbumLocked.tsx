@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import styles from "./VaultPreview.module.css"; // Asegúrate de que el nombre coincida con tu archivo CSS
-
+import styles from "./AlbumLocked.module.css";
 export default function VaultPreview() {
   const [time, setTime] = useState("");
 
@@ -43,7 +42,7 @@ export default function VaultPreview() {
           
           {/* Decoraciones (Rosas y Corona) - reemplaza el src con tus imágenes cuando las tengas */}
           <img src="/rose.png" className={styles.roseTL} alt="" />
-          <img src="/rose.png" className={styles.roseBR} alt="" />
+          <img src="/wallpaperFX.png" className={styles.roseBR} alt="" />
           
           <p className={styles.kicker}>PRIVATE COLLECTION</p>
           <h1 className={styles.hero}>
