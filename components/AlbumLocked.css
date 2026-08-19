@@ -128,33 +128,9 @@
   white-space: nowrap;
 }
 
-.roseTL,
-.roseBR,
-.roseGate {
-  position: absolute;
-  width: 150px;
-  height: auto;
-  opacity: 0.92;
-  pointer-events: none;
-  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.45));
-}
-
-.roseTL {
-  top: 18px;
-  left: 36px;
-  width: 120px;
-}
-
-.roseBR {
-  right: 24px;
-  bottom: 40px;
-  width: 190px;
-}
-
-.roseGate {
-  top: 28px;
-  left: 42%;
-  width: 110px;
+/* Ocultamos las rosas temporalmente para el modo Preview */
+.roseTL, .roseBR, .roseGate {
+  display: none;
 }
 
 .kicker {
@@ -205,11 +181,6 @@
   font-weight: 700;
 }
 
-.body em {
-  color: #f4ece1;
-  font-style: italic;
-}
-
 .gateArt {
   position: relative;
   min-height: 210px;
@@ -235,6 +206,7 @@
 .padlock {
   color: #d7b25a;
   margin-bottom: 10px;
+  font-size: 2rem;
 }
 
 .gateTitle {
@@ -250,17 +222,6 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(6, 8, 14, 0.55);
   padding: 16px 16px 18px;
-}
-
-.panelError {
-  animation: shake 0.35s ease;
-}
-
-@keyframes shake {
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
 }
 
 .tabRow {
@@ -319,21 +280,9 @@
   caret-color: #7ec8ff;
 }
 
-.codeBox:focus {
-  border-color: #4aa3e8;
-  box-shadow: 0 0 0 1px rgba(74, 163, 232, 0.35);
-}
-
-.codeBoxError {
-  border-color: rgba(196, 59, 78, 0.7);
-}
-
-.errorText {
-  margin: 0 0 10px;
-  text-align: center;
-  font-family: "DM Sans", Inter, system-ui, sans-serif;
-  font-size: 0.74rem;
-  color: #ff8aa3;
+.codeBox:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .goldBtn {
@@ -363,59 +312,19 @@
   color: rgba(239, 231, 220, 0.32);
 }
 
-.unlockedRoot {
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  background: #07080d;
-  position: relative;
-}
-
-.unlockedCard {
-  position: relative;
-  z-index: 2;
-  max-width: 28rem;
-  text-align: center;
-  padding: 32px;
-}
-
-.unlockedTitle {
-  margin: 0 0 12px;
-  font-size: 2.4rem;
-  color: #f4ece1;
-}
-
-.unlockedText {
-  color: rgba(239, 231, 220, 0.65);
-  line-height: 1.6;
-}
-
 @media (max-width: 980px) {
   .stage {
     grid-template-columns: 1fr;
   }
-
   .editorial {
     min-height: 52vh;
     padding: 40px 24px 28px;
     border-right: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
-
   .gate {
     padding: 28px 20px 36px;
   }
-
-  .heroAccess {
-    font-size: 3.4rem;
-  }
-
-  .heroRestricted {
-    font-size: 2.7rem;
-  }
-
-  .roseBR {
-    width: 120px;
-    opacity: 0.55;
-  }
+  .heroAccess { font-size: 3.4rem; }
+  .heroRestricted { font-size: 2.7rem; }
 }
