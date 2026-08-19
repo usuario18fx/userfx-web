@@ -2536,187 +2536,81 @@ adminBot.action(
 // ======================================================
 // ADMIN: APPROVE CALL
 // ======================================================
-
-adminBot.action(
-  /^approve_call_(\d+)$/,
-  async (ctx) => {
-    const adminId =
-      String(
-        ctx.from?.id || ""
-      );
-
-    if (
-      adminId !==
-      String(ADMIN_USER_ID)
+     adminBot.action( /^approve_call_(\d+)$/,
+     async (ctx) => { const adminId = String( ctx.from?.id || "");
+    if ( adminId !== String(ADMIN_USER_ID)
     ) {
-      await ctx.answerCbQuery(
-        "❌ Unauthorized"
-      );
-
-      return;
+    await ctx.answerCbQuery(
+        "❌ Unauthorized");
+    return;
     }
-
-    const requesterId =
-      String(ctx.match[1]);
-
+    const requesterId = String(ctx.match[1]);
     const pending =
-      await getVideoRequest(
-        requesterId
-      );
-
-    if (
-      !pending ||
-      pending.status !==
-        REQUEST_STATUS.AWAITING_ADMIN
-    ) {
-      await ctx.answerCbQuery(
-        "Request not found"
-      );
-
-      return;
-    }
-
+    await getVideoRequest( requesterId
+    );
+    if (!pending || pending.status !== REQUEST_STATUS.AWAITING_ADMIN) {
+    await ctx.answerCbQuery(
+        "Request not found");
+      return;}
     try {
       await ctx.answerCbQuery(
-        "📞 Videocall selected"
-      );
-
-      await ctx
-        .editMessageReplyMarkup({
-          inline_keyboard: [],
-        })
+        "📞 Videocall selected" );
+     await ctx
+        .editMessageReplyMarkup({inline_keyboard: [],})
         .catch(() => {});
-
-      await setVideoRequest(
-        requesterId,
-        {
-          ...pending,
-          status:
-            REQUEST_STATUS.APPROVED,
-          approvedAt:
-            Date.now(),
-        }
-      );
-
-      await sendApprovedVideocallFlow(
-        requesterId
-      );
-    } catch (error: any) {
-      logger.error(
+      await setVideoRequest(requesterId,
+        {...pending,
+          status: REQUEST_STATUS.APPROVED,
+          approvedAt: Date.now(),
+        });
+      await sendApprovedVideocallFlow(requesterId);
+    } catch (error: any) {logger.error(
         "APPROVE CALL ERROR",
-        {
-          requesterId,
-          ...getTelegramError(
-            error
-          ),
-          stack:
-            error?.stack ||
-            null,
-        }
-      );
-
-      const current =
-        await getVideoRequest(
-          requesterId
-        );
-
-      if (current) {
-        await setVideoRequest(
-          requesterId,
-          {
-            ...current,
-            status:
-              REQUEST_STATUS.AWAITING_ADMIN,
-          }
-        );
-      }
-    }
-  }
-);
-
-// ======================================================
-// ADMIN: REJECT
-// ======================================================
-
-adminBot.action(
-  /^reject_video_(\d+)$/,
-  async (ctx) => {
-    const adminId =
-      String(
-        ctx.from?.id || ""
-      );
-
-    if (
-      adminId !==
-      String(ADMIN_USER_ID)
+        {requesterId, ...getTelegramError(error),
+          stack: error?.stack || null,
+        });
+      const current = await getVideoRequest(requesterId);
+      if (current) { await setVideoRequest(requesterId,{...current,
+            status: REQUEST_STATUS.AWAITING_ADMIN,
+      });
+      }}});
+//// ADMIN: REJECT //
+    adminBot.action( /^reject_video_(\d+)$/,
+    async (ctx) => {
+    const adminId = String(ctx.from?.id || "");
+    if (adminId !== String(ADMIN_USER_ID)
     ) {
-      await ctx.answerCbQuery(
-        "❌ Unauthorized"
-      );
-
-      return;
-    }
-
-    const requesterId =
-      String(ctx.match[1]);
-
-    const pending =
-      await getVideoRequest(
-        requesterId
-      );
-
+    await ctx.answerCbQuery(
+        "❌ Unauthorized");
+     return;}
+    const requesterId = String(ctx.match[1]);
+    const pending = await getVideoRequest( requesterId);
     if (!pending) {
       await ctx.answerCbQuery(
-        "Request not found"
-      );
-
-      return;
-    }
-
+        "Request not found");
+      return;}
     try {
       await ctx.answerCbQuery(
         "❌ ʀᴇᴊᴇᴄᴛᴇᴅ"
       );
-
       await ctx
-        .editMessageReplyMarkup({
-          inline_keyboard: [],
-        })
-        .catch(() => {});
-
-      await deleteVideoRequest(
-        requesterId
+      .editMessageReplyMarkup({inline_keyboard: [],})
+      .catch(() => {});
+      await deleteVideoRequest( requesterId
       );
-
-      const keyboard =
-        Markup.inlineKeyboard([
-          [
-            Markup.button.callback(
-              "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.",
-              `notify_me_${requesterId}`
-            ),
-          ],
-        ]);
-
+      const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(
+      "ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.",
+      `notify_me_${requesterId}`
+      ),],]);
       await bot.telegram.sendMessage(
         requesterId,
         `⏳ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ɴᴏᴛ ᴀᴘᴘʀᴏᴠᴇᴅ ᴀᴛ ᴛʜɪꜱ ᴛɪᴍᴇ.
-
-ᴡᴀɴᴛ ᴜꜱ ᴛᴏ ʟᴇᴛ ʏᴏᴜ ᴋɴᴏᴡ ᴡʜᴇɴ ꜱʟᴏᴛꜱ ᴏᴘᴇɴ ᴜᴘ ᴀɢᴀɪɴ?`,
-        {
-          reply_markup:
-            keyboard.reply_markup,
-        }
-      );
+       ᴡᴀɴᴛ ᴜꜱ ᴛᴏ ʟᴇᴛ ʏᴏᴜ ᴋɴᴏᴡ ᴡʜᴇɴ ꜱʟᴏᴛꜱ ᴏᴘᴇɴ ᴜᴘ ᴀɢᴀɪɴ?`,
+        { reply_markup: keyboard.reply_markup,});
     } catch (error: any) {
-      logger.error(
-        "REJECT ERROR",
-        {
-          requesterId,
-          ...getTelegramError(
-            error
-          ),
-        }
+      logger.error("REJECT ERROR",
+        {requesterId,...getTelegramError(error),}
       );
     }
   }

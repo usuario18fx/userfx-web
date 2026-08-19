@@ -1510,14 +1510,13 @@ bot.on("document", handleMedia);
 // ======================================================
 // USER TEXT ROUTER
 // ======================================================
-bot.on("text", async (ctx) => {
+    bot.on("text", async (ctx) => {
     const text = String(ctx.message?.text || "").trim();
     const userId = String(ctx.from?.id || "");
     if (!userId)
         return;
     try {
-        if (text.startsWith("/")) {
-            return;
+        if (text.startsWith("/")) { return;
         }
         // ================================================
         // GET CODE
@@ -1588,36 +1587,27 @@ bot.on("text", async (ctx) => {
         // ================================================
         // BACK
         // ================================================
-        if (text === BTN_BACK_MENU) {
-            return await sendMainPanel(ctx);
+        if (text === BTN_BACK_MENU) { return await sendMainPanel(ctx);
         }
         // ================================================
         // ZOOM
         // ================================================
         if (text === BTN_ZOOM) {
-            return await ctx.reply("📞 ᴏᴘᴇɴ ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ",
-                                url: ZOOM_URL,
-                            },
-                        ],
-                    ],
-                },
-            });
-        }
+            return await ctx.reply("📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
+                reply_markup: {inline_keyboard: [
+                        [{ text: "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ",
+                           url: ZOOM_URL,},],],},});
+                          }
         // ================================================
         // TELEGRAM CALL
         // ================================================
         if (text === BTN_TELEGRAM) {
-            return await ctx.reply("💬 ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
+            return await ctx.reply("💬ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
                 reply_markup: {
                     inline_keyboard: [
                         [
                             {
-                                text: "📹 ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+                                text: "📹ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
                                 url: TELEGRAM_CALL_URL,
                             },
                         ],
@@ -1632,54 +1622,31 @@ bot.on("text", async (ctx) => {
             BTN_SMOKELANDIA) {
             await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO);
             return await ctx.reply("𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", {
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: "↗ ᴏᴘᴇɴ",
-                                url: SMOKELANDIA_GROUP_LINK,
-                            },
-                        ],
-                    ],
-                },
-            });
-        }
-        // ================================================
-        // USERFX SITE
-        // ================================================
+            reply_markup: {inline_keyboard:[[{ text: "ɢᴇᴛ-ɪɴ",
+                           url: SMOKELANDIA_GROUP_LINK,},],],},});
+                          }
+//// USERFX SITE // ================================================
         if (text ===
             BTN_USERFX_SITE) {
             await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO);
-            return await ctx.reply("𝐔𝐬ᴇʀ 🜲∓ҳ", {
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: "↗ ᴇɴᴛᴇʀ",
-                                url: USERFX_SITE_URL,
-                            },
-                        ],
-                    ],
-                },
-            });
-        }
+            return await ctx.reply("𝐔𝐬ᴇʀ 🜲∓ҳ", {reply_markup: { inline_keyboard: [
+                        [{ text: "ɢᴇᴛ-ɪɴ",
+                           url: USERFX_SITE_URL,},],],},});
+                          }
         // ================================================
         // PHOTO WAITING
         // ================================================
         const pending = await getVideoRequest(userId);
         if (pending?.status ===
             REQUEST_STATUS.WAITING_PHOTO) {
-            const invalidTextCount = Number(pending.invalidTextCount ||
-                0) + 1;
+            const invalidTextCount = Number(pending.invalidTextCount || 0) + 1;
             if (invalidTextCount >= 4) {
                 await deleteVideoRequest(userId);
                 await ctx.reply("✘ ʀᴇǫᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ.");
                 return await sendMainPanel(ctx);
             }
             await setVideoRequest(userId, {
-                ...pending,
-                invalidTextCount,
-            });
+            ...pending, invalidTextCount,});
             await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
             return;
         }
@@ -1948,23 +1915,18 @@ adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
             .catch(() => { });
         await deleteVideoRequest(requesterId);
         const keyboard = Markup.inlineKeyboard([
-            [
-                Markup.button.callback("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", `notify_me_${requesterId}`),
-            ],
-        ]);
+            [Markup.button.callback("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", `notify_me_${requesterId}`),
+            ],]);
         await bot.telegram.sendMessage(requesterId, `⏳ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ɴᴏᴛ ᴀᴘᴘʀᴏᴠᴇᴅ ᴀᴛ ᴛʜɪꜱ ᴛɪᴍᴇ.
-
-ᴡᴀɴᴛ ᴜꜱ ᴛᴏ ʟᴇᴛ ʏᴏᴜ ᴋɴᴏᴡ ᴡʜᴇɴ ꜱʟᴏᴛꜱ ᴏᴘᴇɴ ᴜᴘ ᴀɢᴀɪɴ?`, {
-            reply_markup: keyboard.reply_markup,
-        });
-    }
+          ᴡᴀɴᴛ ᴜꜱ ᴛᴏ ʟᴇᴛ ʏᴏᴜ ᴋɴᴏᴡ ᴡʜᴇɴ ꜱʟᴏᴛꜱ ᴏᴘᴇɴ ᴜᴘ ᴀɢᴀɪɴ?`, {
+            reply_markup: keyboard.reply_markup,});
+        }
     catch (error) {
         logger.error("REJECT ERROR", {
             requesterId,
             ...getTelegramError(error),
         });
-    }
-});
+        }});
 // ======================================================
 // NOTIFY ME
 // ======================================================
