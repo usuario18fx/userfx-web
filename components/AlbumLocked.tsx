@@ -89,6 +89,8 @@ export default function AlbumLockPanel({
   const [activeTab, setActiveTab] = useState<TabId>("BS02-");
   const [clock, setClock] = useState("--:--:-- UTC");
 
+  const [openPopup, setOpenPopup] = useState(false);
+
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   const consumedPrefill = useRef<string | null>(null);
 
@@ -314,12 +316,14 @@ export default function AlbumLockPanel({
           <img src={LOGO} alt="USER FX" className={styles.headerLogo} />
           <span className={styles.headerLive}>
             <span className={styles.liveDot} />
-            <span>BÓVEDA PRIVADA · Nº07</span>
+            <span>
+              ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</span>
           </span>
         </a>
         <div className={styles.headerRight}>
           <time className={styles.clock}>{clock}</time>
-          <span className={styles.lockedPill}>🜲 LOCKED</span>
+          <span className={styles.lockedPill}>
+            🜲 ʟᴏᴄᴋᴇᴅ</span>
         </div>
       </header>
 
@@ -346,51 +350,65 @@ export default function AlbumLockPanel({
 
             <p className={styles.kicker}>
               <span className={styles.kickerRule} />
-              𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT · Nº𝟬𝟭 NOCTURNA
+              𝐔𝐒𝐄𝐑🜲𝓕𝐗 · ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ · ɴº𝟬𝟭 ɴᴏᴄᴛᴜʀɴᴀ
             </p>
 
             <h1 className={styles.title}>
-              <span className={styles.titleAccess}>ACCESS</span>
+              <span className={styles.titleAccess}>
+                ᴀᴄᴄᴇꜱꜱ</span>
               <span className={styles.titleRestricted}>
-                ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻<span className={styles.dotBlue}>.</span>
+                ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻
+                <span className={styles.dotBlue}>
+                  .</span>
               </span>
             </h1>
 
             <p className={styles.dim}>
-              There are images that were never meant to be seen.
+              ᴛʜᴇʀᴇ ᴀʀᴇ ɪᴍᴀɢᴇꜱ ᴛʜᴀᴛ ᴡᴇʀᴇ ɴᴇᴠᴇʀ ᴍᴇᴀɴᴛ ᴛᴏ ʙᴇ ꜱᴇᴇɴ.
             </p>
             <p className={styles.dim}>
               <span className={styles.bone}>
                 𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — Private Vault
               </span>{" "}
-              is a reserved space for those who want to go a little
-              further. The official site is in pre-launch.
+              ɪꜱ ᴀ ʀᴇꜱᴇʀᴠᴇᴅ ꜱᴘᴀᴄᴇ ꜰᴏʀ ᴛʜᴏꜱᴇ ᴡʜᴏ ᴡᴀɴᴛ ᴛᴏ ɢᴏ ᴀ ʟɪᴛᴛʟᴇ
+              ꜰᴜʀᴛʜᴇʀ. ᴛʜᴇ ᴏꜰꜰɪᴄɪᴀʟ ꜱɪᴛᴇ ɪꜱ ɪɴ ᴘʀᴇ-ʟᴀᴜɴᴄʜ.
             </p>
             <p className={styles.dim}>
-              Access is not public. You&apos;ll need a{" "}
-              <em className={styles.em}>private key.</em>
+              ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴛ ᴘᴜʙʟɪᴄ. ʏᴏᴜ&apos;ʟʟ ɴᴇᴇᴅ ᴀ{" "}
+              <em className={styles.em}>ᴘʀɪᴠᴀᴛᴇ ᴋᴇʏ.</em>
             </p>
 
             <dl className={styles.spec}>
               <div>
-                <dt>BRAND</dt>
-                <dd>𝐔𝐒𝐄𝐑 🜲𝓕𝐗</dd>
+                <dt>
+                  ʙʀᴀɴᴅ</dt>
+                <dd>
+                  𝐔𝐒𝐄𝐑 🜲𝓕𝐗</dd>
               </div>
               <div>
-                <dt>STATUS</dt>
-                <dd>PRE-LAUNCH</dd>
+                <dt>
+                  STATUS</dt>
+                <dd>
+                  PRE-LAUNCH</dd>
               </div>
               <div>
-                <dt>NEXT DROP</dt>
-                <dd>FRIDAY · 22:00 UTC</dd>
+                <dt>
+                  NEXT DROP</dt>
+                <dd>
+                  FRIDAY · 22:00 UTC</dd>
               </div>
               <div>
-                <dt>ACCESS</dt>
-                <dd>PRIVATE KEY</dd>
+                <dt>
+                  ACCESS</dt>
+                <dd>
+                  PRIVATE KEY</dd>
               </div>
               <div>
-                <dt>CODE</dt>
-                <dd>🜲 ∣ {activeTab} ∣ ····</dd>
+                <dt>
+                  CODE</dt>
+                <dd>
+                  🜲 ∣ {activeTab} 
+                  ∣ ····</dd>
               </div>
             </dl>
           </div>
@@ -469,25 +487,46 @@ export default function AlbumLockPanel({
                     {errKind === "ratelimit"
                       ? `Espera ${retryAfter}s`
                       : ERR_TEXT[errKind]}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  className={styles.unlockBtn}
-                  disabled={status === "verifying" || retryAfter > 0}
-                  onClick={() => submitCode(chars.join(""))}
-                >
-                  {status === "verifying" ? "VERIFYING..." : "UNLOCK ALBUM"}
-                </button>
-
-                <p className={styles.hint}>
-                  ᴇɴᴛʀᴀ ʟᴏꜱ úʟᴛɪᴍᴏꜱ 4 ᴄᴀʀᴀᴄᴛᴇʀᴇꜱ ᴅᴇ ᴛᴜ ᴄóᴅɪɢᴏ
-                </p>
-              </div>
-            </section>
-          </div>
-        </div>
+      </p>
+      )}
+      <button type="button" className={styles.unlockBtn} onClick={() => setOpenPopup(true)}>
+      <span className={styles.btnRose} aria-hidden>
+      <svg viewBox="0 0 32 32" width="18" height="18">
+      <path d="M16 26c-3-4.6-7.2-7.4-7.2-11.4 0-2.8 2.3-5 5.4-5 .9 0 1.7.3 2.4.9.7-.6 1.5-.9 2.4-.9 3.1 0 5.4 2.2 5.4 5 0 4-4.2 6.8-7.2 11.4z"
+            fill="#7a1528"/>
+      <path d="M16 12.2c1.6.5 2.5 1.9 2.9 3.3-1.3-.3-2.1 0-2.9.8-.8-.8-1.6-1.1-2.9-.8.4-1.4 1.3-2.8 2.9-3.3z"
+            fill="#c43b4e"/>
+      <path d="M16 14.8c.8.5 1.2 1.3 1.2 2.1s-.5 1.6-1.2 2.1c-.7-.5-1.2-1.3-1.2-2.1s.5-1.6 1.2-2.1z"
+            fill="#e8a0aa"/>
+      </svg>
+      </span>
+        ᴜɴʟᴏᴄᴋ ᴀʟʙᴜᴍ
+      </button>
+       {openPopup && (
+      <div className={styles.popup} onClick={() => setOpenPopup(false)}>
+      <div className={styles.popupContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+      <button type="button" className={styles.close}  onClick={() => setOpenPopup(false)} aria-label="Cerrar">
+        ×
+      </button>
+      <p className={styles.popupKicker}>𝐔𝐒𝐄𝐑🜲𝓕𝐗 ·  ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</p>
+      <h2>ᴀᴄᴄᴇꜱꜱ ʀᴇꜱᴛʀɪᴄᴛᴇᴅ</h2>
+      <p>
+        ʀᴇǫᴜᴇꜱᴛ ʏᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ᴄᴏᴅᴇ ʙʏ ꜱᴇɴᴅɪɴɢ ᴀ ᴅᴍ.
+        ᴛʜɪꜱ ᴘʀᴇ-ᴏʀᴅᴇʀ ᴅᴏᴇꜱ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ᴄᴏᴅᴇꜱ. ʀᴇǫᴜᴇꜱᴛ ʏᴏᴜʀ ᴋᴇʏ ᴠɪᴀ ᴅɪʀᴇᴄᴛ ᴅᴍ.
+      </p>
+      <a className={styles.unlockBtn} href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
+        ꜱᴇɴᴅ ᴅᴍ 
+     </a>
+     </div>
+     </div>
+      )}
+      <p className={styles.hint}>
+       ᴇɴᴛʀᴀ ʟᴏꜱ úʟᴛɪᴍᴏꜱ 4 ᴄᴀʀᴀᴄᴛᴇʀᴇꜱ ᴅᴇ ᴛᴜ ᴄóᴅɪɢᴏ
+      </p>
+      </div>
+      </section>
+      </div>
+      </div>
       </div>
     </section>
   );
