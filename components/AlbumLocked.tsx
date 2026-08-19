@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, {
   useCallback,
@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 
-import styles from "./AlbumLockPanel.module.css";
+import styles from "./AlbumLocked.module.css";
 
 const CODE_LENGTH = 4;
 const TABS = ["BS02-", "PX01-", "VX03-"] as const;
@@ -492,3 +492,4 @@ export default function AlbumLockPanel({
     </section>
   );
 }
+
