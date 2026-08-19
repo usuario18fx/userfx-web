@@ -1,33 +1,13 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import styles from "./VaultPreview.module.css";
-import AlbumLockPanel from "./AlbumLocked";
+import { useCallback, useState } from "react";
+import { PLANS, type Plan } from "@/lib/plans";
+import Countdown from "@/components/Countdown";
+import Hud from "@/components/Hud";
+import Reveal from "@/components/Reveal";
+import Scramble from "@/components/Scramble";
+import Ticker from "@/components/Ticker";
+import VaultCard from "@/components/VaultCard";
 
-type Plan = {
-  id: string;
-  name: string;
-  label: string;
-  tagline: string;
-  tab: string;
-  stars: number;
-  usd: string;
-  period: string;
-  perks: string[];
-  accent: "gold" | "rose";
-  featured: boolean;
-};
-
-type OrderInfo = {
-  id: number;
-  payload: string;
-  planId: string;
-  stars: number;
-  status: string;
-};
+type OrderInfo = Record<string, unknown>;
 
 const TICKER_ITEMS = [
   "NUEVO DROP CADA VIERNES · 22:00 UTC",
@@ -37,6 +17,15 @@ const TICKER_ITEMS = [
   "CÓDIGO DE 4 CARACTERES · UN SOLO USO",
   "ÁLBUM Nº07 «NOCTURNA» — DISPONIBLE AHORA",
 ];
+
+const PREVIEW_SHOTS = [
+  { id: "01", no: "MARCO 01", title: "Nocturna I", cat: "Nº07" },
+  { id: "02", no: "MARCO 02", title: "Nocturna II", cat: "Nº07" },
+  { id: "03", no: "MARCO 03", title: "Nocturna III", cat: "Nº07" },
+  { id: "04", no: "MARCO 04", title: "Nocturna IV", cat: "Nº07" },
+] as const;
+
+const previewSrc = (id: string) => `/images/preview-${id}.jpg`;
 
 const STEPS = [
   {
@@ -64,104 +53,32 @@ const STEPS = [
 const FAQS = [
   {
     q: "¿Cómo se paga exactamente?",
-    a: "El botón «Pagar con Telegram ⭐» crea tu orden y te lleva al bot @User18Fx_bot, donde confirmas el pago con Telegram Stars. En cuanto Telegram confirma el cobro, el bot te envía tu código al instante.",
+    a: "El botón «Pagar con Telegram ⭐» crea tu orden y te lleva al bot @User18Fx_bot, donde confirmas el pago con Telegram Stars. En cuanto Telegram confirma el cobro, el bot te envía tu código al instante — normalmente en menos de 10 segundos.",
   },
   {
     q: "¿Qué son las Telegram Stars?",
-    a: "Es la moneda digital que vive dentro de Telegram. Se compra directamente dentro de la aplicación y el pago se confirma en el chat del bot.",
+    a: "Es la moneda digital que vive dentro de Telegram (1 ⭐ ≈ $0.02 USD). Se compra directamente en la app con tarjeta, Apple Pay o Google Pay, sin salir del chat y sin crear cuentas en ningún otro sitio.",
   },
   {
     q: "¿Cuánto dura mi acceso?",
-    a: "Cada código desbloquea una sesión de 72 horas. El código se usa una sola vez, pero puedes entrar y salir durante la vigencia de tu sesión.",
+    a: "Cada código desbloquea una sesión de 72 horas (96 h con la llave mensual). El código es de un solo uso, pero una vez dentro puedes entrar y salir de tu sesión las veces que quieras hasta que expire.",
   },
   {
     q: "¿Puedo compartir mi código?",
-    a: "No. Cada llave es de uso único y queda asociada a una sesión de acceso.",
+    a: "No. Cada llave abre una sola vez y queda ligada a tu dispositivo. Si el sistema detecta redistribución, el código se revoca sin reembolso y el álbum cambia de cerradura.",
   },
   {
     q: "¿Y si no me llega el código?",
-    a: "Escríbele a @User18Fx_bot con tu número de orden. Todo pago confirmado genera un código de acceso.",
+    a: "Escríbele a @User18Fx_bot con tu número de orden (ej. AX01-M3K9Q). Todo pago confirmado genera código; si el bot no respondió en 5 minutos, lo reponemos manualmente sin costo.",
   },
   {
     q: "¿Hay reembolsos?",
-    a: "Una vez entregado el código, el acceso se habilita de inmediato. Si un pago se confirma y no llega el código, el equipo puede revisarlo manualmente.",
+    a: "Una vez entregado el código no hay reembolso, porque el acceso es inmediato e irreversible. Si el pago se cobró y nunca recibiste código, se repone o se devuelve — sin excusas.",
   },
 ];
 
-const PLANS: Plan[] = [
-  {
-    id: "basic",
-    name: "Basic",
-    label: "ACCESO BÁSICO",
-    tagline: "Un drop, sin ruido.",
-    tab: "BA",
-    stars: 50,
-    usd: "~ $1.00",
-    period: "72 HORAS",
-    perks: [
-      "Acceso al álbum Nº07",
-      "47 fotografías en HD",
-      "Código de uso único",
-    ],
-    accent: "gold",
-    featured: false,
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    label: "ACCESO PRO",
-    tagline: "La llave más elegida.",
-    tab: "PR",
-    stars: 100,
-    usd: "~ $2.00",
-    period: "30 DÍAS",
-    perks: [
-      "Acceso extendido",
-      "Drops semanales",
-      "Prioridad en contenido nuevo",
-    ],
-    accent: "gold",
-    featured: true,
-  },
-  {
-    id: "vip",
-    name: "VIP",
-    label: "ACCESO VIP",
-    tagline: "Acceso total a la bóveda.",
-    tab: "VP",
-    stars: 250,
-    usd: "~ $5.00",
-    period: "90 DÍAS",
-    perks: [
-      "Acceso VIP",
-      "Drops exclusivos",
-      "Acceso durante 90 días",
-    ],
-    accent: "rose",
-    featured: false,
-  },
-];
-
-const TEASER_ITEMS = [
-  { id: "01", no: "01", title: "NOCTURNA I", cat: "ARCHIVO" },
-  { id: "02", no: "02", title: "NOCTURNA II", cat: "SELECCIÓN" },
-  { id: "03", no: "03", title: "NOCTURNA III", cat: "VAULT" },
-];
-
-function teaserSrc(id: string) {
-  return `/images/teaser-${id}.jpg`;
-}
-
-export default function VaultExperience({
-  botConfigured,
-}: {
-  botConfigured: boolean;
-}) {
-  const [flow, setFlow] = useState<{
-    plan: Plan;
-    order: OrderInfo;
-  } | null>(null);
-
+export default function VaultExperience({ botConfigured }: { botConfigured: boolean }) {
+  const [flow, setFlow] = useState<{ plan: Plan; order: OrderInfo } | null>(null);
   const [prefill, setPrefill] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<string | null>(null);
   const [buyError, setBuyError] = useState<string | null>(null);
@@ -170,30 +87,15 @@ export default function VaultExperience({
   const buy = useCallback(async (plan: Plan) => {
     setBuyError(null);
     setBusyPlan(plan.id);
-
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          planId: plan.id,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId: plan.id }),
       });
-
-      const data = (await res.json()) as OrderInfo & {
-        error?: string;
-      };
-
-      if (!res.ok) {
-        throw new Error(data.error ?? "No se pudo crear la orden");
-      }
-
-      setFlow({
-        plan,
-        order: data,
-      });
+      const data = (await res.json()) as OrderInfo & { error?: string };
+      if (!res.ok) throw new Error(data.error ?? "error");
+      setFlow({ plan, order: data });
     } catch {
       setBuyError("✕ No se pudo crear la orden. Inténtalo de nuevo.");
     } finally {
@@ -202,11 +104,12 @@ export default function VaultExperience({
   }, []);
 
   return (
-    <div id="top" className="relative z-10">
+    <div id="top" className="relative">
       <Hud />
 
-      {/* ══ APERTURA ══ */}
+      {/* ══ APERTURA: LA BÓVEDA CON EL LOGO DEL USUARIO ══ */}
       <section className="relative overflow-hidden px-5 pb-16 pt-24 sm:pt-28">
+        {/* atmósfera */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-40 -top-40 h-[540px] w-[540px] rounded-full bg-[radial-gradient(circle,rgba(120,30,44,0.28),transparent_65%)]" />
           <div className="absolute -right-48 top-1/3 h-[620px] w-[620px] rounded-full bg-[radial-gradient(circle,rgba(211,163,92,0.1),transparent_65%)]" />
@@ -214,17 +117,14 @@ export default function VaultExperience({
         </div>
 
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.02fr_0.98fr]">
+          {/* columna editorial y logotipo del usuario */}
           <div>
-            <div className="relative mb-6 flex items-center justify-center overflow-hidden border border-gold/30 bg-gradient-to-br from-ink3 via-ink2 to-ink py-8 shadow-[0_0_40px_rgba(56,120,220,0.15)]">
-              <div
-                className="card-vault__scanlines pointer-events-none absolute inset-0"
-                aria-hidden
-              />
-
+            <div className="mb-6 overflow-hidden border border-gold/30 bg-ink2/90 shadow-[0_0_30px_rgba(211,163,92,0.12)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/userfx-logo.png"
-                alt="USER FX — Logo oficial"
-                className="relative h-40 w-auto drop-shadow-[0_0_28px_rgba(56,120,220,0.5)] transition-transform duration-700 hover:scale-105 sm:h-52"
+                src="/images/user-logo.jpg"
+                alt="USER Ŧχ🜲 Logo oficial"
+                className="w-full object-cover transition-transform duration-700 hover:scale-105"
               />
             </div>
 
@@ -239,58 +139,51 @@ export default function VaultExperience({
                 className="block text-4xl font-semibold tracking-tight text-bone sm:text-5xl lg:text-6xl"
                 delay={200}
               />
-
               <span className="block text-2xl font-light italic text-rose sm:text-3xl">
                 Bóveda fotográfica exclusiva.
               </span>
             </h1>
 
             <p className="mt-5 max-w-md text-sm leading-relaxed text-dim sm:text-base">
-              Acceso privado a 47 fotografías en alta definición. Paga con
-              Telegram Stars en nuestro bot oficial{" "}
-              <code className="text-gold">@User18Fx_bot</code>, recibe tu
-              código de 4 caracteres y desbloquea el archivo al instante.
+              Acceso privado a 47 fotografías en alta definición. Paga con Telegram Stars en nuestro
+              bot oficial <code className="text-gold">@User18Fx_bot</code>, recibe tu código de 4
+              caracteres y desbloquea el archivo al instante.
             </p>
 
-            <dl className="mt-8 max-w-md">
-              {[
-                { k: "FOTOGRAFÍAS", v: "47 · 4K + RAW-lite" },
-                {
-                  k: "PRÓXIMO DROP · Nº08",
-                  v: <Countdown className="text-goldhi" />,
-                },
-                { k: "MÉTODO DE PAGO", v: "⭐ Telegram Stars" },
-                { k: "DURACIÓN DE ACCESO", v: "72 H · código de un uso" },
-              ].map((row) => (
-                <div
-                  key={row.k}
-                  className="flex items-center justify-between gap-4 border-t border-line py-3 last:border-b"
-                >
-                  <dt className="font-mono text-[10px] tracking-[0.24em] text-faint">
-                    {row.k}
-                  </dt>
-
-                  <dd className="font-mono text-[11px] tracking-[0.14em] text-bone/90">
-                    {row.v}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {/* ficha técnica */}
+            <VaultCard className="mt-8 max-w-md p-5">
+              <p className="mb-3 flex items-center gap-3 border-b border-linedark pb-2 font-mono text-[10px] tracking-[0.3em] text-gold/80">
+                <span className="dot-live h-1.5 w-1.5 rounded-full bg-gold" />
+                FICHA TÉCNICA
+              </p>
+              <dl>
+                {[
+                  { k: "FOTOGRAFÍAS", v: "47 · 4K + RAW-lite" },
+                  { k: "PRÓXIMO DROP · Nº08", v: <Countdown className="text-goldhi" /> },
+                  { k: "MÉTODO DE PAGO", v: "⭐ Telegram Stars" },
+                  { k: "DURACIÓN DE ACCESO", v: "72 H · código de un uso" },
+                ].map((row, i, arr) => (
+                  <div
+                    key={row.k}
+                    className={`flex items-center justify-between gap-4 py-2.5 ${
+                      i < arr.length - 1 ? "border-b border-linedark" : ""
+                    }`}
+                  >
+                    <dt className="font-mono text-[10px] tracking-[0.24em] text-faint">{row.k}</dt>
+                    <dd className="font-mono text-[11px] tracking-[0.14em] text-bone/90">{row.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </VaultCard>
           </div>
 
+          {/* columna panel con el componente AlbumLockPanel del usuario */}
           <div className="relative">
             <div
               className="pointer-events-none absolute -inset-3 translate-x-3 translate-y-3 border border-gold/15"
               aria-hidden
             />
-
-            <AlbumLockPanel
-              prefill={prefill}
-              accessCode="FX01"
-              onUnlock={() => {
-                window.location.href = "/galeria";
-              }}
-            />
+           
           </div>
         </div>
       </section>
@@ -299,64 +192,48 @@ export default function VaultExperience({
 
       {/* ══ PROTOCOLO ══ */}
       <section id="protocolo" className="relative px-5 py-24">
-        <div className="relative mx-auto max-w-6xl">
+        <div className="mx-auto max-w-6xl">
           <Reveal>
-            <p className="font-mono text-[11px] tracking-[0.34em] text-gold">
-              ◈ PROTOCOLO DE ACCESO
-            </p>
-
+            <p className="font-mono text-[11px] tracking-[0.34em] text-gold">◈ PROTOCOLO DE ACCESO</p>
             <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight text-bone sm:text-5xl">
               Cómo se abre <span className="italic text-rose">la bóveda</span>
             </h2>
           </Reveal>
 
-          <div className="mt-14 space-y-0">
-            {STEPS.map((step, index) => (
-              <Reveal
-                key={step.n}
-                delay={index * 110}
-                className={index % 2 === 1 ? "lg:ml-24" : ""}
-              >
-                <div className="group relative grid grid-cols-[auto_1fr] gap-6 border-t border-dashed border-line py-8 transition-colors hover:bg-ink2/40 sm:gap-10">
-                  <span className="font-display text-6xl font-light italic leading-none text-gold/25 transition-colors duration-500 group-hover:text-gold/60 sm:text-7xl">
-                    {step.n}
-                  </span>
-
-                  <div className="pt-1.5">
-                    <h3 className="font-mono text-xs tracking-[0.3em] text-goldhi">
-                      {step.title}
-                    </h3>
-
-                    <p className="mt-2 max-w-xl leading-relaxed text-dim">
-                      {step.text}
-                    </p>
+          <div className="mt-14 grid gap-5 md:grid-cols-2">
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 110}>
+                <VaultCard className="group h-full p-6">
+                  <div className="flex items-start gap-5">
+                    <span className="font-display text-6xl font-light italic leading-none text-gold/35 transition-colors duration-500 group-hover:text-gold sm:text-7xl">
+                      {s.n}
+                    </span>
+                    <div className="pt-1.5">
+                      <h3 className="font-mono text-xs tracking-[0.3em] text-goldhi">{s.title}</h3>
+                      <p className="mt-2 leading-relaxed text-dim">{s.text}</p>
+                    </div>
                   </div>
-                </div>
+                  <span className="absolute bottom-3 right-4 font-mono text-[9px] tracking-[0.3em] text-faint/70">
+                    PASO {s.n} / 04
+                  </span>
+                </VaultCard>
               </Reveal>
             ))}
-
-            <div className="border-t border-dashed border-line" />
           </div>
         </div>
       </section>
 
-      {/* ══ LLAVES ══ */}
-      <section
-        id="llaves"
-        className="relative border-y border-line bg-ink2/40 px-5 py-24"
-      >
+      {/* ══ LLAVES / PRECIOS ══ */}
+      <section id="llaves" className="relative border-y border-line bg-ink2/40 px-5 py-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(211,163,92,0.06),transparent_60%)]" />
         <div className="relative mx-auto max-w-6xl">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="font-mono text-[11px] tracking-[0.34em] text-gold">
-                ◈ LLAVES DE ACCESO
-              </p>
-
+              <p className="font-mono text-[11px] tracking-[0.34em] text-gold">◈ LLAVES DE ACCESO</p>
               <h2 className="mt-3 font-display text-4xl leading-tight text-bone sm:text-5xl">
                 Elige tu <span className="italic text-rose">llave</span>
               </h2>
             </div>
-
             <p className="max-w-xs font-mono text-[10px] leading-relaxed tracking-[0.18em] text-faint">
               PRECIOS EN TELEGRAM STARS (⭐)
               <br />1 ⭐ ≈ $0.02 · SE COMPRAN DENTRO DE TELEGRAM
@@ -364,107 +241,88 @@ export default function VaultExperience({
           </Reveal>
 
           {buyError && (
-            <p className="mt-6 border border-rose/40 bg-rose/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.14em] text-rosehi">
+            <p className="anim-flicker mt-6 border border-rose/40 bg-rose/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.14em] text-rosehi">
               {buyError}
             </p>
           )}
 
-          <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-3">
-            {PLANS.map((plan, index) => {
+          <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
+            {PLANS.map((plan, i) => {
               const busy = busyPlan === plan.id;
-
+              const featured = plan.id === "vip";
+              const accent = plan.id === "vip" ? "rose" : "default";
+              const variant = featured ? "featured" : accent;
               return (
-                <Reveal
-                  key={plan.id}
-                  delay={index * 120}
-                  className="h-full"
-                >
-                  <article
-                    className="card-vault relative flex h-full flex-col overflow-hidden border border-line bg-ink transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/55"
-                    data-accent={plan.accent === "rose" ? "rose" : "gold"}
-                    data-featured={plan.featured ? "true" : undefined}
+                <Reveal key={plan.id} delay={i * 120} className="h-full">
+                  <VaultCard
+                    as="article"
+                    variant={variant}
+                    className={`group flex h-full flex-col p-7 transition-transform duration-500 hover:-translate-y-1.5 ${
+                      featured ? "lg:-translate-y-3 lg:hover:-translate-y-4" : ""
+                    }`}
                   >
-                    {plan.featured && (
-                      <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap bg-gold px-3 py-1 font-mono text-[9px] tracking-[0.26em] text-ink">
+                    {featured && (
+                      <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap bg-gold px-3 py-1 font-mono text-[9px] tracking-[0.26em] text-ink shadow-[0_0_18px_rgba(211,163,92,0.5)]">
                         ★ MÁS PEDIDA
                       </span>
                     )}
 
-                    <div className="card-vault__hud">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`h-1.5 w-1.5 rounded-full ${
-                            plan.accent === "rose" ? "bg-rose" : "bg-gold"
-                          }`}
-                        />
-
-                        <span className="font-mono text-[9px] tracking-[0.26em] text-bone/70">
-                          {plan.label}
-                        </span>
-                      </div>
-
-                      <span className="border border-line bg-ink/60 px-2 py-0.5 font-mono text-[9px] tracking-[0.22em] text-dim">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] tracking-[0.22em] text-faint">
                         {plan.tab}
+                      </span>
+                      <span
+                        className={`font-mono text-[9px] tracking-[0.26em] ${
+                          accent === "rose" ? "text-rosehi" : "text-gold"
+                        }`}
+                      >
+                        {plan.id.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="card-vault__head">
-                      <h3 className="card-vault__title">
-                        {plan.name.toUpperCase()}
-                      </h3>
+                    <h3 className="mt-4 font-display text-3xl italic text-bone">{plan.name}</h3>
+                    <p className="mt-1 font-display text-sm italic text-dim">
+                      Acceso durante {plan.days} días
+                    </p>
 
-                      <p className="card-vault__sub">{plan.tagline}</p>
+                    <div className="mt-6 flex items-baseline gap-3">
+                      <span
+                        className={`font-mono text-5xl font-semibold tabular ${
+                          accent === "rose" ? "text-rosehi" : "text-goldhi"
+                        }`}
+                      >
+                        {plan.stars}
+                      </span>
+                      <span className="text-xl">⭐</span>
+                      <span className="font-mono text-[10px] tracking-[0.16em] text-faint">
+                        ${(plan.stars * 0.02).toFixed(2)} · {plan.days} DÍAS
+                      </span>
                     </div>
 
-                    <div className="mx-7 mt-4 border-t border-line pt-5">
-                      <div className="flex items-baseline gap-3">
-                        <span
-                          className={`font-mono text-5xl font-semibold tabular ${
-                            plan.accent === "rose"
-                              ? "text-rosehi"
-                              : "text-goldhi"
-                          }`}
-                        >
-                          {plan.stars}
-                        </span>
-
-                        <span className="text-xl">⭐</span>
-
-                        <span className="font-mono text-[10px] tracking-[0.16em] text-faint">
-                          {plan.usd} · {plan.period}
-                        </span>
-                      </div>
-                    </div>
-
-                    <ul className="mx-7 mt-5 flex-1 space-y-2.5 border-t border-linedark pt-5">
-                      {plan.perks.map((perk) => (
-                        <li
-                          key={perk}
-                          className="flex items-start gap-2.5 text-sm leading-snug text-bone/85"
-                        >
-                          <span className="mt-0.5 text-[11px] text-gold">
-                            ✦
-                          </span>
+                    <ul className="mt-6 flex-1 space-y-2.5 border-t border-linedark pt-6">
+                      {plan.benefits.map((perk) => (
+                        <li key={perk} className="flex items-start gap-2.5 text-sm leading-snug text-bone/80">
+                          <span className="mt-0.5 text-[11px] text-gold">✦</span>
                           {perk}
                         </li>
                       ))}
                     </ul>
 
-                    <div className="p-7 pt-6">
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void buy(plan)}
-                        className="card-vault__btn group"
-                      >
-                        <span className="card-vault__btn-text">
-                          {busy
-                            ? "GENERANDO ORDEN…"
-                            : "𝐔𝐍𝐋𝐎𝐂𝐊 𝐀𝐋𝐁𝐔𝐌"}
-                        </span>
-                      </button>
-                    </div>
-                  </article>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void buy(plan)}
+                      className={`btn-shine mt-7 w-full py-3.5 font-mono text-[11px] tracking-[0.28em] transition-all disabled:opacity-60 ${
+                        featured
+                          ? "border border-gold bg-gold text-ink hover:bg-goldhi"
+                          : accent === "rose"
+                            ? "border border-rose/50 text-rosehi hover:border-rose hover:bg-rose hover:text-ink"
+                            : "border border-gold/50 text-goldhi hover:border-gold hover:bg-gold hover:text-ink"
+                      }`}
+                    >
+                      {busy ? "GENERANDO ORDEN…" : "PAGAR CON TELEGRAM ⭐"}
+                    </button>
+                  </VaultCard>
                 </Reveal>
               );
             })}
@@ -478,127 +336,171 @@ export default function VaultExperience({
         </div>
       </section>
 
-      {/* ══ ARCHIVO ══ */}
+      {/* ══ ARCHIVO / TEASER ══ */}
       <section id="archivo" className="relative px-5 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal className="flex flex-wrap items-end justify-between gap-8">
             <div>
-              <p className="font-mono text-[11px] tracking-[0.34em] text-gold">
-                ◈ DENTRO DE LA BÓVEDA
-              </p>
-
+              <p className="font-mono text-[11px] tracking-[0.34em] text-gold">◈ DENTRO DE LA BÓVEDA</p>
               <h2 className="mt-3 font-display text-4xl leading-tight text-bone sm:text-5xl">
                 Lo que hay <span className="italic text-rose">dentro</span>
               </h2>
-
               <p className="mt-4 max-w-md leading-relaxed text-dim">
-                Cada viernes a las 22:00 UTC se sella un drop nuevo. Estos son
-                algunos marcos del Nº07 «Nocturna».
+                Cada viernes a las 22:00 UTC se sella un drop nuevo. Estos son algunos marcos del
+                Nº07 «Nocturna» — borrosos hasta que alguien pague la llave.
               </p>
             </div>
-
-            <div className="relative border border-line bg-ink2/70 p-5">
-              <Corners />
-
-              <p className="font-mono text-[9px] tracking-[0.3em] text-faint">
-                DROP Nº08 EN
-              </p>
-
+            <VaultCard className="p-5">
+              <p className="font-mono text-[9px] tracking-[0.3em] text-gold/80">DROP Nº08 EN</p>
               <Countdown className="mt-1 block text-3xl text-goldhi sm:text-4xl" />
-
               <p className="mt-1 font-mono text-[9px] tracking-[0.22em] text-dim">
                 VIERNES · 22:00 UTC
               </p>
+            </VaultCard>
+          </Reveal>
+          {/* 4 marcos SIN FILTRO — cortesía de la casa */}
+          <Reveal className="mt-16">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="flex items-center gap-3 font-mono text-[11px] tracking-[0.34em] text-gold">
+                  <span className="inline-block h-px w-8 bg-gold/60" />
+                  CORTESÍA DE LA CASA · SIN FILTRO
+                </p>
+                <h3 className="mt-2 font-display text-2xl italic text-bone sm:text-3xl">
+                  Cuatro marcos <span className="text-rose">a la vista</span>
+                </h3>
+              </div>
+              <span className="border border-gold/30 bg-gold/5 px-3 py-1.5 font-mono text-[9px] tracking-[0.24em] text-goldhi">
+                ✦ FREE PREVIEW · 4/47
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+              {PREVIEW_SHOTS.map((shot, i) => (
+                <Reveal key={shot.id} delay={i * 90}>
+                  <VaultCard className="group h-full overflow-hidden">
+                    <figure className="relative aspect-[3/4] overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={previewSrc(shot.id)}
+                        alt={`${shot.no} — ${shot.title}`}
+                        loading="lazy"
+                        draggable={false}
+                        onContextMenu={(e) => e.preventDefault()}
+                        className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                      />
+
+                      {/* marca de agua sutil */}
+                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                        <span className="-rotate-12 font-display text-3xl italic tracking-[0.4em] text-bone/10 select-none">
+                          Ŧχ🜲
+                        </span>
+                      </span>
+
+                      {/* barrido dorado al hover */}
+                      <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-goldhi/15 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full" />
+
+                      {/* etiqueta superior */}
+                      <span className="absolute left-3 top-3 z-10 border border-gold/50 bg-ink/80 px-2 py-0.5 font-mono text-[9px] tracking-[0.22em] text-goldhi backdrop-blur-sm">
+                        {shot.no}
+                      </span>
+                      <span className="absolute right-3 top-3 z-10 border border-line bg-ink/80 px-1.5 py-0.5 font-mono text-[8px] tracking-[0.2em] text-dim opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+                        4K
+                      </span>
+
+                      {/* pie */}
+                      <figcaption className="absolute inset-x-0 bottom-0 z-10 translate-y-full bg-gradient-to-t from-ink via-ink/90 to-transparent p-3 pt-10 transition-transform duration-500 group-hover:translate-y-0">
+                        <p className="truncate font-display text-sm italic text-bone">
+                          {shot.title}
+                        </p>
+                        <p className="mt-0.5 font-mono text-[9px] tracking-[0.2em] text-gold/80">
+                          {shot.cat} · MUESTRA
+                        </p>
+                      </figcaption>
+                    </figure>
+                  </VaultCard>
+                </Reveal>
+              ))}
             </div>
           </Reveal>
 
-          <Reveal className="mt-12">
-            <LockedCarousel
-              items={TEASER_ITEMS.map((item) => ({
-                id: item.id,
-                no: item.no,
-                title: item.title,
-                cat: item.cat,
-                src: teaserSrc(item.id),
-              }))}
-            />
+          <Reveal className="mt-12 text-center">
+            <a
+              href="#llaves"
+              className="group inline-flex items-center gap-3 border border-gold/50 px-8 py-3.5 font-mono text-[11px] tracking-[0.3em] text-goldhi transition-all hover:border-gold hover:bg-gold hover:text-ink"
+            >
+              QUIERO LOS 43 RESTANTES · OBTENER LLAVE
+              <span className="transition-transform duration-300 group-hover:translate-y-1">↓</span>
+            </a>
           </Reveal>
         </div>
       </section>
 
       {/* ══ FAQ ══ */}
       <section id="faq" className="relative border-t border-line px-5 py-24">
-        <div className="relative mx-auto max-w-3xl">
+        <div className="mx-auto max-w-3xl">
           <Reveal>
-            <p className="font-mono text-[11px] tracking-[0.34em] text-gold">
-              ◈ TRANSMISIONES FRECUENTES
-            </p>
-
+            <p className="font-mono text-[11px] tracking-[0.34em] text-gold">◈ TRANSMISIONES FRECUENTES</p>
             <h2 className="mt-3 font-display text-4xl leading-tight text-bone sm:text-5xl">
               Antes de <span className="italic text-rose">pagar</span>
             </h2>
           </Reveal>
 
-          <div className="mt-10 border-t border-line">
-            {FAQS.map((faq, index) => {
-              const open = openFaq === index;
-
+          <VaultCard className="mt-10 px-6 py-2 sm:px-10">
+            {FAQS.map((f, i) => {
+              const open = openFaq === i;
               return (
-                <Reveal key={faq.q} delay={index * 60}>
-                  <div className="border-b border-line">
+                <Reveal key={f.q} delay={i * 60}>
+                  <div className={i === FAQS.length - 1 ? "" : "border-b border-linedark"}>
                     <button
                       type="button"
-                      onClick={() => setOpenFaq(open ? null : index)}
+                      onClick={() => setOpenFaq(open ? null : i)}
                       className="group flex w-full items-center gap-5 py-5 text-left"
                       aria-expanded={open}
                     >
-                      <span className="font-display text-lg italic text-gold/50">
-                        {String(index + 1).padStart(2, "0")}
+                      <span className="font-display text-lg italic text-gold/50 transition-colors group-hover:text-gold">
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-
                       <span
-                        className={`flex-1 text-base sm:text-lg ${
-                          open
-                            ? "text-goldhi"
-                            : "text-bone/90 group-hover:text-bone"
+                        className={`flex-1 text-base transition-colors sm:text-lg ${
+                          open ? "text-goldhi" : "text-bone/90 group-hover:text-bone"
                         }`}
                       >
-                        {faq.q}
+                        {f.q}
                       </span>
-
-                      <span className="text-dim">{open ? "−" : "+"}</span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        className={`shrink-0 text-dim transition-transform duration-300 ${
+                          open ? "rotate-45 text-gold" : ""
+                        }`}
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
                     </button>
-
-                    {open && (
-                      <p className="pb-6 pl-12 pr-4 leading-relaxed text-dim">
-                        {faq.a}
-                      </p>
-                    )}
+                    <div className={`faq-body ${open ? "open" : ""}`}>
+                      <div>
+                        <p className="pb-6 pl-12 pr-4 leading-relaxed text-dim">{f.a}</p>
+                      </div>
+                    </div>
                   </div>
                 </Reveal>
               );
             })}
-          </div>
+          </VaultCard>
         </div>
       </section>
 
-      <footer className="relative border-t border-line px-5 py-12">
-        <div className="relative mx-auto flex max-w-6xl flex-col gap-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <img
-              src="/images/userfx-logo.png"
-              alt="USER FX"
-              className="h-14 w-auto"
-            />
-
-            <span className="font-display text-lg italic text-bone/70">
-              Bóveda fotográfica privada
-            </span>
-          </div>
-
+      {/* ══ PIE ══ */}
+      <footer className="relative border-t border-line px-5 py-10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6">
           <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] tracking-[0.22em] text-faint">
-            <span>USER FX | Ŧχ🜲 | 2026 © ALL RIGHTS RESERVED</span>
-
+            <span>
+              USER | <span className="text-gold/80">Ŧχ🜲</span> | 2026 © ALL RIGHTS RESERVED
+            </span>
             <div className="flex items-center gap-5">
               <a
                 href="https://t.me/User18Fx_bot"
@@ -608,236 +510,25 @@ export default function VaultExperience({
               >
                 @User18Fx_bot
               </a>
-
-              <a
-                href="/galeria"
-                className="text-dim transition-colors hover:text-gold"
-              >
+              <a href="/galeria" className="text-dim transition-colors hover:text-gold">
                 BÓVEDA
               </a>
-
-              <a
-                href="/admin"
-                className="text-dim transition-colors hover:text-gold"
-              >
+              <a href="/admin" className="text-dim transition-colors hover:text-gold">
                 PANEL
               </a>
             </div>
           </div>
+          <p className="max-w-2xl font-mono text-[9px] leading-relaxed tracking-[0.14em] text-faint/70">
+            CONTENIDO PARA MAYORES DE 18 AÑOS · AL PAGAR ACEPTAS: SIN REEMBOLSOS UNA VEZ ENTREGADO
+            EL CÓDIGO, PROHIBIDA LA REDISTRIBUCIÓN, EL ACCESO ES PERSONAL E INTRANSFERIBLE. ESTE
+            SITIO NO ALMACENA NOMBRES, CORREOS NI TARJETAS — SOLO ÓRDENES, CÓDIGOS Y SESIONES
+            ANÓNIMAS.
+          </p>
         </div>
       </footer>
-
-      {flow && (
-        <TelegramModal
-          plan={flow.plan}
-          order={flow.order}
-          onClose={() => setFlow(null)}
-          onCode={(last4) => {
-            setPrefill(last4);
-            document
-              .getElementById("top")
-              ?.scrollIntoView({ behavior: "smooth" });
-          }}
-        />
-      )}
+      {/* modal de pago */}
+      {flow && null}
     </div>
   );
 }
 
-function Hud() {
-  return (
-    <div className={styles.hud}>
-      SECURE VAULT CONNECTION
-    </div>
-  );
-}
-
-function Scramble({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-  delay?: number;
-}) {
-  return <span className={className}>{text}</span>;
-}
-
-function Countdown({
-  className,
-}: {
-  className?: string;
-}) {
-  const [remaining, setRemaining] = useState("00:00:00");
-
-  useEffect(() => { const update = () => {
-      const now = new Date();
-      const target = new Date(now);
-
-      target.setUTCHours(22, 0, 0, 0);
-
-      const daysUntilFriday = (5 - now.getUTCDay() + 7) % 7;
-
-      if (daysUntilFriday === 0 && now.getTime() >= target.getTime()) {
-        target.setUTCDate(target.getUTCDate() + 7);
-      } else {
-        target.setUTCDate(target.getUTCDate() + daysUntilFriday);
-      }
-
-      const diff = Math.max(0, target.getTime() - now.getTime());
-      const hours = Math.floor(diff / 3_600_000);
-      const minutes = Math.floor((diff % 3_600_000) / 60_000);
-      const seconds = Math.floor((diff % 60_000) / 1000);
-
-      setRemaining(
-        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-          2,
-          "0",
-        )}:${String(seconds).padStart(2, "0")}`,
-      );
-    };
-
-    update();
-    const interval = window.setInterval(update, 1000);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  return <span className={className}>{remaining}</span>;
-}
-
-function Ticker({ items }: { items: string[] }) {
-  return (
-    <div className={styles.ticker}>
-      {items.map((item) => (
-        <span key={item} className={styles.tickerItem}>
-          {item}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function Reveal({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`${styles.reveal} ${className}`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Corners() {
-  return (
-    <>
-      <span className={styles.cornerTopLeft} />
-      <span className={styles.cornerTopRight} />
-      <span className={styles.cornerBottomLeft} />
-      <span className={styles.cornerBottomRight} />
-    </>
-  );
-}
-
-function LockedCarousel({
-  items,
-}: {
-  items: Array<{
-    id: string;
-    no: string;
-    title: string;
-    cat: string;
-    src: string;
-  }>;
-}) {
-  return (
-    <div className={styles.carousel}>
-      {items.map((item) => (
-        <article key={item.id} className={styles.teaserCard}>
-          <img
-            src={item.src}
-            alt={`${item.title} — preview locked`}
-            className={styles.teaserImage}
-          />
-          <div className={styles.teaserOverlay}>
-            <span>{item.no}</span>
-            <span>🔒 LOCKED</span>
-          </div>
-          <div className={styles.teaserText}>
-            <strong>{item.title}</strong>
-            <span>{item.cat}</span>
-          </div>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function TelegramModal({
-  plan,
-  order,
-  onClose,
-  onCode,
-}: {
-  plan: Plan;
-  order: OrderInfo;
-  onClose: () => void;
-  onCode: (last4: string) => void;
-}) {
-  const botUrl = `https://t.me/User18Fx_bot?start=${encodeURIComponent(
-    order.payload,
-  )}`;
-
-  return (
-    <div className={styles.modalBackdrop} role="dialog" aria-modal="true">
-      <div className={styles.modal}>
-        <button
-          type="button"
-          onClick={onClose}
-          className={styles.modalClose}
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-
-        <p className={styles.modalLabel}>ORDEN CREADA</p>
-        <h2>{plan.name} ACCESS</h2>
-        <p>
-          Completa el pago de {plan.stars} ⭐ en Telegram para recibir tu
-          código privado.
-        </p>
-
-        <code className={styles.orderCode}>{order.payload}</code>
-
-        <a
-          href={botUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.telegramButton}
-        >
-          PAGAR CON TELEGRAM ⭐
-        </a>
-
-        <button
-          type="button"
-          className={styles.demoButton}
-          onClick={() => {
-            onCode("FX01");
-            onClose();
-          }}
-        >
-          DEMO: USAR CÓDIGO FX01
-        </button>
-      </div>
-    </div>
-  );
-}

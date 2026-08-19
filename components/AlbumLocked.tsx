@@ -7,67 +7,46 @@ type AlbumLockPanelProps = {
   onUnlock: () => void;
 };
 
-export default function AlbumLockPanel({
+export default function AlbumLocked({
   prefill,
   accessCode,
   onUnlock,
 }: AlbumLockPanelProps) {
-  const [time, setTime] = useState("");
-  const [code, setCode] = useState(["", "", "", ""]);
+  const [time, setTime] = useState(() =>
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  );
+  const [code, setCode] = useState<string[]>(() =>
+    (prefill || "").slice(-4).padStart(4, " ").split(""),
+  );
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const updateClock = () => {
-      const current = new Date();
-
+    const interval = window.setInterval(() => {
       setTime(
-        current.toLocaleTimeString("es-ES", {
-          hour12: false,
+        new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
         }),
       );
-    };
-
-    updateClock();
-
-    const interval = window.setInterval(updateClock, 1000);
-
+    }, 1000);
     return () => window.clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (!prefill) {
-      return;
-    }
-
-    const normalized = prefill
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .slice(-4)
-      .toUpperCase();
-
-    setCode(normalized.padEnd(4, "").split(""));
-  }, [prefill]);
-
   const updateCode = (index: number, value: string) => {
-    const next = [...code];
-    next[index] = value.replace(/[^a-zA-Z0-9]/g, "").slice(-1).toUpperCase();
-
-    setCode(next);
+    setCode((current) =>
+      current.map((character, position) =>
+        position === index ? value.slice(-1) : character,
+      ),
+    );
     setError("");
   };
 
   const attemptUnlock = () => {
-    const enteredCode = code.join("").toUpperCase();
-    const validCode = accessCode
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .slice(-4)
-      .toUpperCase();
-
-    if (enteredCode !== validCode) {
-      setError("CÓDIGO INVÁLIDO");
-      return;
+    if (code.join("") === accessCode.slice(-4)) {
+      onUnlock();
+    } else {
+      setError("CÓDIGO INCORRECTO");
     }
-
-    onUnlock();
   };
 
   return (
@@ -129,7 +108,7 @@ export default function AlbumLockPanel({
             </div>
 
             <div className={styles.codeRow}>
-              {code.map((value, index) => (
+              {code.map((value: string, index: number) => (
                 <input
                   key={index}
                   className={styles.codeBox}
