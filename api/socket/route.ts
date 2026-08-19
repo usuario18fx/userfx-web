@@ -9,14 +9,11 @@ export async function GET() {
     io = new Server({
       cors: { origin: "*" },
     });
-
     io.on("connection", (socket) => {
       console.log("👑 Admin connected:", socket.id);
     });
-
     // guardamos global
     (global as any).io = io;
   }
-
   return Response.json({ ok: true });
 }

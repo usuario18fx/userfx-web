@@ -1,5 +1,6 @@
 /* ════════════════════════════════════════════════════════
-   AlbumLockPanel.css
+   USER FX VAULT — official pre theme
+   No photos. No payment UI.
    ════════════════════════════════════════════════════════ */
 
 .root {
@@ -8,22 +9,48 @@
   height: 100dvh;
   min-height: 580px;
   overflow: hidden;
-  background: #010103;
-  color: #f5f9ff;
+  background: #05060a;
+  color: #f4f1e8;
   font-family: "DM Sans", "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-.wp {
-  /* ── Wallpaper ── */
+.void {
   position: absolute;
   inset: 0;
-  background-image: var(--wp);
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
-  filter: brightness(0.84) contrast(1.1) saturate(1.08);
-  will-change: transform;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(201, 162, 74, 0.16), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 80% 80%, rgba(88, 196, 220, 0.08), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 12% 70%, rgba(232, 51, 109, 0.07), transparent 45%),
+    #05060a;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(244, 241, 232, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 241, 232, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 78%);
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  max-width: 460px;
+  max-height: 460px;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(201, 162, 74, 0.18);
+  box-shadow:
+    inset 0 0 80px rgba(201, 162, 74, 0.08),
+    0 0 80px rgba(201, 162, 74, 0.08);
+  pointer-events: none;
 }
 
 .vignette {
@@ -37,38 +64,32 @@
     ),
     linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.3) 0%,
-      rgba(0, 0, 0, 0.02) 8%,
+      rgba(0, 0, 0, 0.35) 0%,
       transparent 18%,
-      transparent 54%,
-      rgba(0, 0, 0, 0.5) 66%,
-      rgba(0, 0, 0, 0.82) 80%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.72) 78%,
       rgba(0, 0, 0, 0.92) 100%
     );
 }
 
 .scanlines {
-  /* Subtle CRT scanlines for "premium dark" feel */
   position: absolute;
   inset: 0;
   background-image: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.04) 2px,
-    rgba(0, 0, 0, 0.04) 4px
+    rgba(0, 0, 0, 0.05) 2px,
+    rgba(0, 0, 0, 0.05) 4px
   );
   pointer-events: none;
   z-index: 2;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
-/* ════════════════════════════════════════════════════════
-   HUD
-   ════════════════════════════════════════════════════════ */
+/* HUD */
 
 .hud {
-  /* ── HUD — top of screen ── */
   position: absolute;
   top: 0;
   left: 0;
@@ -78,8 +99,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px 8px;
-  border-bottom: 1px solid rgba(137, 216, 255, 0.06);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent);
+  border-bottom: 1px solid rgba(201, 162, 74, 0.1);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
 }
 
 .hudLeft {
@@ -88,16 +109,15 @@
   gap: 7px;
 }
 
-/* Animated status dot */
 .hudDot {
   display: block;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #89d8ff;
+  background: #c9a24a;
   box-shadow:
-    0 0 6px #89d8ff,
-    0 0 12px rgba(137, 216, 255, 0.5);
+    0 0 6px #c9a24a,
+    0 0 12px rgba(201, 162, 74, 0.5);
   animation: dotBlink 2.4s ease-in-out infinite;
 }
 
@@ -105,26 +125,19 @@
   0%,
   100% {
     opacity: 1;
-    box-shadow:
-      0 0 6px #89d8ff,
-      0 0 12px rgba(137, 216, 255, 0.5);
   }
 
   50% {
-    opacity: 0.4;
-    box-shadow: 0 0 2px #89d8ff;
+    opacity: 0.35;
   }
 }
 
 .hudLabel {
   font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(137, 216, 255, 0.92);
-  text-shadow:
-    0 0 14px rgba(137, 216, 255, 0.4),
-    0 2px 10px rgba(0, 0, 0, 1);
+  color: rgba(232, 214, 164, 0.92);
 }
 
 .hudPill {
@@ -133,49 +146,47 @@
   height: 24px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 162, 74, 0.28);
+  background: rgba(201, 162, 74, 0.06);
   font-size: 0.57rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #e2f6ff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+  color: #f4e6c0;
 }
 
-/* ════════════════════════════════════════════════════════
-   LOCK BADGE
-   ════════════════════════════════════════════════════════ */
+/* Brand / lock */
 
 .lockBadge {
-  /* ── Lock badge — centered over logo ── */
   position: absolute;
-  top: 16%;
+  top: 13%;
   left: 0;
   right: 0;
   z-index: 20;
+  padding: 0 22px;
+}
+
+.brandBlock {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  text-align: center;
   gap: 10px;
-  padding: 0 18px;
 }
 
 .lockIconWrap {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
 }
 
 .lockPulse {
-  /* Pulsing ring around lock icon */
   position: absolute;
   inset: -4px;
   border-radius: 60%;
-  border: 2px solid rgba(255, 65, 111, 0.4);
+  border: 2px solid rgba(201, 162, 74, 0.35);
   animation: lockPulse 2.2s ease-out infinite;
 }
 
@@ -197,34 +208,44 @@
 }
 
 .lockSvg {
-  color: #ff416f;
-  filter: drop-shadow(0 0 8px rgba(255, 65, 111, 0.7));
+  color: #c9a24a;
+  filter: drop-shadow(0 0 8px rgba(201, 162, 74, 0.55));
   position: relative;
   z-index: 1;
 }
 
-.lockTitle {
+.kicker {
   margin: 0;
-  font-size: clamp(1.3rem, 5.5vw, 1.9rem);
-  font-weight: 900;
-  letter-spacing: 0.03em;
-  color: #ffffff;
-  line-height: 1;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.12),
-    0 -1px 0 rgba(0, 0, 0, 0.8),
-    0 2px 20px rgba(0, 0, 0, 1),
-    0 0 30px rgba(0, 0, 0, 0.9);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(201, 162, 74, 0.78);
 }
 
-/* ════════════════════════════════════════════════════════
-   INPUT PANEL
-   ════════════════════════════════════════════════════════ */
+.lockTitle {
+  margin: 0;
+  font-size: clamp(1.6rem, 7vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fffaf0;
+  line-height: 0.95;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+}
+
+.lede {
+  margin: 0;
+  max-width: 34rem;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: rgba(244, 241, 232, 0.58);
+}
+
+/* Panel */
 
 .inputPanel {
-  /* ── Input panel — bottom zone ── */
   position: absolute;
-  bottom: 52px;
+  bottom: 56px;
   left: 0;
   right: 0;
   z-index: 20;
@@ -235,19 +256,16 @@
 }
 
 .panelTopLine {
-  /* Thin neon top border */
   width: 100%;
   height: 1px;
   background: linear-gradient(
     to right,
     transparent,
-    rgba(137, 216, 255, 0.35) 30%,
-    rgba(137, 216, 255, 0.6) 50%,
-    rgba(137, 216, 255, 0.35) 70%,
+    rgba(201, 162, 74, 0.35) 30%,
+    rgba(232, 214, 164, 0.7) 50%,
+    rgba(201, 162, 74, 0.35) 70%,
     transparent
   );
-  box-shadow: 0 0 8px rgba(137, 216, 255, 0.25);
-  margin-bottom: 2px;
 }
 
 .inputPanelError {
@@ -277,12 +295,7 @@
   }
 }
 
-/* ════════════════════════════════════════════════════════
-   TABS
-   ════════════════════════════════════════════════════════ */
-
 .tabRow {
-  /* ── Tabs ── */
   display: flex;
   align-items: center;
   gap: 7px;
@@ -293,9 +306,9 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.5);
   height: 28px;
   padding: 0 12px;
   border-radius: 999px;
@@ -304,27 +317,18 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
-  transition:
-    border-color 160ms,
-    color 160ms,
-    box-shadow 160ms;
+  transition: border-color 160ms, color 160ms, box-shadow 160ms;
 }
 
 .tab:hover {
-  border-color: rgba(137, 216, 255, 0.22);
-  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(201, 162, 74, 0.3);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .tabActive {
-  border-color: rgba(137, 216, 255, 0.38);
-  color: #e8f7ff;
-  box-shadow:
-    0 0 10px rgba(137, 216, 255, 0.1),
-    inset 0 0 10px rgba(137, 216, 255, 0.04);
-  text-shadow:
-    0 0 8px rgba(137, 216, 255, 0.3),
-    0 2px 10px rgba(0, 0, 0, 0.9);
+  border-color: rgba(201, 162, 74, 0.45);
+  color: #f4e6c0;
+  box-shadow: 0 0 10px rgba(201, 162, 74, 0.12);
 }
 
 .tabDot {
@@ -332,9 +336,8 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #89d8ff;
-  box-shadow: 0 0 5px #89d8ff;
-  flex-shrink: 0;
+  background: #c9a24a;
+  box-shadow: 0 0 5px #c9a24a;
 }
 
 .tabSpacer {
@@ -346,18 +349,10 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(137, 216, 255, 0.95);
-  text-shadow:
-    0 0 10px rgba(137, 216, 255, 0.35),
-    0 2px 10px rgba(0, 0, 0, 1);
+  color: rgba(201, 162, 74, 0.9);
 }
 
-/* ════════════════════════════════════════════════════════
-   CODE INPUTS
-   ════════════════════════════════════════════════════════ */
-
 .codeRow {
-  /* ── Code inputs ── */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
@@ -371,57 +366,35 @@
 .codeBox {
   width: 70%;
   height: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(201, 162, 74, 0.28);
   border-radius: 8px;
-
-  /* Slightly opaque — brick texture shows through */
-  background: rgba(5, 12, 22, 0.52);
-
+  background: rgba(10, 10, 14, 0.62);
   outline: none;
   text-align: center;
   font-size: 1.18rem;
   font-weight: 950;
-  color: #ffffff;
+  color: #fffaf0;
   text-transform: uppercase;
-  text-shadow:
-    0 0 10px rgba(255, 255, 255, 0.3),
-    0 2px 8px rgba(0, 0, 0, 1);
-  caret-color: #89d8ff;
+  caret-color: #c9a24a;
   letter-spacing: 0.05em;
-
-  /* Inner top highlight — glass feel */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 4px 14px rgba(0, 0, 0, 0.3);
-
-  transition:
-    border-color 160ms,
-    background 160ms,
-    box-shadow 160ms,
-    transform 130ms;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 160ms, background 160ms, box-shadow 160ms, transform 130ms;
 }
 
 .codeBox:focus {
-  border-color: rgba(137, 216, 255, 0.55);
-  background: rgba(8, 25, 45, 0.58);
+  border-color: rgba(201, 162, 74, 0.7);
+  background: rgba(22, 18, 10, 0.7);
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 0 3px rgba(137, 216, 255, 0.09),
-    0 0 16px rgba(137, 216, 255, 0.12),
-    0 6px 16px rgba(0, 0, 0, 0.35);
+    0 0 0 3px rgba(201, 162, 74, 0.1),
+    0 0 16px rgba(201, 162, 74, 0.14);
 }
 
 .codeBoxError {
-  border-color: rgba(255, 65, 111, 0.55);
+  border-color: rgba(232, 51, 109, 0.55);
   background: rgba(45, 5, 18, 0.52);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 100, 120, 0.08),
-    0 0 0 3px rgba(255, 65, 111, 0.08),
-    0 0 14px rgba(255, 65, 111, 0.14);
 }
 
-/* Neon glow under filled cell */
 .cellGlow {
   position: absolute;
   bottom: -3px;
@@ -429,23 +402,8 @@
   right: 15%;
   height: 3px;
   border-radius: 999px;
-  background: rgba(137, 216, 255, 0.55);
-  box-shadow:
-    0 0 8px rgba(137, 216, 255, 0.6),
-    0 0 16px rgba(137, 216, 255, 0.3);
-  animation: cellGlowFade 0.3s ease-out;
-}
-
-@keyframes cellGlowFade {
-  from {
-    opacity: 0;
-    transform: scaleX(0.4);
-  }
-
-  to {
-    opacity: 1;
-    transform: scaleX(1);
-  }
+  background: rgba(201, 162, 74, 0.6);
+  box-shadow: 0 0 10px rgba(201, 162, 74, 0.55);
 }
 
 .errorText {
@@ -453,86 +411,57 @@
   font-size: 0.76rem;
   font-weight: 600;
   color: #ff8aa3;
-  text-shadow:
-    0 0 10px rgba(255, 65, 111, 0.4),
-    0 2px 10px rgba(0, 0, 0, 0.9);
   text-align: center;
 }
 
-/* ════════════════════════════════════════════════════════
-   UNLOCK BUTTON
-   ════════════════════════════════════════════════════════ */
-
 .unlockBtn {
-  /* ── Unlock button ── */
   appearance: none;
   position: relative;
   width: 100%;
   height: 50px;
   border: 0;
   border-radius: 15px;
-
   background: linear-gradient(
     12deg,
-    #a8e8ff 0%,
-    #64c6ff 24%,
-    #1c8af6 70%,
-    #1070d8 100%
+    #f3e0a6 0%,
+    #c9a24a 38%,
+    #8a6a22 100%
   );
-
-  color: #03111e;
+  color: #1a1408;
   font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   cursor: pointer;
   overflow: hidden;
-
   box-shadow:
     0 6px 20px rgba(0, 0, 0, 0.5),
-    0 2px 14px rgba(28, 138, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-
-  transition:
-    transform 160ms,
-    filter 160ms,
-    box-shadow 160ms;
+    0 2px 14px rgba(201, 162, 74, 0.28);
+  transition: transform 160ms, filter 160ms;
 }
 
 .unlockBtn:hover {
   transform: translateY(-2px);
   filter: brightness(1.06);
-
-  box-shadow:
-    0 10px 26px rgba(0, 0, 0, 0.5),
-    0 4px 18px rgba(28, 138, 246, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-.unlockBtn:active {
-  transform: translateY(0);
-  filter: brightness(0.97);
+.unlockBtn:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .unlockBtnShine {
-  /* Animated shine sweep on the button */
   position: absolute;
   top: 0;
   bottom: 0;
   left: -70%;
   width: 60%;
-
   background: linear-gradient(
     100deg,
     transparent 0%,
-    rgba(255, 255, 255, 0) 40%,
     rgba(255, 255, 255, 0.28) 60%,
-    rgba(255, 255, 255, 0) 80%,
     transparent 90%
   );
-
   transform: skewX(-7deg);
   animation: btnShine 7.5s ease-in-out infinite;
 }
@@ -541,10 +470,6 @@
   0% {
     left: -70%;
     opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
   }
 
   40% {
@@ -567,43 +492,31 @@
   margin: -4px 0 0;
   font-size: 0.66rem;
   color: rgba(255, 255, 255, 0.38);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
   text-align: center;
 }
 
-/* ════════════════════════════════════════════════════════
-   FOOTER
-   ════════════════════════════════════════════════════════ */
-
 .footer {
-  /* ── Footer ── */
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 20;
   height: 52px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
-
+  border-top: 1px solid rgba(201, 162, 74, 0.08);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
   font-size: 0.57rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.26);
-
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .footerFx {
-  color: rgba(232, 51, 109, 0.75);
+  color: rgba(201, 162, 74, 0.85);
 }
 
 .footerBot {
@@ -611,49 +524,29 @@
   color: rgba(255, 255, 255, 0.18);
 }
 
-/* ════════════════════════════════════════════════════════
-   UNLOCKED
-   ════════════════════════════════════════════════════════ */
+/* Unlocked */
 
 .unlockedRoot {
-  /* UNLOCKED */
   position: relative;
   width: 100%;
   height: 100dvh;
   min-height: 580px;
-  background: #000;
-
+  background: #05060a;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-
   overflow: hidden;
 }
 
 .unlockedGlow {
   position: absolute;
   inset: 0;
-
   background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(125, 255, 142, 0.06),
+    ellipse at 50% 40%,
+    rgba(201, 162, 74, 0.12),
     transparent 60%
   );
-
   pointer-events: none;
   z-index: 1;
-  animation: unlockedGlowPulse 3s ease-in-out infinite;
-}
-
-@keyframes unlockedGlowPulse {
-  0%,
-  100% {
-    opacity: 0.9;
-  }
-
-  50% {
-    opacity: 1;
-  }
 }
 
 .unlockedHeader {
@@ -662,7 +555,6 @@
   left: 0;
   right: 0;
   z-index: 10;
-
   display: flex;
   justify-content: center;
 }
@@ -670,97 +562,90 @@
 .unlockedBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-
   height: 28px;
   padding: 0 16px;
   border-radius: 999px;
-  border: 1px solid rgba(125, 255, 142, 0.35);
-
+  border: 1px solid rgba(201, 162, 74, 0.4);
   background: rgba(0, 0, 0, 0.55);
-
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-
-  color: #afffbc;
-
-  text-shadow: 0 0 10px rgba(125, 255, 142, 0.4);
-
-  font-family: "DM Sans", "Inter", system-ui, sans-serif;
-
-  box-shadow: 0 0 14px rgba(125, 255, 142, 0.12);
-}
-
-.unlockedVideo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #000;
+  color: #f3e0a6;
 }
 
 .unlockedEmpty {
   flex: 1;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   gap: 14px;
   padding: 32px 24px;
-
-  font-family: "DM Sans", "Inter", system-ui, sans-serif;
-  color: #f5f9ff;
+  color: #f4f1e8;
+  z-index: 2;
 }
 
-.unlockedEmptyIcon {
-  font-size: 3rem;
-  color: #7dff8e;
-
-  text-shadow: 0 0 24px rgba(125, 255, 142, 0.6);
-
-  animation: iconFloat 3s ease-in-out infinite;
-}
-
-@keyframes iconFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-6px);
-  }
+.mark {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(201, 162, 74, 0.35);
+  color: #c9a24a;
+  font-size: 2rem;
+  box-shadow: 0 0 30px rgba(201, 162, 74, 0.2);
 }
 
 .unlockedEmptyTitle {
   font-size: 1.5rem;
   font-weight: 900;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7dff8e;
-
-  text-shadow: 0 0 20px rgba(125, 255, 142, 0.5);
+  color: #f3e0a6;
 }
 
 .unlockedEmptyText {
+  max-width: 28rem;
   font-size: 0.88rem;
   line-height: 1.6;
-  color: rgba(245, 249, 255, 0.58);
+  color: rgba(244, 241, 232, 0.58);
   text-align: center;
 }
 
-.unlockedEmptyText code {
-  color: #fff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+.infoRow {
+  display: flex;
+  gap: 8px;
 }
 
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE
-   ════════════════════════════════════════════════════════ */
+.infoRow span {
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 74, 0.25);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  display: inline-flex;
+  align-items: center;
+  color: rgba(243, 224, 166, 0.8);
+}
+
+.enterButton {
+  appearance: none;
+  margin-top: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(12deg, #f3e0a6, #c9a24a);
+  color: #1a1408;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
 
 @media (max-width: 380px) {
   .codeBox {
@@ -773,26 +658,27 @@
     font-size: 0.68rem;
   }
 
-  .inputPanel {
-    gap: 8px;
+  .codeRow {
+    width: 78%;
   }
 }
 
 @media (min-height: 780px) {
   .lockBadge {
-    top: 18%;
+    top: 16%;
   }
 }
 
 @media (max-height: 620px) {
   .lockBadge {
-    top: 12%;
+    top: 10%;
   }
 
-  .codeBox {
-    height: 44px;
+  .lede {
+    display: none;
   }
 
+  .codeBox,
   .unlockBtn {
     height: 44px;
   }

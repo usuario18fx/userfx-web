@@ -23,8 +23,8 @@ type AlbumLockPanelProps = {
 };
 
 const ERR_TEXT: Record<ErrKind, string> = {
-  invalid: "✕ CÓDIGO INCORRECTO — intenta de nuevo",
-  used: "✕ CÓDIGO YA USADO — cada llave abre una sola vez",
+  invalid: "✕ LLAVE INVÁLIDA — verifica e intenta de nuevo",
+  used: "✕ LLAVE YA USADA — cada acceso es de un solo uso",
   ratelimit: "✕ DEMASIADOS INTENTOS — espera unos segundos",
 };
 
@@ -67,7 +67,7 @@ export default function AlbumLockPanel({
   const [retryAfter, setRetryAfter] = useState(0);
 
   const [activeTab, setActiveTab] =
-    useState("FX-USER01-");
+    useState("VAULT");
 
   const inputsRef = useRef<
     Array<HTMLInputElement | null>
@@ -75,7 +75,8 @@ export default function AlbumLockPanel({
 
   const consumedPrefill = useRef<string | null>(null);
 
-  /* ── Focus ─────────────────────────────────────────────── */
+  void accessCode;
+  void videoSrc;
 
   const focusInput = useCallback((index: number) => {
     if (index < 0 || index >= CODE_LENGTH) {
@@ -86,8 +87,6 @@ export default function AlbumLockPanel({
     inputsRef.current[index]?.select();
   }, []);
 
-  /* ── Reset ─────────────────────────────────────────────── */
-
   const resetInputs = useCallback(() => {
     setChars(Array(CODE_LENGTH).fill(""));
     setStatus("locked");
@@ -97,8 +96,6 @@ export default function AlbumLockPanel({
       focusInput(0);
     }, 0);
   }, [focusInput]);
-
-  /* ── Submit code ───────────────────────────────────────── */
 
   const submitCode = useCallback(
     async (value: string) => {
@@ -181,8 +178,6 @@ export default function AlbumLockPanel({
     [status, resetInputs, onUnlock]
   );
 
-  /* ── Input change ──────────────────────────────────────── */
-
   const handleChange = useCallback(
     (index: number, raw: string) => {
       const value = raw
@@ -209,8 +204,6 @@ export default function AlbumLockPanel({
     },
     [chars, focusInput, submitCode]
   );
-
-  /* ── Keyboard navigation ──────────────────────────────── */
 
   const handleKeyDown = useCallback(
     (
@@ -265,8 +258,6 @@ export default function AlbumLockPanel({
     [chars, focusInput, submitCode]
   );
 
-  /* ── Paste ─────────────────────────────────────────────── */
-
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLInputElement>) => {
       e.preventDefault();
@@ -302,13 +293,9 @@ export default function AlbumLockPanel({
     [focusInput, submitCode]
   );
 
-  /* ── Initial focus ────────────────────────────────────── */
-
   useEffect(() => {
     focusInput(0);
   }, [focusInput]);
-
-  /* ── Prefill ──────────────────────────────────────────── */
 
   useEffect(() => {
     if (!prefill) {
@@ -351,8 +338,6 @@ export default function AlbumLockPanel({
     }
   }, [prefill, focusInput, submitCode]);
 
-  /* ── Rate-limit countdown ─────────────────────────────── */
-
   useEffect(() => {
     if (retryAfter <= 0) {
       return;
@@ -369,147 +354,115 @@ export default function AlbumLockPanel({
     };
   }, [retryAfter]);
 
-  /* ── Unlocked view ────────────────────────────────────── */
-
   if (status === "unlocked") {
     return (
-      <section
-        className={styles.unlockedRoot}
-      >
-        <div
-          className={styles.unlockedGlow}
-        />
+      <section className={styles.unlockedRoot}>
+        <div className={styles.grid} />
+        <div className={styles.unlockedGlow} />
 
-        <header
-          className={styles.unlockedHeader}
-        >
-          <div
-            className={styles.unlockedBadge}
-          >
-            ✦ USER FX · ACCESS GRANTED
+        <header className={styles.unlockedHeader}>
+          <div className={styles.unlockedBadge}>
+            ✦ USER FX VAULT · ACCESS GRANTED
           </div>
         </header>
 
-        {videoSrc ? (
-          <video
-            src={videoSrc}
-            controls
-            autoPlay
-            playsInline
-            className={styles.unlockedVideo}
-          />
-        ) : (
-          <div
-            className={styles.unlockedEmpty}
-          >
-            <div
-              className={
-                styles.unlockedEmptyIcon
-              }
-            >
-              ✦
-            </div>
-
-            <div
-              className={
-                styles.unlockedEmptyTitle
-              }
-            >
-              ACCESS GRANTED
-            </div>
-
-            <p
-              className={
-                styles.unlockedEmptyText
-              }
-            >
-              El acceso fue verificado
-              correctamente.
-            </p>
-
-            <button
-              type="button"
-              className={styles.enterButton}
-              onClick={() => onUnlock?.()}
-            >
-              ENTRAR →
-            </button>
+        <div className={styles.unlockedEmpty}>
+          <div className={styles.mark}>
+            <span>🜲</span>
           </div>
-        )}
+
+          <div className={styles.unlockedEmptyTitle}>
+            VAULT UNLOCKED
+          </div>
+
+          <p className={styles.unlockedEmptyText}>
+            Acceso verificado. El sitio oficial sigue
+            en pre-lanzamiento. Tu llave quedó
+            registrada para cuando el Vault abra
+            por completo.
+          </p>
+
+          <div className={styles.infoRow}>
+            <span>BASIC</span>
+            <span>PRO</span>
+            <span>VIP</span>
+          </div>
+
+          <button
+            type="button"
+            className={styles.enterButton}
+            onClick={() => onUnlock?.()}
+          >
+            CONTINUAR →
+          </button>
+        </div>
       </section>
     );
   }
 
-  /* ── Locked view ───────────────────────────────────────── */
-
   return (
     <section className={styles.root}>
-      <div className={styles.wp} />
+      <div className={styles.void} />
+      <div className={styles.grid} />
+      <div className={styles.orb} />
       <div className={styles.vignette} />
       <div className={styles.scanlines} />
 
-      {/* HUD */}
-
       <header className={styles.hud}>
         <div className={styles.hudLeft}>
-          <span
-            className={styles.hudDot}
-          />
-
-          <span
-            className={styles.hudLabel}
-          >
-            SECURE SESSION
+          <span className={styles.hudDot} />
+          <span className={styles.hudLabel}>
+            USER FX · OFFICIAL PRE
           </span>
         </div>
 
-        <span
-          className={styles.hudPill}
-        >
+        <span className={styles.hudPill}>
           {activeTab}
         </span>
       </header>
 
-      {/* Lock badge */}
-
       <div className={styles.lockBadge}>
-        <div
-          className={styles.lockIconWrap}
-        >
-          <span
-            className={styles.lockPulse}
-          />
+        <div className={styles.brandBlock}>
+          <div className={styles.lockIconWrap}>
+            <span className={styles.lockPulse} />
+            <svg
+              className={styles.lockSvg}
+              width="25"
+              height="25"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="4"
+                y="10"
+                width="16"
+                height="11"
+                rx="2"
+              />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+          </div>
 
-          <svg
-            className={styles.lockSvg}
-            width="25"
-            height="25"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <rect
-              x="4"
-              y="10"
-              width="16"
-              height="11"
-              rx="2"
-            />
+          <p className={styles.kicker}>
+            OFFICIAL WEBSITE · PRE-LAUNCH
+          </p>
 
-            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-          </svg>
+          <h1 className={styles.lockTitle}>
+            USER FX VAULT
+          </h1>
+
+          <p className={styles.lede}>
+            Espacio privado. Sin galería pública.
+            Entra con tu llave de 4 caracteres
+            mientras el Vault oficial se termina.
+          </p>
         </div>
-
-        <h1 className={styles.lockTitle}>
-          LOCKED ACCESS
-        </h1>
       </div>
-
-      {/* Input panel */}
 
       <div
         className={`${styles.inputPanel} ${
@@ -518,13 +471,22 @@ export default function AlbumLockPanel({
             : ""
         }`}
       >
-        <div
-          className={styles.panelTopLine}
-        />
-
-        {/* Tabs */}
+        <div className={styles.panelTopLine} />
 
         <div className={styles.tabRow}>
+          <button
+            type="button"
+            className={`${styles.tab} ${
+              activeTab === "VAULT"
+                ? styles.tabActive
+                : ""
+            }`}
+            onClick={() => setActiveTab("VAULT")}
+          >
+            <span className={styles.tabDot} />
+            VAULT
+          </button>
+
           <button
             type="button"
             className={`${styles.tab} ${
@@ -536,39 +498,15 @@ export default function AlbumLockPanel({
               setActiveTab("FX-USER01-")
             }
           >
-            <span
-              className={styles.tabDot}
-            />
-
             FX-USER01-
           </button>
 
-          <button
-            type="button"
-            className={`${styles.tab} ${
-              activeTab === "VAULT"
-                ? styles.tabActive
-                : ""
-            }`}
-            onClick={() =>
-              setActiveTab("VAULT")
-            }
-          >
-            VAULT
-          </button>
+          <span className={styles.tabSpacer} />
 
-          <span
-            className={styles.tabSpacer}
-          />
-
-          <span
-            className={styles.tabPrefix}
-          >
+          <span className={styles.tabPrefix}>
             ACCESS
           </span>
         </div>
-
-        {/* Code */}
 
         <div className={styles.codeRow}>
           {chars.map((char, i) => (
@@ -617,19 +555,13 @@ export default function AlbumLockPanel({
           ))}
         </div>
 
-        {/* Error */}
-
         {status === "error" && (
-          <p
-            className={styles.errorText}
-          >
+          <p className={styles.errorText}>
             {errKind === "ratelimit"
               ? `Espera ${retryAfter}s`
               : ERR_TEXT[errKind]}
           </p>
         )}
-
-        {/* Unlock */}
 
         <button
           type="button"
@@ -642,38 +574,29 @@ export default function AlbumLockPanel({
             retryAfter > 0
           }
         >
-          <span
-            className={
-              styles.unlockBtnShine
-            }
-          />
-
-          <span
-            className={
-              styles.unlockBtnText
-            }
-          >
+          <span className={styles.unlockBtnShine} />
+          <span className={styles.unlockBtnText}>
             {status === "verifying"
               ? "VERIFYING..."
-              : "UNLOCK"}
+              : "ENTER VAULT"}
           </span>
         </button>
 
         <p className={styles.hint}>
-          Introduce la llave de acceso de
-          4 caracteres
+          Introduce la llave de acceso de 4 caracteres.
+          Sin pagos en esta pre.
         </p>
       </div>
-{/* Footer */}
+
       <footer className={styles.footer}>
         <div>
           <span className={styles.footerFx}>
-            FX
+            🜲 USER FX
           </span>{" "}
-          · PRIVATE ACCESS SYSTEM
+          · OFFICIAL VAULT PRE
         </div>
         <div className={styles.footerBot}>
-          SESSION ENCRYPTED · ONE-TIME KEY
+          SESSION ENCRYPTED · ONE-TIME KEY · NO PUBLIC MEDIA
         </div>
       </footer>
     </section>
