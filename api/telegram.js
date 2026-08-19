@@ -1621,21 +1621,23 @@ bot.on("document", handleMedia);
         if (text ===
             BTN_SMOKELANDIA) {
             await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO);
-            return await ctx.reply("𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", {
-            reply_markup: {inline_keyboard:[[{ text: "ɢᴇᴛ-ɪɴ",
-                           url: SMOKELANDIA_GROUP_LINK,},],],},});
-                          }
+            return await ctx.reply(
+                "𝚜𝚞𝚋𝚖𝚒𝚝 𝚛𝚎𝚚𝚞𝚎𝚜𝚝", {
+            reply_markup: {inline_keyboard:[[{ text: 
+                "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
+            url: SMOKELANDIA_GROUP_LINK,},],],},});
+            }
 //// USERFX SITE // ================================================
         if (text ===
             BTN_USERFX_SITE) {
             await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO);
-            return await ctx.reply("𝐔𝐬ᴇʀ 🜲∓ҳ", {reply_markup: { inline_keyboard: [
-                        [{ text: "ɢᴇᴛ-ɪɴ",
-                           url: USERFX_SITE_URL,},],],},});
-                          }
-        // ================================================
-        // PHOTO WAITING
-        // ================================================
+            return await ctx.reply(
+                "𝚜𝚞𝚋𝚖𝚒𝚝 𝚛𝚎𝚚𝚞𝚎𝚜𝚝", {reply_markup: { inline_keyboard: [
+            [{ text: 
+                "𝐔𝐬ᴇʀ 🜲∓ҳ",
+               url: USERFX_SITE_URL,},],],},});
+            }
+/// PHOTO WAITING // 
         const pending = await getVideoRequest(userId);
         if (pending?.status ===
             REQUEST_STATUS.WAITING_PHOTO) {
