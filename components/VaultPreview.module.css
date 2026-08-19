@@ -1,4 +1,15 @@
-@import "tailwindcss";
+olor-ink);
+  color: var(--color-bone);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+* {
+  scrollbar-width: thin;@import "tailwindcss";
 
 @theme {
   --color-ink: #0b0908;
@@ -23,18 +34,7 @@ html {
 }
 
 body {
-  background: var(--color-ink);
-  color: var(--color-bone);
-  overflow-x: hidden;
-}
-
-::selection {
-  background: var(--color-gold);
-  color: var(--color-ink);
-}
-
-* {
-  scrollbar-width: thin;
+  background: var(--c
   scrollbar-color: #3a2f26 var(--color-ink);
 }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
