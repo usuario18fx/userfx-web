@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { prefersReducedMotion } from "@/lib/client";
+import { prefersReducedMotion } from "@/components/lib/client";
 
 const GLYPHS = "█▓▒░/<>\\|=+*#Ŧχ01FX";
 

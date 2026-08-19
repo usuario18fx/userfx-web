@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { PLANS, type Plan } from "@/lib/plans";
+import { PLANS, type Plan } from "@/components/lib/plans";
 import Countdown from "@/components/Countdown";
 import Hud from "@/components/Hud";
 import Reveal from "@/components/Reveal";
@@ -8,7 +8,6 @@ import Ticker from "@/components/Ticker";
 import VaultCard from "@/components/VaultCard";
 
 type OrderInfo = Record<string, unknown>;
-
 const TICKER_ITEMS = [
   "NUEVO DROP CADA VIERNES · 22:00 UTC",
   "PAGO VÍA TELEGRAM STARS ⭐",

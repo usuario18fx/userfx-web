@@ -1,6 +1,6 @@
 import { getPlan } from "./plans.js";
-import { db } from "../db/index.js";
-import { accessCodes, orders, unlocks } from "../db/schema.js";
+import { db } from "../../db/index.js";
+import { accessCodes, orders, unlocks } from "../../db/schema.js";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { randomBytes } from "crypto";
 

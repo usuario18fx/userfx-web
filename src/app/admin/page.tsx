@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAdminMetrics } from "@/lib/admin-metrics";
+import { getAdminMetrics } from "@/components/lib/admin-metrics";
 
 export const dynamic = "force-dynamic";
 
