@@ -1,12 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./style.css";
-import AlbumLockPanel from "./components/AlbumLocked";
-function App() {
-  return <AlbumLockPanel /> ;
+import VaultHome from "./components/VaultHome";
+
+export default function App() {
+  return <VaultHome />;
 }
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-  <App/>
-  </React.StrictMode>,
-) ;
