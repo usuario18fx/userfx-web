@@ -196,246 +196,247 @@ export default function Vault() {
       return () => window.clearInterval(id);
     }, []);
       return (
-    <div id="top" className="vx">
-    <style>
-      {CSS}</style>
-    <header className="vx-hud">
-    <a href="#top" className="vx-brand">
-    <img src={LOGO} alt="USER FX" />
-    <span className="vx-live" />
-    <span>
-      BÓVEDA PRIVADA · Nº07</span>
-    </a>
-    <div className="vx-hudRight">
-    <time>
-      {clock}</time>
-    <b>
-      🜲 LOCKED</b>
-    </div>
-    </header>
-    <section className="vx-open">
-    <div className="vx-bg">
-    <img src={DAMASK} alt="" className="vx-damask" />
-    <img src={BRICK} alt="" className="vx-brick" />
-    <i className="vx-blob vx-blobA" />
-    <i className="vx-blob vx-blobB" />
-    </div>
-    <div className="vx-grid">
-    <div>
-    <div className="vx-logoWrap">
-    <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" />
-    </div>
-    <p className="vx-kicker">
-    <i /> 
-      𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT · Nº01 NOCTURNA
-    </p>
-    <h1 className="vx-title">
-    <Scramble text="ACCESS" className="vx-access" delay={160}/>
-    <span className="vx-rest">
-      ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻<span>.</span>
-    </span>
-    </h1>
-    <p className="vx-p">
-      There are images that were never meant to be seen.</p>
-    <p className="vx-p">
-    <strong>
-      𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — Private Vault</strong> 
-      is a reserved
-      pace. Access is not public. You’ll need a <em>
-      private key.</em>
-    </p>
-    <dl className="vx-dl">
-      {[["BRAND", "𝐔𝐒𝐄𝐑 🜲𝓕𝐗"],
-        ["CONTENT", "PRIVATE COLLECTION"],
-        ["NEXT DROP", countdown],
-        ["ACCESS", "DM / PRIVATE KEY"],
-        ["CODE", "🜲 ∣ BS02- ∣ ····"],
-        ].map(([k, v]) => (
-    <div key={k}>
-    <dt>{k}</dt>
-    <dd>{v}</dd>
-    </div>
-    ))}
-    </dl>
-    </div>
-    <aside className="vx-lock">
-    <div className="vx-frameA" />
-    <div className="vx-frameB" />
-    <div className="vx-lockCard">          
-    <h2>
-      LOCKED ACCESS</h2>
-    <button type="button" className="vx-gold" onClick={() => setDm(true)}>
-      UNLOCK ALBUM
-    </button>
-    <p>
-      SOLICITA TU CÓDIGO POR DM</p>
-    </div>
-    </aside>
-    </div>
-    </section>
-    <Ticker items={TICKER_ITEMS} />
-    <section id="protocolo" className="vx-sec">
-    <Reveal>
-    <p className="vx-goldk">
-      ◈ ACCESS PROTOCOL</p>
-    <h2>
-      HOW TO UNLOCK <span>
-      THE VAULT</span>
-    </h2>
-    </Reveal> {STEPS.map((s, i) => (
-    <Reveal key={s.n} delay={i * 90} className={i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"}>
-    <article className="vx-step">
-    <b className="vx-stepNum">{s.n}</b>
-      <div>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
+        <div id="top" className="vx">
+          <style>{CSS}</style>
+          <header className="vx-hud">
+            <a href="#top" className="vx-brand">
+              <img src={LOGO} alt="USER FX" />
+              <span className="vx-live" />
+              <span>BÓVEDA PRIVADA ·</span>
+            </a>
+            <div className="vx-hudRight">
+              <time>{clock}</time>
+              <b>🜲 LOCKED</b>
             </div>
-            <small>STEP {s.n} / 04</small>
-            </article>
-            </Reveal>
-            ))}
-      </section>
-      <section id="llaves" className="vx-sec vx-tint">
-        <Reveal>
-          <p className="vx-goldk">◈ ACCESS CODE</p>
-          <h2>
-            CHOOSE YOUR <span>CODE</span>
-          </h2>
-        </Reveal>
-        <div className="vx-plans">
-          {PLANS.map((plan, i) => (
-            <Reveal key={plan.id} delay={i * 110}>
-              <article className={`vx-plan ${plan.id === "pro" ? "is-hot" : ""}`}>
-                {plan.id === "pro" ? <em>★ MOST POPULAR</em> : null}
-                <span>{plan.tab}</span>
-                <h3>{plan.name}</h3>
-                <ul>
-                  {plan.benefits.map((b) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ul>
-                <p>{plan.days} DAYS ACCESS</p>
-                <button type="button" className="vx-gold" onClick={() => setDm(true)}>
-                  GET MY KEY
-                </button>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section id="archivo" className="vx-sec">
-        <Reveal>
-          <p className="vx-goldk">
-            ◈ INSIDE THE VAULT</p>
-          <h2>
-            WHAT&apos;S <span>INSIDE</span>
-          </h2>
-          <p className="vx-lead">
-            You’re only seeing part of it. Every Friday at 22:00 UTC a new drop
-            is added. This is just a glimpse of «Nocturna».
-          </p>
-          </Reveal>
-          <div className="vx-count">
-          <p>DROP Nº08 IN</p>
-          <strong>{countdown}</strong>
-          <p>FRIDAY · 22:00 UTC</p>
-          </div>
-          <div className="vx-archive">
-           {INSIDE.map((src, i) => (
-          <Reveal key={src} delay={i * 70}>
-          <HoldShot src={src} />    
-          </Reveal>
-
-         ))}
-          </div>
-          </section>
-        <section id="faq" className="vx-sec">
-        <Reveal>
-        <p className="vx-goldk">◈ PRIVATE INFORMATION</p>
-        <h2>
-         BEFORE YOU <span>GET IN</span>
-        </h2>
-        </Reveal>
-        <div className="vx-faq">
-          {FAQS.map((f, i) => {
-            const open = openFaq === i;
-            return (
-              <Reveal key={f.q} delay={i * 50}>
-                <div className="vx-faqItem">
-                  <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
-                    <b>{String(i + 1).padStart(2, "0")}</b>
-                    <span>{f.q}</span>
-                    <i>{open ? "–" : "+"}</i>
-                  </button>
-                  {open ? <p>{f.a}</p> : null}
-                </div>
-              </Reveal>
-            );
-          })}
-        </div>
-      </section>
-
-      <footer className="vx-foot">
-        <div className="vx-footGrid">
-          <div>
-            <div className="vx-footBrand">
-              <img src={LOGO} alt="" />
+          </header>
+          <section className="vx-open">
+            <div className="vx-bg">
+              <img src={DAMASK} alt="" className="vx-damask" />
+              <img src={BRICK} alt="" className="vx-brick" />
+              <i className="vx-blob vx-blobA" />
+              <i className="vx-blob vx-blobB" />
+            </div>
+            <div className="vx-grid">
               <div>
-                <p>
-                  USER 🜲<span>FX</span> 🌹👑
+                <div className="vx-logoWrap">
+                  <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" />
+                </div>
+                <p className="vx-kicker">
+                  <i />
+                  𝐔𝐒𝐄𝐑🜲𝓕𝐗 · ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ · ᴏꜰꜰɪᴄɪᴀʟ
                 </p>
-                <small>PRIVATE VAULT</small>
+                <h1 className="vx-title">
+                  <Scramble text="ACCESS" className="vx-access" delay={160} />
+                  <span className="vx-rest">
+                    ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻<span>.</span>
+                  </span>
+                </h1>
+                <p className="vx-p">
+                  ᴛʜᴇʀᴇ ᴀʀᴇ ɪᴍᴀɢᴇꜱ ᴛʜᴀᴛ ᴡᴇʀᴇ ɴᴇᴠᴇʀ ᴍᴇᴀɴᴛ ᴛᴏ ʙᴇ ꜱᴇᴇɴ.
+                </p>
+                <p className="vx-p">
+                  <strong>𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</strong>
+                  ɪꜱ ᴀ ʀᴇꜱᴇʀᴠᴇᴅ ᴘʟᴀᴄᴇ. ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴛ ᴘᴜʙʟɪᴄ. ʏᴏᴜ’ʟʟ ɴᴇᴇᴅ ᴀ{" "}
+                  <em>ᴘʀɪᴠᴀᴛᴇ ᴋᴇʏ.</em>
+                </p>
+                <dl className="vx-dl">
+                  {[
+                    ["BRAND", "𝐔𝐒𝐄𝐑 🜲𝓕𝐗"],
+                    ["CONTENT", "PRIVATE COLLECTION"],
+                    ["NEXT DROP", countdown],
+                    ["ACCESS", "DM / PRIVATE KEY"],
+                    ["CODE", "🜲 ∣ BS02- ∣ ····"],
+                  ].map(([k, v]) => (
+                    <div key={k}>
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <aside className="vx-lock">
+                <div className="vx-frameA" />
+                <div className="vx-frameB" />
+                <div className="vx-lockCard">
+                  <h2>LOCKED ACCESS</h2>
+                  <button
+                    type="button"
+                    className="vx-gold"
+                    onClick={() => setDm(true)}
+                  >
+                    UNLOCK ALBUM
+                  </button>
+                  <p>SOLICITA TU CÓDIGO POR DM</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+          <Ticker items={TICKER_ITEMS} />
+          <section id="protocolo" className="vx-sec">
+            <Reveal>
+              <p className="vx-goldk">◈ ACCESS PROTOCOL</p>
+              <h2>
+                HOW TO UNLOCK <span>THE VAULT</span>
+              </h2>
+            </Reveal>{" "}
+            {STEPS.map((s, i) => (
+              <Reveal
+                key={s.n}
+                delay={i * 90}
+                className={
+                  i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"
+                }
+              >
+                <article className="vx-step">
+                  <b className="vx-stepNum">{s.n}</b>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p>{s.text}</p>
+                  </div>
+                  <small>STEP {s.n} / 04</small>
+                </article>
+              </Reveal>
+            ))}
+          </section>
+          <section id="llaves" className="vx-sec vx-tint">
+            <Reveal>
+              <p className="vx-goldk">◈ ACCESS CODE</p>
+              <h2>
+                CHOOSE YOUR <span>CODE</span>
+              </h2>
+            </Reveal>
+            <div className="vx-plans">
+              {PLANS.map((plan, i) => (
+                <Reveal key={plan.id} delay={i * 110}>
+                  <article
+                    className={`vx-plan ${plan.id === "pro" ? "is-hot" : ""}`}
+                  >
+                    {plan.id === "pro" ? <em>★ MOST POPULAR</em> : null}
+                    <span>{plan.tab}</span>
+                    <h3>{plan.name}</h3>
+                    <ul>
+                      {plan.benefits.map((b) => (
+                        <li key={b}>{b}</li>
+                      ))}
+                    </ul>
+                    <p>{plan.days} ᴅᴀʏꜱ ᴀᴄᴄᴇꜱꜱ</p>
+                    <button
+                      type="button"
+                      className="vx-gold"
+                      onClick={() => setDm(true)}>
+                      GET MY KEY
+                    </button>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+          <section id="archivo" className="vx-sec">
+            <Reveal>
+              <p className="vx-goldk">◈ ɪɴꜱɪᴅᴇ ᴛʜᴇ ᴠᴀᴜʟᴛ</p>
+              <h2>
+                WHAT&apos;S <span>INSIDE</span>
+              </h2>
+              <p className="vx-lead">
+                ʏᴏᴜ’ʀᴇ ᴏɴʟʏ ꜱᴇᴇɪɴɢ ᴘᴀʀᴛ ᴏꜰ ɪᴛ. ᴇᴠᴇʀʏ ꜰʀɪᴅᴀʏ ᴀᴛ 𝟮𝟮﹕𝟬𝟬 ᴜᴛᴄ ᴀ ɴᴇᴡ
+                ᴅʀᴏᴘ ɪꜱ ᴀᴅᴅᴇᴅ. ᴛʜɪꜱ ɪꜱ ᴊᴜꜱᴛ ᴀ ɢʟɪᴍᴘꜱᴇ ᴏꜰ «Nocturna».
+              </p>
+            </Reveal>
+            <div className="vx-count">
+              <p>
+                ᴅʀᴏᴘ ɪɴ</p>
+              <strong>{countdown}</strong>
+              <p>
+                ғʀɪᴅᴀʏ · ２２﹕００ᴜᴛᴄ</p>
+            </div>
+            <div className="vx-archive">
+              {INSIDE.map((src, i) => (
+                <Reveal key={src} delay={i * 70}>
+                  <HoldShot src={src} />
+                </Reveal>
+              ))}
+            </div>
+          </section>
+          <section id="faq" className="vx-sec">
+            <Reveal>
+              <p className="vx-goldk">◈ ᴘʀɪᴠᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ</p>
+              <h2>
+                BEFORE YOU <span>ɢᴇᴛ ɪɴ</span>
+              </h2>
+            </Reveal>
+            <div className="vx-faq">
+              {FAQS.map((f, i) => {
+                const open = openFaq === i;
+                return (
+                  <Reveal key={f.q} delay={i * 50}>
+                    <div className="vx-faqItem">
+                      <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
+                        <b>{String(i + 1).padStart(2, "0")}</b>
+                        <span>{f.q}</span>
+                        <i>{open ? "–" : "+"}</i>
+                      </button>
+                      {open ? <p>{f.a}</p> : null}
+                    </div>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </section>
+          <footer className="vx-foot">
+            <div className="vx-footGrid">
+              <div>
+                <div className="vx-footBrand">
+                  <img src={LOGO} alt="" />
+                  <div>
+                    <p>
+                      USER 🜲<span>FX</span> 🌹👑
+                    </p>
+                    <small>PRIVATE VAULT</small>
+                  </div>
+                </div>
+                <p className="vx-legal">
+                  𝟣𝟪+ ᴄᴏɴᴛᴇɴᴛ · ᴘᴇʀꜱᴏɴᴀʟ, ɴᴏɴ-ᴛʀᴀɴꜱꜰᴇʀᴀʙʟᴇ ᴀᴄᴄᴇꜱꜱ. ᴏɴᴄᴇ ᴛʜᴇ ᴋᴇʏ
+                  ɪꜱ ᴅᴇʟɪᴠᴇʀᴇᴅ, ᴅɪɢɪᴛᴀʟ ᴘᴜʀᴄʜᴀꜱᴇꜱ ᴀʀᴇ ɴᴏɴ-ʀᴇꜰᴜɴᴅᴀʙʟᴇ, ᴇxᴄᴇᴘᴛ
+                  ᴘᴀʏᴍᴇɴᴛ ᴇʀʀᴏʀꜱ ᴏʀ ᴅᴇʟɪᴠᴇʀʏ ꜰᴀɪʟᴜʀᴇꜱ.
+                </p>
+              </div>
+              <div>
+                <p className="vx-copy">
+                  𝐔𝐬𝐞𝐫  | <em>🜲 Ŧҳ</em> | 𝟮𝟬𝟮𝟲 © ᴀʟʟ ʀɪɢʜᴛꜱ ʀᴇꜱᴇʀᴠᴇᴅ
+                </p>
+                <div className="vx-links">
+                  <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
+                    @User18Fx_bot
+                  </a>
+                  <a href="#top">VAULT</a>
+                  <a href="/admin">OPERATOR PANEL</a>
+                </div>
+                <p className="vx-bw">👑 𝐔𝐬𝐞𝐫  Ŧҳ · ʙʟᴀᴄᴋ ᴡᴀʟʟ · ʀᴇᴅ ʀᴏꜱᴇ</p>
               </div>
             </div>
-            <p className="vx-legal">
-              18+ CONTENT · PERSONAL, NON-TRANSFERABLE ACCESS. ONCE THE KEY IS
-              DELIVERED, DIGITAL PURCHASES ARE NON-REFUNDABLE, EXCEPT PAYMENT
-              ERRORS OR DELIVERY FAILURES.
-            </p>
-          </div>
-          <div>
-            <p className="vx-copy">
-              USER | <em>FX18</em> | 2026 © ALL RIGHTS RESERVED
-            </p>
-            <div className="vx-links">
-              <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
-                @User18Fx_bot
-              </a>
-              <a href="#top">VAULT</a>
-              <a href="/admin">OPERATOR PANEL</a>
+            <div className="vx-bar">
+              <span>𝐔𝐬𝐞𝐫 Ŧҳ  · 𝟮𝟬𝟮𝟲 · ʙʟᴀᴄᴋ ᴡᴀʟʟ ᴇᴅɪᴛɪᴏɴ</span>
+              <span>ᴄᴏᴅᴇ ʙ · @ᴜꜱᴇʀ𝟣𝟪ꜰx_ʙᴏᴛ</span>
             </div>
-            <p className="vx-bw">👑 USER FX · BLACK WALL · RED ROSE</p>
-          </div>
+          </footer>
+          <Ticker items={TICKER_ITEMS} reverse />
+          {dm ? (
+            <div className="vx-modal" onClick={() => setDm(false)}>
+              <div onClick={(e) => e.stopPropagation()}>
+                <button type="button" onClick={() => setDm(false)}>
+                  ×
+                </button>
+                <p>𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
+                <h3>ACCESS RESTRICTED</h3>
+                <p>Solicita tu código por DM directo.</p>
+                <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
+                  𝕊𝔼ℕ𝔻 𝐃𝐌
+                </a>
+              </div>
+            </div>
+          ) : null}
         </div>
-        <div className="vx-bar">
-          <span>USER FX · 2026 · BLACK WALL EDITION</span>
-          <span>CODE B · @User18Fx_bot</span>
-        </div>
-      </footer>
-
-      <Ticker items={TICKER_ITEMS} reverse />
-
-      {dm ? (
-        <div className="vx-modal" onClick={() => setDm(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
-            <button type="button" onClick={() => setDm(false)}>
-              ×
-            </button>
-            <p>
-              𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
-            <h3>
-              ACCESS RESTRICTED</h3>
-            <p>
-              Solicita tu código por DM directo.</p>
-            <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
-              SEND DM
-            </a>
-          </div>
-    </div>
-    ) : null}
-    </div>
-    );
+      );
     }
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
