@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
+import Scramble from "./Scramble";
 
-  const LOGO = "/assets/userfx-logo.png";
-  const BRICK = "/assets/brick-wall.png";
-  const DAMASK = "/assets/damask.png";
+  const LOGO =    "/assets/userfx-logo.png";
+  const BRICK =   "/assets/brick-wall.png";
+  const DAMASK =  "/assets/damask.png";
   const INSIDE = ["/assets/pic01.png",
                   "/assets/pic02.png",
-                  "/assets/pic03.png",
+                  "/assets/video01.mp4",
                   "/assets/pic04.png",
                   "/assets/pic05.png",
                   "/assets/pic06.png",
                   "/assets/pic07.png",
-                  "/assets/video01.png",
-                  "/assets/video02.png",
+                  "/assets/video02.mp4",
   ];
   const TICKER_ITEMS = [
     "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
@@ -75,7 +75,7 @@ const FAQS = [
     const TEASERS = [1, 2, 3, 4, 5, 6].map(
     (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
     );
-  function nextFridayUtc() {
+function nextFridayUtc() {
     const now = new Date();
     const day = now.getUTCDay();
     let add = (5 - day + 7) % 7;
@@ -89,7 +89,7 @@ const FAQS = [
     }
   return target;
     }
-     function useCountdown() {
+function useCountdown() {
      const [label, setLabel] = useState("· · ·");
   useEffect(() => {
      const tick = () => {
@@ -110,7 +110,7 @@ const FAQS = [
     }, []);
   return label;
     }
-  function Reveal({ children, delay = 0, className = "",
+function Reveal({ children, delay = 0, className = "",
     }: {children: React.ReactNode; delay?: number; className?: string;}) {
     const ref = useRef<HTMLDivElement | null>(null);
     const [on, setOn] = useState(false);
@@ -142,36 +142,49 @@ const FAQS = [
     </div>
     );
      }
-    function HoldShot({ src, active }: { src: string; active: boolean }) {
-    const [hold, setHold] = useState(false);
-    const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
-    return (
-    <div className={`vh-shot ${active ? "vh-slideOn" : "vh-slide"} ${ hold ? "vh-shotOpen" : ""}`}
+function HoldShot({ src }: { src: string }) {
+  const [hold, setHold] = useState(false);
+  const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
+
+  return (
+    <div
+      className={`vx-shot ${hold ? "is-open" : ""}`}
       onContextMenu={(e) => e.preventDefault()}
       onPointerDown={() => setHold(true)}
       onPointerUp={() => setHold(false)}
       onPointerLeave={() => setHold(false)}
-      onPointerCancel={() => setHold(false)}>
+      onPointerCancel={() => setHold(false)}
+    >
       {isVideo ? (
-    <video src={src} className="vh-shotImg" draggable={false} muted loop playsInline/>
+        <video
+          src={src}
+          className="vx-shotMedia"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
       ) : (
-    <img src={src} alt="" draggable={false} className="vh-shotImg" />
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          className="vx-shotMedia"
+        />
       )}
-    <div className="vh-shotCover" aria-hidden>
-    <span className="vh-shotLock">
-      🜲</span>
-    <span className="vh-shotHint">
-      HOLD TO REVEAL</span>
-    </div>
-    </div>
-    );
-    }
-export default function Vault() {
-  const [clock, setClock] = useState("--:--:-- UTC");
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [dm, setDm] = useState(false);
-  const countdown = useCountdown();
 
+      <div className="vx-shotMask" aria-hidden>
+        <span>🜲</span>
+        <span>HOLD TO REVEAL</span>
+      </div>
+    </div>
+  );
+}
+export default function Vault() {
+    const [clock, setClock] = useState("--:--:-- UTC");
+    const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const [dm, setDm] = useState(false);
+    const countdown = useCountdown();
     useEffect(() => {
       const tick = () => {
       const d = new Date();
@@ -207,80 +220,81 @@ export default function Vault() {
     <i className="vx-blob vx-blobA" />
     <i className="vx-blob vx-blobB" />
     </div>
-
     <div className="vx-grid">
     <div>
     <div className="vx-logoWrap">
-              <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" />
+    <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" />
+    </div>
+    <p className="vx-kicker">
+    <i /> 
+      𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT · Nº01 NOCTURNA
+    </p>
+    <h1 className="vx-title">
+    <Scramble text="ACCESS" className="vx-access" delay={160}/>
+    <span className="vx-rest">
+      ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻<span>.</span>
+    </span>
+    </h1>
+    <p className="vx-p">
+      There are images that were never meant to be seen.</p>
+    <p className="vx-p">
+    <strong>
+      𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — Private Vault</strong> 
+      is a reserved
+      pace. Access is not public. You’ll need a <em>
+      private key.</em>
+    </p>
+    <dl className="vx-dl">
+      {[["BRAND", "𝐔𝐒𝐄𝐑 🜲𝓕𝐗"],
+        ["CONTENT", "PRIVATE COLLECTION"],
+        ["NEXT DROP", countdown],
+        ["ACCESS", "DM / PRIVATE KEY"],
+        ["CODE", "🜲 ∣ BS02- ∣ ····"],
+        ].map(([k, v]) => (
+    <div key={k}>
+    <dt>{k}</dt>
+    <dd>{v}</dd>
+    </div>
+    ))}
+    </dl>
+    </div>
+    <aside className="vx-lock">
+    <div className="vx-frameA" />
+    <div className="vx-frameB" />
+    <div className="vx-lockCard">          
+    <h2>
+      LOCKED ACCESS</h2>
+    <button type="button" className="vx-gold" onClick={() => setDm(true)}>
+      UNLOCK ALBUM
+    </button>
+    <p>
+      SOLICITA TU CÓDIGO POR DM</p>
+    </div>
+    </aside>
+    </div>
+    </section>
+    <Ticker items={TICKER_ITEMS} />
+    <section id="protocolo" className="vx-sec">
+    <Reveal>
+    <p className="vx-goldk">
+      ◈ ACCESS PROTOCOL</p>
+    <h2>
+      HOW TO UNLOCK <span>
+      THE VAULT</span>
+    </h2>
+    </Reveal> {STEPS.map((s, i) => (
+    <Reveal key={s.n} delay={i * 90} className={i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"}>
+    <article className="vx-step">
+    <b className="vx-stepNum">{s.n}</b>
+      <div>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
             </div>
-            <p className="vx-kicker">
-              <i /> 𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT · Nº01 NOCTURNA
-            </p>
-            <h1>
-              <span className="vx-access">ACCESS</span>
-              <span className="vx-rest">
-                RESTRICTED<span>.</span>
-              </span>
-            </h1>
-            <p className="vx-p">There are images that were never meant to be seen.</p>
-            <p className="vx-p">
-              <strong>𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — Private Vault</strong> is a reserved
-              space. Access is not public. You’ll need a <em>private key.</em>
-            </p>
-
-            <dl className="vx-dl">
-              {[
-                ["BRAND", "𝐔𝐒𝐄𝐑 🜲𝓕𝐗"],
-                ["CONTENT", "PRIVATE COLLECTION"],
-                ["NEXT DROP", countdown],
-                ["ACCESS", "DM / PRIVATE KEY"],
-                ["CODE", "🜲 ∣ BS02- ∣ ····"],
-              ].map(([k, v]) => (
-                <div key={k}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <aside className="vx-lock">
-            <div className="vx-frameA" />
-            <div className="vx-frameB" />
-            <div className="vx-lockCard">
-              <h2>LOCKED ACCESS</h2>
-              <button type="button" className="vx-gold" onClick={() => setDm(true)}>
-                🌹 UNLOCK ALBUM
-              </button>
-              <p>SOLICITA TU CÓDIGO POR DM</p>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <Ticker items={TICKER_ITEMS} />
-
-      <section id="protocolo" className="vx-sec">
-        <Reveal>
-          <p className="vx-goldk">◈ ACCESS PROTOCOL</p>
-          <h2>
-            HOW TO UNLOCK <span>THE VAULT</span>
-          </h2>
-        </Reveal>
-        {STEPS.map((s, i) => (
-          <Reveal key={s.n} delay={i * 90} className={i % 2 ? "vx-shift" : ""}>
-            <article className="vx-step">
-              <b>{s.n}</b>
-              <div>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </div>
-              <small>STEP {s.n} / 04</small>
+            <small>STEP {s.n} / 04</small>
             </article>
-          </Reveal>
-        ))}
+            </Reveal>
+            ))}
       </section>
-
       <section id="llaves" className="vx-sec vx-tint">
         <Reveal>
           <p className="vx-goldk">◈ ACCESS CODE</p>
@@ -312,7 +326,8 @@ export default function Vault() {
 
       <section id="archivo" className="vx-sec">
         <Reveal>
-          <p className="vx-goldk">◈ INSIDE THE VAULT</p>
+          <p className="vx-goldk">
+            ◈ INSIDE THE VAULT</p>
           <h2>
             WHAT&apos;S <span>INSIDE</span>
           </h2>
@@ -320,27 +335,27 @@ export default function Vault() {
             You’re only seeing part of it. Every Friday at 22:00 UTC a new drop
             is added. This is just a glimpse of «Nocturna».
           </p>
-        </Reveal>
-        <div className="vx-count">
+          </Reveal>
+          <div className="vx-count">
           <p>DROP Nº08 IN</p>
           <strong>{countdown}</strong>
           <p>FRIDAY · 22:00 UTC</p>
-        </div>
-        <div className="vx-archive">
-          {TEASERS.map((src, i) => (
-            <Reveal key={src} delay={i * 70}>
-            <HoldShot src={src} active={false} />
-            </Reveal>
-          ))}
-        </div>
-      </section>
+          </div>
+          <div className="vx-archive">
+           {INSIDE.map((src, i) => (
+          <Reveal key={src} delay={i * 70}>
+          <HoldShot src={src} />    
+          </Reveal>
 
-      <section id="faq" className="vx-sec">
+         ))}
+          </div>
+          </section>
+        <section id="faq" className="vx-sec">
         <Reveal>
-          <p className="vx-goldk">◈ PRIVATE INFORMATION</p>
-          <h2>
-            BEFORE YOU <span>GET IN</span>
-          </h2>
+        <p className="vx-goldk">◈ PRIVATE INFORMATION</p>
+        <h2>
+         BEFORE YOU <span>GET IN</span>
+        </h2>
         </Reveal>
         <div className="vx-faq">
           {FAQS.map((f, i) => {
