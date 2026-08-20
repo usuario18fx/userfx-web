@@ -15,7 +15,7 @@ import Scramble from "./Scramble";
   ];
   const TICKER_ITEMS = [
     "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
-    "NEW DROP EVERY FRIDAY · 22:00 UTC",
+    "NEW DROP EVERY FRIDAY · 22:00UTC",
     "PRIVATE ACCESS · TELEGRAM",
     "PRIVATE CODE · FX-USER01-XXXX",
     "«NOCTURNA» ALBUM · A PRIVATE COLLECTION",
@@ -202,11 +202,13 @@ export default function Vault() {
             <a href="#top" className="vx-brand">
               <img src={LOGO} alt="USER FX" />
               <span className="vx-live" />
-              <span>BÓVEDA PRIVADA ·</span>
+              <span>
+                private Vault|</span>
             </a>
             <div className="vx-hudRight">
               <time>{clock}</time>
-              <b>🜲 LOCKED</b>
+              <b>
+                🜲 LOCKED</b>
             </div>
           </header>
           <section className="vx-open">
@@ -223,21 +225,21 @@ export default function Vault() {
                 </div>
                 <p className="vx-kicker">
                   <i />
-                  𝐔𝐒𝐄𝐑🜲𝓕𝐗 · ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ · ᴏꜰꜰɪᴄɪᴀʟ
+                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗|𝐏ʀɪᴠᴀᴛᴇ𝐕ᴀᴜʟᴛ|ᴏꜰꜰɪᴄɪᴀʟ
                 </p>
                 <h1 className="vx-title">
                   <Scramble text="ACCESS" className="vx-access" delay={160} />
                   <span className="vx-rest">
-                    ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻<span>.</span>
+                    ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻
                   </span>
                 </h1>
                 <p className="vx-p">
-                  ᴛʜᴇʀᴇ ᴀʀᴇ ɪᴍᴀɢᴇꜱ ᴛʜᴀᴛ ᴡᴇʀᴇ ɴᴇᴠᴇʀ ᴍᴇᴀɴᴛ ᴛᴏ ʙᴇ ꜱᴇᴇɴ.
+                  There are images that were never meant to be seen..
                 </p>
                 <p className="vx-p">
-                  <strong>𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 — ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ</strong>
-                  ɪꜱ ᴀ ʀᴇꜱᴇʀᴠᴇᴅ ᴘʟᴀᴄᴇ. ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴛ ᴘᴜʙʟɪᴄ. ʏᴏᴜ’ʟʟ ɴᴇᴇᴅ ᴀ{" "}
-                  <em>ᴘʀɪᴠᴀᴛᴇ ᴋᴇʏ.</em>
+                  <strong>𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— </strong>
+                  Is a reserved place. access is not public. You’ll need a{" "}
+                  <em>CODE.</em>
                 </p>
                 <dl className="vx-dl">
                   {[
@@ -258,15 +260,16 @@ export default function Vault() {
                 <div className="vx-frameA" />
                 <div className="vx-frameB" />
                 <div className="vx-lockCard">
-                  <h2>LOCKED ACCESS</h2>
+                  <h2>
+                    LOCKED ACCESS</h2>
                   <button
                     type="button"
                     className="vx-gold"
-                    onClick={() => setDm(true)}
-                  >
+                    onClick={() => setDm(true)}>
                     UNLOCK ALBUM
                   </button>
-                  <p>SOLICITA TU CÓDIGO POR DM</p>
+                  <p>
+                    SOLICITA TU CÓDIGO POR DM</p>
                 </div>
               </aside>
             </div>
@@ -274,7 +277,8 @@ export default function Vault() {
           <Ticker items={TICKER_ITEMS} />
           <section id="protocolo" className="vx-sec">
             <Reveal>
-              <p className="vx-goldk">◈ ACCESS PROTOCOL</p>
+              <p className="vx-goldk">
+                ◈ ACCESS PROTOCOL</p>
               <h2>
                 HOW TO UNLOCK <span>THE VAULT</span>
               </h2>
@@ -284,9 +288,7 @@ export default function Vault() {
                 key={s.n}
                 delay={i * 90}
                 className={
-                  i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"
-                }
-              >
+                  i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"}>
                 <article className="vx-step">
                   <b className="vx-stepNum">{s.n}</b>
                   <div>
@@ -347,7 +349,7 @@ export default function Vault() {
                 ᴅʀᴏᴘ ɪɴ</p>
               <strong>{countdown}</strong>
               <p>
-                ғʀɪᴅᴀʏ · ２２﹕００ᴜᴛᴄ</p>
+                ғʀɪᴅᴀʏ |２２﹕００ᴜᴛᴄ|</p>
             </div>
             <div className="vx-archive">
               {INSIDE.map((src, i) => (
@@ -389,7 +391,7 @@ export default function Vault() {
                   <img src={LOGO} alt="" />
                   <div>
                     <p>
-                      USER 🜲<span>FX</span> 🌹👑
+                      USER 🜲 <span>FX </span>🌹👑
                     </p>
                     <small>PRIVATE VAULT</small>
                   </div>
@@ -411,12 +413,12 @@ export default function Vault() {
                   <a href="#top">VAULT</a>
                   <a href="/admin">OPERATOR PANEL</a>
                 </div>
-                <p className="vx-bw">👑 𝐔𝐬𝐞𝐫  Ŧҳ · ʙʟᴀᴄᴋ ᴡᴀʟʟ · ʀᴇᴅ ʀᴏꜱᴇ</p>
+                <p className="vx-bw">👑 𝐔𝐬𝐞𝐫  Ŧҳ | ʙʟᴀᴄᴋ ᴡᴀʟʟ | ʀᴇᴅ ʀᴏꜱᴇ</p>
               </div>
             </div>
             <div className="vx-bar">
-              <span>𝐔𝐬𝐞𝐫 Ŧҳ  · 𝟮𝟬𝟮𝟲 · ʙʟᴀᴄᴋ ᴡᴀʟʟ ᴇᴅɪᴛɪᴏɴ</span>
-              <span>ᴄᴏᴅᴇ ʙ · @ᴜꜱᴇʀ𝟣𝟪ꜰx_ʙᴏᴛ</span>
+              <span>𝐔𝐬𝐞𝐫 Ŧҳ | 𝟮𝟬𝟮𝟲 | ʙʟᴀᴄᴋ ᴡᴀʟʟ ᴇᴅɪᴛɪᴏɴ</span>
+              <span>ᴄᴏᴅᴇ | @ᴜꜱᴇʀ𝟣𝟪ꜰx_ʙᴏᴛ</span>
             </div>
           </footer>
           <Ticker items={TICKER_ITEMS} reverse />
@@ -452,9 +454,9 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-hud{position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(7,6,10,.88);backdrop-filter:blur(8px)}
 .vx-brand{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:.22em}
 .vx-brand img{height:28px}
-.vx-live{width:6px;height:6px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px #c0455a}
+.vx-live{width:6px;height:6px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px #dd334f}
 .vx-hudRight{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dim)}
-.vx-hudRight b{border:1px solid rgba(224,122,139,.5);color:#e07a8b;padding:4px 8px;font-weight:600}
+.vx-hudRight b{border:1px solid #ed1a3d91;color:#e07a8b;padding:4px 8px;font-weight:600}
 .vx-open{position:relative;overflow:hidden;padding:36px 16px 48px}
 .vx-bg{position:absolute;inset:0;pointer-events:none}
 .vx-damask{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
@@ -464,9 +466,9 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-blobB{right:-180px;top:20%;width:560px;height:560px;background:radial-gradient(circle,rgba(192,45,90,.24),transparent 62%)}
 .vx-grid{position:relative;z-index:1;max-width:72rem;margin:0 auto;display:grid;gap:36px}
 @media(min-width:960px){.vx-grid{grid-template-columns:1.05fr .7fr;align-items:end}}
-.vx-logoWrap img{width:min(420px,90vw);filter:drop-shadow(0 0 28px rgba(59,130,246,.45))}
+.vx-logoWrap img{width:min(420px,90vw);filter:drop-shadow(0 0 28px #1863dc9f)}
 .vx-kicker{display:flex;align-items:center;gap:10px;margin:22px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:#bedbff}
-.vx-kicker i{width:40px;height:1px;background:rgba(96,165,250,.6)}
+.vx-kicker i{width:40px;height:1px;background:#1d82fe99}
 .vx-access,.vx-rest{display:block;line-height:.9}
 .vx-access{font-size:clamp(3rem,10vw,6.4rem);font-weight:600}
 .vx-rest{margin-top:.08em;font-size:clamp(2.2rem,8vw,4.2rem);font-weight:300;font-style:italic;color:var(--rose)}
@@ -483,7 +485,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-lockCard{position:relative;padding:22px 16px;border:1px solid var(--line);background:rgba(7,6,10,.7);text-align:center}
 .vx-lockCard h2{margin:0 0 14px;letter-spacing:.18em;font-size:1rem}
 .vx-lockCard>p{margin:10px 0 0;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--faint)}
-.vx-gold{width:100%;height:46px;border:1px solid #e8c56a;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;font-family:var(--mono);font-size:10px;letter-spacing:.18em;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.vx-gold{width:100%;height:46px;border:1px solid #d4a93a;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;font-family:var(--mono);font-size:10px;letter-spacing:.18em;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
 .vx-sec{max-width:56rem;margin:0 auto;padding:72px 16px;border-top:1px solid var(--line)}
 .vx-tint{max-width:none;padding-left:max(16px,calc(50% - 36rem));padding-right:max(16px,calc(50% - 36rem));background:rgba(13,11,18,.4)}
 .vx-goldk{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--gold)}
@@ -500,7 +502,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-plans{display:grid;gap:14px;margin-top:28px}
 @media(min-width:860px){.vx-plans{grid-template-columns:repeat(3,1fr)}}
 .vx-plan{position:relative;padding:18px 16px 16px;border:1px solid var(--line);background:rgba(7,6,10,.55)}
-.vx-plan.is-hot{border-color:rgba(224,184,90,.5)}
+.vx-plan.is-hot{border-color:rgba(222, 172, 54, 0.65)}
 .vx-plan em{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1c1508;font-style:normal;font-family:var(--mono);font-size:9px;padding:3px 8px}
 .vx-plan>span{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:.16em}
 .vx-plan h3{margin:8px 0 12px;font-size:1.7rem;font-style:italic}
@@ -522,7 +524,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-faq{margin-top:18px;border-top:1px solid var(--line)}
 .vx-faqItem{border-bottom:1px solid var(--line)}
 .vx-faqItem button{width:100%;display:grid;grid-template-columns:42px 1fr 18px;gap:10px;padding:16px 0;border:0;background:none;color:var(--bone);text-align:left;cursor:pointer;font-family:var(--display);font-size:1.05rem}
-.vx-faqItem b{color:rgba(224,184,90,.55);font-style:italic;font-weight:400}
+.vx-faqItem b{color:rgba(229, 175, 49, 0.78);font-style:italic;font-weight:400}
 .vx-faqItem p{margin:0;padding:0 0 16px 52px}
 .vx-foot{padding:48px 16px 20px;border-top:1px solid var(--line);background:rgba(13,11,18,.45)}
 .vx-footGrid{max-width:72rem;margin:0 auto;display:grid;gap:28px}
@@ -539,5 +541,5 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(7,6,10,.8)}
 .vx-modal>div{position:relative;width:min(92%,400px);padding:28px 22px;border:1px solid var(--line);background:#0d0b12;text-align:center}
 .vx-modal button{position:absolute;top:8px;right:12px;border:0;background:none;color:var(--dim);font-size:28px;cursor:pointer}
-.vx-modal a{display:flex;align-items:center;justify-content:center;height:46px;margin-top:16px;border:1px solid #e8c56a;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;text-decoration:none;font-family:var(--mono);letter-spacing:.18em}
+.vx-modal a{display:flex;align-items:center;justify-content:center;height:46px;margin-top:16px;border:1px solid #ceb576;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;text-decoration:none;font-family:var(--mono);letter-spacing:.18em}
 `;

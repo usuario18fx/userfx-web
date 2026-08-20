@@ -163,7 +163,7 @@ body {
   color:var(--rose);
 }
 .vx-rest span{
-  color:#93c5fd;
+  color:#328df6;
 }
 .vh-hAccess,
 .vh-hRestricted {
@@ -199,7 +199,7 @@ body {
   justify-self: end;
   padding: 18px 14px 16px;
   border: 1px solid var(--line);
-  background: rgba(7, 6, 10, 0.62);
+  background: #07060a9e;
   text-align: center;
 }
 .vh-gateTitle {
@@ -737,6 +737,10 @@ body {
 }
 .vx-protocolReveal.is-on .vx-stepNum{
   opacity:.7;
-  color:rgba(224,184,90,.9);
-  text-shadow:0 0 18px rgba(224,184,90,.16);
+  color:#e0b85ae6;
+  text-shadow:0 0 18px #e0b85a29;
+}
+.step-text {
+  font-family: Arial, sans-serif;
+  font-style: normal;
 }
