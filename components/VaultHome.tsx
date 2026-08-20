@@ -12,50 +12,57 @@ import Scramble from "./Scramble";
                   "/assets/pic06.png",
                   "/assets/pic07.png",
                   "/assets/video02.mp4",
-  ];
+                ];
+  const ICONS = { corona: "/assets/iconos/corona.png",
+                  candado: "/assets/iconos/candado.png",
+                  rosa: "/assets/iconos/rosa.png",
+                  fotos: "/assets/iconos/fotos.png",
+                  telegram: "/assets/iconos/telegram.png", 
+                };
   const TICKER_ITEMS = [
-    "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
-    "NEW DROP EVERY FRIDAY · 22:00UTC",
-    "PRIVATE ACCESS · TELEGRAM",
-    "PRIVATE CODE · FX-USER01-XXXX",
-    "«NOCTURNA» ALBUM · A PRIVATE COLLECTION",
-  ];
-const STEPS = [
-  { n: "01",
-    title: "UNLOCK YOUR ACCESS",
-    text: "Each key unlocks the private collection for a set period of time.",},
-  { n: "02",
-    title: "REQUEST YOUR KEY",
-    text: "This pre does not generate codes. Ask for your private key by DM.",},
-  { n: "03",
-    title: "RECEIVE YOUR KEY",
-    text: "Once confirmed, you receive your private code. Keep it safe.",},
-  { n: "04",
-    title: "OPEN THE VAULT",
-    text: "Enter the final four characters of your code. The door takes care of the rest.",},
-  ];
-const PLANS = [
-    { id:  "basic",
-      tab: "BS02-",
-      name:"BASIC",
-      days: 7,
-      benefits: ["🔐 Enter the vault", 
-               "📸 BASIC drops", 
-               "⚡ Instant access"],},
+     "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
+     "⌁ NEW DROP EVERY FRIDAY · 𝟮𝟮﹕𝟬𝟬 UTC",
+     "◈ PRIVATE ACCESS · TELEGRAM",
+     "✦ PRIVATE CODE · FX-USER01-XXXX",
+     "◈ «NOCTURNA» · A PRIVATE COLLECTION"
+                 ];
+   const STEPS = [{ n: "01",
+                    title: "UNLOCK YOUR ACCESS",
+                    text: "Each key unlocks the private collection for a set period of time.",},
+                  { n: "02",
+                   title: "REQUEST YOUR KEY",
+                   text: "This pre does not generate codes. Ask for your private key by DM.",},
+                  { n: "03",
+                    title: "RECEIVE YOUR KEY",
+                    text: "Once confirmed, you receive your private code. Keep it safe.",},
+                  { n: "04",
+                    title: "OPEN THE VAULT",
+                    text: "Enter the final four characters of your code. The door takes care of the rest.",},
+                  ];
+const PLANS = [{id:  "basic",
+                tab: "BS02-",
+                name:"BASIC",
+                days: 7,
+                benefits: [
+      { icon: ICONS.candado, text: "Enter the vault" },
+      { icon: ICONS.fotos, text: "BASIC drops" },
+      { icon: ICONS.corona, text: "Instant access" },],},
     { id:  "pro",
       tab: "PX01-",
       name:"PRO",
       days: 30,
-      benefits: ["🔓 Unlock more",
-               "📸 Exclusive PRO drops",
-               "📺 Private channels",],},
+      benefits: [
+      { icon: ICONS.candado, text: "Unlock more" },
+      { icon: ICONS.fotos, text: "Exclusive PRO drops" },
+      { icon: ICONS.telegram, text: "Private channels" },],},
     { id:  "vip",
       tab: "VX03-",
       name:"VIP",
       days: 90,
-      benefits: ["🔓 No limits", 
-               "📸 Full drops", 
-               "💬 Private chat"],},
+      benefits: [
+      { icon: ICONS.candado, text: "No limits" },
+      { icon: ICONS.fotos, text: "Full drops" },
+      { icon: ICONS.telegram, text: "Private chat" },],},
     ];
 const FAQS = [
   { q: "How do I get a code?",
@@ -197,23 +204,23 @@ export default function Vault() {
     }, []);
       return (
         <div id="top" className="vx">
-          <style>{CSS}</style>
-          <header className="vx-hud">
-            <a href="#top" className="vx-brand">
-              <img src={LOGO} alt="USER FX" />
-              <span className="vx-live" />
-              <span>
-                private Vault|</span>
-            </a>
-            <div className="vx-hudRight">
-              <time>{clock}</time>
-              <b>
-                🜲 LOCKED</b>
-            </div>
-          </header>
-          <section className="vx-open">
-            <div className="vx-bg">
-              <img src={DAMASK} alt="" className="vx-damask" />
+        <style>{CSS}</style>
+        <header className="vx-hud">
+        <a href="#top" className="vx-brand">
+        <img src={LOGO} alt="USER FX" />
+        <span className="vx-live" />
+        <span>
+          |Priv Vault |</span>
+        </a>
+        <div className="vx-hudRight">
+        <time>{clock}</time>
+        <b>
+          🜲 LOCKED</b>
+        </div>
+        </header>
+        <section className="vx-open">
+        <div className="vx-bg">
+        <img src={DAMASK} alt="" className="vx-damask" />
               <img src={BRICK} alt="" className="vx-brick" />
               <i className="vx-blob vx-blobA" />
               <i className="vx-blob vx-blobB" />
@@ -225,7 +232,7 @@ export default function Vault() {
                 </div>
                 <p className="vx-kicker">
                   <i />
-                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗|𝐏ʀɪᴠᴀᴛᴇ𝐕ᴀᴜʟᴛ|ᴏꜰꜰɪᴄɪᴀʟ
+                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 <i/> Priv Vault<i/> Official
                 </p>
                 <h1 className="vx-title">
                   <Scramble text="ACCESS" className="vx-access" delay={160} />
@@ -233,11 +240,11 @@ export default function Vault() {
                     ℝ𝔼𝕊𝕋ℝ𝕀ℂ𝕋𝔼𝔻
                   </span>
                 </h1>
-                <p className="vx-p">
+                <p className="vx-p vx-pNormal">
                   There are images that were never meant to be seen..
                 </p>
                 <p className="vx-p">
-                  <strong>𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— </strong>
+                  <strong>𝐔𝐒𝐄𝐑🜲𝓕𝐗 <i/> ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— </strong>
                   Is a reserved place. access is not public. You’ll need a{" "}
                   <em>CODE.</em>
                 </p>
@@ -262,10 +269,8 @@ export default function Vault() {
                 <div className="vx-lockCard">
                   <h2>
                     LOCKED ACCESS</h2>
-                  <button
-                    type="button"
-                    className="vx-gold"
-                    onClick={() => setDm(true)}>
+                  <button type="button" className="vx-gold" onClick={() => setDm(true)}>
+                  <img src={ICONS.rosa} alt="" className="vx-buttonIcon" draggable={false}/>
                     UNLOCK ALBUM
                   </button>
                   <p>
@@ -295,37 +300,42 @@ export default function Vault() {
                     <h3>{s.title}</h3>
                     <p>{s.text}</p>
                   </div>
-                  <small>STEP {s.n} / 04</small>
-                </article>
-              </Reveal>
+          <small>
+           STEP {s.n}
+           / 04</small>
+          </article>
+          </Reveal>
             ))}
           </section>
           <section id="llaves" className="vx-sec vx-tint">
             <Reveal>
-              <p className="vx-goldk">◈ ACCESS CODE</p>
+              <p className="vx-goldk">
+                ◈ ACCESS CODE</p>
               <h2>
-                CHOOSE YOUR <span>CODE</span>
+                CHOOSE YOUR <span>
+                CODE</span>
               </h2>
             </Reveal>
             <div className="vx-plans">
               {PLANS.map((plan, i) => (
                 <Reveal key={plan.id} delay={i * 110}>
-                  <article
-                    className={`vx-plan ${plan.id === "pro" ? "is-hot" : ""}`}
-                  >
-                    {plan.id === "pro" ? <em>★ MOST POPULAR</em> : null}
-                    <span>{plan.tab}</span>
-                    <h3>{plan.name}</h3>
-                    <ul>
-                      {plan.benefits.map((b) => (
-                        <li key={b}>{b}</li>
-                      ))}
+                 <article className={`vx-plan ${plan.id === "pro" ? "is-hot" : ""}`}>
+                  {plan.id === "pro" ? <em>
+                    ★ MOST POPULAR</em> : null}
+                  <span>{plan.tab}</span>
+                  <h3>{plan.name}</h3>
+                  <ul>
+                    {plan.benefits.map((benefit) => (
+                   <li key={benefit.text}>
+                   <img src={benefit.icon} alt="" className="vx-benefitIcon" draggable={false}/>
+                   <span>{benefit.text}</span>
+                   </li>
+                    ))}
                     </ul>
-                    <p>{plan.days} ᴅᴀʏꜱ ᴀᴄᴄᴇꜱꜱ</p>
-                    <button
-                      type="button"
-                      className="vx-gold"
-                      onClick={() => setDm(true)}>
+                    <p>
+                      {plan.days} 
+                      ᴅᴀʏꜱ ᴀᴄᴄᴇꜱꜱ</p>
+                    <button type="button"  className="vx-gold" onClick={() => setDm(true)}>
                       GET MY KEY
                     </button>
                   </article>
@@ -333,51 +343,58 @@ export default function Vault() {
               ))}
             </div>
           </section>
-          <section id="archivo" className="vx-sec">
-            <Reveal>
-              <p className="vx-goldk">◈ ɪɴꜱɪᴅᴇ ᴛʜᴇ ᴠᴀᴜʟᴛ</p>
+             <section id="archivo" className="vx-sec">
+              <Reveal>
+              <p className="vx-goldk">
+                ◈ ɪɴꜱɪᴅᴇ ᴛʜᴇ ᴠᴀᴜʟᴛ</p>
               <h2>
-                WHAT&apos;S <span>INSIDE</span>
+                WHAT&apos;
+                S <span>
+                INSIDE</span>
               </h2>
               <p className="vx-lead">
                 ʏᴏᴜ’ʀᴇ ᴏɴʟʏ ꜱᴇᴇɪɴɢ ᴘᴀʀᴛ ᴏꜰ ɪᴛ. ᴇᴠᴇʀʏ ꜰʀɪᴅᴀʏ ᴀᴛ 𝟮𝟮﹕𝟬𝟬 ᴜᴛᴄ ᴀ ɴᴇᴡ
                 ᴅʀᴏᴘ ɪꜱ ᴀᴅᴅᴇᴅ. ᴛʜɪꜱ ɪꜱ ᴊᴜꜱᴛ ᴀ ɢʟɪᴍᴘꜱᴇ ᴏꜰ «Nocturna».
               </p>
             </Reveal>
-            <div className="vx-count">
+              <div className="vx-count">
               <p>
                 ᴅʀᴏᴘ ɪɴ</p>
               <strong>{countdown}</strong>
               <p>
                 ғʀɪᴅᴀʏ |２２﹕００ᴜᴛᴄ|</p>
-            </div>
-            <div className="vx-archive">
-              {INSIDE.map((src, i) => (
-                <Reveal key={src} delay={i * 70}>
-                  <HoldShot src={src} />
-                </Reveal>
-              ))}
-            </div>
-          </section>
-          <section id="faq" className="vx-sec">
-            <Reveal>
-              <p className="vx-goldk">◈ ᴘʀɪᴠᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ</p>
+              </div>
+              <div className="vx-archive">
+               {INSIDE.map((src, i) => (
+          <Reveal key={src} delay={i * 70}>
+          <HoldShot src={src} />
+          </Reveal>
+               ))}
+              </div>
+            </section>
+            <section id="faq" className="vx-sec">
+          <Reveal>
+              <p className="vx-goldk">
+                ◈ ᴘʀɪᴠᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ</p>
               <h2>
                 BEFORE YOU <span>ɢᴇᴛ ɪɴ</span>
               </h2>
-            </Reveal>
-            <div className="vx-faq">
-              {FAQS.map((f, i) => {
-                const open = openFaq === i;
+          </Reveal>
+              <div className="vx-faq">
+                {FAQS.map((f, i) => { const open = openFaq === i;
                 return (
-                  <Reveal key={f.q} delay={i * 50}>
-                    <div className="vx-faqItem">
-                      <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
-                        <b>{String(i + 1).padStart(2, "0")}</b>
-                        <span>{f.q}</span>
-                        <i>{open ? "–" : "+"}</i>
-                      </button>
-                      {open ? <p>{f.a}</p> : null}
+          <Reveal key={f.q} delay={i * 50}>
+              <div className="vx-faqItem">
+              <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
+              <b>
+              {String(i + 1).padStart(2, "0")}
+              </b>
+              <span>
+                {f.q}
+              </span>
+              <i>{open ? "–" : "+"}</i>
+              </button>
+                {open ? <p>{f.a}</p> : null}
                     </div>
                   </Reveal>
                 );
@@ -391,7 +408,9 @@ export default function Vault() {
                   <img src={LOGO} alt="" />
                   <div>
                     <p>
-                      USER 🜲 <span>FX </span>🌹👑
+                      USER 🜲 <span>FX </span>
+                      <img src={ICONS.rosa} alt="" className="vx-inlineIcon" draggable={false}/>
+                      <img src={ICONS.corona} alt="" className="vx-inlineIcon" draggable={false}/>
                     </p>
                     <small>PRIVATE VAULT</small>
                   </div>
@@ -413,7 +432,9 @@ export default function Vault() {
                   <a href="#top">VAULT</a>
                   <a href="/admin">OPERATOR PANEL</a>
                 </div>
-                <p className="vx-bw">👑 𝐔𝐬𝐞𝐫  Ŧҳ | ʙʟᴀᴄᴋ ᴡᴀʟʟ | ʀᴇᴅ ʀᴏꜱᴇ</p>
+                <p className="vx-bw"> 
+                <img src={ICONS.corona} alt="" className="vx-inlineIcon" draggable={false}/>
+                 𝐔𝐬𝐞𝐫  Ŧҳ | ʙʟᴀᴄᴋ ᴡᴀʟʟ | ʀᴇᴅ ʀᴏꜱᴇ</p>
               </div>
             </div>
             <div className="vx-bar">
@@ -442,13 +463,70 @@ export default function Vault() {
     }
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
-html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
-.vx{--ink:#07060a;--bone:#f4eee4;--dim:#b7aebc;--faint:#7a7286;--gold:#e0b85a;--rose:#e07a8b;--line:rgba(236,229,216,.14);--display:"Cormorant Garamond",Georgia,serif;--mono:"JetBrains Mono",ui-monospace,monospace;color:var(--bone);font-family:var(--display);background:#07060a;min-height:100dvh}
+html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
+.vx{--ink: #07060a;--bone: #f4eee4;--dim: #b7aebc;--faint: #7a7286;--gold: #e0b85a; --rose: #b94a5c; --line: #ece5d824; --display:"Cormorant Garamond",Georgia,serif;--mono:"JetBrains Mono",ui-monospace,monospace;color:var(--bone);font-family:var(--display);background: #07060a;min-height:100dvh}
 .vx-reveal{opacity:.2;transform:translateY(26px);filter:brightness(.55);transition:opacity .75s ease,transform .75s ease,filter .75s ease}
 .vx-reveal.is-on{opacity:1;transform:none;filter:none}
-.vx-ticker{overflow:hidden;height:28px;border-block:1px solid var(--line);background:rgba(7,6,10,.85)}
-.vx-tickerTrack{display:flex;width:max-content;white-space:nowrap;animation:vxL 48s linear infinite;font-family:var(--mono);font-size:9px;letter-spacing:.2em;line-height:28px;color:rgba(236,229,216,.42)}
-.vx-ticker.is-rev .vx-tickerTrack{animation-name:vxR}
+/*HUD*/
+.vx-ticker{
+  position:relative;
+  overflow:hidden;
+  height:34px;
+  border-top:1px solid rgba(96,165,250,.22);
+  border-bottom:1px solid rgba(224,184,90,.2);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(59,130,246,.1),
+      rgba(7,6,10,.9) 18%,
+      rgba(7,6,10,.9) 82%,
+      rgba(192,45,90,.1) ); box-shadow:
+    inset 0 1px 0 rgba(244,238,228,.035),
+    inset 0 -1px 0 rgba(0,0,0,.55),
+    0 8px 26px rgba(0,0,0,.2);}
+.vx-ticker::before,
+.vx-ticker::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  z-index:2;
+  width:72px;
+  pointer-events:none;}
+.vx-ticker::before{
+  left:0;
+  background:linear-gradient(90deg, #07060a, transparent);}
+.vx-ticker::after{
+  right:0;
+  background:linear-gradient(-90deg, #07060a, transparent);}
+.vx-tickerTrack{
+  display:flex;
+  width:max-content;
+  white-space:nowrap;
+  animation:vxL 44s linear infinite;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.24em;
+  line-height:34px;
+  color:rgba(244,238,228,.68);
+  text-transform:uppercase;
+  text-shadow:0 0 10px rgba(96,165,250,.12);}
+.vx-tickerTrack span{
+  display:inline-block;
+  padding-right:48px;}
+.vx-tickerTrack span::first-letter{
+  color:var(--gold);}
+.vx-ticker.is-rev{
+  border-top-color:rgba(224,184,90,.2);
+  border-bottom-color:rgba(192,45,90,.25);}
+.vx-ticker.is-rev .vx-tickerTrack{
+  animation-name:vxR;
+  color:rgba(224,184,90,.72);
+  text-shadow:0 0 12px rgba(224,184,90,.14);}
+.vx-ticker:hover .vx-tickerTrack{
+  animation-play-state:paused;
+}
 @keyframes vxL{to{transform:translateX(-50%)}}
 @keyframes vxR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .vx-hud{position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(7,6,10,.88);backdrop-filter:blur(8px)}
@@ -456,7 +534,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-brand img{height:28px}
 .vx-live{width:6px;height:6px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px #dd334f}
 .vx-hudRight{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dim)}
-.vx-hudRight b{border:1px solid #ed1a3d91;color:#e07a8b;padding:4px 8px;font-weight:600}
+.vx-hudRight b{border:1px solid #ed1a3d91;color: #943243d2;padding:4px 8px;font-weight:600}
 .vx-open{position:relative;overflow:hidden;padding:36px 16px 48px}
 .vx-bg{position:absolute;inset:0;pointer-events:none}
 .vx-damask{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
@@ -467,12 +545,14 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-grid{position:relative;z-index:1;max-width:72rem;margin:0 auto;display:grid;gap:36px}
 @media(min-width:960px){.vx-grid{grid-template-columns:1.05fr .7fr;align-items:end}}
 .vx-logoWrap img{width:min(420px,90vw);filter:drop-shadow(0 0 28px #1863dc9f)}
-.vx-kicker{display:flex;align-items:center;gap:10px;margin:22px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:#bedbff}
-.vx-kicker i{width:40px;height:1px;background:#1d82fe99}
-.vx-access,.vx-rest{display:block;line-height:.9}
+.vx-kicker{display:flex;align-items:center;gap:10px;margin:22px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.28em;color: #bedbff}
+.vx-kicker i{width:40px;height:1px;background: #0a66d699}
+.vx-access,
+.vx-rest{display:block;line-height:.9}
 .vx-access{font-size:clamp(3rem,10vw,6.4rem);font-weight:600}
-.vx-rest{margin-top:.08em;font-size:clamp(2.2rem,8vw,4.2rem);font-weight:300;font-style:italic;color:var(--rose)}
-.vx-rest span{color:#93c5fd}
+/*Title*/
+.vx-rest{margin-top:.08em;font-size:clamp(2.2rem,8vw,4.2rem);font-weight:300;font-style:italic;color: #b74a5c)}
+.vx-rest span{color: #589be7}
 .vx-p{max-width:36rem;color:var(--dim);line-height:1.65}
 .vx-p strong,.vx-p em{color:var(--bone)}
 .vx-dl{max-width:28rem;margin-top:24px}
@@ -485,7 +565,16 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-lockCard{position:relative;padding:22px 16px;border:1px solid var(--line);background:rgba(7,6,10,.7);text-align:center}
 .vx-lockCard h2{margin:0 0 14px;letter-spacing:.18em;font-size:1rem}
 .vx-lockCard>p{margin:10px 0 0;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--faint)}
-.vx-gold{width:100%;height:46px;border:1px solid #d4a93a;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;font-family:var(--mono);font-size:10px;letter-spacing:.18em;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.vx-gold{width:100%;height:46px;border:1px solid  #d4a93a; background:linear-gradient(180deg, #f0d78a, #c9a24b 48%, #8d6a28);color: #1c1508;font-family:var(--mono);font-size:10px;letter-spacing:.18em;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.vx-protocolReveal.is-on .vx-stepNum{opacity:.7; color: #c0993e; text-shadow:0 0 18px #e0b85a29;}
+.vx-plan li{display:flex;align-items:center; gap:8px;}
+.vx-benefitIcon{ width:18px; height:18px; flex:0 0 18px; object-fit:contain;  opacity:.9;}
+.vx-stepNum{ opacity:.5; transition: opacity .7s ease, color .7s ease, text-shadow .7s ease;}
+.vx-shotMask{ position:absolute;inset:0; display:flex; flex-direction:column;  align-items:center; justify-content:center; gap:6px; background:rgba(7,6,10,.42);  color: #f4eee499; font-family:var(--mono);  font-size:9px; letter-spacing:.18em;  transition:opacity .25s ease;}
+.vx-shot.is-open .vx-shotMedia{filter:none; transform:scale(1);}
+.vx-shot.is-open .vx-shotMask{ opacity:0;}
+.vx-shot{ position:relative; width:100%; aspect-ratio:3 / 4; overflow:hidden; border:1px solid var(--line); background: #0a090e; cursor:pointer; touch-action:none; user-select:none;}
+.vx-shotMedia{ width:100%; height:100%; display:block; object-fit:cover;pointer-events:none; filter:blur(14px) grayscale(1) brightness(.4); transform:scale(1.12); transition:filter .25s ease, transform .25s ease;}
 .vx-sec{max-width:56rem;margin:0 auto;padding:72px 16px;border-top:1px solid var(--line)}
 .vx-tint{max-width:none;padding-left:max(16px,calc(50% - 36rem));padding-right:max(16px,calc(50% - 36rem));background:rgba(13,11,18,.4)}
 .vx-goldk{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--gold)}
@@ -496,6 +585,49 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-step h3{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--gold)}
 .vx-step p,.vx-lead,.vx-faq p{color:var(--dim);line-height:1.7}
 .vx-step small{display:none}
+.step-text { font-family: Arial, sans-serif; font-style: normal;}
+.vx-shotMedia{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  pointer-events:none;
+  filter:blur(14px) grayscale(1) brightness(.4);
+  transform:scale(1.12);
+  transition:filter .25s ease,transform .25s ease;
+}
+.vx-shot.is-open .vx-shotMedia,
+.vx-shot:hover .vx-shotMedia{
+  filter:none;
+  transform:none;
+}
+.vx-shotMask{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:rgba(7,6,10,.4);
+  color:rgba(244,238,228,.55);
+  font-family:var(--mono);
+  font-size:8px;
+  letter-spacing:.18em;
+  transition:opacity .25s ease;
+}
+.vx-shot.is-open .vx-shotMask,
+.vx-shot:hover .vx-shotMask{
+  opacity:0;
+  }
+.vx-archive{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:32px;}
+@media(min-width:700px){
+.vx-archive{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;}}
+@media(min-width:1100px){
+.vx-archive{ grid-template-columns:repeat(6,minmax(0,1fr)); gap:24px;}}
+@media(hover:hover){
+.vx-shot:hover .vx-shotMedia{ filter:none; transform:scale(1);} 
+.vx-shot:hover .vx-shotMask{ opacity:0;}}
 @media(min-width:900px){.vx-step small{display:block;position:absolute;right:0;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--faint)}}
 .vx-shift{margin-left:0}
 @media(min-width:900px){.vx-shift{margin-left:4rem}}
@@ -503,7 +635,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 @media(min-width:860px){.vx-plans{grid-template-columns:repeat(3,1fr)}}
 .vx-plan{position:relative;padding:18px 16px 16px;border:1px solid var(--line);background:rgba(7,6,10,.55)}
 .vx-plan.is-hot{border-color:rgba(222, 172, 54, 0.65)}
-.vx-plan em{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1c1508;font-style:normal;font-family:var(--mono);font-size:9px;padding:3px 8px}
+.vx-plan em{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color: #1c1508;font-style:normal;font-family:var(--mono);font-size:9px;padding:3px 8px}
 .vx-plan>span{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:.16em}
 .vx-plan h3{margin:8px 0 12px;font-size:1.7rem;font-style:italic}
 .vx-plan ul{margin:0 0 12px;padding-left:16px;color:var(--dim)}
@@ -532,14 +664,25 @@ html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
 .vx-footBrand{display:flex;gap:14px;align-items:center}
 .vx-footBrand img{height:56px}
 .vx-footBrand p{margin:0;font-family:var(--mono);letter-spacing:.2em}
-.vx-footBrand span{color:#60a5fa}
+.vx-footBrand span{color: #3c7ecf}
 .vx-footBrand small{display:block;color:var(--dim);letter-spacing:.24em}
 .vx-legal,.vx-copy,.vx-bw,.vx-bar{font-family:var(--mono);letter-spacing:.14em;color:var(--faint);font-size:10px;line-height:1.7}
 .vx-links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .vx-links a{border:1px solid var(--line);padding:8px 10px;color:var(--dim);text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:.16em}
 .vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
 .vx-modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(7,6,10,.8)}
-.vx-modal>div{position:relative;width:min(92%,400px);padding:28px 22px;border:1px solid var(--line);background:#0d0b12;text-align:center}
+.vx-modal>div{position:relative;width:min(92%,400px);padding:28px 22px;border:1px solid var(--line);background: #0d0b12;text-align:center}
 .vx-modal button{position:absolute;top:8px;right:12px;border:0;background:none;color:var(--dim);font-size:28px;cursor:pointer}
-.vx-modal a{display:flex;align-items:center;justify-content:center;height:46px;margin-top:16px;border:1px solid #ceb576;background:linear-gradient(180deg,#f0d78a,#c9a24b 48%,#8d6a28);color:#1c1508;text-decoration:none;font-family:var(--mono);letter-spacing:.18em}
+.vx-modal a{display:flex;align-items:center;justify-content:center;height:46px;margin-top:16px;border:1px solid #ceb576;background:linear-gradient(180deg, #dcbe66, #ba9035 48%, #8d6a28);color: #1c1508;text-decoration:none;font-family:var(--mono);letter-spacing:.18em}
+
+/*Iconos*/
+.vx-buttonIcon{ width:18px; height:18px; object-fit:contain;}
+.vx-inlineIcon{ width:16px;  height:16px; vertical-align:middle; object-fit:contain;}
+/*line*/
+.vx-kicker i.vx-kickerShort{ width:20px; flex-basis:20px;}
+/*Fuente*/
+.vx-pNormal{ font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size:15px; font-style:normal; font-weight:400;}
+
+
+
 `;
