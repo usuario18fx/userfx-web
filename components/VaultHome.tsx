@@ -1,133 +1,102 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const LOGO = "/assets/userfx-logo.png";
-const BRICK = "/assets/brick-wall.png";
-const DAMASK = "/assets/damask.png";
-
-const INSIDE = [
-  "/assets/pic01.png",
-  "/assets/pic02.png",
-  "/assets/pic03.png",
-  "/assets/pic04.png",
-  "/assets/pic05.png",
-  "/assets/pic06.png",
-];
-
-const TICKER_ITEMS = [
-  "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
-  "NEW DROP EVERY FRIDAY · 22:00 UTC",
-  "PRIVATE ACCESS · TELEGRAM",
-  "PRIVATE CODE · FX-USER01-XXXX",
-  "«NOCTURNA» ALBUM · A PRIVATE COLLECTION",
-];
-
+  const LOGO = "/assets/userfx-logo.png";
+  const BRICK = "/assets/brick-wall.png";
+  const DAMASK = "/assets/damask.png";
+  const INSIDE = ["/assets/pic01.png",
+                  "/assets/pic02.png",
+                  "/assets/pic03.png",
+                  "/assets/pic04.png",
+                  "/assets/pic05.png",
+                  "/assets/pic06.png",
+                  "/assets/pic07.png",
+                  "/assets/video01.png",
+                  "/assets/video02.png",
+  ];
+  const TICKER_ITEMS = [
+    "𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT",
+    "NEW DROP EVERY FRIDAY · 22:00 UTC",
+    "PRIVATE ACCESS · TELEGRAM",
+    "PRIVATE CODE · FX-USER01-XXXX",
+    "«NOCTURNA» ALBUM · A PRIVATE COLLECTION",
+  ];
 const STEPS = [
-  {
-    n: "01",
+  { n: "01",
     title: "UNLOCK YOUR ACCESS",
-    text: "Each key unlocks the private collection for a set period of time.",
-  },
-  {
-    n: "02",
+    text: "Each key unlocks the private collection for a set period of time.",},
+  { n: "02",
     title: "REQUEST YOUR KEY",
-    text: "This pre does not generate codes. Ask for your private key by DM.",
-  },
-  {
-    n: "03",
+    text: "This pre does not generate codes. Ask for your private key by DM.",},
+  { n: "03",
     title: "RECEIVE YOUR KEY",
-    text: "Once confirmed, you receive your private code. Keep it safe.",
-  },
-  {
-    n: "04",
+    text: "Once confirmed, you receive your private code. Keep it safe.",},
+  { n: "04",
     title: "OPEN THE VAULT",
-    text: "Enter the final four characters of your code. The door takes care of the rest.",
-  },
-];
-
+    text: "Enter the final four characters of your code. The door takes care of the rest.",},
+  ];
 const PLANS = [
-  {
-    id: "basic",
-    tab: "BS02-",
-    name: "BASIC",
-    days: 7,
-    benefits: ["🔐 Enter the vault", "📸 BASIC drops", "⚡ Instant access"],
-  },
-  {
-    id: "pro",
-    tab: "PX01-",
-    name: "PRO",
-    days: 30,
-    benefits: [
-      "🔓 Unlock more",
-      "📸 Exclusive PRO drops",
-      "📺 Private channels",
-    ],
-  },
-  {
-    id: "vip",
-    tab: "VX03-",
-    name: "VIP",
-    days: 90,
-    benefits: ["🔓 No limits", "📸 Full drops", "💬 Private chat"],
-  },
-];
-
+    { id:  "basic",
+      tab: "BS02-",
+      name:"BASIC",
+      days: 7,
+      benefits: ["🔐 Enter the vault", 
+               "📸 BASIC drops", 
+               "⚡ Instant access"],},
+    { id:  "pro",
+      tab: "PX01-",
+      name:"PRO",
+      days: 30,
+      benefits: ["🔓 Unlock more",
+               "📸 Exclusive PRO drops",
+               "📺 Private channels",],},
+    { id:  "vip",
+      tab: "VX03-",
+      name:"VIP",
+      days: 90,
+      benefits: ["🔓 No limits", 
+               "📸 Full drops", 
+               "💬 Private chat"],},
+    ];
 const FAQS = [
-  {
-    q: "How do I get a code?",
+  { q: "How do I get a code?",
     a: "This preview does not generate keys. Request yours by DM on Telegram.",
   },
-  {
-    q: "How long does my access last?",
+  { q: "How long does my access last?",
     a: "It depends on the key you choose. While active, you can return whenever you want.",
   },
-  {
-    q: "Can I share my code?",
+  { q: "Can I share my code?",
     a: "No. Your key is personal and non-transferable.",
   },
-  {
-    q: "What happens if I don’t receive my code?",
-    a: "Contact @User18Fx_bot and we’ll review your request.",
-  },
-  {
-    q: "Are refunds available?",
-    a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",
-  },
-];
-
-const TEASERS = [1, 2, 3, 4, 5, 6].map(
-  (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
-);
-
-function nextFridayUtc() {
-  const now = new Date();
-  const day = now.getUTCDay();
-  let add = (5 - day + 7) % 7;
-  const target = new Date(
+  { q: "What happens if I don’t receive my code?",
+    a: "Contact @User18Fx_bot and we’ll review your request.",},
+  { q: "Are refunds available?",
+    a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",},
+    ];
+    const TEASERS = [1, 2, 3, 4, 5, 6].map(
+    (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
+    );
+  function nextFridayUtc() {
+    const now = new Date();
+    const day = now.getUTCDay();
+    let add = (5 - day + 7) % 7;
+    const target = new Date(
     Date.UTC(
       now.getUTCFullYear(),
       now.getUTCMonth(),
-      now.getUTCDate() + add,
-      22,
-      0,
-      0
-    )
-  );
+      now.getUTCDate() + add, 22, 0, 0));
   if (target.getTime() <= now.getTime()) {
     target.setUTCDate(target.getUTCDate() + 7);
-  }
+    }
   return target;
-}
-
-function useCountdown() {
-  const [label, setLabel] = useState("· · ·");
+    }
+     function useCountdown() {
+     const [label, setLabel] = useState("· · ·");
   useEffect(() => {
-    const tick = () => {
-      const diff = nextFridayUtc().getTime() - Date.now();
-      if (diff <= 0) {
-        setLabel("NOW");
-        return;
-      }
+     const tick = () => {
+     const diff = nextFridayUtc().getTime() - Date.now();
+      if (diff <= 0) {setLabel("NOW");
+      return;
+    }
       const d = Math.floor(diff / 86400000);
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
@@ -138,121 +107,110 @@ function useCountdown() {
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, []);
+    }, []);
   return label;
-}
-
-function Reveal({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [on, setOn] = useState(false);
+    }
+  function Reveal({ children, delay = 0, className = "",
+    }: {children: React.ReactNode; delay?: number; className?: string;}) {
+    const ref = useRef<HTMLDivElement | null>(null);
+    const [on, setOn] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) setOn(true);
-      },
-      { threshold: 0.16 }
+    if (e.isIntersecting) setOn(true);
+    },{threshold: 0.16 }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
-  return (
-    <div
-      ref={ref}
-      className={`vx-reveal ${on ? "is-on" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
+    }, []);
+    return (
+    <div ref={ref} className={`vx-reveal ${on ? "is-on" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
-  );
-}
-
-function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
-  const line = items.join("   ✦   ") + "   ✦   ";
+    );
+    }
+    function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
+    const line = items.join("   ✦   ") + "   ✦   ";
   return (
     <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
-      <div className="vx-tickerTrack">
-        <span>{line.repeat(4)}</span>
-        <span>{line.repeat(4)}</span>
-      </div>
+    <div className="vx-tickerTrack">
+    <span>{line.repeat(4)}</span>
+    <span>{line.repeat(4)}</span>
     </div>
-  );
-}
-
-function HoldShot({ src, label }: { src: string; label?: string }) {
-  const [hold, setHold] = useState(false);
-  return (
-    <div
-      className={`vx-shot ${hold ? "is-open" : ""}`}
+    </div>
+    );
+     }
+    function HoldShot({ src, active }: { src: string; active: boolean }) {
+    const [hold, setHold] = useState(false);
+    const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
+    return (
+    <div className={`vh-shot ${active ? "vh-slideOn" : "vh-slide"} ${ hold ? "vh-shotOpen" : ""}`}
       onContextMenu={(e) => e.preventDefault()}
       onPointerDown={() => setHold(true)}
       onPointerUp={() => setHold(false)}
       onPointerLeave={() => setHold(false)}
-      onPointerCancel={() => setHold(false)}
-    >
-      <img src={src} alt="" draggable={false} />
-      <div className="vx-shotMask">
-        <span>🜲</span>
-        <small>HOLD TO REVEAL</small>
-      </div>
-      {label ? <em>{label}</em> : null}
+      onPointerCancel={() => setHold(false)}>
+      {isVideo ? (
+    <video src={src} className="vh-shotImg" draggable={false} muted loop playsInline/>
+      ) : (
+    <img src={src} alt="" draggable={false} className="vh-shotImg" />
+      )}
+    <div className="vh-shotCover" aria-hidden>
+    <span className="vh-shotLock">
+      🜲</span>
+    <span className="vh-shotHint">
+      HOLD TO REVEAL</span>
     </div>
-  );
-}
-
+    </div>
+    );
+    }
 export default function Vault() {
   const [clock, setClock] = useState("--:--:-- UTC");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [dm, setDm] = useState(false);
   const countdown = useCountdown();
 
-  useEffect(() => {
-    const tick = () => {
+    useEffect(() => {
+      const tick = () => {
       const d = new Date();
       const p = (n: number) => String(n).padStart(2, "0");
       setClock(`${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`);
     };
     tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return (
+      const id = window.setInterval(tick, 1000);
+      return () => window.clearInterval(id);
+    }, []);
+      return (
     <div id="top" className="vx">
-      <style>{CSS}</style>
+    <style>
+      {CSS}</style>
+    <header className="vx-hud">
+    <a href="#top" className="vx-brand">
+    <img src={LOGO} alt="USER FX" />
+    <span className="vx-live" />
+    <span>
+      BÓVEDA PRIVADA · Nº07</span>
+    </a>
+    <div className="vx-hudRight">
+    <time>
+      {clock}</time>
+    <b>
+      🜲 LOCKED</b>
+    </div>
+    </header>
+    <section className="vx-open">
+    <div className="vx-bg">
+    <img src={DAMASK} alt="" className="vx-damask" />
+    <img src={BRICK} alt="" className="vx-brick" />
+    <i className="vx-blob vx-blobA" />
+    <i className="vx-blob vx-blobB" />
+    </div>
 
-      <header className="vx-hud">
-        <a href="#top" className="vx-brand">
-          <img src={LOGO} alt="USER FX" />
-          <span className="vx-live" />
-          <span>BÓVEDA PRIVADA · Nº07</span>
-        </a>
-        <div className="vx-hudRight">
-          <time>{clock}</time>
-          <b>🜲 LOCKED</b>
-        </div>
-      </header>
-
-      <section className="vx-open">
-        <div className="vx-bg">
-          <img src={DAMASK} alt="" className="vx-damask" />
-          <img src={BRICK} alt="" className="vx-brick" />
-          <i className="vx-blob vx-blobA" />
-          <i className="vx-blob vx-blobB" />
-        </div>
-
-        <div className="vx-grid">
-          <div>
-            <div className="vx-logoWrap">
+    <div className="vx-grid">
+    <div>
+    <div className="vx-logoWrap">
               <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" />
             </div>
             <p className="vx-kicker">
@@ -371,7 +329,7 @@ export default function Vault() {
         <div className="vx-archive">
           {TEASERS.map((src, i) => (
             <Reveal key={src} delay={i * 70}>
-              <HoldShot src={src} label={`Nº${String(i + 8).padStart(2, "0")}`} />
+            <HoldShot src={src} active={false} />
             </Reveal>
           ))}
         </div>
@@ -449,19 +407,21 @@ export default function Vault() {
             <button type="button" onClick={() => setDm(false)}>
               ×
             </button>
-            <p>𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
-            <h3>ACCESS RESTRICTED</h3>
-            <p>Solicita tu código por DM directo.</p>
+            <p>
+              𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT</p>
+            <h3>
+              ACCESS RESTRICTED</h3>
+            <p>
+              Solicita tu código por DM directo.</p>
             <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
-              ABRIR DM
+              SEND DM
             </a>
           </div>
-        </div>
-      ) : null}
     </div>
-  );
-}
-
+    ) : null}
+    </div>
+    );
+    }
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
 html,body,#root{margin:0;padding:0;min-height:100%;background:#07060a}
