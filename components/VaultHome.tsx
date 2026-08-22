@@ -7,15 +7,18 @@ import VisitorCounter from './VisitorCounter';
   const LOGO =    "/assets/userfx-logo-sin.png";
   const BRICK =   "/assets/brick-wall.png";
   const DAMASK =  "/assets/damask.png";
-  const INSIDE = ["/assets/album/pic01.png",
-                  "/assets/album/pic02.png",
-                  "/assets/album/pic03.png",
-                  "/assets/album/pic04.png",
-                  "/assets/album/pic05.png",
-                  "/assets/album/pic06.png",
-                  "/assets/album/pic07.png",
+  const PUBLIC_INSIDE = [ "/assets/album/pic01.png",
+                          "/assets/album/pic02.png",
+                          "/assets/album/pic03.png",
+                          "/assets/album/pic04.png",
+                          "/assets/album/pic05.png",
+                          "/assets/album/pic06.png",
+                          "/assets/album/pic07.png",
   ];
-
+  const PRIVATE_INSIDE = [ "/assets/album/pix01.png",
+                           "/assets/album/pix02.png",
+                           "/assets/album/pix03.png",
+];
   const LOCK_VIDEOS = ["/assets/video01.mp4",
                        "/assets/video02.mp4",
                 ];
@@ -24,14 +27,13 @@ import VisitorCounter from './VisitorCounter';
                   rosa: "/assets/iconos/rosa.png",
                   fotos: "/assets/iconos/fotos.png",
                   telegram: "/assets/iconos/telegram.png", 
-  };
-  const TICKER_ITEMS = [
-     "𝓤𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT",
-     "NEW DROP EVERY FRIDAY · 𝟮𝟮﹕𝟬𝟬UTC",
-     "PRIVATE ACCESS · TELEGRAM",
-     "PRIVATE CODE · FX-USER18-0001",
-     "«NOCTURNA» · A PRIVATE COLLECTION"
-  ];
+                       };
+  const TICKER_ITEMS = ["𝓤𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT",
+                        "NEW DROP EVERY FRIDAY · 𝟮𝟮﹕𝟬𝟬UTC",
+                        "PRIVATE ACCESS · TELEGRAM",
+                        "PRIVATE CODE · FX-USER18-0001",
+                        "«NOCTURNA» · A PRIVATE COLLECTION"
+                       ];
    const STEPS = [{ n: "01",
                     title: "UNLOCK YOUR ACCESS",
                     text: "Each key unlocks the private collection for a set period of time.",},
@@ -46,29 +48,26 @@ import VisitorCounter from './VisitorCounter';
                     text: "Enter the final four characters of your code. The door takes care of the rest.",},
                   ];
     const PLANS = [{id:  "basic",
-                tab: "BS02-",
-                name:"BASIC",
-                days: 7,
-                benefits: [
-      { icon: ICONS.candado, text: "Enter the vault" },
-      { icon: ICONS.fotos, text: "BASIC drops" },
-      { icon: ICONS.corona, text: "Instant access" },],},
+                   tab: "BS02-",
+                   name:"BASIC",
+                   days: 7,
+                   benefits: [{icon:ICONS.candado,text: "Enter the vault" },
+                              {icon:ICONS.fotos,text: "BASIC drops" },
+                              {icon:ICONS.corona,text: "Instant access" },],},
     { id:  "pro",
       tab: "PX01-",
       name:"PRO",
       days: 30,
-      benefits: [
-      { icon: ICONS.candado, text: "Unlock more" },
-      { icon: ICONS.fotos, text: "Exclusive PRO drops" },
-      { icon: ICONS.telegram, text: "Private channels" },],},
+      benefits: [{ icon: ICONS.candado, text: "Unlock more" },
+                 { icon: ICONS.fotos, text: "Exclusive PRO drops" },
+                 { icon: ICONS.telegram, text: "Private channels" },],},
     { id:  "vip",
       tab: "VX03-",
       name:"VIP",
       days: 90,
-      benefits: [
-      { icon: ICONS.candado, text: "No limits" },
-      { icon: ICONS.fotos, text: "Full drops" },
-      { icon: ICONS.telegram, text: "Private chat" },],},
+      benefits: [{ icon: ICONS.candado, text: "No limits" },
+                 { icon: ICONS.fotos, text: "Full drops" },
+                 { icon: ICONS.telegram, text: "Private chat" },],},
   ];
     const FAQS = [
      { q: "How do I get a code?",
@@ -177,7 +176,9 @@ import VisitorCounter from './VisitorCounter';
   const STORAGE_KEY = 'vault_unlocked';
   const MAX_ATTEMPTS = 5;
 
+
   export default function VaultHome() {
+
 
   const [clock, setClock] = useState("--:--:-- UTC");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -186,6 +187,9 @@ import VisitorCounter from './VisitorCounter';
   const countdown = useCountdown();
   const [codeModal, setCodeModal] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const visiblePhotos = unlocked
+                     ? [...PUBLIC_INSIDE, ...PRIVATE_INSIDE]
+                     : PUBLIC_INSIDE;
   const [prefix, setPrefix] = useState('');
   const [suffix, setSuffix] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
@@ -193,10 +197,10 @@ import VisitorCounter from './VisitorCounter';
   const [attempts, setAttempts] = useState(0);
   const [activePlan, setActivePlan] = useState("basic");
     
-  useEffect(() => {
-  if (sessionStorage.getItem(STORAGE_KEY) === 'true') setUnlocked(true);
+    useEffect(() => {
+    if (sessionStorage.getItem(STORAGE_KEY) === 'true') setUnlocked(true);
 
-  fetch('/api/miniapp-track', {
+    fetch('/api/miniapp-track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -207,20 +211,18 @@ import VisitorCounter from './VisitorCounter';
   
   useEffect(() => {
   const tick = () => {
-    const d = new Date();
-    const p = (n: number) => String(n).padStart(2, '0');
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, '0');
     setClock(
       `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
   );
   };
-      tick();
-      const id = window.setInterval(tick, 1000);
-      return () => window.clearInterval(id);
+  tick();
+  const id = window.setInterval(tick, 1000);
+  return () => window.clearInterval(id);
   }, []);
-
-      async function handleVerify(e: React.FormEvent) {
+  async function handleVerify(e: React.FormEvent) {
   e.preventDefault();
-
   if (attempts >= MAX_ATTEMPTS) {
     setVerifyError('Demasiados intentos. Recarga la página.');
   return;
@@ -408,7 +410,8 @@ import VisitorCounter from './VisitorCounter';
                  </h2>
                  <p className="vx-lead">
                    You’re only seeing part of it. Every Friday at 22:00 UTC a new drop
-                   is added. This is just a glimpse of <strong>«Nocturna».</strong>
+                   is added. This is just a glimpse of <strong>
+                   «Nocturna».</strong>
                  </p>
                  </div>
                  <div className="vx-count">
@@ -416,17 +419,19 @@ import VisitorCounter from './VisitorCounter';
                  <strong>{countdown}</strong>
                  <p>FRIDAY · 22:00 UTC</p>
                  </div>
-             </Reveal>
-                 <div className="vx-archive">
-                  {INSIDE.map((src, i) => (
-             <Reveal key={src} delay={i * 70}>
-             <HoldShot src={src} />
-             </Reveal>
-                 ))}
+          </Reveal>
+                 <div className="vx-carousel">
+                 <div className="vx-carouselTrack">
+                 {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
+                 <div className="vx-carouselSlide" key={`${src}-${i}`}>
+          <HoldShot src={src} />
                  </div>
-                 </section>
-                 <section id="faq" className="vx-sec">
-             <Reveal>
+                   ))}
+                 </div>
+                 </div>
+              </section>
+              <section id="faq" className="vx-sec">
+          <Reveal>
                  <p className="vx-goldk">
                    ◈ PRIVATE INFORMATION</p>
                  <h2>
@@ -435,11 +440,11 @@ import VisitorCounter from './VisitorCounter';
                  <span className="vx-getIn">
                    GET IN</span>
                  </h2>
-             </Reveal>
+          </Reveal>
                  <div className="vx-faq">
                   {FAQS.map((f, i) => { const open = openFaq === i;
                 return (
-             <Reveal key={f.q} delay={i * 50}>
+          <Reveal key={f.q} delay={i * 50}>
                  <div className="vx-faqItem">
                  <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
                  <b>
@@ -451,34 +456,35 @@ import VisitorCounter from './VisitorCounter';
                  <i>{open ? "–" : "+"}</i>
                  </button>
                   {open ? <p>{f.a}</p> : null}
-                   </div>
-             </Reveal>
-                );
-              })}
-               </div>
-          </section>
-         <footer className="vx-foot">
-  <div className="vx-footGrid">
-    <div>
-      <div className="vx-footBrand">
-        <img src={LOGO} alt="" />
-        <div>
-        <p>
-          USER<span> 🜲FX </span>
-        </p>
-        <small>PRIVATE VAULT</small>
-        </div>
-        </div>
-        </div>
-        <div>
-        <div className="vx-links">
-        <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
-          @User18Fx_bot
-        </a>
-        <a href="#top">
-          VAULT</a>
-        <a href="/admin">
-         DIGITAL ARCHIVE</a>
+                 </div>
+          </Reveal>
+                 );
+                 })}
+                 </div>
+            </section>
+                 <footer className="vx-foot">
+                 <div className="vx-footGrid">
+                 <div>
+                 <div className="vx-footBrand">
+                 <img src={LOGO} alt="" />
+                 <div>
+                 <p>
+                   USER<span> 
+                   🜲FX </span>
+                 </p>
+                 <small>PRIVATE VAULT</small>
+                 </div>
+                 </div>
+                 </div>
+                 <div>
+                 <div className="vx-links">
+                 <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
+                  @User18Fx_bot
+                 </a>
+             <a href="#top">
+              VAULT</a>
+             <a href="/admin">
+              DIGITAL ARCHIVE</a>
         </div>
        </div>
        </div>
@@ -1185,11 +1191,6 @@ text-shadow:0 0 18px #b64b5d2e;}
 .vx-shot:hover .vx-shotMask{
   opacity:0;
   }
-.vx-archive{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:32px;}
-@media(min-width:700px){
-.vx-archive{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;}}
-@media(min-width:1100px){
-.vx-archive{ grid-template-columns:repeat(6,minmax(0,1fr)); gap:24px;}}
 @media(hover:hover){
 .vx-shot:hover .vx-shotMedia{ filter:none; transform:scale(1);} 
 .vx-shot:hover .vx-shotMask{ opacity:0;}}
@@ -1412,14 +1413,7 @@ text-shadow:0 0 18px #b64b5d2e;}
     url("/assets/damask.png");
   transform:translateX(5px);
 }
-.vx-archive{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.vx-archiveHead{ display:grid; gap:28px; align-items:end;}
 @media(min-width:760px){
-.vx-archiveHead{ grid-template-columns:1fr auto;}}
-.vx-archiveHead .vx-count{ justify-self:start;}
-@media(min-width:760px){.vx-archiveHead .vx-count{justify-self:end;}}
-@media(min-width:700px){.vx-archive{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:1100px){.vx-archive{grid-template-columns:repeat(6,1fr)}}
 .vx-shot{position:relative;aspect-ratio:3/4;overflow:hidden;border:1px solid var(--line);cursor:pointer;touch-action:none;user-select:none}
 .vx-shot img{width:100%;height:100%;object-fit:cover;pointer-events:none;filter:blur(14px) grayscale(1) brightness(.4);transform:scale(1.12);transition:.25s ease}
 .vx-shotMask{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(7,6,10,.4);color:rgba(244,238,228,.55);font-family:var(--mono);font-size:8px;letter-spacing:.18em}
@@ -2177,6 +2171,43 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   object-fit:contain;
   pointer-events:none;
 }
+.vx-carousel{width: 100%; margin-top: 32px; overflow: hidden; position: relative; padding: 8px 0;}
+.vx-carousel::before,
+.vx-carousel::after { content:""; position: absolute; top: 0; bottom: 0; width: 55px; z-index: 3; pointer-events: none;}
+.vx-carousel::before { left: 0; background: linear-gradient( 90deg, #07060a 0%, transparent 100%);}
+.vx-carousel::after { right: 0; background: linear-gradient( 270deg, #07060a 0%, transparent 100%);}
+.vx-carouselTrack{display: flex; width: max-content; gap: 14px; animation: vx-carouselMove 22s linear infinite; will-change: transform;}
+.vx-carouselSlide {width: clamp(155px, 22vw, 205px); flex: 0 0 auto;}
+.vx-carousel {
+  position: relative;
+  width: 100%;
+  margin-top: 32px;
+  padding: 8px 0;
+  overflow: hidden;
+}
+.vx-carouselTrack {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  gap: 14px;
+  animation: vxCarouselScroll 18s linear infinite !important;
+  animation-play-state: running !important;
+  will-change: transform;
+}
+.vx-carouselSlide {width: clamp(155px, 22vw, 205px);flex: 0 0 auto;}
+@keyframes vxCarouselScroll {
+  0%{transform: translate3d(0, 0, 0);}
+  100% { transform: translate3d(calc(-50% - 7px), 0, 0);}}
+@media (max-width: 600px) {
+  .vx-carouselTrack { gap: 10px;animation-duration: 14s !important;}
+  .vx-carouselSlide {width: 145px;}
+  @keyframes vxCarouselScroll {
+    0% {transform: translate3d(0, 0, 0);}
+    100% {transform: translate3d(calc(-50% - 5px), 0, 0);
+    }}}
+
+
+
 
 
 `;
