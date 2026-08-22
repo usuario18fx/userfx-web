@@ -290,12 +290,21 @@ import VisitorCounter from './VisitorCounter';
   }}
 
   useEffect(() => {
-  const telegram = window.Telegram?.WebApp;
+  type TelegramViewportApi = {
+    ready?: () => void;
+    expand?: () => void;
+    viewportHeight?: number;
+    viewportStableHeight?: number;
+  };
+
+  const telegram = window.Telegram?.WebApp as
+    | TelegramViewportApi
+    | undefined;
 
   const updateViewport = () => {
     const height =
-      telegram?.viewportStableHeight ||
-      telegram?.viewportHeight ||
+      telegram?.viewportStableHeight ??
+      telegram?.viewportHeight ??
       window.innerHeight;
 
     document.documentElement.style.setProperty(
@@ -304,8 +313,13 @@ import VisitorCounter from './VisitorCounter';
     );
   };
 
-  telegram?.ready?.();
-  telegram?.expand?.();
+  if (typeof telegram?.ready === "function") {
+    telegram.ready();
+  }
+
+  if (typeof telegram?.expand === "function") {
+    telegram.expand();
+  }
 
   updateViewport();
 
@@ -323,8 +337,8 @@ import VisitorCounter from './VisitorCounter';
 
     window.removeEventListener("resize", updateViewport);
     window.removeEventListener("orientationchange", updateViewport);
-     };
-     }, []);
+  };
+}, []);
          return (
                 <div id="top" className="vx">
                 <style>{CSS}</style>
