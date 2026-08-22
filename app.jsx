@@ -1,5 +1,5 @@
-import AccessGate from "./components/AccessGate";
+import VaultHome from "./components/VaultHome";
 
 export default function App() {
-  return <AccessGate />;
+  return <VaultHome />;
 }
