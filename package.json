@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "@vercel/speed-insights": "^2.0.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.45.2",
     "grammy": "^1.30.0",

@@ -288,6 +288,43 @@ import VisitorCounter from './VisitorCounter';
   } finally {
     setVerifyLoading(false);
   }}
+
+  useEffect(() => {
+  const telegram = window.Telegram?.WebApp;
+
+  const updateViewport = () => {
+    const height =
+      telegram?.viewportStableHeight ||
+      telegram?.viewportHeight ||
+      window.innerHeight;
+
+    document.documentElement.style.setProperty(
+      "--telegram-viewport-height",
+      `${height}px`
+    );
+  };
+
+  telegram?.ready?.();
+  telegram?.expand?.();
+
+  updateViewport();
+
+  const animationFrame = window.requestAnimationFrame(updateViewport);
+  const firstUpdate = window.setTimeout(updateViewport, 150);
+  const secondUpdate = window.setTimeout(updateViewport, 500);
+
+  window.addEventListener("resize", updateViewport);
+  window.addEventListener("orientationchange", updateViewport);
+
+  return () => {
+    window.cancelAnimationFrame(animationFrame);
+    window.clearTimeout(firstUpdate);
+    window.clearTimeout(secondUpdate);
+
+    window.removeEventListener("resize", updateViewport);
+    window.removeEventListener("orientationchange", updateViewport);
+     };
+     }, []);
          return (
                 <div id="top" className="vx">
                 <style>{CSS}</style>
@@ -390,12 +427,26 @@ import VisitorCounter from './VisitorCounter';
       </span>
       </div>
 
-      <button  type="button" className="vault-unlock"  onClick={() => setDm(true)} >
-      <span className="vault-unlock__title">
-        UNLOCK ALBUM
-      </span>
-      </button>
-      <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank"rel="noreferrer"> GET MY CODE</a>
+       <div className="vx-lockActions">
+  <button
+    type="button"
+    className="vault-unlock"
+    onClick={() => setCodeModal(true)}
+  >
+    <span className="vault-unlock__title">
+      UNLOCK ALBUM
+    </span>
+  </button>
+
+  <a
+    className="vault-get-code"
+    href="https://t.me/User18Fx_bot?start=getcode"
+    target="_blank"
+    rel="noreferrer"
+  >
+    GET MY CODE
+  </a>
+</div>
       </div>
       </aside>
       </div>
@@ -2461,39 +2512,97 @@ video {
     0 8px 20px #b94a5c4d,
     0 0 18px #b94a5c38;
 }
-
 /* ─── CAROUSEL ─── */
+.vx-carousel {position: relative;
+  width: 100%;max-width: 100%; margin-top: 32px;  padding: 8px 0;overflow: hidden;  contain: layout paint;}
+.vx-carouselTrack{display: flex;flex-wrap: nowrap;width: max-content; gap: 14px; animation:vxCarouselScroll 18s linear infinite; will-change: transform;}
+.vx-carouselSlide {width: 180px; flex: 0 0 180px; overflow: hidden;}
+.vx-carouselSlide .vx-shot {width: 100%;}
+@keyframes vxCarouselScroll {
+from { transform: translate3d(0, 0, 0);}
+to { transform: translate3d( calc(-50% - 7px),0,0);}}
+@media (max-width: 600px) {
+.vx-carouselTrack { gap: 10px; animation-duration: 14s;}
+.vx-carouselSlide { width: 145px; flex-basis: 145px;}
+@keyframes vxCarouselScroll {from { transform: translate3d(0, 0, 0);}
+to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
 
-.vx-carousel {
-  position: relative;
+
+
+.vx-lockActions {
   width: 100%;
-  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.vx-lockActions .vault-unlock,
+.vx-lockActions .vault-get-code {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vx-lockActions .vault-unlock {
+  border: 1px solid #d4a83a;
+  background: linear-gradient(180deg, #2a2a2a, #111);
+  color: #f6d77a;
+}
+.vx-lockActions .vault-get-code {
+  border: 1px solid #9f173d;
+  background: linear-gradient(180deg, #6f102d, #310713);
+  color: #f18aa5;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.vx-lockActions .vault-get-code:hover {
+  color: #fff0f4;
+  border-color: #ec557d;
+  background: linear-gradient(180deg, #a71943, #5b0b22);
+  box-shadow: 0 0 18px rgba(236, 85, 125, 0.28);
+  transform: translateY(-2px);
+}
+.vx-carousel {
+  width: 100%;
   margin-top: 32px;
-  padding: 8px 0;
   overflow: hidden;
-  contain: layout paint;
 }
 
 .vx-carouselTrack {
-  display: flex;
-  flex-wrap: nowrap;
   width: max-content;
+  display: flex;
   gap: 14px;
-
-  animation:
-    vxCarouselScroll 18s linear infinite;
-
   will-change: transform;
+  animation: vxCarouselScroll 18s linear infinite;
 }
 
 .vx-carouselSlide {
-  width: 180px;
-  flex: 0 0 180px;
-  overflow: hidden;
+  width: clamp(150px, 24vw, 260px);
+  flex: 0 0 auto;
 }
 
 .vx-carouselSlide .vx-shot {
   width: 100%;
+  height: 360px;
 }
 
 @keyframes vxCarouselScroll {
@@ -2502,12 +2611,7 @@ video {
   }
 
   to {
-    transform:
-      translate3d(
-        calc(-50% - 7px),
-        0,
-        0
-      );
+    transform: translate3d(calc(-50% - 7px), 0, 0);
   }
 }
 
@@ -2518,8 +2622,8 @@ video {
   }
 
   .vx-carouselSlide {
-    width: 145px;
-    flex-basis: 145px;
+    width: 72vw;
+    max-width: 260px;
   }
 
   @keyframes vxCarouselScroll {
@@ -2528,14 +2632,14 @@ video {
     }
 
     to {
-      transform:
-        translate3d(
-          calc(-50% - 5px),
-          0,
-          0
-        );
+      transform: translate3d(calc(-50% - 5px), 0, 0);
     }
   }
 }
+
+
+
+
+
 
 `;
