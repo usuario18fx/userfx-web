@@ -532,61 +532,51 @@ function getCommandArg(ctx, index = 0) {
         .slice(1);
     return parts[index] || "";
      }
-async function typing(ctx) {
+    async function typing(ctx) {
     try {
-        await ctx.sendChatAction("typing");
-        await sleep(300);
+    await ctx.sendChatAction("typing");
+    await sleep(300);
     }
     catch {
-        // ignore
     } 
     }
-async function sendMediaSafe(ctx, kind, url, extra = {}) {
+    async function sendMediaSafe(ctx, kind, url, extra = {}) {
     try {
-        if (kind === "video") {
-            await ctx.replyWithVideo(url, extra);
-            return;
+    if (kind === "video") {
+    await ctx.replyWithVideo(url, extra);
+    return;
     }
-        await ctx.replyWithPhoto(url, extra);
+    await ctx.replyWithPhoto(url, extra);
     }
-    catch (error) {
-        logger.error("SEND MEDIA ERROR", {
-            kind,
-            url,
-            ...getTelegramError(error),
+    catch (error) {  logger.error(
+        "SEND MEDIA ERROR", {  kind,  url, ...getTelegramError(error),
     });
     }
     }
-// ======================================================
-// BUTTON TRACKING
-// ======================================================
-async function trackButtonClick(ctx, buttonName) {
+//// BUTTON TRACKING //    
+    async function trackButtonClick(ctx, buttonName) {
     try {
-        const client = await ensureRedis();
+    const client = await ensureRedis();
         if (!client)
             return;
-        const user = getUserMeta(ctx.from);
+    const user = getUserMeta(ctx.from);
         if (!user.id)
             return;
-        const data = {
+    const data = {
             fullName: user.fullName,
             username: user.username,
             id: user.id,
             button: buttonName,
             clickedAt: new Date().toISOString(),
     };
-        await client.set(`button_click:${user.id}:${Date.now()}`, JSON.stringify(data), "EX", 60 * 60 * 24 * 30);
+    await client.set(`button_click:${user.id}:${Date.now()}`, JSON.stringify(data), "EX", 60 * 60 * 24 * 30);
     }
-    catch (error) {
-        logger.error("TRACK BUTTON ERROR", {
-            message: error?.message,
+    catch (error) {logger.error("TRACK BUTTON ERROR", { message: error?.message,
     });
     }
     }
-// ======================================================
-// RATE LIMIT
-// ======================================================
-async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
+//// RATE LIMIT //
+    async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
     const client = await ensureRedis();
     if (!client)
         return true;
@@ -594,51 +584,45 @@ async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
         const key = `rate_limit:videocall:${userId}`;
         const count = await client.incr(key);
         if (count === 1) {
-            await client.expire(key, windowSeconds); 
+        await client.expire(key, windowSeconds); 
     }
-        return count <= limit;
+       return count <= limit;
     }
-    catch (error) {
-        logger.error("RATE LIMIT ERROR", {
-            message: error?.message,
-    });
-        return true;
+       catch (error) { logger.error(
+        "RATE LIMIT ERROR", { message: error?.message,});
+       return true;
     }
     }
-// ======================================================
-// CENTRAL CODE ENGINE
-// ======================================================
-function randomCodePart(length = 4) {
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        const index = crypto.randomInt(0, alphabet.length);
-        result += alphabet[index];
+//// CENTRAL CODE ENGINE // 
+    function randomCodePart(length = 4) {
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let result = "";
+      for (let i = 0; i < length; i++) {
+      const index = crypto.randomInt(0, alphabet.length); result += alphabet[index];
     }
-    return result;
+       return result;
     }
-function getPlanFromPayload(payload) {
+  function getPlanFromPayload(payload) {
     if (payload === BASIC_PAYLOAD) {
-        return PLAN_CONFIG.basic;
+       return PLAN_CONFIG.basic;
     }
     if (payload === PRO_PAYLOAD) {
-        return PLAN_CONFIG.pro;
+       return PLAN_CONFIG.pro;
     }
     if (payload === VIP_PAYLOAD) {
-        return PLAN_CONFIG.vip;
+       return PLAN_CONFIG.vip;
     }
-    return null;
+       return null;
     }
-function getCodeKey(code) {
-    return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
+  function getCodeKey(code) {
+       return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
     }
-function getUserCodeIndexKey(userId) {
-    return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
+  function getUserCodeIndexKey(userId) {
+       return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
     }
-async function generateAccessCode(planId, source, userId, chargeId = null) {
+   async function generateAccessCode(planId, source, userId, chargeId = null) {
     const client = await ensureRedis();
-    if (!client) {
-        throw new Error("Redis is required for code generation");
+    if (!client) { throw new Error("Redis is required for code generation");
     }
     const plan = PLAN_CONFIG[planId];
     if (!plan) {
@@ -662,11 +646,6 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
             redeemedAt: null,
             redeemedBy: null,
         };
-        /*
-         * NX makes the code creation atomic.
-         * If another process somehow creates the same
-         * code, Redis rejects this attempt and we retry.
-         */
         const created = await client.set(key, JSON.stringify(record), "NX", "EX", PAYMENT_TTL_SECONDS);
         if (created === "OK") {
             await client.sadd(getUserCodeIndexKey(String(userId)), code);
@@ -677,62 +656,51 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
                 source,
                 userId,
        });
-            return record;
+       return record;
        }
        }
     throw new Error("Unable to generate unique access code");
        }
-async function getAccessCode(code) {
-    const normalized = String(code || "")
+   async function getAccessCode(code) {
+      const normalized = String(code || "")
         .trim()
         .toUpperCase();
     if (!normalized) {
-        return null;
+       return null;
        }
-    return redisGetJson(getCodeKey(normalized));
+       return redisGetJson(getCodeKey(normalized));
        }
-async function validateAccessCode(code) {
-    const record = await getAccessCode(code);
+   async function validateAccessCode(code) {
+      const record = await getAccessCode(code);
     if (!record) {
-        return {
-            valid: false,
-            reason: "not_found",
-        };
-        }
+       return { valid: false,reason: "not_found",};
+       }
     if (record.status !== "active") {
-        return {
-            valid: false,
-            reason: "not_active",
-            record,
-        };
+       return {valid: false, reason: "not_active",record,};
         }
-    return { valid: true, record,};
+       return { valid: true, record,};
         }
-// ======================================================
-// VAULT BUTTON
-// ======================================================
-function getOpenVaultKeyboard() {
-    const url = TELEGRAM_MINI_APP_URL;
-    const isDirectHttps = /^https:\/\//i.test(url) &&
+//// VAULT BUTTON //
+  function getOpenVaultKeyboard() {
+      const url = TELEGRAM_MINI_APP_URL;
+      const isDirectHttps = /^https:\/\//i.test(url) &&
         !/^https:\/\/t\.me\//i.test(url);
-    return Markup.inlineKeyboard([
+      return Markup.inlineKeyboard([
         [ isDirectHttps
             ? Markup.button.webApp(BTN_OPEN_VAULT, url)
             : Markup.button.url(BTN_OPEN_VAULT, url),],]);
         }
-// ======================================================
-// KEYBOARDS
-// ======================================================
-function getMainKeyboard() {
-    return Markup.keyboard([
+//// KEYBOARDS //
+  function getMainKeyboard() {
+      return Markup.keyboard([
         [ BTN_VIDEOCALL,
           BTN_GET_CODE, ] ,
         [ BTN_CHANNELS,  
           BTN_REFRESH, ] ,
         ]).resize();
         }
-function getAccessKeyboard() {
-    return Markup.keyboard([
+  function getAccessKeyboard() {
+      return Markup.keyboard([
         [ BTN_BASIC,
           BTN_VIP, ] ,
         [ BTN_PRO, ] ,
@@ -741,67 +709,62 @@ function getAccessKeyboard() {
           BTN_WEBSITE,
           USERFX_SITE_URL), ] ,] ) .resize();
          }
-    function getPendingPhotoKeyboard() {
-    return Markup.keyboard([
+  function getPendingPhotoKeyboard() {
+      return Markup.keyboard([
         [ BTN_PENDING_REQUEST, ],
         [ BTN_CANCEL, ] , ] ).resize();
         }
-function getApprovedVideocallKeyboard() {
-    return Markup.keyboard([
+  function getApprovedVideocallKeyboard() {
+      return Markup.keyboard([
         [ BTN_ZOOM,
           BTN_TELEGRAM, ],
         [ BTN_BACK_MENU,],]).resize();
          }
-function getVideocallInlineKeyboard() {
-    return { inline_keyboard: [
+  function getVideocallInlineKeyboard() {
+      return { inline_keyboard: [
             [{ text: BTN_ZOOM,
                url: ZOOM_URL,},
              { text: BTN_TELEGRAM,
                url: TELEGRAM_CALL_URL, } , ] , ] , } ; 
-                 }
-function getStarsVipKeyboard() {
-    return Markup.inlineKeyboard([
+        }
+  function getStarsVipKeyboard() {
+      return Markup.inlineKeyboard([
         [ Markup.button.callback("❘ᴘᴀʏ ✪ 𝐕ɪᴘ❘", "pay_vip_stars") , ] , ] ) ;
         }
-function getStarsBasicKeyboard() {
-    return Markup.inlineKeyboard([
+  function getStarsBasicKeyboard() {
+      return Markup.inlineKeyboard([
         [ Markup.button.callback("|ᴘᴀʏ ✪ 𝐁ᴀsɪᴄ|", "pay_basic_stars") , ] , ] ) ;
-         }
-function getStarsProKeyboard() {
-    return Markup.inlineKeyboard([
+        }
+  function getStarsProKeyboard() {
+      return Markup.inlineKeyboard([
         [ Markup.button.callback("| ᴘᴀʏ ✪ ᴘʀᴏ |", "pay_pro_stars") , ] , ] ) ;
         }
-function getChannelsKeyboard() {
-    return Markup.keyboard([
+  function getChannelsKeyboard() {
+      return Markup.keyboard([
         [ BTN_SMOKELANDIA,
           BTN_USERFX_SITE, ] ,
-        [ BTN_BACK_MENU, ] ,
-    ]).resize();
-     }
-// ======================================================
-// ACCESS STATE
-// ======================================================
-function tierRank(tier) {
+        [ BTN_BACK_MENU, ] ,]).resize();
+        }
+//// ACCESS STATE // 
+   function tierRank(tier) {
     if (tier === TIER_VIP)
         return 3;
     if (tier === TIER_PRO)
         return 2;
     if (tier === TIER_BASIC)
         return 1;
-    return 0; }
-async function getAccessState(userId) {
+        return 0; }
+    async function getAccessState(userId) {
     const entry = await getPaidUser(userId);
     const tier = entry?.tier || null;
-    return {
+        return {
         hasVip: tierRank(tier) >= 3,
         hasPro: tierRank(tier) >= 2,
         hasBasic: tierRank(tier) >= 1,
         entry,
     };}
-// ======================================================
-// PANELS
-// ======================================================
-async function sendMainPanel(ctx) {
+//// PANELS //
+    async function sendMainPanel(ctx) {
     try {
         await typing(ctx);
         await sendMediaSafe(ctx, "video", ASSET_WELCOME_VIDEO);
@@ -816,71 +779,60 @@ async function sendMainPanel(ctx) {
             userId: ctx.from?.id || null,
             chatId: ctx.chat?.id || null,
         });
-        throw error;
+    throw error;
        }}
-async function sendMembershipPanel(ctx) {
+    async function sendMembershipPanel(ctx) {
     await typing(ctx);
     await ctx.reply(`ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ
-   🌹 ʙᴀꜱɪᴄ
-   🔥 ᴘʀᴏ 
-   👑 ᴠɪᴘ`, getAccessKeyboard());
-}
-async function sendVipPanel(ctx) {
-    try {
-        await ctx.reply(`👑ᴛɪᴄᴋᴇᴛ ᴠɪᴘ
-————————————
-⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
-⇀ ʙᴇɴᴇғɪᴛs
-⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
-⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³
-
-✪ ${VIP_STARS_PRICE} Telegram Stars`, getStarsVipKeyboard());
+     🌹 ʙᴀꜱɪᴄ
+     🔥 ᴘʀᴏ 
+     👑 ᴠɪᴘ`, getAccessKeyboard());}
+    async function sendVipPanel(ctx) {
+    try { await ctx.reply(
+    `👑ᴛɪᴄᴋᴇᴛ ᴠɪᴘ
+    ————————
+    ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
+    ⇀ ʙᴇɴᴇғɪᴛs
+    ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
+    ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³
+    ✪ ${VIP_STARS_PRICE} Telegram Stars`, getStarsVipKeyboard());
     }
     catch (error) {
-        logger.error("VIP PANEL ERROR", getTelegramError(error));
-    }
-}
-async function sendBasicPanel(ctx) {
-    try {
-        await ctx.reply(`⚡ᴛɪᴄᴋᴇᴛ ʙᴀꜱɪᴄ
-————————————
-⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
-⇀ ʙᴇɴᴇғɪᴛs
-⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹
-
-✪ ${BASIC_STARS_PRICE} Telegram Stars`, getStarsBasicKeyboard());
+    logger.error("VIP PANEL ERROR", getTelegramError(error));
+    }}
+    async function sendBasicPanel(ctx) {
+    try { await ctx.reply(
+    `⚡ᴛɪᴄᴋᴇᴛ ʙᴀꜱɪᴄ
+    —————————
+    ⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
+    ⇀ ʙᴇɴᴇғɪᴛs
+    ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹
+    ✪ ${BASIC_STARS_PRICE} Telegram Stars`, getStarsBasicKeyboard());
     }
     catch (error) {
-        logger.error("BASIC PANEL ERROR", getTelegramError(error));
-    }
-}
-async function sendProPanel(ctx) {
-    try {
-        await ctx.reply(`🔥ᴛɪᴄᴋᴇᴛ ᴘʀᴏ
-————————————
-⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
-⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
-⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
-⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹
-
-✪ ${PRO_STARS_PRICE} Telegram Stars`, getStarsProKeyboard());
+    logger.error("BASIC PANEL ERROR", getTelegramError(error));
+    }}
+    async function sendProPanel(ctx) {
+    try { await ctx.reply(
+    `🔥ᴛɪᴄᴋᴇᴛ ᴘʀᴏ
+    ————————
+    ⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
+    ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
+    ⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
+    ⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹
+    ✪ ${PRO_STARS_PRICE} Telegram Stars`, getStarsProKeyboard());
     }
     catch (error) {
-        logger.error("PRO PANEL ERROR", getTelegramError(error));
-    }
-}
-// ======================================================
-// CHANNELS
-// ======================================================
-async function sendChannelsPanel(ctx) {
+    logger.error("PRO PANEL ERROR", getTelegramError(error));
+    }}
+//// CHANNELS //
+    async function sendChannelsPanel(ctx) {
     await sendMediaSafe(ctx, "video", ASSET_CHANNELS_VIDEO);
     await ctx.reply(`📺ᴄʜᴀɴɴᴇʟꜱ
-ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`, getChannelsKeyboard());
-}
-// ======================================================
-// REFRESH
-// ======================================================
-async function sendRefreshPanel(ctx) {
+    ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`, getChannelsKeyboard());
+    }
+//// REFRESH //
+    async function sendRefreshPanel(ctx) {
     const { hasVip, hasPro, hasBasic, } = await getAccessState(String(ctx.from?.id || ""));
     const tier = hasVip
         ? "👑 ᴠɪᴘ"
@@ -890,51 +842,39 @@ async function sendRefreshPanel(ctx) {
                 ? "🌹 ʙᴀꜱɪᴄ"
                 : "ɴᴏ ᴘʟᴀɴ";
     await ctx.reply(`↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
-ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`, getMainKeyboard());
-}
-// ======================================================
-// SEND GENERATED CODE
-// ======================================================
-async function sendGeneratedCode(ctx, record) {
+    ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`, getMainKeyboard());
+    }
+//// SEND GENERATED CODE //
+    async function sendGeneratedCode(ctx, record) {
     const safeCode = escapeHtml(record.code);
     const safePlan = escapeHtml(record.plan);
     await ctx.reply(`✅ ᴀᴄᴄᴇꜱꜱ ᴜɴʟᴏᴄᴋᴇᴅ
-
-ᴘʟᴀɴ: ${safePlan}
-ᴄᴏᴅᴇ:
-
-<code>${safeCode}</code>
-
-ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`, {
-        parse_mode: "HTML",
-    });
-    await ctx.reply(`🔐 ᴏᴘᴇɴ ᴛʜᴇ ᴠᴀᴜʟᴛ
-
-ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴅᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ᴛᴏ ᴜꜱᴇʀꜰx.`, getOpenVaultKeyboard());
-}
-// ======================================================
-// VIDEOCALL FLOW
-// ======================================================
-async function openVideocallFlow(ctx) {
+     ᴘʟᴀɴ: ${safePlan}
+     ᴄᴏᴅᴇ:
+     <code>${safeCode}</code>
+     ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`, {parse_mode: "HTML",}); await ctx.reply(
+        `🔐 ᴏᴘᴇɴ ᴛʜᴇ ᴠᴀᴜʟᴛ
+     ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴅᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ᴛᴏ ᴜꜱᴇʀꜰx.`, getOpenVaultKeyboard());
+     }
+//// VIDEOCALL FLOW //
+    async function openVideocallFlow(ctx) {
     const userId = String(ctx.from?.id || "");
     if (!userId)
         return;
     try {
         const allowed = await checkRateLimit(userId, 3, 300);
         if (!allowed) {
-            await ctx.reply("⏳ Please wait before requesting again.");
-            return;
+        await ctx.reply(
+        "⏳ Please wait before requesting again.");
+        return;
         }
         const currentRequest = await getVideoRequest(userId);
-        if (currentRequest?.status ===
-            REQUEST_STATUS.WAITING_PHOTO ||
-            currentRequest?.status ===
-                REQUEST_STATUS.AWAITING_ADMIN ||
-            currentRequest?.status ===
-                REQUEST_STATUS.AWAITING_PAYMENT) {
-            await ctx.reply(`⏳ ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
-
-ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`, getPendingPhotoKeyboard());
+        if (currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO ||
+            currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN ||
+            currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT) {
+            await ctx.reply(
+            `⏳ ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
+        ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`, getPendingPhotoKeyboard());
             return;
         }
         const user = getUserMeta(ctx.from);
@@ -945,142 +885,103 @@ async function openVideocallFlow(ctx) {
             status: REQUEST_STATUS.WAITING_PHOTO,
             invalidTextCount: 0,
             createdAt: Date.now(),
-        };
-        await setVideoRequest(userId, request);
-        await ctx.reply(`ʜᴏʟᴅ ᴜᴘ...
-ᴄᴀɴ ɪ ꜱᴇᴇ ᴡʜᴀᴛ ʏᴏᴜ ʟᴏᴏᴋ ʟɪᴋᴇ ғɪʀꜱᴛ👀
-
-ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ᴏᴠᴇʀ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ.`, getPendingPhotoKeyboard());
-        await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `📞 <b>ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ</b>
-Name: ${escapeHtml(user.fullName)}
-Username: ${escapeHtml(user.username)}
-ID: ${escapeHtml(user.id)}
-Chat ID: ${escapeHtml(userId)}
-⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`, {
-            parse_mode: "HTML",
-        });
-    }
-    catch (error) {
-        logger.error("OPEN VIDEOCALL FLOW ERROR", {
-            userId,
-            ...getTelegramError(error),
-            stack: getErrorStack(error),
-        });
-    }
-}
-// ======================================================
-// PENDING VIDEOCALL
-// ======================================================
-async function sendPendingVideocallPanel(ctx) {
+         };
+         await setVideoRequest(userId, request);
+         await ctx.reply(`ʜᴏʟᴅ ᴜᴘ...
+         ᴄᴀɴ ɪ ꜱᴇᴇ ᴡʜᴀᴛ ʏᴏᴜ ʟᴏᴏᴋ ʟɪᴋᴇ ғɪʀꜱᴛ👀
+         ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ᴏᴠᴇʀ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ.`, getPendingPhotoKeyboard());
+         await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `
+            📞 <b>ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ</b>
+         Username: ${escapeHtml(user.username)}
+         ID: ${escapeHtml(user.id)}
+         Chat ID: ${escapeHtml(userId)}
+         ⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`, {
+        parse_mode: "HTML",
+        });}
+    catch (error) { logger.error(
+          "OPEN VIDEOCALL FLOW ERROR", {
+        userId,...getTelegramError(error),stack: getErrorStack(error),
+        });}}
+//// PENDING VIDEOCALL //
+    async function sendPendingVideocallPanel(ctx) {
     const userId = String(ctx.from?.id || "");
-    if (!userId)
+        if (!userId)
         return;
-    try {
+        try {
         const request = await getVideoRequest(userId);
-        if (!request) {
+            if (!request) {
             await ctx.reply(`⏳ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
-
-ᴡʜᴇɴ ʏᴏᴜ ʀᴇǫᴜᴇꜱᴛ ᴀ ᴠɪᴅᴇᴏᴄᴀʟʟ, ɪᴛ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.`, getMainKeyboard());
-            return;
+     ᴡʜᴇɴ ʏᴏᴜ ʀᴇǫᴜᴇꜱᴛ ᴀ ᴠɪᴅᴇᴏᴄᴀʟʟ, ɪᴛ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.`, getMainKeyboard());
+             return;
         }
         let message = "";
         let keyboard = getMainKeyboard();
-        switch (request.status) {
-            case REQUEST_STATUS.WAITING_PHOTO:
-                message =
-                    `📸ꜱᴛᴀᴛᴜꜱ: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ📸
-
-ɪ ɴᴇᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`;
-                keyboard =
-                    getPendingPhotoKeyboard();
-                break;
-            case REQUEST_STATUS.AWAITING_ADMIN:
-                message =
-                    `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ⏳
-
-ꜱᴛᴀᴛᴜꜱ: ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ʀᴇᴄᴇɪᴠᴇᴅ.
-
-ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴅᴍɪɴ ᴀᴘᴘʀᴏᴠᴀʟ.`;
-                keyboard =
-                    getPendingPhotoKeyboard();
-                break;
-            case REQUEST_STATUS.AWAITING_PAYMENT:
-                message =
-                    `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-
-ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
-
-ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;
-                keyboard =
-                    getPendingPhotoKeyboard();
-                break;
-            case REQUEST_STATUS.PAID:
-                message =
-                    `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-
-ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;
-                keyboard =
-                    getApprovedVideocallKeyboard();
-                break;
-            case REQUEST_STATUS.APPROVED:
-                message =
-                    `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-
-ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔️
-
-ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
-                keyboard =
-                    getApprovedVideocallKeyboard();
-                break;
-            default:
-                await ctx.reply("⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
-                return;
-        }
-        await ctx.reply(message, keyboard);
-        logger.info("PENDING VIDEOCALL PANEL", {
-            userId,
-            status: request.status,
-        });
+             switch (request.status) {
+             case REQUEST_STATUS.WAITING_PHOTO:  message =
+        `📸ꜱᴛᴀᴛᴜꜱ: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ📸
+    ɪ ɴᴇᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`;
+                keyboard = getPendingPhotoKeyboard();
+            break;
+            case REQUEST_STATUS.AWAITING_ADMIN: message =
+      `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ⏳
+    ꜱᴛᴀᴛᴜꜱ: ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ʀᴇᴄᴇɪᴠᴇᴅ.
+    ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴅᴍɪɴ ᴀᴘᴘʀᴏᴠᴀʟ.`;
+                keyboard = getPendingPhotoKeyboard();
+            break;
+            case REQUEST_STATUS.AWAITING_PAYMENT: message =
+        `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
+    ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;
+                keyboard = getPendingPhotoKeyboard();
+            break;
+            case REQUEST_STATUS.PAID: message =
+       `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;
+                keyboard = getApprovedVideocallKeyboard();
+            break;
+            case REQUEST_STATUS.APPROVED: message =
+        `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔️
+    ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
+    keyboard = getApprovedVideocallKeyboard();break; default:
+    await ctx.reply(
+        "⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    return;
+    }
+    await ctx.reply(message, keyboard);
+        logger.info(
+            "PENDING VIDEOCALL PANEL", {
+            userId, status: request.status,
+    });
     }
     catch (error) {
         logger.error("PENDING VIDEOCALL PANEL ERROR", {
             userId,
             ...getTelegramError(error),
             stack: getErrorStack(error),
-        });
-        await ctx.reply("❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
-    }
-}
-// ======================================================
-// APPROVED VIDEOCALL
-// ======================================================
-async function sendApprovedVideocallFlow(userId) {
+    });
+    await ctx.reply("❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    }}
+//// APPROVED VIDEOCALL //
+   async function sendApprovedVideocallFlow(userId) {
     const targetUserId = String(userId);
     try {
-        await bot.telegram.sendMessage(targetUserId, `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
-
-ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`);
-        await bot.telegram.sendMessage(targetUserId, `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-
-ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`, {
-            reply_markup: getVideocallInlineKeyboard(),
+    await bot.telegram.sendMessage(targetUserId, `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
+    ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`);
+    await bot.telegram.sendMessage(targetUserId, 
+      `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
+    ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`, {
+        reply_markup: getVideocallInlineKeyboard(),
         });
         logger.info("VIDEOCALL OPTIONS SENT", {
-            userId: targetUserId,
-        });
+         userId: targetUserId,});
     }
     catch (error) {
-        logger.error("SEND APPROVED VIDEOCALL ERROR", {
-            userId: targetUserId,
-            ...getTelegramError(error),
-        });
-        throw error;
-    }
-}
-// ======================================================
-// INVOICES
-// ======================================================
-async function sendStarsInvoice(telegram, chatId, options) {
+    logger.error("SEND APPROVED VIDEOCALL ERROR", {userId: targetUserId,
+            ...getTelegramError(error),});throw error;
+    }}
+//// INVOICES //
+    async function sendStarsInvoice(telegram, chatId, options) {
     if (!chatId)
         return;
     await telegram.callApi("sendInvoice", {
@@ -1090,15 +991,11 @@ async function sendStarsInvoice(telegram, chatId, options) {
         payload: options.payload,
         provider_token: "",
         currency: "XTR",
-        prices: [
-            {
-                label: options.label,
+        prices:[{label: options.label,
                 amount: options.amount,
-            },
-        ],
-    });
-}
-async function sendVipInvoice(ctx) {
+    },],});
+    }
+    async function sendVipInvoice(ctx) {
     const chatId = ctx.chat?.id ||
         ctx.callbackQuery?.message?.chat?.id;
     if (!chatId)
@@ -1110,8 +1007,8 @@ async function sendVipInvoice(ctx) {
         label: "𝓥𝓘𝓟 ᴀᴄᴄᴇss",
         amount: VIP_STARS_PRICE,
     });
-}
-async function sendBasicInvoice(ctx) {
+    }
+    async function sendBasicInvoice(ctx) {
     const chatId = ctx.chat?.id ||
         ctx.callbackQuery?.message?.chat?.id;
     if (!chatId)
@@ -1123,227 +1020,177 @@ async function sendBasicInvoice(ctx) {
         label: "𝔹𝔸𝕊𝕀ℂ ᴀᴄᴄᴇss",
         amount: BASIC_STARS_PRICE,
     });
-}
-async function sendProInvoice(ctx) {
-    const chatId = ctx.chat?.id ||
-        ctx.callbackQuery?.message?.chat?.id;
-    if (!chatId)
+    }
+   async function sendProInvoice(ctx) {
+    const chatId = ctx.chat?.id || ctx.callbackQuery?.message?.chat?.id;
+       if (!chatId)
         return;
-    await sendStarsInvoice(ctx.telegram, chatId, {
+        await sendStarsInvoice(ctx.telegram, chatId, {
         title: "ℙℝ𝕆 ᴀᴄᴄᴇss",
         description: "ᴍᴇɴꜱᴜᴀʟ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: PRO_PAYLOAD,
         label: "ℙℝ𝕆 ᴀᴄᴄᴇss",
         amount: PRO_STARS_PRICE,
     });
-}
-async function sendStars130Invoice(userId) {
+    }
+    async function sendStars130Invoice(userId) {
     await sendStarsInvoice(bot.telegram, String(userId), {
         title: "ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇss",
         description: "ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ꜱᴇʀᴠɪᴄᴇ.",
         payload: STARS_130_PAYLOAD,
         label: "ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇss",
         amount: STARS_130_PRICE,
-    });
-}
-// ======================================================
-// SUCCESSFUL PAYMENT
-// ======================================================
-async function handleSuccessfulPayment(ctx) {
-    const payment = ctx.message?.successful_payment;
-    if (!payment)
+    }  );
+       }
+/// SUCCESSFUL PAYMENT //
+       async function handleSuccessfulPayment(ctx) {
+       const payment = ctx.message?.successful_payment;
+       if (!payment)
         return;
-    const userId = String(ctx.from?.id || "");
-    if (!userId)
+        const userId = String(ctx.from?.id || "");
+        if (!userId)
         return;
-    const chargeId = payment.telegram_payment_charge_id;
-    const payload = payment.invoice_payload;
-    logger.info("SUCCESSFUL PAYMENT", {
-        userId,
-        payload,
-        chargeId,
-    });
-    /*
-     * Vault-originated payloads are relayed to the
-     * website system.
-     */
-    if (isVaultPayload(payload)) {
+        const chargeId = payment.telegram_payment_charge_id;
+        const payload = payment.invoice_payload;
+        logger.info("SUCCESSFUL PAYMENT", { userId, payload, chargeId,});
+        if (isVaultPayload(payload)) {
         const relayed = await relayVaultUpdate(ctx.update);
         if (relayed)
-            return;
-    }
-    /*
-     * Prevent duplicate Telegram payment processing.
-     */
-    const claimed = await claimPaymentProcessed(chargeId);
-    if (!claimed) {
-        logger.warn("DUPLICATE PAYMENT", {
-            userId,
-            payload,
-            chargeId,
-            alreadyProcessed: await hasProcessedPayment(chargeId),
+        return;
+        }
+        const claimed = await claimPaymentProcessed(chargeId);
+        if (!claimed) {
+        logger.warn("DUPLICATE PAYMENT", {  userId,  payload,  chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
         });
         return;
-    }
-    // ====================================================
-    // VIDEOCALL
-    // ====================================================
-    if (payload ===
+        }
+//// VIDEOCALL //
+        if (payload ===
         STARS_130_PAYLOAD) {
         const request = await getVideoRequest(userId);
-        if (!request ||
-            request.status !==
-                REQUEST_STATUS.AWAITING_PAYMENT) {
-            await ctx.reply(`⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ғᴏᴜɴᴅ.
-
-ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
-            return;
+        if (!request || request.status !== REQUEST_STATUS.AWAITING_PAYMENT) {
+        await ctx.reply(`
+            ⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ғᴏᴜɴᴅ.
+         ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+        return;
         }
         try {
-            await setVideoRequest(userId, {
-                ...request,
-                status: REQUEST_STATUS.PAID,
-                paidAt: Date.now(),
-                telegramPaymentChargeId: chargeId,
-            });
-            await ctx.reply(
-                `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
-              📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {
-                reply_markup: getVideocallInlineKeyboard(),
-            });
+        await setVideoRequest(userId, { ...request, status: REQUEST_STATUS.PAID, paidAt: Date.now(), telegramPaymentChargeId: chargeId,
+        });
+        await ctx.reply(
+          `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+        📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {reply_markup: getVideocallInlineKeyboard(),
+        });
         }
         catch (error) {
-            await releasePaymentClaim(chargeId);
-            logger.error("VIDEOCALL PAYMENT HANDLE ERROR", {
-                userId,
-                chargeId,
-                ...getTelegramError(error),
-            });
-            throw error;
+        await releasePaymentClaim(chargeId);
+        logger.error("VIDEOCALL PAYMENT HANDLE ERROR", {
+        userId, chargeId,...getTelegramError(error),
+        });
+        throw error;
         }
         return;
         }
-    // ====================================================
-    // BASIC / PRO / VIP
-    // ====================================================
+//// BASIC / PRO / VIP //
         const plan = getPlanFromPayload(payload);
         if (plan) {
-        try {
-            /*
-             * Generate one central Vault code.
-             * Both Website and Telegram use the same
-             * Redis-backed code namespace.
-             */
-            const record = await generateAccessCode(plan.id, "telegram", userId, chargeId);
-            const existing = await getPaidUser(userId);
-            /*
-             * Never downgrade a user automatically.
-             */
-            const oldRank = tierRank(existing?.tier || null);
-            const newRank = tierRank(plan.tier);
-            const effectiveRecord = newRank >= oldRank
-                ? {
-                    ...existing,
-                    telegramPaymentChargeId: chargeId,
-                    paidAt: Date.now(),
-                    tier: plan.tier,
-                    planId: plan.id,
-                    code: record.code,
-                    codePrefix: plan.prefix,
-                    source: "telegram",
-                }
-                : {
-                    ...existing,
-                    telegramPaymentChargeId: chargeId,
-                    paidAt: Date.now(),
-                    lastPurchasedPlan: plan.id,
-                    lastPurchasedCode: record.code,
-                    source: "telegram",
-                };
-            await setPaidUser(userId, effectiveRecord);
-            await sendGeneratedCode(ctx, record);
-            await ctx.reply(`✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ
+        try {   
+        const record = await generateAccessCode(plan.id, "telegram", userId, chargeId);
+        const existing = await getPaidUser(userId);
+           
+        const oldRank = tierRank(existing?.tier || null);
+        const newRank = tierRank(plan.tier);
+        const effectiveRecord = newRank >= oldRank
+        ? {
+        ...existing, telegramPaymentChargeId: chargeId, paidAt: Date.now(), tier: plan.tier, planId: plan.id, code: record.code, codePrefix: plan.prefix, source: "telegram",
+        } : {...existing, telegramPaymentChargeId: chargeId, paidAt: Date.now(), lastPurchasedPlan: plan.id, lastPurchasedCode: record.code,
+        source: "telegram",
+        };
+        await setPaidUser(userId, effectiveRecord);
+        await sendGeneratedCode(ctx, record);
+        await ctx.reply(`✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ
         ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
-            return;
+        return;
         }
         catch (error) {
-            await releasePaymentClaim(chargeId);
-            logger.error("ACCESS CODE GENERATION ERROR", {
-                userId,
-                payload,
-                chargeId,
-                ...getTelegramError(error),
-                stack: getErrorStack(error),
+        await releasePaymentClaim(chargeId);
+        logger.error("ACCESS CODE GENERATION ERROR", {
+            userId, payload, chargeId,
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
             });
-            await ctx.reply(`⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
-      ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
-      ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
-            return;
-      }}
-    logger.warn("UNKNOWN PAYMENT PAYLOAD", {
-        userId,
-        payload,
-        chargeId,
+            await ctx.reply(
+          `⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
+         ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
+         ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+    return;
+    }}
+    logger.warn("UNKNOWN PAYMENT PAYLOAD", { userId, payload, chargeId,
     });
     }
-// ======================================================
-// GET CODE PANEL
-// ======================================================
-    async function openGetCodePanel(
-    ctx,
+//// GET CODE PANEL //
+    async function openGetCodePanel(ctx,
     source = "telegram" 
     ) {
     try {
-    await trackButtonClick(
-            ctx,
-            `GET CODE · ${source}`
+    await trackButtonClick(ctx,
+    `GET CODE · ${source}`
     );
     await sendMediaSafe(
-            ctx,
-            "photo",
-            ASSET_GETCODE_IMAGE
+    ctx,"photo",ASSET_GETCODE_IMAGE
     );
     await ctx.reply(
-            "🔐 ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",
-            getAccessKeyboard()
+    "🔐 ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",getAccessKeyboard()
     );}
     catch (error) {
-        logger.error("GET CODE PANEL ERROR", {
-            source,
-            ...getTelegramError(error),
-            stack: getErrorStack(error),
-        });
+    logger.error("GET CODE PANEL ERROR", { source,
+    ...getTelegramError(error),
+    stack: getErrorStack(error),
+    });
     await ctx.reply(
      "⚠️ Unable to open the access panel."
      ).catch(() => {});
      }}
-
-
      bot.command("getcode", async (ctx) => {
-    await openGetCodePanel(
-        ctx,
+    await openGetCodePanel(ctx,
         "COMMAND"
     );
     });
-// ======================================================
-// USER START
-// ======================================================
+//// USER START //
 async function handleUserStart(ctx) {
     try {
         const messageText =
-            String(ctx.message?.text || "").trim();
+        String(ctx.message?.text || "").trim();
 
-        const textPayload =
-            messageText
+        const textPayload = messageText
                 .replace(/^\/start(?:@\w+)?\s*/i, "")
                 .trim();
-
-        const startPayload =
-            String(
-                ctx.startPayload ||
-                textPayload ||
-                ""
-            ).trim().toLowerCase();
+        const startPayload = String(ctx.startPayload || textPayload || "")
+            .trim().toLowerCase();
+//// WEBSITE DEVICE → BASIC //
+        if (startPayload === "getcode_basic") {
+            await trackButtonClick( ctx,
+                "WEBSITE GET CODE BASIC"
+            );
+            await sendBasicPanel(ctx);
+            return;
+        }
+//// WEBSITE DEVICE → PRO //
+        if (startPayload === "getcode_pro") {
+            await trackButtonClick(ctx,
+            "WEBSITE GET CODE PRO"
+            );
+            await sendProPanel(ctx);
+            return;
+        }
+//// WEBSITE DEVICE → VIP //
+        if (startPayload === "getcode_vip") {
+            await trackButtonClick(ctx,
+            "WEBSITE GET CODE VIP"
+            );
+            await sendVipPanel(ctx);
+            return;
+        }
 
         logger.info("USER START RECEIVED", {
             userId: String(ctx.from?.id || ""),
@@ -1395,17 +1242,13 @@ async function handleUserStart(ctx) {
         ).catch(() => {});
         }}
     bot.start(handleUserStart);
-// ======================================================
-// PAYMENT SUPPORT
-// ======================================================
+//// PAYMENT SUPPORT //
    bot.command("paysupport", async (ctx) => {
     await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 
    ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
     });
-// ======================================================
-// PAYMENT ACTIONS
-// ======================================================
+//// PAYMENT ACTIONS //
     bot.action("pay_vip_stars", async (ctx) => {
     try {
         await ctx.answerCbQuery();
@@ -1433,18 +1276,12 @@ async function handleUserStart(ctx) {
         logger.error("PAY BASIC ERROR", getTelegramError(error));
     }
     });
-// ======================================================
-// PRE CHECKOUT
-// ======================================================
-    bot.on("pre_checkout_query", async (ctx) => {
+//// PRE CHECKOUT // 
+  bot.on("pre_checkout_query", async (ctx) => {
     try {
         const payload = ctx.update
             ?.pre_checkout_query
             ?.invoice_payload || "";
-        /*
-         * Vault-originated invoices can be handled
-         * by the website system.
-         */
         if (isVaultPayload(payload)) {
             const relayed = await relayVaultUpdate(ctx.update);
             if (relayed)
@@ -1648,7 +1485,7 @@ async function handleUserStart(ctx) {
     if (text === BTN_BACK_MENU) {
     return await sendMainPanel(ctx);
 }
-// // ZOOM // ================================================
+// // ZOOM //
     if (text === BTN_ZOOM) {
     return await ctx.reply("📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
         reply_markup: {inline_keyboard: [
@@ -1873,7 +1710,7 @@ async function handleUserStart(ctx) {
     });
     }
     }});
-//// ADMIN: REJECT // ======================================================
+//// ADMIN: REJECT // 
     adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
     const adminId = String(ctx.from?.id || "");
     if (adminId !== String(ADMIN_USER_ID)) {
@@ -1940,9 +1777,7 @@ async function handleUserStart(ctx) {
     catch (error) { logger.error("NOTIFY ERROR", { requesterId,...getTelegramError(error),
         });
         }});
-// ======================================================
-// ADMIN CODE LOOKUP
-// ======================================================
+//// ADMIN CODE LOOKUP // 
 adminBot.command("code", async (ctx) => {
     if (!isAdmin(ctx)) {
         await ctx.reply("❌ Unauthorized.");
@@ -1971,32 +1806,25 @@ User ID: ${record.userId}
 Status: ${record.status}
 Created: ${record.createdAt}`);
 });
-// ======================================================
-// ERROR HANDLERS
-// ======================================================
-bot.catch((error, ctx) => {
+//// ERROR HANDLERS //
+    bot.catch((error, ctx) => {
     logger.error("BOT ERROR", {
-        updateId: ctx?.update?.update_id ??
-            null,
+        updateId: ctx?.update?.update_id ?? null,
         ...getTelegramError(error),
         stack: getErrorStack(error),
     });
-});
-adminBot.catch((error, ctx) => {
+    });
+    
+    adminBot.catch((error, ctx) => {
     logger.error("ADMIN BOT ERROR", {
-        updateId: ctx?.update?.update_id ??
-            null,
-        chatId: ctx?.chat?.id ??
-            null,
-        userId: ctx?.from?.id ??
-            null,
+        updateId: ctx?.update?.update_id ?? null,
+        chatId: ctx?.chat?.id ?? null,
+        userId: ctx?.from?.id ?? null,
         ...getTelegramError(error),
         stack: getErrorStack(error),
     });
-});
-// ======================================================
-// RAW BODY READER
-// ======================================================
+    });
+//// RAW BODY READER //
 function readRawBody(req) {
     return new Promise((resolve, reject) => {
         let body = "";
@@ -2067,9 +1895,7 @@ function parseTelegramBody(rawBody) {
     }
     return JSON.parse(raw);
 }
-// ======================================================
-// WEBHOOK HANDLER
-// ======================================================
+//// WEBHOOK HANDLER //
 export default async function handler(req, res) {
     logger.info("TELEGRAM WEBHOOK REQUEST", {
         method: req.method,
@@ -2077,32 +1903,24 @@ export default async function handler(req, res) {
         contentLength: req.headers["content-length"] || null,
         secretPresent: Boolean(req.headers["x-telegram-bot-api-secret-token"]),
     });
-    // ====================================================
-    // GET
-    // ====================================================
+//// GET //
     if (req.method === "GET") {
-        return res
-            .status(200)
-            .json({
+        return res .status(200)
+                   .json({
             ok: true,
             service: "telegram-webhook",
             status: "online",
-        });
+    });
     }
-    // ====================================================
-    // METHOD
-    // ====================================================
+//// METHOD //
     if (req.method !== "POST") {
-        return res
-            .status(405)
-            .json({
+        return res .status(405)
+                   .json({
             ok: false,
             error: "method_not_allowed",
-        });
+    });
     }
-    // ====================================================
-    // SECRET
-    // ====================================================
+//// SECRET //
     const incomingSecret = String(req.headers["x-telegram-bot-api-secret-token"] || "").trim();
     const userSecret = String(WEBHOOK_SECRET || "").trim();
     const adminSecret = String(ADMIN_WEBHOOK_SECRET ||
@@ -2119,10 +1937,9 @@ export default async function handler(req, res) {
     if (isAdminWebhookRoute && isUserWebhookRoute) {
         if (requestedBot === "admin") {
             isUserWebhookRoute = false;
-        }
+    }
         else {
-            isAdminWebhookRoute = false;
-        }
+            isAdminWebhookRoute = false;}
     }
     logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
         incomingSecretPresent: Boolean(incomingSecret),
@@ -2133,40 +1950,31 @@ export default async function handler(req, res) {
     if (!isAdminWebhookRoute &&
         !isUserWebhookRoute) {
         logger.warn("TELEGRAM WEBHOOK UNAUTHORIZED");
-        return res
-            .status(401)
-            .json({
+        return res .status(401)
+                   .json({
             ok: false,
             error: "unauthorized",
-        });
+    });
     }
-    // ====================================================
-    // BODY
-    // ====================================================
+//// BODY //
     let rawBody;
-    try {
-        rawBody =
-            await getRequestBody(req);
-        logger.info("TELEGRAM RAW BODY", {
-            length: typeof rawBody ===
-                "string"
+    try { rawBody =
+    await getRequestBody(req); logger.info("TELEGRAM RAW BODY", {
+            length: typeof rawBody === "string"
                 ? rawBody.length
                 : null,
-        });
+    });
     }
     catch (error) {
         logger.error("BODY READ ERROR", {
-            message: error?.message ||
-                null,
+            message: error?.message || null,
             stack: getErrorStack(error),
         });
-        const status = error?.message ===
-            "payload_too_large"
+    const status = error?.message === "payload_too_large"
             ? 413
             : 400;
-        return res
-            .status(status)
-            .json({
+        return res .status(status)
+                   .json({
             ok: false,
             error: status === 413
                 ? "payload_too_large"
@@ -2174,43 +1982,29 @@ export default async function handler(req, res) {
             message: error?.message ||
                 "Unable to read request body",
         });
-    }
-    // ====================================================
-    // JSON
-    // ====================================================
+        }
+    //// JSON //
     let update;
-    try {
-        update =
-            parseTelegramBody(rawBody);
+    try { update = parseTelegramBody(rawBody);
     }
-    catch (error) {
-        logger.error("BODY JSON PARSE ERROR", {
-            message: error?.message ||
-                null,
+    catch (error) { logger.error("BODY JSON PARSE ERROR", {
+            message: error?.message || null,
         });
-        return res
-            .status(400)
-            .json({
+        return res .status(400)
+                   .json({
             ok: false,
             error: "invalid_json",
-            message: error?.message ||
-                "Invalid JSON",
+            message: error?.message || "Invalid JSON",
         });
-    }
-    // ====================================================
-    // UPDATE VALIDATION
-    // ====================================================
-    if (!update ||
-        typeof update !==
-            "object" ||
+        }
+//// UPDATE VALIDATION // 
+        if (!update ||
+        typeof update !== "object" ||
         Array.isArray(update)) {
-        return res
-            .status(400)
-            .json({
-            ok: false,
-            error: "invalid_update",
-        });
-    }
+        return res .status(400)
+                   .json({ ok: false, 
+        error: "invalid_update",
+        });}
     logger.info("TELEGRAM UPDATE RECEIVED", {
     bot: isAdminWebhookRoute ? "admin" : "user",
     updateId: update.update_id ?? null,
@@ -2220,61 +2014,41 @@ export default async function handler(req, res) {
     messageType: Object.keys(update.message || {}).find(
         k => ["text","photo","video","document","sticker","animation",
               "voice","video_note","location","contact","poll"]
-        .includes(k)
-    ) || "other",                                     // ← agrega
+        .includes(k)) || "other",                                     // ← agrega
     hasCallback: Boolean(update.callback_query),
     hasPhoto: Boolean(update.message?.photo),
     hasPayment: Boolean(update.message?.successful_payment),
-});
-    // ====================================================
-    // DISPATCH
-    // ====================================================
-    try {
-        if (isAdminWebhookRoute) {
+    });
+//// DISPATCH // 
+    try { if (isAdminWebhookRoute) {
             await adminBot.handleUpdate(update);
-            return res
-                .status(200)
-                .json({
-                ok: true,
-                bot: "admin",
+            return res.status(200)
+                      .json({ok: true,bot: "admin",
             });
-        }
-        if (isUserWebhookRoute) {
+            }
+    if (isUserWebhookRoute) {
             await bot.handleUpdate(update);
-            return res
-                .status(200)
-                .json({
-                ok: true,
-                bot: "user",
-            });
-        }
-        return res
-            .status(401)
-            .json({
-            ok: false,
+            return res .status(200)
+                       .json({ ok: true,
+                               bot: "user",
+            });}
+            return res .status(401)
+                       .json({ ok: false,
             error: "invalid_webhook_route",
         });
-    }
+        }
     catch (error) {
         logger.error("BOT HANDLE UPDATE ERROR", {
-            name: error?.name ??
-                null,
-            message: error?.message ??
-                null,
-            stack: getErrorStack(error),
-            description: error?.response
-                ?.description ??
-                null,
+        name: error?.name ?? null,
+        message: error?.message ?? null,
+        stack: getErrorStack(error),
+        description: error?.response ?.description ?? null,
         });
-        return res
-            .status(500)
-            .json({
-            ok: false,
+        return res.status(500)
+                  .json({ ok: false,
             error: "telegram_handler_error",
             message: error?.message ??
                 "unknown_error",
-            description: error?.response
-                ?.description ??
-                null,
+            description: error?.response ?.description ?? null,
         });
        }}

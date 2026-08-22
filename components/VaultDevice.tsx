@@ -183,116 +183,89 @@ import './VaultDevice.css';
     setActiveSheet(type);
   };
 
-  const closeSheet = () => {
-    setBuyError('');
+  const closeSheet = () => { setBuyError('');
     setActiveSheet(null);
   };
 
+  const TELEGRAM_PLAN_LINKS: Record<keyof PlanKey, string> = {
+  basic: "https://t.me/User18Fx_bot?start=getcode_basic",
+  pro: "https://t.me/User18Fx_bot?start=getcode_pro",
+  vip: "https://t.me/User18Fx_bot?start=getcode_vip",
+  };
+
+  const openPlanInBot = () => {
+  if (!activeSheet) return;
+
+  window.location.href = TELEGRAM_PLAN_LINKS[activeSheet];
+  };
   const currentPlan = activeSheet
     ? PLANS[activeSheet]
     : null;
-
 /* Create order and open Telegram payment */
-
-     const buyAccess = () => {
-
+  const buyAccess = () => {
   if (buying) return;
-
   setBuying(true);
   setBuyError('');
-
-  try {
-    const telegramUrl =
-      'https://t.me/User18Fx_bot?start=getcode';
-
+    try {
+  const telegramUrl = 'https://t.me/User18Fx_bot?start=getcode';
     window.location.assign(telegramUrl);
-
-  } catch {
-    setBuying(false);
-
-    setBuyError(
+  } catch { setBuying(false); setBuyError(
       'No se pudo abrir Telegram. Inténtalo nuevamente.'
-    );
+  );
   }};
-
   return (
       <div className="vd-device">
-
 {/* Side buttons */}
-
       <div className="vd-btn vd-pwr" />
       <div className="vd-btn vd-vol1" />
       <div className="vd-btn vd-vol2" />
-
       <div className="vd-screen">
-
 {/* Dynamic Island */}
-
       <div className="vd-island" />
-
 {/* ── Lock Screen ── */}
-
-      <div
-        className={`vd-lockscreen ${!locked ? 'vd-unlocked' : ''}`}
-        onClick={unlock}
-      >
+      <div className={`vd-lockscreen ${!locked ? 'vd-unlocked' : ''}`} onClick={unlock}>
       <div className="vd-lock-time">
-        {time}
+       {time}
       </div>
-
       <div className="vd-lock-date">
         {lockDate}
       </div>
-
       <div className="vd-lock-prompt">
       <div className="vd-lock-prompt-icon">
       <img src={ICONS.candado} alt="" className="vx-titleCandado" draggable={false} width={20} height={20} style={{ width: "20px", height: "20px", maxWidth: "20px", maxHeight: "20px", objectFit: "contain", }}/>
       </div>
-
       <div className="vd-lock-prompt-text">
         Tap to explore
       </div>
       </div>
       </div>
-
 {/* ── Menu Screen ── */}
-
       <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>
-
       <div className="vd-menu-header">
       <p>
         Select a plan to see details
       </p>
       </div>
-
       <div className="vd-menu-options">
-
       <div className="vd-option vd-opt-basic" onClick={() => openSheet('basic')}>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.rosa} alt="" className="vx-titleRose" draggable={false} width={45} height={45} style={{ width: "45px", height: "45px", maxWidth: "50px", maxHeight: "50px", objectFit: "contain",}}/>
       </div>
-
       <div className="vd-option-info">
       <div className="vd-option-name">
         Basic
       </div>
-
       <div className="vd-option-desc">
         Single session access
       </div>
       </div>
-
       <div className="vd-option-arrow">
         ›
       </div>
       </div>
       </div>
-
-      <div
-        className="vd-option vd-opt-pro"
-        onClick={() => openSheet('pro')}
-      >
+      <div className="vd-option vd-opt-pro" onClick={() => openSheet('pro')}>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.fuego} alt="" className="vx-planButtonIcon vx-planButtonFire" draggable={false} width={45} height={45} style={{ width: "45px", height: "45px", maxWidth: "45px", maxHeight: "45px", objectFit: "contain",}}/>
@@ -426,23 +399,22 @@ import './VaultDevice.css';
       </p>
       )}
       <div className="vd-sheet-actions">
-     <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`} onClick={buyAccess} disabled={buying || !currentPlan}>
-  {buying ? (
-    <span className="vd-buy-loading">
+     <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`} onClick={openPlanInBot} disabled={buying || !currentPlan}>
+      {buying ? (
+     <span className="vd-buy-loading">
       CREATING ORDER...
-    </span>
-  ) : (
-       <>
-      <span className="vd-buy-label">
+     </span>
+     ) : (
+     <>
+     <span className="vd-buy-label">
         GET CODE
-      </span>
-      <span className="vd-buy-price">
-        {currentPlan?.stars ?? 0} STARS ⭐
-      </span>
-    </>
-  )}
-</button>
-
+     </span>
+     <span className="vd-buy-price">
+      {currentPlan?.stars ?? 0} STARS ⭐
+     </span>
+     </>
+     )}
+     </button>
       <button
         type="button"
         className={`vd-cta-btn ${currentPlan?.ctaClass ?? ''}`}

@@ -288,57 +288,6 @@ import VisitorCounter from './VisitorCounter';
   } finally {
     setVerifyLoading(false);
   }}
-
-  useEffect(() => {
-  type TelegramViewportApi = {
-    ready?: () => void;
-    expand?: () => void;
-    viewportHeight?: number;
-    viewportStableHeight?: number;
-  };
-
-  const telegram = window.Telegram?.WebApp as
-    | TelegramViewportApi
-    | undefined;
-
-  const updateViewport = () => {
-    const height =
-      telegram?.viewportStableHeight ??
-      telegram?.viewportHeight ??
-      window.innerHeight;
-
-    document.documentElement.style.setProperty(
-      "--telegram-viewport-height",
-      `${height}px`
-    );
-  };
-
-  if (typeof telegram?.ready === "function") {
-    telegram.ready();
-  }
-
-  if (typeof telegram?.expand === "function") {
-    telegram.expand();
-  }
-
-  updateViewport();
-
-  const animationFrame = window.requestAnimationFrame(updateViewport);
-  const firstUpdate = window.setTimeout(updateViewport, 150);
-  const secondUpdate = window.setTimeout(updateViewport, 500);
-
-  window.addEventListener("resize", updateViewport);
-  window.addEventListener("orientationchange", updateViewport);
-
-  return () => {
-    window.cancelAnimationFrame(animationFrame);
-    window.clearTimeout(firstUpdate);
-    window.clearTimeout(secondUpdate);
-
-    window.removeEventListener("resize", updateViewport);
-    window.removeEventListener("orientationchange", updateViewport);
-  };
-}, []);
          return (
                 <div id="top" className="vx">
                 <style>{CSS}</style>
@@ -347,11 +296,11 @@ import VisitorCounter from './VisitorCounter';
                 <img src={LOGO} alt="USER FX" />
                 <span className="vx-live" />
                 <span>
-                 | Priv Vault |</span>
+                 | PrivVault |</span>
                  </a>
                  <div className="vx-hudRight">
                  <VisitorCounter />
-                 <time>{clock} LOCAL</time>
+                 <time>{clock}</time>
                  <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? 'vx-unlockedBadge' : ''}>
                    {unlocked ? '✓ UNLOCKED' : '🜲 LOCKED'}
                  </b>
@@ -429,41 +378,28 @@ import VisitorCounter from './VisitorCounter';
                  </div>
                  </div>
                  </div>
-                <aside className="vx-lock">
-  <div className="vx-frameA" />
-  <div className="vx-frameB" />
+      <aside className="vx-lock" style={{ position: "relative", width: "calc(100% - 24px)", maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
+      <div className="vx-frameA" />
+      <div className="vx-frameB" />
 
-      <div className="vx-lockCard">
-      <div className="vx-lockVideo">
-      <video key={LOCK_VIDEOS[lockVideo]}src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" width={300}height={360} onEnded={() => setLockVideo((current) =>(current + 1) % LOCK_VIDEOS.length)} style={{ display: "block", width: "100%", height: "100%", maxWidth: "100%", objectFit: "cover",}}/>
+      <div className="vx-lockCard" style={{  width: "100%",  maxWidth: "450px",   minWidth: 0, padding: "20px", boxSizing: "border-box",}}>
+      <div className="vx-lockVideo" style={{ position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", boxSizing: "border-box",}}>
+      <video key={LOCK_VIDEOS[lockVideo]} src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" onEnded={() => setLockVideo((current) => (current + 1) % LOCK_VIDEOS.length)  }  style={{  display: "block",  width: "100%", height: "100%", objectFit: "cover",}}/>
       <span className="vx-lockVideoTag">
         PRIVATE PREVIEW
       </span>
       </div>
-
-       <div className="vx-lockActions">
-  <button
-    type="button"
-    className="vault-unlock"
-    onClick={() => setCodeModal(true)}
-  >
-    <span className="vault-unlock__title">
-      UNLOCK ALBUM
-    </span>
-  </button>
-
-  <a
-    className="vault-get-code"
-    href="https://t.me/User18Fx_bot?start=getcode"
-    target="_blank"
-    rel="noreferrer"
-  >
-    GET MY CODE
-  </a>
-</div>
-      </div>
-      </aside>
-      </div>
+      <div className="vx-lockActions" style={{ width: "80%", display: "flex", flexDirection: "column", alignItems: "stretch",  gap: "14px", marginTop: "16px",}}>
+      <button type="button" className="vault-unlock" onClick={() => setCodeModal(true)} style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4a83a", borderRadius: "4px",background: "linear-gradient(180deg, #2a2a2a, #111111)", color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", cursor: "pointer",}}>
+        UNLOCK ALBUM
+      </button>
+                <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" style={{ width: "80%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #9f173d", borderRadius: "4px", background: "linear-gradient(180deg, #6f102d, #310713)", color: "#f18aa5", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textDecoration: "none",}}>
+                  GET MY CODE
+                 </a>
+                 </div>
+                 </div>
+                 </aside>
+                 </div>
       </section>
             <Ticker items={TICKER_ITEMS} />
             <section id="protocolo" className="vx-sec">
@@ -517,9 +453,11 @@ import VisitorCounter from './VisitorCounter';
                  </p>
                  </div>
                  <div className="vx-count">
-                 <p>DROP IN</p>
+                 <p>
+                  DROP IN</p>
                  <strong>{countdown}</strong>
-                 <p>FRIDAY · 22:00 UTC</p>
+                 <p>
+                  FRIDAY · 22:00 UTC</p>
                  </div>
           </Reveal>
                  <div className="vx-carousel">
@@ -620,14 +558,15 @@ import VisitorCounter from './VisitorCounter';
       </button>
 {/* ── ícono candado ── */}
       <div className="vx-modalIcon">
-      <img src={ICONS.corona} alt="" className="vx-modalCrown" draggable={false}/>
       </div>
       <p className="vx-modalKicker">
         𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT
       </p>
-      <h3 className="vx-modalTitle">
-        <span className="vx-modalTitleShimmer">
-          ACCESS RESTRICTED</span>
+      <h3 className="vx-modalTitle vx-modalTitleWithCrown">
+      <span className="vx-modalTitleShimmer">
+          ACCESS RESTRICTED
+      </span>
+      <img src={ICONS.corona} alt="" className="vx-modalTitleCrown" draggable={false}/>
       </h3>
       <p className="vx-modalText">
         This content is encrypted. Send us a DM to unlock your exclusive access code.
@@ -778,19 +717,19 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
   height:52px;
   padding:0 16px;
   overflow:hidden;
-  border-bottom:1px solid #e0b85c57;
+  border-bottom:1px solid #e0b85c30;
   background:
-    linear-gradient(90deg,
-      #081221eb,
-      #122b46db,
-      #081221eb),
+    linear-gradient(205deg,
+      #12284a50,
+      #122b4657,
+      #1a6fac2b),
     url("/assets/damask.png");
   background-size:auto, 230px;
   background-repeat:no-repeat, repeat;
   background-position:center;
   box-shadow:
-    inset 0 -1px 0 #e0b85a1f,
-    0 6px 22px #00000061;
+    inset 0 -1px 0 #e0b85a3b,
+    0 7px 22px #9e631761;
   backdrop-filter:blur(8px);
 }
   .vx-hudRight {
@@ -813,9 +752,9 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
   min-height: 26px;
   padding: 0 8px;
 
-  border: 1px solid rgba(0, 115, 246, 0.72);
+  border: 1px solid #0073f6b8;
   border-radius: 3px;
-  background: rgba(7, 6, 10, 0.42);
+  background: #07060a29;
 
   color: #f8fbfe;
   font-family: var(--mono);
@@ -1236,9 +1175,9 @@ text-shadow:0 0 18px #b64b5d2e;}
   margin-top:12px;
   padding:22px 18px;
   border:1px solid var(--line);
-  background-color: #1131717a;
+  background-color: #094d9153;
   background:
-    linear-gradient( #0252b338, #023e8241),
+    linear-gradient( #0252b353, #023e8241),
     url("/assets/damask.png");
   background-size:auto, 240px;
   background-repeat:no-repeat, repeat;
@@ -1250,11 +1189,11 @@ text-shadow:0 0 18px #b64b5d2e;}
     background-color .3s ease;
 }
     .vx-step:hover{
-  border-color: #e0b85a61;
+  border-color: #e0b85a6e;
   transform:translateX(4px);
-  background-color: #07060aad;
+  background-color: #01399914;
 }
-.vx-step b{font-size:3rem;font-weight:300;font-style:italic;color:rgba(224,184,90,.35);line-height:1}
+.vx-step b{font-size:3rem;font-weight:300;font-style:italic;color:rgba(240, 191, 77, 0.42);line-height:1}
 .vx-step h3{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--gold)}
 .vx-step p,.vx-lead,.vx-faq p{color:var(--dim);line-height:1.7}
 .vx-step small{display:none}
@@ -1988,14 +1927,14 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   margin-left:.12em;
   color:#b64b5d;
   font-style:italic;
-  text-shadow:0 0 18px #b64b5d29;
+  text-shadow:0 0 18px #e79b3154;
 }
   .vx-sec h2 .vx-codeTitle{
   display:inline;
   margin-left:.12em;
   color:#b64b5d;
   font-style:italic;
-  text-shadow:0 0 18px #b64b5d29;
+  text-shadow:0 0 18px #e79b313f;
 }
 .vx-foot{
   position:relative;
@@ -2593,63 +2532,25 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   border-color: #ec557d;
   background: linear-gradient(180deg, #a71943, #5b0b22);
   box-shadow: 0 0 18px rgba(236, 85, 125, 0.28);
-  transform: translateY(-2px);
-}
-.vx-carousel {
-  width: 100%;
-  margin-top: 32px;
-  overflow: hidden;
-}
-
+  transform: translateY(-2px);}
+.vx-carousel { width: 100%; margin-top: 32px; overflow: hidden;}
 .vx-carouselTrack {
-  width: max-content;
-  display: flex;
-  gap: 14px;
-  will-change: transform;
-  animation: vxCarouselScroll 18s linear infinite;
-}
-
+  width: max-content; display: flex;gap: 14px; will-change: transform; animation: vxCarouselScroll 18s linear infinite;}
 .vx-carouselSlide {
   width: clamp(150px, 24vw, 260px);
-  flex: 0 0 auto;
-}
-
+  flex: 0 0 auto;}
 .vx-carouselSlide .vx-shot {
   width: 100%;
-  height: 360px;
-}
-
+  height: 360px;}
 @keyframes vxCarouselScroll {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(calc(-50% - 7px), 0, 0);
-  }
-}
-
+  from { transform: translate3d(0, 0, 0);}
+  to { transform: translate3d(calc(-50% - 7px), 0, 0);}}
 @media (max-width: 600px) {
-  .vx-carouselTrack {
-    gap: 10px;
-    animation-duration: 14s;
-  }
-
-  .vx-carouselSlide {
-    width: 72vw;
-    max-width: 260px;
-  }
-
-  @keyframes vxCarouselScroll {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      transform: translate3d(calc(-50% - 5px), 0, 0);
-    }
-  }
-}
+  .vx-carouselTrack { gap: 10px; animation-duration: 14s;}
+  .vx-carouselSlide { width: 72vw; max-width: 260px;}
+@keyframes vxCarouselScroll {
+  from {transform: translate3d(0, 0, 0);}
+  to {transform: translate3d(calc(-50% - 5px), 0, 0);}}}
 
 
 
