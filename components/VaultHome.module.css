@@ -1,628 +1,513 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
+/* ============================================
+   VAULT — Dark Luxury Design System
+   ============================================ */
 
-html,
-body,
-#root {
+/* ---- CSS Variables ---- */
+:root {
+  /* Colors */
+  --vault-black: #0a0a0e;
+  --vault-dark: #0f0f14;
+  --vault-card: #111118;
+  --vault-border: #1e1c24;
+  --vault-gold: #c4a265;
+  --vault-gold-dim: #8a7345;
+  --vault-rose: #d4829a;
+  --vault-rose-dim: #a05a72;
+  --vault-text: #c8c4bc;
+  --vault-text-dim: #7a7670;
+  --vault-faint: #4a4640;
+  --vault-white: #f0ece4;
+
+  /* Typography */
+  --font-serif: 'Georgia', 'Times New Roman', 'Palatino', serif;
+  --font-mono: 'Courier New', 'Consolas', monospace;
+
+  /* Spacing */
+  --card-gap: 24px;
+  --section-pad: 60px;
+}
+
+/* ---- Reset & Base ---- */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
-  min-height: 100%;
-  background: #07060a;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
+  background: var(--vault-black);
+  color: var(--vault-text);
+  font-family: var(--font-serif);
+  min-height: 100vh;
   overflow-x: hidden;
 }
 
-.vh-page {
-  --ink: #07060a;
-  --bone: #f4eee4;
-  --dim: #b7aebc;
-  --faint: #7a7286;
-  --gold: #e0b85a;
-  --rose: #e07a8b;
-  --line: rgba(236, 229, 216, 0.14);
-  --display: "Cormorant Garamond", Georgia, serif;
-  --mono: "JetBrains Mono", ui-monospace, monospace;
-
-  min-height: 100dvh;
-  background-color: #07060a;
-  background-image:
-    radial-gradient(ellipse 70% 50% at 12% 8%, rgba(59, 130, 246, 0.28), transparent 58%),
-    radial-gradient(ellipse 60% 45% at 92% 30%, rgba(192, 45, 90, 0.26), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(201, 162, 75, 0.1), transparent 60%),
-    linear-gradient(rgba(7, 6, 10, 0.35), rgba(7, 6, 10, 0.55)),
-    url("/images/damask.png");
-  background-size: auto, auto, auto, auto, 300px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
-  color: var(--bone);
-  font-family: var(--display);
+/* ---- Page Container ---- */
+.vx-vault {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px var(--section-pad);
 }
 
-.vh-hud {
-  overflow: hidden;
-  width: 100%;
-  height: 28px;
-  border-block: 1px solid var(--line);
-  background: rgba(7, 6, 10, 0.82);
+/* ============================================
+   HEADER / TITLE AREA
+   ============================================ */
+
+.vx-vault-header {
+  margin-bottom: 48px;
 }
 
-.vh-hudTrack {
-  display: flex;
-  flex-wrap: nowrap;
-  width: max-content;
-  animation: hudLeft 42s linear infinite;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  color: rgba(236, 229, 216, 0.42);
-  line-height: 28px;
-  white-space: nowrap;
-}
-
-.vh-hudTrack span {
-  padding-right: 48px;
-}
-
-.vh-hudReverse .vh-hudTrack {
-  animation-name: hudRight;
-}
-
-@keyframes hudLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes hudRight {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
-}
-
-.vh-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 52px;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(7, 6, 10, 0.78);
-}
-
-.vh-logo {
-  height: 28px;
-  width: auto;
-}
-
-.vh-headerRight {
+/* ---- Label (ACCESS PROTOCOL) ---- */
+.vx-vault-label {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 12px;
 }
 
-.vh-clock {
-  display: none;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: var(--dim);
+.vx-vault-label .vx-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--vault-gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
 }
 
-@media (min-width: 640px) {
-  .vh-clock { display: block; }
-}
-
-.vh-locked {
-  border: 1px solid rgba(182, 75, 93, 0.5);
-  color: #e07a8b;
-  padding: 5px 8px;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-}
-
-.vh-hero {
-  display: grid;
-  gap: 28px;
-  padding: 28px 16px 36px;
-  max-width: 72rem;
-  margin: 0 auto;
-}
-
-@media (min-width: 900px) {
-  .vh-hero {
-    grid-template-columns: 1.2fr 0.55fr;
-    align-items: end;
-    padding: 48px 24px 56px;
-  }}
-.vh-kicker,
-.vh-secKicker {
-  margin: 0 0 10px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  color: var(--gold);
-}
-.vx-title{
-  margin:22px 0 0;
-  font-family:var(--display);
-  line-height:.9;
-}
-.vx-access{
-  display:block;
-  font-size:clamp(3.8rem,12vw,6.8rem);
-  font-weight:600;
-  letter-spacing:-.035em;
-  color:var(--bone);
-}
-.vx-rest{
-  display:block;
-  margin-top:.08em;
-  font-size:clamp(2.8rem,9vw,4.8rem);
-  font-weight:300;
-  font-style:italic;
-  letter-spacing:-.025em;
-  color:var(--rose);
-}
-.vx-rest span{
-  color:#328df6;
-}
-.vh-hAccess,
-.vh-hRestricted {
-  display: block;
-}
-.vh-hRestricted {
-  margin-top: 0.08em;
-  font-size: clamp(2.2rem, 8vw, 4.2rem);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--rose);
-  line-height: 0.9;
-}
-.vh-secTitle {
-  margin: 0;
-  font-size: clamp(2.2rem, 8vw, 4rem);
-  font-weight: 500;
-  line-height: 0.95;
-}
-.vh-secTitle span {
-  display: block;
-  color: var(--rose);
-  font-style: italic;
-  font-weight: 400;
-}
-.vh-dim {
-  max-width: 34rem;
-  color: var(--dim);
-  line-height: 1.65;
-}
-.vh-gate {
-  width: min(100%, 280px);
-  justify-self: end;
-  padding: 18px 14px 16px;
-  border: 1px solid var(--line);
-  background: #07060a9e;
-  text-align: center;
-}
-.vh-gateTitle {
-  margin: 0 0 14px;
-  font-size: 0.95rem;
-  letter-spacing: 0.16em;
-}
-.vh-unlockBtn {
-  width: 100%;
-  height: 46px;
-  border: 1px solid #e8c56a;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: linear-gradient(180deg, #f0d78a, #c9a24b 48%, #8d6a28);
-  color: #1c1508;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-decoration: none;
-  cursor: pointer;
-}
-.vh-btnRose {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-grid;
-  place-items: center;
-  background: #14080a;
-}
-.vh-hint {
-  margin: 10px 0 0;
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  color: var(--faint);
-}
-.vh-block {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 56px 16px;
-  border-top: 1px solid var(--line);
-}
-.vh-steps {
-  list-style: none;
-  margin: 28px 0 0;
-  padding: 0;
-}
-.vh-steps li {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 14px;
-  padding: 22px 0;
-  border-top: 1px dashed var(--line);
-}
-.vh-num {
-  font-size: 2.4rem;
-  color: rgba(201, 162, 75, 0.55);
-  line-height: 1;
-}
-.vh-steps h3 {
-  margin: 0 0 6px;
-  font-family: var(--mono);
+.vx-vault-label span {
+  font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.18em;
-  color: var(--gold);
-  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--vault-gold);
 }
-.vh-steps p,
-.vh-faqA,
-.vh-pathMeta {
-  margin: 0;
-  color: var(--dim);
-  line-height: 1.6;
+
+/* ---- Main Title (HOW TO UNLOCK THE VAULT) ---- */
+.vx-vault-title {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 6vw, 58px);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--vault-white);
+  letter-spacing: 0.01em;
 }
-.vh-paths {
-  display: grid;
-  gap: 14px;
-  margin-top: 28px;
+
+.vx-vault-title .vx-accent {
+  font-style: italic;
+  color: var(--vault-rose);
 }
-@media (min-width: 800px) {
-  .vh-paths { grid-template-columns: repeat(3, 1fr); }
-}
-.vh-path {
-  padding: 18px 16px;
-  border: 1px solid var(--line);
-  background: rgba(7, 6, 10, 0.5);
-}
-.vh-pathHot {
-  border-color: rgba(201, 162, 75, 0.4);
-}
-.vh-pathId,
-.vh-pathMeta {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: var(--gold);
-}
-.vh-path h3 {
-  margin: 8px 0 12px;
-  font-size: 1.6rem;
-}
-.vh-path ul {
-  margin: 0 0 16px;
-  padding-left: 16px;
-  color: var(--dim);
-}
-.vh-carousel {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: 36px 1fr 36px;
-  align-items: center;
-  gap: 8px;
-}
-.vh-stage {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #0a090e;
-}
-.vh-slide,
-.vh-slideOn {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 500ms ease;
-  pointer-events: none;
-}
-.vh-slideOn {
-  opacity: 1;
-  pointer-events: auto;
-}
-.vh-shot {
-  overflow: hidden;
-  user-select: none;
-  touch-action: none;
-  cursor: pointer;
-  background: #07060a;
-}
-.vh-shotImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  filter: blur(18px) grayscale(1) brightness(0.38);
-  transform: scale(1.1);
-  transition: filter 220ms ease, transform 220ms ease;
-}
-.vh-shotCover {
-  position: absolute;
-  inset: 0;
+
+/* ============================================
+   STEP CARDS
+   ============================================ */
+
+.vx-vault-steps {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(7, 6, 10, 0.42);
-  transition: opacity 220ms ease;
+  gap: var(--card-gap);
 }
 
-.vh-shotLock {
-  color: #c9a24b;
-  font-size: 14px;
-}
-
-.vh-shotHint {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  color: rgba(236, 229, 216, 0.55);
-}
-.vh-shotOpen .vh-shotImg {
-  filter: none;
-  transform: scale(1);
-}
-.vh-shotOpen .vh-shotCover {
-  opacity: 0;
-}
-@media (hover: hover) {
-.vh-shot:hover .vh-shotImg { filter: none; transform: scale(1);}
-.vh-shot:hover .vh-shotCover { opacity: 0;}
-}
-.vh-arrow {
-  height: 36px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--bone);
-  cursor: pointer;
-}
-.vh-dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 12px;
-}
-.vh-dot,
-.vh-dotOn {
-  width: 7px;
-  height: 7px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(236, 229, 216, 0.2);
-  cursor: pointer;
-}
-.vh-dotOn { background: var(--gold); }
-.vh-faqItem {
-  border-bottom: 1px solid var(--line);
-}
-.vh-faqBtn {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 40px 1fr 20px;
-  gap: 10px;
-  align-items: center;
-  padding: 16px 0;
-  border: 0;
-  background: none;
-  color: var(--bone);
-  text-align: left;
-  cursor: pointer;
-  font-family: var(--display);
-  font-size: 1.05rem;
-}
-
-.vh-faqN {
-  color: rgba(201, 162, 75, 0.55);
-  font-style: italic;
-}
-
-.vh-faqA {
-  padding: 0 0 16px 50px;
-}
-
-.vh-popup {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(7, 6, 10, 0.8);
-}
-
-.vh-popupBox {
+/* ---- Single Step Card ---- */
+.vx-vault-step {
   position: relative;
-  width: min(92%, 400px);
-  padding: 32px 24px;
-  border: 1px solid var(--line);
-  background: #0d0b12;
-  text-align: center;
-}
-
-.vh-close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  border: 0;
-  background: none;
-  color: var(--dim);
-  font-size: 28px;
-  cursor: pointer;
-}
-.vh-steps li > .vh-reveal {
-  display: contents;
-}
-.vh-reveal {
-  opacity: 0.18;
-  transform: translateY(28px);
-  filter: brightness(0.55);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease,
-    filter 0.8s ease;
-}
-
-.vh-reveal.is-on {
-  opacity: 1;
-  transform: none;
-  filter: brightness(1);
-}
-
-.vh-insideLead {
-  max-width: 36rem;
-  margin: 14px 0 0;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  line-height: 1.8;
-  color: var(--dim);
-  text-transform: uppercase;
-}
-
-.vh-insideLead strong {
-  color: var(--bone);
-  font-weight: 600;
-}
-
-.vh-foot {
-  margin-top: 40px;
-  padding: 48px 20px 24px;
-  border-top: 1px solid var(--line);
-  background: rgba(7, 6, 10, 0.55);
-}
-
-.vh-footGrid {
-  max-width: 72rem;
-  margin: 0 auto;
   display: grid;
-  gap: 32px;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 0 20px;
+  padding: 32px 28px;
+  background-color: var(--vault-card);
+  background-image: url("/assets/damask.png");
+  background-size: 220px;
+  background-repeat: repeat;
+  background-position: center;
+  border: 1px solid var(--vault-border);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
-@media (min-width: 900px) {
-  .vh-footGrid {
-    grid-template-columns: 1.2fr 0.8fr;
+.vx-vault-step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 15, 20, 0.88) 0%,
+    rgba(15, 15, 20, 0.82) 50%,
+    rgba(15, 15, 20, 0.9) 100%
+  );
+  z-index: 0;
+}
+
+.vx-vault-step > * {
+  position: relative;
+  z-index: 1;
+}
+
+.vx-vault-step:hover {
+  border-color: var(--vault-gold-dim);
+  box-shadow: 0 0 40px rgba(196, 162, 101, 0.04);
+}
+
+/* ---- Step Number ---- */
+.vx-vault-step-num {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--vault-gold);
+  opacity: 0.6;
+  line-height: 1;
+  align-self: center;
+  transition: opacity 0.35s ease;
+}
+
+.vx-vault-step:hover .vx-vault-step-num {
+  opacity: 0.85;
+}
+
+/* ---- Step Content ---- */
+.vx-vault-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vx-vault-step-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--vault-gold);
+  opacity: 0.85;
+}
+
+.vx-vault-step-desc {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--vault-text-dim);
+  line-height: 1.55;
+}
+
+/* ---- Step Counter (01 / 04) ---- */
+.vx-vault-step-counter {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--vault-faint);
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* ============================================
+   LOCK CARD (Video/Media Area)
+   ============================================ */
+
+.vx-lockCard {
+  position: relative;
+  width: 300px;
+  padding: 22px 16px;
+  border: 1px solid var(--vault-border);
+  border-radius: 2px;
+  background-color: var(--vault-card);
+  background-image: url("/assets/damask.png");
+  background-size: 220px;
+  background-repeat: repeat;
+  background-position: center;
+  text-align: center;
+  overflow: hidden;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.38),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.vx-lockCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    170deg,
+    rgba(15, 15, 20, 0.88) 0%,
+    rgba(10, 10, 14, 0.92) 100%
+  );
+  z-index: 0;
+}
+
+.vx-lockCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.vx-lockCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--vault-gold-dim);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.45),
+    0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ---- Lock Card Title ---- */
+.vx-lockCard h2 {
+  margin: 10px 0 0;
+  padding-bottom: 15px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vault-gold);
+  opacity: 0.65;
+  line-height: 1;
+}
+
+/* ---- Lock Card Subtitle ---- */
+.vx-lockCard > p {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--vault-text-dim);
+  line-height: 1.4;
+}
+
+/* ---- Unlock Button ---- */
+.vx-unlockBtn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 28px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--vault-gold);
+  background: linear-gradient(
+    180deg,
+    rgba(196, 162, 101, 0.08) 0%,
+    rgba(196, 162, 101, 0.04) 100%
+  );
+  border: 1px solid rgba(196, 162, 101, 0.2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.vx-unlockBtn:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(196, 162, 101, 0.15) 0%,
+    rgba(196, 162, 101, 0.08) 100%
+  );
+  border-color: rgba(196, 162, 101, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.vx-unlockBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   VIDEO / MEDIA FRAME
+   ============================================ */
+
+.vx-lock {
+  position: relative;
+  width: min(100%, 300px);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vx-lock video,
+.vx-lock img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  filter: saturate(0.6) brightness(0.8) contrast(1.08);
+  transition: filter 0.4s ease;
+}
+
+.vx-lock:hover video,
+.vx-lock:hover img {
+  filter: saturate(0.75) brightness(0.88) contrast(1.05);
+}
+
+/* ---- Frame Overlays ---- */
+.vx-frameA,
+.vx-frameB {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vx-frameA {
+  border: 1px solid rgba(196, 162, 101, 0.08);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.4),
+    inset 0 0 80px rgba(0, 0, 0, 0.2);
+}
+
+.vx-frameB {
+  border: 1px solid rgba(196, 162, 101, 0.04);
+  border-radius: 2px;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+/* ============================================
+   STATUS & TIME BADGES
+   ============================================ */
+
+.vx-status {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vault-rose);
+  opacity: 0.7;
+  z-index: 3;
+}
+
+.vx-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--vault-rose);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.vx-time {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  color: var(--vault-faint);
+  z-index: 3;
+}
+
+/* ============================================
+   GLOW & DECORATIVE
+   ============================================ */
+
+.vx-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    180deg,
+    rgba(196, 162, 101, 0.02) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---- Top/bottom accent lines on lock card ---- */
+.vx-lockCard > .vx-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vault-gold-dim), transparent);
+  opacity: 0.4;
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+
+.vx-vault-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vault-faint), transparent);
+  margin: 40px auto;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .vx-vault {
+    padding: 24px 16px 40px;
+  }
+
+  .vx-vault-title {
+    font-size: clamp(24px, 8vw, 40px);
+  }
+
+  .vx-vault-step {
+    grid-template-columns: 50px 1fr auto;
+    gap: 0 14px;
+    padding: 24px 18px;
+  }
+
+  .vx-vault-step-num {
+    font-size: 34px;
+  }
+
+  .vx-vault-step-title {
+    font-size: 9px;
+  }
+
+  .vx-vault-step-desc {
+    font-size: 13px;
+  }
+
+  .vx-lockCard {
+    width: 100%;
   }
 }
 
-.vh-footBrand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+@media (max-width: 340px) {
+  .vx-vault-step {
+    grid-template-columns: 1fr;
+    gap: 12px 0;
+    padding: 20px 16px;
+  }
 
-.vh-footLogo {
-  height: 56px;
-  width: auto;
-}
+  .vx-vault-step-num {
+    font-size: 28px;
+  }
 
-.vh-footRule {
-  width: 1px;
-  height: 40px;
-  background: var(--line);
+  .vx-vault-step-counter {
+    text-align: right;
+  }
 }
-
-.vh-footName {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: var(--bone);
-}
-.vh-footName span {
-  color: #90c5ff;
-}
-.vh-footSub {
-  margin: 6px 0 0;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  color: var(--dim);
-}
-.vh-legal {
-  max-width: 36rem;
-  margin: 20px 0 0;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  line-height: 1.7;
-  color: var(--faint);
-  text-transform: uppercase;
-}
-.vh-footRight {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.vh-copyLine {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--dim);
-}
-.vh-copyLine em {
-  color: #90c5ff;
-  font-style: normal;
-}
-.vh-footLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.vh-footLinks a {
-  border: 1px solid var(--line);
-  padding: 8px 12px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: var(--dim);
-  text-decoration: none;
-}
-.vh-footLinks a:hover {
-  color: var(--gold);
-  border-color: var(--gold);
-}
-.vh-blackwall {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.24em;
-  color: rgba(191, 219, 254, 0.55);
-}
-.vh-blackwall i {
-  display: inline-block;
-  width: 40px;
-  height: 1px;
-  background: rgba(96, 165, 250, 0.35);
-}
-.vh-footBar {
-  max-width: 72rem;
-  margin: 28px auto 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  color: var(--faint);
-}
-/*=========================*/
