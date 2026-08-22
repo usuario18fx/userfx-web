@@ -2,16 +2,18 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
+  res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=59');
+
   const { count, error } = await supabase
     .from('track_events')
     .select('*', { count: 'exact', head: true })
-    .eq('event_type', 'miniapp_open');
+    .eq('event', 'miniapp_open');
 
   if (error) {
     console.error('stats_error', error);

@@ -3,43 +3,50 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  // IP real detrás del proxy de Vercel
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')
     .split(',')[0]
     .trim();
 
   const { initData } = req.body || {};
 
-  // Verificación obligatoria del initData (evita eventos falseados)
   const isValid = verifyTelegramWebAppData(initData, process.env.BOT_TOKEN);
   if (!isValid) return res.status(401).json({ ok: false, error: 'invalid_signature' });
 
-  let user = {};
+  let telegramUser = {};
   try {
     const params = new URLSearchParams(initData);
-    user = JSON.parse(params.get('user') || '{}');
+    telegramUser = JSON.parse(params.get('user') || '{}');
   } catch {
-    user = {};
+    telegramUser = {};
   }
 
-  // Nunca se guarda el IP crudo — se hashea con salt para conteo único sin exponer PII
-  const ipHash = crypto
-    .createHash('sha256')
-    .update(ip + process.env.IP_SALT)
-    .digest('hex');
+  // Vercel inyecta estos headers automáticamente en cada request — sin costo, sin API externa
+  const geo = {
+    country: req.headers['x-vercel-ip-country'] || null,
+    region: req.headers['x-vercel-ip-country-region'] || null,
+    city: req.headers['x-vercel-ip-city']
+      ? decodeURIComponent(req.headers['x-vercel-ip-city'])
+      : null,
+    timezone: req.headers['x-vercel-ip-timezone'] || null,
+  };
 
   const { error } = await supabase.from('track_events').insert({
-    event_type: 'miniapp_open',
-    telegram_id: user.id || null,
-    ip_hash: ipHash,
-    user_agent: req.headers['user-agent'],
-    created_at: new Date().toISOString(),
+    event: 'miniapp_open',
+    telegram: telegramUser, // jsonb: {id, username, first_name, ...}
+    meta: {},
+    geo,
+    ip,
+    ua: req.headers['user-agent'] || null,
+    href: req.headers['referer'] || null,
+    path: '/miniapp',
+    host: req.headers['host'] || null,
+    referer: req.headers['referer'] || null,
   });
 
   if (error) {
@@ -73,7 +80,6 @@ function verifyTelegramWebAppData(initData, botToken) {
     .update(dataCheckString)
     .digest('hex');
 
-  // Comparación en tiempo constante para evitar timing attacks
   const a = Buffer.from(computedHash);
   const b = Buffer.from(hash);
   if (a.length !== b.length) return false;
