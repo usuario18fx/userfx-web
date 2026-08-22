@@ -680,12 +680,48 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
     0 6px 22px #00000061;
   backdrop-filter:blur(8px);
 }
-  .vx-visitorCount{
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:.16em;
-  color:var(--dim);
-  white-space:nowrap;
+  .vx-hudRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--dim);
+}
+
+.vx-visitorCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-height: 26px;
+  padding: 0 8px;
+
+  border: 1px solid rgba(0, 115, 246, 0.72);
+  border-radius: 3px;
+  background: rgba(7, 6, 10, 0.42);
+
+  color: #f8fbfe;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vx-visitorIcon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex: 0 0 16px;
+  object-fit: contain;
+  pointer-events: none;
+
+  filter: drop-shadow(0 0 4px rgba(224, 184, 90, 0.25));
 }
 .vx-brand{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:.22em}
 .vx-brand img{height:28px}
