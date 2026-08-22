@@ -1413,7 +1413,19 @@ async function handleUserStart(ctx) {
     }
 }
 
+
 bot.start(handleUserStart);
+
+// ======================================================
+// PAYMENT SUPPORT
+// ======================================================
+
+bot.command("paysupport", async (ctx) => {
+    await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
+
+ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
+});
+
 // ======================================================
 // PAYMENT SUPPORT
 // ======================================================
@@ -1556,19 +1568,77 @@ async function handleMedia(ctx) {
        bot.on("video", handleMedia);
        bot.on("document", handleMedia);
 //// USER TEXT ROUTER // 
-      bot.on("text", async (ctx) => {
-      const text =
-          String(ctx.message?.text || "").trim();
-      const userId =
-          String(ctx.from?.id || "");
-      if (!userId) return;
-      try {
-      if (
-          /^\/start(?:@\w+)?(?:\s|$)/i.test(text)
-      ) {return await handleUserStart(ctx);}
-      if (text.startsWith("/")) {
-          return;
-      }
+     //// USER TEXT ROUTER //
+
+bot.on("text", async (ctx) => {
+    const text =
+        String(ctx.message?.text || "").trim();
+
+    const userId =
+        String(ctx.from?.id || "");
+
+    logger.info("USER TEXT RECEIVED", {
+        userId,
+        text,
+    });
+
+    if (!userId) {
+        return;
+    }
+
+    try {
+        if (
+            /^\/start(?:@\w+)?(?:\s|$)/i.test(text)
+        ) {
+            const startPayload =
+                text
+                    .replace(
+                        /^\/start(?:@\w+)?\s*/i,
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+            logger.info("USER START RECEIVED", {
+                userId,
+                startPayload:
+                    startPayload || null,
+            });
+
+            if (startPayload === "pay_basic") {
+                logger.info(
+                    "START BASIC PAYMENT"
+                );
+
+                await sendBasicInvoice(ctx);
+                return;
+            }
+
+            if (startPayload === "pay_pro") {
+                logger.info(
+                    "START PRO PAYMENT"
+                );
+
+                await sendProInvoice(ctx);
+                return;
+            }
+
+            if (startPayload === "pay_vip") {
+                logger.info(
+                    "START VIP PAYMENT"
+                );
+
+                await sendVipInvoice(ctx);
+                return;
+            }
+
+            await sendMainPanel(ctx);
+            return;
+        }
+
+        if (text.startsWith("/")) {
+            return;
+        }
 //// GET CODE //
     if (text === BTN_GET_CODE) {
         await trackButtonClick(ctx, "GET CODE");
