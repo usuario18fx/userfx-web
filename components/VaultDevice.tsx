@@ -194,7 +194,7 @@ import './VaultDevice.css';
 
 /* Create order and open Telegram payment */
 
-  const buyAccess = async () => {
+   const buyAccess = () => {
 
   if (!activeSheet || buying) return;
 
@@ -202,39 +202,23 @@ import './VaultDevice.css';
   setBuyError('');
 
   try {
-    const response = await fetch('/api/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        planId: activeSheet,
-      }),
-    });
-
-    const data = (await response.json()) as {
-      payload?: string;
-      error?: string;
-    };
-
-    if (!response.ok || !data.payload) {
-      throw new Error(
-        data.error || 'No se pudo crear la orden'
-      );
-    }
+    const paymentPayload = {
+      basic: 'pay_basic',
+      pro: 'pay_pro',
+      vip: 'pay_vip',
+    }[activeSheet];
 
     const telegramUrl =
-      `https://t.me/User18Fx_bot?start=${encodeURIComponent(data.payload)}`;
+      `https://t.me/User18Fx_bot?start=${paymentPayload}`;
 
     window.location.assign(telegramUrl);
 
   } catch {
-    setBuyError(
-      'No se pudo iniciar el pago. Inténtalo nuevamente.'
-    );
-
-  } finally {
     setBuying(false);
+
+    setBuyError(
+      'No se pudo abrir el pago. Inténtalo nuevamente.'
+    );
   }};
 
   return (
@@ -464,40 +448,30 @@ import './VaultDevice.css';
       </div>
       ))}
       </div>
-
 {/* ── Payment and Done buttons ── */}
-
       <div className="vd-sheet-footer">
-
       {buyError && (
       <p className="vd-buy-error">
         {buyError}
       </p>
       )}
-
       <div className="vd-sheet-actions">
-
-      <button
-        type="button"
-        className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`}
-        onClick={buyAccess}
-        disabled={buying || !currentPlan}
-      >
-
-      {currentPlan?.emoji && (
-      <img
-        src={currentPlan.emoji}
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        className={`vd-cta-icon vd-cta-icon-${activeSheet ?? ''}`}
-      />
-      )}
-
-      {buying
-        ? 'CREATING ORDER...'
-        : `GET CODE · ${currentPlan?.stars ?? 0} ⭐`}
-      </button>
+     <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`} onClick={buyAccess} disabled={buying || !currentPlan}>
+  {buying ? (
+    <span className="vd-buy-loading">
+      CREATING ORDER...
+    </span>
+  ) : (
+       <>
+      <span className="vd-buy-label">
+        GET CODE
+      </span>
+      <span className="vd-buy-price">
+        {currentPlan?.stars ?? 0} STARS ⭐
+      </span>
+    </>
+  )}
+</button>
 
       <button
         type="button"

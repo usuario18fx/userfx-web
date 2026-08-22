@@ -452,7 +452,7 @@ const REQUEST_STATUS = {
 // ======================================================
 const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
-const BTN_BASIC = "⚡ ʙᴀꜱɪᴄ";
+const BTN_BASIC = "🌹 ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
 const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
@@ -935,7 +935,7 @@ async function sendRefreshPanel(ctx) {
         : hasPro
             ? "🔥 ᴘʀᴏ"
             : hasBasic
-                ? "⚡ ʙᴀꜱɪᴄ"
+                ? "🌹 ʙᴀꜱɪᴄ"
                 : "ɴᴏ ᴘʟᴀɴ";
     await ctx.reply(`↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
 ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`, getMainKeyboard());
@@ -1341,14 +1341,64 @@ async function handleSuccessfulPayment(ctx) {
 // ======================================================
 // USER START
 // ======================================================
-bot.start(async (ctx) => {
+     // ======================================================
+// USER START
+// ======================================================
+
+async function handleUserStart(ctx) {
     try {
-        const startPayload = String(ctx.startPayload || "").trim();
-        if (isVaultPayload(startPayload)) {
-            const relayed = await relayVaultUpdate(ctx.update);
-            if (relayed)
-                return;
+        const messageText =
+            String(ctx.message?.text || "").trim();
+
+        const textPayload =
+            messageText
+                .replace(/^\/start(?:@\w+)?\s*/i, "")
+                .trim();
+
+        const startPayload =
+            String(
+                ctx.startPayload ||
+                textPayload ||
+                ""
+            ).trim().toLowerCase();
+
+        logger.info("USER START RECEIVED", {
+            userId: String(ctx.from?.id || ""),
+            chatId: String(ctx.chat?.id || ""),
+            startPayload: startPayload || null,
+            messageText: messageText || null,
+        });
+
+        if (startPayload === "pay_basic") {
+            logger.info("START BASIC PAYMENT");
+
+            await sendBasicInvoice(ctx);
+            return;
         }
+
+        if (startPayload === "pay_pro") {
+            logger.info("START PRO PAYMENT");
+
+            await sendProInvoice(ctx);
+            return;
+        }
+
+        if (startPayload === "pay_vip") {
+            logger.info("START VIP PAYMENT");
+
+            await sendVipInvoice(ctx);
+            return;
+        }
+
+        if (isVaultPayload(startPayload)) {
+            const relayed =
+                await relayVaultUpdate(ctx.update);
+
+            if (relayed) {
+                return;
+            }
+        }
+
         await sendMainPanel(ctx);
     }
     catch (error) {
@@ -1356,8 +1406,14 @@ bot.start(async (ctx) => {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
+
+        await ctx.reply(
+            "⚠️ Unable to open the payment. Please try again."
+        ).catch(() => {});
     }
-});
+}
+
+bot.start(handleUserStart);
 // ======================================================
 // PAYMENT SUPPORT
 // ======================================================
@@ -1501,10 +1557,17 @@ async function handleMedia(ctx) {
        bot.on("document", handleMedia);
 //// USER TEXT ROUTER // 
       bot.on("text", async (ctx) => {
-      const text = String(ctx.message?.text || "").trim();
-      const userId = String(ctx.from?.id || "");
-    if (!userId) return; try {
-    if (text.startsWith("/")) { return;
+      const text =
+          String(ctx.message?.text || "").trim();
+      const userId =
+          String(ctx.from?.id || "");
+      if (!userId) return;
+      try {
+      if (
+          /^\/start(?:@\w+)?(?:\s|$)/i.test(text)
+      ) {return await handleUserStart(ctx);}
+      if (text.startsWith("/")) {
+          return;
       }
 //// GET CODE //
     if (text === BTN_GET_CODE) {
