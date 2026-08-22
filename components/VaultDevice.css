@@ -979,3 +979,67 @@
 .vd-sheet-footer { padding: 10px 12px 14px;}
 .vd-sheet-actions { gap: 8px;}
 .vd-sheet-actions .vd-cta-btn { min-width: 80px; padding: 0 12px;}}
+/* ─── TELEGRAM WEBVIEW FIX ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--tg-viewport-height, 100dvh);
+  margin: 0;
+  overflow-x: clip;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+/* Evita iconos gigantes durante la carga */
+.vx-titleRose,
+.vx-titleCandado,
+.vx-planButtonIcon,
+.vd-option-img,
+.vd-option-icon img,
+.vd-sheet-title-icon,
+.vd-benefit-img,
+.vd-cta-icon {
+  width: 50px;
+  height: 50px;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  object-fit: contain;
+}
+/* Carrusel */
+.vx-carousel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+}
+.vx-carouselTrack {
+  max-width: none;
+}
+.vx-carouselSlide {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.vx-carouselSlide .vx-shotMedia {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+/* Device responsive */
+@media (max-width: 800px) {
+  .vd-device {
+    width: calc(100dvw - 24px) !important;
+    max-width: 760px !important;
+    height: auto !important;
+    aspect-ratio: 2 / 1;
+    margin-inline: auto;
+  }}
