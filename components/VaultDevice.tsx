@@ -194,22 +194,16 @@ import './VaultDevice.css';
 
 /* Create order and open Telegram payment */
 
-   const buyAccess = () => {
+     const buyAccess = () => {
 
-  if (!activeSheet || buying) return;
+  if (buying) return;
 
   setBuying(true);
   setBuyError('');
 
   try {
-    const paymentPayload = {
-      basic: 'pay_basic',
-      pro: 'pay_pro',
-      vip: 'pay_vip',
-    }[activeSheet];
-
     const telegramUrl =
-      `https://t.me/User18Fx_bot?start=${paymentPayload}`;
+      'https://t.me/User18Fx_bot?start=getcode';
 
     window.location.assign(telegramUrl);
 
@@ -217,7 +211,7 @@ import './VaultDevice.css';
     setBuying(false);
 
     setBuyError(
-      'No se pudo abrir el pago. Inténtalo nuevamente.'
+      'No se pudo abrir Telegram. Inténtalo nuevamente.'
     );
   }};
 

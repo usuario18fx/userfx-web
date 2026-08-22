@@ -465,6 +465,7 @@ const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
 const BTN_PENDING_REQUEST = "ʀᴇǫᴜᴇꜱᴛ";
 const BTN_GET_CODE = "ɢᴇᴛ ᴄᴏᴅᴇ";
 const BTN_OPEN_VAULT = "🔐 ᴏᴘᴇɴ ᴠᴀᴜʟᴛ";
+const BTN_WEBSITE = "🌐 ᴡᴇʙꜱɪᴛᴇ";
 // ======================================================
 // UTILITIES
 // ======================================================
@@ -475,7 +476,7 @@ function escapeHtml(value = "") {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-}
+     }
 function getUserMeta(from) {
     const firstName = from?.first_name || "";
     const lastName = from?.last_name || "";
@@ -489,16 +490,16 @@ function getUserMeta(from) {
         username,
         id: String(from?.id || ""),
     };
-}
+    }
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-}
+    }
 function getErrorStack(error) {
     if (error instanceof Error) {
         return error.stack || null;
     }
     return null;
-}
+    }
 function getTelegramError(error) {
     return {
         errorCode: error?.response?.error_code ||
@@ -510,7 +511,7 @@ function getTelegramError(error) {
         parameters: error?.response?.parameters ||
             null,
     };
-}
+    }
 function secureCompare(a, b) {
     const bufA = Buffer.from(String(a));
     const bufB = Buffer.from(String(b));
@@ -519,18 +520,18 @@ function secureCompare(a, b) {
         return false;
     }
     return crypto.timingSafeEqual(bufA, bufB);
-}
+    }
 function isAdmin(ctx) {
     return (String(ctx.from?.id || "") ===
         String(ADMIN_USER_ID));
-}
+     }
 function getCommandArg(ctx, index = 0) {
     const parts = String(ctx.message?.text || "")
         .trim()
         .split(/\s+/)
         .slice(1);
     return parts[index] || "";
-}
+     }
 async function typing(ctx) {
     try {
         await ctx.sendChatAction("typing");
@@ -538,14 +539,14 @@ async function typing(ctx) {
     }
     catch {
         // ignore
+    } 
     }
-}
 async function sendMediaSafe(ctx, kind, url, extra = {}) {
     try {
         if (kind === "video") {
             await ctx.replyWithVideo(url, extra);
             return;
-        }
+    }
         await ctx.replyWithPhoto(url, extra);
     }
     catch (error) {
@@ -553,9 +554,9 @@ async function sendMediaSafe(ctx, kind, url, extra = {}) {
             kind,
             url,
             ...getTelegramError(error),
-        });
+    });
     }
-}
+    }
 // ======================================================
 // BUTTON TRACKING
 // ======================================================
@@ -573,15 +574,15 @@ async function trackButtonClick(ctx, buttonName) {
             id: user.id,
             button: buttonName,
             clickedAt: new Date().toISOString(),
-        };
+    };
         await client.set(`button_click:${user.id}:${Date.now()}`, JSON.stringify(data), "EX", 60 * 60 * 24 * 30);
     }
     catch (error) {
         logger.error("TRACK BUTTON ERROR", {
             message: error?.message,
-        });
+    });
     }
-}
+    }
 // ======================================================
 // RATE LIMIT
 // ======================================================
@@ -593,17 +594,17 @@ async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
         const key = `rate_limit:videocall:${userId}`;
         const count = await client.incr(key);
         if (count === 1) {
-            await client.expire(key, windowSeconds);
-        }
+            await client.expire(key, windowSeconds); 
+    }
         return count <= limit;
     }
     catch (error) {
         logger.error("RATE LIMIT ERROR", {
             message: error?.message,
-        });
+    });
         return true;
     }
-}
+    }
 // ======================================================
 // CENTRAL CODE ENGINE
 // ======================================================
@@ -615,7 +616,7 @@ function randomCodePart(length = 4) {
         result += alphabet[index];
     }
     return result;
-}
+    }
 function getPlanFromPayload(payload) {
     if (payload === BASIC_PAYLOAD) {
         return PLAN_CONFIG.basic;
@@ -627,13 +628,13 @@ function getPlanFromPayload(payload) {
         return PLAN_CONFIG.vip;
     }
     return null;
-}
+    }
 function getCodeKey(code) {
     return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
-}
+    }
 function getUserCodeIndexKey(userId) {
     return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
-}
+    }
 async function generateAccessCode(planId, source, userId, chargeId = null) {
     const client = await ensureRedis();
     if (!client) {
@@ -675,21 +676,21 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
                 planId: plan.id,
                 source,
                 userId,
-            });
+       });
             return record;
-        }
-    }
+       }
+       }
     throw new Error("Unable to generate unique access code");
-}
+       }
 async function getAccessCode(code) {
     const normalized = String(code || "")
         .trim()
         .toUpperCase();
     if (!normalized) {
         return null;
-    }
+       }
     return redisGetJson(getCodeKey(normalized));
-}
+       }
 async function validateAccessCode(code) {
     const record = await getAccessCode(code);
     if (!record) {
@@ -697,19 +698,16 @@ async function validateAccessCode(code) {
             valid: false,
             reason: "not_found",
         };
-    }
+        }
     if (record.status !== "active") {
         return {
             valid: false,
             reason: "not_active",
             record,
         };
-    }
-    return {
-        valid: true,
-        record,
-    };
-}
+        }
+    return { valid: true, record,};
+        }
 // ======================================================
 // VAULT BUTTON
 // ======================================================
@@ -718,111 +716,68 @@ function getOpenVaultKeyboard() {
     const isDirectHttps = /^https:\/\//i.test(url) &&
         !/^https:\/\/t\.me\//i.test(url);
     return Markup.inlineKeyboard([
-        [
-            isDirectHttps
-                ? Markup.button.webApp(BTN_OPEN_VAULT, url)
-                : Markup.button.url(BTN_OPEN_VAULT, url),
-        ],
-    ]);
-}
+        [ isDirectHttps
+            ? Markup.button.webApp(BTN_OPEN_VAULT, url)
+            : Markup.button.url(BTN_OPEN_VAULT, url),],]);
+        }
 // ======================================================
 // KEYBOARDS
 // ======================================================
 function getMainKeyboard() {
     return Markup.keyboard([
-        [
-            BTN_VIDEOCALL,
-            BTN_GET_CODE,
-        ],
-        [
-            BTN_CHANNELS,
-            BTN_REFRESH,
-        ],
-    ]).resize();
-}
+        [ BTN_VIDEOCALL,
+          BTN_GET_CODE, ] ,
+        [ BTN_CHANNELS,  
+          BTN_REFRESH, ] ,
+        ]).resize();
+        }
 function getAccessKeyboard() {
     return Markup.keyboard([
-        [
-            BTN_BASIC,
-            BTN_VIP,
-        ],
-        [
-            BTN_PRO,
-        ],
-        [
-            BTN_BACK_MENU,
-        ],
-    ]).resize();
-}
-function getPendingPhotoKeyboard() {
+        [ BTN_BASIC,
+          BTN_VIP, ] ,
+        [ BTN_PRO, ] ,
+        [ BTN_BACK_MENU,
+          Markup.button.webApp(
+          BTN_WEBSITE,
+          USERFX_SITE_URL), ] ,] ) .resize();
+         }
+    function getPendingPhotoKeyboard() {
     return Markup.keyboard([
-        [
-            BTN_PENDING_REQUEST,
-        ],
-        [
-            BTN_CANCEL,
-        ],
-    ]).resize();
-}
+        [ BTN_PENDING_REQUEST, ],
+        [ BTN_CANCEL, ] , ] ).resize();
+        }
 function getApprovedVideocallKeyboard() {
     return Markup.keyboard([
-        [
-            BTN_ZOOM,
-            BTN_TELEGRAM,
-        ],
-        [
-            BTN_BACK_MENU,
-        ],
-    ]).resize();
-}
+        [ BTN_ZOOM,
+          BTN_TELEGRAM, ],
+        [ BTN_BACK_MENU,],]).resize();
+         }
 function getVideocallInlineKeyboard() {
-    return {
-        inline_keyboard: [
-            [
-                {
-                    text: BTN_ZOOM,
-                    url: ZOOM_URL,
-                },
-                {
-                    text: BTN_TELEGRAM,
-                    url: TELEGRAM_CALL_URL,
-                },
-            ],
-        ],
-    };
-}
+    return { inline_keyboard: [
+            [{ text: BTN_ZOOM,
+               url: ZOOM_URL,},
+             { text: BTN_TELEGRAM,
+               url: TELEGRAM_CALL_URL, } , ] , ] , } ; 
+                 }
 function getStarsVipKeyboard() {
     return Markup.inlineKeyboard([
-        [
-            Markup.button.callback("❘ᴘᴀʏ ✪ 𝐕ɪᴘ❘", "pay_vip_stars"),
-        ],
-    ]);
-}
+        [ Markup.button.callback("❘ᴘᴀʏ ✪ 𝐕ɪᴘ❘", "pay_vip_stars") , ] , ] ) ;
+        }
 function getStarsBasicKeyboard() {
     return Markup.inlineKeyboard([
-        [
-            Markup.button.callback("|ᴘᴀʏ ✪ 𝐁ᴀsɪᴄ|", "pay_basic_stars"),
-        ],
-    ]);
-}
+        [ Markup.button.callback("|ᴘᴀʏ ✪ 𝐁ᴀsɪᴄ|", "pay_basic_stars") , ] , ] ) ;
+         }
 function getStarsProKeyboard() {
     return Markup.inlineKeyboard([
-        [
-            Markup.button.callback("| ᴘᴀʏ ✪ ᴘʀᴏ |", "pay_pro_stars"),
-        ],
-    ]);
-}
+        [ Markup.button.callback("| ᴘᴀʏ ✪ ᴘʀᴏ |", "pay_pro_stars") , ] , ] ) ;
+        }
 function getChannelsKeyboard() {
     return Markup.keyboard([
-        [
-            BTN_SMOKELANDIA,
-            BTN_USERFX_SITE,
-        ],
-        [
-            BTN_BACK_MENU,
-        ],
+        [ BTN_SMOKELANDIA,
+          BTN_USERFX_SITE, ] ,
+        [ BTN_BACK_MENU, ] ,
     ]).resize();
-}
+     }
 // ======================================================
 // ACCESS STATE
 // ======================================================
@@ -833,8 +788,7 @@ function tierRank(tier) {
         return 2;
     if (tier === TIER_BASIC)
         return 1;
-    return 0;
-}
+    return 0; }
 async function getAccessState(userId) {
     const entry = await getPaidUser(userId);
     const tier = entry?.tier || null;
@@ -843,8 +797,7 @@ async function getAccessState(userId) {
         hasPro: tierRank(tier) >= 2,
         hasBasic: tierRank(tier) >= 1,
         entry,
-    };
-}
+    };}
 // ======================================================
 // PANELS
 // ======================================================
@@ -852,9 +805,10 @@ async function sendMainPanel(ctx) {
     try {
         await typing(ctx);
         await sendMediaSafe(ctx, "video", ASSET_WELCOME_VIDEO);
-        await ctx.reply(`𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
-ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
-ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`, getMainKeyboard());
+        await ctx.reply(
+     `𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
+    ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
+    ᴜꜱᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴꜱ ʙᴇʟᴏᴡ ᴛᴏ ɴᴀᴠɪɢᴀᴛᴇ ᴏᴜʀ ᴘʀɪᴠᴀᴛᴇ ꜱᴇᴄᴛɪᴏɴꜱ.`, getMainKeyboard());
     }
     catch (error) {
         logger.error("MAIN PANEL ERROR", {
@@ -863,15 +817,13 @@ async function sendMainPanel(ctx) {
             chatId: ctx.chat?.id || null,
         });
         throw error;
-    }
-}
+       }}
 async function sendMembershipPanel(ctx) {
     await typing(ctx);
     await ctx.reply(`ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ
-
-⚡ ʙᴀꜱɪᴄ
-🔥 ᴘʀᴏ
-👑 ᴠɪᴘ`, getAccessKeyboard());
+   🌹 ʙᴀꜱɪᴄ
+   🔥 ᴘʀᴏ 
+   👑 ᴠɪᴘ`, getAccessKeyboard());
 }
 async function sendVipPanel(ctx) {
     try {
@@ -1254,9 +1206,9 @@ async function handleSuccessfulPayment(ctx) {
                 paidAt: Date.now(),
                 telegramPaymentChargeId: chargeId,
             });
-            await ctx.reply(`✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
-
-📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {
+            await ctx.reply(
+                `✅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+              📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {
                 reply_markup: getVideocallInlineKeyboard(),
             });
         }
@@ -1270,12 +1222,12 @@ async function handleSuccessfulPayment(ctx) {
             throw error;
         }
         return;
-    }
+        }
     // ====================================================
     // BASIC / PRO / VIP
     // ====================================================
-    const plan = getPlanFromPayload(payload);
-    if (plan) {
+        const plan = getPlanFromPayload(payload);
+        if (plan) {
         try {
             /*
              * Generate one central Vault code.
@@ -1311,8 +1263,7 @@ async function handleSuccessfulPayment(ctx) {
             await setPaidUser(userId, effectiveRecord);
             await sendGeneratedCode(ctx, record);
             await ctx.reply(`✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-
-ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
+        ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
             return;
         }
         catch (error) {
@@ -1325,26 +1276,58 @@ async function handleSuccessfulPayment(ctx) {
                 stack: getErrorStack(error),
             });
             await ctx.reply(`⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
-
-ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
-
-ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+      ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
+      ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
             return;
-        }
-    }
+      }}
     logger.warn("UNKNOWN PAYMENT PAYLOAD", {
         userId,
         payload,
         chargeId,
     });
-}
+    }
 // ======================================================
-// USER START
+// GET CODE PANEL
 // ======================================================
-     // ======================================================
-// USER START
-// ======================================================
+    async function openGetCodePanel(
+    ctx,
+    source = "telegram" 
+    ) {
+    try {
+    await trackButtonClick(
+            ctx,
+            `GET CODE · ${source}`
+    );
+    await sendMediaSafe(
+            ctx,
+            "photo",
+            ASSET_GETCODE_IMAGE
+    );
+    await ctx.reply(
+            "🔐 ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",
+            getAccessKeyboard()
+    );}
+    catch (error) {
+        logger.error("GET CODE PANEL ERROR", {
+            source,
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+    await ctx.reply(
+     "⚠️ Unable to open the access panel."
+     ).catch(() => {});
+     }}
 
+
+     bot.command("getcode", async (ctx) => {
+    await openGetCodePanel(
+        ctx,
+        "COMMAND"
+    );
+    });
+// ======================================================
+// USER START
+// ======================================================
 async function handleUserStart(ctx) {
     try {
         const messageText =
@@ -1368,76 +1351,62 @@ async function handleUserStart(ctx) {
             startPayload: startPayload || null,
             messageText: messageText || null,
         });
-
+        if (startPayload === "getcode") {
+            logger.info("START GET CODE", {
+                userId:
+                    String(ctx.from?.id || ""),
+            });
+            await openGetCodePanel(
+                ctx,
+                "WEBSITE"
+            );
+            return;
+        }
         if (startPayload === "pay_basic") {
             logger.info("START BASIC PAYMENT");
-
             await sendBasicInvoice(ctx);
             return;
         }
-
         if (startPayload === "pay_pro") {
             logger.info("START PRO PAYMENT");
-
             await sendProInvoice(ctx);
             return;
         }
-
         if (startPayload === "pay_vip") {
             logger.info("START VIP PAYMENT");
-
             await sendVipInvoice(ctx);
             return;
         }
-
         if (isVaultPayload(startPayload)) {
             const relayed =
                 await relayVaultUpdate(ctx.update);
-
             if (relayed) {
                 return;
-            }
-        }
-
+        }}
         await sendMainPanel(ctx);
-    }
-    catch (error) {
+        }
+        catch (error) {
         logger.error("START ERROR", {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
-
         await ctx.reply(
             "⚠️ Unable to open the payment. Please try again."
         ).catch(() => {});
-    }
-}
-
-
-bot.start(handleUserStart);
-
+        }}
+    bot.start(handleUserStart);
 // ======================================================
 // PAYMENT SUPPORT
 // ======================================================
-
-bot.command("paysupport", async (ctx) => {
+   bot.command("paysupport", async (ctx) => {
     await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
 
-ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
-});
-
-// ======================================================
-// PAYMENT SUPPORT
-// ======================================================
-bot.command("paysupport", async (ctx) => {
-    await ctx.reply(`ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
-
-ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
-});
+   ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
+    });
 // ======================================================
 // PAYMENT ACTIONS
 // ======================================================
-bot.action("pay_vip_stars", async (ctx) => {
+    bot.action("pay_vip_stars", async (ctx) => {
     try {
         await ctx.answerCbQuery();
         await sendVipInvoice(ctx);
@@ -1445,8 +1414,8 @@ bot.action("pay_vip_stars", async (ctx) => {
     catch (error) {
         logger.error("PAY VIP ERROR", getTelegramError(error));
     }
-});
-bot.action("pay_pro_stars", async (ctx) => {
+    });
+    bot.action("pay_pro_stars", async (ctx) => {
     try {
         await ctx.answerCbQuery();
         await sendProInvoice(ctx);
@@ -1454,8 +1423,8 @@ bot.action("pay_pro_stars", async (ctx) => {
     catch (error) {
         logger.error("PAY PRO ERROR", getTelegramError(error));
     }
-});
-bot.action("pay_basic_stars", async (ctx) => {
+    });
+    bot.action("pay_basic_stars", async (ctx) => {
     try {
         await ctx.answerCbQuery();
         await sendBasicInvoice(ctx);
@@ -1463,11 +1432,11 @@ bot.action("pay_basic_stars", async (ctx) => {
     catch (error) {
         logger.error("PAY BASIC ERROR", getTelegramError(error));
     }
-});
+    });
 // ======================================================
 // PRE CHECKOUT
 // ======================================================
-bot.on("pre_checkout_query", async (ctx) => {
+    bot.on("pre_checkout_query", async (ctx) => {
     try {
         const payload = ctx.update
             ?.pre_checkout_query
@@ -1491,12 +1460,12 @@ bot.on("pre_checkout_query", async (ctx) => {
         catch {
             // ignore
         }
-    }
-});
+    } 
+       });
 // ======================================================
 // MEDIA / PHOTO
 // ======================================================
-function isAcceptableMedia(ctx) {
+    function isAcceptableMedia(ctx) {
     if (ctx.message?.photo?.length) {
         return true;
     }
@@ -1510,8 +1479,8 @@ function isAcceptableMedia(ctx) {
     const mime = String(document.mime_type || "");
     return (mime.startsWith("image/") ||
         mime.startsWith("video/"));
-}
-async function handleMedia(ctx) {
+    }
+    async function handleMedia(ctx) {
     const userId = String(ctx.from?.id || "");
     if (!userId)
         return;
@@ -1519,7 +1488,7 @@ async function handleMedia(ctx) {
    if (!pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO) {
     await ctx.reply("📸 ᴇɴᴠɪ́ᴀ ᴜɴᴀ ғᴏᴛᴏ ᴅᴇꜱᴅᴇ ᴇʟ ᴍᴇɴᴜ́ ᴅᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ.", getMainKeyboard()).catch(() => {});
     return;
-}
+    }
     if (!isAcceptableMedia(ctx)) {
         await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
         return;
@@ -1566,10 +1535,8 @@ async function handleMedia(ctx) {
        bot.on("photo", handleMedia);
        bot.on("video", handleMedia);
        bot.on("document", handleMedia);
-//// USER TEXT ROUTER // 
-     //// USER TEXT ROUTER //
-
-bot.on("text", async (ctx) => {
+ //// USER TEXT ROUTER //
+    bot.on("text", async (ctx) => {
     const text =
         String(ctx.message?.text || "").trim();
 
@@ -1580,11 +1547,9 @@ bot.on("text", async (ctx) => {
         userId,
         text,
     });
-
     if (!userId) {
         return;
     }
-
     try {
         if (
             /^\/start(?:@\w+)?(?:\s|$)/i.test(text)
@@ -1603,48 +1568,41 @@ bot.on("text", async (ctx) => {
                 startPayload:
                     startPayload || null,
             });
-
             if (startPayload === "pay_basic") {
                 logger.info(
                     "START BASIC PAYMENT"
                 );
-
                 await sendBasicInvoice(ctx);
                 return;
             }
-
             if (startPayload === "pay_pro") {
                 logger.info(
                     "START PRO PAYMENT"
                 );
-
                 await sendProInvoice(ctx);
                 return;
             }
-
             if (startPayload === "pay_vip") {
                 logger.info(
                     "START VIP PAYMENT"
                 );
-
                 await sendVipInvoice(ctx);
                 return;
             }
-
             await sendMainPanel(ctx);
             return;
         }
-
          if (text.startsWith("/")) {
     await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
     return;
-}
+    }
 //// GET CODE //
     if (text === BTN_GET_CODE) {
-        await trackButtonClick(ctx, "GET CODE");
-        await sendMediaSafe(ctx, "photo", ASSET_GETCODE_IMAGE);
-        return await ctx.reply("🔐 ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:", getAccessKeyboard());
-      }
+    return await openGetCodePanel(
+        ctx,
+        "BUTTON"
+    );
+    }
 //// VIDEOCALL // 
       if (text === BTN_VIDEOCALL) {
         await trackButtonClick(ctx, "VIDEOCALL");
