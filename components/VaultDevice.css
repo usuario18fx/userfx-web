@@ -195,9 +195,10 @@
   margin-bottom: 4px;
 }
 .vd-menu-header p {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--vd-dim);
   font-weight: 400;
+   font-family:"Arial Black", "Segoe UI Black", Arial, sans-serif;
 }
 /* ---- Options ---- */
 .vd-menu-options {
@@ -588,7 +589,8 @@
   transform: translateY(-1px);
 }
 .vd-cta-btn.cta-vip {
-  background: linear-gradient(135deg, #c9a84c, #b08a30);
+  background: linear-gradient(135deg,
+   #f3c54686, #c0942e9b);
 }
 .vd-cta-btn.cta-vip:hover {
   filter: brightness(1.08);
@@ -815,4 +817,22 @@
   transform: translateY(-1px);
   margin: 0;
   pointer-events: none;
+}
+.vd-option-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0;
+}
+.vd-option-img,
+.vd-option-icon img {
+  width: 50px;
+  height: 50px;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }

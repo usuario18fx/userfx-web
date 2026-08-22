@@ -275,7 +275,7 @@ export default function VaultHome() {
                  </div>
                  <p className="vx-kicker">
                  <i />
-                   𝐔𝐒𝐄𝐑⭑🜲𝓕𝐗 <i/> Priv⭑Vault<i/> Official
+                  ᴘʀɪᴠ⭑ᴠᴀᴜʟᴛ<i/>ᴜꜱᴇʀ 🜲𝓕𝐗 <i/> ᴏꜰꜰɪᴄɪᴀʟ <i/>
                  </p>
                  <h1 className="vx-title">
              <Scramble text="ACCESS" className="vx-access" delay={160}/>
@@ -289,7 +289,7 @@ export default function VaultHome() {
                  <strong> 
                   USER<span> 
                   🜲 FX </span> <i/> 
-                   —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— </strong>
+                   —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— <i/></strong>
                   Is a reserved place. access is not public. 
                   You’ll need a ᴄᴏᴅᴇ
                  </p>
@@ -395,7 +395,8 @@ export default function VaultHome() {
              <VaultDevice />
                  </div>
                  <div>
-                 <p className="vx-goldk">◈ INSIDE THE VAULT</p>
+                 <p className="vx-goldk">
+                  ◈ INSIDE THE VAULT</p>
                  <h2 className="vx-insideTitle">
                     WHAT&apos;S <span>
                     INSIDE</span>
@@ -422,31 +423,31 @@ export default function VaultHome() {
                  <section id="faq" className="vx-sec">
              <Reveal>
                  <p className="vx-goldk">
-                   ◈ ᴘʀɪᴠᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ</p>
+                   ◈ PRIVATE INFORMATION</p>
                  <h2>
                    BEFORE YOU
                  <img src={ICONS.rosa} alt="" className="vx-titleRose" draggable={false}/>
                  <span className="vx-getIn">
                    GET IN</span>
                  </h2>
-      </Reveal>
-              <div className="vx-faq">
-                {FAQS.map((f, i) => { const open = openFaq === i;
+             </Reveal>
+                 <div className="vx-faq">
+                  {FAQS.map((f, i) => { const open = openFaq === i;
                 return (
-      <Reveal key={f.q} delay={i * 50}>
-              <div className="vx-faqItem">
-              <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
-              <b>
-              {String(i + 1).padStart(2, "0")}
-              </b>
-              <span>
-                {f.q}
-              </span>
-              <i>{open ? "–" : "+"}</i>
-              </button>
-                {open ? <p>{f.a}</p> : null}
-              </div>
-        </Reveal>
+             <Reveal key={f.q} delay={i * 50}>
+                 <div className="vx-faqItem">
+                 <button type="button" onClick={() => setOpenFaq(open ? null : i)}>
+                 <b>
+                  {String(i + 1).padStart(2, "0")}
+                 </b>
+                 <span>
+                 {f.q}
+                 </span>
+                 <i>{open ? "–" : "+"}</i>
+                 </button>
+                  {open ? <p>{f.a}</p> : null}
+                   </div>
+             </Reveal>
                 );
               })}
                </div>
@@ -472,9 +473,9 @@ export default function VaultHome() {
         <a href="#top">
           VAULT</a>
         <a href="/admin">
-         ᴅɪɢɪᴛᴀʟ ᴀʀᴄʜɪᴠᴇ</a>
+         DIGITAL ARCHIVE</a>
         </div>
-        </div>
+       </div>
        </div>
        <p className="vx-legal">
        18+ CONTENT · PERSONAL & NON-TRANSFERABLE
@@ -485,12 +486,12 @@ export default function VaultHome() {
       </p>
       <div className="vx-bar">
       <span>
-       ᴠɪᴀ ᴛᴇʟᴇɢʀᴀᴍ | ᴄᴏᴅᴇᴅ ᴀᴄᴄᴇss | ᴛᴇʟᴇɢʀᴀᴍ | ʙᴏᴛ
-       ᴛᴇʟᴇɢʀᴀᴍ | ᴠɪᴅᴇᴏᴄᴀʟʟ | ꜰx | ᴄʟᴏsᴇᴅ ᴄɪʀᴄᴜɪᴛ |
-       ᴡᴇʙꜱɪᴛᴇ 𝟮𝟬𝟮𝟲 | ᴛᴏʀᴏɴᴛᴏ, ᴄᴀɴᴀᴅᴀ | ᴀʟʟ ʀɪɢʜᴛꜱ
-       ʀᴇꜱᴇʀᴠᴇᴅ |
+       VIA TELEGRAM | CODED ACCESS | TELEGRAM | BOT  
+       TELEGRAM | VIDEOCALL | FX | CLOSED CIRCUIT  
+       WEBSITE 2026 | TORONTO, CANADA | ALL RIGHTS RESERVED | 
       </span>
-      <span>ᴄᴏᴅᴇ | @ᴜꜱᴇʀ𝟣𝟪ꜰx_ʙᴏᴛ</span>
+      <span>
+        CODE | @user18Fx_bot</span>
      </div>
      </footer>
   <Ticker items={TICKER_ITEMS} reverse />
@@ -512,7 +513,8 @@ export default function VaultHome() {
         𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT
       </p>
       <h3 className="vx-modalTitle">
-        <span className="vx-modalTitleShimmer">ACCESS RESTRICTED</span>
+        <span className="vx-modalTitleShimmer">
+          ACCESS RESTRICTED</span>
       </h3>
       <p className="vx-modalText">
         This content is encrypted. Send us a DM to unlock your exclusive access code.
@@ -531,7 +533,6 @@ export default function VaultHome() {
       </div>
       </div>
       ) : null}
-      
       {codeModal ? (
       <div className="vx-modal" onClick={() => setCodeModal(false)}>
       <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
@@ -1086,9 +1087,9 @@ text-shadow:0 0 18px #b64b5d2e;}
   margin-top:12px;
   padding:22px 18px;
   border:1px solid var(--line);
-  background-color: #042d7f8c;
+  background-color: #1131717a;
   background:
-    linear-gradient( #0252b381, #023d824c),
+    linear-gradient( #0252b338, #023e8241),
     url("/assets/damask.png");
   background-size:auto, 240px;
   background-repeat:no-repeat, repeat;
