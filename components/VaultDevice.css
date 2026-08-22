@@ -32,10 +32,10 @@
   padding: 8px;
   font-family: var(--vd-sf);
   box-shadow:
-    0 0 0 1px #16589292,
-    0 30px 80px #c07575b3,
-    0 8px 24px #97848480,
-    inset 0 1px 0 #0578c0be;
+    0 0 0 1px #0d589892,
+    0 30px 80px #c54c4cb3,
+    0 8px 24px #080000d4,
+    inset 0 1px 0 #0078c2be;
 }
 .vd-device::before {
   content: '';
