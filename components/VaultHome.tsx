@@ -1007,7 +1007,7 @@ text-shadow:0 0 18px #b64b5d2e;}
   border:1px solid var(--line);
   background-color: #042d7f8c;
   background:
-    linear-gradient( #0252b357, #033f8557),
+    linear-gradient( #0252b381, #023d824c),
     url("/assets/damask.png");
   background-size:auto, 240px;
   background-repeat:no-repeat, repeat;
@@ -1021,7 +1021,7 @@ text-shadow:0 0 18px #b64b5d2e;}
     .vx-step:hover{
   border-color: #e0b85a61;
   transform:translateX(4px);
-  background-color: #07060a8f;
+  background-color: #07060aad;
 }
 .vx-step b{font-size:3rem;font-weight:300;font-style:italic;color:rgba(224,184,90,.35);line-height:1}
 .vx-step h3{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--gold)}
@@ -1539,7 +1539,7 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   border-radius: 3px;
   background: transparent;
   color: #f6d77a;
-  font-family:font-family:"Inter", system-ui, sans-serif;
+  font-family:"Inter", system-ui, sans-serif;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.2em;
