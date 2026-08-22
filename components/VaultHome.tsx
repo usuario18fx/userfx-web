@@ -154,23 +154,61 @@ import VisitorCounter from './VisitorCounter';
   );
   }
      function HoldShot({ src }: { src: string }) {
-     const [hold, setHold] = useState(false);
-     const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
-        return (
-                <div className={`vx-shot ${hold ? "is-open" : ""}`} onContextMenu={(e) => e.preventDefault()} onPointerDown={() => setHold(true)} onPointerUp={() => setHold(false)} onPointerLeave={() => setHold(false)} onPointerCancel={() => setHold(false)}>
-                 {isVideo ? (
-                <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata"/>
-                 ) : (
-                <img src={src} alt="" draggable={false} className="vx-shotMedia"/>
-                 )}
-                <div className="vx-shotMask" aria-hidden>
-                <span>
-                 🜲
-                </span>
-                <span>
-                 HOLD TO REVEAL</span>
-                </div>
-                </div>
+  const [hold, setHold] = useState(false);
+
+  const isVideo =
+    src.endsWith(".mp4") ||
+    src.endsWith(".webm");
+
+  return (
+    <div
+      className={`vx-shot ${hold ? "is-open" : ""}`}
+      onContextMenu={(e) => e.preventDefault()}
+      onPointerDown={() => setHold(true)}
+      onPointerUp={() => setHold(false)}
+      onPointerLeave={() => setHold(false)}
+      onPointerCancel={() => setHold(false)}
+    >
+      {isVideo ? (
+        <video
+          src={src}
+          className="vx-shotMedia"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          width={300}
+          height={400}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            maxWidth: "100%",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          className="vx-shotMedia"
+          width={300}
+          height={400}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            maxWidth: "100%",
+            objectFit: "cover",
+          }}
+        />
+      )}
+      <div className="vx-shotMask" aria-hidden>
+        <span>🜲</span>
+        <span>HOLD TO REVEAL</span>
+      </div>
+    </div>
   );}
 
   const STORAGE_KEY = 'vault_unlocked';
@@ -286,7 +324,7 @@ import VisitorCounter from './VisitorCounter';
                  </p>
                  <h1 className="vx-title">
              <Scramble text="ACCESS" className="vx-access" delay={160}/>
-                 <img src={ICONS.corona} alt="" className="vx-subIcon" draggable={false}/>
+                 <img src={ICONS.corona} alt="" className="vx-subIcon" draggable={false} width={65} height={65} style={{ width: "65px", height: "65px", maxWidth: "65px", maxHeight: "65px", objectFit: "contain", flex: "0 0 65px",}}/>
              <Scramble text="RESTRICTED" className="vx-rest" delay={420}/>
                  </h1>
                  <p className="vx-p vx-pNormal">
@@ -340,27 +378,52 @@ import VisitorCounter from './VisitorCounter';
                  </div>
                  </div>
                  </div>
-                 <aside className="vx-lock">
-                 <div className="vx-frameA" />
-                 <div className="vx-frameB" />
-                 <div className="vx-lockCard">
-                 <div className="vx-lockVideo">
-                 <video key={LOCK_VIDEOS[lockVideo]} src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" onEnded={() => setLockVideo((current) => (current + 1) % LOCK_VIDEOS.length)}/>
-                 <span className="vx-lockVideoTag">
-                  PRIVATE PREVIEW</span>
-                 </div>
-                 <button type="button" className="vault-unlock" onClick={() => setDm(true)}>
-                 <span className="vault-unlock__icon">
-                 < svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                 </svg>
-                 </span>
-                 <span className="vault-unlock__text">
-                 <span className="vault-unlock__title">
-                   UNLOCK ALBUM</span>
-                 </span>
-                 </button>
-                 </div>
-                 </aside>
+                <aside className="vx-lock">
+  <div className="vx-frameA" />
+  <div className="vx-frameB" />
+
+  <div className="vx-lockCard">
+    <div className="vx-lockVideo">
+      <video
+        key={LOCK_VIDEOS[lockVideo]}
+        src={LOCK_VIDEOS[lockVideo]}
+        autoPlay
+        muted
+        playsInline
+        preload="metadata"
+        width={300}
+        height={360}
+        onEnded={() =>
+          setLockVideo(
+            (current) =>
+              (current + 1) % LOCK_VIDEOS.length
+          )
+        }
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          maxWidth: "100%",
+          objectFit: "cover",
+        }}
+      />
+
+      <span className="vx-lockVideoTag">
+        PRIVATE PREVIEW
+      </span>
+    </div>
+
+    <button
+      type="button"
+      className="vault-unlock"
+      onClick={() => setDm(true)}
+    >
+      <span className="vault-unlock__title">
+        UNLOCK ALBUM
+      </span>
+    </button>
+  </div>
+</aside>
                  </div>
             </section>
             <Ticker items={TICKER_ITEMS} />
@@ -2205,9 +2268,172 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
     0% {transform: translate3d(0, 0, 0);}
     100% {transform: translate3d(calc(-50% - 5px), 0, 0);
     }}}
-
-
-
+/* ─── TELEGRAM WEBVIEW FIX ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--tg-viewport-height, 100dvh);
+  margin: 0;
+  overflow-x: clip;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+/* Evita iconos gigantes durante la carga */
+.vx-titleRose,
+.vx-titleCandado,
+.vx-planButtonIcon,
+.vd-option-img,
+.vd-option-icon img,
+.vd-sheet-title-icon,
+.vd-benefit-img,
+.vd-cta-icon {
+  width: 50px;
+  height: 50px;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  object-fit: contain;
+}
+/* Carrusel */
+.vx-carousel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+}
+.vx-carouselTrack {
+  max-width: none;
+}
+.vx-carouselSlide {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.vx-carouselSlide .vx-shotMedia {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+/* Device responsive */
+@media (max-width: 800px) {
+  .vd-device {
+    width: calc(100dvw - 24px) !important;
+    max-width: 760px !important;
+    height: auto !important;
+    aspect-ratio: 2 / 1;
+    margin-inline: auto;
+  }}
+/* ─── PRIVATE PREVIEW INITIAL RENDER FIX ─── */
+.vx-lock {
+  position: relative;
+  width: min(100%, 300px) !important;
+  max-width: 300px !important;
+  margin-inline: auto;
+  transform: none !important;
+}
+.vx-lockCard {
+  width: 100% !important;
+  max-width: 300px !important;
+  padding: 14px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #ece5d824;
+  background:
+    linear-gradient(
+      rgba(7, 6, 10, 0.72),
+      rgba(7, 6, 10, 0.92)
+    ),
+    url("/assets/damask.png");
+  background-size: auto, 180px;
+}
+.vx-lockVideo {
+  position: relative;
+  width: 100% !important;
+  max-width: 270px !important;
+  aspect-ratio: 5 / 6 !important;
+  margin: 0 0 14px !important;
+  overflow: hidden;
+  border: 1px solid #e0b85a52;
+  background: #07060a;
+}
+.vx-lockVideo video {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  object-fit: cover !important;
+  filter:
+    brightness(0.62)
+    contrast(1.1)
+    saturate(0.78);
+}
+.vx-lockVideoTag {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  display: block;
+  padding: 6px 8px;
+  background: #07060abf;
+  color: #e0b85a;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+.vault-unlock {
+  position: relative;
+  width: 82%;
+  min-height: 44px;
+  padding: 0 18px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #d4a83a !important;
+  border-radius: 4px;
+  background:
+    linear-gradient(
+      180deg,
+      #2a2a2a,
+      #111111
+    ) !important;
+  color: #f6d77a !important;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+.vault-unlock:hover {
+  color: #1a0d05 !important;
+  background:
+    linear-gradient(
+      180deg,
+      #f6d77a,
+      #b8861f
+    ) !important;
+  transform: translateY(-2px);
+}
+.vault-unlock__title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
 
 
 `;

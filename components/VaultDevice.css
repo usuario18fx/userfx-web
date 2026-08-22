@@ -1043,3 +1043,11 @@ video {
     aspect-ratio: 2 / 1;
     margin-inline: auto;
   }}
+  .vx-subIcon,
+.vx-titleRose,
+.vx-titleCandado,
+.vx-planButtonIcon,
+.vd-option-img {
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+}

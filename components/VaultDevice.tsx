@@ -246,12 +246,7 @@ import './VaultDevice.css';
 
       <div className="vd-lock-prompt">
       <div className="vd-lock-prompt-icon">
-      <img
-        src={ICONS.candado}
-        alt=""
-        className="vx-titleCandado"
-        draggable={false}
-      />
+      <img src={ICONS.candado} alt="" className="vx-titleCandado" draggable={false} width={20} height={20} style={{ width: "20px", height: "20px", maxWidth: "20px", maxHeight: "20px", objectFit: "contain", }}/>
       </div>
 
       <div className="vd-lock-prompt-text">
@@ -272,18 +267,10 @@ import './VaultDevice.css';
 
       <div className="vd-menu-options">
 
-      <div
-        className="vd-option vd-opt-basic"
-        onClick={() => openSheet('basic')}
-      >
+      <div className="vd-option vd-opt-basic" onClick={() => openSheet('basic')}>
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.rosa}
-        alt=""
-        className="vx-titleRose"
-        draggable={false}
-      />
+      <img src={ICONS.rosa} alt="" className="vx-titleRose" draggable={false} width={45} height={45} style={{ width: "45px", height: "45px", maxWidth: "50px", maxHeight: "50px", objectFit: "contain",}}/>
       </div>
 
       <div className="vd-option-info">
@@ -308,14 +295,8 @@ import './VaultDevice.css';
       >
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.fuego}
-        alt=""
-        className="vx-planButtonIcon vx-planButtonFire"
-        draggable={false}
-      />
+      <img src={ICONS.fuego} alt="" className="vx-planButtonIcon vx-planButtonFire" draggable={false} width={45} height={45} style={{ width: "45px", height: "45px", maxWidth: "45px", maxHeight: "45px", objectFit: "contain",}}/>
       </div>
-
       <div className="vd-option-info">
       <div className="vd-option-name">
         Pro
@@ -338,12 +319,7 @@ import './VaultDevice.css';
       >
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.corona}
-        alt=""
-        className="vd-option-img"
-        draggable={false}
-      />
+      <img src={ICONS.corona} alt="" className="vd-option-img" draggable={false} width={45} height={45} style={{ width: "45px", height: "45px",maxWidth: "45px", maxHeight: "45px",objectFit: "contain", }}/>
       </div>
 
       <div className="vd-option-info">
