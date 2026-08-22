@@ -98,13 +98,9 @@ import VisitorCounter from './VisitorCounter';
     }
 
   function useCountdown() {
-
   const [label, setLabel] = useState("· · ·");
-
   useEffect(() => {
-
   const tick = () => {
-
   const diff = nextFridayUtc().getTime() - Date.now();
       if (diff <= 0) {setLabel("NOW");
       return;
@@ -174,6 +170,10 @@ import VisitorCounter from './VisitorCounter';
                 </div>
                 </div>
                 );}
+
+  const STORAGE_KEY = 'vault_unlocked';
+  const MAX_ATTEMPTS = 5;
+
 export default function VaultHome() {
 
   const [clock, setClock] = useState("--:--:-- UTC");
@@ -181,8 +181,28 @@ export default function VaultHome() {
   const [dm, setDm] = useState(false);
   const [lockVideo, setLockVideo] = useState(0);
   const countdown = useCountdown();
+  const [codeModal, setCodeModal] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [prefix, setPrefix] = useState('');
+  const [suffix, setSuffix] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
+  const [attempts, setAttempts] = useState(0);
   const [activePlan, setActivePlan] = useState("basic");
-    useEffect(()  => {
+    
+  useEffect(() => {
+  if (sessionStorage.getItem(STORAGE_KEY) === 'true') setUnlocked(true);
+
+  fetch('/api/miniapp-track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      initData: window.Telegram?.WebApp?.initData || '',
+  }),
+  }).catch(() => {});
+  }, []);
+  
+  useEffect(()  => {
   const tick = () => {
   const d = new Date();
   const p = (n: number) => String(n).padStart(2, "0");
@@ -192,6 +212,37 @@ export default function VaultHome() {
   const id = window.setInterval(tick, 1000);
          return () => window.clearInterval(id);
            },[]);
+
+      async function handleVerify(e: React.FormEvent) {
+  e.preventDefault();
+
+  if (attempts >= MAX_ATTEMPTS) {
+    setVerifyError('Demasiados intentos. Recarga la página.');
+    return;
+  }
+    setVerifyLoading(true);
+    setVerifyError('');
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prefix, suffix }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+      sessionStorage.setItem(STORAGE_KEY, 'true');
+      setUnlocked(true);
+      setCodeModal(false);
+    } else {
+      setAttempts((n) => n + 1);
+      setVerifyError(data.error || 'Código inválido');
+      setSuffix('');
+    }
+  } catch {
+    setVerifyError('Error de conexión');
+  } finally {
+    setVerifyLoading(false);
+  }}
          return (
                 <div id="top" className="vx">
                 <style>{CSS}</style>
@@ -203,10 +254,11 @@ export default function VaultHome() {
                  | Priv Vault |</span>
                  </a>
                  <div className="vx-hudRight">
-            <VisitorCounter />
+                 <VisitorCounter />
                  <time>{clock}</time>
-                 <b>
-                  🜲 LOCKED</b>
+                 <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? 'vx-unlockedBadge' : ''}>
+                   {unlocked ? '✓ UNLOCKED' : '🜲 LOCKED'}
+                 </b>
                  </div>
                  </header>
                  <section className="vx-open">
@@ -442,24 +494,17 @@ export default function VaultHome() {
      </div>
      </footer>
   <Ticker items={TICKER_ITEMS} reverse />
-    {dm ? (
-  <div className="vx-modal" onClick={() => setDm(false)}>
-    <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
-
-      {/* ── partículas doradas ── */}
+       {dm ? (
+      <div className="vx-modal" onClick={() => setDm(false)}>
+      <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
+{/* ── partículas doradas ── */}
       <div className="vx-modalParticles">
-        <span /><span /><span /><span /><span />
+      <span /><span /><span /><span /><span />
       </div>
-
-      <button
-        type="button"
-        className="vx-modalClose"
-        onClick={() => setDm(false)}
-        aria-label="Close modal"
-      >
+      <button type="button" className="vx-modalClose" onClick={() => setDm(false)} aria-label="Close modal">
         ×
       </button>
-      {/* ── ícono candado ── */}
+{/* ── ícono candado ── */}
       <div className="vx-modalIcon">
       <img src={ICONS.corona} alt="" className="vx-modalCrown" draggable={false}/>
       </div>
@@ -473,22 +518,58 @@ export default function VaultHome() {
         This content is encrypted. Send us a DM to unlock your exclusive access code.
       </p>
       <div className="vx-modalDivider" />
-      <a  className="vx-modalLink" href="https://t.me/User18Fx" target="_blank" rel="noreferrer" >
+      <a className="vx-modalLink" href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
       <span className="vx-modalLinkBg" />
       <span className="vx-modalLinkContent">
-      <img src={ICONS.rosa} alt="" className="vx-modalRose"draggable={false}/>
+      <img src={ICONS.rosa} alt="" className="vx-modalRose" draggable={false}/>
         GET MY CODE
       </span>
       </a>
       <p className="vx-modalFooter">
         Usually responds right away.
       </p>
-
-    </div>
-  </div>
-) : null}
-     
-        </div>
+      </div>
+      </div>
+      ) : null}
+      
+      {codeModal ? (
+      <div className="vx-modal" onClick={() => setCodeModal(false)}>
+      <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
+      <button type="button" className="vx-modalClose" onClick={() => setCodeModal(false)} aria-label="Close modal">
+        ×
+      </button>
+      <div className="vx-modalIcon">
+      <img src={ICONS.candado} alt="" className="vx-modalCrown" draggable={false}/>
+      </div>
+      <p className="vx-modalKicker">
+        𝐔𝐒𝐄𝐑🜲𝓕𝐗 · ENTER CODE
+      </p>
+      <h3 className="vx-modalTitle">
+        <span className="vx-modalTitleShimmer">
+          YOUR ACCESS KEY
+        </span>
+      </h3>
+      <form onSubmit={handleVerify} className="vx-codeForm">
+      <div className="vx-codeInputs">
+      <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={10} autoCapitalize="characters" autoComplete="off" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
+      <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
+      </div>
+      <button type="submit" className="vx-gold" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}>
+        {verifyLoading ? 'VERIFYING...' : 'UNLOCK'}
+      </button>
+      {verifyError && (
+      <p className="vx-modalText" style={{ color: '#b94a5c' }}>
+        {verifyError}
+      </p>
+      )}
+      </form>
+      <p className="vx-modalFooter">
+        Don't have a code? DM @User18Fx to get one.
+      </p>
+      </div>
+      </div>
+      ) : null}
+      </div>
       );
     }
 const CSS = `
@@ -2012,4 +2093,15 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   font-style: italic;
   text-shadow: 0 0 18px rgba(182, 75, 93, 0.25);
 }
+  .vx-codeForm{ margin-top:20px; }
+.vx-codeInputs{ display:flex; gap:8px; margin-bottom:16px; }
+.vx-codeInputs input{
+  flex:1; min-width:0; height:42px; padding:0 10px;
+  border:1px solid rgba(236,229,216,.16);
+  background:#0d0b12; color:#f4eee4;
+  font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+  text-align:center; text-transform:uppercase;
+}
+.vx-codeInputs input:focus{ outline:none; border-color:var(--gold); }
+.vx-unlockedBadge{ border-color:#4ab97e91 !important; color:#4ab97e !important; cursor:default; }
   `;
