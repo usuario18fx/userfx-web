@@ -650,11 +650,10 @@ function getCommandArg(ctx, index = 0) {
         if (created === "OK") {
             await client.sadd(getUserCodeIndexKey(String(userId)), code);
             await client.expire(getUserCodeIndexKey(String(userId)), PAYMENT_TTL_SECONDS);
-            logger.info("ACCESS CODE GENERATED", {
-                code,
-                planId: plan.id,
-                source,
-                userId,
+           logger.info("ACCESS CODE GENERATED", {
+           planId,
+           source,
+           userId,
        });
        return record;
        }

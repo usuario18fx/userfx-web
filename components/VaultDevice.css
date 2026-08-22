@@ -1062,3 +1062,45 @@ video {
   flex-grow: 0 !important;
   flex-shrink: 0 !important;
 }
+/* ─── MENÚ HORIZONTAL: AJUSTE DEFINITIVO ─── */
+
+.vd-menuscreen.vd-active {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 34px 20px 12px !important;
+  box-sizing: border-box !important;
+}
+
+.vd-menu-header {
+  flex: 0 0 auto !important;
+  padding: 8px 0 6px !important;
+}
+
+.vd-menu-header p {
+  margin: 0 !important;
+}
+
+.vd-menu-options {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: center !important;
+
+  gap: 12px !important;
+  padding: 0 !important;
+}
+
+.vd-option {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  padding: 12px 10px !important;
+  box-sizing: border-box !important;
+}
+
+.vd-menu-bottom {
+  flex: 0 0 auto !important;
+  padding: 4px 0 0 !important;
+}
