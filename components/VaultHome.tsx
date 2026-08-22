@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Scramble from "./Scramble";
 import VaultDevice from '../components/VaultDevice';
 import '../components/VaultDevice.css';
+import VisitorCounter from './VisitorCounter';
 
-  const LOGO =    "/assets/userfx-logo.png";
+  const LOGO =    "/assets/userfx-logo-sin.png";
   const BRICK =   "/assets/brick-wall.png";
   const DAMASK =  "/assets/damask.png";
   const INSIDE = ["/assets/pic01.png",
@@ -202,6 +203,7 @@ export default function VaultHome() {
                  | Priv Vault |</span>
                  </a>
                  <div className="vx-hudRight">
+            <VisitorCounter />
                  <time>{clock}</time>
                  <b>
                   🜲 LOCKED</b>
@@ -596,6 +598,13 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
     0 6px 22px #00000061;
   backdrop-filter:blur(8px);
 }
+  .vx-visitorCount{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.16em;
+  color:var(--dim);
+  white-space:nowrap;
+}
 .vx-brand{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:.22em}
 .vx-brand img{height:28px}
 .vx-live{width:6px;height:6px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px #dd334f}
@@ -974,8 +983,8 @@ text-shadow:0 0 18px #b64b5d2e;}
   .vx-lockCard > p {
     font-size: 7px;}
 }
-.vx-gold{width:70%;height:46px;border:2px solid  #a37f24cb; background:linear-gradient(180deg, #9d884a, #c9a24b 48%, #8d6a28);color: #1c1508;font-family:var(--mono);font-size:11px;letter-spacing:.018em;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
-.vx-protocolReveal.is-on .vx-stepNum{opacity:.7; color: #c0993e; text-shadow:0 0 18px #e0b85a29;}
+.vx-gold{width:70%;height:46px;border:2px solid  #7b611dcb; background:linear-gradient(180deg, #9d884a, #c9a24b 48%, #8d6a28);color: #1c1508;font-family:var(--mono);font-size:11px;letter-spacing:.018em;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.vx-protocolReveal.is-on .vx-stepNum{opacity:.7; color: #eaaf26; text-shadow:0 0 18px #e0b85a29;}
 .vx-benefitIcon{ width:18px; height:18px; flex:0 0 18px; object-fit:contain;  opacity:.9;}
 .vx-stepNum{ opacity:.5; transition: opacity .7s ease, color .7s ease, text-shadow .7s ease;}
 .vx-shotMask{ position:absolute;inset:0; display:flex; flex-direction:column;  align-items:center; justify-content:center; gap:6px; background:rgba(7,6,10,.42);  color: #f4eee499; font-family:var(--mono);  font-size:9px; letter-spacing:.18em;  transition:opacity .25s ease;}
@@ -996,9 +1005,9 @@ text-shadow:0 0 18px #b64b5d2e;}
   margin-top:12px;
   padding:22px 18px;
   border:1px solid var(--line);
-  background-color: #07060a8c;
+  background-color: #042d7f8c;
   background:
-    linear-gradient( #325a8b57, #2e5c9157),
+    linear-gradient( #0252b357, #033f8557),
     url("/assets/damask.png");
   background-size:auto, 240px;
   background-repeat:no-repeat, repeat;
