@@ -1764,11 +1764,12 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   color:var(--rose);
   font-weight:bold;}
 /*Get in */
-.vx-sec h2 .vx-getIn{
-  display:inline;
-  margin-left:.12em;
-  color: #b64b5d29;
-  font-style:italic;
+.vx-sec h2 .vx-getIn {
+  display: inline;
+  margin-left: .12em;
+  color: #b64b5d;
+  font-style: italic;
+  text-shadow: 0 0 18px rgba(182, 75, 93, 0.25);
 }
   .vx-sec h2 .vx-theVault{
   display:inline;
@@ -2004,5 +2005,11 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   letter-spacing:.2em;
 }
 
-
+.vx-sec h2 .vx-getIn {
+  display: inline;
+  margin-left: .12em;
+  color: #b64b5d;
+  font-style: italic;
+  text-shadow: 0 0 18px rgba(182, 75, 93, 0.25);
+}
   `;
