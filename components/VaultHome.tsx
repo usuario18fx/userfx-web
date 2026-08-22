@@ -382,50 +382,24 @@ import VisitorCounter from './VisitorCounter';
   <div className="vx-frameA" />
   <div className="vx-frameB" />
 
-  <div className="vx-lockCard">
-    <div className="vx-lockVideo">
-      <video
-        key={LOCK_VIDEOS[lockVideo]}
-        src={LOCK_VIDEOS[lockVideo]}
-        autoPlay
-        muted
-        playsInline
-        preload="metadata"
-        width={300}
-        height={360}
-        onEnded={() =>
-          setLockVideo(
-            (current) =>
-              (current + 1) % LOCK_VIDEOS.length
-          )
-        }
-        style={{
-          display: "block",
-          width: "100%",
-          height: "100%",
-          maxWidth: "100%",
-          objectFit: "cover",
-        }}
-      />
-
+      <div className="vx-lockCard">
+      <div className="vx-lockVideo">
+      <video key={LOCK_VIDEOS[lockVideo]}src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" width={300}height={360} onEnded={() => setLockVideo((current) =>(current + 1) % LOCK_VIDEOS.length)} style={{ display: "block", width: "100%", height: "100%", maxWidth: "100%", objectFit: "cover",}}/>
       <span className="vx-lockVideoTag">
         PRIVATE PREVIEW
       </span>
-    </div>
+      </div>
 
-    <button
-      type="button"
-      className="vault-unlock"
-      onClick={() => setDm(true)}
-    >
+      <button  type="button" className="vault-unlock"  onClick={() => setDm(true)} >
       <span className="vault-unlock__title">
         UNLOCK ALBUM
       </span>
-    </button>
-  </div>
-</aside>
-                 </div>
-            </section>
+      </button>
+      <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank"rel="noreferrer"> GET MY CODE</a>
+      </div>
+      </aside>
+      </div>
+      </section>
             <Ticker items={TICKER_ITEMS} />
             <section id="protocolo" className="vx-sec">
             <Reveal>
@@ -2434,6 +2408,134 @@ video {
   letter-spacing: 0.16em;
   text-align: center;
 }
+/* ─── GET MY CODE ─── */
 
+.vault-get-code {
+  width: 82%;
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #b94a5c;
+  border-radius: 4px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #35141d,
+      #170b0f
+    );
+
+  color: #e98798;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-decoration: none;
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.vault-get-code:hover {
+  color: #18090e;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f28ca0,
+      #b94a5c
+    );
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px #b94a5c4d,
+    0 0 18px #b94a5c38;
+}
+
+/* ─── CAROUSEL ─── */
+
+.vx-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 32px;
+  padding: 8px 0;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.vx-carouselTrack {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  gap: 14px;
+
+  animation:
+    vxCarouselScroll 18s linear infinite;
+
+  will-change: transform;
+}
+
+.vx-carouselSlide {
+  width: 180px;
+  flex: 0 0 180px;
+  overflow: hidden;
+}
+
+.vx-carouselSlide .vx-shot {
+  width: 100%;
+}
+
+@keyframes vxCarouselScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform:
+      translate3d(
+        calc(-50% - 7px),
+        0,
+        0
+      );
+  }
+}
+
+@media (max-width: 600px) {
+  .vx-carouselTrack {
+    gap: 10px;
+    animation-duration: 14s;
+  }
+
+  .vx-carouselSlide {
+    width: 145px;
+    flex-basis: 145px;
+  }
+
+  @keyframes vxCarouselScroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform:
+        translate3d(
+          calc(-50% - 5px),
+          0,
+          0
+        );
+    }
+  }
+}
 
 `;
