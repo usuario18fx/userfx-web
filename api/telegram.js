@@ -1516,11 +1516,10 @@ async function handleMedia(ctx) {
     if (!userId)
         return;
     const pending = await getVideoRequest(userId);
-    if (!pending ||
-        pending.status !==
-            REQUEST_STATUS.WAITING_PHOTO) {
-        return;
-    }
+   if (!pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO) {
+    await ctx.reply("📸 ᴇɴᴠɪ́ᴀ ᴜɴᴀ ғᴏᴛᴏ ᴅᴇꜱᴅᴇ ᴇʟ ᴍᴇɴᴜ́ ᴅᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ.", getMainKeyboard()).catch(() => {});
+    return;
+}
     if (!isAcceptableMedia(ctx)) {
         await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
         return;
@@ -1636,9 +1635,10 @@ bot.on("text", async (ctx) => {
             return;
         }
 
-        if (text.startsWith("/")) {
-            return;
-        }
+         if (text.startsWith("/")) {
+    await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
+    return;
+}
 //// GET CODE //
     if (text === BTN_GET_CODE) {
         await trackButtonClick(ctx, "GET CODE");
@@ -1687,9 +1687,9 @@ bot.on("text", async (ctx) => {
         return await sendMainPanel(ctx);
     }
 //// BACK //
-    if (text === BTN_BACK_MENU) { return 
-        await sendMainPanel(ctx);
-    }
+    if (text === BTN_BACK_MENU) {
+    return await sendMainPanel(ctx);
+}
 // // ZOOM // ================================================
     if (text === BTN_ZOOM) {
     return await ctx.reply("📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
@@ -1735,6 +1735,14 @@ bot.on("text", async (ctx) => {
         ...getTelegramError(error),
         stack: getErrorStack(error),
     });
+    
+    bot.on("message", async (ctx) => {
+    logger.warn("UNHANDLED MESSAGE TYPE", {
+        userId: ctx.from?.id,
+        keys: Object.keys(ctx.message || {}),
+    });
+    await ctx.reply("👀 ᴇɴᴠɪ́ᴀ /start ᴘᴀʀᴀ ᴀʙʀɪʀ ᴇʟ ᴍᴇɴᴜ́.", getMainKeyboard()).catch(() => {});
+});
     }});
 //// SUCCESSFUL PAYMENT HANDLER // 
     bot.on("successful_payment", handleSuccessfulPayment);
@@ -2246,17 +2254,20 @@ export default async function handler(req, res) {
         });
     }
     logger.info("TELEGRAM UPDATE RECEIVED", {
-        bot: isAdminWebhookRoute
-            ? "admin"
-            : "user",
-        updateId: update.update_id ??
-            null,
-        hasMessage: Boolean(update.message),
-        hasCallback: Boolean(update.callback_query),
-        hasPhoto: Boolean(update.message?.photo),
-        hasPayment: Boolean(update.message
-            ?.successful_payment),
-    });
+    bot: isAdminWebhookRoute ? "admin" : "user",
+    updateId: update.update_id ?? null,
+    hasMessage: Boolean(update.message),
+    hasText: Boolean(update.message?.text),          // ← agrega
+    messageText: update.message?.text?.slice(0, 100) || null, // ← agrega
+    messageType: Object.keys(update.message || {}).find(
+        k => ["text","photo","video","document","sticker","animation",
+              "voice","video_note","location","contact","poll"]
+        .includes(k)
+    ) || "other",                                     // ← agrega
+    hasCallback: Boolean(update.callback_query),
+    hasPhoto: Boolean(update.message?.photo),
+    hasPayment: Boolean(update.message?.successful_payment),
+});
     // ====================================================
     // DISPATCH
     // ====================================================
