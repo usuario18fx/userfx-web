@@ -7,11 +7,14 @@ import VisitorCounter from './VisitorCounter';
   const LOGO =    "/assets/userfx-logo-sin.png";
   const BRICK =   "/assets/brick-wall.png";
   const DAMASK =  "/assets/damask.png";
-  const INSIDE = ["/assets/pic01.png",
-                  "/assets/pic05.png",
-                  "/assets/pic06.png",
-                  "/assets/pic07.png",
-                ];
+  const INSIDE = ["/assets/album/pic01.png",
+                  "/assets/album/pic02.png",
+                  "/assets/album/pic03.png",
+                  "/assets/album/pic04.png",
+                  "/assets/album/pic05.png",
+                  "/assets/album/pic06.png",
+                  "/assets/album/pic07.png",
+  ];
 
   const LOCK_VIDEOS = ["/assets/video01.mp4",
                        "/assets/video02.mp4",
@@ -21,14 +24,14 @@ import VisitorCounter from './VisitorCounter';
                   rosa: "/assets/iconos/rosa.png",
                   fotos: "/assets/iconos/fotos.png",
                   telegram: "/assets/iconos/telegram.png", 
-                };
+  };
   const TICKER_ITEMS = [
      "𝓤𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT",
      "NEW DROP EVERY FRIDAY · 𝟮𝟮﹕𝟬𝟬UTC",
      "PRIVATE ACCESS · TELEGRAM",
      "PRIVATE CODE · FX-USER18-0001",
      "«NOCTURNA» · A PRIVATE COLLECTION"
-                 ];
+  ];
    const STEPS = [{ n: "01",
                     title: "UNLOCK YOUR ACCESS",
                     text: "Each key unlocks the private collection for a set period of time.",},
@@ -66,7 +69,7 @@ import VisitorCounter from './VisitorCounter';
       { icon: ICONS.candado, text: "No limits" },
       { icon: ICONS.fotos, text: "Full drops" },
       { icon: ICONS.telegram, text: "Private chat" },],},
-      ];
+  ];
     const FAQS = [
      { q: "How do I get a code?",
       a: "This preview does not generate keys. Request yours by DM on Telegram.",},
@@ -78,13 +81,13 @@ import VisitorCounter from './VisitorCounter';
        a: "Contact @User18Fx_bot and we’ll review your request.",},
      { q: "Are refunds available?",
        a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",},
-     ];
+  ];
 
    const TEASERS = [1, 2, 3, 4, 5, 6].map(
      (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
-     );
+  );
 
-   function nextFridayUtc() {
+    function nextFridayUtc() {
     const now = new Date();
     const day = now.getUTCDay(); let add = (5 - day + 7) % 7;
     const target = new Date( Date.UTC(
@@ -93,9 +96,9 @@ import VisitorCounter from './VisitorCounter';
       now.getUTCDate() + add, 22, 0, 0));
   if (target.getTime() <= now.getTime()) {
       target.setUTCDate(target.getUTCDate() + 7);
-    }
+  }
   return target;
-    }
+  }
 
   function useCountdown() {
   const [label, setLabel] = useState("· · ·");
@@ -104,44 +107,44 @@ import VisitorCounter from './VisitorCounter';
   const diff = nextFridayUtc().getTime() - Date.now();
       if (diff <= 0) {setLabel("NOW");
       return;
-    }
+  }
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
   const p = (n: number) => String(n).padStart(2, "0");
       setLabel(`${d}d ${p(h)}:${p(m)}:${p(s)}`);
-    };
+  };
       tick();
   const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-    }, []);
+  }, []);
     return label;
-    }
+  }
   function Reveal({ children, delay = 0, className = "",
-    }: {children: React.ReactNode; delay?: number; className?: string;}) {
+  }: {children: React.ReactNode; delay?: number; className?: string;}) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [on, setOn] = useState(false);
     useEffect(() => {
-  
+
   const el = ref.current;
     if (!el) return;
   const io = new IntersectionObserver(
       ([e]) => {
     if (e.isIntersecting) setOn(true);
-    },{threshold: 0.16 }
-    );
+  },{threshold: 0.16 }
+  );
     io.observe(el);
     return () => io.disconnect();
-    }, []);
+  }, []);
     return (
     <div ref={ref} className={`vx-reveal ${on ? "is-on" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
-    );
-    }
-  function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
-  const line = items.join("   🜲   ") + "   🜲   ";
+  );
+  }
+    function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
+    const line = items.join("   🜲   ") + "   🜲   ";
     return (
     <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
     <div className="vx-tickerTrack">
@@ -149,8 +152,8 @@ import VisitorCounter from './VisitorCounter';
     <span>{line.repeat(4)}</span>
     </div>
     </div>
-    );
-     }
+  );
+  }
      function HoldShot({ src }: { src: string }) {
      const [hold, setHold] = useState(false);
      const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
@@ -169,12 +172,12 @@ import VisitorCounter from './VisitorCounter';
                  HOLD TO REVEAL</span>
                 </div>
                 </div>
-                );}
+  );}
 
   const STORAGE_KEY = 'vault_unlocked';
   const MAX_ATTEMPTS = 5;
 
-export default function VaultHome() {
+  export default function VaultHome() {
 
   const [clock, setClock] = useState("--:--:-- UTC");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -202,42 +205,44 @@ export default function VaultHome() {
   }).catch(() => {});
   }, []);
   
-  useEffect(()  => {
+  useEffect(() => {
   const tick = () => {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-      setClock(`${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`);
-                };
+    const d = new Date();
+    const p = (n: number) => String(n).padStart(2, '0');
+    setClock(
+      `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+  );
+  };
       tick();
-  const id = window.setInterval(tick, 1000);
-         return () => window.clearInterval(id);
-           },[]);
+      const id = window.setInterval(tick, 1000);
+      return () => window.clearInterval(id);
+  }, []);
 
       async function handleVerify(e: React.FormEvent) {
   e.preventDefault();
 
   if (attempts >= MAX_ATTEMPTS) {
     setVerifyError('Demasiados intentos. Recarga la página.');
-    return;
+  return;
   }
     setVerifyLoading(true);
     setVerifyError('');
-    try {
+  try {
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix, suffix }),
-      });
+  });
       const data = await res.json();
       if (data.ok) {
       sessionStorage.setItem(STORAGE_KEY, 'true');
       setUnlocked(true);
       setCodeModal(false);
-    } else {
+  } else {
       setAttempts((n) => n + 1);
       setVerifyError(data.error || 'Código inválido');
       setSuffix('');
-    }
+  }
   } catch {
     setVerifyError('Error de conexión');
   } finally {
@@ -255,7 +260,7 @@ export default function VaultHome() {
                  </a>
                  <div className="vx-hudRight">
                  <VisitorCounter />
-                 <time>{clock}</time>
+                 <time>{clock} LOCAL</time>
                  <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? 'vx-unlockedBadge' : ''}>
                    {unlocked ? '✓ UNLOCKED' : '🜲 LOCKED'}
                  </b>
@@ -1826,13 +1831,6 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
 .vx-planButtonFire{ margin-left:8px;}
 .vx-planPanel .vx-gold{display:inline-flex; align-items:center;justify-content:center;
 }
-.vd-option-img{
-  width:30px;
-  height:30px;
-  display:block;
-  object-fit:contain;
-  pointer-events:none;
-}
   .vd-sheet-title{
   display:flex;
   align-items:center;
@@ -2122,7 +2120,6 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   font-weight:700;
   letter-spacing:.2em;
 }
-
 .vx-sec h2 .vx-getIn {
   display: inline;
   margin-left: .12em;
@@ -2130,15 +2127,56 @@ vx-bar{max-width:72rem;margin:24px auto 0;padding-top:14px;border-top:1px solid 
   font-style: italic;
   text-shadow: 0 0 18px rgba(182, 75, 93, 0.25);
 }
-  .vx-codeForm{ margin-top:20px; }
+.vx-codeForm{ margin-top:20px; }
 .vx-codeInputs{ display:flex; gap:8px; margin-bottom:16px; }
 .vx-codeInputs input{
   flex:1; min-width:0; height:42px; padding:0 10px;
   border:1px solid rgba(236,229,216,.16);
   background:#0d0b12; color:#f4eee4;
   font-family:var(--mono); font-size:11px; letter-spacing:.1em;
-  text-align:center; text-transform:uppercase;
-}
+  text-align:center; text-transform:uppercase;}
 .vx-codeInputs input:focus{ outline:none; border-color:var(--gold); }
 .vx-unlockedBadge{ border-color:#4ab97e91 !important; color:#4ab97e !important; cursor:default; }
-  `;
+.vd-option-desc {
+  font-size: 11px;
+  color: var(--vd-rose);
+  font-weight: 400;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.3s ease;
+}
+.vd-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vd-option-row {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.vd-option-info {
+  flex: 0;
+  width: 100%;
+  text-align: center;
+}
+.vd-option:hover .vd-option-desc {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.vd-option-img{
+  width:30px;
+  height:30px;
+  display:block;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+
+`;
