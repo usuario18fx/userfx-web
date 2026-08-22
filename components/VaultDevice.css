@@ -112,7 +112,7 @@
     radial-gradient(ellipse at 30% 20%, #c9a84c14, transparent 50%),
     radial-gradient(ellipse at 70% 80%, #e8728a0f, transparent 50%),
     radial-gradient(ellipse at 50% 50%, #2455da08, transparent 60%),
-    linear-gradient(180deg, #0a0a10, #050508);
+    linear-gradient(180deg, #0a0a1000, #050508);
 }
 .vd-lockscreen.vd-unlocked {
   opacity: 0;
@@ -143,8 +143,8 @@
 .vd-lock-prompt-icon {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff33;
+  border-radius: none;
+  border: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,18 +174,25 @@
   pointer-events: none;
   transition: opacity 0.5s ease 0.2s;
   background:
-    radial-gradient(ellipse at 30% 15%, rgba(201, 168, 76, 0.05), transparent 50%),
-    radial-gradient(ellipse at 70% 85%, rgba(232, 114, 138, 0.04), transparent 50%),
-    linear-gradient(180deg, #08080e, #030306);
+    radial-gradient(ellipse at 30% 15%, #c9a84c29, transparent 50%),
+    radial-gradient(ellipse at 70% 85%, #e8728a0a, transparent 50%),
+    linear-gradient(180deg, #08080e89, #030306);
 }
 .vd-menuscreen.vd-active {
   opacity: 1;
   pointer-events: all;
 }
 /* ---- Menu Header ---- */
+.vd-menuscreen {
+  padding: 34px 20px 14px;
+  box-sizing: border-box;
+}
 .vd-menu-header {
-  padding: 50px 24px 20px;
-  text-align: center;
+  padding: 10px 10px 8px;
+  color: var(--vd-rose);
+}
+.vd-menu-header p {
+  margin: 0;
 }
 .vd-menu-header h2 {
   font-size: 15px;
@@ -201,13 +208,12 @@
    font-family:"Arial Black", "Segoe UI Black", Arial, sans-serif;
 }
 /* ---- Options ---- */
-.vd-menu-options {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.vd-menu-options{
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 0 20px;
+  gap: 12px;
+  padding: 0;
 }
 .vd-option {
   position: relative;
@@ -313,7 +319,7 @@
 }
 /* ---- Bottom pill ---- */
 .vd-menu-bottom {
-  padding: 16px 0 12px;
+  padding: 6px 0 0;
   text-align: center;
 }
 .vd-home-pill {
@@ -621,7 +627,7 @@
   font-size:48px;
 }
 .vd-lock-date{
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 /* Menú horizontal: opciones en tres columnas */
 .vd-menu-header{
@@ -689,14 +695,19 @@
 }
 /* Pantalla bloqueada: patrón suave */
 .vd-lockscreen{
+  padding: 42px 28px 26px;
+  box-sizing: border-box;
+
   background:
     linear-gradient(
       #05080eb8,
-      #05080ed6),
+      #05080ed6
+    ),
     url("/assets/damask.png");
-  background-size:auto, 180px;
-  background-repeat:no-repeat, repeat;
-  background-position:center, center;
+
+  background-size: auto, 180px;
+  background-repeat: no-repeat, repeat;
+  background-position: center, center;
 }
 /* Menú visible después de desbloquear */
 .vd-menuscreen{

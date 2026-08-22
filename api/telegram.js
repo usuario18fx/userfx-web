@@ -789,7 +789,7 @@ function getCommandArg(ctx, index = 0) {
      👑 ᴠɪᴘ`, getAccessKeyboard());}
     async function sendVipPanel(ctx) {
     try { await ctx.reply(
-    `👑ᴛɪᴄᴋᴇᴛ ᴠɪᴘ
+      `👑ᴄᴏᴅᴇ ᴠɪᴘ
     ————————
     ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
     ⇀ ʙᴇɴᴇғɪᴛs
@@ -802,7 +802,7 @@ function getCommandArg(ctx, index = 0) {
     }}
     async function sendBasicPanel(ctx) {
     try { await ctx.reply(
-    `⚡ᴛɪᴄᴋᴇᴛ ʙᴀꜱɪᴄ
+      `🌹ᴄᴏᴅᴇ ʙᴀꜱɪᴄ
     —————————
     ⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
     ⇀ ʙᴇɴᴇғɪᴛs
@@ -814,7 +814,7 @@ function getCommandArg(ctx, index = 0) {
     }}
     async function sendProPanel(ctx) {
     try { await ctx.reply(
-    `🔥ᴛɪᴄᴋᴇᴛ ᴘʀᴏ
+      `🔥ᴄᴏᴅᴇ ᴘʀᴏ
     ————————
     ⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
     ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
@@ -929,18 +929,18 @@ function getCommandArg(ctx, index = 0) {
                 keyboard = getPendingPhotoKeyboard();
             break;
             case REQUEST_STATUS.AWAITING_PAYMENT: message =
-        `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+      `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
     ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;
                 keyboard = getPendingPhotoKeyboard();
             break;
             case REQUEST_STATUS.PAID: message =
-       `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+      `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;
                 keyboard = getApprovedVideocallKeyboard();
             break;
             case REQUEST_STATUS.APPROVED: message =
-        `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+      `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔️
     ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
     keyboard = getApprovedVideocallKeyboard();break; default:
@@ -948,36 +948,36 @@ function getCommandArg(ctx, index = 0) {
         "⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
     return;
     }
-    await ctx.reply(message, keyboard);
-        logger.info(
+    await ctx.reply(message, keyboard);logger.info(
             "PENDING VIDEOCALL PANEL", {
             userId, status: request.status,
     });
     }
-    catch (error) {
-        logger.error("PENDING VIDEOCALL PANEL ERROR", {
-            userId,
-            ...getTelegramError(error),
+    catch (error) { logger.error(
+            "PENDING VIDEOCALL PANEL ERROR", {
+            userId,  ...getTelegramError(error),
             stack: getErrorStack(error),
     });
-    await ctx.reply("❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    await ctx.reply(
+        "❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
     }}
 //// APPROVED VIDEOCALL //
    async function sendApprovedVideocallFlow(userId) {
     const targetUserId = String(userId);
     try {
-    await bot.telegram.sendMessage(targetUserId, `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
+    await bot.telegram.sendMessage(targetUserId, 
+      `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
     ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`);
     await bot.telegram.sendMessage(targetUserId, 
       `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
     ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`, {
-        reply_markup: getVideocallInlineKeyboard(),
-        });
-        logger.info("VIDEOCALL OPTIONS SENT", {
-         userId: targetUserId,});
+    reply_markup: getVideocallInlineKeyboard(),});
+    logger.info(
+        "VIDEOCALL OPTIONS SENT", {
+    userId: targetUserId,});
     }
-    catch (error) {
-    logger.error("SEND APPROVED VIDEOCALL ERROR", {userId: targetUserId,
+    catch (error) {logger.error(
+        "SEND APPROVED VIDEOCALL ERROR", {userId: targetUserId,
             ...getTelegramError(error),});throw error;
     }}
 //// INVOICES //
