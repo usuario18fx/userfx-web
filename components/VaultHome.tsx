@@ -531,10 +531,9 @@ export default function VaultHome() {
         </div>
         <p className="vx-legal">
           18+ CONTENT · PERSONAL & NON-TRANSFERABLE
-          Access to Vault is personal, confidential and non-transferable. Sharing, reselling, recording, screenshotting, downloading, copying, reproducing, reposting or redistributing Vault content outside the platform is strictly prohibited, including through Telegram, social media, messaging apps, websites, cloud storage or file-sharing services.
-          Unauthorized disclosure or distribution may result in immediate termination of access without refund, subject to applicable consumer rights under Ontario law.
-          All content remains protected by applicable Canadian copyright law, including the **Copyright Act, R.S.C. 1985, c. C-42**. Unauthorized reproduction or distribution may constitute copyright infringement and may result in civil remedies, including damages or injunctions.
-          Digital purchases are generally final once access has been delivered, except where a refund is required by applicable law, including applicable rights under Ontario’s **Consumer Protection Act, 2002**.
+          Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content
+          is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital
+          purchases are final once access is delivered, except where Ontario law requires otherwise.
         </p>
         <div className="vx-bar">
           <span>
