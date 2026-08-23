@@ -8,24 +8,24 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
   position:relative;
   overflow:hidden;
   height:34px;
-  border-top:1px solid #73b2ff92;
-  border-bottom:1px solid #73b2ff92;
+  border-top:1px solid #00387dfb;
+  border-bottom:1px solid #00387dfb;
   background:
     linear-gradient(
       90deg,
-      #3b83f682,
-      #3a41606b 18%,
-      #5d5f6080,
-      #3a41606b 62%,
-      #376dff91 ),
+      #0054db82,
+      #00093200 18%,
+      #00093200 ,
+      #00358a82 62%,
+      #977b003e  ),
     url("/assets/damask.png");
   background-size:auto, 180px;
   background-repeat:no-repeat, repeat;
   background-position:center, center;
   box-shadow:
-      inset 0 1px 0 #f4eee409,
-    inset 0 -1px 0 #0000008c,
-    0 8px 26px #00000033;
+      inset 0 1px 0 #9f85033f
+    inset 0 -1px 0 #9f85038c,
+    0 8px 26px #9f85038c;
 }
 .vx-ticker::before,
 .vx-ticker::after{
@@ -161,7 +161,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
 .vx-blobB{right:-180px;top:20%;width:560px;height:560px;background:radial-gradient(circle,rgba(192,45,90,.24),transparent 62%)}
 .vx-grid{position:relative;z-index:1;max-width:72rem;margin:0 auto;display:grid;gap:36px}
 @media(min-width:960px){.vx-grid{grid-template-columns:1.05fr .7fr;align-items:end}}
-.vx-logoWrap img{width:min(420px,90vw);filter:drop-shadow(0 0 28px #1863dc9f)}
+.vx-logoWrap img{width:min(420px,90vw);filter:drop-shadow(0 0 28px #002d752e)}
 .vx-kicker{display:flex;align-items:center;gap:10px;margin:22px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.28em;color: #bedbff}
 .vx-kicker i{width:40px;height:1px;background: #0a66d699}
 .vx-access,
@@ -1924,3 +1924,13 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
 @keyframes vxCarouselScroll {
   from {transform: translate3d(0, 0, 0);}
   to {transform: translate3d(calc(-50% - 5px), 0, 0);}}}
+.vx-subIcon {
+  display: block;
+  margin-left: 55%;
+  margin-right: auto;
+  transform: translateY(35%);
+}
+.vx-access {
+  display: block;
+  transform: translateY(80%) translateX(-3%);
+}

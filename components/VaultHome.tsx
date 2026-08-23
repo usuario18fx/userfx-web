@@ -321,7 +321,7 @@ export default function VaultHome() {
             </div>
             <p className="vx-kicker">
               <i />
-              ᴘʀɪᴠ⭑ᴠᴀᴜʟᴛ<i/>ᴜꜱᴇʀ 🜲𝓕𝓧 <i/> ᴏꜰꜰɪᴄɪᴀʟ <i/>
+              ᴘʀɪᴠ⭑ᴠᴀᴜʟᴛ<i/>ᴜꜱᴇʀ🜲𝓕𝓧 <i/> ᴏꜰꜰɪᴄɪᴀʟ <i/>
             </p>
             <h1 className="vx-title">
               <Scramble text="ACCESS" className="vx-access" delay={160}/>
