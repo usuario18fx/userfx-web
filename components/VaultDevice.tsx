@@ -59,12 +59,7 @@ import './VaultDevice.css';
       { label: 'Best for',
         items: [
           { icon: ICONS.rosa, text: 'First-time access', sub: 'Perfect for trying the private vault without a subscription' },
-          { icon: '🔓', text: 'One premium drop', sub: 'Best when you only want one specific session' },
-        ],
-      },
-    ],
-  },
-
+          { icon: '🔓', text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
   pro: {
     title: 'Pro',
     emoji: ICONS.fuego,
