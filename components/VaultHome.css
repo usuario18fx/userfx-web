@@ -23,9 +23,9 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
   background-repeat:no-repeat, repeat;
   background-position:center, center;
   box-shadow:
-      inset 0 1px 0 #9f85033f
-    inset 0 -1px 0 #9f85038c,
-    0 8px 26px #9f85038c;
+      inset 0 1px 0 #241e00
+    inset 0 -1px 0 #0000009e,
+    0 8px 26px #000000ac;
 }
 .vx-ticker::before,
 .vx-ticker::after{
@@ -1925,12 +1925,23 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   from {transform: translate3d(0, 0, 0);}
   to {transform: translate3d(calc(-50% - 5px), 0, 0);}}}
 .vx-subIcon {
+  width: 105px;
+  height: 105px;
   display: block;
-  margin-left: 55%;
+  margin-left: 54%;
   margin-right: auto;
   transform: translateY(35%);
 }
 .vx-access {
   display: block;
   transform: translateY(80%) translateX(-3%);
+}
+.access-title::before {
+  font-size: 2em;
+}
+.vx-subIcon {
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+  transform: translateX(40px) translateY(10px) scale(2.2);
 }

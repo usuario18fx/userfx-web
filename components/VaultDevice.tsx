@@ -314,78 +314,69 @@ import './VaultDevice.css';
 
 {/* ── Detail Sheet ── */}
 
-      <div className={`vd-detail-sheet ${activeSheet ? 'vd-active' : ''}`}>
+    <div className={`vd-detail-sheet ${activeSheet ? 'vd-active' : ''}`}>
 
-      <div className="vd-sheet-handle">
-      <div className="vd-sheet-handle-bar" />
-      </div>
+<div className="vd-sheet-handle">
+<div className="vd-sheet-handle-bar" />
+</div>
 
-      <div className="vd-sheet-header">
-      <div className="vd-sheet-title-area">
-      <div className="vd-sheet-title">
+<div className="vd-sheet-header">
+<div className="vd-sheet-title-area">
+<div className="vd-sheet-title">
 
-      {currentPlan?.emoji.startsWith('/assets/') ? (
-      <img
-        src={currentPlan.emoji}
-        alt=""
-        className="vd-sheet-title-icon"
-        draggable={false}
-      />
-      ) : (
-      <span className="vd-sheet-title-emoji">
-        {currentPlan?.emoji}
-      </span>
-      )}
+<span className={`vd-sheet-title-name vd-title-${activeSheet}`}>
+  {currentPlan?.title}
+</span>
 
-      <span className={`vd-sheet-title-name vd-title-${activeSheet}`}>
-        {currentPlan?.title}
-      </span>
-      </div>
-      </div>
-      </div>
+</div>
+</div>
+</div>
 
-      <div className="vd-sheet-body">
+<div className="vd-sheet-body">
 
-      {currentPlan?.groups.map((group, gi) => (
-      <div className="vd-benefit-group" key={gi}>
+{currentPlan?.groups.map((group, gi) => (
+<div className="vd-benefit-group" key={gi}>
 
-      <div className="vd-benefit-group-label">
-        {group.label}
-      </div>
+<div className="vd-benefit-group-label">
+  {group.label}
+</div>
 
-      <div className="vd-benefit-list">
+<div className="vd-benefit-list">
 
-      {group.items.map((item, ii) => (
-      <div className="vd-benefit-item" key={ii}>
+{group.items.map((item, ii) => (
+<div className="vd-benefit-item" key={ii}>
 
-      {item.icon.startsWith('/assets/') ? (
-      <img
-        src={item.icon}
-        alt=""
-        className="vd-benefit-img"
-        draggable={false}
-      />
-      ) : (
-      <span>
-        {item.icon}
-      </span>
-      )}
+{item.icon.startsWith('/assets/') ? (
+<img
+  src={item.icon}
+  alt=""
+  className="vd-benefit-img"
+  draggable={false}
+/>
+) : (
+<span>
+  {item.icon}
+</span>
+)}
 
-      <div>
-      <div className="vd-benefit-label">
-        {item.text}
-      </div>
+<div>
+<div className="vd-benefit-label">
+  {item.text}
+</div>
 
-      <div className="vd-benefit-sub">
-        {item.sub}
-      </div>
-      </div>
-      </div>
-      ))}
-      </div>
-      </div>
-      ))}
-      </div>
+<div className="vd-benefit-sub">
+  {item.sub}
+</div>
+</div>
+
+</div>
+))}
+
+</div>
+</div>
+))}
+
+</div>
 {/* ── Payment and Done buttons ── */}
       <div className="vd-sheet-footer">
       {buyError && (
