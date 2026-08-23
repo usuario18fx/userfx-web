@@ -1,40 +1,24 @@
-// components/VisitorCounter.tsx
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function VisitorCounter() {
-  const [count, setCount] = useState<number | null>(null);
+  const [stats, setStats] = useState<{ visitors: number; unique: number } | null>(null);
 
   useEffect(() => {
     fetch('/api/miniapp-stats')
-      .then(async (res) => {
-        if (!res.ok) throw new Error('No se pudo cargar el contador');
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
-        if (data.ok && typeof data.visitors === 'number') {
-          setCount(data.visitors);
-          return;
+        if (data.ok) {
+          setStats({ visitors: data.visitors, unique: data.unique_visitors });
         }
-
-        throw new Error('Respuesta inválida');
       })
-      .catch((error) => {
-        console.error('VisitorCounter:', error);
-        setCount(0);
-      });
+      .catch(() => {});
   }, []);
 
-  return (
-    <span className="vx-visitorCount" title="Visitors">
-      <img
-        src="/assets/iconos/user.png"
-        alt=""
-        aria-hidden="true"
-        className="vx-visitorIcon"
-        draggable={false}
-      />
+  if (!stats) return null;
 
-      <span>{count === null ? '—' : count.toLocaleString('es-ES')}</span>
+  return (
+    <span className="vx-visitorCount">
+      👥 {stats.unique.toLocaleString('es')} únicos · {stats.visitors.toLocaleString('es')} visitas
     </span>
   );
 }
