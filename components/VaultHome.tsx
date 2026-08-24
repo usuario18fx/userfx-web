@@ -510,8 +510,9 @@ export default function VaultHome() {
               <img src={LOGO} alt="" />
               <div>
                 <p>
-                  USER<span>
-                    🜲FX </span>
+                USER<span>
+                🜲</span>
+                FX                 
                 </p>
                 <small>PRIVATE VAULT</small>
               </div>
@@ -530,14 +531,15 @@ export default function VaultHome() {
           </div>
         </div>
         <p className="vx-legal">
-          18+ CONTENT · PERSONAL & NON-TRANSFERABLE
+          | 18+ CONTENT | PERSONAL & NON-TRANSFERABLE |
           Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content
           is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital
           purchases are final once access is delivered, except where Ontario law requires otherwise.
         </p>
         <div className="vx-bar">
           <span>
-            CODE | @user18Fx_bot</span>
+           | CODE | FX-011897-190122-CAHATO |
+          </span>
         </div>
       </footer>
       <Ticker items={TICKER_ITEMS} reverse />

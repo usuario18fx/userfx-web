@@ -1,867 +1,623 @@
-/* VAULT DEVICE  */
-.vd-device {
-  --vd-black: #000000;
-  --vd-dark: #0a0a0f;
-  --vd-gold: #c9a84c;
-  --vd-rose: #e8728a;
-  --vd-green: #34c759;
-  --vd-white: #f5f5f7;
-  --vd-glass: #ffffff0f;
-  --vd-glass-border: #ffffff1a;
-  --vd-glass-strong: #ffffff1a;
-  --vd-glass-strong-border: #ffffff2e;
-  --vd-text: rgba(255, 255, 255, 0.7);
-  --vd-dim: #ffffff59;
-  --vd-faint: #ffffff14;
-  --vd-sf: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
+/* =========================================================
+   VAULT DEVICE
+   Hoja limpia para VaultDevice.tsx
+   ========================================================= */
+.vd-device,
+.vd-device *,
+.vd-device *::before,
+.vd-device *::after {
+  box-sizing: border-box;
 }
-/* ─── Device Shell ─── */
 .vd-device {
+  --vd-black: #000;
+  --vd-shell: #050a12;
+  --vd-panel: #20262c;
+  --vd-white: #f5f5f7;
+  --vd-text: rgba(255, 255, 255, 0.72);
+  --vd-dim: rgba(255, 255, 255, 0.42);
+  --vd-faint: rgba(255, 255, 255, 0.08);
+  --vd-glass: rgba(255, 255, 255, 0.07);
+  --vd-glass-border: rgba(255, 255, 255, 0.12);
+  --vd-rose: #d66079;
+  --vd-orange: #e5782d;
+  --vd-gold: #c9a84c;
+  --vd-blue: #168bd1;
+  --vd-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   position: relative;
-  width: 300px;
-  height: 620px;
-  background:
-  linear-gradient(5deg,
-    #050a12b8,
-    #0c1e349e ),
-  url("/assets/damask.png");
-  background-size:auto, 220px;
-  background-repeat:no-repeat, repeat;
-  background-position:center;
-  border-radius: 44px;
+  isolation: isolate;
+  width: min(760px, calc(100vw - 24px));
+  height: 380px;
+  margin-inline: auto;
   padding: 8px;
-  font-family: var(--vd-sf);
+  overflow: hidden;
+  border-radius: 40px;
+  font-family: var(--vd-font);
+  color: var(--vd-white);
+  background:
+    linear-gradient(145deg, rgba(5, 10, 18, 0.78), rgba(12, 30, 52, 0.62)),
+    url("/assets/damask.png") center / 260px repeat;
   box-shadow:
-    0 1px 0 2px #0d589892,
-    0 20px 80px #c20202b3,
-    0 8px 24px #080000d4,
-    inset 0 1px 0 #0078c2be;
+    0 1px 0 2px rgba(13, 88, 152, 0.58),
+    0 22px 70px rgba(194, 2, 2, 0.45),
+    0 10px 26px rgba(0, 0, 0, 0.78),
+    inset 0 1px 0 rgba(0, 120, 194, 0.72);
 }
 .vd-device::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
-  left: 20px;
-  right: 20px;
+  right: 24px;
+  left: 24px;
+  z-index: 80;
   height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    #ffffff26,
-    transparent
-  );
-  border-radius: 44px 44px 0 0;
-  z-index: 10;
+  border-radius: 40px 40px 0 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
 }
-/* ─── Side Buttons ─── */
+/* Marco grande: queda contenido dentro del dispositivo. */
+.vd-device-damask-frame {
+   position: absolute;
+  top: -28px;
+  right: -46px;
+  bottom: -28px;
+  left: -46px;
+  width: calc(100% + 92px);
+  height: calc(100% + 56px);
+  max-width: none !important;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: block;
+  object-fit: fill;
+  z-index: 40;
+  opacity: 0.72;
+  transform: none !important;
+  pointer-events: none;
+  user-select: none;
+  filter:
+    brightness(1.25)
+    contrast(1.08)
+    drop-shadow(0 0 2px #1484dc40);
+}
+/*  BOTONES FÃSICOS  */
 .vd-btn {
   position: absolute;
-  background: #2a2a2e;
-  border-radius: 2px;
+  z-index: 1;
+  width: 3px;
+  border-radius: 3px;
+  background: #182d41b8;
+  box-shadow: inset 0 0 1px #ffffff33;
 }
 .vd-pwr {
+  top: 50%;
   right: -2px;
-  top: 130px;
-  width: 3px;
-  height: 50px;
+  height: 62px;
+  transform: translateY(-50%);
 }
 .vd-vol1 {
+  top: calc(50% - 42px);
   left: -2px;
-  top: 110px;
-  width: 3px;
-  height: 28px;
+  height: 30px;
 }
 .vd-vol2 {
+  top: calc(50% + 12px);
   left: -2px;
-  top: 148px;
-  width: 3px;
-  height: 28px;
+  height: 30px;
 }
-/* ─── Screen ─── */
+/* PANTALLA E ISLA  */
 .vd-screen {
   position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  border-radius: 38px;
   overflow: hidden;
-  background: #000;
+  border-radius: 32px;
+  background:
+    linear-gradient(135deg, #050a1294, #0c1e3480),
+    url("/assets/damask.png") center / 220px repeat;
 }
-/* ─── Dynamic Island ─── */
 .vd-island {
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 90px;
-  height: 28px;
+  z-index: 70;
+  width: 82px;
+  height: 22px;
+  border-radius: 16px;
   background: #000;
-  border-radius: 20px;
-  z-index: 50;
+  box-shadow: inset 0 1px 1px #ffffff0d;
+  transform: translateX(-50%);
 }
-/* ======  LOCK SCREEN ======= */
+/* LOCK SCREEN */
 .vd-lockscreen {
   position: absolute;
   inset: 0;
+  z-index: 30;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 20;
   cursor: pointer;
-  transition: opacity 0.6s ease, transform 0.6s ease;
   background:
     radial-gradient(ellipse at 30% 20%, #c9a84c14, transparent 50%),
     radial-gradient(ellipse at 70% 80%, #e8728a0f, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, #2455da08, transparent 60%),
-    linear-gradient(180deg, #0a0a1000, #050508);
+    linear-gradient(180deg, #0a0a100f, #050508);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 .vd-lockscreen.vd-unlocked {
   opacity: 0;
-  transform: scale(1.1);
+  transform: scale(1.06);
   pointer-events: none;
 }
 .vd-lock-time {
-  font-size: 58px;
-  font-weight: 700;
+  margin-bottom: 5px;
   color: var(--vd-white);
-  letter-spacing: -2px;
+  font-size: 48px;
+  font-weight: 750;
   line-height: 1;
-  margin-bottom: 4px;
+  letter-spacing: -2px;
 }
 .vd-lock-date {
+  margin-bottom: 24px;
+  color: var(--vd-text);
   font-size: 13px;
   font-weight: 400;
-  color: var(--vd-text);
-  margin-bottom: 60px;
 }
 .vd-lock-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   animation: vd-breathe 3s ease-in-out infinite;
 }
 .vd-lock-prompt-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: none;
-  border: transparent;
   display: flex;
+  width: 34px;
+  height: 34px;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  background: #ffffff08;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+}
+.vd-lock-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
 }
 .vd-lock-prompt-text {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--vd-dim);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 @keyframes vd-breathe {
-  0%, 100% { opacity: 0.6; transform: scale(1);}
-  50% { opacity: 1; transform: scale(1.05);}
-}
-/* ────── MENÚ HORIZONTAL ──────────── */
+  0%, 100% { opacity: 0.58; transform: scale(1);
+  }
+  50% { opacity: 1; transform: scale(1.05);
+  }}
+/*   MENÃš DE PLANES  */
 .vd-menuscreen {
-  padding: 34px 20px 14px;
-  box-sizing: border-box;
   position: absolute;
   inset: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
+  padding: 34px 30px 13px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease 0.2s;
   background:
-    radial-gradient(ellipse at 30% 15%, #c9a84c29, transparent 50%),
-    radial-gradient(ellipse at 70% 85%, #e8728a0a, transparent 50%),
-    linear-gradient(180deg, #08080e89, #030306);
+    linear-gradient(1deg, #0e4da505, #1b60a924),
+    url("/assets/damask.png") center / 280px repeat;
+  transition: opacity 0.5s ease 0.18s;
 }
 .vd-menuscreen.vd-active {
   opacity: 1;
-  pointer-events: all;
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 34px 20px 12px !important;
-  box-sizing: border-box !important;
+  pointer-events: auto;
 }
 .vd-menu-header {
-  flex: 0 0 auto !important;
-  padding: 15px 0 10px !important;
-  color: #03b748;
-}
-.vd-menu-header h2 {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--vd-white);
-  letter-spacing: -0.2px;
-  margin-bottom: 4px;
+  flex: 0 0 auto;
+  padding: 40px 18px 8px;
+  position: relative;
+  z-index: 60;
 }
 .vd-menu-header p {
+  margin: 0;
+  color: var(--vd-rose);
+  font-family: "Courier New", ui-monospace, monospace;
   font-size: 15px;
-  color: var(--vd-dim);
-  font-weight: 400;
-  font-family:"Arial Black", "Segoe UI Black", Arial, sans-serif;
-  margin: 0 !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0.82;
 }
 .vd-menu-options {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  align-items: center !important;
-  gap: 12px !important;
-  padding: 0 !important;
+  position:relative;
+  z-index: 60;
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+  padding: 0 6px;
 }
 .vd-option {
-  width: auto !important;
-  min-width: 0 !important;
-  min-height: 112px !important;
-  padding: 6px 4px !important;
-  box-sizing: border-box !important;
   position: relative;
-  padding: 20px;
-  border-radius: 18px;
-  cursor: pointer;
+  z-index: 61;
+  isolation: isolate;
   overflow: hidden;
-  transition: all 0.35s ease;
-  background: var(--vd-glass);
-  border: 3px solid var(--vd-glass-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.vd-menu-bottom {
-  flex: 0 0 auto !important;
-  padding: 4px 0 0 !important;
-}
-.vd-option:hover {
-  transform: scale(1.02);
-  border-color: var(--vd-glass-strong-border);
-}
-.vd-option:active {
-  transform: scale(0.98);
+  width: 100%;
+  min-width: 0;
+  height: 122px;
+  padding: 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 28px;
+  cursor: pointer;
+  background:
+    linear-gradient(145deg, #272e35fa, #1b2025fa);
+  box-shadow:
+    0 8px 0 #1e2328fa,
+    0 12px 18px #00000066,
+    inset 0 1px 0 #ffffff17;
+  transition: transform 0.26s ease, filter 0.26s ease, box-shadow 0.26s ease;
 }
 .vd-option::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  border-radius: 18px;
+  z-index: 0;
+  border-radius: inherit;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.26s ease;
 }
-/*────── Type glows ─────────────────────*/
 .vd-opt-basic::before {
-  background: radial-gradient(
-    ellipse at 30% 50%,
-    #e8728a1a,
-    transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, #e8728a24, transparent 74%);
 }
 .vd-opt-pro::before {
-  background: radial-gradient(
-    ellipse at 30% 50%,
-    #ff8c321a,
-    transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, #ff8c3224, transparent 74%);
 }
 .vd-opt-vip::before {
-  background: radial-gradient(
-    ellipse at 30% 50%,
-    #c9a84c1a,
-    transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, #238cff24, transparent 74%);
+}
+.vd-option:hover {
+  filter: brightness(1.08);
+  transform: translateY(-3px) scale(1.015);
+  box-shadow:
+    0 9px 0 #1e2328fa,
+    0 17px 25px #0000007a,
+    inset 0 1px 0 #ffffff1f;
 }
 .vd-option:hover::before {
   opacity: 1;
 }
-.vd-option > * {
-  position: relative;
+.vd-option:active {
+  transform: translateY(2px) scale(0.985);
+}
+/* Marco de figuras para Basic, Pro y VIP. */
+.vd-option-damask-frame {
+  position: absolute;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  max-width: none !important;
+  display: block;
+  object-fit: fill;
+  margin: 0;
+  padding: 0;
+  border: 0;
   z-index: 1;
+  opacity: 0.92;
+  transform: none !important;
+  pointer-events: none;
+  user-select: none;
+  filter:
+    brightness(1.6)
+    contrast(1.12)
+    drop-shadow(0 0 2px #1484dc8c);
+  pointer-events: none;
+  user-select: none;
 }
 .vd-option-row {
+  position: relative;
+  z-index: 2;
   display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.vd-option-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 5px;
+  text-align: center;
 }
-.vd-opt-basic .vd-option-icon {
-  background: linear-gradient(135deg, #e8728a1f, #e8728a0a);
+.vd-option-icon {
+  display: flex;
+  width: 74px;
+  height: 64px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
 }
-.vd-opt-pro .vd-option-icon {
-  background: linear-gradient(135deg, #ff8c321f, #ff8c320a);
+.vd-plan-icon {
+  display: block;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
-.vd-opt-vip .vd-option-icon {
-  background: linear-gradient(135deg, #c9a84c1f, #c9a84c0a);
+.vd-plan-icon--basic {
+  width: 62px;
+  height: 62px;
+}
+.vd-plan-icon--pro {
+  width: 60px;
+  height: 64px;
+}
+.vd-plan-icon--vip {
+  width: 70px;
+  height: 56px;
 }
 .vd-option-info {
-  flex: 1;
+  min-width: 0;
 }
 .vd-option-name {
-  font-size: 14px;
-  font-weight: 600;
+  margin: 0;
   color: var(--vd-white);
-  margin-bottom: 2px;
-  letter-spacing: -0.1px;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.1;
 }
 .vd-option-desc {
-  font-size: 11px;
+  display: none;
   color: var(--vd-rose);
-  font-weight: 400;
+  font-size: 9px;
+  line-height: 1.15;
 }
 .vd-option-arrow {
-  font-size: 14px;
-  color: var(--vd-dim);
-  transition: transform 0.3s, color 0.3s;
+  display: none;
 }
-.vd-option:hover .vd-option-arrow {
-  transform: translateX(3px);
-  color: var(--vd-text);
+/* VacÃ­os antiguos presentes en el JSX: no participan en el diseÃ±o. */
+.vd-plan-card,
+.vd-damask-border {
+  display: none !important;
 }
-/*────── Bottom pill ──────────────────*/
 .vd-menu-bottom {
-  padding: 6px 0 0;
+  position: relative;
+  z-index: 60;
+  flex: 0 0 auto;
+  padding-top: 5px;
   text-align: center;
 }
 .vd-home-pill {
   width: 120px;
   height: 4px;
-  border-radius: 2px;
-  background: #ffffff26;
   margin: 0 auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
 }
-/*────── DETAIL SHEET ──────────────────*/
+/* =========================================================
+   PANEL DE DETALLES
+   ========================================================= */
 .vd-detail-sheet {
   position: absolute;
   inset: 0;
+  z-index: 40;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background:
+    linear-gradient(1deg, rgba(28, 64, 123, 0.03), rgba(38, 58, 81, 0.34)),
+    url("/assets/damask.png") center / 280px repeat,
+    #090d12;
   transform: translateY(100%);
   transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
-  z-index: 30;
-  background:
-    radial-gradient(ellipse at 50% 0%, #ffffff08, transparent 50%),
-    #0a0a10;
 }
 .vd-detail-sheet.vd-active {
   transform: translateY(0);
 }
-/* ---- Handle ---- */
 .vd-sheet-handle {
   display: flex;
-  
+  flex: 0 0 auto;
   justify-content: center;
-  padding: 10px 0 6px;
+  padding: 9px 0 5px;
 }
 .vd-sheet-handle-bar {
   width: 36px;
   height: 4px;
-  border-radius: 2px;
-  background: #ffffff26;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
 }
-/* ---- Sheet Header ---- */
 .vd-sheet-header {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
-  padding: 4px 20px 16px;
+  justify-content: center;
+  min-height: 53px;
+  padding: 2px 20px 11px;
   border-bottom: 1px solid var(--vd-faint);
+}
+.vd-sheet-title-area {
+  width: 100%;
 }
 .vd-sheet-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
-  padding-top: 6px;
-  transform: translateX(260px);
+  gap: 10px;
+  padding: 0;
+  transform: none;
 }
 .vd-sheet-title-name {
-  color: #f4f7fb;
+  color: var(--vd-white);
   font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
-  font-size: 31px;
+  font-size: 29px;
   font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -1.8px;
+  line-height: 1;
+  letter-spacing: -1.4px;
   text-transform: uppercase;
   transform: skewX(-5deg);
-  text-shadow: none;
 }
 .vd-title-basic {
-  color: #e8728a; /* rosa */
-  font-size: 31px;
-  letter-spacing: -1.8px;
-  text-shadow: none;
+  color: var(--vd-rose);
 }
 .vd-title-pro {
-  color: #a46331; /* naranja */
-  font-size: 31px;
-  letter-spacing: -1.8px;
-  text-shadow: none;
+  color: var(--vd-orange);
 }
 .vd-title-vip {
-  color: #c9a84c; /* dorado */
-  font-size: 31px;
-  letter-spacing: -1.8px;
-  text-shadow: none;
+  color: var(--vd-gold);
 }
-.vd-sheet-title-emoji,
-.vd-sheet-title-icon {
-  width: 28px;
-  height: 28px;
-  display: block;
-  object-fit: contain;
-}
-/* ---- Sheet Body ---- */
 .vd-sheet-body {
-  flex: 1;
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 15px;
+  min-height: 0;
+  padding: 13px 20px;
   overflow-y: auto;
-  padding: 20px;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 .vd-sheet-body::-webkit-scrollbar {
-  width: 0;
+  display: none;
 }
-/* ---- Benefits ---- */
 .vd-benefit-group {
-  margin-bottom: 20px;
+  min-width: 0;
+  margin: 0;
 }
 .vd-benefit-group-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  padding: 0 12px 7px;
   color: var(--vd-dim);
-  padding: 0 16px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .vd-benefit-list {
-  font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
-  background: var(--vd-glass);
+  overflow: hidden;
   border: 1px solid var(--vd-glass-border);
   border-radius: 14px;
-  overflow: hidden;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--vd-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 .vd-benefit-item {
   display: flex;
+  min-width: 0;
   align-items: center;
-  gap: 12px;
-  padding: 13px 16px;
+  gap: 11px;
+  padding: 10px 13px;
   border-bottom: 1px solid var(--vd-faint);
 }
 .vd-benefit-item:last-child {
-  border-bottom: none;
+  border-bottom: 0;
 }
-.vd-benefit-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+.vd-benefit-item > span {
   display: flex;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  flex-shrink: 0;
+  font-size: 19px;
 }
-.vd-bi-basic {
-  background: rgba(232, 114, 138, 0.1);
+.vd-benefit-item > div:last-child {
+  min-width: 0;
 }
-.vd-bi-pro {
-  background: rgba(255, 140, 50, 0.1);
-}
-.vd-bi-vip {
-  background: rgba(201, 168, 76, 0.1);
+.vd-benefit-img {
+  display: block;
+  width: 38px;
+  height: 38px;
+  max-width: none;
+  flex: 0 0 38px;
+  object-fit: contain;
+  pointer-events: none;
 }
 .vd-benefit-label {
-  font-size: 13px;
+  overflow: hidden;
   color: var(--vd-white);
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .vd-benefit-sub {
-  font-size: 11px;
+  display: -webkit-box;
+  margin-top: 2px;
+  overflow: hidden;
   color: var(--vd-dim);
+  font-size: 10px;
   font-weight: 400;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
-/* ---- CTA ---- */
-.vd-sheet-cta {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 14px 18px 20px;
-  border-top: 1px solid #ffffff14;
-}
-.vd-cta-btn {
-  min-width: 100px;
-  height: 42px;
-  padding: 0 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  border: 1px solid #ffdd828c;
-  border-radius: 9px;
-  background:
-    linear-gradient(
-      135deg,
-      #be9732c1 0%,
-      #ab8224af 48%,
-      #b27c1792 100% );
-  color: #362d18;
-  font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  box-shadow:
-    0 7px 18px #00000059,
-    0 0 18px #c9a84c33,
-    inset 0 1px 0 #ffffff66,
-    inset 0 -2px 0 #64410a38;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease,
-    box-shadow 0.2s ease;
-}
-.vd-cta-btn:hover {
-  filter: brightness(1.08);
-  transform: translateY(-2px);
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.42),
-    0 0 24px rgba(201, 168, 76, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -2px 0 rgba(100, 65, 10, 0.2);
-}
-.vd-cta-btn:active {
-  transform: translateY(0) scale(0.96);
-}
-.vd-cta-icon {
-  width: 22px;
-  height: 22px;
-  display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(80, 50, 0, 0.35));
-}
-.vd-cta-btn:active {
-  transform: translateY(0) scale(0.97);
-}
-.vd-cta-btn.cta-basic {
-  background: linear-gradient(135deg, #e8728a, #d45a72);
-}
-.vd-cta-btn.cta-basic:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-.vd-cta-btn.cta-pro {
-  background: linear-gradient(135deg, #fa852b, #e06820);
-}
-.vd-cta-btn.cta-pro:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-.vd-cta-btn.cta-vip {
-  background: linear-gradient(5deg,
-   #f8c12bd3, #ffcf61e1);
-}
-.vd-cta-btn.cta-vip:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-/**/
-.vd-cta-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.vd-cta-icon {
-  width: 19px;
-  height: 19px;
-  display: block;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-/* ─── VAULT DEVICE: formato horizontal ─── */
-.vd-device{
-  width:760px;
-  height:380px;
-  padding:8px;
-  border-radius:34px;
-}
-/* Línea de brillo superior */
-.vd-device::before{
-  left:20px;
-  right:20px;
-  border-radius:34px 34px 0 0;
-}
-/* La pantalla mantiene el borde interno */
-.vd-screen{
-  border-radius:27px;
-}
-/* Dynamic Island centrada arriba y más compacta */
-.vd-island{
-  top:8px;
-  width:82px;
-  height:22px;
-  border-radius:16px;
-}
-/* Botones físicos ahora van a los laterales largos */
-.vd-pwr{
-  right:-2px;
-  top:50%;
-  width:3px;
-  height:62px;
-  transform:translateY(-50%);
-}
-.vd-vol1{
-  left:-2px;
-  top:calc(50% - 42px);
-  width:3px;
-  height:30px;
-}
-.vd-vol2{
-  left:-2px;
-  top:calc(50% + 12px);
-  width:3px;
-  height:30px;
-}
-/* Lockscreen: reduce tamaños para el nuevo alto */
-.vd-lock-time{
-  font-size:48px;
-}
-.vd-lock-date{
-  margin-bottom:20px;
-}
-/* Menú horizontal: opciones en tres columnas */
-.vd-menu-header{
-  padding:70px 10px 8px;
-  color: var(--vd-rose)
-}
-.vd-menu-header h2{
-  color:var(--vd-rose);
-}
-.vd-menu-header p{
-  color:var(--vd-rose);
-  opacity:.72;
-}
-.vd-menu-options{
-  flex-direction:row;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  padding:0 20px;
-}
-.vd-option{
-  width:calc((100% - 24px) / 3);
-  min-height:122px;
-  padding:16px 12px;
-}
-.vd-option-row{
-  flex-direction:column;
-  justify-content:center;
-  gap:8px;
-  text-align:center;
-}
-.vd-option-icon{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-}
-.vd-option-name{
-  font-size:13px;
-}
-.vd-option-arrow{
-  display:none;
-}
-/* Hoja de detalles: contenido en dos columnas */
-.vd-sheet-body{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  padding:14px 20px;
-}
-.vd-benefit-group{
-  margin-bottom:0;
-}
-.vd-sheet-cta{ padding:12px 20px 18px; }
-.vd-cta-btn{ padding:12px; }
-/**/
-.vd-screen{
-  background:
-    linear-gradient(135deg,
-      #050a1294,
-      #0c1e3480 ),
-    url("/assets/damask.png");
-  background-size:auto, 180px;
-  background-repeat:no-repeat, repeat;
-  background-position:center, center;
-}
-/* Pantalla bloqueada: patrón suave */
-.vd-lockscreen{
-  padding: 42px 28px 26px;
-  box-sizing: border-box;
-
-  background:
-    linear-gradient(
-      #05080eb8,
-      #05080ed6
-    ),
-    url("/assets/damask.png");
-
-  background-size: auto, 180px;
-  background-repeat: no-repeat, repeat;
-  background-position: center, center;
-}
-/* Menú visible después de desbloquear */
-.vd-menuscreen{
-  background:
-    linear-gradient(1deg,
-      #0e4da506,
-      #1b60a925),
-    url("/assets/damask.png");
-  background-size:auto, 280px;
-  background-repeat:no-repeat, repeat;
-  background-position:center, center;
-}
-/* Panel de detalles */
-.vd-detail-sheet{
-  background:
-    linear-gradient(1deg,
-      #1c407b05,
-      #263a514f),
-    url("/assets/damask.png");
-  background-size:auto, 280px;
-  background-repeat:no-repeat, repeat;
-  background-position:center, center;
-}
-/**/
-.vd-cta-icon {
-  display: block;
-  flex-shrink: 0;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-/* Rosa: Basic */
-.vd-cta-icon-basic {
-  width: 33px;
-  height: 33px;
-  transform: translateX(2px);
-  filter: drop-shadow(0 2px 2px #5c142959);
-}
-.vd-cta-icon-pro { /* Fuego: Pro */
-  width: 33px;
-  height: 33px;
-  transform: translateY(-1px);
-  filter: drop-shadow(0 2px 3px #6e2a0566);
-}
-.vd-cta-icon-vip { /* Corona: VIP */
-  width: 23px;
-  height: 23px;
-  transform: translateY(-1px);
-  filter: drop-shadow(0 2px 3px #5b3d056b);
-}
-/* ─── DONE: misma estructura para Basic, Pro y VIP ─── */
-.vd-sheet-cta .vd-cta-btn {
-  min-width: 90px;
-  height: 42px;
-  padding: 0 18px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  border-radius: 9px;
-  font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* Tamaño y posición idénticos para los 3 PNG */
-.vd-sheet-cta .vd-cta-icon,
-.vd-sheet-cta .vd-cta-icon-basic,
-.vd-sheet-cta .vd-cta-icon-pro,
-.vd-sheet-cta .vd-cta-icon-vip {
-  width: 23px;
-  height: 23px;
-  display: block;
-  flex-shrink: 0;
-  object-fit: contain;
-  transform: translateY(-1px);
-  margin: 0;
-  pointer-events: none;
-}
-.vd-option-icon {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border-radius: 0;
-}
-.vd-option-img,
-.vd-option-icon img {
-  width: 50px;
-  height: 50px;
-  display: block;
-  object-fit: contain;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-/* ─── PAYMENT + DONE BUTTONS ─── */
+/*   PIE Y BOTONES DE COMPRA  */
 .vd-sheet-footer {
-  padding: 12px 20px 18px;
-  border-top: 1px solid #ffffff14;
+  flex: 0 0 auto;
+  padding: 10px 20px 16px;
+  border-top: 1px solid var(--vd-faint);
+  background: rgba(5, 8, 12, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.vd-buy-error {
+  margin: 0 0 8px;
+  color: #ff8194;
+  font-size: 11px;
+  text-align: right;
 }
 .vd-sheet-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 11px;
 }
-.vd-sheet-actions .vd-cta-btn {
-  min-width: 100px;
-  flex-shrink: 0;
-}
-.vd-sheet-actions .vd-cta-icon {
-  width: 23px;
-  height: 23px;
-  display: block;
-  flex-shrink: 0;
-  object-fit: contain;
-  pointer-events: none;
-}.vd-buy-btn {
+.vd-buy-btn,
+.vd-cta-btn {
   position: relative;
-  min-width: 125px;
-  height: 42px;
-  padding: 0 18px;
-  overflow: hidden;
   display: inline-flex;
+  height: 42px;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border: 1px solid transparent;
   border-radius: 9px;
-  color: #24180d;
   font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
   font-size: 12px;
   font-weight: 900;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition:
-    transform 0.3s ease,
-    filter 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: transform 0.24s ease, filter 0.24s ease, box-shadow 0.24s ease;
+}
+.vd-buy-btn {
+  min-width: 132px;
+  padding: 0 18px;
+}
+.vd-cta-btn {
+  min-width: 96px;
+  padding: 0 20px;
+}
+.vd-buy-btn:hover:not(:disabled),
+.vd-cta-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+.vd-buy-btn:active:not(:disabled),
+.vd-cta-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.vd-buy-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 .vd-buy-label,
 .vd-buy-price {
@@ -870,284 +626,168 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  transition: opacity 0.28s ease, transform 0.28s ease;
 }
-/* GET CODE visible normalmente */
 .vd-buy-label {
   opacity: 1;
   transform: translateY(0);
 }
-/* Precio oculto normalmente */
 .vd-buy-price {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(15px);
 }
-/* Ocultar GET CODE durante hover */
 .vd-buy-btn:hover:not(:disabled) .vd-buy-label {
   opacity: 0;
-  transform: translateY(-16px);
+  transform: translateY(-15px);
 }
-/* Mostrar precio durante hover */
 .vd-buy-btn:hover:not(:disabled) .vd-buy-price {
   opacity: 1;
   transform: translateY(0);
-}
-.vd-buy-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  filter: brightness(1.12);
-}
-.vd-buy-btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.97);
-}
-.vd-buy-btn:disabled {
-  opacity: 0.55;
-  cursor: wait;
 }
 .vd-buy-loading {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-/* ─── BASIC · ROSA ─── */
-.vd-buy-btn.cta-basic {
+.vd-buy-btn.cta-basic,
+.vd-cta-btn.cta-basic {
   color: #2b0d16;
-  background:
-    linear-gradient(
-      135deg,
-      #f08aa0,
-      #d7506d);
   border-color: #ffb2c1;
-  box-shadow:
-    0 7px 20px #e8728a40,
-    inset 0 1px 0 #ffffff73;
+  background: linear-gradient(135deg, #f08aa0, #d7506d);
+  box-shadow: 0 7px 20px rgba(232, 114, 138, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
-.vd-buy-btn.cta-basic .vd-buy-label,
-.vd-buy-btn.cta-basic .vd-buy-price {
-  color: #2b0d16;
-}
-.vd-buy-btn.cta-basic:hover:not(:disabled) {
-  background:
-    linear-gradient(
-      135deg,
-      #ff9bb0,
-      #e45d79);
-  box-shadow:
-    0 10px 28px #e8728a70,
-    0 0 20px #e8728a45,
-    inset 0 1px 0 #ffffff8c;
-}
-/* ─── PRO · NARANJA ─── */
-.vd-buy-btn.cta-pro {
+.vd-buy-btn.cta-pro,
+.vd-cta-btn.cta-pro {
   color: #301406;
-  background:
-    linear-gradient(
-      35deg,
-      #ff7818,
-      #e05d19);
-  border-color: #ff6f00;
-  box-shadow:
-    0 7px 20px #e0682047,
-    inset 0 1px 0 #ffffff73;
+  border-color: #ff8736;
+  background: linear-gradient(135deg, #ff8e3d, #df5d19);
+  box-shadow: 0 7px 20px rgba(224, 104, 32, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
-.vd-buy-btn.cta-pro .vd-buy-label,
-.vd-buy-btn.cta-pro .vd-buy-price {
-  color: #301406;
-}
-.vd-buy-btn.cta-pro:hover:not(:disabled) {
-  background:
-    linear-gradient(
-      15deg,
-      #ea7b2b,
-      #f06b21);
-  box-shadow:
-    0 10px 28px #e0682073,
-    0 0 20px #ff762e47,
-    inset 0 1px 0 #ffffff8c;
-}
-/* ─── VIP · DORADO ─── */
-.vd-buy-btn.cta-vip {
+.vd-buy-btn.cta-vip,
+.vd-cta-btn.cta-vip {
   color: #302005;
-  background:
-    linear-gradient(
-      135deg,
-      #c5aa5ef3,
-      #f3b52e);
-  border-color: #b18202;
-  box-shadow:
-    0 7px 20px #c9a84c4d,
-    inset 0 1px 0 #ffffff73;
+  border-color: #d4ad3e;
+  background: linear-gradient(135deg, #e3c06d, #efa916);
+  box-shadow: 0 7px 20px rgba(201, 168, 76, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.48);
 }
-.vd-buy-btn.cta-vip .vd-buy-label,
-.vd-buy-btn.cta-vip .vd-buy-price {
-  color: #302005;
-}
-.vd-buy-btn.cta-vip:hover:not(:disabled) {
-  background:
-    linear-gradient(
-      135deg,
-      #eac230ab,
-      #dbaa35);
-  box-shadow:
-    0 10px 28px #c9a84c75,
-    0 0 22px #ffd76a52,
-    inset 0 1px 0 #ffffff99;
-}
-@media (max-width: 600px) {
-.vd-sheet-footer { padding: 10px 12px 14px;}
-.vd-sheet-actions { gap: 8px;}
-.vd-sheet-actions .vd-cta-btn { min-width: 80px; padding: 0 12px;}}
-/* ─── TELEGRAM WEBVIEW FIX ─── */
-*,*::before,*::after {box-sizing: border-box; }
-html,body {
-  width: 100%;
-  max-width: 100%;
-  min-height: var(--tg-viewport-height, 100dvh);
-  margin: 0;
-  overflow-x: clip;
-}
-img,svg,video {display: block; max-width: 100%;
-}
-/* Evita iconos gigantes durante la carga */
-.vx-titleRose,
-.vx-titleCandado,
-.vx-planButtonIcon,
-.vd-option-img,
-.vd-option-icon img,
-.vd-sheet-title-icon,
-.vd-benefit-img,
-.vd-cta-icon {
-  width: 50px;
-  height: 50px;
-  max-width: 50px !important;
-  max-height: 50px !important;
-  object-fit: contain;
-}
-/* Carrusel */
-.vx-carousel {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  contain: layout paint;
-}
-.vx-carouselTrack {
-  max-width: none;
-}
-.vx-carouselSlide {
-  flex-shrink: 0;
-  overflow: hidden;
-}
-.vx-carouselSlide .vx-shotMedia {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: cover;
-}
-/* Device responsive */
+
+/* RESPONSIVE  */
 @media (max-width: 800px) {
   .vd-device {
-    width: calc(100dvw - 24px) !important;
-    max-width: 760px !important;
-    height: auto !important;
-    aspect-ratio: 2 / 1;
-    margin-inline: auto;
+    width: calc(100dvw - 24px);
+    max-width: 760px;
+    height: clamp(300px, 50vw, 380px);
   }}
-.vx-subIcon,
-.vx-titleRose,
-.vx-titleCandado,
-.vx-planButtonIcon,
-.vd-option-img {
-  flex-grow: 0 !important;
-  flex-shrink: 0 !important;
-}
-.vd-plan-icon {
-  display: block;
-  object-fit: contain;
-  margin: 0 auto 10px;
-  user-select: none;
-  pointer-events: none;
-}
-.vd-plan-icon--basic {
-  width: 64px;
-  height: 64px;
-}
-.vd-plan-icon--pro {
-  width: 62px;
-  height: 68px;
-}
-.vd-plan-icon--vip {
-  width: 72px;
-  height: 58px;
-}
-.vd-plan-card,
+@media (max-width: 560px) {
+  .vd-device {
+    width: calc(100dvw - 16px);
+    height: 320px;
+    border-radius: 30px;
+    padding: 6px;
+  }
+  .vd-screen {
+    border-radius: 24px;
+  }
+  .vd-device-damask-frame {
+    inset: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+  }
+  .vd-menuscreen {
+    padding: 30px 14px 10px;
+  }
+  .vd-menu-header {
+    padding: 31px 12px 6px;
+  }
+  .vd-menu-header p {
+    font-size: 12px;
+  }
+  .vd-menu-options {
+    gap: 7px;
+    padding: 0;
+  }
+  .vd-option {
+    height: 108px;
+    border-radius: 21px;
+  }
+  .vd-option-damask-frame {
+    inset: 3px;
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+  }
+  .vd-option-icon {
+    width: 54px;
+    height: 50px;
+  }
+  .vd-plan-icon--basic {
+    width: 49px;
+    height: 49px;
+  }
+  .vd-plan-icon--pro {
+    width: 47px;
+    height: 51px;
+  }
+  .vd-plan-icon--vip {
+    width: 54px;
+    height: 44px;
+  }
+  .vd-option-name {
+    font-size: 12px;
+  }
+  .vd-sheet-title-name {
+    font-size: 23px;
+  }
+  .vd-sheet-body {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  .vd-sheet-footer {
+    padding: 9px 12px 12px;
+  }
+  .vd-sheet-actions {
+    gap: 8px;
+  }
+  .vd-buy-btn {
+    min-width: 124px;
+  }
+  .vd-cta-btn {
+    min-width: 78px;
+    padding-inline: 12px;
+  }}
+@media (prefers-reduced-motion: reduce) {
+  .vd-device *,
+  .vd-device *::before,
+  .vd-device *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }}
+/* ─── BORDE DEL DISPOSITIVO ─── */
 .vd-device-damask {
   position: relative;
   isolation: isolate;
-}
-.vd-option {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  border-radius: 32px;
-}
-.vd-plan-card,
-.vd-device-damask {
-  position: relative;
-  isolation: isolate;
-}
-/* Figura tejida, sin línea sólida */
-.vd-option {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-.vd-option-damask-frame {
-  position: absolute;
-  inset: 4px;
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
-  object-fit: fill;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.9;
-  filter:
-    brightness(1.65)
-    contrast(1.12)
-    drop-shadow(0 0 2px #1484dc80);
-}
-.vd-option-row {
-  position: relative;
-  z-index: 2;
 }
 .vd-device-damask-frame {
   position: absolute;
-  inset: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
+  inset: 10px 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 20px);
+  max-width: none !important;
+  display: block;
   object-fit: fill;
+  margin: 0;
+  padding: 0;
+  border: 0;
   z-index: 50;
+  opacity: 0.78;
+  transform: none !important;
   pointer-events: none;
-  opacity: 0.75;
-  filter: brightness(1.5);
+  user-select: none;
+  filter:
+    brightness(1.35)
+    contrast(1.08)
+    drop-shadow(0 0 2px rgba(20, 132, 220, 0.3));
 }
-
-
-
-/* BASIC */
-.vd-plan-basic {
-  --vd-damask-color: #d62b4b;
-}
-/* PRO */
-.vd-plan-pro {
-  --vd-damask-color: #ed642d;
-}
-/* VIP */
-.vd-plan-vip {
-  --vd-damask-color: #238cff;
-}
-/* Hover de las tres cards */
-.vd-plan-card:hover .vd-damask-frame {
-  opacity: 1;
-  filter: drop-shadow(0 0 5px var(--vd-damask-color));
-}
+/* ─── BORDE DE FIGURAS EN LOS BOTONES ─── */

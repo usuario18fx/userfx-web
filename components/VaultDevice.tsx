@@ -31,7 +31,8 @@ import './VaultDevice.css';
                   rosa: "/assets/iconos/rosa.png",
                   telegram: "/assets/iconos/telegram.png",
                   vip: "/assets/iconos/vip.png",
-                  borde: "/assets/iconos/borde-damask-transparente.png",
+                  bordeDevice: "/assets/iconos/bordeDevice.png",
+                  bordeBtn: "/assets/iconos/bordeBtn.png",
                   instantAccess: "/assets/iconos/instant-access.png",
                   };
 /* ─── Plan Data ─── */
@@ -150,8 +151,8 @@ vip: {title: 'VIP',
   );
   }};
   return (
-      <div className="vd-device">
-      <img src={ICONS.borde} alt="" className="vd-device-damask-frame" draggable={false}/>
+      <div className="vd-device vd-device-damask">
+      <img src={ICONS.bordeDevice} alt="" className="vd-device-damask-frame" draggable={false}/>
 {/* Side buttons */}
       <div className="vd-btn vd-pwr" />
       <div className="vd-btn vd-vol1" />
@@ -185,8 +186,7 @@ vip: {title: 'VIP',
       </div>
       <div className="vd-menu-options">
       <div className="vd-option vd-opt-basic" onClick={() => openSheet('basic')}>
-      <span className="vd-damask-frame" aria-hidden="true" />
-      <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
+      <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.rosa} alt="" className="vd-plan-icon vd-plan-icon--basic" draggable={false}/>
@@ -205,7 +205,7 @@ vip: {title: 'VIP',
       </div>
       </div>
       <div className="vd-option vd-opt-pro" onClick={() => openSheet('pro')}>
-       <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
+       <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.fuego} alt="" className="vd-plan-icon vd-plan-icon--pro" draggable={false}/>
@@ -225,7 +225,7 @@ vip: {title: 'VIP',
       </div>
       </div>
       <div className="vd-option vd-opt-vip" onClick={() => openSheet('vip')}>
-      <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
+      <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.corona} alt="" className="vd-plan-icon vd-plan-icon--vip" draggable={false}/>
