@@ -4,6 +4,8 @@ import VaultDevice from "../components/VaultDevice";
 import "../components/VaultDevice.css";
 import "./VaultHome.css"; // ← el CSS ahora vive en su propio archivo (con los 7 fixes)
 import VisitorCounter from "./VisitorCounter";
+import Crown4D from "../components/Crown4D/Crown4D";
+
 
 const LOGO = "/assets/userfx-logo-sin.png";
 const BRICK = "/assets/brick-wall.png";
@@ -324,15 +326,17 @@ export default function VaultHome() {
               ᴘʀɪᴠ⭑ᴠᴀᴜʟᴛ<i/>ᴜꜱᴇʀ🜲𝓕𝓧 <i/> ᴏꜰꜰɪᴄɪᴀʟ <i/>
             </p>
             <h1 className="vx-title">
-              <Scramble text="ACCESS" className="vx-access" delay={160}/>
-              <img src={ICONS.corona} alt="" className="vx-subIcon" draggable={false} width={65} height={65} style={{ width: "65px", height: "65px", maxWidth: "65px", maxHeight: "65px", objectFit: "contain", flex: "0 0 65px",}}/>
-              <Scramble text="RESTRICTED" className="vx-rest" delay={420}/>
+            <Scramble text="ACCESS" className="vx-access" delay={160}/>
+            <div className="vx-titleCrown">
+            <Crown4D />
+            </div>
+            <Scramble text="RESTRICTED" className="vx-rest" delay={420}/>
             </h1>
             <p className="vx-p vx-pNormal">
               There are images that were never meant to be seen..
             </p>
             <p className="vx-p">
-              <strong>
+            <strong>
                 USER<span>
                   🜲 FX </span> <i/>
                 —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— <i/></strong>
@@ -514,7 +518,8 @@ export default function VaultHome() {
                 🜲</span>
                 FX                 
                 </p>
-                <small>PRIVATE VAULT</small>
+                <small>
+                  PRIVATE VAULT</small>
               </div>
             </div>
           </div>

@@ -1900,11 +1900,11 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
 }
 .vx-access {
   display: block;
-  transform: translateY(93%) translateX(-3%);
+  transform: translateY(186%) translateX(-3%);
 }
-.vx-restricted {
+.vx-rest {
   display: block;
-  transform: translateY() translateX();
+  transform: translateY(40%) translateX(3%);
 }
 .access-title::before {
   font-size: 2em;
@@ -1924,4 +1924,8 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   user-select: none;
   pointer-events: none;
 }
-
+.vx-titleCrown {
+  position: relative;
+  transform: translateX(350px) translateY(40%);
+  z-index: 3;
+}
