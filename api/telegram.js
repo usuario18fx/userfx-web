@@ -729,17 +729,17 @@ function getCommandArg(ctx, index = 0) {
   function getStarsVipKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            "❘ ᴘᴀʏ✪ᴠɪᴘ ❘", "pay_vip_stars") , ] , ] ) ;
+            `| ✪ ${VIP_STARS_PRICE} |`, "pay_vip_stars") , ] , ] ) ;
         }
   function getStarsBasicKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            "| ᴘᴀʏ✪ʙᴀꜱɪᴄ |", "pay_basic_stars") , ] , ] ) ;
+            `| ✪ ${BASIC_STARS_PRICE} |`, "pay_basic_stars") , ] , ] ) ;
         }
   function getStarsProKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            "| ᴘᴀʏ✪ᴘʀᴏ |", "pay_pro_stars") , ] , ] ) ;
+            `| ✪ ${PRO_STARS_PRICE} |`, "pay_pro_stars") , ] , ] ) ;
         }
   function getChannelsKeyboard() {
       return Markup.keyboard([
@@ -791,23 +791,23 @@ function getCommandArg(ctx, index = 0) {
      👑 ᴠɪᴘ`, getAccessKeyboard());}
     async function sendVipPanel(ctx) {
     try { await ctx.reply(
-        `👑ᴄᴏᴅᴇ ᴠɪᴘ ✪${VIP_STARS_PRICE}
-    ——————————
-    ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
-    ⇀ ʙᴇɴᴇғɪᴛs
-    ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
-    ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`, getStarsVipKeyboard());
+`👑ᴄᴏᴅᴇ ᴠɪᴘ
+——————————
+⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
+⇀ ʙᴇɴᴇғɪᴛs
+⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
+⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`, getStarsVipKeyboard());
     }
     catch (error) {logger.error(
         "VIP PANEL ERROR", getTelegramError(error));
     }}
     async function sendBasicPanel(ctx) {
     try { await ctx.reply(
-        `🌹ᴄᴏᴅᴇ ʙᴀꜱɪᴄ ✪ ${BASIC_STARS_PRICE}
-    ————————
-    ⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
-    ⇀ ʙᴇɴᴇғɪᴛs
-    ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹`, getStarsBasicKeyboard());
+`🌹ᴄᴏᴅᴇ ʙᴀꜱɪᴄ
+—————————
+⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
+⇀ ʙᴇɴᴇғɪᴛs
+⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹`, getStarsBasicKeyboard());
     }
     catch (error) {
     logger.error(
@@ -815,12 +815,12 @@ function getCommandArg(ctx, index = 0) {
     }}
     async function sendProPanel(ctx) {
     try { await ctx.reply(
-        `🔥ᴄᴏᴅᴇ ᴘʀᴏ ✪ ${PRO_STARS_PRICE}
-    ——————————
-    ⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
-    ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
-    ⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
-    ⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹`, getStarsProKeyboard());
+`🔥ᴄᴏᴅᴇ ᴘʀᴏ
+——————————
+⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
+⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
+⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
+⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹`, getStarsProKeyboard());
     }
     catch (error) {
     logger.error(
@@ -878,25 +878,25 @@ function getCommandArg(ctx, index = 0) {
         currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT) {
     await ctx.reply(
        `⏳ ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
-     ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`, getPendingPhotoKeyboard());
+ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`, getPendingPhotoKeyboard());
     return;
     }
     const user = getUserMeta(ctx.from);
     const request = { userId, fullName: user.fullName, username: user.username, status: REQUEST_STATUS.WAITING_PHOTO, invalidTextCount: 0, createdAt: Date.now(),};
     await setVideoRequest(userId, request);
     await ctx.reply(
-              `ʜᴏʟᴅ ᴜᴘ...
-         ᴄᴀɴ ɪ ꜱᴇᴇ ᴡʜᴀᴛ ʏᴏᴜ ʟᴏᴏᴋ ʟɪᴋᴇ ғɪʀꜱᴛ👀
-         ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ᴏᴠᴇʀ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ.`, getPendingPhotoKeyboard());
-    await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `
-            📞 <b>ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ</b>
-         Username: ${escapeHtml(user.username)}
-         ID: ${escapeHtml(user.id)}
-         Chat ID: ${escapeHtml(userId)}
-         ⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`, {parse_mode: "HTML",
+    `ʜᴏʟᴅ ᴜᴘ...
+ᴄᴀɴ ɪ ꜱᴇᴇ ᴡʜᴀᴛ ʏᴏᴜ ʟᴏᴏᴋ ʟɪᴋᴇ ғɪʀꜱᴛ👀
+ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ᴏᴠᴇʀ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ.`, getPendingPhotoKeyboard());
+    await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, 
+    `📞 <b>ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ</b>
+    Username: ${escapeHtml(user.username)}
+    ID: ${escapeHtml(user.id)}
+    Chat ID: ${escapeHtml(userId)}
+    ⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`, {parse_mode: "HTML",
     });}
     catch (error) { logger.error(
-          "OPEN VIDEOCALL FLOW ERROR", {
+    "OPEN VIDEOCALL FLOW ERROR", {
     userId,...getTelegramError(error),stack: getErrorStack(error),
     });}}
 //// PENDING VIDEOCALL //
@@ -908,7 +908,7 @@ function getCommandArg(ctx, index = 0) {
     const request = await getVideoRequest(userId);
     if (!request) {
     await ctx.reply(
-      `⏳ɴᴏ ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
+    `⏳ɴᴏ ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
      ᴡʜᴇɴ ʏᴏᴜ ʀᴇǫᴜᴇꜱᴛ ᴀ ᴠɪᴅᴇᴏᴄᴀʟʟ, ɪᴛ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.`, getMainKeyboard());
     return;
     }
@@ -916,60 +916,60 @@ function getCommandArg(ctx, index = 0) {
     let keyboard = getMainKeyboard();
     switch (request.status) {
     case REQUEST_STATUS.WAITING_PHOTO:  message =
-        `𝐒𝐓𝐀𝐓𝐔𝐒: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ 📸
+    `ꜱᴛᴀᴛᴜꜱ: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ 📸
     ɪ ɴᴇᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`;keyboard = getPendingPhotoKeyboard();
     break;
     case REQUEST_STATUS.AWAITING_ADMIN: message =
-        `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ʀᴇᴄᴇɪᴠᴇᴅ.
     ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴅᴍɪɴ ᴀᴘᴘʀᴏᴠᴀʟ.`;keyboard = getPendingPhotoKeyboard();
     break;
     case REQUEST_STATUS.AWAITING_PAYMENT: message =
-      `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-    𝐒𝐓𝐀𝐓𝐔𝐒: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
+    `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
     ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;keyboard = getPendingPhotoKeyboard();
     break;
     case REQUEST_STATUS.PAID: message =
-      `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-    𝐒𝐓𝐀𝐓𝐔𝐒: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;keyboard = getApprovedVideocallKeyboard();
+    `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;keyboard = getApprovedVideocallKeyboard();
     break;
     case REQUEST_STATUS.APPROVED: message =
-      `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
+    `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔️
     ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
     keyboard = getApprovedVideocallKeyboard();break; default:
     await ctx.reply(
-        "⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    "⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
     return;
     }
     await ctx.reply(message, keyboard);logger.info(
-        "PENDING VIDEOCALL PANEL", {userId, status: request.status,
+    "PENDING VIDEOCALL PANEL", {userId, status: request.status,
     });
     }
     catch (error) { logger.error(
-        "PENDING VIDEOCALL PANEL ERROR", {userId,  ...getTelegramError(error),
+    "PENDING VIDEOCALL PANEL ERROR", {userId,  ...getTelegramError(error),
                                           stack: getErrorStack(error),
     });
     await ctx.reply(
-        "❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    "❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
     }}
 //// APPROVED VIDEOCALL //
    async function sendApprovedVideocallFlow(userId) {
     const targetUserId = String(userId);
     try {
     await bot.telegram.sendMessage(targetUserId, 
-      `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
+    `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
     ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`);
     await bot.telegram.sendMessage(targetUserId, 
-      `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
+    `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
     ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`, {
     reply_markup: getVideocallInlineKeyboard(),});
     logger.info(
-        "VIDEOCALL OPTIONS SENT", {
+    "VIDEOCALL OPTIONS SENT", {
     userId: targetUserId,});
     }
     catch (error) {logger.error(
-        "SEND APPROVED VIDEOCALL ERROR", {userId: targetUserId,...getTelegramError(error),});throw error;
+    "SEND APPROVED VIDEOCALL ERROR", {userId: targetUserId,...getTelegramError(error),});throw error;
     }}
 //// INVOICES //
     async function sendStarsInvoice(telegram, chatId, options) {
@@ -986,10 +986,10 @@ function getCommandArg(ctx, index = 0) {
     if (!chatId)
     return;
     await sendStarsInvoice(ctx.telegram, chatId, {
-        title: "𝓥𝓘𝓟 ᴀᴄᴄᴇss",
-        description: "𝓥𝓘𝓟 ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+        title: "𝓥ɪᴘ ᴀᴄᴄᴇss",
+        description: "ᴠɪᴘ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: VIP_PAYLOAD,
-        label: "𝓥𝓘𝓟 ᴀᴄᴄᴇss",
+        label: "ᴠɪᴘ ᴀᴄᴄᴇss",
         amount: VIP_STARS_PRICE,
     });
     }
@@ -998,10 +998,10 @@ function getCommandArg(ctx, index = 0) {
     if (!chatId)
     return;
     await sendStarsInvoice(ctx.telegram, chatId, {
-        title: "𝔹𝔸𝕊𝕀ℂ ᴀᴄᴄᴇss",
-        description: "𝔹𝔸𝕊𝕀ℂ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+        title: "𝐁𝐀𝐒𝐈𝐂 ᴀᴄᴄᴇss",
+        description: "ʙᴀꜱɪᴄ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
         payload: BASIC_PAYLOAD,
-        label: "𝔹𝔸𝕊𝕀ℂ ᴀᴄᴄᴇss",
+        label: "ʙᴀꜱɪᴄ ᴀᴄᴄᴇss",
         amount: BASIC_STARS_PRICE,
     });
     }
@@ -1010,10 +1010,10 @@ function getCommandArg(ctx, index = 0) {
    if (!chatId)
     return;
     await sendStarsInvoice(ctx.telegram, chatId, {
-    title: "ℙℝ𝕆 ᴀᴄᴄᴇss",
+    title: "𝐏𝐑𝐎 ᴀᴄᴄᴇss",
     description: "ᴍᴇɴꜱᴜᴀʟ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.", 
     payload: PRO_PAYLOAD,
-    label: "ℙℝ𝕆 ᴀᴄᴄᴇss",
+    label: "ᴘʀᴏ ᴀᴄᴄᴇss",
     amount: PRO_STARS_PRICE,
     });
     }
@@ -1044,7 +1044,8 @@ function getCommandArg(ctx, index = 0) {
     }
     const claimed = await claimPaymentProcessed(chargeId);
     if (!claimed) {
-    logger.warn("DUPLICATE PAYMENT", {  userId,  payload,  chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
+    logger.warn(
+    "DUPLICATE PAYMENT", {  userId,  payload,  chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
     });
     return;
     }
@@ -1054,21 +1055,22 @@ function getCommandArg(ctx, index = 0) {
     const request = await getVideoRequest(userId);
     if (!request || request.status !== REQUEST_STATUS.AWAITING_PAYMENT) {
     await ctx.reply(
-        `⚠️ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ғᴏᴜɴᴅ.
-     ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+`⚠️ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ, ʙᴜᴛ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ғᴏᴜɴᴅ.
+ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
     return;
     }
     try {
     await setVideoRequest(userId, { ...request, status: REQUEST_STATUS.PAID, paidAt: Date.now(), telegramPaymentChargeId: chargeId,
     });
     await ctx.reply(
-        `✅ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
-     📞ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {reply_markup: getVideocallInlineKeyboard(),
+    `✅ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+    📞ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {reply_markup: getVideocallInlineKeyboard(),
     });
     }        
     catch (error) {
     await releasePaymentClaim(chargeId);
-    logger.error("VIDEOCALL PAYMENT HANDLE ERROR", {
+    logger.error(
+    "VIDEOCALL PAYMENT HANDLE ERROR", {
     userId, chargeId,...getTelegramError(error),
     });
     throw error;
@@ -1079,9 +1081,9 @@ function getCommandArg(ctx, index = 0) {
     const plan = getPlanFromPayload(payload);
     if (plan) {
     try {   
-    const record = await generateAccessCode(plan.id, "telegram", userId, chargeId);
+    const record = await generateAccessCode(plan.id, 
+    "telegram", userId, chargeId);
     const existing = await getPaidUser(userId);
-       
     const oldRank = tierRank(existing?.tier || null);
     const newRank = tierRank(plan.tier);
     const effectiveRecord = newRank >= oldRank
@@ -1089,52 +1091,55 @@ function getCommandArg(ctx, index = 0) {
     } : {...existing, telegramPaymentChargeId: chargeId, paidAt: Date.now(), lastPurchasedPlan: plan.id, lastPurchasedCode: record.code,source: "telegram",};
     await setPaidUser(userId, effectiveRecord);
     await sendGeneratedCode(ctx, record);
-    await ctx.reply(`✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ
-    ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
+    await ctx.reply(
+    `✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
     return;
     }
     catch (error) {
     await releasePaymentClaim(chargeId); logger.error(
-        "ACCESS CODE GENERATION ERROR", {userId, payload, chargeId,...getTelegramError(error),
+    "ACCESS CODE GENERATION ERROR", {userId, payload, chargeId,...getTelegramError(error),
     stack: getErrorStack(error),
     });
     await ctx.reply(
-        `⚠️ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
+    `⚠️ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
      ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
      ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
     return;
     }}
     logger.warn(
-        "UNKNOWN PAYMENT PAYLOAD", { userId, payload, chargeId,
+    "UNKNOWN PAYMENT PAYLOAD", { userId, payload, chargeId,
     });
     }
 //// GET CODE PANEL //
     async function openGetCodePanel(ctx,
-    source = "telegram" 
+    source = 
+    "telegram" 
     ) {
     try {
     await trackButtonClick(ctx,
     `GET CODE · ${source}`
     );
     await sendMediaSafe(
-    ctx,"photo",ASSET_GETCODE_IMAGE
+    ctx,
+    "photo",ASSET_GETCODE_IMAGE
     );
     await ctx.reply(
     "🔐ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",getAccessKeyboard()
     );}
     catch (error) {
     logger.error(
-        "GET CODE PANEL ERROR", { source,
+    "GET CODE PANEL ERROR", { source,
     ...getTelegramError(error),
     stack: getErrorStack(error),
     });
     await ctx.reply(
-     "⚠️Unable to open the access panel."
+    "⚠️Unable to open the access panel."
      ).catch(() => {});
      }}
-     bot.command("getcode", async (ctx) => {
+     bot.command(
+    "getcode", async (ctx) => {
     await openGetCodePanel(ctx,
-      "COMMAND"
+    "COMMAND"
     );
     });
 //// USER START //
@@ -1147,52 +1152,57 @@ async function handleUserStart(ctx) {
     const startPayload = String(ctx.startPayload || textPayload || "")
         .trim().toLowerCase();
 //// WEBSITE DEVICE → BASIC //
-        if (startPayload === "getcode_basic") {
+        if (startPayload === 
+        "getcode_basic") {
         await trackButtonClick( ctx,
-            "WEBSITE GET CODE BASIC");
+        "WEBSITE GET CODE BASIC");
         await sendBasicPanel(ctx);
         return;
         }
 //// WEBSITE DEVICE → PRO //
-        if (startPayload === "getcode_pro") {
+        if (startPayload === 
+        "getcode_pro") {
         await trackButtonClick(ctx,
-            "WEBSITE GET CODE PRO");
+        "WEBSITE GET CODE PRO");
         await sendProPanel(ctx);
         return;
         }
 //// WEBSITE DEVICE → VIP //
-        if (startPayload === "getcode_vip") {
+        if (startPayload === 
+        "getcode_vip") {
         await trackButtonClick(ctx,
-            "WEBSITE GET CODE VIP");
+        "WEBSITE GET CODE VIP");
         await sendVipPanel(ctx);
         return;
         }
         logger.info(
-            "USER START RECEIVED", {
-            userId: String(ctx.from?.id || ""),
+        "USER START RECEIVED",{userId: String(ctx.from?.id || ""),
             chatId: String(ctx.chat?.id || ""),
             startPayload: startPayload || null,
             messageText: messageText || null,});
-        if (startPayload === "getcode") {
-            logger.info(
-            "START GET CODE", {userId: String(ctx.from?.id || ""),});
+        if (startPayload === 
+        "getcode") {
+        logger.info(
+        "START GET CODE", {userId: String(ctx.from?.id || ""),});
         await openGetCodePanel(ctx,
-            "WEBSITE");
+        "WEBSITE");
         return;
         }
-        if (startPayload === "pay_basic") {logger.info("START BASIC PAYMENT");
+        if (startPayload === 
+        "pay_basic") {logger.info(
+        "START BASIC PAYMENT");
         await sendBasicInvoice(ctx);
         return;
         }
         if (startPayload === 
-            "pay_pro") {logger.info(
-            "START PRO PAYMENT");
+        "pay_pro") {logger.info(
+        "START PRO PAYMENT");
         await sendProInvoice(ctx);
         return;
         }
         if (startPayload === 
-            "pay_vip") {logger.info(
-            "START VIP PAYMENT");
+        "pay_vip") {logger.info(
+        "START VIP PAYMENT");
         await sendVipInvoice(ctx);
         return;
         }
@@ -1205,57 +1215,57 @@ async function handleUserStart(ctx) {
         }
         catch (error) {
         logger.error(
-            "START ERROR", {...getTelegramError(error), stack: getErrorStack(error),
+        "START ERROR", {...getTelegramError(error), stack: getErrorStack(error),
         });
         await ctx.reply(
-            "⚠️Unable to open the payment. Please try again."
+        "⚠️Unable to open the payment. Please try again."
         ).catch(() => {});
         }}
         bot.start(handleUserStart);
 //// PAYMENT SUPPORT //
         bot.command(
-            "paysupport", async (ctx) => {
+        "paysupport", async (ctx) => {
         await ctx.reply(
-            `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
+        `ᴘᴀʏᴍᴇɴᴛ ꜱᴜᴘᴘᴏʀᴛ
         ꜰᴏʀ ᴘᴀʏᴍᴇɴᴛ ɪꜱꜱᴜᴇꜱ, ᴄᴏɴᴛᴀᴄᴛ @User18fx`);
         });
 //// PAYMENT ACTIONS //
         bot.action(
-            "pay_vip_stars", async (ctx) => {
+        "pay_vip_stars", async (ctx) => {
         try {
         await ctx.answerCbQuery();
         await sendVipInvoice(ctx);
         }
         catch (error) {
         logger.error(
-            "PAY VIP ERROR", getTelegramError(error));
+        "PAY VIP ERROR", getTelegramError(error));
         }
         });
         bot.action(
-            "pay_pro_stars", async (ctx) => {
+        "pay_pro_stars", async (ctx) => {
         try {
         await ctx.answerCbQuery();
         await sendProInvoice(ctx);
         }
         catch (error) {
         logger.error(
-            "PAY PRO ERROR", getTelegramError(error));
+        "PAY PRO ERROR", getTelegramError(error));
         }
         });
         bot.action(
-            "pay_basic_stars", async (ctx) => {
+        "pay_basic_stars", async (ctx) => {
         try {
         await ctx.answerCbQuery();
         await sendBasicInvoice(ctx);
         }
          catch (error) {
         logger.error(
-            "PAY BASIC ERROR", getTelegramError(error));
+        "PAY BASIC ERROR", getTelegramError(error));
         }
         });
 //// PRE CHECKOUT // 
         bot.on(
-            "pre_checkout_query", async (ctx) => {
+        "pre_checkout_query", async (ctx) => {
         try {
         const payload = ctx.update
             ?.pre_checkout_query
@@ -1269,10 +1279,10 @@ async function handleUserStart(ctx) {
         }
         catch (error) {
         logger.error(
-            "PRE CHECKOUT ERROR", getTelegramError(error));
+        "PRE CHECKOUT ERROR", getTelegramError(error));
         try {
         await ctx.answerPreCheckoutQuery(false, 
-            "Unable to process payment right now.");
+        "Unable to process payment right now.");
         }
         catch {
         }} });
@@ -1290,7 +1300,8 @@ async function handleUserStart(ctx) {
       }
       const mime = String(document.mime_type || "");
       return (mime.startsWith("image/") ||
-      mime.startsWith("video/"));
+      mime.startsWith(
+      "video/"));
       }
       async function handleMedia(ctx) {
       const userId = String(ctx.from?.id || "");
@@ -1299,12 +1310,12 @@ async function handleUserStart(ctx) {
       const pending = await getVideoRequest(userId);
      if (!pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO) {
      await ctx.reply(
-        "📸 ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ꜰʀᴏᴍ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
+     "📸 ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ꜰʀᴏᴍ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
      return;
      }
      if (!isAcceptableMedia(ctx)) {
      await ctx.reply(
-        "📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
+     "📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
      return;
      }
      const user = getUserMeta(ctx.from);
@@ -1314,30 +1325,28 @@ async function handleUserStart(ctx) {
     try {
     const adminKeyboard = Markup.inlineKeyboard([
     [Markup.button.callback(            
-      "ᴘᴀʏ ✪𝟭𝟯𝟬 ꜱᴛᴀʀꜱ", `approve_stars_${user.id}`),
+    "ᴘᴀʏ ✪𝟭𝟯𝟬 ꜱᴛᴀʀꜱ", `approve_stars_${user.id}`),
     ],
     [Markup.button.callback(
-      "ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ", `approve_call_${user.id}`),],
+    "ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ", `approve_call_${user.id}`),],
     [Markup.button.callback(
-      "✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${user.id}`),],]);
+    "✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${user.id}`),],]);
     await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `
-      📸<b>NEW PHOTO RECEIVED</b>
+    📸<b>NEW PHOTO RECEIVED</b>
     Username: ${escapeHtml(user.username)}
     ID: ${escapeHtml(user.id)}
-    Chat ID: ${escapeHtml(userId)}
-      📸ᴜꜱᴇʀ ᴘʜᴏᴛᴏ ɪꜱ ᴀᴛᴛᴀᴄʜᴇᴅ ʙᴇʟᴏᴡ.`, {parse_mode: "HTML",
-    });
+    Chat ID: ${escapeHtml(userId)}`,{parse_mode: "HTML",});
     await bot.telegram.copyMessage(ADMIN_CHAT_ID, ctx.chat.id, ctx.message.message_id);
     await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, 
-      "ᴄʜᴏᴏꜱᴇ ᴀɴ ᴀᴄᴛɪᴏɴ:", {reply_markup: adminKeyboard.reply_markup,});
+    "ᴄʜᴏᴏꜱᴇ ᴀɴ ᴀᴄᴛɪᴏɴ:", {reply_markup: adminKeyboard.reply_markup,});
      await ctx.reply(
-      `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
+    `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
     ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`);
     }
     catch (error) { logger.error(
-       "MEDIA HANDLER ERROR",{userId,...getTelegramError(error),stack: getErrorStack(error),adminChatId: ADMIN_CHAT_ID || null,
-     });
-     }}
+    "MEDIA HANDLER ERROR",{userId,...getTelegramError(error),stack: getErrorStack(error),adminChatId: ADMIN_CHAT_ID || null,
+    });
+    }}
    bot.on("photo", handleMedia);
    bot.on("video", handleMedia);
    bot.on("document", handleMedia);
@@ -1356,71 +1365,77 @@ async function handleUserStart(ctx) {
     .replace(/^\/start(?:@\w+)?\s*/i,"")
     .trim()
     .toLowerCase(); logger
-    .info("USER START RECEIVED", {
+    .info(
+    "USER START RECEIVED", {
     userId,startPayload: startPayload || null,});
     if (startPayload === "pay_basic") {logger.info(
-          "START BASIC PAYMENT");
+    "START BASIC PAYMENT");
     await sendBasicInvoice(ctx);
     return;
     }
-   if (startPayload === "pay_pro") {
-                logger.info(
-                    "START PRO PAYMENT"
-                );
-                await sendProInvoice(ctx);
-                return;
-            }
-            if (startPayload === "pay_vip") {
-                logger.info(
-                    "START VIP PAYMENT"
-                );
-                await sendVipInvoice(ctx);
-                return;
-            }
-            await sendMainPanel(ctx);
-            return;
-        }
-         if (text.startsWith("/")) {
-    await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
+    if (startPayload === 
+    "pay_pro") {logger.info(
+    "START PRO PAYMENT");
+    await sendProInvoice(ctx);
+    return;
+    }
+    if (startPayload === 
+    "pay_vip") {logger.info(
+    "START VIP PAYMENT");
+    await sendVipInvoice(ctx);
+    return;
+    }
+    await sendMainPanel(ctx);
+    return;
+    }
+    if (text.startsWith("/")) {
+    await ctx.reply(
+    "🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
     return;
     }
 //// GET CODE //
     if (text === BTN_GET_CODE) {
-    return await openGetCodePanel(
-        ctx,
-        "BUTTON"
+    return await openGetCodePanel(ctx,
+    "BUTTON"
     );
     }
 //// VIDEOCALL // 
-      if (text === BTN_VIDEOCALL) {
-        await trackButtonClick(ctx, "VIDEOCALL");
-        await sendMediaSafe(ctx, "photo", ASSET_VIDEOCALL_IMAGE);
-        return await openVideocallFlow(ctx);
-        }
+    if (text === BTN_VIDEOCALL) {
+    await trackButtonClick(ctx, 
+    "VIDEOCALL");
+    await sendMediaSafe(ctx, 
+    "photo", ASSET_VIDEOCALL_IMAGE);
+    return await openVideocallFlow(ctx);
+    }
 //// PENDING REQUEST //
     if (text === BTN_PENDING_REQUEST) {
-        await trackButtonClick(ctx, "PENDING VIDEOCALL REQUEST");
-        return await sendPendingVideocallPanel(ctx);
-        }
+    await trackButtonClick(ctx, 
+    "PENDING VIDEOCALL REQUEST");
+    return await sendPendingVideocallPanel(ctx);
+    }
  //// VIP //
     if (text === BTN_VIP) {
-        await trackButtonClick(ctx, "VIP");
-        return await sendVipPanel(ctx);
-        }
+    await trackButtonClick(ctx, 
+    "VIP");
+    return await sendVipPanel(ctx);
+    }
 //// BASIC  //
     if (text === BTN_BASIC) {
-        await trackButtonClick(ctx, "BASIC");
-        return await sendBasicPanel(ctx);
-        }
+    await trackButtonClick(ctx, 
+    "BASIC");
+    return await sendBasicPanel(ctx);
+    }
 //// PRO //
     if (text === BTN_PRO) {
-        await trackButtonClick(ctx, "PRO");
-        return await sendProPanel(ctx);
-        }
+    await trackButtonClick(ctx, 
+    "PRO");        
+    return await sendProPanel(ctx);
+    }
 //// CHANNELS //
     if (text === BTN_CHANNELS) {
-        await trackButtonClick(ctx, "CHANNELS");
-        return await sendChannelsPanel(ctx);
+    await trackButtonClick(ctx, 
+    "CHANNELS");
+    return await sendChannelsPanel(ctx);
      }
 //// REFRESH //
     if (text === BTN_REFRESH) {
