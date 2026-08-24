@@ -18,10 +18,12 @@ import './VaultDevice.css';
   interface PlanKey { basic: Plan;
                       pro: Plan;
                       vip: Plan; }
-  const ICONS =  { anydevice: "/assets/iconos/anydevice.png",
+  const ICONS = { anydevice: "/assets/iconos/anydevice.png",
                   corona: "/assets/iconos/corona.png",
                   candado: "/assets/iconos/candado.png",
+                  candado2: "/assets/iconos/candado2.png",
                   calendario: "/assets/iconos/calendario.png",
+                  choose: "/assets/iconos/choose.png",
                   fotos: "/assets/iconos/fotos.png",
                   fuego: "/assets/iconos/fuego.png",
                   getin: "/assets/iconos/getin.png",
@@ -33,8 +35,8 @@ import './VaultDevice.css';
                   telegram: "/assets/iconos/telegram.png",
                   vip: "/assets/iconos/vip.png",
                   bordeDevice: "/assets/iconos/bordeDevice.png",
-                  bordeBtn: "/assets/iconos/borde-plan-gris.png",
-                  instantAccess: "/assets/iconos/instant-access.png",
+                  bordeBtn: "/assets/iconos/bordeBtn.png",
+                  quickly: "/assets/iconos/quickly.png",
                   };
 /* ─── Plan Data ─── */
  const PLANS: PlanKey = { basic: {
@@ -53,7 +55,7 @@ import './VaultDevice.css';
           { label: 'Best for',
             items: 
          [{ icon: ICONS.rosa, text: 'First-time access', sub: 'Perfect for trying the private vault without a subscription' },
-          { icon: '🔓', text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
+          { icon: ICONS.candado2, text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
             pro: 
           { title: 'Pro',
             emoji: ICONS.fuego,
@@ -63,11 +65,11 @@ import './VaultDevice.css';
             groups: 
          [{ label: 'What you get',
             items: 
-         [{ icon: ICONS.anydevice, text:'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
+         [{ icon: ICONS.choose, text:'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
           { icon: '🔢', text: '5 premium entries', sub: 'Get five individual entries to use within 30 days' },
           { icon: ICONS.anydevice, text:'Any device', sub: 'Seamless access across phone, tablet and desktop' },
           { icon: ICONS.quality, text:'Enhanced quality', sub: 'Higher-quality streaming for a smoother viewing experience' },
-          { icon: ICONS.instantAccess, text:'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
+          { icon: ICONS.quickly, text:'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
           { label: 'Best for',
             items: 
          [{ icon: ICONS.fuego, text:'Regular viewers', sub: 'Made for people who want more than one session' },
@@ -94,7 +96,7 @@ vip: {title: 'VIP',
   function PlanDiamonds() {
     return (
       <span className="vd-option-diamonds" aria-hidden="true">
-      {Array.from({ length: 12 }, (_, index) => (
+      {Array.from({ length: 16 }, (_, index) => (
       <span className="vd-option-diamond" key={index} />
       ))}
       </span>
@@ -190,14 +192,7 @@ vip: {title: 'VIP',
       </div>
       </div>
 {/* ── Menu Screen ── */}
-      <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>
-      <img
-        src={ICONS.bordeDevice}
-        alt=""
-        className="vd-device-damask-frame"
-        draggable={false}
-        aria-hidden="true"
-      />
+      <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>      <img src={ICONS.bordeDevice} alt="" className="vd-device-damask-frame" draggable={false} aria-hidden="true"/>
       <div className="vd-menu-header">
       <p>
         𝚂𝚎𝚕𝚎𝚌𝚝 𝚊 𝚙𝚕𝚊𝚗 𝚝𝚘 𝚜𝚎𝚎 𝚍𝚎𝚝𝚊𝚒𝚕𝚜
@@ -205,22 +200,10 @@ vip: {title: 'VIP',
       </div>
       <div className="vd-menu-options">
       <div className={`vd-option vd-opt-basic ${selectedPlan === 'basic' ? 'vd-selected' : ''}`} onClick={() => openSheet('basic')}>
-      <img
-        src={ICONS.bordeBtn}
-        alt=""
-        className="vd-option-damask-frame"
-        draggable={false}
-        aria-hidden="true"
-      />
       <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.rosa}
-        alt=""
-        className="vd-plan-icon vd-plan-icon--basic"
-        draggable={false}
-      />
+      <img src={ICONS.rosa} alt="" className="vd-plan-icon vd-plan-icon--basic" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
@@ -236,22 +219,10 @@ vip: {title: 'VIP',
       </div>
       </div>
       <div className={`vd-option vd-opt-pro ${selectedPlan === 'pro' ? 'vd-selected' : ''}`} onClick={() => openSheet('pro')}>
-      <img
-        src={ICONS.bordeBtn}
-        alt=""
-        className="vd-option-damask-frame"
-        draggable={false}
-        aria-hidden="true"
-      />
       <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.fuego}
-        alt=""
-        className="vd-plan-icon vd-plan-icon--pro"
-        draggable={false}
-      />
+      <img src={ICONS.fuego} alt="" className="vd-plan-icon vd-plan-icon--pro" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
@@ -267,22 +238,10 @@ vip: {title: 'VIP',
       </div>
       </div>
       <div className={`vd-option vd-opt-vip ${selectedPlan === 'vip' ? 'vd-selected' : ''}`} onClick={() => openSheet('vip')}>
-      <img
-        src={ICONS.bordeBtn}
-        alt=""
-        className="vd-option-damask-frame"
-        draggable={false}
-        aria-hidden="true"
-      />
       <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img
-        src={ICONS.corona}
-        alt=""
-        className="vd-plan-icon vd-plan-icon--vip"
-        draggable={false}
-      />
+      <img src={ICONS.corona} alt="" className="vd-plan-icon vd-plan-icon--vip" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
@@ -301,7 +260,6 @@ vip: {title: 'VIP',
       <div className="vd-menu-bottom">
       <div className="vd-home-pill" />
       </div>
-
       </div>
 {/* ── Detail Sheet ── */}
       <div className={`vd-detail-sheet vd-detail-${activeSheet ?? 'closed'} ${activeSheet ? 'vd-active' : ''}`}>
@@ -327,7 +285,7 @@ vip: {title: 'VIP',
        {group.items.map((item, ii) => (
       <div className="vd-benefit-item" key={ii}>
        {item.icon.startsWith('/assets/') ? (
-      <img src={item.icon} alt="" className="vd-benefit-img" draggable={false}/>):(
+      <img src={item.icon} alt="" className="vd-benefit-img vd-benefit-img-choose" draggable={false}/>):(
       <span>
        {item.icon}
       </span>
@@ -380,3 +338,4 @@ vip: {title: 'VIP',
       </div>
       );
        }
+
