@@ -11,6 +11,7 @@ import './VaultDevice.css';
   interface Plan { title: string;
                    emoji: string;
                    stars: number;
+                   days: number;
                    ctaClass: string;
                    groups: BenefitGroup[];
                    }
@@ -32,7 +33,7 @@ import './VaultDevice.css';
                   telegram: "/assets/iconos/telegram.png",
                   vip: "/assets/iconos/vip.png",
                   bordeDevice: "/assets/iconos/bordeDevice.png",
-                  bordeBtn: "/assets/iconos/bordeBtn.png",
+                  bordeBtn: "/assets/iconos/borde-plan-gris.png",
                   instantAccess: "/assets/iconos/instant-access.png",
                   };
 /* ─── Plan Data ─── */
@@ -40,6 +41,7 @@ import './VaultDevice.css';
             title: 'Basic',
             emoji: ICONS.rosa,
             stars: 350,
+            days: 7,
             ctaClass: 'cta-basic',
             groups: 
          [{ label: 'What you get',
@@ -56,12 +58,13 @@ import './VaultDevice.css';
           { title: 'Pro',
             emoji: ICONS.fuego,
             stars: 750,
+            days: 30,
             ctaClass: 'cta-pro',
             groups: 
          [{ label: 'What you get',
             items: 
          [{ icon: ICONS.anydevice, text:'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
-          { icon: '🔢', text: '5 premium entries', sub: 'Get five individual entries to use within 7 days' },
+          { icon: '🔢', text: '5 premium entries', sub: 'Get five individual entries to use within 30 days' },
           { icon: ICONS.anydevice, text:'Any device', sub: 'Seamless access across phone, tablet and desktop' },
           { icon: ICONS.quality, text:'Enhanced quality', sub: 'Higher-quality streaming for a smoother viewing experience' },
           { icon: ICONS.instantAccess, text:'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
@@ -73,22 +76,36 @@ import './VaultDevice.css';
 vip: {title: 'VIP',
             emoji: ICONS.corona,
             stars: 1500,
+            days: 90,
             ctaClass: 'cta-vip',
             groups: 
          [{ label: 'What you get',
             items: 
          [{ icon: ICONS.fotos, text: 'Full vault entry', sub: 'Every session, no restrictions' },
           { icon: ICONS.limit, text: 'Unlimited sessions', sub: 'Enter as many times as you want' },
-          { icon: ICONS.calendario, text: '30-day access', sub: 'A full month of entry' },
+          { icon: ICONS.calendario, text: '90-day access', sub: 'Three full months of entry' },
           { icon: ICONS.quality, text: 'HD quality', sub: 'Highest available resolution' },
           { icon: ICONS.anydevice, text: 'Any device', sub: 'Sync across all your screens' },],},
           { label: 'Best for',
             items: 
          [{ icon: ICONS.telegram, text: 'Chat Experience', sub: 'Direct DM for anything' },],},],},};
+
+/* ─── Diamond figures ─── */
+  function PlanDiamonds() {
+    return (
+      <span className="vd-option-diamonds" aria-hidden="true">
+      {Array.from({ length: 12 }, (_, index) => (
+      <span className="vd-option-diamond" key={index} />
+      ))}
+      </span>
+    );
+  }
 /* ─── Component ─── */
     export default function VaultDevice() {
       const [locked, setLocked] = useState(true);
       const [activeSheet, setActiveSheet] =
+        useState<keyof PlanKey | null>(null);
+      const [selectedPlan, setSelectedPlan] =
         useState<keyof PlanKey | null>(null);
       const [time, setTime] = useState('');
       const [buying, setBuying] = useState(false);
@@ -121,6 +138,7 @@ vip: {title: 'VIP',
   const unlock = () => setLocked(false);
   const openSheet = (type: keyof PlanKey) => {
     setBuyError('');
+    setSelectedPlan(type);
     setActiveSheet(type);
   };
   const closeSheet = () => { setBuyError('');
@@ -132,27 +150,21 @@ vip: {title: 'VIP',
   vip: "https://t.me/User18Fx_bot?start=getcode_vip",
   };
   const openPlanInBot = () => {
-  if (!activeSheet) return;
-  window.location.href = TELEGRAM_PLAN_LINKS[activeSheet];
+  if (!activeSheet || buying) return;
+  setBuying(true);
+  setBuyError('');
+  try {
+  window.location.assign(TELEGRAM_PLAN_LINKS[activeSheet]);
+  } catch {
+  setBuying(false);
+  setBuyError('No se pudo abrir Telegram. Inténtalo nuevamente.');
+  }
   };
   const currentPlan = activeSheet
     ? PLANS[activeSheet]
     : null;
-/* Create order and open Telegram payment */
-  const buyAccess = () => {
-  if (buying) return;
-  setBuying(true);
-  setBuyError('');
-    try {
-  const telegramUrl = 'https://t.me/User18Fx_bot?start=getcode';
-    window.location.assign(telegramUrl);
-  } catch { setBuying(false); setBuyError(
-      'No se pudo abrir Telegram. Inténtalo nuevamente.'
-  );
-  }};
   return (
       <div className="vd-device vd-device-damask">
-      <img src={ICONS.bordeDevice} alt="" className="vd-device-damask-frame" draggable={false}/>
 {/* Side buttons */}
       <div className="vd-btn vd-pwr" />
       <div className="vd-btn vd-vol1" />
@@ -179,65 +191,105 @@ vip: {title: 'VIP',
       </div>
 {/* ── Menu Screen ── */}
       <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>
+      <img
+        src={ICONS.bordeDevice}
+        alt=""
+        className="vd-device-damask-frame"
+        draggable={false}
+        aria-hidden="true"
+      />
       <div className="vd-menu-header">
       <p>
         𝚂𝚎𝚕𝚎𝚌𝚝 𝚊 𝚙𝚕𝚊𝚗 𝚝𝚘 𝚜𝚎𝚎 𝚍𝚎𝚝𝚊𝚒𝚕𝚜
       </p>
       </div>
       <div className="vd-menu-options">
-      <div className="vd-option vd-opt-basic" onClick={() => openSheet('basic')}>
-      <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
+      <div className={`vd-option vd-opt-basic ${selectedPlan === 'basic' ? 'vd-selected' : ''}`} onClick={() => openSheet('basic')}>
+      <img
+        src={ICONS.bordeBtn}
+        alt=""
+        className="vd-option-damask-frame"
+        draggable={false}
+        aria-hidden="true"
+      />
+      <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img src={ICONS.rosa} alt="" className="vd-plan-icon vd-plan-icon--basic" draggable={false}/>
+      <img
+        src={ICONS.rosa}
+        alt=""
+        className="vd-plan-icon vd-plan-icon--basic"
+        draggable={false}
+      />
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-       Basic
+        Basic
       </div>
       <div className="vd-option-desc">
-       ꜱɪɴɢʟᴇ ꜱᴇꜱꜱɪᴏɴ ᴀᴄᴄᴇꜱꜱ
+        𝟳 ᴅᴀʏꜱ · 𝟭 ꜱᴇꜱꜱɪᴏɴ
       </div>
       </div>
       <div className="vd-option-arrow">
-       ›
+        ›
       </div>
       </div>
       </div>
-      <div className="vd-option vd-opt-pro" onClick={() => openSheet('pro')}>
-       <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
+      <div className={`vd-option vd-opt-pro ${selectedPlan === 'pro' ? 'vd-selected' : ''}`} onClick={() => openSheet('pro')}>
+      <img
+        src={ICONS.bordeBtn}
+        alt=""
+        className="vd-option-damask-frame"
+        draggable={false}
+        aria-hidden="true"
+      />
+      <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img src={ICONS.fuego} alt="" className="vd-plan-icon vd-plan-icon--pro" draggable={false}/>
+      <img
+        src={ICONS.fuego}
+        alt=""
+        className="vd-plan-icon vd-plan-icon--pro"
+        draggable={false}
+      />
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-      <span className="vd-plan-card vd-plan-pro" aria-hidden="true" />
-       PRO
+        PRO
       </div>
       <div className="vd-option-desc">
-       ʟɪᴍɪᴛᴇᴅ ꜱᴇꜱꜱɪᴏɴꜱ· 𝟳ᴅᴀʏꜱ
+        𝟯𝟬 ᴅᴀʏꜱ · 𝟱 ᴇɴᴛʀɪᴇꜱ
       </div>
       </div>
       <div className="vd-option-arrow">
-       ›
+        ›
       </div>
       </div>
       </div>
-      <div className="vd-option vd-opt-vip" onClick={() => openSheet('vip')}>
-      <img src={ICONS.bordeBtn} alt="" className="vd-option-damask-frame" draggable={false}/>
+      <div className={`vd-option vd-opt-vip ${selectedPlan === 'vip' ? 'vd-selected' : ''}`} onClick={() => openSheet('vip')}>
+      <img
+        src={ICONS.bordeBtn}
+        alt=""
+        className="vd-option-damask-frame"
+        draggable={false}
+        aria-hidden="true"
+      />
+      <PlanDiamonds />
       <div className="vd-option-row">
       <div className="vd-option-icon">
-      <img src={ICONS.corona} alt="" className="vd-plan-icon vd-plan-icon--vip" draggable={false}/>
+      <img
+        src={ICONS.corona}
+        alt=""
+        className="vd-plan-icon vd-plan-icon--vip"
+        draggable={false}
+      />
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-      <div className="vd-plan-card vd-damask-border vd-damask-vip"></div>
-      <span className="vd-plan-card vd-plan-vip"aria-hidden="true" />
         VIP
       </div>
       <div className="vd-option-desc">
-         ᴜɴʟɪᴍɪᴛᴇᴅ · 𝟯𝟬ᴅᴀʏꜱ
+        𝟵𝟬 ᴅᴀʏꜱ · ᴜɴʟɪᴍɪᴛᴇᴅ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -249,9 +301,10 @@ vip: {title: 'VIP',
       <div className="vd-menu-bottom">
       <div className="vd-home-pill" />
       </div>
+
       </div>
 {/* ── Detail Sheet ── */}
-      <div className={`vd-detail-sheet ${activeSheet ? 'vd-active' : ''}`}>
+      <div className={`vd-detail-sheet vd-detail-${activeSheet ?? 'closed'} ${activeSheet ? 'vd-active' : ''}`}>
       <div className="vd-sheet-handle">
       <div className="vd-sheet-handle-bar" />
       </div>
