@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 
 export default function VisitorCounter() {
-  const [stats, setStats] = useState<{ visitors: number; unique: number } | null>(null);
+  const [stats, setStats] = useState<{
+    visitors: number;
+    unique: number;
+  } | null>(null);
+
   const [showUnique, setShowUnique] = useState(false);
 
   useEffect(() => {
@@ -9,7 +13,10 @@ export default function VisitorCounter() {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
-          setStats({ visitors: data.visitors, unique: data.unique_visitors });
+          setStats({
+            visitors: data.visitors,
+            unique: data.unique_visitors,
+          });
         }
       })
       .catch(() => {});
@@ -21,10 +28,28 @@ export default function VisitorCounter() {
     <button
       type="button"
       className="vx-visitorCount"
-      onClick={() => setShowUnique((v) => !v)}
+      onClick={() => setShowUnique((value) => !value)}
       title={showUnique ? 'Unique visitors' : 'Total opens'}
     >
-      {showUnique ? '👁️' : '👤'} {(showUnique ? stats.unique : stats.visitors).toLocaleString('es')}
+      {showUnique ? (
+        <span className="vx-visitorEye" aria-hidden>
+          👁️
+        </span>
+      ) : (
+        <img
+          src="/assets/iconos/user.png"
+          alt=""
+          className="vx-visitorIcon"
+          draggable={false}
+        />
+      )}
+
+      <span>
+        {(showUnique
+          ? stats.unique
+          : stats.visitors
+        ).toLocaleString('es')}
+      </span>
     </button>
   );
 }

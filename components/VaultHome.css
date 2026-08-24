@@ -1929,3 +1929,25 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   transform: translateX(350px) translateY(40%);
   z-index: 3;
 }
+.vx-visitorCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.vx-visitorIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.vx-visitorEye {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
