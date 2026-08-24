@@ -1156,7 +1156,7 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
 /* ── responsive ── */
 @media (max-width: 520px) {
   .vx-modalCard {
-    padding: 44px 20px 28px;
+    padding: 25px 17px 20px;
   }
   .vx-modalKicker {
     font-size: 7.5px;
@@ -1574,17 +1574,6 @@ html,body,#root{margin:0;padding:0;min-height:100%;background: #07060a}
   animation-play-state: running !important;
   will-change: transform;
 }
-.vx-carouselSlide {width: clamp(155px, 22vw, 205px);flex: 0 0 auto;}
-@keyframes vxCarouselScroll {
-  0%{transform: translate3d(0, 0, 0);}
-  100% { transform: translate3d(calc(-50% - 7px), 0, 0);}}
-@media (max-width: 600px) {
-  .vx-carouselTrack { gap: 10px;animation-duration: 14s !important;}
-  .vx-carouselSlide {width: 145px;}
-  @keyframes vxCarouselScroll {
-    0% {transform: translate3d(0, 0, 0);}
-    100% {transform: translate3d(calc(-50% - 5px), 0, 0);
-    }}}
 /* ─── TELEGRAM WEBVIEW FIX ─── */
 *,
 *::before,
@@ -1810,17 +1799,6 @@ video {
 .vx-carouselTrack{display: flex;flex-wrap: nowrap;width: max-content; gap: 14px; animation:vxCarouselScroll 18s linear infinite; will-change: transform;}
 .vx-carouselSlide {width: 180px; flex: 0 0 180px; overflow: hidden;}
 .vx-carouselSlide .vx-shot {width: 100%;}
-@keyframes vxCarouselScroll {
-from { transform: translate3d(0, 0, 0);}
-to { transform: translate3d( calc(-50% - 7px),0,0);}}
-@media (max-width: 600px) {
-.vx-carouselTrack { gap: 10px; animation-duration: 14s;}
-.vx-carouselSlide { width: 145px; flex-basis: 145px;}
-@keyframes vxCarouselScroll {from { transform: translate3d(0, 0, 0);}
-to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
-
-
-
 .vx-lockActions {
   width: 100%;
   display: flex;
@@ -1829,7 +1807,6 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   gap: 10px;
   margin-top: 12px;
 }
-
 .vx-lockActions .vault-unlock,
 .vx-lockActions .vault-get-code {
   width: 100%;
@@ -1885,8 +1862,8 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   from { transform: translate3d(0, 0, 0);}
   to { transform: translate3d(calc(-50% - 7px), 0, 0);}}
 @media (max-width: 600px) {
-  .vx-carouselTrack { gap: 10px; animation-duration: 14s;}
-  .vx-carouselSlide { width: 72vw; max-width: 260px;}
+  .vx-carouselTrack { gap: 10px; animation-duration: 11s;}
+  .vx-carouselSlide { width: 72vw; max-width: 250px; height: 330px;}
 @keyframes vxCarouselScroll {
   from {transform: translate3d(0, 0, 0);}
   to {transform: translate3d(calc(-50% - 5px), 0, 0);}}}
@@ -1951,3 +1928,35 @@ to { transform: translate3d(calc(-50% - 5px),0,0 );}}}
   justify-content: center;
   line-height: 1;
 }
+@media (max-width: 768px) {
+  .vx-title { position: relative;
+  }
+  .vx-titleCrown { position: absolute; top: 10px; right:auto;left: 56%;width: clamp(100px, 28vw, 130px); transform: none; z-index: 5;
+  }
+  .vx-titleCrown > div { width: 100%; min-width: 0;
+  }
+  .vx-titleCrown img { width: 100%;height: auto;
+  }}
+@media (max-width: 900px) {
+  .vx-grid { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) !important; gap: 36px;
+  }
+  .vx-lock { width: calc(100% - 24px) !important; max-width: 420px !important;min-width: 0 !important; margin: 0 auto !important;
+  }
+  .vx-lockCard {width: 100% !important;max-width: 100% !important; min-width: 0 !important;padding: 14px !important;
+  }
+  .vx-lockVideo {width: 100% !important;height: auto !important;aspect-ratio: 4 / 5; overflow: hidden;
+  }
+  .vx-lockVideo video {display: block; width: 100% !important;height: 100% !important;object-fit: cover;
+  }
+  .vx-lockActions { width: 100% !important;
+  }
+  .vault-unlock,
+  .vault-get-code { width: 100% !important;
+  }}
+@media (max-width: 900px) {
+  .vx-title { position: relative; width: 100%; min-width: 0;
+  }
+  .vx-access { display: block; width: fit-content; max-width: 100%; font-size: clamp(56px, 16vw, 57px) !important; line-height: 0.8; letter-spacing: -0.035em; white-space: nowrap; transform: translateY(55%) !important;
+  }}
+@media (max-width: 420px) {.vx-access { font-size: clamp(48px, 15vw, 64px) !important;
+  }}

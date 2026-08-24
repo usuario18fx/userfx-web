@@ -30,6 +30,8 @@ const ICONS = { corona: "/assets/iconos/corona.png",
                 rosa: "/assets/iconos/rosa.png",
                 fotos: "/assets/iconos/fotos.png",
                 telegram: "/assets/iconos/telegram.png",
+                user: "/assets/iconos/user.png",
+
 };
 const TICKER_ITEMS = ["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
                       "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
@@ -509,45 +511,46 @@ export default function VaultHome() {
       </section>
       <footer className="vx-foot">
         <div className="vx-footGrid">
-          <div>
-            <div className="vx-footBrand">
+              <div>
+              <div className="vx-footBrand">
               <img src={LOGO} alt="" />
               <div>
                 <p>
                 USER<span>
                 🜲</span>
                 FX                 
-                </p>
-                <small>
-                  PRIVATE VAULT</small>
+              </p>
+              <small>
+                PRIVATE VAULT</small>
               </div>
-            </div>
-          </div>
-          <div>
-            <div className="vx-links">
+              </div>
+              </div>
+              <div>
+              <div className="vx-links">
               <a href="https://t.me/User18Fx_bot" target="_blank" rel="noreferrer">
                 @User18Fx_bot
               </a>
               <a href="#top">
                 VAULT</a>
-              <a href="/admin">
-                DIGITAL ARCHIVE</a>
-            </div>
-          </div>
-        </div>
-        <p className="vx-legal">
-          | 18+ CONTENT | PERSONAL & NON-TRANSFERABLE |
-          Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content
-          is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital
-          purchases are final once access is delivered, except where Ontario law requires otherwise.
-        </p>
-        <div className="vx-bar">
-          <span>
-           | CODE | FX-011897-190122-CAHATO |
-          </span>
-        </div>
-      </footer>
-      <Ticker items={TICKER_ITEMS} reverse />
+              <button type="button" onClick={() => {if (unlocked) { window.location.href = "/galeria";} else {setCodeModal(true);}}}>
+               DIGITAL ARCHIVE
+              </button>
+              </div>
+              </div>
+              </div>
+              <p className="vx-legal">
+             | 18+ CONTENT | PERSONAL & NON-TRANSFERABLE |
+               Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content
+               is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital
+               purchases are final once access is delivered, except where Ontario law requires otherwise.
+              </p>
+              <div className="vx-bar">
+              <span>
+               | CODE | FX-011897-190122-CAHATO |
+             </span>
+             </div>
+             </footer>
+             <Ticker items={TICKER_ITEMS} reverse />
       {dm ? (
         <div className="vx-modal" onClick={() => setDm(false)}>
           <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
