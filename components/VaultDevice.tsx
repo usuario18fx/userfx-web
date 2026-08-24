@@ -4,20 +4,20 @@ import './VaultDevice.css';
   interface Benefit { icon: string;
                       text: string;
                       sub: string;
-                    }
+                 }
   interface BenefitGroup { label: string;
                            items: Benefit[];
-                         }
+                 }
   interface Plan { title: string;
                    emoji: string;
                    stars: number;
                    ctaClass: string;
                    groups: BenefitGroup[];
-                    }
+                   }
   interface PlanKey { basic: Plan;
                       pro: Plan;
                       vip: Plan; }
-  const ICONS = { anydevice: "/assets/iconos/anydevice.png",
+  const ICONS =  { anydevice: "/assets/iconos/anydevice.png",
                   corona: "/assets/iconos/corona.png",
                   candado: "/assets/iconos/candado.png",
                   calendario: "/assets/iconos/calendario.png",
@@ -30,8 +30,10 @@ import './VaultDevice.css';
                   rayo: "/assets/iconos/rayo.png",
                   rosa: "/assets/iconos/rosa.png",
                   telegram: "/assets/iconos/telegram.png",
-                  vip: "/assets/iconos/vip.png"
-              };
+                  vip: "/assets/iconos/vip.png",
+                  borde: "/assets/iconos/borde-damask-transparente.png",
+                  instantAccess: "/assets/iconos/instant-access.png",
+                  };
 /* ─── Plan Data ─── */
  const PLANS: PlanKey = { basic: {
             title: 'Basic',
@@ -57,16 +59,16 @@ import './VaultDevice.css';
             groups: 
          [{ label: 'What you get',
             items: 
-         [{ icon: '🎬', text: 'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
+         [{ icon: ICONS.anydevice, text:'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
           { icon: '🔢', text: '5 premium entries', sub: 'Get five individual entries to use within 7 days' },
-          { icon: ICONS.anydevice, text: 'Any device', sub: 'Seamless access across phone, tablet and desktop' },
-          { icon: '🎥', text: 'Enhanced quality', sub: 'Higher-quality streaming for a smoother viewing experience' },
-          { icon: '⚡', text: 'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
+          { icon: ICONS.anydevice, text:'Any device', sub: 'Seamless access across phone, tablet and desktop' },
+          { icon: ICONS.quality, text:'Enhanced quality', sub: 'Higher-quality streaming for a smoother viewing experience' },
+          { icon: ICONS.instantAccess, text:'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
           { label: 'Best for',
             items: 
-         [{ icon: ICONS.fuego, text: 'Regular viewers', sub: 'Made for people who want more than one session' },
-          { icon: '💎', text: 'More value per entry', sub: 'Multiple premium sessions without committing to VIP' },
-          { icon: ICONS.vip, text: 'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
+         [{ icon: ICONS.fuego, text:'Regular viewers', sub: 'Made for people who want more than one session' },
+          { icon: '💎', text:'More value per entry', sub: 'Multiple premium sessions without committing to VIP' },
+          { icon: ICONS.vip, text:'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
 vip: {title: 'VIP',
             emoji: ICONS.corona,
             stars: 1500,
@@ -78,7 +80,7 @@ vip: {title: 'VIP',
           { icon: ICONS.limit, text: 'Unlimited sessions', sub: 'Enter as many times as you want' },
           { icon: ICONS.calendario, text: '30-day access', sub: 'A full month of entry' },
           { icon: ICONS.quality, text: 'HD quality', sub: 'Highest available resolution' },
-          { icon: '📱', text: 'Any device', sub: 'Sync across all your screens' },],},
+          { icon: ICONS.anydevice, text: 'Any device', sub: 'Sync across all your screens' },],},
           { label: 'Best for',
             items: 
          [{ icon: ICONS.telegram, text: 'Chat Experience', sub: 'Direct DM for anything' },],},],},};
@@ -97,43 +99,25 @@ vip: {title: 'VIP',
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
       setTime(`${h}:${m}`);
-      };
+  };
       update();
       const id = setInterval(update, 10000);
       return () => clearInterval(id);
-     }, []);
+  }, []);
 /* Lock screen date */
-      const lockDate = (() => {
-      const now = new Date();
-      const days = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ];
-      const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ];
-
+  const lockDate = (() => {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday',
+                'Thursday','Friday','Saturday',
+  ];
+  const months = ['January','February','March',
+                  'April','May','June',
+                  'July','August','September',
+                  'October','November','December',
+  ];
       return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
-      })();
-
+  })();
   const unlock = () => setLocked(false);
-
   const openSheet = (type: keyof PlanKey) => {
     setBuyError('');
     setActiveSheet(type);
@@ -167,6 +151,7 @@ vip: {title: 'VIP',
   }};
   return (
       <div className="vd-device">
+      <img src={ICONS.borde} alt="" className="vd-device-damask-frame" draggable={false}/>
 {/* Side buttons */}
       <div className="vd-btn vd-pwr" />
       <div className="vd-btn vd-vol1" />
@@ -187,7 +172,7 @@ vip: {title: 'VIP',
       <img src={ICONS.candado} alt="" className="vd-lock-icon" draggable={false}/>
       </div>
       <div className="vd-lock-prompt-text">
-        Tap to explore
+        ᴛᴀᴘ ᴛᴏ ᴇxᴘʟᴏʀᴇ
       </div>
       </div>
       </div>
@@ -195,60 +180,64 @@ vip: {title: 'VIP',
       <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>
       <div className="vd-menu-header">
       <p>
-        Select a plan to see details
+        𝚂𝚎𝚕𝚎𝚌𝚝 𝚊 𝚙𝚕𝚊𝚗 𝚝𝚘 𝚜𝚎𝚎 𝚍𝚎𝚝𝚊𝚒𝚕𝚜
       </p>
       </div>
       <div className="vd-menu-options">
       <div className="vd-option vd-opt-basic" onClick={() => openSheet('basic')}>
+      <span className="vd-damask-frame" aria-hidden="true" />
+      <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.rosa} alt="" className="vd-plan-icon vd-plan-icon--basic" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-      <div className="vd-plan-card vd-damask-border vd-damask-basic"></div>
-        Basic
+       Basic
       </div>
       <div className="vd-option-desc">
-        Single session access
+       ꜱɪɴɢʟᴇ ꜱᴇꜱꜱɪᴏɴ ᴀᴄᴄᴇꜱꜱ
       </div>
       </div>
       <div className="vd-option-arrow">
-        ›
+       ›
       </div>
       </div>
       </div>
       <div className="vd-option vd-opt-pro" onClick={() => openSheet('pro')}>
+       <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.fuego} alt="" className="vd-plan-icon vd-plan-icon--pro" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-      <div className="vd-plan-card vd-damask-border vd-damask-pro"></div>
-        Pro
+      <span className="vd-plan-card vd-plan-pro" aria-hidden="true" />
+       PRO
       </div>
       <div className="vd-option-desc">
-        Limited sessions · 7 days
+       ʟɪᴍɪᴛᴇᴅ ꜱᴇꜱꜱɪᴏɴꜱ· 𝟳ᴅᴀʏꜱ
       </div>
       </div>
       <div className="vd-option-arrow">
-        ›
+       ›
       </div>
       </div>
       </div>
       <div className="vd-option vd-opt-vip" onClick={() => openSheet('vip')}>
+      <img src={ICONS.borde} alt="" className="vd-option-damask-frame" draggable={false}/>
       <div className="vd-option-row">
       <div className="vd-option-icon">
       <img src={ICONS.corona} alt="" className="vd-plan-icon vd-plan-icon--vip" draggable={false}/>
       </div>
       <div className="vd-option-info">
       <div className="vd-option-name">
-        <div className="vd-plan-card vd-damask-border vd-damask-vip"></div>
+      <div className="vd-plan-card vd-damask-border vd-damask-vip"></div>
+      <span className="vd-plan-card vd-plan-vip"aria-hidden="true" />
         VIP
       </div>
       <div className="vd-option-desc">
-        Unlimited · 30 days
+         ᴜɴʟɪᴍɪᴛᴇᴅ · 𝟯𝟬ᴅᴀʏꜱ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -262,48 +251,48 @@ vip: {title: 'VIP',
       </div>
       </div>
 {/* ── Detail Sheet ── */}
-    <div className={`vd-detail-sheet ${activeSheet ? 'vd-active' : ''}`}>
-<div className="vd-sheet-handle">
-<div className="vd-sheet-handle-bar" />
-</div>
-<div className="vd-sheet-header">
-<div className="vd-sheet-title-area">
-<div className="vd-sheet-title">
-<span className={`vd-sheet-title-name vd-title-${activeSheet}`}>
-  {currentPlan?.title}
-</span>
-</div>
-</div>
-</div>
-<div className="vd-sheet-body">
-{currentPlan?.groups.map((group, gi) => (
-<div className="vd-benefit-group" key={gi}>
-<div className="vd-benefit-group-label">
-  {group.label}
-</div>
-<div className="vd-benefit-list">
-{group.items.map((item, ii) => (
-<div className="vd-benefit-item" key={ii}>
-{item.icon.startsWith('/assets/') ? (
-<img src={item.icon} alt="" className="vd-benefit-img" draggable={false}/>):(
-<span>
-  {item.icon}
-</span>
-)}
-<div>
-<div className="vd-benefit-label">
-  {item.text}
-</div>
-<div className="vd-benefit-sub">
-  {item.sub}
-</div>
-</div>
-</div>
-))}
-</div>
-</div>
-))}
-</div>
+      <div className={`vd-detail-sheet ${activeSheet ? 'vd-active' : ''}`}>
+      <div className="vd-sheet-handle">
+      <div className="vd-sheet-handle-bar" />
+      </div>
+      <div className="vd-sheet-header">
+      <div className="vd-sheet-title-area">
+      <div className="vd-sheet-title">
+      <span className={`vd-sheet-title-name vd-title-${activeSheet}`}>
+       {currentPlan?.title}
+      </span>
+      </div>
+      </div>
+      </div>
+      <div className="vd-sheet-body">
+       {currentPlan?.groups.map((group, gi) => (
+      <div className="vd-benefit-group" key={gi}>
+      <div className="vd-benefit-group-label">
+        {group.label}
+      </div>
+      <div className="vd-benefit-list">
+       {group.items.map((item, ii) => (
+      <div className="vd-benefit-item" key={ii}>
+       {item.icon.startsWith('/assets/') ? (
+      <img src={item.icon} alt="" className="vd-benefit-img" draggable={false}/>):(
+      <span>
+       {item.icon}
+      </span>
+       )}
+      <div>  
+      <div className="vd-benefit-label">
+      {item.text}
+      </div>
+      <div className="vd-benefit-sub">
+      {item.sub}
+      </div>
+      </div>
+      </div>
+      ))}  
+      </div>
+      </div>
+       ))}
+      </div>
 {/* ── Payment and Done buttons ── */}
       <div className="vd-sheet-footer">
       {buyError && (
@@ -312,17 +301,17 @@ vip: {title: 'VIP',
       </p>
       )}
       <div className="vd-sheet-actions">
-     <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`} onClick={openPlanInBot} disabled={buying || !currentPlan}>
+      <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ''}`} onClick={openPlanInBot} disabled={buying || !currentPlan}>
       {buying ? (
-     <span className="vd-buy-loading">
+      <span className="vd-buy-loading">
       CREATING ORDER...
-     </span>
-     ) : (
-     <>
-     <span className="vd-buy-label">
+      </span>
+      ) : (
+      <>
+      <span className="vd-buy-label">
         GET CODE
-     </span>
-     <span className="vd-buy-price">
+      </span>
+      <span className="vd-buy-price">
       {currentPlan?.stars ?? 0} STARS ⭐
      </span>
      </>

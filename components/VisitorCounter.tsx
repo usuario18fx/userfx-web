@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function VisitorCounter() {
   const [stats, setStats] = useState<{ visitors: number; unique: number } | null>(null);
+  const [showUnique, setShowUnique] = useState(false);
 
   useEffect(() => {
     fetch('/api/miniapp-stats')
@@ -17,8 +18,13 @@ export default function VisitorCounter() {
   if (!stats) return null;
 
   return (
-    <span className="vx-visitorCount">
-      👥 {stats.unique.toLocaleString('es')} únicos · {stats.visitors.toLocaleString('es')} visitas
-    </span>
+    <button
+      type="button"
+      className="vx-visitorCount"
+      onClick={() => setShowUnique((v) => !v)}
+      title={showUnique ? 'Unique visitors' : 'Total opens'}
+    >
+      {showUnique ? '👁️' : '👤'} {(showUnique ? stats.unique : stats.visitors).toLocaleString('es')}
+    </button>
   );
 }

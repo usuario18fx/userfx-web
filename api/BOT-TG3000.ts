@@ -381,152 +381,111 @@ async function scanKeys(pattern: string) {
         pattern,
         "COUNT",
         100
-      );
-
+  );
       cursor = result[0];
-
       if (result[1]?.length) {
         keys.push(...result[1]);
-      }
-    } while (cursor !== "0");
-
+  }
+  } while (cursor !== "0");
     return keys;
   } catch (error: any) {
     logger.error("REDIS SCAN ERROR", {
-      pattern,
-      message: error?.message,
-    });
-
-    return [];
+      pattern, message: error?.message,
+  });
+  return [];
   }
-}
-
-// ======================================================
-// USER DATA
-// ======================================================
-
+  }
+//// USER DATA //
 async function getPaidUser(userId: string | number) {
   return redisGetJson(
     `paid_user:${String(userId)}`
   );
-}
-
+  }
 async function setPaidUser(
   userId: string | number,
   data: unknown
-) {
+  ) {
   return redisSetJson(
     `paid_user:${String(userId)}`,
     data
   );
-}
-
-// ======================================================
-// VIDEOCALL DATA
-// ======================================================
-
+  }
+//// VIDEOCALL DATA //
 const VIDEO_REQUEST_TTL =
   60 * 60 * 6;
-
 async function getVideoRequest(userId: string | number) {
   return redisGetJson(
     `video_request:${String(userId)}`
   );
-}
-
+  }
 async function setVideoRequest(
   userId: string | number,
   data: unknown
-) {
+  ) {
   return redisSetJson(
     `video_request:${String(userId)}`,
     data,
     VIDEO_REQUEST_TTL
   );
-}
-
+  }
 async function deleteVideoRequest(
   userId: string | number
-) {
+  ) {
   await redisDelete(
     `video_request:${String(userId)}`
   );
-}
-
-// ======================================================
-// PAYMENT IDEMPOTENCY
-// ======================================================
-
+  }
+//// PAYMENT IDEMPOTENCY //
 async function hasProcessedPayment(
   chargeId: string
-) {
+  ) {
   if (!chargeId || !redis) return false;
-
   try {
     return Boolean(
       await redis.exists(
         `processed_payment:${chargeId}`
-      )
-    );
+  ));
   } catch (error: any) {
     logger.error("PAYMENT CHECK ERROR", {
       chargeId,
       message: error?.message,
-    });
-
-    return false;
+  });
+  return false;
   }
-}
-
+  }
 async function markPaymentProcessed(
   chargeId: string
-) {
+  ) {
   if (!chargeId || !redis) return false;
-
   try {
     await redis.set(
       `processed_payment:${chargeId}`,
       "1",
       "EX",
       60 * 60 * 24 * 365
-    );
-
+  );
     return true;
   } catch (error: any) {
     logger.error("PAYMENT MARK ERROR", {
       chargeId,
       message: error?.message,
-    });
-
-    return false;
-  }
-}
-
-// ======================================================
-// PLAN CONSTANTS
-// ======================================================
-
+  });
+  return false;
+  }}
+//// PLAN CONSTANTS //
 const BASIC_STARS_PRICE = 350;
 const PRO_STARS_PRICE = 750;
 const VIP_STARS_PRICE = 1500;
-
 const STARS_130_PAYLOAD =
   "videocall_access_130";
-
 const STARS_130_PRICE = 130;
-
 const BASIC_PAYLOAD = "basic";
 const PRO_PAYLOAD = "pro";
 const VIP_PAYLOAD = "vip";
-
 const TIER_BASIC = "ʙᴀsɪᴄ";
 const TIER_PRO = "ᴘʀᴏ";
 const TIER_VIP = "ᴠɪᴘ";
-
-// ======================================================
-// PLAN CONFIGURATION
-// ======================================================
-
+//// PLAN CONFIGURATION //
 const PLAN_CONFIG = {
   basic: {
     id: "basic",
@@ -536,7 +495,6 @@ const PLAN_CONFIG = {
     days: 7,
     tier: TIER_BASIC,
   },
-
   pro: {
     id: "pro",
     name: "PRO",
@@ -545,7 +503,6 @@ const PLAN_CONFIG = {
     days: 30,
     tier: TIER_PRO,
   },
-
   vip: {
     id: "vip",
     name: "VIP",
@@ -555,11 +512,7 @@ const PLAN_CONFIG = {
     tier: TIER_VIP,
   },
 } as const;
-
-// ======================================================
-// REQUEST STATUS
-// ======================================================
-
+//// REQUEST STATUS //
 const REQUEST_STATUS = {
   WAITING_PHOTO: "waiting_photo",
   AWAITING_ADMIN: "awaiting_admin",
@@ -567,60 +520,23 @@ const REQUEST_STATUS = {
   PAID: "paid",
   APPROVED: "approved",
 } as const;
-
-// ======================================================
-// BUTTONS
-// ======================================================
-
-const BTN_VIDEOCALL =
-  "ᴠɪᴅᴇᴏᴄᴀʟʟ";
-
-const BTN_VIP =
-  "👑 ᴠɪᴘ";
-
-const BTN_BASIC =
-  "⚡ ʙᴀꜱɪᴄ";
-
-const BTN_PRO =
-  "🔥 ᴘʀᴏ";
-
-const BTN_CHANNELS =
-  "ᴄʜᴀɴɴᴇʟꜱ";
-
-const BTN_REFRESH =
-  "↻ ʀᴇꜰʀᴇꜱʜ";
-
-const BTN_ZOOM =
-  "🟦 ᴢᴏᴏᴍ";
-
-const BTN_TELEGRAM =
-  "💬 ᴛᴇʟᴇɢʀᴀᴍ";
-
-const BTN_CANCEL =
-  "✖ ᴄᴀɴᴄᴇʟ";
-
-const BTN_BACK_MENU =
-  "↽ ʙᴀᴄᴋ";
-
-const BTN_SMOKELANDIA =
-  "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
-
-const BTN_USERFX_SITE =
-  "𝐔𝐬ᴇʀ 🜲∓ҳ";
-
-const BTN_PENDING_REQUEST =
-  "ʀᴇǫᴜᴇꜱᴛ";
-
-const BTN_GET_CODE =
-  "ɢᴇᴛ ᴄᴏᴅᴇ";
-
-const BTN_OPEN_VAULT =
-  "🔐 ᴏᴘᴇɴ ᴠᴀᴜʟᴛ";
-
-// ======================================================
-// UTILITIES
-// ======================================================
-
+//// BUTTONS //
+const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
+const BTN_VIP = "👑 ᴠɪᴘ";
+const BTN_BASIC = "⚡ ʙᴀꜱɪᴄ";
+const BTN_PRO = "🔥 ᴘʀᴏ";
+const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
+const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
+const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
+const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
+const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
+const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
+const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
+const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
+const BTN_PENDING_REQUEST = "ʀᴇǫᴜᴇꜱᴛ";
+const BTN_GET_CODE = "ɢᴇᴛ ᴄᴏᴅᴇ";
+const BTN_OPEN_VAULT = "🔐 ᴏᴘᴇɴ ᴠᴀᴜʟᴛ";
+//// UTILITIES //
 function escapeHtml(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -628,86 +544,63 @@ function escapeHtml(value = "") {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
-
+  }
 function getUserMeta(from: any) {
   const firstName =
     from?.first_name || "";
-
   const lastName =
     from?.last_name || "";
-
   const fullName =
     `${firstName} ${lastName}`.trim() ||
     "No name";
-
   const username =
     from?.username
       ? `@${from.username}`
       : "sin_username";
-
   return {
     fullName,
     username,
     id: String(from?.id || ""),
   };
-}
-
+  }
 function sleep(ms: number) {
   return new Promise((resolve) =>
     setTimeout(resolve, ms)
   );
-}
-
+  }
 function getTelegramError(error: any) {
   return {
-    errorCode:
-      error?.response?.error_code ||
-      null,
-
-    description:
-      error?.response?.description ||
-      null,
-
-    message:
-      error?.message ||
-      null,
-
-    parameters:
-      error?.response?.parameters ||
-      null,
+    errorCode: error?.response?.error_code || null,
+    description: error?.response?.description || null,
+    message: error?.message || null,
+    parameters: error?.response?.parameters || null,
   };
-}
-
+  }
 function secureCompare(
   a: unknown,
   b: unknown
-) {
+  ) {
   const bufA =
     Buffer.from(String(a));
-
   const bufB =
-    Buffer.from(String(b));
-
+  Buffer.from(String(b));
   if (
     bufA.length !==
     bufB.length
   ) {
     return false;
   }
-
   return crypto.timingSafeEqual(
     bufA,
     bufB
   );
-}
-
+  }
 function isAdmin(ctx: any) {
   return (
     String(ctx.from?.id || "") ===
     String(ADMIN_USER_ID)
   );
-   }
+  }
 async function typing(ctx: any) {
   try {
   await ctx.sendChatAction("typing");
@@ -719,23 +612,23 @@ async function sendMediaSafe(
   kind: "video" | "photo",
   url: string,
   extra: any = {}
-   ) {
+  ) {
   try {
     if (kind === "video") {
     await ctx.replyWithVideo(url, extra);
-    }
+  }
     if (kind === "photo") {await ctx.replyWithPhoto(url,extra);
-    }
-    } catch (error: any) {logger.error(
+  }
+  } catch (error: any) {logger.error(
       "SEND MEDIA ERROR",
-    {kind,url,...getTelegramError(error),
-    } );
-    }}
+  {kind,url,...getTelegramError(error),
+  } );
+  }}
 //// BUTTON TRACKING //
      async function trackButtonClick(
      ctx: any,
      buttonName: string
-    ) {
+  ) {
     try {
     if (!redis) return;
     const user = getUserMeta(ctx.from);
@@ -751,121 +644,88 @@ async function sendMediaSafe(
   } catch (error: any) {
     logger.error(
       "TRACK BUTTON ERROR",
-      {
-        message: error?.message,
-      }
-    );
-  }
-}
-
-// ======================================================
-// RATE LIMIT
-// ======================================================
-
+  {message: error?.message,});
+  }}
+//// RATE LIMIT //
 async function checkRateLimit(
   userId: string,
   limit = 3,
   windowSeconds = 300
-) {
+  ) {
   if (!redis) return true;
-
   try {
     const key =
       `rate_limit:videocall:${userId}`;
-
     const count =
       await redis.incr(key);
-
     if (count === 1) {
-      await redis.expire(
-        key,
-        windowSeconds
-      );
-    }
-
+      await redis.expire(key,windowSeconds
+  );
+  }
     return count <= limit;
   } catch (error: any) {
     logger.error(
-      "RATE LIMIT ERROR",
-      {
-        message: error?.message,
-      }
-    );
-
-    return true;
+    "RATE LIMIT ERROR",
+      {message: error?.message,}
+  );
+  return true;
   }
-}
-
-// ======================================================
-// CENTRAL CODE ENGINE
-// ======================================================
-
+  }
+//// CENTRAL CODE ENGINE //
 function randomCodePart(length = 4) {
   const alphabet =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
   let result = "";
-
   for (let i = 0; i < length; i++) {
     const index =
       crypto.randomInt(
         0,
         alphabet.length
-      );
-
+  );
     result += alphabet[index];
   }
-
   return result;
-}
-
+  }
 function getPlanFromPayload(
   payload: string
-) {
+  ) {
   if (payload === BASIC_PAYLOAD) {
     return PLAN_CONFIG.basic;
   }
-
   if (payload === PRO_PAYLOAD) {
     return PLAN_CONFIG.pro;
   }
-
   if (payload === VIP_PAYLOAD) {
     return PLAN_CONFIG.vip;
   }
-
   return null;
-}
-
+  }
 function getCodeKey(code: string) {
   return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
-}
-
+  }
 function getUserCodeIndexKey(
   userId: string
-) {
+  ) {
   return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
-}
-
+  }
 async function generateAccessCode(
   planId: "basic" | "pro" | "vip",
   source: "telegram" | "website",
   userId: string,
   chargeId: string | null = null
-) {
+  ) {
   if (!redis) {
     throw new Error(
       "Redis is required for code generation"
-    );
+  );
   }
-
   const plan =
     PLAN_CONFIG[planId];
 
   if (!plan) {
     throw new Error(
       `Unknown plan: ${planId}`
-    );
+  );
   }
 
   for (let attempt = 0; attempt < 20; attempt++) {
@@ -890,173 +750,108 @@ async function generateAccessCode(
         new Date().toISOString(),
       redeemedAt: null,
       redeemedBy: null,
-    };
-
-    /*
-     * NX makes the code creation atomic.
-     * If another process somehow creates the same
-     * code, Redis rejects this attempt and we retry.
-     */
+  };
     const created =
     await redis.set(key, JSON.stringify(record),"EX", 60 * 60 * 24 * 365, "NX");
     if (created === "OK") {
     await redis.sadd(getUserCodeIndexKey( String(userId)),code);
     await redis.expire(getUserCodeIndexKey( String(userId)),60 * 60 * 24 * 365);logger.info(
       "ACCESS CODE GENERATED",
-    { code,
-      planId: plan.id,
-      source,
-      userId,});
-      return record;
-    }}
+  { code,
+    planId: plan.id,
+    source,
+    userId,});
+    return record;
+  }}
     throw new Error(
     "Unable to generate unique access code");
-    }
+  }
     async function getAccessCode(code: string) {
     const normalized = String(code || "")
       .trim()
       .toUpperCase();
-
   if (!normalized) {
     return null;
   }
-
-  return redisGetJson(
-    getCodeKey(normalized)
-  );
-}
-
+  return redisGetJson(getCodeKey(normalized)
+     );
+     }
 async function validateAccessCode(
   code: string
 ) {
   const record =
     await getAccessCode(code);
-
   if (!record) {
-    return {
-      valid: false,
-      reason: "not_found",
-    };
-  }
-
+    return {valid: false,reason: "not_found",};
+     }
   if (record.status !== "active") {
-    return {
-      valid: false,
-      reason: "not_active",
-      record,
-    };
-  }
-
-  return {
-    valid: true,
-    record,
-  };
-}
-
-// ======================================================
-// VAULT BUTTON
-// ======================================================
-
+    return {valid: false,reason: "not_active", record,};
+     }
+  return {valid: true,record,};
+     }
+//// VAULT BUTTON //
 function getOpenVaultKeyboard() {
   return Markup.inlineKeyboard([
-    [
-      Markup.button.url(
-        BTN_OPEN_VAULT,
-        TELEGRAM_MINI_APP_URL
-      ),
-    ],
-  ]);
-}
-
-// ======================================================
-// KEYBOARDS
-// ======================================================
-
+    [Markup.button.url(
+     BTN_OPEN_VAULT,
+     TELEGRAM_MINI_APP_URL),
+     ],]);
+     }
+//// KEYBOARDS //
 function getMainKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_VIDEOCALL,
+    [BTN_VIDEOCALL,
       BTN_GET_CODE,
     ],
-    [
-      BTN_CHANNELS,
+    [BTN_CHANNELS,
       BTN_REFRESH,
-    ],
-  ]).resize();
-}
-
+    ],]).resize();
+    }
 function getAccessKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_BASIC,
-      BTN_VIP,
-    ],
-    [
-      BTN_PRO,
-    ],
-    [
-      BTN_BACK_MENU,
-    ],
-  ]).resize();
-}
-
+    [BTN_BASIC,
+    BTN_VIP,],
+    [BTN_PRO,],
+    [BTN_BACK_MENU,
+    ],]).resize(); 
+    }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_PENDING_REQUEST,
-    ],
-    [
-      BTN_CANCEL,
-    ],
-  ]).resize();
-}
-
+    [BTN_PENDING_REQUEST,],
+    [BTN_CANCEL,
+    ],]).resize();
+    }
 function getApprovedVideocallKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_ZOOM,
-      BTN_TELEGRAM,
+    [BTN_ZOOM,
+     BTN_TELEGRAM,
     ],
-    [
-      BTN_BACK_MENU,
-    ],
-  ]).resize();
-}
-
+    [BTN_BACK_MENU,
+    ],]).resize();
+    }
 function getVideocallInlineKeyboard() {
   return {
     inline_keyboard: [
-      [
-        {
-          text: BTN_ZOOM,
+        [{text: BTN_ZOOM,
           url: ZOOM_URL,
         },
-        {
-          text: BTN_TELEGRAM,
-          url: TELEGRAM_CALL_URL,
-        },],],};}
+        {text: BTN_TELEGRAM,
+         url: TELEGRAM_CALL_URL,},],],
+        };}
 function getStarsVipKeyboard() {
   return Markup.inlineKeyboard([
-    [
-      Markup.button.callback(
-        "❘ᴘᴀʏ ✪ 𝐕ɪᴘ❘",
-        "pay_vip_stars"
-      ),
-    ],
-  ]);
-}
-
+    [Markup.button.callback(
+        "❘ ᴘᴀʏ✪ᴠɪᴘ ❘",
+        "pay_vip_stars"),
+    ],]);
+    }
 function getStarsBasicKeyboard() {
   return Markup.inlineKeyboard([
-    [
-      Markup.button.callback(
+    [Markup.button.callback(
         "|ᴘᴀʏ ✪ 𝐁ᴀsɪᴄ|",
-        "pay_basic_stars"
-      ),
-    ],
-  ]);
-}
-
+        "pay_basic_stars"),
+    ],]);
+    }
 function getStarsProKeyboard() {
   return Markup.inlineKeyboard([
     [

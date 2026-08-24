@@ -164,8 +164,10 @@
   0%, 100% { opacity: 0.6; transform: scale(1);}
   50% { opacity: 1; transform: scale(1.05);}
 }
-/* ====  MENU SCREEN ================== */
+/* ────── MENÚ HORIZONTAL ──────────── */
 .vd-menuscreen {
+  padding: 34px 20px 14px;
+  box-sizing: border-box;
   position: absolute;
   inset: 0;
   display: flex;
@@ -181,18 +183,15 @@
 .vd-menuscreen.vd-active {
   opacity: 1;
   pointer-events: all;
-}
-/* ---- Menu Header ---- */
-.vd-menuscreen {
-  padding: 34px 20px 14px;
-  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 34px 20px 12px !important;
+  box-sizing: border-box !important;
 }
 .vd-menu-header {
-  padding: 10px 10px 8px;
-  color: var(--vd-rose);
-}
-.vd-menu-header p {
-  margin: 0;
+  flex: 0 0 auto !important;
+  padding: 15px 0 10px !important;
+  color: #03b748;
 }
 .vd-menu-header h2 {
   font-size: 15px;
@@ -205,17 +204,24 @@
   font-size: 15px;
   color: var(--vd-dim);
   font-weight: 400;
-   font-family:"Arial Black", "Segoe UI Black", Arial, sans-serif;
+  font-family:"Arial Black", "Segoe UI Black", Arial, sans-serif;
+  margin: 0 !important;
 }
-/* ---- Options ---- */
-.vd-menu-options{
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 0;
+.vd-menu-options {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 !important;
 }
 .vd-option {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  padding: 6px 4px !important;
+  box-sizing: border-box !important;
   position: relative;
   padding: 20px;
   border-radius: 18px;
@@ -223,9 +229,20 @@
   overflow: hidden;
   transition: all 0.35s ease;
   background: var(--vd-glass);
-  border: 1px solid var(--vd-glass-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  border: 3px solid var(--vd-glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.vd-menu-bottom {
+  flex: 0 0 auto !important;
+  padding: 4px 0 0 !important;
+}
+.vd-option:hover {
+  transform: scale(1.02);
+  border-color: var(--vd-glass-strong-border);
+}
+.vd-option:active {
+  transform: scale(0.98);
 }
 .vd-option::before {
   content: '';
@@ -235,14 +252,7 @@
   opacity: 0;
   transition: opacity 0.35s ease;
 }
-.vd-option:hover {
-  transform: scale(1.02);
-  border-color: var(--vd-glass-strong-border);
-}
-.vd-option:active {
-  transform: scale(0.98);
-}
-/* Type glows */
+/*────── Type glows ─────────────────────*/
 .vd-opt-basic::before {
   background: radial-gradient(
     ellipse at 30% 50%,
@@ -317,7 +327,7 @@
   transform: translateX(3px);
   color: var(--vd-text);
 }
-/* ---- Bottom pill ---- */
+/*────── Bottom pill ──────────────────*/
 .vd-menu-bottom {
   padding: 6px 0 0;
   text-align: center;
@@ -329,7 +339,7 @@
   background: #ffffff26;
   margin: 0 auto;
 }
-/* ======= DETAIL SHEET */
+/*────── DETAIL SHEET ──────────────────*/
 .vd-detail-sheet {
   position: absolute;
   inset: 0;
@@ -809,8 +819,6 @@
   border: 0;
   box-shadow: none;
 }
-
-
 /* ─── PAYMENT + DONE BUTTONS ─── */
 .vd-sheet-footer {
   padding: 12px 20px 18px;
@@ -991,24 +999,15 @@
 .vd-sheet-actions { gap: 8px;}
 .vd-sheet-actions .vd-cta-btn { min-width: 80px; padding: 0 12px;}}
 /* ─── TELEGRAM WEBVIEW FIX ─── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-html,
-body {
+*,*::before,*::after {box-sizing: border-box; }
+html,body {
   width: 100%;
   max-width: 100%;
   min-height: var(--tg-viewport-height, 100dvh);
   margin: 0;
   overflow-x: clip;
 }
-img,
-svg,
-video {
-  display: block;
-  max-width: 100%;
+img,svg,video {display: block; max-width: 100%;
 }
 /* Evita iconos gigantes durante la carga */
 .vx-titleRose,
@@ -1054,54 +1053,13 @@ video {
     aspect-ratio: 2 / 1;
     margin-inline: auto;
   }}
-  .vx-subIcon,
+.vx-subIcon,
 .vx-titleRose,
 .vx-titleCandado,
 .vx-planButtonIcon,
 .vd-option-img {
   flex-grow: 0 !important;
   flex-shrink: 0 !important;
-}
-/* ─── MENÚ HORIZONTAL: AJUSTE DEFINITIVO ─── */
-
-.vd-menuscreen.vd-active {
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 34px 20px 12px !important;
-  box-sizing: border-box !important;
-}
-
-.vd-menu-header {
-  flex: 0 0 auto !important;
-  padding: 8px 0 6px !important;
-}
-
-.vd-menu-header p {
-  margin: 0 !important;
-}
-
-.vd-menu-options {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  align-items: center !important;
-
-  gap: 12px !important;
-  padding: 0 !important;
-}
-
-.vd-option {
-  width: auto !important;
-  min-width: 0 !important;
-  min-height: 112px !important;
-  padding: 12px 10px !important;
-  box-sizing: border-box !important;
-}
-.vd-menu-bottom {
-  flex: 0 0 auto !important;
-  padding: 4px 0 0 !important;
 }
 .vd-plan-icon {
   display: block;
@@ -1110,85 +1068,86 @@ video {
   user-select: none;
   pointer-events: none;
 }
-
 .vd-plan-icon--basic {
   width: 64px;
   height: 64px;
 }
-
 .vd-plan-icon--pro {
   width: 62px;
   height: 68px;
 }
-
 .vd-plan-icon--vip {
   width: 72px;
   height: 58px;
 }
-
-.vd-damask-border {
+.vd-plan-card,
+.vd-device-damask {
+  position: relative;
+  isolation: isolate;
+}
+.vd-option {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 32px;
+}
+.vd-plan-card,
+.vd-device-damask {
+  position: relative;
+  isolation: isolate;
+}
+/* Figura tejida, sin línea sólida */
+.vd-option {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: none;
 }
-.vd-damask-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  padding: 4px;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      135deg,
-      var(--vd-border-light),
-      var(--vd-border-dark) 45%,
-      var(--vd-border-light)),
-    url("/public/assets/borde.png") center / 160px auto;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.85;
-}
-.vd-damask-border::after {
-  content: "";
+.vd-option-damask-frame {
   position: absolute;
   inset: 4px;
-  z-index: -1;
-  border-radius: calc(inherit - 4px);
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  object-fit: fill;
+  z-index: 1;
   pointer-events: none;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      var(--vd-inner-glow),
-      transparent 55%);
-  opacity: 0.18;
+  opacity: 0.9;
+  filter:
+    brightness(1.65)
+    contrast(1.12)
+    drop-shadow(0 0 2px #1484dc80);
 }
+.vd-option-row {
+  position: relative;
+  z-index: 2;
+}
+.vd-device-damask-frame {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  object-fit: fill;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.75;
+  filter: brightness(1.5);
+}
+
+
 
 /* BASIC */
-
-.vd-damask-basic {
-  --vd-border-light: rgba(210, 38, 68, 0.85);
-  --vd-border-dark: rgba(66, 8, 20, 0.25);
-  --vd-inner-glow: rgba(210, 38, 68, 0.55);
+.vd-plan-basic {
+  --vd-damask-color: #d62b4b;
 }
-
 /* PRO */
-
-.vd-damask-pro {
-  --vd-border-light: rgba(236, 92, 30, 0.9);
-  --vd-border-dark: rgba(92, 26, 8, 0.25);
-  --vd-inner-glow: rgba(236, 92, 30, 0.55);
+.vd-plan-pro {
+  --vd-damask-color: #ed642d;
 }
-
 /* VIP */
-
-.vd-damask-vip {
-  --vd-border-light: rgba(25, 126, 255, 0.9);
-  --vd-border-dark: rgba(6, 37, 92, 0.25);
-  --vd-inner-glow: rgba(25, 126, 255, 0.6);
+.vd-plan-vip {
+  --vd-damask-color: #238cff;
+}
+/* Hover de las tres cards */
+.vd-plan-card:hover .vd-damask-frame {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--vd-damask-color));
 }
