@@ -1629,15 +1629,6 @@ video {
   max-width: none;
   object-fit: cover;
 }
-/* Device responsive */
-@media (max-width: 800px) {
-  .vd-device {
-    width: calc(100dvw - 24px) !important;
-    max-width: 760px !important;
-    height: auto !important;
-    aspect-ratio: 2 / 1;
-    margin-inline: auto;
-  }}
 /* ─── PRIVATE PREVIEW INITIAL RENDER FIX ─── */
 .vx-lock {
   position: relative;
@@ -1741,27 +1732,21 @@ video {
   text-align: center;
 }
 /* ─── GET MY CODE ─── */
-
 .vault-get-code {
   width: 82%;
   min-height: 44px;
   margin-top: 10px;
   padding: 0 18px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   border: 1px solid #b94a5c;
   border-radius: 4px;
-
   background:
     linear-gradient(
       180deg,
       #35141d,
-      #170b0f
-    );
-
+      #170b0f);
   color: #e98798;
   font-family: "JetBrains Mono", monospace;
   font-size: 11px;
@@ -1769,26 +1754,20 @@ video {
   letter-spacing: 0.16em;
   text-align: center;
   text-decoration: none;
-
   transition:
     color 0.3s ease,
     background 0.3s ease,
     transform 0.3s ease,
     box-shadow 0.3s ease;
 }
-
 .vault-get-code:hover {
   color: #18090e;
-
   background:
     linear-gradient(
       180deg,
       #f28ca0,
-      #b94a5c
-    );
-
+      #b94a5c);
   transform: translateY(-2px);
-
   box-shadow:
     0 8px 20px #b94a5c4d,
     0 0 18px #b94a5c38;
@@ -1826,7 +1805,6 @@ video {
   text-decoration: none;
   cursor: pointer;
 }
-
 .vx-lockActions .vault-unlock {
   border: 1px solid #d4a83a;
   background: linear-gradient(180deg, #2a2a2a, #111);
@@ -1912,14 +1890,12 @@ video {
   justify-content: center;
   gap: 6px;
 }
-
 .vx-visitorIcon {
   width: 18px;
   height: 18px;
   object-fit: contain;
   flex-shrink: 0;
 }
-
 .vx-visitorEye {
   width: 18px;
   height: 18px;
@@ -1928,6 +1904,90 @@ video {
   justify-content: center;
   line-height: 1;
 }
+.vx-insideRow {
+  width: 100%;
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 42px;
+}
+.vx-insideRow .vx-lead {
+  max-width: 32rem;
+  margin: 0;
+}
+.vx-insideRow .vx-count {
+  transform: translateY(-46px);
+  min-width: 280px;
+  margin: 0;
+  justify-self: end;
+}
+.vx-archive { margin-top: -20px;
+}
+.vx-links .vx-digitalArchive {
+  background: transparent !important;
+  color: var(--dim) !important;
+  border: 1px solid var(--line);
+}
+.vx-links .vx-digitalArchive:hover {
+  background: rgba(224, 184, 90, 0.08) !important;
+  color: var(--goldhi) !important;
+  border-color: var(--gold);
+}
+.vx-footActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+.vx-footCode {
+  width: 100%;
+  text-align: right;
+  color: var(--goldhi);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+.vx-foot {
+  padding-bottom: 0;
+}
+.vx-legal {
+  margin: 58px auto 0;
+  padding: 22px 0 10px;
+  border-bottom: 0;
+}
+/* Eliminar espacio entre FAQ y footer */
+#faq.vx-sec {
+  padding-bottom: 0;
+}
+.vx-foot {
+  padding: 110px 16px 0 !important;
+}
+.vx-footGrid {
+  padding-top: 0 !important;
+}
+.vx-foot .vx-footGrid {
+  position: relative !important;
+  transform: translateY(90px) !important;
+  margin-bottom: 90px !important;
+}
+/* Responsive */
+@media (max-width: 899px) {
+  .vx-footActions { align-items: flex-start;
+  }
+  .vx-footCode { text-align: left; white-space: normal;
+  }
+  .vx-legal { margin-top: 36px;
+  }}
+/* En celular vuelve a colocarse debajo */
+@media (max-width: 700px) {
+  .vx-insideRow { grid-template-columns: 1fr; gap: 16px;
+  }
+  .vx-insideRow .vx-count { min-width: 0; justify-self: start;
+  }}
 @media (max-width: 768px) {
   .vx-title { position: relative;
   }
@@ -1960,3 +2020,147 @@ video {
   }}
 @media (max-width: 420px) {.vx-access { font-size: clamp(48px, 15vw, 64px) !important;
   }}
+/* ========  RESPONSIVE DEL DISPOSITIVO ======== */
+.vx-deviceStage {
+  width: 100%;
+  padding: 28px 0 48px;
+  display: grid;
+  place-items: center;
+  background: #050508;
+}
+.vd-device,
+.vd-device *,
+.vd-device *::before,
+.vd-device *::after {
+  box-sizing: border-box;
+}
+/* Tablet: conserva formato horizontal */
+@media (min-width: 701px) and (max-width: 840px) {
+  .vd-device {width: calc(100vw - 64px); max-width: 760px; height: auto; aspect-ratio: 2 / 1;
+  }
+  .vd-menu-header { padding-top: 56px;
+  }
+  .vd-option { min-height: 110px; padding: 13px 10px;
+  }
+/* formato vertical */
+  .vd-device {
+    width: min(300px, calc(100vw - 72px));
+    max-width: 300px;
+    height: auto;
+    aspect-ratio: 15 / 31;
+    padding: 8px;
+    border-radius: clamp(32px, 12vw, 44px);
+  }
+  .vd-device::before { left: 20px; right: 20px; border-radius: 44px 44px 0 0;
+  }
+  .vd-screen { border-radius: clamp(27px, 10vw, 38px);
+  }
+  .vd-island { top: 10px;  width: clamp(76px, 30vw, 90px); height: clamp(22px, 8vw, 28px); border-radius: 20px;
+  }
+  /* Botones físicos */
+  .vd-pwr { right: -2px; top: 130px; width: 3px; height: 50px;  transform: none;
+  }
+  .vd-vol1 { left: -2px; top: 110px; width: 3px; height: 28px;
+  }
+  .vd-vol2 { left: -2px; top: 148px; width: 3px; height: 28px;
+  }
+  .vd-lock-time { /* Pantalla bloqueada */ font-size: clamp(42px, 16vw, 58px);
+  }
+  .vd-lock-date { margin-bottom:clamp(38px, 15vw, 60px);
+  }
+  .vd-menu-header {  /* Menú vertical */ padding:  clamp(46px, 18vw, 58px) 14px 10px;
+  }
+  .vd-menu-header p { max-width: 150px; margin: 0 auto; font-size: clamp(9px, 2.8vw, 11px); line-height: 1.25;
+  }
+  .vd-menu-options {
+     flex: 0 0 auto;
+     flex-direction: row;
+     align-items: stretch;
+     justify-content: center;
+     gap: clamp(6px, 2.5vw, 10px);
+     padding: 0 clamp(12px, 5vw, 20px);
+  }
+  .vd-option {
+    width: calc((100% - 20px) / 3);
+    min-height: clamp(82px, 30vw, 115px);
+    padding: clamp(8px, 3vw, 12px) 5px;
+    border-radius: clamp(12px, 5vw, 18px);
+  }
+  .vd-option-row {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+  }
+  .vd-option-info,
+  .vd-option-arrow {display: none;
+  }
+.vd-option-icon { width: clamp(32px, 12vw, 44px); height: clamp(32px, 12vw, 44px); flex: 0 0 auto;
+  }
+.vd-device .vd-option-icon img,
+.vd-device .vd-option-img {
+  width: clamp(34px, 13vw, 50px);
+  height: clamp(34px, 13vw, 50px);
+  margin: 0;
+  object-fit: contain;
+}
+  .vd-option-info { min-width: 0;
+  }
+  .vd-option-name { font-size: 13px;
+  }
+  .vd-option-desc { font-size: 10px;
+  }
+  .vd-option-arrow { display: block; margin-left: auto;
+  }
+  .vd-menu-bottom { margin-top: auto;
+  }
+  /* Panel de detalles */
+  .vd-sheet-header { display: grid; grid-template-columns: 76px minmax(0, 1fr) 76px; align-items: center; padding: 4px 14px 12px;
+  }
+  .vd-sheet-header::after { content: ""; width: 76px;
+  }
+  .vd-sheet-back { min-width: 76px; width: 76px; height: 32px; padding: 0 7px; font-size: 10px;
+  }
+  .vd-sheet-title-area { min-width: 0; display: flex; justify-content: center;
+  }
+  .vd-sheet-title { gap: 5px; padding-top: 0; transform: none;
+  }
+  .vd-sheet-title-name,
+  .vd-title-basic,
+  .vd-title-pro,
+  .vd-title-vip { font-size: clamp(18px,7vw, 24px); letter-spacing: -1px;
+  }
+  .vd-device .vd-sheet-title-icon { width: 21px; height: 21px;
+  }
+  .vd-sheet-body { display: block; padding: 13px 12px 8px;
+  }
+  .vd-benefit-group { margin-bottom: 13px;
+  }
+  .vd-benefit-item { gap: 9px; padding: 10px 11px;
+  }
+  .vd-benefit-label { font-size: 11px;
+  }
+  .vd-benefit-sub { font-size: 9px; line-height: 1.35;
+  }
+  .vd-device .vd-benefit-img { width: 26px; height: 26px; flex: 0 0 26px;
+  }
+  .vd-sheet-cta {  padding: 10px 13px calc(13px + env(safe-area-inset-bottom));
+  }
+  .vd-sheet-cta .vd-cta-btn { min-width: 86px; height: 37px; }
+  }
+/* Celulares muy pequeña */
+@media (max-width: 320px) {
+  .vd-device { width: calc(100vw - 64px);
+  }
+  .vd-menu-options { padding-inline: 11px;
+  }
+  .vd-option { padding: 12px;
+  }
+  .vd-sheet-title-name,
+  .vd-title-basic,
+  .vd-title-pro,
+  .vd-title-vip { font-size: 20px;}
+ }

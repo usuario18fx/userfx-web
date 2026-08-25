@@ -22,22 +22,22 @@
   --vd-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   position: relative;
   isolation: isolate;
-  width: min(760px, calc(100vw - 24px));
+   width: 760px;
   height: 380px;
   margin-inline: auto;
   padding: 8px;
   overflow: hidden;
-  border-radius: 9px;
+  border-radius: 50px;
   font-family: var(--vd-font);
   color: var(--vd-white);
   background:
     linear-gradient(145deg, #050a12c7, #0c1e349e),
     url("/assets/damask.png") center / 260px repeat;
+  border: none !important;
+  outline: none !important;
   box-shadow:
-    0 1px 0 2px #0d589894,
     0 22px 70px #c2020273,
-    0 10px 26px #000000c7,
-    inset 0 1px 0 #0078c2b8;
+    0 10px 26px #310101c7 !important;
 }
 .vd-device::before {
   content: "";
@@ -71,9 +71,9 @@
   transform: none !important;
   pointer-events: none;
   user-select: none;
-  filter:brightness(1.08)contrast(1.05);
+  filter:brightness(1.08)contrast(0.8);
 }
-/*  BOTONES FÃSICOS  */
+/*  BOTONES BASICOS  */
 .vd-btn {
   position: absolute;
   z-index: 1;
@@ -122,72 +122,7 @@
   box-shadow: inset 0 1px 1px #ffffff0d;
   transform: translateX(-50%);
 }
-/* LOCK SCREEN */
-.vd-lockscreen {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background:
-    radial-gradient(ellipse at 30% 20%, #c9a84c14, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, #e8728a0f, transparent 50%),
-    linear-gradient(180deg, #0a0a100f, #050508);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.vd-lockscreen.vd-unlocked {
-  opacity: 0;
-  transform: scale(1.06);
-  pointer-events: none;
-}
-.vd-lock-time {
-  margin-bottom: 5px;
-  color: var(--vd-white);
-  font-size: 48px;
-  font-weight: 750;
-  line-height: 1;
-  letter-spacing: -2px;
-}
-.vd-lock-date {
-  margin-bottom: 24px;
-  color: var(--vd-text);
-  font-size: 13px;
-  font-weight: 400;
-}
-.vd-lock-prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  animation: vd-breathe 3s ease-in-out infinite;
-}
-.vd-lock-prompt-icon {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  align-items: center;
-  justify-content: center;
-}
-.vd-lock-icon {
-  display: block;
-  width: 32px;
-  height: 32px;
-  max-width: none;
-  object-fit: contain;
-  pointer-events: none;
-}
-.vd-lock-prompt-text {
-  color: var(--vd-dim);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-/*   MENÃš DE PLANES  */
-.vd-menuscreen {
+.vd-menuscreen { /*   MENU DE PLANES  */
   position: absolute;
   inset: 0;
   isolation: isolate;
@@ -210,41 +145,45 @@
 .vd-menu-header p {
   display: inline-block;
  margin: 0;
-  padding: 4px 14px;
+  padding: 14px 14px;
   color: #d66079;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 800;
   line-height: 1.2;
   letter-spacing: 0.02em;
   text-align: center;
-  border-radius: 16px;
-  background: rgba(4, 8, 13, 0.68);
+  border-radius: 1px;
+  background: #04080dad;
   opacity: 0.9;
   text-shadow:
-    0 1px 4px #000,
-    0 0 8px rgba(214, 96, 121, 0.28);
+    0 1px 4px #000000,
+    0 0 8px #d6607947;
 }
 .vd-option {
   position: relative;
   isolation: isolate;
   z-index: 5;
-  width: 100%;
+  width: 60%;
   min-width: 0;
-  height: 122px;
-  padding: 10px;
+  height: 115px;
   overflow: hidden;
   border: 0 !important;
-  border-radius: 28px;
+  border-radius: 8px;
   background:
     linear-gradient(
       145deg,
-      rgba(43, 50, 57, 0.98),
-      rgba(26, 32, 38, 0.98));
+      #2b3239fa,
+      #1a2026fa);
   box-shadow:
-    0 8px 0 rgba(29, 34, 39, 0.98),
-    0 13px 20px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 8px 0 #1d2227fa,
+    0 13px 20px #00000073,
+    inset 0 1px 0 #ffffff1a;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+    transform: translateX(60px);
 }
 .vd-option::before {
   content: "";
@@ -266,7 +205,6 @@
 }
 .vd-option:hover {
   filter: brightness(1.08);
-  transform: translateY(-3px) scale(1.015);
   box-shadow:
     0 9px 0 #1e2328fa,
     0 17px 25px #0000007a,
@@ -275,9 +213,7 @@
 .vd-option:hover::before {
   opacity: 1;
 }
-.vd-option:active {
-  transform: translateY(2px) scale(0.985);
-}
+
 /* Marco de figuras para Basic, Pro y VIP. */
 .vd-option-damask-frame {
   position: absolute;
@@ -298,7 +234,7 @@
   filter:
     brightness(1.42)
     contrast(1.08)
-    drop-shadow(0 0 2px rgba(20, 132, 220, 0.42));
+    drop-shadow(0 0 2px #1484dc6b);
 }
 .vd-option-row {
   position: relative;
@@ -309,7 +245,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 1px;
   text-align: center;
 }
 .vd-option-info {
@@ -385,7 +321,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 1px;
   min-height: 0;
   padding: 0 6px 4px;
 }
@@ -395,13 +331,6 @@
   flex: 0 0 auto;
   padding-top: 5px;
   text-align: center;
-}
-.vd-home-pill {
-  width: 120px;
-  height: 4px;
-  margin: 0 auto;
-  border-radius: 999px;
-  background: #ffffff29;
 }
 /*  PANEL DE DETALLES  */
 .vd-detail-sheet {
@@ -671,13 +600,6 @@
   background: linear-gradient(135deg, #e3c06d, #efa916);
   box-shadow: 0 7px 20px #c9a84c52, inset 0 1px 0 #ffffff7a;
 }
-.vd-device {
-  border: none !important;
-  outline: none !important;
-  box-shadow:
-    0 22px 70px #c2020273,
-    0 10px 26px #a49f9fc7 !important;
-}
 /* RESPONSIVE  */
 @media (prefers-reduced-motion: reduce) {
   .vd-device *,
@@ -731,8 +653,6 @@
   }
   .vd-option-desc { margin-top: 2px;font-size: 6.5px; white-space: normal;
   }}
-
-
 .vd-candado2-icon {
   display: block;
   width: 30px;
@@ -747,10 +667,7 @@
   user-select: none;
 }
 @media (max-width: 560px) {
-  .vd-candado2-icon {
-    width: 25px;
-    height: 25px;
-    flex-basis: 25px;
+  .vd-candado2-icon { width: 25px; height: 25px; flex-basis: 25px;
   }}
   .vd-benefit-img {
   width: 34px;
@@ -772,4 +689,10 @@
   width: 38px;
   height: 38px;
   margin: -2px;
+}
+.vx-count {
+  margin: 10px 0 6px;
+}
+.vx-archive {
+  margin-top: 4px;
 }

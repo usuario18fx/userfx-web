@@ -54,8 +54,7 @@ import './VaultDevice.css';
           { icon: ICONS.preview, text: 'Full session view', sub: 'Enjoy the complete unlocked session, not just a preview' },],},
           { label: 'Best for',
             items: 
-         [{ icon: ICONS.rosa, text: 'First-time access', sub: 'Perfect for trying the private vault without a subscription' },
-          { icon: ICONS.candado2, text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
+         [{ icon: ICONS.candado2, text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
             pro: 
           { title: 'Pro',
             emoji: ICONS.fuego,
@@ -66,16 +65,15 @@ import './VaultDevice.css';
          [{ label: 'What you get',
             items: 
          [{ icon: ICONS.choose, text:'Choose your sessions', sub: 'Pick from available premium sessions in the vault' },
-          { icon: '🔢', text: '5 premium entries', sub: 'Get five individual entries to use within 30 days' },
-          { icon: ICONS.anydevice, text:'Any device', sub: 'Seamless access across phone, tablet and desktop' },
           { icon: ICONS.quality, text:'Enhanced quality', sub: 'Higher-quality streaming for a smoother viewing experience' },
           { icon: ICONS.quickly, text:'Instant access', sub: 'No waiting — unlock and enter when you are ready' },],},
           { label: 'Best for',
             items: 
          [{ icon: ICONS.fuego, text:'Regular viewers', sub: 'Made for people who want more than one session' },
           { icon: '💎', text:'More value per entry', sub: 'Multiple premium sessions without committing to VIP' },
+  
           { icon: ICONS.vip, text:'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
-vip: {title: 'VIP',
+  vip:{title:'VIP',
             emoji: ICONS.corona,
             stars: 1500,
             days: 90,
@@ -91,7 +89,6 @@ vip: {title: 'VIP',
           { label: 'Best for',
             items: 
          [{ icon: ICONS.telegram, text: 'Chat Experience', sub: 'Direct DM for anything' },],},],},};
-
 /* ─── Diamond figures ─── */
   function PlanDiamonds() {
     return (
@@ -174,23 +171,6 @@ vip: {title: 'VIP',
       <div className="vd-screen">
 {/* Dynamic Island */}
       <div className="vd-island" />
-{/* ── Lock Screen ── */}
-      <div className={`vd-lockscreen ${!locked ? 'vd-unlocked' : ''}`} onClick={unlock}>
-      <div className="vd-lock-time">
-       {time}
-      </div>
-      <div className="vd-lock-date">
-        {lockDate}
-      </div>
-      <div className="vd-lock-prompt">
-      <div className="vd-lock-prompt-icon">
-      <img src={ICONS.candado} alt="" className="vd-lock-icon" draggable={false}/>
-      </div>
-      <div className="vd-lock-prompt-text">
-        ᴛᴀᴘ ᴛᴏ ᴇxᴘʟᴏʀᴇ
-      </div>
-      </div>
-      </div>
 {/* ── Menu Screen ── */}
       <div className={`vd-menuscreen ${!locked ? 'vd-active' : ''}`}>      <img src={ICONS.bordeDevice} alt="" className="vd-device-damask-frame" draggable={false} aria-hidden="true"/>
       <div className="vd-menu-header">
@@ -258,7 +238,6 @@ vip: {title: 'VIP',
       </div>
       </div>
       <div className="vd-menu-bottom">
-      <div className="vd-home-pill" />
       </div>
       </div>
 {/* ── Detail Sheet ── */}
