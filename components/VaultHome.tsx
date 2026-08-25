@@ -261,22 +261,29 @@ export default function VaultHome() {
       setUnlocked(true);
       setCodeModal(false);
       setVerifyError("");
-// Elimina el código de la URL después de validarlo
+  // Elimina el código de la URL después de validarlo
     const currentUrl = new URL(window.location.href);
       currentUrl.searchParams.delete("code");
       window.history.replaceState(
     {},
     "",
     `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
-    );
-// Baja automáticamente a la nueva sección
-    window.setTimeout(() => {document.getElementById("unlocked-vault")
-      ?.scrollIntoView({behavior: "smooth",block: "start",});
-      }, 200);
-    return;
-    } else {setAttempts((n) => n + 1);
-            setVerifyError(data.error || 
-    'ᴄᴏ́ᴅɪɢᴏ ɪɴᴠᴀ́ʟɪᴅᴏ');
+  );
+  // Baja automáticamente a la nueva sección
+  window.setTimeout(() => {
+    document
+      .getElementById("unlocked-vault")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, 200);
+  return;
+
+    } else {
+        setAttempts((n) => n + 1);
+        setVerifyError(data.error || 
+          'ᴄᴏ́ᴅɪɢᴏ ɪɴᴠᴀ́ʟɪᴅᴏ');
     }
     } catch {
       setVerifyError('ᴇʀʀᴏʀ ᴅᴇ ᴄᴏɴᴇxɪᴏ́ɴ');
@@ -284,15 +291,19 @@ export default function VaultHome() {
       setVerifyLoading(false);
     }}
     function openUnlockedVault() {
-    if (unlocked) {document
+  if (unlocked) {
+    document
       .getElementById("unlocked-vault")
-      ?.scrollIntoView({behavior: "smooth", block: "start",
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       });
+
     return;
   }
   setCodeModal(true);
-     }
-    return (  <div id="top" className="vx">
+    }
+   return (  <div id="top" className="vx">
               <header className="vx-hud">
               <a href="#top" className="vx-brand">
               <img src={LOGO} alt="USER FX" />
@@ -412,15 +423,8 @@ export default function VaultHome() {
               </span>
               </div>
               <div className="vx-lockActions" style={{ width: "80%", display: "flex", flexDirection: "column", alignItems: "stretch", gap: "14px", marginTop: "16px",}}>
-              <button type="button" className={`vault-unlock ${unlocked ? "is-unlocked" : ""}`} onClick={openUnlockedVault}>
-              <span className="vault-unlock__icon" aria-hidden="true">
-               {unlocked ? "🔓" : "🔐"}
-              </span>
-              <span className="vault-unlock__text">
-              <span className="vault-unlock__title">
-               {unlocked ? "OPEN ALBUM" : "UNLOCK ALBUM"}
-              </span>
-              </span>
+              <button type="button" className="vault-unlock" onClick={() => setCodeModal(true)} style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #2a2a2a, #111111)", color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", cursor: "pointer",}}>
+               UNLOCK ALBUM
               </button>
               <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" style={{ width: "80%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #9f173d", borderRadius: "4px", background: "linear-gradient(180deg, #6f102d, #310713)", color: "#f18aa5", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textDecoration: "none",}}>
                GET MY CODE
@@ -431,52 +435,62 @@ export default function VaultHome() {
               </div>
           </section>
         <Ticker items={TICKER_ITEMS} />
-               {unlocked ? (
-          <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
-              <div className="vx-privateAlbumInner">
-              <header className="vx-privateAlbumHeader">
-              <p className="vx-privateAlbumStatus">
-              <span>
-                ✓
-              </span>
-               ACCESS GRANTED
-              </p>
-              <h2 className="vx-privateAlbumTitle">
-               PRIVATE 
-              <span>                  
-               ALBUM
-              </span>
-              </h2>
-              <p className="vx-privateAlbumDescription">
-               Your access key has been verified. Welcome inside the private vault.
-              </p>
-              <div className="vx-privateAlbumLine" />
-              </header>
-              <div className="vx-privateAlbumGrid">
-               {PRIVATE_INSIDE.map((src, index) => (
-              <figure  key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
-              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"}/>
-              <figcaption>
-              <span>
-                USER 🜲 FX
-              </span>
+        {unlocked ? (
+  <section
+    id="unlocked-vault"
+    className="vx-privateAlbum"
+    aria-label="Unlocked private album"
+  >
+    <div className="vx-privateAlbumInner">
+      <header className="vx-privateAlbumHeader">
+        <p className="vx-privateAlbumStatus">
+          <span>✓</span>
+          ACCESS GRANTED
+        </p>
+
+        <h2 className="vx-privateAlbumTitle">
+          PRIVATE <span>ALBUM</span>
+        </h2>
+
+        <p className="vx-privateAlbumDescription">
+          Your access key has been verified. Welcome inside the private vault.
+        </p>
+
+        <div className="vx-privateAlbumLine" />
+      </header>
+
+      <div className="vx-privateAlbumGrid">
+        {PRIVATE_INSIDE.map((src, index) => (
+          <figure
+            key={`unlocked-${src}`}
+            className="vx-privateAlbumItem"
+            onContextMenu={(event) => event.preventDefault()}
+          >
+            <img
+              src={src}
+              alt={`Private vault image ${index + 1}`}
+              draggable={false}
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+
+            <figcaption>
+              <span>USER 🜲 FX</span>
               <small>
                 PRIVATE FILE {String(index + 1).padStart(2, "0")}
               </small>
-              </figcaption>
-              </figure>
-              ))}
-              </div>
-              <footer className="vx-privateAlbumFooter">
-              <span>
-               PERSONAL ACCESS</span>
-              <i />
-              <span>
-               DO NOT DISTRIBUTE</span>
-              </footer>
-              </div>
-          </section>
-           ) : null}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <footer className="vx-privateAlbumFooter">
+        <span>PERSONAL ACCESS</span>
+        <i />
+        <span>DO NOT DISTRIBUTE</span>
+      </footer>
+    </div>
+  </section>
+) : null}
           <section id="protocolo" className="vx-sec">
         <Reveal>
               <p className="vx-goldk">
