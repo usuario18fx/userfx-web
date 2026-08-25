@@ -1,79 +1,157 @@
-import crypto from 'crypto';
+import Redis from "ioredis";
 
-const TRACK_SECRET = process.env.TRACK_SECRET;
+const REDIS_URL = process.env.REDIS_URL;
+const CODE_ENGINE_NAMESPACE =
+    process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 
-// Rate limit en memoria — se resetea en cada cold start de Vercel.
-// Para persistencia real entre invocaciones, migrar a Upstash Redis
-// o a una tabla Supabase (ip_hash, attempts, reset_at).
 const attemptsCache = new Map();
-const WINDOW_MS = 15 * 60_000; // 15 minutos
+const WINDOW_MS = 15 * 60_000;
 const MAX_ATTEMPTS = 5;
 
 function checkRateLimit(ip) {
-  const now = Date.now();
-  const entry = attemptsCache.get(ip);
+    const now = Date.now();
+    const entry = attemptsCache.get(ip);
 
-  if (!entry || now > entry.resetAt) {
-    attemptsCache.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    if (!entry || now > entry.resetAt) {
+        attemptsCache.set(ip, {
+            count: 1,
+            resetAt: now + WINDOW_MS,
+        });
+
+        return true;
+    }
+
+    if (entry.count >= MAX_ATTEMPTS) {
+        return false;
+    }
+
+    entry.count += 1;
     return true;
-  }
-  if (entry.count >= MAX_ATTEMPTS) return false;
-
-  entry.count++;
-  return true;
 }
 
-function timingSafeCompare(a, b) {
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+function getRedis() {
+    if (!REDIS_URL) {
+        return null;
+    }
+
+    if (!globalThis.__userfxVerifyRedis) {
+        globalThis.__userfxVerifyRedis = new Redis(REDIS_URL, {
+            maxRetriesPerRequest: 1,
+            enableReadyCheck: false,
+            connectTimeout: 10000,
+        });
+    }
+
+    return globalThis.__userfxVerifyRedis;
 }
 
 export default async function handler(req, res) {
-  const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '')
-    .split(',')[0]
-    .trim();
+    res.setHeader("Cache-Control", "no-store");
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'method_not_allowed' });
-  }
-
-  if (!checkRateLimit(ip)) {
-    return res.status(429).json({ ok: false, error: 'too_many_attempts' });
-  }
-
-  try {
-    const body =
-      typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
-    const safePrefix = String(body.prefix || '').trim().toUpperCase();
-    const safeSuffix = String(body.suffix || '').trim().toUpperCase();
-
-    if (!safePrefix || !safeSuffix) {
-      return res.status(400).json({ ok: false, error: 'Missing code.' });
-    }
-    if (safeSuffix.length !== 4) {
-      return res
-        .status(400)
-        .json({ ok: false, error: 'The suffix must be 4 characters.' });
-    }
-    if (!TRACK_SECRET) {
-      return res
-        .status(500)
-        .json({ ok: false, error: 'Missing TRACK_SECRET on server.' });
+    if (req.method !== "POST") {
+        return res.status(405).json({
+            ok: false,
+            error: "Method not allowed.",
+        });
     }
 
-    const fullCode = `${safePrefix}${safeSuffix}`;
-    const isValid = timingSafeCompare(fullCode, TRACK_SECRET.toUpperCase());
+    const ip = String(
+        req.headers["x-forwarded-for"] ||
+        req.socket?.remoteAddress ||
+        ""
+    )
+        .split(",")[0]
+        .trim();
 
-    if (isValid) {
-      return res.status(200).json({ ok: true, code: fullCode });
+    if (!checkRateLimit(ip)) {
+        return res.status(429).json({
+            ok: false,
+            error: "Too many attempts. Please refresh the page.",
+        });
     }
 
-    return res.status(401).json({ ok: false, error: 'Invalid code.' });
-  } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      error: 'server_error',
-      details: String(error?.message || error),
-    });
-  }
+    try {
+        const body =
+            typeof req.body === "string"
+                ? JSON.parse(req.body)
+                : req.body || {};
+
+        const safePrefix = String(body.prefix || "")
+            .trim()
+            .toUpperCase()
+            .replace(/-+$/, "");
+
+        const safeSuffix = String(body.suffix || "")
+            .trim()
+            .toUpperCase();
+
+        if (!/^(FX01|AX01|VIPX)$/.test(safePrefix)) {
+            return res.status(400).json({
+                ok: false,
+                error: "Invalid prefix.",
+            });
+        }
+
+        if (!/^[A-HJ-NP-Z2-9]{4}$/.test(safeSuffix)) {
+            return res.status(400).json({
+                ok: false,
+                error: "The suffix must be 4 valid characters.",
+            });
+        }
+
+        const redis = getRedis();
+
+        if (!redis) {
+            return res.status(500).json({
+                ok: false,
+                error: "Missing REDIS_URL on server.",
+            });
+        }
+
+        const fullCode = `${safePrefix}-${safeSuffix}`;
+        const redisKey =
+            `${CODE_ENGINE_NAMESPACE}:code:${fullCode}`;
+
+        const rawRecord = await redis.get(redisKey);
+
+        if (!rawRecord) {
+            return res.status(401).json({
+                ok: false,
+                error: "Invalid code.",
+            });
+        }
+
+        let record;
+
+        try {
+            record = JSON.parse(rawRecord);
+        } catch {
+            return res.status(500).json({
+                ok: false,
+                error: "Invalid access record.",
+            });
+        }
+
+        if (record.status !== "active") {
+            return res.status(403).json({
+                ok: false,
+                error: "This code is no longer active.",
+            });
+        }
+
+        return res.status(200).json({
+            ok: true,
+            code: fullCode,
+            planId: record.planId,
+            plan: record.plan,
+            days: record.days,
+        });
+    } catch (error) {
+        console.error("VERIFY CODE ERROR", error);
+
+        return res.status(500).json({
+            ok: false,
+            error: "Server connection error.",
+        });
+    }
 }
