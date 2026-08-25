@@ -42,8 +42,9 @@ const USERFX_SITE_URL = process.env.USERFX_SITE_URL ||
  * Example:
  * https://t.me/User18Fx_bot?startapp=vault
  */
-const TELEGRAM_MINI_APP_URL = process.env.TELEGRAM_MINI_APP_URL ||
-    `${USERFX_SITE_URL.replace(/\/$/, "")}/vault`;
+const TELEGRAM_MINI_APP_URL =
+    process.env.TELEGRAM_MINI_APP_URL ||
+    USERFX_SITE_URL.replace(/\/$/, "");
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE ||
     "userfx:vault";
 const MAX_BODY_BYTES = 1024 * 1024;
@@ -680,14 +681,22 @@ function getCommandArg(ctx, index = 0) {
        return { valid: true, record,};
         }
 //// VAULT BUTTON //
-  function getOpenVaultKeyboard() {
-      const url = TELEGRAM_MINI_APP_URL;
-      const isDirectHttps = /^https:\/\//i.test(url) &&
+  function getOpenVaultKeyboard(code = "") {
+    const baseUrl = String(TELEGRAM_MINI_APP_URL || "")
+        .trim()
+        .replace(/\/$/, "");
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    const url = code
+        ? `${baseUrl}${separator}code=${encodeURIComponent(String(code).trim().toUpperCase())}`
+        : baseUrl;
+    const isDirectHttps =
+        /^https:\/\//i.test(url) &&
         !/^https:\/\/t\.me\//i.test(url);
-      return Markup.inlineKeyboard([
+    return Markup.inlineKeyboard([
         [ isDirectHttps
             ? Markup.button.webApp(BTN_OPEN_VAULT, url)
-            : Markup.button.url(BTN_OPEN_VAULT, url),],]);
+            : Markup.button.url(BTN_OPEN_VAULT, url),
+        ],]);
         }
 //// KEYBOARDS //
   function getMainKeyboard() {
@@ -824,13 +833,13 @@ function getCommandArg(ctx, index = 0) {
     }
     catch (error) {
     logger.error(
-        "PRO PANEL ERROR", getTelegramError(error));
+      "PRO PANEL ERROR", getTelegramError(error));
     }}
 //// CHANNELS //
     async function sendChannelsPanel(ctx) {
     await sendMediaSafe(ctx, "video", ASSET_CHANNELS_VIDEO);
     await ctx.reply(
-        `📺ᴄʜᴀɴɴᴇʟꜱ
+      `📺ᴄʜᴀɴɴᴇʟꜱ
     ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`, getChannelsKeyboard());
     }
 //// REFRESH //
@@ -848,18 +857,19 @@ function getCommandArg(ctx, index = 0) {
     ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`, getMainKeyboard());
     }
 //// SEND GENERATED CODE //
-    async function sendGeneratedCode(ctx, record) {
+async function sendGeneratedCode(ctx, record) {
     const safeCode = escapeHtml(record.code);
     const safePlan = escapeHtml(record.plan);
+    const keyboard = getOpenVaultKeyboard(record.code);
     await ctx.reply(
-        `✅ ᴀᴄᴄᴇꜱꜱ ᴜɴʟᴏᴄᴋᴇᴅ
-     ᴘʟᴀɴ: ${safePlan}
-     ᴄᴏᴅᴇ:
-     <code>${safeCode}</code>
-     ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`, {parse_mode: "HTML",}); await ctx.reply(
-        `🔐 ᴏᴘᴇɴ ᴛʜᴇ ᴠᴀᴜʟᴛ
-     ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴅᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ᴛᴏ ᴜꜱᴇʀꜰx.`, getOpenVaultKeyboard());
-     }
+      `✅ ᴀᴄᴄᴇꜱꜱ 𝐔𝐍𝐋𝐎𝐂𝐊𝐄𝐃
+    ᴘʟᴀɴ: ${safePlan}
+    ᴄᴏᴅᴇ:
+    <code>${safeCode}</code>
+    ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`,
+    {parse_mode: "HTML", reply_markup: keyboard.reply_markup,}
+    );
+    }
 //// VIDEOCALL FLOW //
     async function openVideocallFlow(ctx) {
     const userId = String(ctx.from?.id || "");
@@ -1070,7 +1080,7 @@ function getCommandArg(ctx, index = 0) {
     catch (error) {
     await releasePaymentClaim(chargeId);
     logger.error(
-    "VIDEOCALL PAYMENT HANDLE ERROR", {
+    "𝚅𝙸𝙳𝙴𝙾𝙲𝙰𝙻𝙻 𝙿𝙰𝚈𝙼𝙴𝙽𝚃 𝙷𝙰𝙽𝙳𝙻𝙴 𝙴𝚁𝚁𝙾𝚁", {
     userId, chargeId,...getTelegramError(error),
     });
     throw error;
@@ -1081,67 +1091,75 @@ function getCommandArg(ctx, index = 0) {
     const plan = getPlanFromPayload(payload);
     if (plan) {
     try {   
-    const record = await generateAccessCode(plan.id, 
-    "telegram", userId, chargeId);
+
+    const record = await generateAccessCode( plan.id,
+    "telegram", userId, chargeId
+    );
     const existing = await getPaidUser(userId);
     const oldRank = tierRank(existing?.tier || null);
     const newRank = tierRank(plan.tier);
     const effectiveRecord = newRank >= oldRank
-    ? {...existing, telegramPaymentChargeId: chargeId, paidAt: Date.now(), tier: plan.tier, planId: plan.id, code: record.code, codePrefix: plan.prefix, source: "telegram",
-    } : {...existing, telegramPaymentChargeId: chargeId, paidAt: Date.now(), lastPurchasedPlan: plan.id, lastPurchasedCode: record.code,source: "telegram",};
+    ? {...existing, telegramPaymentChargeId: chargeId, 
+        paidAt: Date.now(), tier: plan.tier, planId: 
+        plan.id, code: record.code,codePrefix: plan.prefix,
+       source: "telegram", }
+    : {...existing, telegramPaymentChargeId: chargeId, 
+       paidAt: Date.now(), lastPurchasedPlan: plan.id,
+       lastPurchasedCode: record.code, source: "telegram",
+    };
     await setPaidUser(userId, effectiveRecord);
     await sendGeneratedCode(ctx, record);
-    await ctx.reply(
-    `✅ ${plan.name} ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ ${plan.name} ᴀᴄᴄᴇꜱꜱ ɪꜱ ɴᴏᴡ ʀᴇᴀᴅʏ.`, getMainKeyboard());
     return;
     }
     catch (error) {
-    await releasePaymentClaim(chargeId); logger.error(
-    "ACCESS CODE GENERATION ERROR", {userId, payload, chargeId,...getTelegramError(error),
+    await releasePaymentClaim(chargeId);
+    logger.error("ACCESS CODE GENERATION ERROR", {
+        userId,
+        payload,
+        chargeId,
+    ...getTelegramError(error),
     stack: getErrorStack(error),
     });
-    await ctx.reply(
-    `⚠️ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
-     ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
-     ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+    await ctx.reply(`⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
+    ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
+    ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
     return;
     }}
-    logger.warn(
-    "UNKNOWN PAYMENT PAYLOAD", { userId, payload, chargeId,
+logger.warn("UNKNOWN PAYMENT PAYLOAD", {userId, payload, chargeId,
     });
     }
 //// GET CODE PANEL //
     async function openGetCodePanel(ctx,
-    source = 
-    "telegram" 
-    ) {
-    try {
-    await trackButtonClick(ctx,
-    `GET CODE · ${source}`
-    );
-    await sendMediaSafe(
-    ctx,
-    "photo",ASSET_GETCODE_IMAGE
-    );
-    await ctx.reply(
-    "🔐ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",getAccessKeyboard()
-    );}
-    catch (error) {
-    logger.error(
-    "GET CODE PANEL ERROR", { source,
-    ...getTelegramError(error),
-    stack: getErrorStack(error),
-    });
-    await ctx.reply(
-    "⚠️Unable to open the access panel."
-     ).catch(() => {});
-     }}
+      source = 
+      "ᴛᴇʟᴇɢʀᴀᴍ" 
+      ) {
+      try {
+      await trackButtonClick(ctx,
+      `ɢᴇᴛ ᴄᴏᴅᴇ · ${source}`
+      );
+      await sendMediaSafe(
+      ctx,
+      "ᴘʜᴏᴛᴏ",ASSET_GETCODE_IMAGE
+      );
+      await ctx.reply(
+      "🔐ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ:",getAccessKeyboard()
+      );}
+      catch (error) {
+      logger.error(
+      "𝙶𝙴𝚃 𝙲𝙾𝙳𝙴 𝙿𝙰𝙽𝙴𝙻 𝙴𝚁𝚁𝙾𝚁", { source,
+       ...getTelegramError(error),
+      stack: getErrorStack(error),
+      });
+      await ctx.reply(
+      "⚠️ᴜɴᴀʙʟᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ."
+       ).catch(() => {});
+       }}
      bot.command(
-    "getcode", async (ctx) => {
-    await openGetCodePanel(ctx,
-    "COMMAND"
-    );
-    });
+      "getcode", async (ctx) => {
+      await openGetCodePanel(ctx,
+      "COMMAND"
+      );
+      });
 //// USER START //
 async function handleUserStart(ctx) {
     try {
@@ -1218,7 +1236,7 @@ async function handleUserStart(ctx) {
         "START ERROR", {...getTelegramError(error), stack: getErrorStack(error),
         });
         await ctx.reply(
-        "⚠️Unable to open the payment. Please try again."
+        "⚠️ᴜɴᴀʙʟᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ."
         ).catch(() => {});
         }}
         bot.start(handleUserStart);
@@ -1236,35 +1254,33 @@ async function handleUserStart(ctx) {
         await ctx.answerCbQuery();
         await sendVipInvoice(ctx);
         }
-        catch (error) {
-        logger.error(
-        "PAY VIP ERROR", getTelegramError(error));
+        catch (error) {logger.error(
+        "𝙿𝙰𝚈  𝚅𝙸𝙿 𝙴𝚁𝚁𝙾𝚁", getTelegramError(error));
         }
         });
-        bot.action(
+
+    bot.action(
         "pay_pro_stars", async (ctx) => {
         try {
         await ctx.answerCbQuery();
         await sendProInvoice(ctx);
         }
-        catch (error) {
-        logger.error(
-        "PAY PRO ERROR", getTelegramError(error));
+        catch (error) {logger.error(
+        "𝙿𝙰𝚈 𝙿𝚁𝙾 𝙴𝚁𝚁𝙾𝚁", getTelegramError(error));
         }
         });
-        bot.action(
+    bot.action(
         "pay_basic_stars", async (ctx) => {
         try {
         await ctx.answerCbQuery();
         await sendBasicInvoice(ctx);
         }
-         catch (error) {
-        logger.error(
-        "PAY BASIC ERROR", getTelegramError(error));
+         catch (error) {logger.error(
+        "𝙿𝙰𝚈 𝙱𝙰𝚂𝙸𝙲 𝙴𝚁𝚁𝙾𝚁 ", getTelegramError(error));
         }
         });
 //// PRE CHECKOUT // 
-        bot.on(
+    bot.on(
         "pre_checkout_query", async (ctx) => {
         try {
         const payload = ctx.update

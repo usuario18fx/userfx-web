@@ -6,10 +6,10 @@ import "./VaultHome.css"; // ← el CSS ahora vive en su propio archivo (con los
 import VisitorCounter from "./VisitorCounter";
 import Crown4D from "../components/Crown4D/Crown4D";
 
-const LOGO="/assets/userfx-logo-sin.png";
-const BRICK="/assets/brick-wall.png";
-const DAMASK="/assets/damask.png";
-const PUBLIC_INSIDE=["/assets/album/pic01.png",
+  const LOGO="/assets/userfx-logo-sin.png";
+  const BRICK="/assets/brick-wall.png";
+  const DAMASK="/assets/damask.png";
+  const PUBLIC_INSIDE=["/assets/album/pic01.png",
                      "/assets/album/pic02.png",
                      "/assets/album/pic03.png",
                      "/assets/album/pic04.png",
@@ -17,14 +17,14 @@ const PUBLIC_INSIDE=["/assets/album/pic01.png",
                      "/assets/album/pic06.png",
                      "/assets/album/pic07.png",
     ];
-const PRIVATE_INSIDE = ["/assets/album/pix01.png",
+  const PRIVATE_INSIDE = ["/assets/album/pix01.png",
                         "/assets/album/pix02.png",
                         "/assets/album/pix03.png",
     ];
-const LOCK_VIDEOS = ["/assets/video01.mp4",
+  const LOCK_VIDEOS = ["/assets/video01.mp4",
                      "/assets/video02.mp4",
     ];
-const ICONS={corona:"/assets/iconos/corona.png",
+  const ICONS={corona:"/assets/iconos/corona.png",
              candado:"/assets/iconos/candado.png",
              rosa:"/assets/iconos/rosa.png",
              fotos:"/assets/iconos/fotos.png",
@@ -32,12 +32,12 @@ const ICONS={corona:"/assets/iconos/corona.png",
              user:"/assets/iconos/user.png",
 
     };
-const TICKER_ITEMS=["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
+  const TICKER_ITEMS=["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
                     "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
                     "| FX | CLOSED CIRCUIT | TORONTO,CANADA",
                     "| ALL RIGHTS RESERVED |",
     ];
-const STEPS = [{n: "01",
+  const STEPS = [{n: "01",
                  title: "UNLOCK YOUR ACCESS",
                  text: "Each key unlocks the private collection for a set period of time.",},
                {n: "02",
@@ -50,7 +50,7 @@ const STEPS = [{n: "01",
                 title: "OPEN THE VAULT",
                 text: "Enter the final four characters of your code. The door takes care of the rest.",},
     ];
-const PLANS = [{ id: "basic",
+  const PLANS = [{ id: "basic",
                  tab: "BS02-",
                  name: "BASIC",
                  days: 7,
@@ -72,7 +72,7 @@ const PLANS = [{ id: "basic",
                            { icon: ICONS.fotos, text: "Full drops" },
                            { icon: ICONS.telegram, text: "Private chat" },],},
     ];
-const FAQS = [
+  const FAQS = [
     { q: "How do I get a code?",
       a: "This preview does not generate keys. Request yours by DM on Telegram.",},
     { q: "How long does my access last?",
@@ -84,13 +84,13 @@ const FAQS = [
     { q: "Are refunds available?",
       a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",},
     ];
-    const TEASERS = [1, 2, 3, 4, 5, 6].map(
+  const TEASERS = [1, 2, 3, 4, 5, 6].map(
     (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
     );
     function nextFridayUtc() {
-    const now = new Date();
-    const day = now.getUTCDay(); let add = (5 - day + 7) % 7;
-    const target = new Date(Date.UTC(
+  const now = new Date();
+  const day = now.getUTCDay(); let add = (5 - day + 7) % 7;
+  const target = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
     now.getUTCDate() + add, 22, 0, 0));
@@ -100,18 +100,20 @@ const FAQS = [
     return target;
     }
     function useCountdown() {
-    const [label, setLabel] = useState("· · ·");
-    useEffect(() => {
-    const tick = () => {
-    const diff = nextFridayUtc().getTime() - Date.now();
-    if (diff <= 0) { setLabel("NOW");
+  const [label, setLabel] = useState("· · ·");
+
+  useEffect(() => {
+  const tick = () => {
+  const diff = nextFridayUtc().getTime() - Date.now();
+    if (diff <= 0) {
+        setLabel("NOW");
     return;
     }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    const p = (n: number) => String(n).padStart(2, "0");
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      const p = (n: number) => String(n).padStart(2, "0");
       setLabel(`${d}d ${p(h)}:${p(m)}:${p(s)}`);
     };
     tick();
@@ -125,9 +127,9 @@ function Reveal({ children, delay = 0, className = "",
   const ref = useRef<HTMLDivElement | null>(null);
   const [on, setOn] = useState(false);
   useEffect(() => {
-    const el = ref.current;
+  const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
+  const io = new IntersectionObserver(
      ([e]) => {
     if (e.isIntersecting) setOn(true);
     },{threshold: 0.16 }
@@ -141,9 +143,9 @@ function Reveal({ children, delay = 0, className = "",
               </div>
     );
     }
-function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
-  const line = items.join("   🜲   ") + "   🜲   ";
-  return (
+  function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
+    const line = items.join("   🜲   ") + "   🜲   ";
+    return (
               <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
               <div className="vx-tickerTrack">
               <span>{line.repeat(4)}</span>
@@ -156,7 +158,7 @@ function HoldShot({ src }: { src: string }) {
   const [hold, setHold] = useState(false);
   const isVideo = src.endsWith(".mp4") ||
                   src.endsWith(".webm");
-  return (
+    return (
               <div className={`vx-shot ${hold ? "is-open" : ""}`} onContextMenu={(e) => e.preventDefault()} onPointerDown={() => setHold(true)} onPointerUp={() => setHold(false)} onPointerLeave={() => setHold(false)} onPointerCancel={() => setHold(false)}>
                {isVideo ? (
               <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400} style={{ display: "block", width: "100%", height: "100%", maxWidth: "100%", objectFit: "cover", }}/>
@@ -178,8 +180,8 @@ function HoldShot({ src }: { src: string }) {
               </div>
     );}
 
-const STORAGE_KEY = 'vault_unlocked';
-const MAX_ATTEMPTS = 5;
+  const STORAGE_KEY = 'vault_unlocked';
+  const MAX_ATTEMPTS = 5;
 
 export default function VaultHome() {
 
@@ -199,23 +201,38 @@ export default function VaultHome() {
   const [verifyError, setVerifyError] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [activePlan, setActivePlan] = useState("basic");
-    useEffect(() => {
-    if (sessionStorage.getItem(STORAGE_KEY) === 'true') setUnlocked(true);
-    fetch('/api/miniapp-track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        initData: window.Telegram?.WebApp?.initData || '',
+  
+  useEffect(() => {
+    if (sessionStorage.getItem(STORAGE_KEY) === "true") {
+    setUnlocked(true);
+    }
+  const codeFromTelegram = new URLSearchParams(
+    window.location.search
+    ).get("code");
+  const match = String(codeFromTelegram || "")
+    .trim()
+    .toUpperCase()
+    .match(/^(FX01|AX01|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
+    if (match) {
+    setPrefix(match[1]);
+    setSuffix(match[2]);
+    setCodeModal(true);
+    }
+  fetch("/api/miniapp-track", {
+    method: "POST",headers: {
+    "Content-Type": "application/json",
+    },
+    body: JSON.stringify({initData: window.Telegram?.WebApp?.initData || "",
     }),
     }).catch(() => {});
     }, []);
 
   useEffect(() => {
     const tick = () => {
-      const d = new Date();
-      const p = (n: number) => String(n).padStart(2, '0');
-      setClock(
-        `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+    const d = new Date();
+    const p = (n: number) => String(n).padStart(2, "0");
+    setClock(
+    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
     );
     };
     tick();
@@ -225,35 +242,35 @@ export default function VaultHome() {
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-    if (attempts >= MAX_ATTEMPTS) {
-      setVerifyError('Demasiados intentos. Recarga la página.');
-      return;
+    if (attempts >= MAX_ATTEMPTS) {setVerifyError(
+        'ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..');
+    return;
     }
     setVerifyLoading(true);
     setVerifyError('');
     try {
-      const res = await fetch('/api/verify', {
+    const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix, suffix }),
     });
-      const data = await res.json();
-      if (data.ok) {
+    const data = await res.json();
+    if (data.ok) {
         sessionStorage.setItem(STORAGE_KEY, 'true');
         setUnlocked(true);
         setCodeModal(false);
     } else {
         setAttempts((n) => n + 1);
-        setVerifyError(data.error || 'Código inválido');
+        setVerifyError(data.error || 
+          'ᴄᴏ́ᴅɪɢᴏ ɪɴᴠᴀ́ʟɪᴅᴏ');
         setSuffix('');
     }
     } catch {
-      setVerifyError('Error de conexión');
+      setVerifyError('ᴇʀʀᴏʀ ᴅᴇ ᴄᴏɴᴇxɪᴏ́ɴ');
     } finally {
       setVerifyLoading(false);
     }}
-       return (
-              <div id="top" className="vx">
+    return (  <div id="top" className="vx">
               <header className="vx-hud">
               <a href="#top" className="vx-brand">
               <img src={LOGO} alt="USER FX" />
