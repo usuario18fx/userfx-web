@@ -2353,3 +2353,301 @@ video {
   .vd-title-pro,
   .vd-title-vip { font-size: 20px;}
  }
+
+/* ===== RIGHT ACCESS DRAWER ===== */
+.vx-lock {
+  width: min(100%, 420px) !important;
+  max-width: 420px !important;
+}
+
+.vx-lockCard {
+  max-width: 420px !important;
+}
+
+.vx-codeDrawer {
+  width: 100%;
+  margin: 18px auto 0;
+  padding: 18px;
+  border: 1px solid rgba(212, 168, 58, 0.48);
+  border-radius: 6px;
+  background:
+    linear-gradient(145deg, rgba(26, 24, 20, 0.98), rgba(7, 7, 8, 0.98)),
+    url("/assets/damask.png");
+  background-size: auto, 180px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+    0 16px 36px rgba(0, 0, 0, 0.38);
+  animation: vxCodeDrawerIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes vxCodeDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vx-codeDrawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.vx-codeDrawerKicker {
+  margin: 0;
+  color: #f6d77a;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.vx-codeDrawerSignal {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #be163f;
+  box-shadow: 0 0 12px rgba(190, 22, 63, 0.8);
+  animation: vxCodeSignal 1.8s ease-in-out infinite;
+}
+
+@keyframes vxCodeSignal {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.vx-codeDrawerHint {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.52);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+}
+
+.vx-inlineCodeForm {
+  width: 100%;
+}
+
+.vx-inlineCodeInput {
+  width: 100%;
+  min-width: 0;
+  height: 54px;
+  padding: 0 15px;
+  border: 1px solid rgba(246, 215, 122, 0.35);
+  border-radius: 4px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  caret-color: #f6d77a;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.vx-inlineCodeInput::placeholder {
+  color: rgba(255, 255, 255, 0.24);
+}
+
+.vx-inlineCodeInput:focus {
+  border-color: #d4a83a;
+  background: rgba(0, 0, 0, 0.72);
+  box-shadow: 0 0 0 3px rgba(212, 168, 58, 0.1);
+}
+
+.vx-inlineCodeInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.vx-rememberOptions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  margin: 12px 0;
+  padding: 0;
+  border: 0;
+}
+
+.vx-srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vx-rememberOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease;
+}
+
+.vx-rememberOption:hover {
+  border-color: rgba(212, 168, 58, 0.34);
+  transform: translateY(-1px);
+}
+
+.vx-rememberOption.is-selected {
+  border-color: rgba(212, 168, 58, 0.55);
+  background: rgba(212, 168, 58, 0.08);
+}
+
+.vx-rememberOption input {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  margin: 2px 0 0;
+  accent-color: #d4a83a;
+}
+
+.vx-rememberCopy {
+  min-width: 0;
+  color: #eee1bb;
+  font-family: var(--mono);
+  font-size: 8px;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-align: left;
+}
+
+.vx-rememberCopy small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 7px;
+  letter-spacing: 0.04em;
+}
+
+.vx-codeDrawerSubmit {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #d4a83a;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #4b3b13, #1f1807);
+  color: #f8df8c;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition:
+    color 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.vx-codeDrawerSubmit:hover:not(:disabled) {
+  color: #1a1104;
+  background: linear-gradient(180deg, #f2d476, #b88924);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(212, 168, 58, 0.18);
+}
+
+.vx-codeDrawerSubmit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.vx-codeDrawerError {
+  margin: 11px 0 0;
+  color: #df7089;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.vx-forgetCode {
+  display: block;
+  margin: 12px auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.38);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.vx-forgetCode:hover {
+  color: #df7089;
+}
+
+@media (max-width: 900px) {
+  .vx-lock,
+  .vx-lockCard {
+    width: 100% !important;
+    max-width: 420px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .vx-codeDrawer {
+    padding: 14px;
+  }
+
+  .vx-rememberOptions {
+    grid-template-columns: 1fr;
+  }
+
+  .vx-inlineCodeInput {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-codeDrawer,
+  .vx-codeDrawerSignal {
+    animation: none;
+  }
+}
+/* Sube todo el bloque derecho: video, botones y cajón */
+@media (min-width: 960px) {
+  .vx-lock.vx-lockRaise {
+    transform: translateY(-280px) translateX(-50px) !important;
+  }
+}
+
+/* En celular conserva su posición normal */
+@media (max-width: 959px) {
+  .vx-lock.vx-lockRaise {
+    transform: none !important;
+  }
+}

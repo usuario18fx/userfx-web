@@ -180,8 +180,10 @@ function HoldShot({ src }: { src: string }) {
               </div>
     );}
 
-  const STORAGE_KEY = 'vault_unlocked';
+  const STORAGE_KEY = "vault_unlocked";
+  const SAVED_CODE_KEY = "vault_saved_code";
   const MAX_ATTEMPTS = 5;
+  type RememberMode = "session" | "code";
 
 export default function VaultHome() {
 
@@ -201,6 +203,10 @@ export default function VaultHome() {
   const [verifyError, setVerifyError] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [activePlan, setActivePlan] = useState("basic");
+  const [codeDrawer, setCodeDrawer] = useState(false);
+  const [rememberMode, setRememberMode] = useState<RememberMode>("session");
+  const [savedCodeStored, setSavedCodeStored] = useState(false);
+  const inlineCodeRef = useRef<HTMLInputElement | null>(null);
   
   useEffect(() => {
     if (sessionStorage.getItem(STORAGE_KEY) === "true") {
@@ -209,14 +215,21 @@ export default function VaultHome() {
   const codeFromTelegram = new URLSearchParams(
     window.location.search
     ).get("code");
-  const match = String(codeFromTelegram || "")
+  const savedCode = localStorage.getItem(SAVED_CODE_KEY);
+  const codeToLoad = codeFromTelegram || savedCode;
+  const match = String(codeToLoad || "")
     .trim()
     .toUpperCase()
-    .match(/^(FX01|AX01|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
+    .match(/^(BS02|PX01|VX03|FX01|AX01|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
     if (match) {
     setPrefix(match[1]);
     setSuffix(match[2]);
-    setCodeModal(true);
+    if (codeFromTelegram) {
+      setCodeModal(true);
+    } else {
+      setRememberMode("code");
+      setSavedCodeStored(true);
+    }
     }
   fetch("/api/miniapp-track", {
     method: "POST",headers: {
@@ -246,20 +259,52 @@ export default function VaultHome() {
         'ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..');
     return;
     }
+    const normalizedPrefix = prefix
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+    const normalizedSuffix = suffix
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-HJ-NP-Z2-9]/g, "");
+
+    if (normalizedPrefix.length !== 4 || normalizedSuffix.length !== 4) {
+      setVerifyError("ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴍᴘʟᴇᴛᴇ ᴀᴄᴄᴇꜱꜱ ᴋᴇʏ");
+      return;
+    }
+
+    setPrefix(normalizedPrefix);
+    setSuffix(normalizedSuffix);
     setVerifyLoading(true);
     setVerifyError('');
     try {
     const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prefix, suffix }),
+        body: JSON.stringify({
+          prefix: normalizedPrefix,
+          suffix: normalizedSuffix,
+        }),
     });
     const data = await res.json();
     if (data.ok) {
     sessionStorage.setItem(STORAGE_KEY, "true");
-    sessionStorage.setItem("vault_plan", data.planId || prefix);
+    sessionStorage.setItem("vault_plan", data.planId || normalizedPrefix);
+
+    if (rememberMode === "code") {
+      localStorage.setItem(
+        SAVED_CODE_KEY,
+        `${normalizedPrefix}-${normalizedSuffix}`
+      );
+      setSavedCodeStored(true);
+    } else {
+      localStorage.removeItem(SAVED_CODE_KEY);
+      setSavedCodeStored(false);
+    }
+
       setUnlocked(true);
       setCodeModal(false);
+      setCodeDrawer(false);
       setVerifyError("");
   // Elimina el código de la URL después de validarlo
     const currentUrl = new URL(window.location.href);
@@ -290,6 +335,42 @@ export default function VaultHome() {
     } finally {
       setVerifyLoading(false);
     }}
+
+    function handleInlineCodeChange(value: string) {
+      const compactCode = value
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "")
+        .slice(0, 8);
+
+      setPrefix(compactCode.slice(0, 4));
+      setSuffix(compactCode.slice(4, 8));
+      setVerifyError("");
+    }
+
+    function toggleCodeDrawer() {
+      if (unlocked) {
+        openUnlockedVault();
+        return;
+      }
+
+      const nextOpen = !codeDrawer;
+      setCodeDrawer(nextOpen);
+
+      if (nextOpen) {
+        window.setTimeout(() => inlineCodeRef.current?.focus(), 120);
+      }
+    }
+
+    function forgetSavedCode() {
+      localStorage.removeItem(SAVED_CODE_KEY);
+      setSavedCodeStored(false);
+      setRememberMode("session");
+      setPrefix("");
+      setSuffix("");
+      setVerifyError("");
+      window.setTimeout(() => inlineCodeRef.current?.focus(), 0);
+    }
+
     function openUnlockedVault() {
   if (unlocked) {
     document
@@ -412,7 +493,9 @@ export default function VaultHome() {
               </div>
               </div>
               </div>
-          <aside className="vx-lock" style={{ position: "relative", width: "calc(100% - 24px)", maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
+              <aside className="vx-lock vx-lockRaise" style={{ position: "relative",
+               width: "calc(100% - 24px)",
+               maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
               <div className="vx-frameA" />
               <div className="vx-frameB" />
               <div className="vx-lockCard" style={{ width: "100%", maxWidth: "450px", minWidth: 0, padding: "20px", boxSizing: "border-box",}}>
@@ -423,13 +506,65 @@ export default function VaultHome() {
               </span>
               </div>
               <div className="vx-lockActions" style={{ width: "80%", display: "flex", flexDirection: "column", alignItems: "stretch", gap: "14px", marginTop: "16px",}}>
-              <button type="button" className="vault-unlock" onClick={() => setCodeModal(true)} style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #2a2a2a, #111111)", color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", cursor: "pointer",}}>
-               UNLOCK ALBUM
+              <button type="button" className="vault-unlock" onClick={toggleCodeDrawer} aria-expanded={codeDrawer} aria-controls="vx-code-drawer" style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #2a2a2a, #111111)", color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", cursor: "pointer",}}>
+               {unlocked ? "OPEN ALBUM" : "I ALREADY HAVE A CODE"}
               </button>
-              <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" style={{ width: "80%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #9f173d", borderRadius: "4px", background: "linear-gradient(180deg, #6f102d, #310713)", color: "#f18aa5", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textDecoration: "none",}}>
+              <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #9f173d", borderRadius: "4px", background: "linear-gradient(180deg, #6f102d, #310713)", color: "#f18aa5", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textDecoration: "none",}}>
                GET MY CODE
               </a>
               </div>
+              {codeDrawer && !unlocked ? (
+              <div id="vx-code-drawer" style={{ width: "calc(100% - 24px)", margin: "18px auto 0", padding: "18px", boxSizing: "border-box", border: "1px solid rgba(212, 168, 58, 0.48)", borderRadius: "6px", background: "linear-gradient(145deg, rgba(26, 24, 20, 0.98), rgba(7, 7, 8, 0.98))", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.025), 0 16px 36px rgba(0,0,0,0.38)",}}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "6px",}}>
+              <p style={{ margin: 0, color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "11px", fontWeight: 800, letterSpacing: "0.16em",}}>
+               🜲 PRIVATE KEY ACCESS
+              </p>
+              <span style={{ width: "7px", height: "7px", flex: "0 0 auto", borderRadius: "50%", background: "#be163f", boxShadow: "0 0 12px rgba(190,22,63,0.8)",}} />
+              </div>
+              <p style={{ margin: "0 0 16px", color: "rgba(255,255,255,0.52)", fontFamily: "var(--mono), monospace", fontSize: "9px", lineHeight: 1.6, letterSpacing: "0.1em",}}>
+               ENTER THE COMPLETE CODE YOU RECEIVED
+              </p>
+              <form onSubmit={handleVerify}>
+              <input ref={inlineCodeRef} value={prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : ""} onChange={(event) => handleInlineCodeChange(event.target.value)} placeholder="BS02-XXXX" maxLength={9} autoCapitalize="characters" autoComplete="off" spellCheck={false} disabled={verifyLoading || attempts >= MAX_ATTEMPTS} aria-label="Complete access code" style={{ width: "100%", minWidth: 0, height: "54px", padding: "0 15px", boxSizing: "border-box", border: "1px solid rgba(246, 215, 122, 0.35)", borderRadius: "4px", outline: "none", background: "rgba(0,0,0,0.52)", color: "#ffffff", caretColor: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "15px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textTransform: "uppercase",}} />
+              <fieldset style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", minWidth: 0, margin: "12px 0", padding: 0, border: 0,}}>
+              <legend style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)",}}>
+               Remember access preference
+              </legend>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", minWidth: 0, padding: "10px", border: rememberMode === "session" ? "1px solid rgba(212,168,58,0.55)" : "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", background: rememberMode === "session" ? "rgba(212,168,58,0.08)" : "rgba(255,255,255,0.025)", cursor: "pointer",}}>
+              <input type="radio" name="remember-access" value="session" checked={rememberMode === "session"} onChange={() => setRememberMode("session")} style={{ margin: "2px 0 0", accentColor: "#d4a83a",}} />
+              <span style={{ minWidth: 0, color: "#eee1bb", fontFamily: "var(--mono), monospace", fontSize: "8px", lineHeight: 1.45, letterSpacing: "0.08em",}}>
+               KEEP SESSION
+              <small style={{ display: "block", marginTop: "3px", color: "rgba(255,255,255,0.4)", fontSize: "7px", letterSpacing: "0.04em",}}>
+               OPEN UNTIL THE SESSION ENDS
+              </small>
+              </span>
+              </label>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", minWidth: 0, padding: "10px", border: rememberMode === "code" ? "1px solid rgba(212,168,58,0.55)" : "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", background: rememberMode === "code" ? "rgba(212,168,58,0.08)" : "rgba(255,255,255,0.025)", cursor: "pointer",}}>
+              <input type="radio" name="remember-access" value="code" checked={rememberMode === "code"} onChange={() => setRememberMode("code")} style={{ margin: "2px 0 0", accentColor: "#d4a83a",}} />
+              <span style={{ minWidth: 0, color: "#eee1bb", fontFamily: "var(--mono), monospace", fontSize: "8px", lineHeight: 1.45, letterSpacing: "0.08em",}}>
+               SAVE MY CODE
+              <small style={{ display: "block", marginTop: "3px", color: "rgba(255,255,255,0.4)", fontSize: "7px", letterSpacing: "0.04em",}}>
+               AUTOFILL ON THIS DEVICE
+              </small>
+              </span>
+              </label>
+              </fieldset>
+              <button type="submit" disabled={verifyLoading || attempts >= MAX_ATTEMPTS} style={{ width: "100%", minHeight: "50px", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #4b3b13, #1f1807)", color: "#f8df8c", fontFamily: "var(--mono), monospace", fontSize: "11px", fontWeight: 900, letterSpacing: "0.18em", cursor: verifyLoading || attempts >= MAX_ATTEMPTS ? "not-allowed" : "pointer", opacity: verifyLoading || attempts >= MAX_ATTEMPTS ? 0.55 : 1,}}>
+               {verifyLoading ? "VERIFYING..." : "VERIFY & OPEN"}
+              </button>
+              {verifyError ? (
+              <p role="alert" style={{ margin: "11px 0 0", color: "#df7089", fontFamily: "var(--mono), monospace", fontSize: "9px", lineHeight: 1.5, letterSpacing: "0.08em", textAlign: "center",}}>
+               {verifyError}
+              </p>
+              ) : null}
+              </form>
+              {savedCodeStored ? (
+              <button type="button" onClick={forgetSavedCode} style={{ display: "block", margin: "12px auto 0", padding: 0, border: 0, background: "transparent", color: "rgba(255,255,255,0.38)", fontFamily: "var(--mono), monospace", fontSize: "8px", letterSpacing: "0.12em", textDecoration: "underline", textUnderlineOffset: "3px", cursor: "pointer",}}>
+               FORGET SAVED CODE
+              </button>
+              ) : null}
+              </div>
+              ) : null}
               </div>
           </aside>
               </div>
