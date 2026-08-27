@@ -112,7 +112,7 @@ const VAULT_WEBHOOK_SECRET =
 function isVaultPayload(payload: unknown) {
   const value = String(payload || "").trim();
 
-  return /^(BASC|PRX0|VIPX)-/i.test(value);
+  return /^(BSIC|PRX0|VIPX)-/i.test(value);
 }
 
 async function relayVaultUpdate(update: unknown) {
@@ -490,7 +490,7 @@ const PLAN_CONFIG = {
   basic: {
     id: "basic",
     name: "BASIC",
-    prefix: "BASC",
+    prefix: "BSIC",
     stars: BASIC_STARS_PRICE,
     days: 7,
     tier: TIER_BASIC,

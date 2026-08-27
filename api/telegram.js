@@ -69,7 +69,7 @@ const VAULT_WEBHOOK_SECRET = process.env.VAULT_WEBHOOK_SECRET ||
     "";
 function isVaultPayload(payload) {
     const value = String(payload || "").trim();
-    return /^(BASC|PRX0|VIPX)-/i.test(value);
+    return /^(BSIC|PRX0|VIPX)-/i.test(value);
 }
 async function relayVaultUpdate(update) {
     if (!VAULT_WEBHOOK_URL || !VAULT_WEBHOOK_SECRET) {
@@ -416,7 +416,7 @@ const PLAN_CONFIG = {
     basic: {
         id: "basic",
         name: "BASIC",
-        prefix: "BASC",
+        prefix: "BSIC",
         stars: BASIC_STARS_PRICE,
         days: 7,
         tier: TIER_BASIC,
@@ -1767,7 +1767,7 @@ adminBot.command("code", async (ctx) => {
     }
     const code = getCommandArg(ctx);
     if (!code) {
-        await ctx.reply("Usage: /code FX01-XXXX");
+        await ctx.reply("Usage: /code BSIC-XXXX");
         return;
     }
     const result = await validateAccessCode(code);
