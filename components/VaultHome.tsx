@@ -9,17 +9,30 @@ import Crown4D from "../components/Crown4D/Crown4D";
   const LOGO="/assets/userfx-logo-sin.png";
   const BRICK="/assets/brick-wall.png";
   const DAMASK="/assets/damask.png";
-  const PUBLIC_INSIDE=["/assets/album/pic01.png",
-                     "/assets/album/pic02.png",
-                     "/assets/album/pic03.png",
-                     "/assets/album/pic04.png",
-                     "/assets/album/pic05.png",
-                     "/assets/album/pic06.png",
-                     "/assets/album/pic07.png",
+  const privatePhoto=(pathname:string)=>
+    `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+  const PREVIEW_INSIDE=["/assets/album/PRVW/PRVW-01.jpg",
+                     "/assets/album/PRVW/PRVW-02.jpg",
+                     "/assets/album/PRVW/PRVW-03.jpg",
+                     "/assets/album/PRVW/PRVW-04.jpg",
+                     "/assets/album/PRVW/PRVW-05.jpg",
+                     "/assets/album/PRVW/PRVW-06.jpg",
+                     "/assets/album/PRVW/PRVW-07.jpg",
     ];
-  const PRIVATE_INSIDE = ["/assets/album/pix01.png",
-                        "/assets/album/pix02.png",
-                        "/assets/album/pix03.png",
+  const BASIC_INSIDE=[privatePhoto("userfx-album/BSIC/BSIC-01.jpg"),
+                     privatePhoto("userfx-album/BSIC/BSIC-02.jpg"),
+                     privatePhoto("userfx-album/BSIC/BSIC-03.jpg"),
+                     privatePhoto("userfx-album/BSIC/BSIC-04.jpg"),
+                     privatePhoto("userfx-album/BSIC/BSIC-05.jpg"),
+    ];
+  const PRO_INSIDE=[privatePhoto("userfx-album/PRX0/PRX0-01.jpg"),
+                   privatePhoto("userfx-album/PRX0/PRX0-02.jpg"),
+                   privatePhoto("userfx-album/PRX0/PRX0-03.jpg"),
+    ];
+  const VIP_INSIDE=[privatePhoto("userfx-album/VIPX/VIPX-01.jpg"),
+                   privatePhoto("userfx-album/VIPX/VIPX-02.jpg"),
+                   privatePhoto("userfx-album/VIPX/VIPX-03.jpg"),
+                   privatePhoto("userfx-album/VIPX/VIPX-04.jpg"),
     ];
   const LOCK_VIDEOS = ["/assets/video01.mp4",
                      "/assets/video02.mp4",
@@ -27,10 +40,6 @@ import Crown4D from "../components/Crown4D/Crown4D";
   const ICONS={corona:"/assets/iconos/corona.png",
              candado:"/assets/iconos/candado.png",
              rosa:"/assets/iconos/rosa.png",
-             fotos:"/assets/iconos/fotos.png",
-             telegram:"/assets/iconos/telegram.png",
-             user:"/assets/iconos/user.png",
-
     };
   const TICKER_ITEMS=["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
                     "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
@@ -50,28 +59,6 @@ import Crown4D from "../components/Crown4D/Crown4D";
                 title: "OPEN THE VAULT",
                 text: "Enter the final four characters of your code. The door takes care of the rest.",},
     ];
-  const PLANS = [{ id: "basic",
-                 tab: "BS02-",
-                 name: "BASIC",
-                 days: 7,
-                 benefits:[{icon:ICONS.candado,text: "Enter the vault" },
-                           {icon:ICONS.fotos,text: "BASIC drops" },
-                           {icon:ICONS.corona,text: "Instant access" },],},
-               { id: "pro",
-                 tab: "PX01-",
-                 name: "PRO",
-                 days: 30,
-                 benefits:[{ icon: ICONS.candado, text: "Unlock more" },
-                           { icon: ICONS.fotos, text: "Exclusive PRO drops" },
-                           { icon: ICONS.telegram, text: "Private channels" },],},
-               { id: "vip",
-                 tab: "VX03-",
-                 name: "VIP",
-                 days: 90,
-                 benefits:[{ icon: ICONS.candado, text: "No limits" },
-                           { icon: ICONS.fotos, text: "Full drops" },
-                           { icon: ICONS.telegram, text: "Private chat" },],},
-    ];
   const FAQS = [
     { q: "How do I get a code?",
       a: "This preview does not generate keys. Request yours by DM on Telegram.",},
@@ -84,9 +71,6 @@ import Crown4D from "../components/Crown4D/Crown4D";
     { q: "Are refunds available?",
       a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",},
     ];
-  const TEASERS = [1, 2, 3, 4, 5, 6].map(
-    (n) => `/assets/pic${String(n).padStart(2, "0")}.png`
-    );
     function nextFridayUtc() {
   const now = new Date();
   const day = now.getUTCDay(); let add = (5 - day + 7) % 7;
@@ -161,13 +145,9 @@ function HoldShot({ src }: { src: string }) {
     return (
               <div className={`vx-shot ${hold ? "is-open" : ""}`} onContextMenu={(e) => e.preventDefault()} onPointerDown={() => setHold(true)} onPointerUp={() => setHold(false)} onPointerLeave={() => setHold(false)} onPointerCancel={() => setHold(false)}>
                {isVideo ? (
-              <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400} style={{ display: "block", width: "100%", height: "100%", maxWidth: "100%", objectFit: "cover", }}/>
+              <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400}/>
     ) : (
-              <img src={src} alt="" draggable={false} className="vx-shotMedia" width={300} height={400} style={{ display: "block",
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "100%",
-                    objectFit: "cover",}}/>
+              <img src={src} alt="" draggable={false} className="vx-shotMedia" width={300} height={400}/>
     )}
               <div className="vx-shotMask" aria-hidden>
               <span>
@@ -180,10 +160,16 @@ function HoldShot({ src }: { src: string }) {
               </div>
     );}
 
-  const STORAGE_KEY = "vault_unlocked";
   const SAVED_CODE_KEY = "vault_saved_code";
   const MAX_ATTEMPTS = 5;
-  type RememberMode = "session" | "code";
+  type AccessPlanId = "basic" | "pro" | "vip";
+  type TelegramWindow = Window & {
+    Telegram?: { WebApp?: { initData?: string } };
+  };
+
+  function isAccessPlanId(value: unknown): value is AccessPlanId {
+    return value === "basic" || value === "pro" || value === "vip";
+  }
 
 export default function VaultHome() {
 
@@ -194,24 +180,42 @@ export default function VaultHome() {
   const countdown = useCountdown();
   const [codeModal, setCodeModal] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [activePlanId, setActivePlanId] = useState<AccessPlanId | null>(null);
+  const unlockedPhotos = activePlanId === "vip"
+    ? [...BASIC_INSIDE, ...PRO_INSIDE, ...VIP_INSIDE]
+    : activePlanId === "pro"
+      ? [...BASIC_INSIDE, ...PRO_INSIDE]
+      : activePlanId === "basic"
+        ? BASIC_INSIDE
+        : [];
   const visiblePhotos = unlocked
-                     ? [...PUBLIC_INSIDE, ...PRIVATE_INSIDE]
-                     : PUBLIC_INSIDE;
+    ? [...PREVIEW_INSIDE, ...unlockedPhotos]
+    : PREVIEW_INSIDE;
   const [prefix, setPrefix] = useState('');
   const [suffix, setSuffix] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [verifyError, setVerifyError] = useState('');
   const [attempts, setAttempts] = useState(0);
-  const [activePlan, setActivePlan] = useState("basic");
   const [codeDrawer, setCodeDrawer] = useState(false);
-  const [rememberMode, setRememberMode] = useState<RememberMode>("session");
   const [savedCodeStored, setSavedCodeStored] = useState(false);
   const inlineCodeRef = useRef<HTMLInputElement | null>(null);
-  
+
   useEffect(() => {
-    if (sessionStorage.getItem(STORAGE_KEY) === "true") {
-    setUnlocked(true);
-    }
+  fetch("/api/access-session", {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    credentials: "same-origin",
+    cache: "no-store",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data?.ok && data?.authenticated && isAccessPlanId(data.planId)) {
+        sessionStorage.setItem("vault_plan", data.planId);
+        setActivePlanId(data.planId);
+        setUnlocked(true);
+      }
+    })
+    .catch(() => {});
   const codeFromTelegram = new URLSearchParams(
     window.location.search
     ).get("code");
@@ -220,22 +224,25 @@ export default function VaultHome() {
   const match = String(codeToLoad || "")
     .trim()
     .toUpperCase()
-    .match(/^(BS02|PX01|VX03|FX01|AX01|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
+    .match(/^(BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
     if (match) {
-    setPrefix(match[1]);
-    setSuffix(match[2]);
-    if (codeFromTelegram) {
-      setCodeModal(true);
-    } else {
-      setRememberMode("code");
-      setSavedCodeStored(true);
-    }
+      if (codeFromTelegram || match[1] === "PRX0") {
+        setPrefix(match[1]);
+        setSuffix(match[2]);
+      }
+      if (codeFromTelegram) {
+        setCodeModal(true);
+      } else if (match[1] === "PRX0") {
+        setSavedCodeStored(true);
+      } else {
+        localStorage.removeItem(SAVED_CODE_KEY);
+      }
     }
   fetch("/api/miniapp-track", {
     method: "POST",headers: {
     "Content-Type": "application/json",
     },
-    body: JSON.stringify({initData: window.Telegram?.WebApp?.initData || "",
+    body: JSON.stringify({initData: (window as TelegramWindow).Telegram?.WebApp?.initData || "",
     }),
     }).catch(() => {});
     }, []);
@@ -281,6 +288,7 @@ export default function VaultHome() {
     const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({
           prefix: normalizedPrefix,
           suffix: normalizedSuffix,
@@ -288,19 +296,23 @@ export default function VaultHome() {
     });
     const data = await res.json();
     if (data.ok) {
-    sessionStorage.setItem(STORAGE_KEY, "true");
-    sessionStorage.setItem("vault_plan", data.planId || normalizedPrefix);
-
-    if (rememberMode === "code") {
-      localStorage.setItem(
-        SAVED_CODE_KEY,
-        `${normalizedPrefix}-${normalizedSuffix}`
-      );
-      setSavedCodeStored(true);
-    } else {
-      localStorage.removeItem(SAVED_CODE_KEY);
-      setSavedCodeStored(false);
+    if (!isAccessPlanId(data.planId)) {
+      setVerifyError("ɪɴᴠᴀʟɪᴅ ᴀᴄᴄᴇꜱꜱ ᴘʟᴀɴ");
+      return;
     }
+    sessionStorage.setItem("vault_plan", data.planId);
+    setActivePlanId(data.planId);
+
+    if (data.planId === "pro") {
+        localStorage.setItem(
+          SAVED_CODE_KEY,
+          `${normalizedPrefix}-${normalizedSuffix}`
+        );
+        setSavedCodeStored(true);
+      } else {
+        localStorage.removeItem(SAVED_CODE_KEY);
+        setSavedCodeStored(false);
+      }
 
       setUnlocked(true);
       setCodeModal(false);
@@ -364,7 +376,6 @@ export default function VaultHome() {
     function forgetSavedCode() {
       localStorage.removeItem(SAVED_CODE_KEY);
       setSavedCodeStored(false);
-      setRememberMode("session");
       setPrefix("");
       setSuffix("");
       setVerifyError("");
@@ -384,6 +395,22 @@ export default function VaultHome() {
   }
   setCodeModal(true);
     }
+    const inlineCodeValue = prefix || suffix
+      ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}`
+      : "";
+    const inlineCodeTemplate = inlineCodeValue.startsWith("V")
+      ? "VIPX-CODE"
+      : inlineCodeValue.startsWith("P")
+        ? "PRX0-CODE"
+        : "BSIC-CODE";
+    const inlineCodeRemaining = inlineCodeTemplate.slice(inlineCodeValue.length);
+    const detectedPlanId: AccessPlanId | null = prefix === "BSIC"
+      ? "basic"
+      : prefix === "PRX0"
+        ? "pro"
+        : prefix === "VIPX"
+          ? "vip"
+          : null;
    return (  <div id="top" className="vx">
               <header className="vx-hud">
               <a href="#top" className="vx-brand">
@@ -488,83 +515,75 @@ export default function VaultHome() {
               <small>
                CODE</small>
               <strong>
-               🜲 ∣ BS02- ∣ ····</strong>
+               🜲 ∣ BSIC / PRX0 / VIPX</strong>
               </div>
               </div>
               </div>
               </div>
-          <aside className="vx-lock" style={{ position: "relative", width: "calc(100% - 24px)", maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
+             <aside className="vx-lock vx-lockRaise">
               <div className="vx-frameA" />
               <div className="vx-frameB" />
-              <div className="vx-lockCard" style={{ width: "100%", maxWidth: "450px", minWidth: 0, padding: "20px", boxSizing: "border-box",}}>
-              <div className="vx-lockVideo" style={{ position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", boxSizing: "border-box",}}>
-               <video key={LOCK_VIDEOS[lockVideo]} src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" onEnded={() => setLockVideo((current) => (current + 1) % LOCK_VIDEOS.length)} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover",}}/>
-              <span className="vx-lockVideoTag">
-               PRIVATE PREVIEW
-              </span>
-              </div>
-              <div className="vx-lockActions" style={{ width: "80%", display: "flex", flexDirection: "column", alignItems: "stretch", gap: "14px", marginTop: "16px",}}>
-              <button type="button" className="vault-unlock" onClick={toggleCodeDrawer} aria-expanded={codeDrawer} aria-controls="vx-code-drawer" style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #2a2a2a, #111111)", color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", cursor: "pointer",}}>
-               {unlocked ? "OPEN ALBUM" : "I ALREADY HAVE A CODE"}
+              <div className="vx-lockCard">
+              <div className="vx-lockVideo">
+              <video key={LOCK_VIDEOS[lockVideo]} src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" onEnded={() => setLockVideo((current) => (current + 1) % LOCK_VIDEOS.length)}/>
+              <span className="vx-lockVideoTag">PRIVATE PREVIEW</span>
+              </div>{/*➡️ CIERRE VIDEO */}
+              </div>{/*➡️ CIERRE CARD */}
+              <div className="vx-accessArea">
+              <button type="button" className="vx-alreadyCodeBtn" aria-expanded={codeDrawer} aria-controls="vx-code-drawer" onClick={toggleCodeDrawer}>
+               I ALREADY HAVE A CODE
               </button>
-              <a className="vault-get-code" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" style={{ width: "100%", minWidth: 0, minHeight: "56px", margin: 0, padding: "12px 16px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #9f173d", borderRadius: "4px", background: "linear-gradient(180deg, #6f102d, #310713)", color: "#f18aa5", fontFamily: "var(--mono), monospace", fontSize: "12px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textDecoration: "none",}}>
+              <button type="button" className="vx-getCodeBtn" onClick={() => setDm(true)}>
                GET MY CODE
-              </a>
-              </div>
+              </button>
               {codeDrawer && !unlocked ? (
-              <div id="vx-code-drawer" style={{ width: "calc(100% - 24px)", margin: "18px auto 0", padding: "18px", boxSizing: "border-box", border: "1px solid rgba(212, 168, 58, 0.48)", borderRadius: "6px", background: "linear-gradient(145deg, rgba(26, 24, 20, 0.98), rgba(7, 7, 8, 0.98))", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.025), 0 16px 36px rgba(0,0,0,0.38)",}}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "6px",}}>
-              <p style={{ margin: 0, color: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "11px", fontWeight: 800, letterSpacing: "0.16em",}}>
-               🜲 PRIVATE KEY ACCESS
-              </p>
-              <span style={{ width: "7px", height: "7px", flex: "0 0 auto", borderRadius: "50%", background: "#be163f", boxShadow: "0 0 12px rgba(190,22,63,0.8)",}} />
-              </div>
-              <p style={{ margin: "0 0 16px", color: "rgba(255,255,255,0.52)", fontFamily: "var(--mono), monospace", fontSize: "9px", lineHeight: 1.6, letterSpacing: "0.1em",}}>
-               ENTER THE COMPLETE CODE YOU RECEIVED
-              </p>
-              <form onSubmit={handleVerify}>
-              <input ref={inlineCodeRef} value={prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : ""} onChange={(event) => handleInlineCodeChange(event.target.value)} placeholder="BS02-XXXX" maxLength={9} autoCapitalize="characters" autoComplete="off" spellCheck={false} disabled={verifyLoading || attempts >= MAX_ATTEMPTS} aria-label="Complete access code" style={{ width: "100%", minWidth: 0, height: "54px", padding: "0 15px", boxSizing: "border-box", border: "1px solid rgba(246, 215, 122, 0.35)", borderRadius: "4px", outline: "none", background: "rgba(0,0,0,0.52)", color: "#ffffff", caretColor: "#f6d77a", fontFamily: "var(--mono), monospace", fontSize: "15px", fontWeight: 800, letterSpacing: "0.18em", textAlign: "center", textTransform: "uppercase",}} />
-              <fieldset style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", minWidth: 0, margin: "12px 0", padding: 0, border: 0,}}>
-              <legend style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)",}}>
-               Remember access preference
-              </legend>
-              <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", minWidth: 0, padding: "10px", border: rememberMode === "session" ? "1px solid rgba(212,168,58,0.55)" : "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", background: rememberMode === "session" ? "rgba(212,168,58,0.08)" : "rgba(255,255,255,0.025)", cursor: "pointer",}}>
-              <input type="radio" name="remember-access" value="session" checked={rememberMode === "session"} onChange={() => setRememberMode("session")} style={{ margin: "2px 0 0", accentColor: "#d4a83a",}} />
-              <span style={{ minWidth: 0, color: "#eee1bb", fontFamily: "var(--mono), monospace", fontSize: "8px", lineHeight: 1.45, letterSpacing: "0.08em",}}>
-               KEEP SESSION
-              <small style={{ display: "block", marginTop: "3px", color: "rgba(255,255,255,0.4)", fontSize: "7px", letterSpacing: "0.04em",}}>
-               OPEN UNTIL THE SESSION ENDS
-              </small>
-              </span>
-              </label>
-              <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", minWidth: 0, padding: "10px", border: rememberMode === "code" ? "1px solid rgba(212,168,58,0.55)" : "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", background: rememberMode === "code" ? "rgba(212,168,58,0.08)" : "rgba(255,255,255,0.025)", cursor: "pointer",}}>
-              <input type="radio" name="remember-access" value="code" checked={rememberMode === "code"} onChange={() => setRememberMode("code")} style={{ margin: "2px 0 0", accentColor: "#d4a83a",}} />
-              <span style={{ minWidth: 0, color: "#eee1bb", fontFamily: "var(--mono), monospace", fontSize: "8px", lineHeight: 1.45, letterSpacing: "0.08em",}}>
-               SAVE MY CODE
-              <small style={{ display: "block", marginTop: "3px", color: "rgba(255,255,255,0.4)", fontSize: "7px", letterSpacing: "0.04em",}}>
-               AUTOFILL ON THIS DEVICE
-              </small>
-              </span>
-              </label>
-              </fieldset>
-              <button type="submit" disabled={verifyLoading || attempts >= MAX_ATTEMPTS} style={{ width: "100%", minHeight: "50px", border: "1px solid #d4a83a", borderRadius: "4px", background: "linear-gradient(180deg, #4b3b13, #1f1807)", color: "#f8df8c", fontFamily: "var(--mono), monospace", fontSize: "11px", fontWeight: 900, letterSpacing: "0.18em", cursor: verifyLoading || attempts >= MAX_ATTEMPTS ? "not-allowed" : "pointer", opacity: verifyLoading || attempts >= MAX_ATTEMPTS ? 0.55 : 1,}}>
+              <div id="vx-code-drawer" className="vx-codeDrawer">
+              <div className="vx-codeDrawerHead">
+              <p className="vx-codeDrawerKicker">🜲 PRIVATE KEY ACCESS</p>
+              <span className="vx-codeDrawerSignal" />
+              </div>{/*⬇️ CIERRE ENCABEZADO */}
+              <p className="vx-codeDrawerHint">ENTER THE COMPLETE CODE YOU RECEIVED</p>
+              <form className="vx-inlineCodeForm" onSubmit={handleVerify}>
+              <div className={"vx-inlineCodeField" + (verifyLoading || attempts >= MAX_ATTEMPTS ? " is-disabled" : "")} onClick={() => inlineCodeRef.current?.focus()}>
+              <span className="vx-inlineCodeEntry">
+              <span className="vx-inlineCodeGuide" aria-hidden="true">
+              <span className="vx-inlineCodeTyped">{inlineCodeValue}</span>
+              <span className="vx-inlineCodeRemaining">{inlineCodeRemaining}</span>
+              </span>{/*➡️ CIERRE GUÍA VISIBLE */}
+              <input ref={inlineCodeRef} className="vx-inlineCodeInput" value={inlineCodeValue} onChange={(event) => handleInlineCodeChange(event.target.value)} maxLength={9} autoCapitalize="characters" autoComplete="off" spellCheck={false} disabled={verifyLoading || attempts >= MAX_ATTEMPTS} aria-label="Complete access code"/>
+              </span>{/*➡️ CIERRE ENTRADA SUPERPUESTA */}
+              </div>{/*➡️ CIERRE CAMPO DE CÓDIGO */}
+              <div className="vx-planAccessModes" aria-label="Access mode detected automatically from the code">
+              <div className={"vx-planAccessMode vx-planAccessModeBasic" + (detectedPlanId === "basic" ? " is-active" : "")}>
+              <span className="vx-planAccessBadge">BASIC · BSIC</span>
+              <strong>ONE-TIME ACCESS</strong>
+              <small>ONE ACTIVATION · CURRENT SESSION</small>
+              </div>{/*⬇️ CIERRE BASIC */}
+              <div className={"vx-planAccessMode vx-planAccessModePro" + (detectedPlanId === "pro" ? " is-active" : "")}>
+              <span className="vx-planAccessBadge">PRO · PRX0</span>
+              <strong>CODE REMEMBERED</strong>
+              <small>RECURRENT WHILE ACTIVE</small>
+              </div>{/*⬇️ CIERRE PRO */}
+              <div className={"vx-planAccessMode vx-planAccessModeVip" + (detectedPlanId === "vip" ? " is-active" : "")}>
+              <span className="vx-planAccessBadge">VIP · VIPX</span>
+              <strong>7-DAY SESSION</strong>
+              <small>PREMIUM · PERSISTENT ACCESS</small>
+              </div>{/*⬇️ CIERRE VIP */}
+              </div>{/*⬇️ CIERRE MODOS AUTOMÁTICOS */}
+              <button type="submit" className="vx-codeDrawerSubmit" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}>
                {verifyLoading ? "VERIFYING..." : "VERIFY & OPEN"}
               </button>
-              {verifyError ? (
-              <p role="alert" style={{ margin: "11px 0 0", color: "#df7089", fontFamily: "var(--mono), monospace", fontSize: "9px", lineHeight: 1.5, letterSpacing: "0.08em", textAlign: "center",}}>
-               {verifyError}
-              </p>
-              ) : null}
-              </form>
+              {verifyError ? <p role="alert" className="vx-codeDrawerError">{verifyError}</p> : null}
+              </form>{/*⬇️ CIERRE FORM */}
               {savedCodeStored ? (
-              <button type="button" onClick={forgetSavedCode} style={{ display: "block", margin: "12px auto 0", padding: 0, border: 0, background: "transparent", color: "rgba(255,255,255,0.38)", fontFamily: "var(--mono), monospace", fontSize: "8px", letterSpacing: "0.12em", textDecoration: "underline", textUnderlineOffset: "3px", cursor: "pointer",}}>
+              <button type="button" className="vx-forgetCode" onClick={forgetSavedCode}>
                FORGET SAVED CODE
               </button>
               ) : null}
               </div>
               ) : null}
-              </div>
-          </aside>
+              </div>{/*➡️ CIERRE ACCESS AREA */}
+          </aside>{/*➡️ CIERRE PANEL DERECHO */}
               </div>
           </section>
         <Ticker items={TICKER_ITEMS} />
@@ -593,7 +612,7 @@ export default function VaultHome() {
       </header>
 
       <div className="vx-privateAlbumGrid">
-        {PRIVATE_INSIDE.map((src, index) => (
+        {unlockedPhotos.map((src, index) => (
           <figure
             key={`unlocked-${src}`}
             className="vx-privateAlbumItem"
@@ -850,7 +869,7 @@ export default function VaultHome() {
                {verifyLoading ? 'VERIFYING...' : 'UNLOCK'}
               </button>
                {verifyError && (
-              <p className="vx-modalText" style={{ color: '#b94a5c' }}>
+              <p className="vx-modalError">
                {verifyError}
               </p>
               )}

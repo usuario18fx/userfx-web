@@ -180,7 +180,7 @@ async function createAccessSession({
     }
   } else {
     await redis.set(sessionKey, sessionRecord, "EX", sessionSeconds);
-   }
+  }
 
   const persistentMaxAge = planId === "vip" ? sessionSeconds : undefined;
   res.setHeader(
@@ -193,7 +193,7 @@ async function createAccessSession({
     accessMode,
     sessionExpiresAt: new Date(sessionExpiresAt).toISOString(),
   };
-  }
+}
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -203,7 +203,7 @@ export default async function handler(req, res) {
       ok: false,
       error: "Method not allowed.",
     });
-    }
+  }
 
   try {
     const redis = getRedis();
@@ -215,7 +215,7 @@ export default async function handler(req, res) {
         ok: false,
         error: "Too many attempts. Please refresh the page.",
       });
-      }
+    }
 
     const body =
       typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
@@ -230,14 +230,14 @@ export default async function handler(req, res) {
         ok: false,
         error: "Invalid prefix.",
       });
-      }
+    }
 
     if (!/^[A-HJ-NP-Z2-9]{4}$/.test(safeSuffix)) {
       return res.status(400).json({
         ok: false,
         error: "Invalid suffix.",
       });
-      }
+    }
 
     const fullCode = `${safePrefix}-${safeSuffix}`;
     const redisKey = `${CODE_ENGINE_NAMESPACE}:code:${fullCode}`;
@@ -248,19 +248,19 @@ export default async function handler(req, res) {
         ok: false,
         error: "Invalid code.",
       });
-      }
+    }
 
     let record;
 
     try {
       record = JSON.parse(rawRecord);
-      } catch {
+    } catch {
       console.error("[verify] Invalid Redis record", { redisKey });
       return res.status(500).json({
         ok: false,
         error: "Invalid access record.",
       });
-      }
+    }
 
     const expectedPlanId = PREFIX_TO_PLAN[safePrefix];
     const recordPlanId = String(record.planId || "").trim().toLowerCase();
@@ -275,21 +275,21 @@ export default async function handler(req, res) {
         ok: false,
         error: "Invalid access record.",
       });
-      }
+    }
 
     if (record.status === "consumed" && recordPlanId === "basic") {
       return res.status(401).json({
         ok: false,
         error: "This BASIC code has already been activated.",
       });
-      }
+    }
 
     if (record.status !== "active") {
       return res.status(401).json({
         ok: false,
         error: "This code is no longer active.",
       });
-      }
+    }
 
     const codeExpiresAt = getCodeExpiration(record);
 
@@ -298,14 +298,14 @@ export default async function handler(req, res) {
         ok: false,
         error: "Invalid access record.",
       });
-      }
+    }
 
     if (Date.now() >= codeExpiresAt) {
       return res.status(401).json({
         ok: false,
         error: "This code has expired.",
       });
-      }
+    }
 
     const session = await createAccessSession({
       redis,
@@ -317,14 +317,15 @@ export default async function handler(req, res) {
       fullCode,
       planId: recordPlanId,
       codeExpiresAt,
-      });
+    });
 
     if (!session.ok) {
       return res.status(409).json({
         ok: false,
         error: "This BASIC code has already been activated.",
       });
-      }
+    }
+
     return res.status(200).json({
       ok: true,
       code: fullCode,
@@ -334,11 +335,12 @@ export default async function handler(req, res) {
       accessMode: session.accessMode,
       sessionExpiresAt: session.sessionExpiresAt,
       expiresAt: new Date(codeExpiresAt).toISOString(),
-      });
-      } catch (error) {
+    });
+  } catch (error) {
     console.error("[api/verify]", error);
     return res.status(500).json({
       ok: false,
       error: "Server connection error.",
-      });
-      }}
+    });
+  }
+}
