@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_2uiLXV0ug05hfPXNgprbZWaHgKSJ",
+      "name": "userfx-web",
+      "directory": ".",
+      "orgId": "team_pbJthYKXXuBG28MTQssOkcBs"
+    }
+  ]
+}

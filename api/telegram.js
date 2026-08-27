@@ -69,7 +69,7 @@ const VAULT_WEBHOOK_SECRET = process.env.VAULT_WEBHOOK_SECRET ||
     "";
 function isVaultPayload(payload) {
     const value = String(payload || "").trim();
-    return /^(FX01|AX01|VIPX)-/i.test(value);
+    return /^(BASC|PRX0|VIPX)-/i.test(value);
 }
 async function relayVaultUpdate(update) {
     if (!VAULT_WEBHOOK_URL || !VAULT_WEBHOOK_SECRET) {
@@ -416,7 +416,7 @@ const PLAN_CONFIG = {
     basic: {
         id: "basic",
         name: "BASIC",
-        prefix: "FX01",
+        prefix: "BASC",
         stars: BASIC_STARS_PRICE,
         days: 7,
         tier: TIER_BASIC,
@@ -424,7 +424,7 @@ const PLAN_CONFIG = {
     pro: {
         id: "pro",
         name: "PRO",
-        prefix: "AX01",
+        prefix: "PRX0",
         stars: PRO_STARS_PRICE,
         days: 30,
         tier: TIER_PRO,

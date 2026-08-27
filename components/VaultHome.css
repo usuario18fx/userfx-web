@@ -2180,7 +2180,7 @@ video {
 @media (max-width: 768px) {
   .vx-title { position: relative;
   }
-  .vx-titleCrown { position: absolute; top: 10px; right:auto;left: 56%;width: clamp(100px, 28vw, 130px); transform: none; z-index: 5;
+  .vx-titleCrown { position: absolute; top: 10px; right:auto;left: 58%;width: clamp(100px, 28vw, 130px); transform: none; z-index: 5;
   }
   .vx-titleCrown > div { width: 100%; min-width: 0;
   }
@@ -2636,18 +2636,5 @@ video {
   .vx-codeDrawer,
   .vx-codeDrawerSignal {
     animation: none;
-  }
-}
-/* Sube todo el bloque derecho: video, botones y cajón */
-@media (min-width: 960px) {
-  .vx-lock.vx-lockRaise {
-    transform: translateY(-280px) translateX(-50px) !important;
-  }
-}
-
-/* En celular conserva su posición normal */
-@media (max-width: 959px) {
-  .vx-lock.vx-lockRaise {
-    transform: none !important;
   }
 }

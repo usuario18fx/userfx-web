@@ -112,7 +112,7 @@ const VAULT_WEBHOOK_SECRET =
 function isVaultPayload(payload: unknown) {
   const value = String(payload || "").trim();
 
-  return /^(FX01|AX01|VIPX)-/i.test(value);
+  return /^(BASC|PRX0|VIPX)-/i.test(value);
 }
 
 async function relayVaultUpdate(update: unknown) {
@@ -490,7 +490,7 @@ const PLAN_CONFIG = {
   basic: {
     id: "basic",
     name: "BASIC",
-    prefix: "FX01",
+    prefix: "BASC",
     stars: BASIC_STARS_PRICE,
     days: 7,
     tier: TIER_BASIC,
@@ -498,7 +498,7 @@ const PLAN_CONFIG = {
   pro: {
     id: "pro",
     name: "PRO",
-    prefix: "AX01",
+    prefix: "PRX0",
     stars: PRO_STARS_PRICE,
     days: 30,
     tier: TIER_PRO,
@@ -2431,143 +2431,28 @@ bot.action(
       requesterId
     ) {
       await ctx.answerCbQuery(
-        "❌ Unauthorized"
-      );
-
-      return;
+    return;
     }
-
-    try {
-      await ctx.answerCbQuery(
-        "👍"
-      );
-
-      await ctx
-        .editMessageReplyMarkup({
-          inline_keyboard: [],
-        })
-        .catch(() => {});
-
-      const user =
-        getUserMeta(ctx.from);
-
-      await adminBot.telegram.sendMessage(
-        ADMIN_CHAT_ID,
-        `🔔 <b>NOTIFY REQUEST</b>
-
-Name: ${escapeHtml(user.fullName)}
-Username: ${escapeHtml(user.username)}
-ID: ${escapeHtml(user.id)}
-Target: ${escapeHtml(requesterId)}`,
-        {
-          parse_mode:
-            "HTML",
-        }
-      );
-
-      await bot.telegram.sendMessage(
-        requesterId,
-        `📺 ɢᴏᴛ ɪᴛ!
-
-ꜱᴡɪɴɢ ʙʏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ꜱᴇᴇ ᴡʜᴀᴛ'ꜱ ɴᴇᴡ.`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text:
-                    "𝐔𝐬ᴇʀ 🜲∓ҳ",
-                  url:
-                    USER_GROUP_LINK,
-                },
-              ],
-              [
-                {
-                  text:
-                    "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
-                  url:
-                    SMOKELANDIA_GROUP_LINK,
-                },
-              ],
-            ],
-          },
-        }
-      );
-    } catch (error: any) {
-      logger.error(
-        "NOTIFY ERROR",
-        {
-          requesterId,
-          ...getTelegramError(
-            error
-          ),
-        }
-      );
-    }
-  }
-);
-
-// ======================================================
-// ADMIN CODE LOOKUP
-// ======================================================
-
-adminBot.command(
-  "code",
-  async (ctx) => {
-    if (!isAdmin(ctx)) {
-      await ctx.reply(
-        "❌ Unauthorized."
-      );
-
-      return;
-    }
-
-    const parts =
-      String(
-        ctx.message?.text || ""
-      )
-        .trim()
-        .split(/\s+/);
-
-    const code =
-      parts[1] || "";
-
-    if (!code) {
-      await ctx.reply(
-        "Usage: /code FX01-XXXX"
-      );
-
-      return;
-    }
-
-    const result =
-      await validateAccessCode(
-        code
-      );
-
+    const result = await validateAccessCode(
+    code
+    );
     if (!result.valid) {
-      await ctx.reply(
-        `❌ Code invalid.
-
-Reason: ${result.reason}`
-      );
-
+    await ctx.reply(
+      `❌ Code invalid.
+    Reason: ${result.reason}`
+    );
       return;
     }
-
-    const record =
-      result.record;
-
+    const record = result.record;
     await ctx.reply(
       `✅ CODE FOUND
-
-Code: ${record.code}
-Plan: ${record.plan}
-Plan ID: ${record.planId}
-Source: ${record.source}
-User ID: ${record.userId}
-Status: ${record.status}
-Created: ${record.createdAt}`
+  Code: ${record.code} 
+  Plan: ${record.plan}
+  Plan ID: ${record.planId}
+  Source: ${record.source} 
+  User ID: ${record.userId}
+  Status: ${record.status}
+  Created: ${record.createdAt}`
     );
      });
 //// ERROR HANDLERS //

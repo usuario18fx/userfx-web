@@ -493,9 +493,7 @@ export default function VaultHome() {
               </div>
               </div>
               </div>
-              <aside className="vx-lock vx-lockRaise" style={{ position: "relative",
-               width: "calc(100% - 24px)",
-               maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
+          <aside className="vx-lock" style={{ position: "relative", width: "calc(100% - 24px)", maxWidth: "450px", minWidth: 0, margin: "0 auto", boxSizing: "border-box",}}>
               <div className="vx-frameA" />
               <div className="vx-frameB" />
               <div className="vx-lockCard" style={{ width: "100%", maxWidth: "450px", minWidth: 0, padding: "20px", boxSizing: "border-box",}}>

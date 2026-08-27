@@ -73,24 +73,8 @@ export default function AccessGate() {
         <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
         <p className="access-gate__kicker">𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT</p>
         <div className="access-gate__inputs">
-          <input
-            value={prefix}
-            onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-            placeholder="PREFIX"
-            maxLength={4}
-            autoCapitalize="characters"
-            autoComplete="off"
-            disabled={loading || attempts >= MAX_ATTEMPTS}
-          />
-          <input
-            value={suffix}
-            onChange={(e) => setSuffix(e.target.value.toUpperCase())}
-            placeholder="SUFFIX"
-            maxLength={4}
-            autoCapitalize="characters"
-            autoComplete="off"
-            disabled={loading || attempts >= MAX_ATTEMPTS}
-          />
+          <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}  placeholder="PREFIX"   maxLength={4}  autoCapitalize="characters"  autoComplete="off"  disabled={loading || attempts >= MAX_ATTEMPTS} />
+          <input  value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX"  maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS}/>
         </div>
         <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
           {loading ? 'Verificando...' : 'Entrar'}
