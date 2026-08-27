@@ -163,6 +163,11 @@ function HoldShot({ src }: { src: string }) {
   const SAVED_CODE_KEY = "vault_saved_code";
   const MAX_ATTEMPTS = 5;
   type AccessPlanId = "basic" | "pro" | "vip";
+  const ACCESS_PLAN_PREFIX: Record<AccessPlanId, "BSIC" | "PRX0" | "VIPX"> = {
+    basic: "BSIC",
+    pro: "PRX0",
+    vip: "VIPX",
+  };
   type TelegramWindow = Window & {
     Telegram?: { WebApp?: { initData?: string } };
   };
@@ -181,6 +186,9 @@ export default function VaultHome() {
   const [codeModal, setCodeModal] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [activePlanId, setActivePlanId] = useState<AccessPlanId | null>(null);
+  const activePlanPrefix = activePlanId
+    ? ACCESS_PLAN_PREFIX[activePlanId]
+    : "";
   const unlockedPhotos = activePlanId === "vip"
     ? [...BASIC_INSIDE, ...PRO_INSIDE, ...VIP_INSIDE]
     : activePlanId === "pro"
@@ -423,8 +431,20 @@ export default function VaultHome() {
               <div className="vx-hudRight">
         <VisitorCounter />
               <time>{clock}</time>
-              <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? 'vx-unlockedBadge' : ''}>
-               {unlocked ? '✓ UNLOCKED' : '🜲 LOCKED'}
+              <b
+               onClick={() => !unlocked && setCodeModal(true)}
+               className={unlocked ? "vx-unlockedBadge" : ""}
+               aria-live="polite"
+               aria-label={unlocked ? `${activePlanPrefix} unlocked` : "Vault locked"}
+              >
+               {unlocked ? (
+                <>
+                 <span className="vx-unlockedPrefix">{activePlanPrefix}</span>
+                 <span className="vx-unlockedState">UNLOCKED</span>
+                </>
+               ) : (
+                "🜲 LOCKED"
+               )}
               </b>
               </div>
           </header>
