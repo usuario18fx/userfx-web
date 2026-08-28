@@ -1,5 +1,4 @@
 "use client";
-
 import { useRef, type PointerEvent } from "react";
 import styles from "./Crown4D.module.css";
 

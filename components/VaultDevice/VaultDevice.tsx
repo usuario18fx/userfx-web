@@ -11,7 +11,7 @@ import './VaultDevice.css';
   interface Plan { title: string;
                    emoji: string;
                    stars: number;
-                   days: number;
+                   entries: number | null;
                    ctaClass: string;
                    groups: BenefitGroup[];
                    }
@@ -43,7 +43,7 @@ import './VaultDevice.css';
             title: 'Basic',
             emoji: ICONS.rosa,
             stars: 350,
-            days: 7,
+            entries: 1,
             ctaClass: 'cta-basic',
             groups: 
          [{ label: 'What you get',
@@ -54,12 +54,12 @@ import './VaultDevice.css';
           { icon: ICONS.preview, text: 'Full session view', sub: 'Enjoy the complete unlocked session, not just a preview' },],},
           { label: 'Best for',
             items: 
-         [{ icon: ICONS.candado2, text: 'One premium drop', sub: 'Best when you only want one specific session' },],},],},
+         [{ icon: ICONS.candado2,text: 'One premium drop', sub: 'One-time access only.' },],},],},
             pro: 
           { title: 'Pro',
             emoji: ICONS.fuego,
             stars: 750,
-            days: 30,
+            entries: 10,
             ctaClass: 'cta-pro',
             groups: 
          [{ label: 'What you get',
@@ -70,23 +70,23 @@ import './VaultDevice.css';
           { label: 'Best for',
             items: 
          [{ icon: ICONS.fuego, text:'Regular viewers', sub: 'Made for people who want more than one session' },
-          { icon: '💎', text:'More value per entry', sub: 'Multiple premium sessions without committing to VIP' },
+          { icon: '💎', text:'More value per entry', sub: 'Code saved. Access secured.' },
   
           { icon: ICONS.vip, text:'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
   vip:{title:'VIP',
             emoji: ICONS.corona,
             stars: 1500,
-            days: 90,
+            entries: null,
             ctaClass: 'cta-vip',
             groups: 
          [{ label: 'What you get',
             items: 
          [{ icon: ICONS.fotos, text: 'Full vault entry', sub: 'Every session, no restrictions' },
           { icon: ICONS.limit, text: 'Unlimited sessions', sub: 'Enter as many times as you want' },
-          { icon: ICONS.calendario, text: '90-day access', sub: 'Three full months of entry' },
+          { icon: ICONS.calendario, text: 'No day limit', sub: 'Unlimited entries while your VIP code remains active' },
           { icon: ICONS.quality, text: 'HD quality', sub: 'Highest available resolution' },
-          { icon: ICONS.anydevice, text: 'Any device', sub: 'Sync across all your screens' },],},
-          { label: 'Best for',
+          { icon: ICONS.candado2, text: 'Any device', sub: 'Keep your access active' },],},
+          { label: '',
             items: 
          [{ icon: ICONS.telegram, text: 'Chat Experience', sub: 'Direct DM for anything' },],},],},};
 /* ─── Diamond figures ─── */
@@ -190,7 +190,7 @@ import './VaultDevice.css';
         Basic
       </div>
       <div className="vd-option-desc">
-        𝟳 ᴅᴀʏꜱ · 𝟭 ꜱᴇꜱꜱɪᴏɴ
+        · 𝟭 ꜱᴇꜱꜱɪᴏɴ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -209,7 +209,7 @@ import './VaultDevice.css';
         PRO
       </div>
       <div className="vd-option-desc">
-        𝟯𝟬 ᴅᴀʏꜱ · 𝟱 ᴇɴᴛʀɪᴇꜱ
+        ·𝟭𝟬 ᴇɴᴛʀɪᴇꜱ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -228,7 +228,7 @@ import './VaultDevice.css';
         VIP
       </div>
       <div className="vd-option-desc">
-        𝟵𝟬 ᴅᴀʏꜱ · ᴜɴʟɪᴍɪᴛᴇᴅ
+        ·ᴜɴʟɪᴍɪᴛᴇᴅ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -317,4 +317,3 @@ import './VaultDevice.css';
       </div>
       );
        }
-

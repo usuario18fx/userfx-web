@@ -418,7 +418,7 @@ const PLAN_CONFIG = {
         name: "BASIC",
         prefix: "BSIC",
         stars: BASIC_STARS_PRICE,
-        days: 7,
+        maxAccesses: 1,
         tier: TIER_BASIC,
     },
     pro: {
@@ -426,7 +426,7 @@ const PLAN_CONFIG = {
         name: "PRO",
         prefix: "PRX0",
         stars: PRO_STARS_PRICE,
-        days: 30,
+        maxAccesses: 10,
         tier: TIER_PRO,
     },
     vip: {
@@ -434,7 +434,7 @@ const PLAN_CONFIG = {
         name: "VIP",
         prefix: "VIPX",
         stars: VIP_STARS_PRICE,
-        days: 90,
+        maxAccesses: null,
         tier: TIER_VIP,
     },
 };
@@ -638,7 +638,10 @@ function getCommandArg(ctx, index = 0) {
             plan: plan.name,
             prefix: plan.prefix,
             stars: plan.stars,
-            days: plan.days,
+            maxAccesses: plan.maxAccesses,
+            usedAccesses: 0,
+            remainingAccesses: plan.maxAccesses,
+            unlimitedAccess: plan.maxAccesses === null,
             source,
             userId: String(userId),
             chargeId,
@@ -647,10 +650,9 @@ function getCommandArg(ctx, index = 0) {
             redeemedAt: null,
             redeemedBy: null,
         };
-        const created = await client.set(key, JSON.stringify(record), "NX", "EX", PAYMENT_TTL_SECONDS);
+        const created = await client.set(key, JSON.stringify(record), "NX");
         if (created === "OK") {
             await client.sadd(getUserCodeIndexKey(String(userId)), code);
-            await client.expire(getUserCodeIndexKey(String(userId)), PAYMENT_TTL_SECONDS);
            logger.info("ACCESS CODE GENERATED", {
            planId,
            source,
@@ -677,6 +679,13 @@ function getCommandArg(ctx, index = 0) {
        }
     if (record.status !== "active") {
        return {valid: false, reason: "not_active",record,};
+        }
+    const maxAccesses = record.maxAccesses === null
+        ? null
+        : Number(record.maxAccesses);
+    const usedAccesses = Math.max(0, Number(record.usedAccesses) || 0);
+    if (maxAccesses !== null && usedAccesses >= maxAccesses) {
+       return {valid: false, reason: "no_accesses_remaining",record,};
         }
        return { valid: true, record,};
         }
@@ -1786,6 +1795,8 @@ Plan ID: ${record.planId}
 Source: ${record.source}
 User ID: ${record.userId}
 Status: ${record.status}
+Used accesses: ${record.usedAccesses ?? 0}
+Remaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}
 Created: ${record.createdAt}`);
 });
 //// ERROR HANDLERS //

@@ -166,8 +166,11 @@ export default async function handler(req, res) {
       authenticated: true,
       planId: session.planId,
       accessMode: session.accessMode,
+      maxAccesses: session.maxAccesses,
+      usedAccesses: session.usedAccesses,
+      remainingAccesses: session.remainingAccesses,
+      unlimitedAccess: session.unlimitedAccess,
       expiresAt: session.expiresAt,
-      codeExpiresAt: session.codeExpiresAt,
     });
   } catch (error) {
     console.error("[api/access-session]", error);

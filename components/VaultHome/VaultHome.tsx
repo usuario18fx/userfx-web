@@ -1,14 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import Scramble from "./Scramble";
-import VaultDevice from "../components/VaultDevice";
-import "../components/VaultDevice.css";
-import "./VaultHome.css"; // ← el CSS ahora vive en su propio archivo (con los 7 fixes)
-import VisitorCounter from "./VisitorCounter";
-import Crown4D from "../components/Crown4D/Crown4D";
+"use client";
+import React, {useEffect, useRef, useState,} from "react";
+import Scramble from "../Scramble";
+import VisitorCounter from "../VisitorCounter";
+import VaultDevice from "../VaultDevice/VaultDevice";
+import "../VaultDevice/VaultDevice.css";
+import Crown4D from "../Crown4D/Crown4D";
+import "../VaultHome/VaultHome.css";
+import VaultHeroDoors from "../CodedAlbum/VaultHeroDoors";
 
   const LOGO="/assets/userfx-logo-sin.png";
   const BRICK="/assets/brick-wall.png";
   const DAMASK="/assets/damask.png";
+  
   const privatePhoto=(pathname:string)=>
     `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
   const PREVIEW_INSIDE=["/assets/album/PRVW/PRVW-01.jpg",
@@ -19,51 +22,49 @@ import Crown4D from "../components/Crown4D/Crown4D";
                      "/assets/album/PRVW/PRVW-06.jpg",
                      "/assets/album/PRVW/PRVW-07.jpg",
     ];
-  const BASIC_INSIDE=[privatePhoto("userfx-album/BSIC/BSIC-01.jpg"),
-                     privatePhoto("userfx-album/BSIC/BSIC-02.jpg"),
-                     privatePhoto("userfx-album/BSIC/BSIC-03.jpg"),
-                     privatePhoto("userfx-album/BSIC/BSIC-04.jpg"),
-                     privatePhoto("userfx-album/BSIC/BSIC-05.jpg"),
+  const BASIC_INSIDE = [privatePhoto("userfx-album/BSIC/BSIC-01.jpg"),
+                       privatePhoto("userfx-album/BSIC/BSIC-02.jpg"),
+                       privatePhoto("userfx-album/BSIC/BSIC-03.jpg"),
+                       privatePhoto("userfx-album/BSIC/BSIC-04.jpg"),
+                       privatePhoto("userfx-album/BSIC/BSIC-05.jpg"),
     ];
-  const PRO_INSIDE=[privatePhoto("userfx-album/PRX0/PRX0-01.jpg"),
-                   privatePhoto("userfx-album/PRX0/PRX0-02.jpg"),
-                   privatePhoto("userfx-album/PRX0/PRX0-03.jpg"),
+  const PRO_INSIDE  = [privatePhoto("userfx-album/PRX0/PRX0-01.jpg"),
+                      privatePhoto("userfx-album/PRX0/PRX0-02.jpg"),
+                      privatePhoto("userfx-album/PRX0/PRX0-03.jpg"),
     ];
-  const VIP_INSIDE=[privatePhoto("userfx-album/VIPX/VIPX-01.jpg"),
-                   privatePhoto("userfx-album/VIPX/VIPX-02.jpg"),
-                   privatePhoto("userfx-album/VIPX/VIPX-03.jpg"),
-                   privatePhoto("userfx-album/VIPX/VIPX-04.jpg"),
+  const VIP_INSIDE =  [privatePhoto("userfx-album/VIPX/VIPX-01.jpg"),
+                      privatePhoto("userfx-album/VIPX/VIPX-02.jpg"),
+                      privatePhoto("userfx-album/VIPX/VIPX-03.jpg"),
+                      privatePhoto("userfx-album/VIPX/VIPX-04.jpg"),
     ];
-  const LOCK_VIDEOS = ["/assets/video01.mp4",
-                     "/assets/video02.mp4",
-    ];
-  const ICONS={corona:"/assets/iconos/corona.png",
-             candado:"/assets/iconos/candado.png",
-             rosa:"/assets/iconos/rosa.png",
+
+  const ICONS =       {corona:"/assets/iconos/corona.png",
+                       candado:"/assets/iconos/candado.png",
+                       rosa:"/assets/iconos/rosa.png",
     };
-  const TICKER_ITEMS=["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
-                    "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
-                    "| FX | CLOSED CIRCUIT | TORONTO,CANADA",
-                    "| ALL RIGHTS RESERVED |",
+  const TICKER_ITEMS =["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
+                      "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
+                      "| FX | CLOSED CIRCUIT | TORONTO,CANADA",
+                      "| ALL RIGHTS RESERVED |",
     ];
-  const STEPS = [{n: "01",
-                 title: "UNLOCK YOUR ACCESS",
-                 text: "Each key unlocks the private collection for a set period of time.",},
-               {n: "02",
-                title: "REQUEST YOUR KEY",
-                text: "This pre does not generate codes. Ask for your private key by DM.",},
-               {n: "03",
-                title: "RECEIVE YOUR KEY",
-                text: "Once confirmed, you receive your private code. Keep it safe.",},
-               {n: "04",
-                title: "OPEN THE VAULT",
-                text: "Enter the final four characters of your code. The door takes care of the rest.",},
+  const STEPS  =      [{n: "01",
+                        title: "UNLOCK YOUR ACCESS",
+                        text: "Each key unlocks the private collection for a set number of entries.",},
+                       {n: "02",
+                        title: "REQUEST YOUR KEY",
+                        text: "This pre does not generate codes. Ask for your private key by DM.",},
+                       {n: "03",
+                        title: "RECEIVE YOUR KEY",
+                        text: "Once confirmed, you receive your private code. Keep it safe.",},
+                       {n: "04",
+                        title: "OPEN THE VAULT",
+                        text: "Enter the final four characters of your code. The door takes care of the rest.",},
     ];
   const FAQS = [
     { q: "How do I get a code?",
       a: "This preview does not generate keys. Request yours by DM on Telegram.",},
-    { q: "How long does my access last?",
-      a: "It depends on the key you choose. While active, you can return whenever you want.",},
+    { q: "How many times can I enter?",
+      a: "BASIC includes 1 entry, PRO includes 10 entries, and VIP includes unlimited entries.",},
     { q: "Can I share my code?",
       a: "No. Your key is personal and non-transferable.",},
     { q: "What happens if I don’t receive my code?",
@@ -129,8 +130,7 @@ function Reveal({ children, delay = 0, className = "",
     }
   function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
     const line = items.join("   🜲   ") + "   🜲   ";
-    return (
-              <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
+    return (  <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
               <div className="vx-tickerTrack">
               <span>{line.repeat(4)}</span>
               <span>{line.repeat(4)}</span>
@@ -175,7 +175,6 @@ function HoldShot({ src }: { src: string }) {
   function isAccessPlanId(value: unknown): value is AccessPlanId {
     return value === "basic" || value === "pro" || value === "vip";
   }
-
 export default function VaultHome() {
 
   const [clock, setClock] = useState("--:--:-- UTC");
@@ -186,6 +185,8 @@ export default function VaultHome() {
   const [codeModal, setCodeModal] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [activePlanId, setActivePlanId] = useState<AccessPlanId | null>(null);
+  const [remainingAccesses, setRemainingAccesses] = useState<number | null>(null);
+  const [unlimitedAccess, setUnlimitedAccess] = useState(false);
   const activePlanPrefix = activePlanId
     ? ACCESS_PLAN_PREFIX[activePlanId]
     : "";
@@ -204,9 +205,9 @@ export default function VaultHome() {
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [verifyError, setVerifyError] = useState('');
   const [attempts, setAttempts] = useState(0);
-  const [codeDrawer, setCodeDrawer] = useState(false);
   const [savedCodeStored, setSavedCodeStored] = useState(false);
   const inlineCodeRef = useRef<HTMLInputElement | null>(null);
+  const [doorsOpen,setDoorsOpen]=useState(false);
 
   useEffect(() => {
   fetch("/api/access-session", {
@@ -220,6 +221,12 @@ export default function VaultHome() {
       if (data?.ok && data?.authenticated && isAccessPlanId(data.planId)) {
         sessionStorage.setItem("vault_plan", data.planId);
         setActivePlanId(data.planId);
+        setRemainingAccesses(
+          Number.isFinite(Number(data.remainingAccesses))
+            ? Number(data.remainingAccesses)
+            : null
+        );
+        setUnlimitedAccess(data.unlimitedAccess === true);
         setUnlocked(true);
       }
     })
@@ -239,13 +246,12 @@ export default function VaultHome() {
         setSuffix(match[2]);
       }
       if (codeFromTelegram) {
-        setCodeModal(true);
+        window.setTimeout(() => inlineCodeRef.current?.focus(), 150);
       } else if (match[1] === "PRX0") {
         setSavedCodeStored(true);
       } else {
         localStorage.removeItem(SAVED_CODE_KEY);
-      }
-    }
+      }}
   fetch("/api/miniapp-track", {
     method: "POST",headers: {
     "Content-Type": "application/json",
@@ -287,7 +293,6 @@ export default function VaultHome() {
       setVerifyError("ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴍᴘʟᴇᴛᴇ ᴀᴄᴄᴇꜱꜱ ᴋᴇʏ");
       return;
     }
-
     setPrefix(normalizedPrefix);
     setSuffix(normalizedSuffix);
     setVerifyLoading(true);
@@ -302,6 +307,7 @@ export default function VaultHome() {
           suffix: normalizedSuffix,
         }),
     });
+
     const data = await res.json();
     if (data.ok) {
     if (!isAccessPlanId(data.planId)) {
@@ -310,7 +316,12 @@ export default function VaultHome() {
     }
     sessionStorage.setItem("vault_plan", data.planId);
     setActivePlanId(data.planId);
-
+    setRemainingAccesses(
+      Number.isFinite(Number(data.remainingAccesses))
+        ? Number(data.remainingAccesses)
+        : null
+    );
+    setUnlimitedAccess(data.unlimitedAccess === true);
     if (data.planId === "pro") {
         localStorage.setItem(
           SAVED_CODE_KEY,
@@ -321,10 +332,8 @@ export default function VaultHome() {
         localStorage.removeItem(SAVED_CODE_KEY);
         setSavedCodeStored(false);
       }
-
       setUnlocked(true);
       setCodeModal(false);
-      setCodeDrawer(false);
       setVerifyError("");
   // Elimina el código de la URL después de validarlo
     const currentUrl = new URL(window.location.href);
@@ -333,8 +342,7 @@ export default function VaultHome() {
     {},
     "",
     `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
-  );
-  // Baja automáticamente a la nueva sección
+  );  // Baja automáticamente a la nueva sección
   window.setTimeout(() => {
     document
       .getElementById("unlocked-vault")
@@ -344,7 +352,6 @@ export default function VaultHome() {
       });
   }, 200);
   return;
-
     } else {
         setAttempts((n) => n + 1);
         setVerifyError(data.error || 
@@ -356,31 +363,17 @@ export default function VaultHome() {
       setVerifyLoading(false);
     }}
 
+  
+
     function handleInlineCodeChange(value: string) {
       const compactCode = value
         .toUpperCase()
         .replace(/[^A-Z0-9]/g, "")
         .slice(0, 8);
-
       setPrefix(compactCode.slice(0, 4));
       setSuffix(compactCode.slice(4, 8));
       setVerifyError("");
     }
-
-    function toggleCodeDrawer() {
-      if (unlocked) {
-        openUnlockedVault();
-        return;
-      }
-
-      const nextOpen = !codeDrawer;
-      setCodeDrawer(nextOpen);
-
-      if (nextOpen) {
-        window.setTimeout(() => inlineCodeRef.current?.focus(), 120);
-      }
-    }
-
     function forgetSavedCode() {
       localStorage.removeItem(SAVED_CODE_KEY);
       setSavedCodeStored(false);
@@ -389,7 +382,6 @@ export default function VaultHome() {
       setVerifyError("");
       window.setTimeout(() => inlineCodeRef.current?.focus(), 0);
     }
-
     function openUnlockedVault() {
   if (unlocked) {
     document
@@ -398,10 +390,9 @@ export default function VaultHome() {
         behavior: "smooth",
         block: "start",
       });
-
     return;
   }
-  setCodeModal(true);
+  setDoorsOpen(true);
     }
     const inlineCodeValue = prefix || suffix
       ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}`
@@ -430,15 +421,10 @@ export default function VaultHome() {
               </a>
               <div className="vx-hudRight">
         <VisitorCounter />
-              <time>{clock}</time>
-              <b
-               onClick={() => !unlocked && setCodeModal(true)}
-               className={unlocked ? "vx-unlockedBadge" : ""}
-               aria-live="polite"
-               aria-label={unlocked ? `${activePlanPrefix} unlocked` : "Vault locked"}
-              >
-               {unlocked ? (
-                <>
+                 <time>{clock}</time>
+                 <b  onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? "vx-unlockedBadge" : ""} aria-live="polite" aria-label={unlocked ? `${activePlanPrefix} unlocked` : "Vault locked"}>
+                 {unlocked ? (
+                 <>
                  <span className="vx-unlockedPrefix">{activePlanPrefix}</span>
                  <span className="vx-unlockedState">UNLOCKED</span>
                 </>
@@ -476,10 +462,14 @@ export default function VaultHome() {
               </div>
         <Scramble text="RESTRICTED" className="vx-rest" delay={420}/>
               </h1>
-              <p className="vx-p vx-pNormal">
-                There are images that were never meant to be seen..
+               <p className="vx-p vx-pNormal mt-6 max-w-xl text-[15px] leading-relaxed text-dim">
+               There are images that should never have been seen.
               </p>
-              <p className="vx-p">
+              <p className="vx-p mt-0 max-w-xl text-[15px] leading-relaxed text-dim">
+               Private Vault FX brings together a private collection of 17
+               high-resolution photographs. A space reserved for those who want to go
+               a little further.
+              </p>
               <strong>
                USER
               <span>
@@ -489,9 +479,6 @@ export default function VaultHome() {
                —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ— 
               <i/>
               </strong>
-               Is a reserved place. access is not public.
-               You’ll need a ᴄᴏᴅᴇ
-              </p>
               <div className="vx-dossier">
               <div className="vx-dossierHead">
               <span>
@@ -520,8 +507,10 @@ export default function VaultHome() {
               </div>
                <div className="vx-dossierItem vx-dossierDrop">
               <small>
-               NEXT DROP</small>
-              <strong>{countdown}</strong>
+               NEXT DROP
+              </small>
+              <strong>{countdown}
+              </strong>
               </div>
               <div className="vx-dossierItem">
               <small>
@@ -540,130 +529,67 @@ export default function VaultHome() {
               </div>
               </div>
               </div>
-             <aside className="vx-lock vx-lockRaise">
-              <div className="vx-frameA" />
-              <div className="vx-frameB" />
-              <div className="vx-lockCard">
-              <div className="vx-lockVideo">
-              <video key={LOCK_VIDEOS[lockVideo]} src={LOCK_VIDEOS[lockVideo]} autoPlay muted playsInline preload="metadata" onEnded={() => setLockVideo((current) => (current + 1) % LOCK_VIDEOS.length)}/>
-              <span className="vx-lockVideoTag">PRIVATE PREVIEW</span>
-              </div>{/*➡️ CIERRE VIDEO */}
-              </div>{/*➡️ CIERRE CARD */}
+              <aside className="vx-lock vx-lockRaise">
+        <VaultHeroDoors value={inlineCodeValue} onChange={handleInlineCodeChange} onSubmit={handleVerify} loading={verifyLoading} error={verifyError} unlocked={unlocked} placeholder={inlineCodeTemplate} inputRef={inlineCodeRef}/>
               <div className="vx-accessArea">
-              <button type="button" className="vx-alreadyCodeBtn" aria-expanded={codeDrawer} aria-controls="vx-code-drawer" onClick={toggleCodeDrawer}>
-               I ALREADY HAVE A CODE
-              </button>
-              <button type="button" className="vx-getCodeBtn" onClick={() => setDm(true)}>
-               GET MY CODE
-              </button>
-              {codeDrawer && !unlocked ? (
-              <div id="vx-code-drawer" className="vx-codeDrawer">
-              <div className="vx-codeDrawerHead">
-              <p className="vx-codeDrawerKicker">🜲 PRIVATE KEY ACCESS</p>
-              <span className="vx-codeDrawerSignal" />
-              </div>{/*⬇️ CIERRE ENCABEZADO */}
-              <p className="vx-codeDrawerHint">ENTER THE COMPLETE CODE YOU RECEIVED</p>
-              <form className="vx-inlineCodeForm" onSubmit={handleVerify}>
-              <div className={"vx-inlineCodeField" + (verifyLoading || attempts >= MAX_ATTEMPTS ? " is-disabled" : "")} onClick={() => inlineCodeRef.current?.focus()}>
-              <span className="vx-inlineCodeEntry">
-              <span className="vx-inlineCodeGuide" aria-hidden="true">
-              <span className="vx-inlineCodeTyped">{inlineCodeValue}</span>
-              <span className="vx-inlineCodeRemaining">{inlineCodeRemaining}</span>
-              </span>{/*➡️ CIERRE GUÍA VISIBLE */}
-              <input ref={inlineCodeRef} className="vx-inlineCodeInput" value={inlineCodeValue} onChange={(event) => handleInlineCodeChange(event.target.value)} maxLength={9} autoCapitalize="characters" autoComplete="off" spellCheck={false} disabled={verifyLoading || attempts >= MAX_ATTEMPTS} aria-label="Complete access code"/>
-              </span>{/*➡️ CIERRE ENTRADA SUPERPUESTA */}
-              </div>{/*➡️ CIERRE CAMPO DE CÓDIGO */}
-              <div className="vx-planAccessModes" aria-label="Access mode detected automatically from the code">
-              <div className={"vx-planAccessMode vx-planAccessModeBasic" + (detectedPlanId === "basic" ? " is-active" : "")}>
-              <span className="vx-planAccessBadge">BASIC · BSIC</span>
-              <strong>ONE-TIME ACCESS</strong>
-              <small>ONE ACTIVATION · CURRENT SESSION</small>
-              </div>{/*⬇️ CIERRE BASIC */}
-              <div className={"vx-planAccessMode vx-planAccessModePro" + (detectedPlanId === "pro" ? " is-active" : "")}>
-              <span className="vx-planAccessBadge">PRO · PRX0</span>
-              <strong>CODE REMEMBERED</strong>
-              <small>RECURRENT WHILE ACTIVE</small>
-              </div>{/*⬇️ CIERRE PRO */}
-              <div className={"vx-planAccessMode vx-planAccessModeVip" + (detectedPlanId === "vip" ? " is-active" : "")}>
-              <span className="vx-planAccessBadge">VIP · VIPX</span>
-              <strong>7-DAY SESSION</strong>
-              <small>PREMIUM · PERSISTENT ACCESS</small>
-              </div>{/*⬇️ CIERRE VIP */}
-              </div>{/*⬇️ CIERRE MODOS AUTOMÁTICOS */}
-              <button type="submit" className="vx-codeDrawerSubmit" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}>
-               {verifyLoading ? "VERIFYING..." : "VERIFY & OPEN"}
-              </button>
-              {verifyError ? <p role="alert" className="vx-codeDrawerError">{verifyError}</p> : null}
-              </form>{/*⬇️ CIERRE FORM */}
-              {savedCodeStored ? (
-              <button type="button" className="vx-forgetCode" onClick={forgetSavedCode}>
-               FORGET SAVED CODE
-              </button>
-              ) : null}
               </div>
-              ) : null}
-              </div>{/*➡️ CIERRE ACCESS AREA */}
-          </aside>{/*➡️ CIERRE PANEL DERECHO */}
+              <div className="vx-lockCard vx-lockVideoCard">                     
               </div>
-          </section>
+              </aside>
+{/*➡️ CIERRE PANEL DERECHO */}
+              </div>
+              </section>
         <Ticker items={TICKER_ITEMS} />
-        {unlocked ? (
-  <section
-    id="unlocked-vault"
-    className="vx-privateAlbum"
-    aria-label="Unlocked private album"
-  >
-    <div className="vx-privateAlbumInner">
-      <header className="vx-privateAlbumHeader">
-        <p className="vx-privateAlbumStatus">
-          <span>✓</span>
-          ACCESS GRANTED
-        </p>
-
-        <h2 className="vx-privateAlbumTitle">
-          PRIVATE <span>ALBUM</span>
-        </h2>
-
-        <p className="vx-privateAlbumDescription">
-          Your access key has been verified. Welcome inside the private vault.
-        </p>
-
-        <div className="vx-privateAlbumLine" />
-      </header>
-
-      <div className="vx-privateAlbumGrid">
-        {unlockedPhotos.map((src, index) => (
-          <figure
-            key={`unlocked-${src}`}
-            className="vx-privateAlbumItem"
-            onContextMenu={(event) => event.preventDefault()}
-          >
-            <img
-              src={src}
-              alt={`Private vault image ${index + 1}`}
-              draggable={false}
-              loading={index === 0 ? "eager" : "lazy"}
-            />
-
-            <figcaption>
+               {unlocked ? (
+              <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
+              <div className="vx-privateAlbumInner">
+              <header className="vx-privateAlbumHeader">
+              <p className="vx-privateAlbumStatus">
+              <span>
+                ✓
+              </span> 
+               ACCESS GRANTED
+              </p>
+              <h2 className="vx-privateAlbumTitle">
+               PRIVATE 
+              <span>
+               ALBUM</span>
+              </h2>
+              <p className="vx-privateAlbumDescription">
+               Your {activePlanPrefix} 
+               access key has been verified. {unlimitedAccess
+                 ? "Unlimited entries available."
+                 : remainingAccesses === null
+                    ? "Welcome inside the private vault."
+                    : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+              </p>
+              <div className="vx-privateAlbumLine" />
+              </header> 
+              <div className="vx-privateAlbumGrid">
+               {unlockedPhotos.map((src, index) => (
+              <figure key={`unlocked-${src}`}
+               className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
+              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"}/>
+              <figcaption>
               <span>USER 🜲 FX</span>
               <small>
                 PRIVATE FILE {String(index + 1).padStart(2, "0")}
               </small>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <footer className="vx-privateAlbumFooter">
-        <span>PERSONAL ACCESS</span>
-        <i />
-        <span>DO NOT DISTRIBUTE</span>
-      </footer>
-    </div>
-  </section>
-) : null}
-          <section id="protocolo" className="vx-sec">
+              </figcaption>
+              </figure>
+              ))}
+              </div>
+              <footer className="vx-privateAlbumFooter">
+              <span>
+               PERSONAL ACCESS</span>
+              <i />
+              <span>
+               DO NOT DISTRIBUTE</span>
+              </footer>
+              </div>
+              </section>
+               ) : null}
+              <section id="protocolo" className="vx-sec">
         <Reveal>
               <p className="vx-goldk">
                🜲 ACCESS PROTOCO
@@ -682,9 +608,11 @@ export default function VaultHome() {
               <b className="vx-stepNum">{s.n}</b>
               <div>
               <h3>
-               {s.title}</h3>
+               {s.title}
+              </h3>
               <p>
-               {s.text}</p>
+               {s.text}
+              </p>
               </div>
               <small>
                {s.n} / 04
@@ -692,8 +620,8 @@ export default function VaultHome() {
               </article>
         </Reveal>
                ))}
-          </section>
-          <section id="llaves" className="vx-sec vx-tint">
+            </section>
+            <section id="llaves" className="vx-sec vx-tint">
         <Reveal>
               <p className="vx-goldk">
                🜲 ACCESS CODE
@@ -785,13 +713,16 @@ export default function VaultHome() {
               <div className="vx-footBrand">
               <img src={LOGO} alt="" />
               <div>
-                <p>
-                USER<span>
-                🜲</span>
-                FX                 
+              <p>
+               USER
+              <span>
+               🜲
+              </span>
+               FX                 
               </p>
               <small>
-                PRIVATE VAULT</small>
+               PRIVATE VAULT
+              </small>
               </div>
               </div>
               </div>
@@ -815,12 +746,12 @@ export default function VaultHome() {
               </div>
               </div>
               <p className="vx-legal">
-  | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is
-  confidential and for personal use only. Sharing, reselling, recording,
-  downloading, copying, or redistributing content is prohibited and may
-  result in immediate termination without refund. All content is protected
-  by Canadian copyright law. Digital purchases are final once access is
-  delivered, except where Ontario law requires otherwise.
+               | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is
+               confidential and for personal use only. Sharing, reselling, recording,
+               downloading, copying, or redistributing content is prohibited and may
+               result in immediate termination without refund. All content is protected
+               by Canadian copyright law. Digital purchases are final once access is
+               delivered, except where Ontario law requires otherwise.
               </p>
               </footer>
         <Ticker items={TICKER_ITEMS} reverse />
@@ -862,12 +793,12 @@ export default function VaultHome() {
               </p>
               </div>
               </div>
-              ) : null}
-              {codeModal ? (
+               ) : null}
+               {codeModal ? (
               <div className="vx-modal" onClick={() => setCodeModal(false)}>
               <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
               <button type="button" className="vx-modalClose" onClick={() => setCodeModal(false)} aria-label="Close modal">
-               ×
+                ×
               </button>
               <div className="vx-modalIcon">
               <img src={ICONS.candado} alt="" className="vx-modalCrown" draggable={false}/>
@@ -877,7 +808,7 @@ export default function VaultHome() {
               </p>
               <h3 className="vx-modalTitle">
               <span className="vx-modalTitleShimmer">
-                 YOUR ACCESS KEY
+               YOUR ACCESS KEY
               </span>
               </h3>
               <form onSubmit={handleVerify} className="vx-codeForm">
@@ -892,14 +823,14 @@ export default function VaultHome() {
               <p className="vx-modalError">
                {verifyError}
               </p>
-              )}
+               )}
               </form>
               <p className="vx-modalFooter">
-               Don't have a code? DM @User18Fx to get one.
+                Don't have a code? DM @User18Fx to get one.
               </p>
               </div>
               </div>
-              ):null}
+               ):null}
               </div>
-              );
-              }
+               );
+               }

@@ -18,10 +18,16 @@ const PREFIX_TO_PLAN = Object.freeze({
   VIPX: "vip",
 });
 
+const PLAN_ACCESS_LIMITS = Object.freeze({
+  basic: 1,
+  pro: 10,
+  vip: null,
+});
+
 const PLAN_TO_ACCESS_MODE = Object.freeze({
-  basic: "single_session",
-  pro: "remembered_code",
-  vip: "persistent_7d",
+  basic: "single_entry",
+  pro: "ten_entries",
+  vip: "unlimited_entries",
 });
 
 function getRedis() {
@@ -97,26 +103,34 @@ function serializeSessionCookie(req, token, maxAge) {
   return parts.join("; ");
 }
 
-function getCodeExpiration(record) {
-  const createdAt = Date.parse(record.createdAt);
-  const days = Number(record.days);
+function getAccessState(record, planId) {
+  const maxAccesses = PLAN_ACCESS_LIMITS[planId];
+  const parsedUsedAccesses = Number(record.usedAccesses);
+  const fallbackUsedAccesses =
+    record.status === "consumed" && Number.isFinite(maxAccesses)
+      ? maxAccesses
+      : 0;
+  const usedAccesses = Number.isFinite(parsedUsedAccesses)
+    ? Math.max(0, Math.floor(parsedUsedAccesses))
+    : fallbackUsedAccesses;
+  const remainingAccesses = Number.isFinite(maxAccesses)
+    ? Math.max(0, maxAccesses - usedAccesses)
+    : null;
 
-  if (!Number.isFinite(createdAt) || !Number.isFinite(days) || days <= 0) {
-    return null;
-  }
-
-  return createdAt + days * 24 * 60 * 60 * 1000;
+  return {
+    maxAccesses,
+    usedAccesses,
+    remainingAccesses,
+    unlimitedAccess: maxAccesses === null,
+  };
 }
 
-function getSessionSeconds(planId, remainingCodeSeconds) {
-  const requestedSeconds =
-    planId === "vip"
-      ? VIP_SESSION_SECONDS
-      : planId === "pro"
-        ? PRO_SESSION_SECONDS
-        : BASIC_SESSION_SECONDS;
-
-  return Math.max(1, Math.min(requestedSeconds, remainingCodeSeconds));
+function getSessionSeconds(planId) {
+  return planId === "vip"
+    ? VIP_SESSION_SECONDS
+    : planId === "pro"
+      ? PRO_SESSION_SECONDS
+      : BASIC_SESSION_SECONDS;
 }
 
 async function createAccessSession({
@@ -128,58 +142,75 @@ async function createAccessSession({
   record,
   fullCode,
   planId,
-  codeExpiresAt,
+  accessState,
 }) {
   const token = crypto.randomBytes(32).toString("base64url");
   const sessionHash = hashValue(token);
   const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
-  const remainingCodeSeconds = Math.max(
-    1,
-    Math.floor((codeExpiresAt - Date.now()) / 1000)
-  );
-  const sessionSeconds = getSessionSeconds(planId, remainingCodeSeconds);
+  const sessionSeconds = getSessionSeconds(planId);
   const sessionExpiresAt = Date.now() + sessionSeconds * 1000;
   const accessMode = PLAN_TO_ACCESS_MODE[planId];
+  const usedAccesses = accessState.usedAccesses + 1;
+  const remainingAccesses = Number.isFinite(accessState.maxAccesses)
+    ? Math.max(0, accessState.maxAccesses - usedAccesses)
+    : null;
+  const usedAt = new Date().toISOString();
+  const updatedRecord = {
+    ...record,
+    status:
+      remainingAccesses === 0 && accessState.maxAccesses !== null
+        ? "consumed"
+        : "active",
+    maxAccesses: accessState.maxAccesses,
+    usedAccesses,
+    remainingAccesses,
+    unlimitedAccess: accessState.unlimitedAccess,
+    lastUsedAt: usedAt,
+  };
+
+  delete updatedRecord.days;
+  delete updatedRecord.expiresAt;
+
+  if (remainingAccesses === 0 && accessState.maxAccesses !== null) {
+    updatedRecord.usedAt = usedAt;
+  }
+
   const sessionRecord = JSON.stringify({
     planId,
     accessMode,
     codeHash: hashValue(fullCode).slice(0, 32),
-    createdAt: new Date().toISOString(),
+    maxAccesses: accessState.maxAccesses,
+    usedAccesses,
+    remainingAccesses,
+    unlimitedAccess: accessState.unlimitedAccess,
+    createdAt: usedAt,
     expiresAt: new Date(sessionExpiresAt).toISOString(),
-    codeExpiresAt: new Date(codeExpiresAt).toISOString(),
   });
+  const result = Number(
+    await redis.eval(
+      `
+        local current = redis.call("GET", KEYS[1])
+        if not current then return 0 end
+        if current ~= ARGV[1] then return -1 end
+        redis.call("SET", KEYS[1], ARGV[2])
+        redis.call("SET", KEYS[2], ARGV[3], "EX", tonumber(ARGV[4]))
+        return 1
+      `,
+      2,
+      redisKey,
+      sessionKey,
+      rawRecord,
+      JSON.stringify(updatedRecord),
+      sessionRecord,
+      String(sessionSeconds)
+    )
+  );
 
-  if (planId === "basic") {
-    const consumedRecord = JSON.stringify({
-      ...record,
-      status: "consumed",
-      usedAt: new Date().toISOString(),
-    });
-    const result = Number(
-      await redis.eval(
-        `
-          local current = redis.call("GET", KEYS[1])
-          if not current then return 0 end
-          if current ~= ARGV[1] then return -1 end
-          redis.call("SET", KEYS[1], ARGV[2], "KEEPTTL")
-          redis.call("SET", KEYS[2], ARGV[3], "EX", tonumber(ARGV[4]))
-          return 1
-        `,
-        2,
-        redisKey,
-        sessionKey,
-        rawRecord,
-        consumedRecord,
-        sessionRecord,
-        String(sessionSeconds)
-      )
-    );
-
-    if (result !== 1) {
-      return { ok: false, reason: result === 0 ? "missing" : "used" };
-    }
-  } else {
-    await redis.set(sessionKey, sessionRecord, "EX", sessionSeconds);
+  if (result !== 1) {
+    return {
+      ok: false,
+      reason: result === 0 ? "missing" : "changed",
+    };
   }
 
   const persistentMaxAge = planId === "vip" ? sessionSeconds : undefined;
@@ -191,6 +222,10 @@ async function createAccessSession({
   return {
     ok: true,
     accessMode,
+    maxAccesses: accessState.maxAccesses,
+    usedAccesses,
+    remainingAccesses,
+    unlimitedAccess: accessState.unlimitedAccess,
     sessionExpiresAt: new Date(sessionExpiresAt).toISOString(),
   };
 }
@@ -277,10 +312,15 @@ export default async function handler(req, res) {
       });
     }
 
-    if (record.status === "consumed" && recordPlanId === "basic") {
+    const accessState = getAccessState(record, recordPlanId);
+
+    if (
+      accessState.remainingAccesses !== null &&
+      accessState.remainingAccesses <= 0
+    ) {
       return res.status(401).json({
         ok: false,
-        error: "This BASIC code has already been activated.",
+        error: "This code has no accesses remaining.",
       });
     }
 
@@ -288,22 +328,6 @@ export default async function handler(req, res) {
       return res.status(401).json({
         ok: false,
         error: "This code is no longer active.",
-      });
-    }
-
-    const codeExpiresAt = getCodeExpiration(record);
-
-    if (!codeExpiresAt) {
-      return res.status(500).json({
-        ok: false,
-        error: "Invalid access record.",
-      });
-    }
-
-    if (Date.now() >= codeExpiresAt) {
-      return res.status(401).json({
-        ok: false,
-        error: "This code has expired.",
       });
     }
 
@@ -316,13 +340,13 @@ export default async function handler(req, res) {
       record,
       fullCode,
       planId: recordPlanId,
-      codeExpiresAt,
+      accessState,
     });
 
     if (!session.ok) {
       return res.status(409).json({
         ok: false,
-        error: "This BASIC code has already been activated.",
+        error: "The code changed while it was being verified. Try again.",
       });
     }
 
@@ -331,10 +355,12 @@ export default async function handler(req, res) {
       code: fullCode,
       planId: recordPlanId,
       plan: record.plan,
-      days: record.days,
       accessMode: session.accessMode,
+      maxAccesses: session.maxAccesses,
+      usedAccesses: session.usedAccesses,
+      remainingAccesses: session.remainingAccesses,
+      unlimitedAccess: session.unlimitedAccess,
       sessionExpiresAt: session.sessionExpiresAt,
-      expiresAt: new Date(codeExpiresAt).toISOString(),
     });
   } catch (error) {
     console.error("[api/verify]", error);
