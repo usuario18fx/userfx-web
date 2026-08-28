@@ -1,8 +1,8 @@
 /* ═════════  VAULT HERO DOORS  ══════════════════════════════════ */
 .vhd-root{
   /* ── Color ── */
-  --gold:#E0B85A;
-  --gold-hi:#F6D77A;
+  --gold:#b69039cb;
+  --gold-hi:#000000;
   --brand:#0054DB;              /* azul del logo / glow */
   --ink:#F4EEE4;
   --line:#ECE5D824;
@@ -67,14 +67,10 @@
   padding:clamp(24px,4vw,48px);
   padding-top:calc(clamp(24px,4vw,48px) + var(--logo-drop));
   overflow:hidden;
-  background:
-    linear-gradient(180deg,
-      #07060A38 0%,
-      #07060A1F 45%,
-      #07060A8F 100%),
-    url("/wallpaperVideo.png")
-      center / cover
-      no-repeat;
+  background:linear-gradient(90deg,
+  #07060A45,#07060A12,#07060A45),
+  url("/wallpaperVideo2.png")
+  center / 260px auto repeat;
   box-shadow:
     inset -1px 0 0 #E0B85A21,
     inset 0 0 90px #00000061;
@@ -261,18 +257,16 @@ video.vhd-logo{
   margin-inline:auto;
   padding:7px 7px 7px 16px;
   border:1px solid #E0B85A52;
-  background:
-    linear-gradient(90deg,
-      #07060AC7 0%,
-      #07060A73 50%,
-      #373221c7 100%),
-    url("/wallpaperInput.png") center / cover no-repeat;
   box-shadow:
     0 16px 40px #000000A6,
     0 0 24px #E0B85A12,
     inset 0 1px 0 #FFFFFF0D;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+  background:linear-gradient(90deg,
+  #07060A30,#07060A0A,#07060A30),
+  url("/wallpaperVideo.png")
+  center / 210px auto repeat-x;
 }
 .vhd-form:focus-within{
   border-color:var(--gold);
@@ -328,14 +322,14 @@ video.vhd-logo{
   padding:0;
   border:1px solid var(--gold);
   background:var(--gold);
-  color:#1A0D05;
+  color:#4f2810;
   font-size:17px;
   font-weight:900;
   line-height:1;
   cursor:pointer;
   transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
-.vhd-go:hover{background:var(--gold-hi); transform:translateY(-1px); box-shadow:0 8px 20px #E0B85A33;
+.vhd-go:hover{background:var(--gold-hi); transform:translateY(-1px); box-shadow:0 8px 20px #8e743933;
 }
 @media (max-width:520px){
   .vhd-form{ bottom:14px; width:calc(100%-24px); min-height:56px; padding:6px 6px 6px 10px;
@@ -554,3 +548,101 @@ video.vhd-logo{
     url("/public/doorLeft.png")
       center / cover no-repeat;
 }
+/* ══════════════════════════════════════════════
+   RESPONSIVE VAULT — CELULAR
+══════════════════════════════════════════════ */
+
+@media (max-width:520px){
+
+  .vhd-root{
+    display:flex;
+    flex-direction:column;
+
+    width:100%;
+    min-height:0;
+    height:auto;
+
+    overflow:hidden;
+    perspective:none;
+  }
+  /* VIDEO */
+  .vhd-logoSide{
+    width:100%;
+    min-height:360px;
+    padding:20px 16px 64px;
+    background:
+    linear-gradient(180deg,
+    #07060A4D 0%,#07060A14 45%,
+    #07060ACC 100%
+      ),
+    url("/wallpaperVideo2.png")
+    center / cover no-repeat;
+  }
+  .vhd-logoGlow{
+    width:280px;
+    height:280px;
+  }
+  .vhd-logo{
+    width:min(280px,88%);
+    max-width:100%;
+    max-height:290px;
+    object-fit:contain;
+    object-position:center;
+    transform:none;
+  }
+  .vhd-logoSub{
+    margin-top:10px;
+    font-size:7px;
+    letter-spacing:.16em;
+  }
+  /* PUERTAS */
+  .vhd-doors{
+    width:100%;
+    min-height:370px;
+    height:370px;
+    grid-template-columns:1fr 1fr;
+    box-shadow:
+      0 -12px 30px #0000008C,
+      inset 0 1px 0 #E0B85A24;
+  }
+  .vhd-door-inner{
+    width:90%;
+  }
+  .vhd-door-inner span{
+    font-size:7px;
+    letter-spacing:.22em;
+    white-space:nowrap;
+  }
+  .vhd-root.is-typing .vhd-door-inner span{
+    letter-spacing:.28em;
+  }
+  .vhd-door-inner i{
+    width:34px;
+  }
+  /* INPUT INFERIOR */
+  .vhd-form{
+    left:12px;
+    right:12px;
+    bottom:12px;
+    width:auto;
+    min-height:54px;
+    margin:0;
+    padding:6px 6px 6px 10px;
+    background:
+    linear-gradient(90deg,
+    #07060A45,#07060A12,#07060A45),
+    url("/wallpaperInput.png")
+    center / 190px auto repeat-x;
+    box-shadow:
+      0 12px 30px #000000B3,
+      0 0 18px #E0B85A14,
+      inset 0 1px 0 #FFFFFF12;
+  }
+  .vhd-input{min-width:0;height:42px;padding:0 6px;font-size:10px;  letter-spacing:.12em;
+  }
+  .vhd-go{flex:0 0 42px; width:42px;min-width:42px;height:42px;font-size:16px;
+  }}
+  /* ⬆️ SUBIR HUD AMARILLO EN CELULAR */
+@media (max-width:520px){
+  .vx-ticker.is-rev{position:relative; top:-1px;margin-bottom:-52px; z-index:20;
+  }}
