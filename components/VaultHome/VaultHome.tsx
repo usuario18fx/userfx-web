@@ -6,7 +6,7 @@ import VaultDevice from "../VaultDevice/VaultDevice";
 import "../VaultDevice/VaultDevice.css";
 import Crown4D from "../Crown4D/Crown4D";
 import "../VaultHome/VaultHome.css";
-import VaultHeroDoors from "../CodedAlbum/VaultHeroDoors";
+import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
 
   const LOGO="/assets/userfx-logo-sin.png";
   const BRICK="/assets/brick-wall.png";
@@ -198,8 +198,8 @@ export default function VaultHome() {
         ? BASIC_INSIDE
         : [];
   const visiblePhotos = unlocked
-    ? [...PREVIEW_INSIDE, ...unlockedPhotos]
-    : PREVIEW_INSIDE;
+        ? [...PREVIEW_INSIDE, ...unlockedPhotos]
+        : PREVIEW_INSIDE;
   const [prefix, setPrefix] = useState('');
   const [suffix, setSuffix] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
@@ -208,7 +208,6 @@ export default function VaultHome() {
   const [savedCodeStored, setSavedCodeStored] = useState(false);
   const inlineCodeRef = useRef<HTMLInputElement | null>(null);
   const [doorsOpen,setDoorsOpen]=useState(false);
-
   useEffect(() => {
   fetch("/api/access-session", {
     method: "GET",
@@ -228,12 +227,11 @@ export default function VaultHome() {
         );
         setUnlimitedAccess(data.unlimitedAccess === true);
         setUnlocked(true);
-      }
-    })
+        }})
     .catch(() => {});
   const codeFromTelegram = new URLSearchParams(
     window.location.search
-    ).get("code");
+        ).get("code");
   const savedCode = localStorage.getItem(SAVED_CODE_KEY);
   const codeToLoad = codeFromTelegram || savedCode;
   const match = String(codeToLoad || "")
@@ -260,7 +258,6 @@ export default function VaultHome() {
     }),
     }).catch(() => {});
     }, []);
-
   useEffect(() => {
     const tick = () => {
     const d = new Date();
@@ -273,7 +270,6 @@ export default function VaultHome() {
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
     }, []);
-
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
     if (attempts >= MAX_ATTEMPTS) {setVerifyError(
@@ -305,9 +301,7 @@ export default function VaultHome() {
         body: JSON.stringify({
           prefix: normalizedPrefix,
           suffix: normalizedSuffix,
-        }),
-    });
-
+    }),});
     const data = await res.json();
     if (data.ok) {
     if (!isAccessPlanId(data.planId)) {
@@ -326,12 +320,12 @@ export default function VaultHome() {
         localStorage.setItem(
           SAVED_CODE_KEY,
           `${normalizedPrefix}-${normalizedSuffix}`
-        );
+    );
         setSavedCodeStored(true);
-      } else {
+    } else {
         localStorage.removeItem(SAVED_CODE_KEY);
         setSavedCodeStored(false);
-      }
+    }
       setUnlocked(true);
       setCodeModal(false);
       setVerifyError("");
@@ -342,15 +336,15 @@ export default function VaultHome() {
     {},
     "",
     `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
-  );  // Baja automáticamente a la nueva sección
+    );  // Baja automáticamente a la nueva sección
   window.setTimeout(() => {
     document
       .getElementById("unlocked-vault")
       ?.scrollIntoView({
         behavior: "smooth",
         block: "start",
-      });
-  }, 200);
+    });
+    }, 200);
   return;
     } else {
         setAttempts((n) => n + 1);
@@ -362,9 +356,6 @@ export default function VaultHome() {
     } finally {
       setVerifyLoading(false);
     }}
-
-  
-
     function handleInlineCodeChange(value: string) {
       const compactCode = value
         .toUpperCase()
@@ -389,9 +380,9 @@ export default function VaultHome() {
       ?.scrollIntoView({
         behavior: "smooth",
         block: "start",
-      });
+    });
     return;
-  }
+    }
   setDoorsOpen(true);
     }
     const inlineCodeValue = prefix || suffix
@@ -416,7 +407,7 @@ export default function VaultHome() {
               <img src={LOGO} alt="USER FX" />
               <span className="vx-live" />
               <span>
-               |  PrivVault |
+               |  PRIV⭑VAULT |
               </span>
               </a>
               <div className="vx-hudRight">
@@ -426,11 +417,13 @@ export default function VaultHome() {
                  {unlocked ? (
                  <>
                  <span className="vx-unlockedPrefix">{activePlanPrefix}</span>
-                 <span className="vx-unlockedState">UNLOCKED</span>
+                 <span className="vx-unlockedState">
+                  UNLOCKED
+                </span>
                 </>
-               ) : (
+    ) : (
                 "🜲 LOCKED"
-               )}
+    )}
               </b>
               </div>
           </header>
@@ -448,11 +441,11 @@ export default function VaultHome() {
               </div>
               <p className="vx-kicker">
               <i />
-               ᴘʀɪᴠ⭑ᴠᴀᴜʟᴛ
+              PRIV⭑VAULT
               <i/>
-               ᴜꜱᴇʀ🜲𝓕𝓧 
+               User🜲𝓕𝓧 
               <i/> 
-               ᴏꜰꜰɪᴄɪᴀʟ 
+               OFFICIAL 
               <i/>
               </p>
               <h1 className="vx-title">
@@ -553,7 +546,8 @@ export default function VaultHome() {
               <h2 className="vx-privateAlbumTitle">
                PRIVATE 
               <span>
-               ALBUM</span>
+               ALBUM
+              </span>
               </h2>
               <p className="vx-privateAlbumDescription">
                Your {activePlanPrefix} 
@@ -760,7 +754,11 @@ export default function VaultHome() {
               <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
 {/* ── partículas doradas ── */}
               <div className="vx-modalParticles">
-              <span /><span /><span /><span /><span />
+              <span/>
+              <span/>
+              <span/>
+              <span/>
+              <span/>
               </div>
               <button type="button" className="vx-modalClose" onClick={() => setDm(false)} aria-label="Close modal">
                ×

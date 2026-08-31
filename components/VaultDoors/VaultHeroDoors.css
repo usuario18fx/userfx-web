@@ -65,11 +65,11 @@
   min-width:0;
   min-height:0;
   padding:clamp(24px,4vw,48px);
-  padding-top:calc(clamp(24px,4vw,48px) + var(--logo-drop));
+  padding-top:calc(clamp(28px,4vw,58px) + var(--logo-drop));
   overflow:hidden;
   background:linear-gradient(90deg,
-  #07060A45,#07060A12,#07060A45),
-  url("/wallpaperVideo2.png")
+  #07060A05,#07060A06,#07060a05),
+  url("/public/wallpaperBase.png")
   center / 260px auto repeat;
   box-shadow:
     inset -1px 0 0 #E0B85A21,
@@ -265,7 +265,7 @@ video.vhd-logo{
   -webkit-backdrop-filter:blur(8px);
   background:linear-gradient(90deg,
   #07060A30,#07060A0A,#07060A30),
-  url("/wallpaperVideo.png")
+  url("/wallpaperVideo2.png")
   center / 210px auto repeat-x;
 }
 .vhd-form:focus-within{
@@ -548,20 +548,14 @@ video.vhd-logo{
     url("/public/doorLeft.png")
       center / cover no-repeat;
 }
-/* ══════════════════════════════════════════════
-   RESPONSIVE VAULT — CELULAR
-══════════════════════════════════════════════ */
-
+/* ══════════ RESPONSIVE VAULT — CELULAR ═══════════════ */
 @media (max-width:520px){
-
   .vhd-root{
     display:flex;
     flex-direction:column;
-
     width:100%;
     min-height:0;
     height:auto;
-
     overflow:hidden;
     perspective:none;
   }
@@ -573,14 +567,11 @@ video.vhd-logo{
     background:
     linear-gradient(180deg,
     #07060A4D 0%,#07060A14 45%,
-    #07060ACC 100%
-      ),
+    #07060ACC 100%),
     url("/wallpaperVideo2.png")
     center / cover no-repeat;
   }
-  .vhd-logoGlow{
-    width:280px;
-    height:280px;
+  .vhd-logoGlow{width:280px;height:280px;
   }
   .vhd-logo{
     width:min(280px,88%);
@@ -605,19 +596,13 @@ video.vhd-logo{
       0 -12px 30px #0000008C,
       inset 0 1px 0 #E0B85A24;
   }
-  .vhd-door-inner{
-    width:90%;
+  .vhd-door-inner{width:90%;
   }
-  .vhd-door-inner span{
-    font-size:7px;
-    letter-spacing:.22em;
-    white-space:nowrap;
+  .vhd-door-inner span{font-size:7px;letter-spacing:.22em;white-space:nowrap;
   }
-  .vhd-root.is-typing .vhd-door-inner span{
-    letter-spacing:.28em;
+  .vhd-root.is-typing .vhd-door-inner span{letter-spacing:.28em;
   }
-  .vhd-door-inner i{
-    width:34px;
+  .vhd-door-inner i{width:34px;
   }
   /* INPUT INFERIOR */
   .vhd-form{
@@ -631,7 +616,7 @@ video.vhd-logo{
     background:
     linear-gradient(90deg,
     #07060A45,#07060A12,#07060A45),
-    url("/wallpaperInput.png")
+    url("/wallpaper2.png")
     center / 190px auto repeat-x;
     box-shadow:
       0 12px 30px #000000B3,
@@ -646,3 +631,52 @@ video.vhd-logo{
 @media (max-width:520px){
   .vx-ticker.is-rev{position:relative; top:-1px;margin-bottom:-52px; z-index:20;
   }}
+
+/* ===== CORTAR LAS PUERTAS JUSTO DEBAJO DEL TEXTO DEL VIDEO ===== */
+.vhd-doors{
+  position:relative;
+  min-height:0;
+  height:425px;
+  overflow:visible;
+  margin-bottom: 0;
+}
+/* ===== PUERTAS TERMINAN ARRIBA DEL INPUT ===== */
+.vhd-door{
+  height:370px;
+  overflow: hidden;
+}
+/* ===== VIDEO + TEXTO ===== */
+.vhd-doors > :not(.vhd-door):not(.vhd-form){
+  grid-area:1 / 1 / 2 / -1;
+  z-index:0;
+  min-width:0;
+  max-width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:14px;
+  padding:24px 16px 0;
+  overflow:hidden;
+}
+/* ===== INPUT SEPARADO DE LAS PUERTAS ===== */
+.vhd-form{
+  position:absolute;
+  left:50%;
+  bottom:-25px;
+  transform:translateX(-50%);
+  width:min(400px,calc(100% - 32px));
+  z-index:var(--z-form);
+  display:flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+  align-items:center;
+  margin:0;
+}
+.vhd-bg{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  background:transparent;
+}
