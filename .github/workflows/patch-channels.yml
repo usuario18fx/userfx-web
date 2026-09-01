@@ -1,0 +1,82 @@
+name: Patch channel access buttons
+
+on:
+  push:
+    paths:
+      - ".github/workflows/patch-channels.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch Telegram channels panel
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path("api/telegram.js")
+          text = path.read_text(encoding="utf-8")
+
+          old = '''  function getChannelsKeyboard() {
+      return Markup.keyboard([
+        [ BTN_SMOKELANDIA,
+          BTN_USERFX_SITE, ] ,
+        [ BTN_BACK_MENU, ] ,]).resize();
+        }'''
+
+          new = '''  function getChannelsKeyboard() {
+      return Markup.inlineKeyboard([
+        [ Markup.button.url(
+            BTN_SMOKELANDIA,
+            SMOKELANDIA_GROUP_LINK), ],
+        [ Markup.button.url(
+            BTN_USERFX_SITE,
+            USERFX_SITE_URL), ],
+        [ Markup.button.callback(
+            BTN_BACK_MENU,
+            "channels_back"), ],
+        ]);
+        }'''
+
+          if old not in text:
+              raise SystemExit("getChannelsKeyboard block not found; refusing to patch")
+
+          text = text.replace(old, new, 1)
+
+          marker = '''//// PRE CHECKOUT // '''
+          action = '''//// CHANNELS BACK ACTION //
+    bot.action(
+        "channels_back", async (ctx) => {
+        try {
+        await ctx.answerCbQuery();
+        return await sendMainPanel(ctx);
+        }
+        catch (error) {logger.error(
+        "CHANNELS BACK ERROR", getTelegramError(error));
+        }
+        });
+'''
+
+          if '"channels_back", async (ctx)' not in text:
+              if marker not in text:
+                  raise SystemExit("PRE CHECKOUT marker not found; refusing to patch")
+              text = text.replace(marker, action + marker, 1)
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Commit patch and remove one-shot workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add api/telegram.js
+          git rm .github/workflows/patch-channels.yml
+          git commit -m "fix: add inline access buttons to channels"
+          git push
