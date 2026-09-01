@@ -1,15 +1,14 @@
 /* ═════════  VAULT HERO DOORS  ══════════════════════════════════ */
 .vhd-root{
-  /* ── Color ── */
-  --gold:#b69039cb;
-  --gold-hi:#000000;
-  --brand:#0054DB;              /* azul del logo / glow */
-  --ink:#F4EEE4;
-  --line:#ECE5D824;
-  --bg:#07060A;
+  --gold:#b6ac39cb;
+  --gold-hi:#2c2b01;
+  --brand:#1957de; /* azul del logo / glow */
+  --ink:#f4f4e4;
+  --line:#b5b3a124;
+  --bg:#06080a;
   /* ── Forma ── */
-  --vhd-h:clamp(500px,52vh,650px); /* pon 580px si la quieres fija */
-  --logo-drop:clamp(25px,0,65px); /* cuánto baja el logo */
+  --vhd-h:425px;
+  --logo-drop:25px;
   --ease-door:cubic-bezier(.77,0,.18,1);
   --t-door:1.5s;
   /* ── Capas ── */
@@ -20,20 +19,35 @@
   --z-form:5;
   position:relative;
   isolation:isolate;
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
+   position:relative;
+  isolation:isolate;
+  display:block;
+  width:100%;
+  height:425px;
+  overflow:visible;
+  background:#06080a;
   width:140%;
   height:var(--vhd-h);
-  min-height:520px;
-  overflow:hidden;
+  min-height:0;
+  margin-bottom:110px;
+  overflow:visible;
   background:var(--bg);
 }
-::selection{ background:#E0B85A33; }
+.vhd-root *,
+.vhd-root *::before,
+.vhd-root *::after{
+  box-sizing:border-box;
+}
+::selection{
+  background:#d8d45733;
+}
 /* ═══════════  FONDO  ═══════════ */
 .vhd-bg{
   position:absolute;
   inset:0;
   z-index:var(--z-bg);
+  pointer-events:none;
+  overflow:hidden;
   background:center/cover no-repeat;
   filter:blur(32px) brightness(.35) saturate(1.2);
   transform:scale(1.15);
@@ -46,13 +60,13 @@
 .vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-bg{
   filter:blur(20px) brightness(.5) saturate(1.15);
 }
-.vhd-damask {
-  position: absolute;
-  inset: 0;
-  z-index: var(--z-damask);
-  background: url("/assets/damask.png") center / 320px repeat;
-  opacity: 0.28;
-  pointer-events: none;
+.vhd-damask{
+  position:absolute;
+  inset:0;
+  z-index:var(--z-damask);
+  background:url("/assets/damask.png") center / 320px repeat;
+  opacity:.28;
+  pointer-events:none;
 }
 /* ═══════════  LADO DEL VIDEO / LOGO  ═══════════ */
 .vhd-logoSide{
@@ -64,34 +78,29 @@
   justify-content:center;
   min-width:0;
   min-height:0;
-  padding:clamp(24px,4vw,48px);
-  padding-top:calc(clamp(28px,4vw,58px) + var(--logo-drop));
+  height:100%;
+  padding:24px clamp(24px,4vw,48px);
+  padding-top:calc(24px + var(--logo-drop));
   overflow:hidden;
-  background:linear-gradient(90deg,
-  #07060A05,#07060A06,#07060a05),
-  url("/public/wallpaperBase.png")
-  center / 260px auto repeat;
-  box-shadow:
-    inset -1px 0 0 #E0B85A21,
-    inset 0 0 90px #00000061;
+  background:
+    url("/wallpaperBase.png")
+    center / 260px auto repeat;
+  box-shadow:none !important;
 }
 .vhd-logoGlow{
+  display: none;
   position:absolute;
   width:min(420px,75%);
   aspect-ratio:1;
   border-radius:50%;
-  background:radial-gradient(circle,
-    color-mix(in srgb, var(--brand) 20%, transparent) 0%,
-    color-mix(in srgb, var(--brand) 8%, transparent) 40%,
-    transparent 70%);
-  filter:blur(20px);
   animation:vhdGlow 3s ease-in-out infinite;
   pointer-events:none;
 }
 @keyframes vhdGlow{
-  0%,100%{ opacity:.55; transform:scale(1); }
-  50%{ opacity:.85; transform:scale(1.12); }
-}
+  0%,100%{opacity:.55; transform:scale(1);
+  }
+  50%{opacity:.85; transform:scale(1.12);
+  }}
 /* Funciona tanto para <img> como para <video> */
 .vhd-logo{
   position:relative;
@@ -99,13 +108,12 @@
   display:block;
   width:min(460px,100%);
   max-width:100%;
-  max-height:clamp(300px,48vh,440px);
+  max-height:330px;
   object-fit:contain;
   object-position:center;
-  filter:
-    drop-shadow(0 0 30px color-mix(in srgb, var(--brand) 27%, transparent))
-    drop-shadow(0 0 60px #0009);
-  transition:filter .4s ease, transform .4s ease;
+  filter:none;
+  box-shadow:none;
+  transition:transform .4s ease;
 }
 video.vhd-logo{
   background:transparent;
@@ -113,16 +121,15 @@ video.vhd-logo{
   outline:0;
 }
 .vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-logo{
-  filter:
-    drop-shadow(0 0 40px #E0B85A66)
-    drop-shadow(0 0 80px #000C);
-  transform:scale(1.025);
+  filter:none;
+  box-shadow:none;
+  transform:scale(1);
 }
 .vhd-logoSub{
   position:relative;
   z-index:1;
-  margin-top:16px;
-  color:#FFFFFF66;
+  margin-top:14px;
+  color:#35331300;
   font-family:"JetBrains Mono",monospace;
   font-size:clamp(8px,.7vw,9px);
   line-height:1.6;
@@ -135,34 +142,63 @@ video.vhd-logo{
   position:relative;
   z-index:var(--z-doors);
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"doorL doorR";
+  grid-template-rows:1fr;
   min-width:0;
   min-height:0;
-  overflow:hidden;
-  background:var(--bg);
-  perspective:1200px; /* ← la perspectiva va en el padre DIRECTO de las puertas */
-  box-shadow:
-    -20px 0 60px #0009,
-    inset 1px 0 0 #FFFFFF08;
+  height:90%;
+  overflow:visible;
+  background:transparent;
+  perspective:1200px;
+  box-shadow:none !important;
 }
 .vhd-door{
- position:relative;
+  position:relative;
   min-width:0;
+  height:90%;
   overflow:hidden;
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#141210 0%,#0B090D 50%,#07060A 100%);
+  border:5px solid var(--line);
   transition:
-    transform var(--t-door) var(--ease-door),
     filter .5s ease,
     box-shadow .5s ease;
 }
-/* will-change solo mientras están cerradas: se libera al abrir */
-.vhd-root:not(.is-open) .vhd-door{ will-change:transform; }
+.vhd-door.left{
+  grid-area:doorL;
+  z-index:1;
+  transform-origin:left center;
+  background:
+    linear-gradient(var(--gold),var(--gold))
+    right 26px center / 2px 120px no-repeat,
+    radial-gradient(closest-side,
+    #1c1c0915,transparent)
+    right 26px center / 24px 160px no-repeat,
+    url("/doorLeft.png")center / cover no-repeat;
+  box-shadow:none !important;
+}
+.vhd-door.right{
+  grid-area:doorR;
+  z-index:1;
+  transform-origin:right center;
+  background:
+    linear-gradient(var(--gold),var(--gold))
+    left 26px center / 2px 120px no-repeat,
+    radial-gradient(closest-side,
+    #e0d75a00,transparent)
+    left 26px center / 24px 160px no-repeat,
+    url("/doorRight.avif")
+      center / cover no-repeat;
+  box-shadow:none !important;
+}
+/* will-change solo mientras están cerradas */
+.vhd-root:not(.is-open) .vhd-door{
+  will-change:transform;
+}
 .vhd-door::before{
   content:"";
   position:absolute;
   inset:0;
-  background:url("/assets/damask.png") center/200px repeat;
+  background:url("/assets/damask.png") center / 200px repeat;
   opacity:.12;
   pointer-events:none;
 }
@@ -170,40 +206,21 @@ video.vhd-logo{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,#0003,transparent 30%,transparent 70%,#0004);
+  background:linear-gradient(90deg,#423f1500,transparent 30%,transparent 70%,#2d2b0b44);
   pointer-events:none;
 }
-/* Tiradores dorados + brillo en el encuentro central (sin HTML extra) */
-.vhd-door.left{
-  transform-origin:left center;
-  background:
-    linear-gradient(var(--gold),var(--gold)) right 26px center/2px 120px no-repeat,
-    radial-gradient(closest-side,#E0B85A2E,transparent) right 26px center/24px 160px no-repeat,
-    linear-gradient(180deg,#141210 0%,#0B090D 50%,#07060A 100%);
-  box-shadow:
-    inset -30px 0 60px #000C,
-    inset -1px 0 0 #E0B85A29;
+.vhd-root.is-open .vhd-door.left{transform:translateX(-102%) rotateY(-22deg);
 }
-.vhd-door.right{
-  transform-origin:right center;
-  background:
-    linear-gradient(var(--gold),var(--gold)) left 26px center/2px 120px no-repeat,
-    radial-gradient(closest-side,#E0B85A2E,transparent) left 26px center/24px 160px no-repeat,
-    linear-gradient(180deg,#141210 0%,#0B090D 50%,#07060A 100%);
-  box-shadow:
-    inset 30px 0 60px #000C,
-    inset 1px 0 0 #E0B85A29;
+.vhd-root.is-open .vhd-door.right{transform:translateX(102%) rotateY(22deg);
 }
-.vhd-root.is-open .vhd-door.left{  transform:translateX(-102%) rotateY(-22deg); }
-.vhd-root.is-open .vhd-door.right{ transform:translateX(102%)  rotateY(22deg); }
-/* Micro-interacción: las puertas cerradas reaccionan al hover */
 @media (hover:hover){
-  .vhd-root:not(.is-open) .vhd-door:hover{ filter:brightness(1.12); }
-}
+  .vhd-root:not(.is-open) .vhd-door:hover{
+    filter:brightness(1.12);
+  }}
 /* ═══════════  TEXTO DE LAS PUERTAS  ═══════════ */
 .vhd-door-inner{
   position:absolute;
-  inset:0; /* centra con flex: mismo resultado que top/left + translate */
+  inset:0;
   z-index:2;
   display:flex;
   flex-direction:column;
@@ -215,37 +232,89 @@ video.vhd-logo{
 }
 .vhd-door-inner span{
   max-width:100%;
-  color:#FFFFFF4D;
+  color:#f5ed924d;
   font-family:"JetBrains Mono",monospace;
   font-size:clamp(8px,.7vw,10px);
   line-height:1.5;
   letter-spacing:.42em;
   text-wrap:balance;
-  transition:color .5s ease, letter-spacing .5s ease, text-shadow .5s ease;
+  transition:
+    color .5s ease,
+    letter-spacing .5s ease,
+    text-shadow .5s ease;
 }
 .vhd-door-inner i{
   display:block;
   width:60px;
   height:1px;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  box-shadow:0 0 10px #E0B85A66;
-  transition:width .5s ease, background .5s ease, box-shadow .5s ease;
+  box-shadow:none !important;
+  transition:
+    width .5s ease,
+    background .5s ease,
+    box-shadow .5s ease;
 }
 .vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner span{
   color:var(--ink);
   letter-spacing:.52em;
-  text-shadow:0 0 12px #E0B85A66;
+  text-shadow:0 0 12px #e0de5a66;
 }
 .vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner i{
   width:68px;
   background:var(--gold);
-  box-shadow:0 0 16px var(--gold);
+  box-shadow:none !important;
+}
+/* ═══════════  VIDEO DENTRO DE LAS PUERTAS  ═══════════ */
+/* Video + caption = capa base a todo el panel, detrás de las puertas */
+.vhd-doors > :not(.vhd-door):not(.vhd-form){
+  grid-area:1 / 1 / 2 / -1;
+  z-index:0;
+  align-self:stretch;
+  min-width:0;
+  max-width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:24px 16px;
+  overflow:hidden;
+}
+.vhd-doors video{
+  display:block;
+  width:min(290px,88%);
+  height:min(310px,74%);
+  object-fit:cover;
+  object-position:center;
+  transform:none;
+}
+.vhd-reveal{
+  margin:0;
+}
+.vhd-reveal img,
+.vhd-reveal video{
+  display:block;
+  width:min(290px,88%);
+  height:min(310px,74%);
+  object-fit:cover;
+  object-position:center;
+  border:1px solid #3a391500;
+}
+.vhd-reveal figcaption{
+  margin-top:0px;
+  color:#e5e5ca73;
+  font-family:"JetBrains Mono",monospace;
+  font-size:9px;
+  letter-spacing:.28em;
+  text-align:center;
+  text-transform:uppercase;
 }
 /* ═══════════ INPUT DE CÓDIGO INFERIOR ═══════════ */
-.vhd-form{
+ .vhd-form{
   position:absolute;
-  inset-inline:0;
-  bottom:22px;
+  left:50%;
+  bottom:-92px;
   z-index:var(--z-form);
   display:flex;
   flex-direction:row;
@@ -254,40 +323,31 @@ video.vhd-logo{
   gap:8px;
   width:min(400px,calc(100% - 32px));
   min-height:60px;
-  margin-inline:auto;
+  margin:0;
   padding:7px 7px 7px 16px;
-  border:1px solid #E0B85A52;
-  box-shadow:
-    0 16px 40px #000000A6,
-    0 0 24px #E0B85A12,
-    inset 0 1px 0 #FFFFFF0D;
+  transform:translateX(-50%);
+  border:1px solid #FFD000;
+  box-shadow:none !important;
   backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  background:linear-gradient(90deg,
-  #07060A30,#07060A0A,#07060A30),
-  url("/wallpaperVideo2.png")
-  center / 210px auto repeat-x;
+  -webkit-backdrop-filter:blur(0px);
 }
 .vhd-form:focus-within{
   border-color:var(--gold);
-  box-shadow:
-    0 16px 40px #000A,
-    0 0 0 3px #E0B85A26,
-    inset 0 1px 0 #FFFFFF0A;
+  box-shadow:none!important;
 }
-.vhd-input{background:transparent;
-}
-/* Error de clave: añade la clase desde JS y quítala al reescribir */
 .vhd-form.is-error{
-  border-color:#E5484D;
+  border-color:#fff9545f;
   animation:vhdShake .4s ease;
 }
 @keyframes vhdShake{
-  20%{ transform:translateX(-6px); }
-  40%{ transform:translateX(5px); }
-  60%{ transform:translateX(-3px); }
-  80%{ transform:translateX(2px); }
-}
+  20%{transform:translateX(calc(-50% - 6px));
+  }
+  40%{transform:translateX(calc(-50% + 5px));
+  }
+  60%{transform:translateX(calc(-50% - 3px));
+  }
+  80%{transform:translateX(calc(-50% + 2px));
+  }}
 .vhd-input{
   flex:1;
   width:100%;
@@ -306,249 +366,41 @@ video.vhd-logo{
   text-transform:uppercase;
 }
 .vhd-input::placeholder{
-  color:#FFFFFF70;
+  color:#ceceb92b;
   opacity:1;
 }
 .vhd-input:focus::placeholder{
-  color:#FFFFFF30;
-}
-.vhd-go{
-  flex:0 0 46px;
-  display:grid;
-  place-items:center;
-  width:46px;
-  min-width:46px;
-  height:46px;
-  padding:0;
-  border:1px solid var(--gold);
-  background:var(--gold);
-  color:#4f2810;
-  font-size:17px;
-  font-weight:900;
-  line-height:1;
-  cursor:pointer;
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-}
-.vhd-go:hover{background:var(--gold-hi); transform:translateY(-1px); box-shadow:0 8px 20px #8e743933;
-}
-@media (max-width:520px){
-  .vhd-form{ bottom:14px; width:calc(100%-24px); min-height:56px; padding:6px 6px 6px 10px;
-  }
-  .vhd-input{font-size:11px; letter-spacing:.14em;
-  }
-  .vhd-go{flex-basis:44px; width:44px; min-width:44px; height:44px;
-  }}
-.vhd-input::placeholder{ color:#FFFFFF55; }
-.vhd-input:focus::placeholder{ color:#FFFFFF2B; }
-.vhd-go{
-  flex:0 0 44px;
-  width:44px;
-  height:44px;
-  border:1px solid var(--gold);
-  background:var(--gold);
-  color:#1A0D05;
-  font-weight:900;
-  cursor:pointer;
-  transition:background .2s ease, border-color .2s ease,
-             transform .2s ease, box-shadow .2s ease;
-}
-.vhd-go:hover{
-  border-color:var(--gold-hi);
-  background:var(--gold-hi);
-  transform:translateY(-1px) scale(1.03);
-  box-shadow:0 8px 20px #E0B85A33, 0 0 18px #E0B85A33;
-}
-.vhd-go:active{ transform:scale(.97); }
-.vhd-go:focus-visible,
-.vhd-input:focus-visible{
-  outline:2px solid var(--gold-hi);
-  outline-offset:2px;
-}
-/* ═══════════  VIDEO DENTRO DE LAS PUERTAS  ═══════════ */
-.vhd-doors video{
-  display:block;
-  width:min(290px,88%);
-  height:min(380px,60%);
-  object-fit:cover;
-  object-position:center;
-  transform:translateY(clamp(24px,6vh,55px));
+  color:#ceceb92b;
 }
 /* ═══════════  TABLET  ═══════════ */
-  @media (max-width:900px){
+@media (max-width:900px){
   .vhd-root{
     grid-template-columns:1fr;
+    width:100%;
     height:auto;
     min-height:0;
-    /* overflow:hidden se mantiene: evita scroll-x cuando las puertas se abren */
+    margin-bottom:100px;
+    overflow:visible;
   }
   .vhd-logoSide{
-    min-height:clamp(340px,44vh,460px);
+    min-height:380px;
+    height:auto;
     padding:28px 20px;
     padding-top:calc(28px + var(--logo-drop));
   }
- .vhd-logo{
+  .vhd-logo{
     width:min(420px,92%);
-    max-height:380px;
+    max-height:330px;
   }
   .vhd-doors{
-    min-height:clamp(420px,54vh,560px);
+    min-height:390px;
+    height:390px;
     perspective:900px;
+  }
+  .vhd-form{
+    bottom:-84px;
   }}
 /* ═══════════  CELULAR  ═══════════ */
-@media (max-width:520px){
-  .vhd-logoSide{
-    min-height:320px;
-    padding:20px 14px;
-    padding-top:calc(20px + var(--logo-drop));
-  }
-  .vhd-logo{
-    width:min(330px,94%);
-    max-height:280px;
-  }
-  .vhd-logoGlow{ width:280px; }
-  .vhd-doors{ min-height:430px; }
-  .vhd-door-inner span{ font-size:8px; letter-spacing:.26em;
-  }
-  .vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner span{ letter-spacing:.32em;
-  }
-  .vhd-input{ font-size:11px; letter-spacing:.14em;
-  }
-  .vhd-go{ flex-basis:42px; width:42px; height:42px;
-  }}
-/* ═══════════  ACCESIBILIDAD  ═══════════ */
-  @media (prefers-reduced-motion:reduce){
-  .vhd-bg,
-  .vhd-logo,
-  .vhd-door-inner span,
-  .vhd-door-inner i,
-  .vhd-go,
-  .vhd-form{
-    animation:none !important;
-    transition:none !important;
-  }
-  .vhd-logoGlow{ animation:none !important; }
-  /* Las puertas se desvanecen en lugar de rotar */
-  .vhd-door{ transition:opacity .3s ease !important; }
-  .vhd-root.is-open .vhd-door.left,
-  .vhd-root.is-open .vhd-door.right{
-    transform:none;
-    opacity:0;
-  }}
-/* ═══ PARCHE: estructura de puertas + form ═══ */
-/* Puertas en áreas fijas: nunca se deforman ni empujan el ancho */
-.vhd-doors{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  grid-template-areas:"doorL doorR";
-  grid-template-rows:1fr;
-}
-.vhd-door.left{  grid-area:doorL; z-index:1; }
-.vhd-door.right{ grid-area:doorR; z-index:1; }
-/* Video + caption = capa base a todo el panel, DETRÁS de las puertas */
-.vhd-doors > :not(.vhd-door):not(.vhd-form){
-  grid-area:1 / 1 / 2 / -1;
-  z-index:0;
-  min-width:0;
-  max-width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  padding:24px 16px 90px; /* deja aire para el form */
-  overflow:hidden;
-}
-/* El translateY ya no hace falta: el flex centra solo */
-.vhd-doors video{ transform:none; }
-/* ═══ PARCHE: botón del form ═══ */
-/* Tamaños predecibles en todo el hero */
-.vhd-root *,
-.vhd-root *::before,
-.vhd-root *::after{
-  box-sizing:border-box;
-}
-/* El wrapper del video nunca debe tocar al botón */
-.vhd-doors > .vhd-go{
-  grid-area:auto;
-  padding:0;
-}
-/* La fila del form no se rompe */
-.vhd-form{
-  display:flex;
-  flex-direction:row;
-  flex-wrap:nowrap;
-  align-items:center;
-}
-/* Botón siempre cuadrado 44×44, flecha centrada */
-.vhd-go{
-  flex:0 0 44px;
-  width:44px;
-  min-width:44px;
-  height:44px;
-  padding:0;
-  display:grid;
-  place-items:center;
-  line-height:1;
-}
-/* ═══ PARCHE FINAL: preview + wallpaper ═══ */
-
-/* 1) Figure sin márgenes por defecto */
-.vhd-reveal{ margin:0; }
-
-/* 2) Imagen y video del preview con el mismo tamaño */
-.vhd-reveal img,
-.vhd-reveal video{
-  display:block;
-  width:min(290px,88%);
-  height:min(380px,60%);
-  object-fit:cover;
-  object-position:center;
-  border:1px solid #FFFFFF14;
-}
-.vhd-reveal figcaption{
-  color:#FFFFFF73;
-  font-family:"JetBrains Mono",monospace;
-  font-size:9px;
-  letter-spacing:.28em;
-  text-align:center;
-  text-transform:uppercase;
-}
-/* 3) Fondo wallpaper.png en las puertas (misma carpeta que damask) */
-.vhd-door{
-  background:
-    linear-gradient(180deg,#141210B3 0%,#0B090DC4 50%,#07060AD9 100%),
-    url("/public/wallpaper.avif") center/cover no-repeat;
-}
-/* PUERTA DERECHA */
-.vhd-door.right{
-  background:
-    linear-gradient(var(--gold),var(--gold))
-      left 26px center / 2px 120px no-repeat,
-    radial-gradient(
-      closest-side,#E0B85A2E,transparent)
-      left 26px center / 24px 160px no-repeat,
-    linear-gradient(180deg,
-      #382A1B66 0%,
-      #382A1B29 50%,
-      #382A1B66 100%),
-     url("/public/doorRight.avif")
-      center / cover no-repeat;
-}
-/* PUERTA IZQUIERDA — reflejo de la derecha */
-.vhd-door.left{
-  background:
-    linear-gradient(var(--gold),var(--gold))
-      right 26px center / 2px 120px no-repeat,
-    radial-gradient(
-      closest-side,#E0B85A2E,transparent)
-      right 26px center / 24px 160px no-repeat,
-    linear-gradient(180deg,
-      #382A1B66 0%,
-      #382A1B29 50%,
-      #382A1B66 100%),
-    url("/public/doorLeft.png")
-      center / cover no-repeat;
-}
-/* ══════════ RESPONSIVE VAULT — CELULAR ═══════════════ */
 @media (max-width:520px){
   .vhd-root{
     display:flex;
@@ -556,27 +408,28 @@ video.vhd-logo{
     width:100%;
     min-height:0;
     height:auto;
-    overflow:hidden;
+    margin-bottom:88px;
+    overflow:visible;
     perspective:none;
   }
   /* VIDEO */
   .vhd-logoSide{
     width:100%;
-    min-height:360px;
-    padding:20px 16px 64px;
+    min-height:340px;
+    height:auto;
+    padding:20px 16px 38px;
     background:
-    linear-gradient(180deg,
-    #07060A4D 0%,#07060A14 45%,
-    #07060ACC 100%),
-    url("/wallpaperVideo2.png")
-    center / cover no-repeat;
+      url("/wallpaperVideo2.png")
+      center / cover no-repeat;
   }
-  .vhd-logoGlow{width:280px;height:280px;
+  .vhd-logoGlow{
+    width:280px;
+    height:280px;
   }
   .vhd-logo{
     width:min(280px,88%);
     max-width:100%;
-    max-height:290px;
+    max-height:280px;
     object-fit:contain;
     object-position:center;
     transform:none;
@@ -589,94 +442,205 @@ video.vhd-logo{
   /* PUERTAS */
   .vhd-doors{
     width:100%;
-    min-height:370px;
-    height:370px;
+    min-height:340px;
+    height:340px;
     grid-template-columns:1fr 1fr;
-    box-shadow:
-      0 -12px 30px #0000008C,
-      inset 0 1px 0 #E0B85A24;
+    overflow:visible;
+    box-shadow:none !important;
   }
-  .vhd-door-inner{width:90%;
+  .vhd-door-inner{
+    width:90%;
   }
-  .vhd-door-inner span{font-size:7px;letter-spacing:.22em;white-space:nowrap;
+  .vhd-door-inner span{
+    font-size:7px;
+    letter-spacing:.22em;
+    white-space:nowrap;
   }
-  .vhd-root.is-typing .vhd-door-inner span{letter-spacing:.28em;
+  .vhd-root.is-typing .vhd-door-inner span{
+    letter-spacing:.28em;
   }
-  .vhd-door-inner i{width:34px;
+  .vhd-door-inner i{
+    width:34px;
+  }
+  .vhd-doors > :not(.vhd-door):not(.vhd-form){
+    padding:18px 12px;
+  }
+  .vhd-reveal img,
+  .vhd-reveal video{
+    width:min(250px,88%);
+    height:min(260px,72%);
   }
   /* INPUT INFERIOR */
   .vhd-form{
-    left:12px;
-    right:12px;
-    bottom:12px;
-    width:auto;
+    left:50%;
+    right:auto;
+    bottom:-74px;
+    width:calc(100% - 24px);
     min-height:54px;
     margin:0;
     padding:6px 6px 6px 10px;
+    transform:translateX(-50%);
     background:
     linear-gradient(90deg,
-    #07060A45,#07060A12,#07060A45),
-    url("/wallpaper2.png")
-    center / 190px auto repeat-x;
-    box-shadow:
-      0 12px 30px #000000B3,
-      0 0 18px #E0B85A14,
-      inset 0 1px 0 #FFFFFF12;
+    #06090a45,#06080a12,
+    #06080a45),
+      url("/wallpaper2.png")
+      center / 190px auto repeat-x;
+    box-shadow:none !important;
   }
-  .vhd-input{min-width:0;height:42px;padding:0 6px;font-size:10px;  letter-spacing:.12em;
-  }
-  .vhd-go{flex:0 0 42px; width:42px;min-width:42px;height:42px;font-size:16px;
+  .vhd-input{
+    min-width:0;
+    height:42px;
+    padding:0 6px;
+    font-size:10px;
+    letter-spacing:.12em;
   }}
-  /* ⬆️ SUBIR HUD AMARILLO EN CELULAR */
+/* ⬆️ SUBIR HUD AMARILLO EN CELULAR */
 @media (max-width:520px){
-  .vx-ticker.is-rev{position:relative; top:-1px;margin-bottom:-52px; z-index:20;
+  .vx-ticker.is-rev{
+    position:relative;
+    top:-1px;
+    margin-bottom:-52px;
+    z-index:20;
   }}
+/* ═══════════  ACCESIBILIDAD  ═══════════ */
+@media (prefers-reduced-motion:reduce){
+  .vhd-bg,
+  .vhd-logo,
+  .vhd-door-inner span,
+  .vhd-door-inner i,
+  .vhd-go,
+  .vhd-form{
+    animation:none !important;
+    transition:none !important;
+  }
+   .vhd-logoGlow{
+    animation:none !important;
+  }
+  .vhd-door{
+    transition:opacity .3s ease !important;
+  }
+  .vhd-root.is-open .vhd-door.left,
+  .vhd-root.is-open .vhd-door.right{
+    transform:none;
+    opacity:0;
+  }}
+#faq.vx-sec{
+  max-width:none;
+  padding-left:max(16px,calc(50% - 36rem));
+  padding-right:max(16px,calc(50% - 36rem));
+  padding-bottom:0;
+  background:
+    url("/wallpaper.png");
+  background-repeat:no-repeat,repeat;
+  background-position:center,center;
+}
+/* ===== SIN LUCES EXTERNAS EN VAULT HERO ===== */
+.vhd-root,
+.vhd-logoSide,
+.vhd-doors,
+.vhd-door,
+.vhd-form,
+.vhd-reveal,
+.vhd-reveal img,
+.vhd-reveal video{
+  box-shadow:none !important;
+  filter:none !important;
+}
+.vhd-logoGlow{
+  display:none !important;
+}
+.vhd-logo{
+  filter:none !important;
+  box-shadow:none !important;
+}
+.vhd-root::before,
+.vhd-root::after,
+.vhd-logoSide::before,
+.vhd-logoSide::after,
+.vhd-doors::before,
+.vhd-doors::after{
+  box-shadow:none !important;
+  filter:none !important;
+  background-image:none !important;
+}
+/* ═════════════════════ ESPACIO INFERIOR ═════════════════════ */
+.vhd-root{
+  margin-bottom:135px;
+}
+/* ═══════════════════════════════════════════════
+   VAULT HERO · SIN LUCES / GLOW EXTERNO
+   NO TOCA BACKGROUNDS NI IMÁGENES
+═══════════════════════════════════════════════ */
 
-/* ===== CORTAR LAS PUERTAS JUSTO DEBAJO DEL TEXTO DEL VIDEO ===== */
-.vhd-doors{
-  position:relative;
-  min-height:0;
-  height:425px;
-  overflow:visible;
-  margin-bottom: 0;
+.vhd-root,
+.vhd-bg,
+.vhd-logoSide,
+.vhd-logo,
+.vhd-doors,
+.vhd-door,
+.vhd-door.left,
+.vhd-door.right,
+.vhd-door-inner,
+.vhd-door-inner span,
+.vhd-door-inner i,
+.vhd-reveal,
+.vhd-reveal img,
+.vhd-reveal video,
+.vhd-reveal figcaption{
+  box-shadow:none !important;
+  text-shadow:none !important;
 }
-/* ===== PUERTAS TERMINAN ARRIBA DEL INPUT ===== */
-.vhd-door{
-  height:370px;
-  overflow: hidden;
+
+/* quitar glow del video/logo */
+.vhd-logoGlow{
+  display:none !important;
+  opacity:0 !important;
+  box-shadow:none !important;
+  filter:none !important;
 }
-/* ===== VIDEO + TEXTO ===== */
-.vhd-doors > :not(.vhd-door):not(.vhd-form){
-  grid-area:1 / 1 / 2 / -1;
-  z-index:0;
-  min-width:0;
-  max-width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  gap:14px;
-  padding:24px 16px 0;
-  overflow:hidden;
+
+/* quitar filtros de luz */
+.vhd-logo,
+.vhd-reveal img,
+.vhd-reveal video{
+  filter:none !important;
 }
-/* ===== INPUT SEPARADO DE LAS PUERTAS ===== */
-.vhd-form{
-  position:absolute;
-  left:50%;
-  bottom:-25px;
-  transform:translateX(-50%);
-  width:min(400px,calc(100% - 32px));
-  z-index:var(--z-form);
-  display:flex;
-  flex-direction:row;
-  flex-wrap:nowrap;
-  align-items:center;
-  margin:0;
+
+/* puertas sin aumento de brillo al hover */
+@media (hover:hover){
+  .vhd-root:not(.is-open) .vhd-door:hover{
+    filter:none !important;
+  }
 }
-.vhd-bg{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
-  background:transparent;
+
+/* texto de puertas sin glow al escribir */
+.vhd-root:is(.is-typing, :has(.vhd-input:focus))
+.vhd-door-inner span{
+  text-shadow:none !important;
 }
+
+/* línea central sin glow */
+.vhd-door-inner i,
+.vhd-root:is(.is-typing, :has(.vhd-input:focus))
+.vhd-door-inner i{
+  box-shadow:none !important;
+}
+
+/* quitar cualquier glow generado por pseudo-elementos */
+.vhd-root::before,
+.vhd-root::after,
+.vhd-logoSide::before,
+.vhd-logoSide::after,
+.vhd-doors::before,
+.vhd-doors::after,
+.vhd-door::before,
+.vhd-door::after{
+  box-shadow:none !important;
+  filter:none !important;
+}
+
+/* IMPORTANTE:
+   mantenemos los backgrounds de ::before / ::after
+   para NO desaparecer damask ni puertas
+*/

@@ -1,0 +1,428 @@
+
+.va,
+.va *,
+.va *::before,
+.va *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.va{
+  position: absolute;
+  top: 67%;    /* ← SUBIR/BAJAR TODO: menos = más ARRIBA */
+  left: 61%;  /* ← MOVER TODO: menos = más a la DERECHA */
+  z-index: 2147483647; /* ← CLICS: por encima de corona, video y HUD */
+  pointer-events: auto; /* ← CLICS: habilita la interacción del bloque completo */
+  width: 650px; /* ← ANCHO TOTAL de GET MY CODE + INPUT + FLECHA */
+  max-width: calc(100% - 68px);
+  margin: 0;
+  padding: 0 12px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.va__row{
+  position: relative; /* ← CLICS: crea la referencia de capas para los botones */
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* ← EVITA que la flecha caiga abajo */
+  gap: 12px; /* ← SEPARACIÓN entre GET MY CODE y el campo */
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOTÓN BASE (Ghost primario)
+   ═══════════════════════════════════════════════════════ */
+.va-btn{
+  appearance: none;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  flex: 0 0 140px; /* ← ANCHO del botón GET MY CODE */
+  width: 133px;
+  height: 43px; /* ← ALTO del botón GET MY CODE */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px; /* ← ESPACIO interno izquierdo/derecho de GET MY CODE */
+  border: 1px solid #c395388c;
+  border-radius: 9px;
+  background:
+    linear-gradient(180deg, #8c12264d, #1e0206d9),
+    #050505;
+  color: #F0D894;
+  font-size: clamp(11px, 1vw, 11px);
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  box-shadow:
+    inset 0 1px 0 #ffe7a824,
+    inset 0 -1px 0 #000000b3,
+    0 6px 18px -8px #000000e6;
+  transition:
+    transform .18s cubic-bezier(.22,.61,.36,1),
+    border-color .18s cubic-bezier(.22,.61,.36,1),
+    color .18s cubic-bezier(.22,.61,.36,1),
+    background .32s cubic-bezier(.22,.61,.36,1),
+    box-shadow .32s cubic-bezier(.22,.61,.36,1);
+  z-index: 2; /* ← CLICS: coloca GET MY CODE por encima de adornos */
+  pointer-events: auto;
+  transform: translateX(-170px);
+}
+/* Shimmer de luz (sin bloquear clicks) */
+.va-btn__shimmer{
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(105deg,
+              transparent 42%,
+              #ffebaf33 50%,
+              transparent 58%);
+  transform: translateX(-150%);
+}
+.va-btn:hover:not(:disabled) .va-btn__shimmer{
+  animation: va-sheen .85s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes va-sheen{ to { transform: translateX(130%); } }
+/* Label */
+.va-btn__label{
+  position: relative;
+  z-index: 2;
+}
+.va-btn svg{
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+/* Hover */
+.va-btn:hover:not(:disabled){
+  border-color: #DDB861;
+  color: #FBEFC8;
+  background:
+    linear-gradient(180deg, #a0162c6b, #2d030ae6),
+    #050505;
+  box-shadow:
+    inset 0 1px 0 #ffe7a833,
+    inset 0 -1px 0 #000000b3,
+    0 12px 26px -10px #000000,
+    0 0 0 1px #ddb86124;
+}
+.va-btn:active:not(:disabled){
+  box-shadow:
+    inset 0 2px 6px #000000b3,
+    0 3px 10px -6px #000000e6;
+}
+.va-btn:disabled{
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+.va-btn:focus-visible{
+  outline: 2px solid #F0D894;
+  outline-offset: 3px;
+}
+/* ═════════════  CAMPO DE CÓDIGO ══════════════════════════════════════ */
+.va-field{
+  position: absolute;
+  z-index: 1;
+  isolation: isolate;
+
+  flex: 1 0 170px; /* ← ANCHO del bloque INPUT + FLECHA */
+  width: 180px;
+  height: 47px; /* ← ALTO del bloque INPUT + FLECHA */
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px;
+  padding-left: 12px;
+
+  border: 1px solid #c3953873;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #141414, #050505);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,241,178,.07),
+    inset 0 2px 12px rgba(0,0,0,.85),
+    0 6px 18px -8px rgba(0,0,0,.9);
+
+  transition: border-color .32s cubic-bezier(.22,.61,.36,1), box-shadow .32s cubic-bezier(.22,.61,.36,1);
+transform: translateX(90px);
+}
+
+
+/* Background decorativo (línea interna) */
+.va-field__bg{
+  position: absolute;
+  inset: 5px;
+  border: 1px solid #c395381f;
+  border-radius: calc(16px - 5px);
+  pointer-events: none;
+  z-index: 0;
+  transition: border-color .32s cubic-bezier(.22,.61,.36,1);
+}
+
+.va-field:focus-within{
+  border-color: #DDB861;
+  box-shadow:
+    inset 0 1px 0 rgba(255,241,178,.10),
+    inset 0 2px 12px rgba(0,0,0,.85),
+    0 0 0 3px rgba(195,149,56,.16),
+    0 10px 24px -10px #000000;
+}
+.va-field:focus-within .va-field__bg{ border-color: rgba(221,184,97,.26); }
+.va-field.is-error{
+  border-color: #D4485F;
+  box-shadow:
+    inset 0 2px 12px #000000d9,
+    0 0 0 3px #d4485f2e;
+  animation: va-shake .4s cubic-bezier(.22,.61,.36,1);
+}
+/* Icono candado (siempre visible, sin z-index alto) */
+.va-field svg{
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  color: #9C7326;
+  opacity: .95;
+  transition: color .18s cubic-bezier(.22,.61,.36,1), opacity .18s cubic-bezier(.22,.61,.36,1);
+}
+.va-field:focus-within svg{ color: #DDB861; opacity: 1; }
+.va-field.is-error svg{ color: #D4485F; }
+
+/* Input */
+.va-field__input{
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 calc(50px + 16px) 0 8px; /* ← CLICS: reserva a la derecha el espacio de la flecha */
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  color: #EBD9A8;
+  caret-color: #DDB861;
+
+  font-family: inherit;
+  font-size: clamp(13px, 1.3vw, 15px);
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-indent: .22em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.va-field__input::placeholder{
+  color: #6B6455;
+  font-weight: 500;
+  letter-spacing: .18em;
+  transition: opacity .18s cubic-bezier(.22,.61,.36,1);
+}
+.va-field__input:focus::placeholder{ opacity: .35; }
+.va-field__input:disabled{ opacity: .5; cursor: not-allowed; }
+
+/* Medidor de progreso */
+.va-field__meter{
+  position: absolute;
+  left: 1px;
+  right: calc(50px + 7px + 8px);
+  bottom: 10px;
+  height: 1px;
+  background: #c3953824;
+  overflow: hidden;
+  border-radius: 1px;
+  z-index: 1;
+  pointer-events: none;
+}
+.va-field__meter::after{
+  content: "";
+  display: block;
+  height: 100%;
+  width: 0%; /* ← PROGRESO visual; cambia este porcentaje directamente */
+  background: linear-gradient(90deg, #9C7326, #F0D894);
+  transition: width .32s cubic-bezier(.22,.61,.36,1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOTÓN FLECHA (oro macizo)
+   ═══════════════════════════════════════════════════════ */
+.va-go{
+  appearance: none;
+  position: absolute;
+  isolation: isolate;
+  overflow: hidden;
+
+  flex: 0 0 50px;
+  width: 42px;  /* ← ANCHO del botón FLECHA */
+  height: 42px; /* ← ALTO del botón FLECHA */
+  left: 103%; /* ← POSICIÓN horizontal: aumenta para moverlo a la IZQUIERDA */
+  top: 45%;             /* ← CENTRADO vertical del botón FLECHA */
+  transform: translateY(-50%);
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #C39538;
+  border-radius: 4px;
+  background: linear-gradient(165deg, #FBEFC8 0%, #F0D894 30%,
+                                       #C39538 72%, #9C7326 100%);
+  color: #1A1206;
+
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,252,235,.65),
+    inset 0 -2px 4px rgba(105,72,18,.45),
+    0 3px 10px -3px rgba(0,0,0,.8);
+
+  transition:
+    transform .18s cubic-bezier(.22,.61,.36,1),
+    filter .18s cubic-bezier(.22,.61,.36,1),
+    box-shadow .32s cubic-bezier(.22,.61,.36,1),
+    opacity .32s cubic-bezier(.22,.61,.36,1);
+
+  z-index: 5; /* ← CLICS: la flecha queda encima del input */
+  pointer-events: auto;
+}
+
+/* ← CLICS: fuerza los controles reales por encima de cualquier imagen interna */
+.va button,
+.va input{
+  pointer-events: auto !important;
+}
+
+/* ← CLICS: ningún dibujo interno de los botones captura el toque */
+.va-btn > *,
+.va-go > *{
+  pointer-events: none;
+}
+
+.va-go svg{ transition: transform .18s cubic-bezier(.22,.61,.36,1); }
+
+.va-go:hover:not(:disabled){
+  transform: translateY(-50%);
+  filter: brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,252,235,.8),
+    inset 0 -2px 4px rgba(105,72,18,.4),
+    0 6px 18px -4px rgba(221,184,97,.45);
+}
+.va-go:hover:not(:disabled) svg{ transform: translateX(3px); }
+
+.va-go:active:not(:disabled){
+  transform: translateY(-50%) scale(.95);
+  box-shadow: inset 0 2px 6px rgba(90,62,14,.55);
+}
+
+.va-go:disabled{
+  cursor: not-allowed;
+  border-color: rgba(195,149,56,.25);
+  background: linear-gradient(165deg, #2A2A2A, #131313);
+  color: rgba(235,217,168,.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.va-field.is-ready .va-go{ animation: va-pulse 2.4s cubic-bezier(.22,.61,.36,1) infinite; }
+@keyframes va-pulse{
+  0%,100%{ box-shadow: inset 0 1px 0 rgba(255,252,235,.65), 0 0 0 0 rgba(221,184,97,.32); }
+  50%    { box-shadow: inset 0 1px 0 rgba(255,252,235,.65), 0 0 0 7px rgba(221,184,97,0); }
+}
+
+.va-go:focus-visible{
+  outline: 2px solid #F0D894;
+  outline-offset: 3px;
+}
+/* ═══════════  EFECTOS GLOBALES ═════════════════════════ */
+/* Ripple (se crea en JS) */
+.va-ripple{
+  position: absolute;
+  z-index: 50;
+  border-radius:9%;
+  background: radial-gradient(circle, rgba(255,240,200,.38), transparent 70%);
+  transform: scale(0);
+  opacity: .9;
+  pointer-events: none;
+  animation: va-ripple .55s cubic-bezier(.22,.61,.36,1) forwards;
+}
+@keyframes va-ripple{ to { transform: scale(1); opacity: 0; } }
+
+/* Spinner */
+.va-spin{ animation: va-spin .7s linear infinite; }
+@keyframes va-spin{ to { transform: rotate(360deg); } }
+
+/* Shake */
+@keyframes va-shake{
+  0%,100%{ transform: translateX(0); }
+  18%    { transform: translateX(-6px); }
+  38%    { transform: translateX(5px); }
+  58%    { transform: translateX(-3px); }
+  78%    { transform: translateX(2px); }
+}
+
+/* Error */
+.va-error{
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(100% + 8px);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #D4485F;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity .32s cubic-bezier(.22,.61,.36,1), transform .32s cubic-bezier(.22,.61,.36,1);
+}
+.va-error.is-visible{ opacity: 1; transform: translateY(0); }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 720px){
+  .va{
+    top: 92px;    /* ← SUBIR/BAJAR botones en celular */
+    right: 12px;  /* ← POSICIÓN derecha en celular */
+    left: 12px;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0 12px;
+  }
+  .va__row{ flex-direction: column; }
+  .va-btn{ flex: 0 0 auto; width: 100%; height: 58px; border-radius: 14px; }
+  /* ↑ ANCHO móvil de GET MY CODE: cambia width:100% si lo quieres más corto */
+  .va-field{ flex: 0 0 auto; min-width: 0; width: 100%; height: 58px; border-radius: 14px; }
+  .va-field__input{ letter-spacing: .18em; text-indent: .18em; }
+  .va-error{ position: static; margin-top: 10px; transform: none; }
+}
+@media (max-width: 360px){
+  .va-btn,
+  .va-field{ height: 54px; }
+  .va-btn__label{ font-size: 11px; letter-spacing: .12em; }
+}
+/* ══════════════ ACCESIBILIDAD ═══════════════════════════ */
+@media (prefers-reduced-motion: reduce){
+  .va *,
+  .va *::before,
+  .va *::after{
+    animation: none !important;
+    transition: none !important;
+  }}
+@media (prefers-contrast: more){
+  .va-btn,
+  .va-field{ border-color: #F0D894; }
+  .va-field__input::placeholder{ color: #9A927E; }
+}
+

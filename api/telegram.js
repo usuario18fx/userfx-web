@@ -466,7 +466,7 @@ const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
 const BTN_PENDING_REQUEST = "ʀᴇǫᴜᴇꜱᴛ";
 const BTN_GET_CODE = "ɢᴇᴛ ᴄᴏᴅᴇ";
 const BTN_OPEN_VAULT = "🔐 ᴏᴘᴇɴ ᴠᴀᴜʟᴛ";
-const BTN_WEBSITE = "🌐 ᴡᴇʙꜱɪᴛᴇ";
+const BTN_WEBSITE = "ᴇɴᴛᴇʀ ᴄᴏᴅᴇ";
 // ======================================================
 // UTILITIES
 // ======================================================

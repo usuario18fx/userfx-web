@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import VaultHome from './VaultHome';
+import VaultHome from './VaultHome/VaultHome';
 
 const STORAGE_KEY = 'vault_unlocked';
 const MAX_ATTEMPTS = 5;
