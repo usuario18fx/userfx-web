@@ -423,6 +423,7 @@ export default function VaultHome() {
       : inlineCodeValue.startsWith("P")
         ? "PRX0-CODE"
         : "BSIC-CODE";
+
    return (
               <div id="top" className="vx">
               <header className="vx-hud">
@@ -454,7 +455,6 @@ export default function VaultHome() {
               </b>
               </div>
               </header>
-
               <section className="vx-open">
               <div className="vx-bg">
               <img src={DAMASK} alt="" className="vx-damask" />
@@ -554,63 +554,10 @@ export default function VaultHome() {
             </section>
       <Ticker items={TICKER_ITEMS} />
                {unlocked ? (
-            <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
-              <div className="vx-privateAlbumInner">
-              <header className="vx-privateAlbumHeader">
-              <p className="vx-privateAlbumStatus">
-              <span>
-                ✓
-              </span>
-               ACCESS GRANTED
-              </p>
-              <h2 className="vx-privateAlbumTitle">
-               PRIVATE
-              <span>
-               ALBUM
-              </span>
-              </h2>
-              <p className="vx-privateAlbumDescription">
-               Your {activePlanPrefix}
-               access key has been verified. {unlimitedAccess
-                 ? "Unlimited entries available."
-                 : remainingAccesses === null
-                    ? "Welcome inside the private vault."
-                    : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
-              </p>
-              <div className="vx-privateAlbumLine" />
-              </header>
-              <div className="vx-privateAlbumGrid">
-               {unlockedPhotos.map((src, index) => (
-              <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
-              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"}/>
-              <figcaption>
-              <span>
-               USER 🜲 FX
-              </span>
-              <small>
-               PRIVATE FILE {String(index + 1).padStart(2, "0")}
-              </small>
-              </figcaption>
-              </figure>
-              ))}
-              </div>
-              <footer className="vx-privateAlbumFooter">
-              <span>
-               PERSONAL ACCESS
-              </span>
-              <i />
-              <span>
-               DO NOT DISTRIBUTE
-              </span>
-              </footer>
-
-              </div>
-              </section>
-               ) : null}
-              <section id="protocolo" className="vx-sec">
+              <section id="protocolo" className="vx-sec vx-protocol">
         <Reveal>
               <p className="vx-goldk">
-               🜲 ACCESS PROTOCOL
+               ◈ ACCESS PROTOCOL
               </p>
               <h2>
                HOW TO UNLOCK
@@ -618,9 +565,10 @@ export default function VaultHome() {
                THE VAULT
               </span>
               </h2>
-        </Reveal>{" "}
+        </Reveal>
+              <div className="vx-protocolSteps">
                {STEPS.map((s, i) => (
-        <Reveal key={s.n} delay={i * 90} className={i % 2 ? "vx-shift vx-protocolReveal" : "vx-protocolReveal"}>
+        <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
               <article className="vx-step">
               <b className="vx-stepNum">
                {s.n}
@@ -639,7 +587,9 @@ export default function VaultHome() {
               </article>
         </Reveal>
                ))}
+              </div>
               </section>
+               ) : null}
               <section id="llaves" className="vx-sec vx-tint">
         <Reveal>
               <p className="vx-goldk">
@@ -696,6 +646,7 @@ export default function VaultHome() {
               </div>
               </div>
               </section>
+
               <section id="faq" className="vx-sec">
         <Reveal>
               <p className="vx-goldk">
@@ -780,7 +731,9 @@ export default function VaultHome() {
                delivered, except where Ontario law requires otherwise.
               </p>
               </footer>
+
         <Ticker items={TICKER_ITEMS} reverse />
+
                {dm ? (
               <div className="vx-modal" onClick={() => setDm(false)}>
               <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
