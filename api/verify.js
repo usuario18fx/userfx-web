@@ -65,6 +65,15 @@ function hashValue(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function createWatermarkId(fullCode) {
+  const prefix = String(fullCode || "").split("-")[0] || "USER";
+  const fingerprint = hashValue(`watermark:${fullCode}`)
+    .slice(0, 8)
+    .toUpperCase();
+
+  return `${prefix}-${fingerprint}`;
+}
+
 async function checkRateLimit(redis, ip) {
   const key = `${CODE_ENGINE_NAMESPACE}:verify-rate:${hashValue(ip).slice(0, 24)}`;
   const attempts = await redis.incr(key);
@@ -155,8 +164,10 @@ async function createAccessSession({
     ? Math.max(0, accessState.maxAccesses - usedAccesses)
     : null;
   const usedAt = new Date().toISOString();
+  const watermarkId = createWatermarkId(fullCode);
   const updatedRecord = {
     ...record,
+    watermarkId,
     status:
       remainingAccesses === 0 && accessState.maxAccesses !== null
         ? "consumed"
@@ -179,6 +190,7 @@ async function createAccessSession({
     planId,
     accessMode,
     codeHash: hashValue(fullCode).slice(0, 32),
+    watermarkId,
     maxAccesses: accessState.maxAccesses,
     usedAccesses,
     remainingAccesses,
@@ -186,6 +198,15 @@ async function createAccessSession({
     createdAt: usedAt,
     expiresAt: new Date(sessionExpiresAt).toISOString(),
   });
+  const watermarkLookupKey = `${CODE_ENGINE_NAMESPACE}:watermark:${watermarkId}`;
+  const watermarkLookupRecord = JSON.stringify({
+    watermarkId,
+    code: fullCode,
+    planId,
+    userId: record.userId ? String(record.userId) : null,
+    createdAt: usedAt,
+  });
+
   const result = Number(
     await redis.eval(
       `
@@ -194,15 +215,18 @@ async function createAccessSession({
         if current ~= ARGV[1] then return -1 end
         redis.call("SET", KEYS[1], ARGV[2])
         redis.call("SET", KEYS[2], ARGV[3], "EX", tonumber(ARGV[4]))
+        redis.call("SET", KEYS[3], ARGV[5])
         return 1
       `,
-      2,
+      3,
       redisKey,
       sessionKey,
+      watermarkLookupKey,
       rawRecord,
       JSON.stringify(updatedRecord),
       sessionRecord,
-      String(sessionSeconds)
+      String(sessionSeconds),
+      watermarkLookupRecord
     )
   );
 
@@ -222,6 +246,7 @@ async function createAccessSession({
   return {
     ok: true,
     accessMode,
+    watermarkId,
     maxAccesses: accessState.maxAccesses,
     usedAccesses,
     remainingAccesses,
@@ -356,6 +381,7 @@ export default async function handler(req, res) {
       planId: recordPlanId,
       plan: record.plan,
       accessMode: session.accessMode,
+      watermarkId: session.watermarkId,
       maxAccesses: session.maxAccesses,
       usedAccesses: session.usedAccesses,
       remainingAccesses: session.remainingAccesses,
