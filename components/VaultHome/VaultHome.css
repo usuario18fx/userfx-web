@@ -245,7 +245,6 @@ video{
   width:min(420px,90vw);
   filter:drop-shadow(0 0 28px #002D7521);
 }
-
 /* ═══════════════════════════════════════
    KICKER
    ═══════════════════════════════════════ */
@@ -259,24 +258,31 @@ video{
   max-width:760px;
   min-height:120px;
   margin:22px 0 0;
-  padding:18px 26px;
+  padding:18px 26px; /* ↔️ espacio interno */
   overflow:hidden;
-  border:1px solid #FFFFFF0D;
-  background:url("/assets/wallpaperKicker.png") center / cover no-repeat;
+  border:1px solid #2C3036;
+  border-bottom:2px solid #B58B36; /* 🎨 color / grosor inferior */
+  background:
+    linear-gradient(180deg,#05070A33,#0203058A),
+    url("/assets/wallpaperKicker.png") center / cover no-repeat;
   color:#D8E8FF;
-  font-family:var(--mono);
+  font-family:"JetBrains Mono",ui-monospace,monospace;
   font-size:11px;
   letter-spacing:.28em;
   text-transform:uppercase;
-  box-shadow:0 10px 30px #00000047, inset 0 1px 0 #FFFFFF0A;
 }
-.vx-kicker::before{
+.vx-kicker::after{
   content:"";
   position:absolute;
-  inset:0;
-  background:#070A1029;
-  pointer-events:none;
-}
+  left:8%;       /*➡️⬅️ inicio de línea */
+  right:8%;      /* ➡️⬅️ final de línea */
+  bottom:-1px;   /* ⬆️⬇️ posición */
+  height:1px;
+  background:linear-gradient(90deg,
+    transparent,
+    #D5AD53,#F0D47D,
+    #D5AD53,transparent
+  );}
 .vx-kicker > *{
   position:relative;
   z-index:1;
@@ -293,38 +299,43 @@ video{
    ═══════════════════════════════════════ */
 .vx-title{
   position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
   margin:0;
+  padding-top:26px; /* ↕️ espacio superior */
 }
 .vx-access{
   display:block;
-  width:fit-content;
-  max-width:100%;
-  font-size:clamp(3rem,10vw,6.4rem);
+  margin:0 0 30px 0; /* ↕️ separación ACCESS → RESTRICTED */
+  color:#F4EEE4;
+  font-size:clamp(3rem,10vw,6.4rem); /* ↗️ tamaño */
   font-weight:600;
-  line-height:.88;
-  transform:translateY(186%) translateX(-3%);
+  line-height:.82;
+ transform:none;
 }
 .vx-rest{
   display:block;
-  margin-top:.08em;
-  color:#B64B5D;
-  font-size:clamp(2.8rem,9vw,4.8rem);
+  margin:0;
+  color:#B64B5D; /* 🎨 color */
+  font-size:clamp(2.8rem,9vw,4.8rem); /* ↗️ tamaño */
   font-weight:300;
   font-style:italic;
-  line-height:.9;
-  letter-spacing:-.025em;
-  text-shadow:0 0 18px #B64B5D;
-  transform:translateY(9%) translateX(3%);
+  line-height:.88;
+  transform:none;
 }
 .vx-titleCrown{
-  position:relative;
+  position:absolute;
+  width:150px; /* ↗️ tamaño */
+  left:58%;    /* ➡️⬅️ mover corona */
+  top:48%;     /* ⬆️⬇️ mover corona */
   z-index:3;
-  transform:translateX(375px) translateY(5%);
+  transform:translate(-50%,-50%);
 }
-
-/* ══════════════════════════════════════
-   INTRO PARAGRAPH
-   ═══════════════════════════════════════ */
+@media(max-width:700px){
+  .vx-titleCrown{ width:118px; /*↗️*/ left:72%;/*➡️*/ top:53%;/*⬆️*/
+  }}
+/* ═════════  INTRO PARAGRAPH ═════════════════════ */
 .vx-p{
   display:block;
   width:100%;
@@ -670,7 +681,6 @@ video{
   font-style:italic;
   text-shadow:0 0 18px #B64B5D40;
 }
-
 /* ════════════  PROTOCOL ════════════ */
 .vx-step{
   position:relative;
@@ -718,7 +728,71 @@ video{
 }
 .vx-step small{ display:none; }
 .vx-shift{ margin-left:0; }
-
+/*____________________________________*/
+.vx-protocol{
+  overflow:hidden;
+  padding-top:70px; /* ↕️ */
+  padding-bottom:90px;
+}
+.vx-protocolSteps{
+  display:flex;
+  flex-direction:column;
+  gap:28px; /* ↕️ separación pasos */
+  width:100%;
+  max-width:900px;
+  margin:44px auto 0;
+}
+.vx-protocolReveal{
+  width:68%; /* ↔️ ancho tarjeta */
+}
+.vx-stepLeft{
+  align-self:flex-start;
+  transform:translateX(0); /* ➡️⬅️ */
+}
+.vx-stepRight{
+  align-self:flex-end;
+  transform:translateX(0); /* ➡️⬅️ */
+}
+.vx-step{
+  position:relative;
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:20px;
+  min-height:175px;
+  padding:28px 32px; /* ↔️↕️ padding */
+  border:1px solid #8E6E2C;
+  background:
+    linear-gradient(180deg,#0B0D10E8,#050607F5),
+    url("/assets/damask.png") center / 320px repeat;
+  color:#EAE5DD;
+}
+.vx-stepNum{
+  color:#C79D42; /* 🎨 */
+  font-size:44px; /* ↗️ */
+  font-weight:400;
+}
+.vx-step h3{
+  margin:4px 0 12px;
+  color:#E0B85A; /* 🎨 */
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:10px;
+  letter-spacing:.22em;
+}
+.vx-step p{
+  margin:0;
+  color:#DDD7CD;
+  font-size:18px; /*↗️*/
+  line-height:1.45;
+}
+@media(max-width:700px){
+  .vx-protocolReveal{width:84%; /* ↔️ */
+  }
+  .vx-stepLeft{margin-right:auto;
+  }
+  .vx-stepRight{margin-left:auto;
+  }
+  .vx-step{grid-template-columns:54px 1fr;padding:22px 18px;/*↔️*/
+  }}
 /* ══════════  DEVICE / CHOOSE CODE ══════════ */
 .vx-deviceStage{
   display:grid;
@@ -1033,72 +1107,99 @@ video{
 /* ═══════════════════════════════════════
    MODAL
    ═══════════════════════════════════════ */
-.vx-modal{
+   .vx-modal{
   position:fixed;
   inset:0;
-  z-index:50;
-  isolation:isolate;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:16px;
-  overflow:hidden;
-  background:#07060A;
-  animation:vx-modalIn .3s ease both;
-}
-.vx-modal::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background:url("/wallpaper1.png");
-  background-size:auto,420px;
-  background-position:center;
-  background-repeat:no-repeat,repeat;
-  opacity:.9;
-  filter:brightness(1.45) contrast(1.1);
+  z-index:100;
+  display:grid;
+  place-items:center;
+  padding:22px; /* ↔️ */
+  background:#000000B8;
+  backdrop-filter:blur(8px);
 }
 .vx-modalCard{
   position:relative;
-  z-index:1;
-  width:min(100%,420px);
-  padding:48px 32px 36px;
+  width:min(520px,92vw); /* ↗️ tamaño modal */
+  padding:28px 28px 30px; /* ↔️↕️ */
   overflow:hidden;
-  border:1px solid #5A6CE04D;
-  border-radius:6px;
+  border:1px solid #5A5138;
+  border-radius:8px;
   background:
-    linear-gradient(170deg,#0F0C12EB,#07060AF7),
-    url("/wallpaper1.png");
-  background-size:auto,260px;
-  background-repeat:no-repeat,repeat;
-  background-position:center;
-  text-align:center;
+    linear-gradient(180deg,#09090BD9,#050506F2),
+    url("/assets/damask.png") center / 300px repeat; /* 🎨 fondo */
   box-shadow:
-    0 30px 80px #000000B3,
-    0 0 0 1px #E0B85A14,
-    inset 0 1px 0 #F4EEE40F;
-  animation:vx-modalCardIn .38s cubic-bezier(.22,1,.36,1) both;
+    0 22px 70px #000000D9,
+    inset 0 1px 0 #FFFFFF0A;
 }
+/* elimina decoraciones de esquina */
 .vx-modalCard::before,
 .vx-modalCard::after{
-  content:"";
-  position:absolute;
-  width:40px;
-  height:40px;
-  pointer-events:none;
+  display:none;
+  content:none;
 }
-.vx-modalCard::before{
-  top:12px;
-  left:12px;
-  border-top:1px solid #E0B85A99;
-  border-left:1px solid #E0B85A99;
+/* corona */
+.vx-modalCrownStage{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:150px; /* ↕️ espacio corona */
+  margin:-4px 0 2px;
 }
-.vx-modalCard::after{
-  right:12px;
-  bottom:12px;
-  border-right:1px solid #B94A5C99;
-  border-bottom:1px solid #B94A5C99;
+.vx-modalTitleCrown{
+  width:125px; /* ↗️ tamaño corona */
+  height:auto;
+  object-fit:contain;
+  animation:vxModalCrownFloat 3.8s ease-in-out infinite;
+}
+@keyframes vxModalCrownFloat{
+  0%,100%{transform:translateY(4px) rotate(-1deg) scale(1);
+  }
+  50%{transform:translateY(-10px) rotate(1deg) scale(1.055);
+  }}
+/* título */
+.vx-modalTitle{
+  margin:0;
+  color:#F4EEE4;
+  font-family:"Cormorant Garamond",Georgia,serif;
+  font-size:clamp(38px,7vw,62px); /* ↗️ */
+  font-weight:400;
+  line-height:.92;
+  text-align:center;
+}
+/* texto */
+.vx-modalText{
+  max-width:420px;
+  margin:22px auto 0;
+  color:#DBDEE5;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:12px;
+  line-height:1.8;
+  letter-spacing:.08em;
+  text-align:center;
+}
+/* botón */
+.vx-modalLink{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:72px; /* ↕️ */
+  margin-top:26px;
+  border:1px solid #9C782D;
+  background:#080708;
+  color:#EDCF78;
+  text-decoration:none;
+}
+.vx-modalLinkContent{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
+.vx-modalRose{
+  width:58px; /* ↗️ tamaño rosa */
+  height:58px;
+  object-fit:contain;
 }
 .vx-modalParticles{
   position:absolute;
@@ -1122,7 +1223,6 @@ video{
 .vx-modalParticles span:nth-child(3){ left:55%; width:2px; height:2px; animation-duration:4s; animation-delay:1.5s; }
 .vx-modalParticles span:nth-child(4){ left:72%; animation-duration:5.8s; animation-delay:.3s; }
 .vx-modalParticles span:nth-child(5){ left:88%; width:2px; height:2px; animation-duration:4.8s; animation-delay:2s; }
-
 .vx-modalClose{
   position:absolute;
   top:10px;
@@ -1155,28 +1255,11 @@ video{
   letter-spacing:.22em;
   text-transform:uppercase;
 }
-.vx-modalTitle{
-  margin:14px 0 12px;
-  color:var(--bone);
-  font-family:var(--display);
-  font-size:clamp(2rem,8vw,2.8rem);
-  font-style:italic;
-  font-weight:500;
-  line-height:.95;
-  letter-spacing:.02em;
-}
 .vx-modalTitleWithCrown{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-}
-.vx-modalTitleCrown{
-  width:58px;
-  height:58px;
-  flex:0 0 58px;
-  object-fit:contain;
-  filter:drop-shadow(0 0 12px #0060D466);
 }
 .vx-modalTitleShimmer{
   position:relative;
@@ -1188,45 +1271,11 @@ video{
   -webkit-text-fill-color:transparent;
   animation:vxShimmer 4s ease-in-out infinite;
 }
-.vx-modalText{
-  max-width:280px;
-  margin:0 auto;
-  color:var(--dim);
-  font-family:var(--mono);
-  font-size:10.5px;
-  line-height:1.75;
-  letter-spacing:.06em;
-}
 .vx-modalDivider{
   width:40px;
   height:1px;
   margin:22px auto 0;
   background:linear-gradient(90deg,transparent,#E0B85A66,transparent);
-}
-.vx-modalLink{
-  position:relative;
-  isolation:isolate;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  width:auto;
-  min-height:44px;
-  margin:22px auto 0;
-  padding:0 20px;
-  overflow:hidden;
-  border:1px solid #D4A83A99;
-  border-radius:3px;
-  background:transparent;
-  color:#F6D77A;
-  font-family:"Inter",system-ui,sans-serif;
-  font-size:.85rem;
-  font-weight:700;
-  letter-spacing:.2em;
-  text-decoration:none;
-  text-transform:uppercase;
-  cursor:pointer;
-  transition:color .3s ease, border-color .3s ease, transform .25s ease, box-shadow .3s ease;
 }
 .vx-modalLinkBg{
   position:absolute;
@@ -1236,21 +1285,6 @@ video{
   transform:scaleY(0);
   transform-origin:bottom;
   transition:transform .4s cubic-bezier(.22,1,.36,1);
-}
-.vx-modalLinkContent{
-  position:relative;
-  z-index:1;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transition:color .3s ease;
-}
-.vx-modalRose{
-  width:50px;
-  height:50px;
-  flex:0 0 25px;
-  object-fit:contain;
-  transition:transform .3s ease;
 }
 .vx-modalLink:hover{
   border-color:#F6D77A;
@@ -1301,6 +1335,22 @@ video{
   outline:none;
   border-color:var(--gold);
 }
+/*_____________*/
+.vx-codeHeading{
+  position:relative;
+  transform:translateY(-42px); /* ⬆️⬇️ subir/bajar título */
+  margin-bottom:-20px;
+}
+.vx-deviceWrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:520px; /* ↕️ espacio dispositivo */
+  padding:18px 16px 52px; /* ↕️↔️ padding */
+  background:transparent;
+}
+/**/
 .vx-gold{
   display:inline-flex;
   align-items:center;
@@ -1343,7 +1393,6 @@ video{
   from{ opacity:0; transform:translateY(20px) scale(.95); filter:blur(4px); }
   to{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
 }
-
 /* ══════   PRIVATE ALBUM ════════════════ */
 .vx-privateAlbum{
   position:relative;
@@ -1512,7 +1561,6 @@ video{
   background-repeat:no-repeat;
   background-attachment:fixed;
 }
-
 /* ═══════════ FAQ ═══════════ */
 #faq.vx-sec{
   position:relative;
@@ -1549,7 +1597,6 @@ video{
   background-position:center;
   background-repeat:no-repeat;
 }
-
 /* ══════════════  HOW TO UNLOCK / ACCESS PROTOCOL ══════════════ */
 #protocolo{
   max-width:none;
@@ -1566,6 +1613,55 @@ video{
   margin-right:auto;
 }
 
+  /* fondo general desde Choose Your Code */
+#llaves{
+  position:relative;
+  background:
+    linear-gradient(180deg,#06080AE8,#070608E8),
+    url("/assets/damask.png") center top / 420px repeat;
+  background-attachment:scroll;
+}
+/* BEFORE YOU GET IN completo */
+#faq{
+  position:relative;
+  background:
+    linear-gradient(180deg,#070707D9,#090909F2),
+    url("/assets/wallpaperFaq.png") center top / cover no-repeat;
+  padding-top:76px; /* ↕️ */
+  padding-bottom:100px;
+}
+/*
+#faq{
+  background:
+    linear-gradient(180deg,#050505B3,#050505E6),
+    url("/assets/wallpaperFaq.png") center / cover no-repeat;
+}
+/*
+/* no colocar otro fondo en cabecera */
+#faq > .vx-reveal{
+  background:transparent;
+}
+/* caja FAQ */
+.vx-faq{
+  width:100%;
+  max-width:900px;
+  margin:46px auto 0;
+  background:transparent;
+}
+/* pregunta */
+.vx-faqItem{
+  border-top:1px solid #393632;
+  background:#090909; /* 🎨 negro sólido */
+}
+/* respuesta */
+.vx-faqItem > p{
+  margin:0;
+  padding:28px 42px 34px; /* ↔️↕️ */
+  background:#050505; /* 🎨 negro sólido */
+  color:#E8E1D8;
+  font-size:20px;
+  line-height:1.55;
+}
 /* ════════════  RESPONSIVE ═════════════ */
 @media (min-width:900px){
   .vx-step small{
@@ -1583,18 +1679,13 @@ video{
   .vx-footGrid{
     grid-template-columns:1.2fr .8fr;
     align-items:start;
-  }
-}
+  }}
 @media (min-width:960px){
-  .vx-grid{
-    grid-template-columns:1.05fr .7fr;
-    align-items:end;
+  .vx-grid{ grid-template-columns:1.05fr .7fr; align-items:end;
   }
   .vx-lock{ justify-self:start; }
-  .vx-grid > .vx-lock.vx-lockRaise{
-    transform:translateY(-10px) translateX(-190px);
-  }
-}
+  .vx-grid > .vx-lock.vx-lockRaise{transform:translateY(-10px) translateX(-190px);
+  }}
 @media (max-width:900px){
   .vx-grid{
     grid-template-columns:minmax(0,1fr) !important;
@@ -1739,34 +1830,21 @@ video{
   }
   .vx-modalTitle{ font-size:clamp(1.8rem,10vw,2.4rem); }
   .vx-modalText{ font-size:10px; }
-  .vx-modalTitleWithCrown{
-    display:flex;
-    flex-direction:column-reverse;
+  .vx-modalTitleWithCrown{ display:flex;flex-direction:column-reverse;
   }
-  .vx-modalTitleCrown{
-    width:52px;
-    height:52px;
-    flex-basis:52px;
+  .vx-modalTitleCrown{ width:52px; height:52px; flex-basis:52px;
   }
   .vx-codeInputs{ flex-direction:column; }
-  .vx-ticker.is-rev{
-    position:relative;
-    top:-1px;
-    margin-bottom:-52px;
-    z-index:20;
-  }
-}
+  .vx-ticker.is-rev{ position:relative; top:-1px; margin-bottom:-52px;z-index:20;
+  }}
 @media (max-width:420px){
   .vx-access{ font-size:clamp(48px,15vw,64px) !important; }
 }
 /* ═══════════ MOVER VAULT COMPLETO ═══════════ */
-
 @media (min-width:960px){
-
   .vx-grid > .vx-lock.vx-lockRaise{
-    transform:
-      translateX(-160px)
-      translateY(40px) !important;
-  }
+    transform:translateX(-160px) translateY(40px) !important;
+  }}
 
-}
+
+  

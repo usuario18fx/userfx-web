@@ -89,44 +89,23 @@ export default function VaultActions({
           </span>
           </button>
 {/* ═══ CAMPO DE CÓDIGO ═══ */}
-          <form className={`va-field${error ? " is-error" : ""}${ready ? " is-ready" : ""}`} onSubmit={onSubmit}noValidate>
-          <span className="va-field__bg" aria-hidden="true" />
-          <IconLock />
-          <input
-            ref={inputRef}
-            className="va-field__input"
-            type="text"
-            inputMode="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value.toUpperCase())}
-            placeholder={placeholder}
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            autoCapitalize="characters"
-            maxLength={MAX}
-            disabled={loading}
-            aria-label="Access code"
-            aria-invalid={!!error}
-            aria-describedby={error ? "va-error" : undefined}/>
-          <span className="va-field__meter" style={{ ["--p" as string]: `${progress}%` }}aria-hidden="true"/>
-          <button
-            type="submit"
-            className="va-go"
-            disabled={!ready}
-            aria-label="Enter vault"
-            aria-busy={loading}
-            onClick={ripple}
-          >
-            {loading ? <Spinner size={20} /> : <IconArrow />}
-          </button>
-        </form>
-      </div>
-
-      {/* ═══ MENSAJE DE ERROR ═══ */}
-      <p id="va-error" className={`va-error${error ? " is-visible" : ""}`} role="alert">
-        {error}
-      </p>
-    </div>
-  );
-}
+          <div className="va-terminal">
+      {Array.from({ length: 9 }).map((_, index) => {
+      const char = value[index] || "";
+      return (
+          <span key={index} className={`va-terminalCell${char ? " is-filled" : ""}`}>
+      {char || (index === 4 ? "-" : "")}
+          </span>
+          );
+          })}
+          </div> 
+{/* .va-terminal → celdas individuales BSIC-CODE */}
+          <input ref={inputRef} className="va-field__input va-field__input--terminal" type="text" inputMode="text" value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} placeholder={placeholder} autoComplete="off" autoCorrect="off" spellCheck={false} autoCapitalize="characters" maxLength={9} disabled={loading} aria-label="Access code"/> 
+          </div>
+{/* ═══ MENSAJE DE ERROR ═══ */}
+          <p id="va-error" className={`va-error${error ? " is-visible" : ""}`} role="alert">
+          {error}
+          </p>
+          </div>
+          );
+         }
