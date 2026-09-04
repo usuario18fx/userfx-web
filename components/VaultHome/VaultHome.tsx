@@ -245,127 +245,100 @@ export default function VaultHome() {
         setUnlocked(true);
         }})
     .catch(() => {});
-
   const codeFromTelegram = new URLSearchParams(
-    window.location.search
-        ).get("code");
+    window.location.search).get("code");
 
   const savedCode = localStorage.getItem(SAVED_CODE_KEY);
   const codeToLoad = codeFromTelegram || savedCode;
-
   const match = String(codeToLoad || "")
     .trim()
     .toUpperCase()
     .match(/^(BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
-
     if (match) {
-      if (codeFromTelegram || match[1] === "PRX0") {
+    if (codeFromTelegram || match[1] === "PRX0") {
         setPrefix(match[1]);
         setSuffix(match[2]);
-      }
-
-      if (codeFromTelegram) {
-        window.setTimeout(() => inlineCodeRef.current?.focus(), 150);
-      } else if (match[1] !== "PRX0") {
-        localStorage.removeItem(SAVED_CODE_KEY);
-      }}
-
-  fetch("/api/miniapp-track", {
+    }
+    if (codeFromTelegram) {window.setTimeout(() => inlineCodeRef.current?.focus(), 150);
+    } else if (match[1] !== "PRX0") {
+    localStorage.removeItem(SAVED_CODE_KEY);
+    }}
+    fetch("/api/miniapp-track", {
     method: "POST",
     headers: {
     "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      initData: (window as TelegramWindow).Telegram?.WebApp?.initData || "",
-    }),
-    }).catch(() => {});
+    initData: (window as TelegramWindow).Telegram?.WebApp?.initData || "",
+    }),}).catch(() => {});
     }, []);
-
-  useEffect(() => {
+    useEffect(() => {
     const tick = () => {
     const d = new Date();
     const p = (n: number) => String(n).padStart(2, "0");
-
     setClock(
     `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
     );
     };
-
     tick();
-
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
     }, []);
-
-  async function handleVerify(e: React.FormEvent) {
+    async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-
     if (attempts >= MAX_ATTEMPTS) {
       setVerifyError(
         'ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..'
-      );
+    );
     return;
     }
-
     const normalizedPrefix = prefix
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "");
-
     const normalizedSuffix = suffix
       .trim()
       .toUpperCase()
       .replace(/[^A-HJ-NP-Z2-9]/g, "");
-
     if (
-      !/^(BSIC|PRX0|VIPX)$/.test(normalizedPrefix) ||
-      normalizedSuffix.length !== 4
+    !/^(BSIC|PRX0|VIPX)$/.test(normalizedPrefix) ||
+    normalizedSuffix.length !== 4
     ) {
-      setVerifyError("ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴍᴘʟᴇᴛᴇ ᴀᴄᴄᴇꜱꜱ ᴋᴇʏ");
-      return;
+    setVerifyError("ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴍᴘʟᴇᴛᴇ ᴀᴄᴄᴇꜱꜱ ᴋᴇʏ");
+    return;
     }
-
     setPrefix(normalizedPrefix);
     setSuffix(normalizedSuffix);
     setVerifyLoading(true);
     setVerifyError('');
-
     try {
     const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({
-          prefix: normalizedPrefix,
-          suffix: normalizedSuffix,
+        prefix: normalizedPrefix,
+        suffix: normalizedSuffix,
     }),});
-
     const data = await res.json();
-
     if (data.ok) {
     if (!isAccessPlanId(data.planId)) {
       setVerifyError("ɪɴᴠᴀʟɪᴅ ᴀᴄᴄᴇꜱꜱ ᴘʟᴀɴ");
       return;
     }
-
     sessionStorage.setItem("vault_plan", data.planId);
     setActivePlanId(data.planId);
-
     setRemainingAccesses(
       Number.isFinite(Number(data.remainingAccesses))
         ? Number(data.remainingAccesses)
         : null
     );
-
     setUnlimitedAccess(data.unlimitedAccess === true);
-
-    if (data.planId === "pro") {
-        localStorage.setItem(
-          SAVED_CODE_KEY,
-          `${normalizedPrefix}-${normalizedSuffix}`
+    if (data.planId === "pro") {localStorage.setItem(
+    SAVED_CODE_KEY,`${normalizedPrefix}-${normalizedSuffix}`
     );
     } else {
-        localStorage.removeItem(SAVED_CODE_KEY);
+    localStorage.removeItem(SAVED_CODE_KEY);
     }
 
       setUnlocked(true);
@@ -373,15 +346,12 @@ export default function VaultHome() {
       setVerifyError("");
 
     const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.delete("code");
-
-      window.history.replaceState(
-    {},
-    "",
-    `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
+    currentUrl.searchParams.delete("code");
+    window.history.replaceState(
+    {},"",`${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
     );
 
-  window.setTimeout(() => {
+    window.setTimeout(() => {
     document
       .getElementById("unlocked-vault")
       ?.scrollIntoView({
@@ -389,41 +359,35 @@ export default function VaultHome() {
         block: "start",
     });
     }, 200);
-
   return;
     } else {
         setAttempts((n) => n + 1);
         setVerifyError(
           data.error || 'ᴄᴏ́ᴅɪɢᴏ ɪɴᴠᴀ́ʟɪᴅᴏ'
-        );
+    );
     }
     } catch {
       setVerifyError('ᴇʀʀᴏʀ ᴅᴇ ᴄᴏɴᴇxɪᴏ́ɴ');
     } finally {
       setVerifyLoading(false);
     }}
-
     function handleInlineCodeChange(value: string) {
       const compactCode = value
         .toUpperCase()
         .replace(/[^A-Z0-9]/g, "")
         .slice(0, 8);
-
       setPrefix(compactCode.slice(0, 4));
       setSuffix(compactCode.slice(4, 8));
       setVerifyError("");
     }
-
     const inlineCodeValue = prefix || suffix
       ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}`
       : "";
-
     const inlineCodeTemplate = inlineCodeValue.startsWith("V")
       ? "VIPX-CODE"
       : inlineCodeValue.startsWith("P")
         ? "PRX0-CODE"
         : "BSIC-CODE";
-
    return (
               <div id="top" className="vx">
               <header className="vx-hud">
@@ -553,6 +517,59 @@ export default function VaultHome() {
               </div>
             </section>
       <Ticker items={TICKER_ITEMS} />
+               {unlocked ? (
+            <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
+              <div className="vx-privateAlbumInner">
+              <header className="vx-privateAlbumHeader">
+              <p className="vx-privateAlbumStatus">
+              <span>
+                ✓
+              </span>
+               ACCESS GRANTED
+              </p>
+              <h2 className="vx-privateAlbumTitle">
+               PRIVATE
+              <span>
+               ALBUM
+              </span>
+              </h2>
+              <p className="vx-privateAlbumDescription">
+               Your {activePlanPrefix}
+               access key has been verified. {unlimitedAccess
+                 ? "Unlimited entries available."
+                 : remainingAccesses === null
+                    ? "Welcome inside the private vault."
+                    : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+              </p>
+              <div className="vx-privateAlbumLine" />
+              </header>
+              <div className="vx-privateAlbumGrid">
+               {unlockedPhotos.map((src, index) => (
+              <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
+              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"}/>
+              <figcaption>
+              <span>
+               USER 🜲 FX
+              </span>
+              <small>
+               PRIVATE FILE {String(index + 1).padStart(2, "0")}
+              </small>
+              </figcaption>
+              </figure>
+              ))}
+              </div>
+              <footer className="vx-privateAlbumFooter">
+              <span>
+               PERSONAL ACCESS
+              </span>
+              <i />
+              <span>
+               DO NOT DISTRIBUTE
+              </span>
+              </footer>
+              </div>
+              </section>
+               ) : null}
                {unlocked ? (
               <section id="protocolo" className="vx-sec vx-protocol">
         <Reveal>
@@ -731,9 +748,7 @@ export default function VaultHome() {
                delivered, except where Ontario law requires otherwise.
               </p>
               </footer>
-
         <Ticker items={TICKER_ITEMS} reverse />
-
                {dm ? (
               <div className="vx-modal" onClick={() => setDm(false)}>
               <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
@@ -827,6 +842,7 @@ export default function VaultHome() {
               </div>
               </div>
                ) : null}
+
               </div>
                );
                }
