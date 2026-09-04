@@ -303,9 +303,9 @@ video{
   flex-direction:column;
   align-items:flex-start;
   margin:0;
-  padding-top:26px; /*↕️*/
+  padding-top:30px; /*↕️*/
 }
-.vx-access{
+.vx-access{           /*ACCESS*/
   display:block;
   margin:0 0 30px 0; /*↕️*/
   color:#F4EEE4;
@@ -314,7 +314,7 @@ video{
   line-height:.82;
  transform:translateY(45px);
 }
-.vx-rest{
+.vx-rest{             /*RESTRICT*/
   display:block;
   margin:0;
   color:#B64B5D;                    /*🎨*/
@@ -324,7 +324,7 @@ video{
   line-height:.88;
   transform:translateX(35px) translateY(15px); /*+➡️*/
 }
-.vx-titleCrown{
+.vx-titleCrown{      /*Corona*/
   position:absolute;
   width:150px; /*↗️*/
   left:79%;    /*➡️*/
@@ -443,7 +443,6 @@ video{
   color:#F4EEE4D1;
   letter-spacing:.18em;
 }
-
 /* ════════   RIGHT HERO / DOORS ═════════════ */
 .vx-grid > .vx-lock{ align-self:start; }
 .vx-lock{
@@ -466,7 +465,6 @@ video{
   padding-top:16px;
   overflow:visible;
 }
-
 .vx-lock .vx-getCodeBtn{
   position:relative;
   appearance:none;
@@ -973,19 +971,17 @@ video{
     inset 0 -1px 0 #FFFFFF08;
   padding:14px 18px 16px 78px;
 }
-
 /* ═══════════  FOOTER ════════════ */
-.vx-foot{
-  position:relative;
-  padding:110px 16px 0;
-  border-top:1px solid var(--line);
-  background:
-    linear-gradient(rgba(0,0,0,.58),rgba(0,0,0,.72)),
-    url("/assets/wallpaper1.png");
-  background-size:cover;
-  background-position:center bottom;
-  background-repeat:no-repeat;
-  background-attachment:fixed;
+.vx-foot{ 
+   position:relative;
+   background:
+    url("/wallpaper1-1.png")
+    center 70% / 100% auto no-repeat; /* ⬆️⬇️ mueve la imagen */
+  padding-top:1px;
+  padding-bottom:10px;
+  min-height:auto;
+  overflow:hidden;
+  background-position:center 110%;
 }
 .vx-footGrid{
   position:relative;
@@ -995,19 +991,19 @@ video{
   max-width:72rem;
   margin:0 auto 90px;
   padding-top:0;
-  transform:translateY(90px);
+  transform:translateY(100px);
 }
 .vx-footBrand{
   display:flex;
   align-items:center;
-  gap:16px;
+  gap:5px;
 }
 .vx-footBrand img{
   width:auto;
   height:84px;
   object-fit:contain;
-  border:1px solid #60A5FA29;
-  box-shadow:0 8px 20px #00000059;
+  border:transparent;
+  box-shadow: none;
 }
 .vx-footBrand p{
   margin:0;
@@ -1030,14 +1026,14 @@ video{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:14px;
-  padding:18px;
-  border:1px solid #FFFFFF14;
-  background:#0000009E;
+  gap:5px;
+  padding:10px;
+  border:2px solid #FFFFFF14;
+  background:transparent;
   box-shadow:
-    inset 0 0 30px #00000059,
-    0 12px 28px #00000040;
-  backdrop-filter:blur(2px);
+    inset 0 0 50px #0000008e,
+    0 12px 40px #0000007a;
+  backdrop-filter:blur(4px);
 }
 .vx-links a{
   display:inline-flex;
@@ -1052,14 +1048,14 @@ video{
   text-decoration:none;
   font-family:var(--mono);
   font-size:10px;
-  font-weight:600;
+  font-weight:800;
   letter-spacing:.18em;
   transition:color .25s ease, text-shadow .25s ease, transform .25s ease;
 }
 .vx-links a:hover{
   color:#3fb9ff;
-  text-shadow:0 0 10px #0090e38a;
-  transform:translateY(-1px);
+  text-shadow:0 0 30px #0090e3dc;
+  transform:translateY(-2px);
 }
 .vx-links .vx-digitalArchive{
   border:0 !important;
@@ -1067,20 +1063,20 @@ video{
   color:#F4EEE4B8 !important;
 }
 .vx-links .vx-digitalArchive:hover{
-  color:#0090e38a !important;
+  color:#3fffaf !important;
 }
 .vx-links a + a::before{
   content:"";
   width:1px;
   height:18px;
   margin-right:14px;
-  background:linear-gradient(transparent,#008dc066,transparent);
+  background:linear-gradient(transparent,#008dc0fd,transparent);
 }
 .vx-footCode{
   width:100%;
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid #FFFFFF14;
+  margin-top:20px;
+  padding-top:25px;
+  border-top:1px solid #ffffff00;
   color:#FFFFFF !important;
   font-family:var(--mono);
   font-size:9px;
@@ -1103,10 +1099,7 @@ video{
   letter-spacing:.14em;
   text-transform:uppercase;
 }
-
-/* ═══════════════════════════════════════
-   MODAL
-   ═══════════════════════════════════════ */
+/* ═══════════  MODAL ═════ */
    .vx-modal{
   position:fixed;
   inset:0;
@@ -1162,7 +1155,7 @@ video{
   color:#F4EEE4;
   font-family:"Cormorant Garamond",Georgia,serif;
   font-size:clamp(38px,7vw,62px); /* ↗️ */
-  font-weight:400;
+  font-weight:800;
   line-height:.92;
   text-align:center;
 }
@@ -1182,9 +1175,9 @@ video{
   display:flex;
   align-items:center;
   justify-content:center;
-  width:100%;
-  min-height:72px; /* ↕️ */
-  margin-top:26px;
+  width:52%;
+  height:53px; /* ↕️ */
+  margin:0 auto;
   border:1px solid #9C782D;
   background:#080708;
   color:#EDCF78;
@@ -1196,10 +1189,25 @@ video{
   justify-content:center;
   gap:18px;
 }
-.vx-modalRose{
-  width:58px; /* ↗️ tamaño rosa */
+.vx-modalRose1{
+  width:48px; /* ↗️ tamaño rosa */
   height:58px;
   object-fit:contain;
+  transform:translateY(-2px)
+            translateX(-10px)
+            scale(2.9)  
+            rotate(33deg);
+}
+.vx-modalLaurel{
+  width:68px; /* ↗️ tamaño rosa */
+  height:58px;
+  object-fit:contain;
+  transform:translateY(-55px)
+            translateX(220px)
+            scale(2.9);
+  pointer-events:none;
+  user-select:none;
+  z-index:1;
 }
 .vx-modalParticles{
   position:absolute;
@@ -1210,11 +1218,11 @@ video{
 .vx-modalParticles span{
   position:absolute;
   bottom:-4px;
-  width:3px;
-  height:3px;
+  width:15px;
+  height:15px;
   border-radius:50%;
-  background:#E0B85A80;
-  box-shadow:0 0 6px #E0B85A4D;
+  background:#e0b85aa8;
+  box-shadow:0 0 10px #e0b85a80;
   opacity:0;
   animation:vxFloat linear infinite;
 }
@@ -1242,7 +1250,7 @@ video{
 }
 .vx-modalClose:hover{
   border-color:#B94A5C80;
-  background:#B94A5C14;
+  background:#91860d77;
   color:#E0546C;
   transform:rotate(90deg);
 }
@@ -1254,6 +1262,8 @@ video{
   font-weight:700;
   letter-spacing:.22em;
   text-transform:uppercase;
+  align-items:center;
+  justify-content:center;
 }
 .vx-modalTitleWithCrown{
   display:inline-flex;
@@ -1280,7 +1290,8 @@ video{
 .vx-modalLinkBg{
   position:absolute;
   inset:0;
-  z-index:-2;
+  z-index:5;
+  pointer-events:none;
   background:linear-gradient(180deg,#F6D77A,#B8861F);
   transform:scaleY(0);
   transform-origin:bottom;
@@ -1288,9 +1299,9 @@ video{
 }
 .vx-modalLink:hover{
   border-color:#F6D77A;
-  color:#1A0D05;
+  color:#df5c0b;
   transform:translateY(-2px);
-  box-shadow:0 8px 24px #E0B85A33, 0 0 0 1px #E0B85A1A;
+  box-shadow:0 8px 24px #e0b85a71, 0 0 0 1px #E0B85A1A;
 }
 .vx-modalLink:hover .vx-modalLinkBg{ transform:scaleY(1); }
 .vx-modalLink:hover .vx-modalLinkContent{ color:#1A0D05; }
@@ -1531,134 +1542,77 @@ video{
   background:#E0B85A66;
 }
 /* ═══════  ICONS ═══════════ */
-.vx-titleRose{
+.vx-titleRose1{
   display:inline-block;
   width:45px;
   height:45px;
-  margin:0 10px;
+  margin:0 4px;
   vertical-align:middle;
   object-fit:contain;
-  transform:translateY(-2px);
+    transform:translateY(10px) translateX(35PX)
+               scale(4);    
 }
-/* ═════  WALLPAPER FROM CHOOSE CODE DOWN ═══════════════ */
-#llaves{
-  max-width:none;
-  padding-left:max(16px,calc(50% - 36rem));
-  padding-right:max(16px,calc(50% - 36rem));
-  background:
-    linear-gradient(rgba(7,6,10,.38),rgba(7,6,10,.58)),
-    url("/wallpaperVideo.png");
-  background-repeat:no-repeat,repeat;
-  background-position:center,center;
-  background-size:auto,360px auto;
-}
-#llaves ~ .vx-sec{
-  background:url("/assets/wallpaper1.png");
-  background-size:cover;
-  background-position:center top;
-  background-repeat:no-repeat;
-  background-attachment:fixed;
-}
-/* ═══════════ FAQ ═══════════ */
-#faq.vx-sec{
+/* ══════════ PROTOCOL ═══════════════════ */
+#protocolo.vx-sec{
   position:relative;
-  max-width:none;
-  padding:72px 16px 0;
-  overflow:hidden;
-  background:
-    linear-gradient(rgba(7,6,10,.26),rgba(7,6,10,.38)),
-    url("/wallpaperVideo.png");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
+  background:linear-gradient(
+  #03050770,#03050759),
+    url("/wallpaper.png")
+    center / cover no-repeat,
+    url("/wallpaper.png")
+    center / cover no-repeat;
+  padding-top:90px;    /* ⬆️ */
+  padding-bottom:1px; /* ⬇️ */
 }
+/* ═══════ fondo Before You Code  ══════════ */
 #faq > .vx-reveal,
 #faq > .vx-faq{
   position:relative;
   z-index:2;
-  width:min(100%,64rem);
+  width:min(100%,55rem);
   margin-left:auto;
   margin-right:auto;
   background:
-    linear-gradient(#05050766,#0505078c),
+    linear-gradient(#05050754,#050507a0),
     url("/wallpaper.png");
-  background-size:auto,430px auto;
-  background-repeat:no-repeat,repeat;
-  background-position:center;
-}
-#faq ~ .vx-foot,
-#faq ~ .vx-ticker{
-  background:
-    linear-gradient(#01040885,#010306b8),
-    url("/wallpaperVideo.png");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-}
-/* ══════════════  HOW TO UNLOCK / ACCESS PROTOCOL ══════════════ */
-#protocolo{
+  transform: translateY(-45px);
+  }
+/* ═══════════  CHOOSE YOUR CODE ════════ */
+.vx-chooseZone{
+  position:relative;
+  width:100vw;                         /* ↔️ ancho total pantalla */
   max-width:none;
-  padding-left:max(16px,calc(50% - 36rem));
-  padding-right:max(16px,calc(50% - 36rem));
-  background:#01040694, url("/wallpaperVideo.png");
-  background-size:cover;
-  background-position:center;
+  margin-left:calc(50% - 50vw);        /*⬅️➡️*/
+  margin-right:calc(50% - 50vw);
+  padding:1px/*⬆️*/ max(24px,calc(50vw - 30rem))/*↔️*/ 1px/*⬇️*/;
+  background-color:#050607;
+  background:linear-gradient(#0505071a,#05050729), url("/wallpaper1.png");
+  background-position:center center;
+  background-size:100% auto;
   background-repeat:no-repeat;
+  overflow:hidden;
 }
-#protocolo > .vx-reveal{
-  width:min(100%,56rem);
-  margin-left:auto;
-  margin-right:auto;
-}
-
-  /* fondo general desde Choose Your Code */
-#llaves{
+/* ═══════  INSIDE THE VAULT ════════════════════ */
+.vx-insideZone{
   position:relative;
-  background:
-    linear-gradient(180deg,#06080AE8,#070608E8),
-    url("/assets/damask.png") center top / 420px repeat;
-  background-attachment:scroll;
-}
-/* BEFORE YOU GET IN completo */
-#faq{
-  position:relative;
-  background:
-    linear-gradient(180deg,#070707D9,#090909F2),
-    url("/assets/wallpaperFaq.png") center top / cover no-repeat;
-  padding-top:76px; /* ↕️ */
-  padding-bottom:100px;
-}
-/*
-#faq{
-  background:
-    linear-gradient(180deg,#050505B3,#050505E6),
-    url("/assets/wallpaperFaq.png") center / cover no-repeat;
-}
-/*
-/* no colocar otro fondo en cabecera */
-#faq > .vx-reveal{
-  background:transparent;
-}
-/* caja FAQ */
-.vx-faq{
   width:100%;
-  max-width:900px;
-  margin:46px auto 0;
-  background:transparent;
+  padding-top:80px;       /* ⬆️ */
+  padding-bottom:80px;    /* ⬇️ */
+  background:
+  url("/wallpaperVertical.png")
+  center top / 100% auto repeat-y; /* 🎨 fondo general */
 }
-/* pregunta */
-.vx-faqItem{
-  border-top:1px solid #393632;
-  background:#090909; /* 🎨 negro sólido */
+#llaves.vx-sec{
+  min-height:0 !important;
+  height:auto !important;
+  padding-bottom:0 !important; /* ⬆️ elimina espacio inferior */
+  margin-bottom:0 !important;
 }
-/* respuesta */
-.vx-faqItem > p{
-  margin:0;
-  padding:28px 42px 34px; /* ↔️↕️ */
-  background:#050505; /* 🎨 negro sólido */
-  color:#E8E1D8;
-  font-size:20px;
-  line-height:1.55;
+.vx-tint{
+  min-height:0 !important;
+  height:auto !important;
+  padding-bottom:0 !important;
+  margin-bottom:0 !important;
 }
 /* ════════════  RESPONSIVE ═════════════ */
 @media (min-width:900px){
@@ -1685,9 +1639,7 @@ video{
   .vx-grid > .vx-lock.vx-lockRaise{transform:translateY(-10px) translateX(-190px);
   }}
 @media (max-width:900px){
-  .vx-grid{
-    grid-template-columns:minmax(0,1fr) !important;
-    gap:36px;
+  .vx-grid{ grid-template-columns:minmax(0,1fr) !important;gap:36px;
   }
   .vx-lock{
     width:calc(100% - 24px);
@@ -1695,11 +1647,8 @@ video{
     min-width:0;
     margin:0 auto;
   }
-  .vx-lock.vx-lockRaise{
-    top:0;
-    transform:none;
-  }
-}
+  .vx-lock.vx-lockRaise{ top:0;transform:none;
+  }}
 @media (max-width:768px){
   .vx-title{ position:relative; }
   .vx-titleCrown{
@@ -1726,105 +1675,58 @@ video{
     letter-spacing:-.035em;
     white-space:nowrap;
     transform:translateY(55%) !important;
-  }
-}
+  }}
 @media (max-width:700px){
   #llaves,
   #llaves ~ .vx-sec,
-  .vx-foot{
-    background-attachment:scroll;
+  .vx-foot{ background-attachment:scroll;
   }
-  .vx-insideRow{
-    grid-template-columns:1fr;
-    gap:16px;
+  .vx-insideRow{ grid-template-columns:1fr; gap:16px;
   }
-  .vx-insideRow .vx-count{
-    min-width:0;
-    justify-self:start;
-    transform:none;
+  .vx-insideRow .vx-count{min-width:0;justify-self:start;transform:none;
   }
-  .vx-footActions{
-    align-items:flex-start;
-    padding:14px 12px;
+  .vx-footActions{align-items:flex-start; padding:14px 12px;
   }
-  .vx-footCode{
-    text-align:left;
-    white-space:normal;
+  .vx-footCode{text-align:left;white-space:normal;
   }
   .vx-privateAlbum{ padding:64px 14px; }
   .vx-privateAlbumGrid{ grid-template-columns:1fr; }
   .vx-privateAlbumTitle{ font-size:clamp(42px,15vw,64px); }
   .vx-privateAlbumItem{ padding:7px; }
-  .vx-privateAlbumItem figcaption{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:5px;
+  .vx-privateAlbumItem figcaption{flex-direction:column;align-items:flex-start;gap:5px;
   }
-  .vx-privateAlbumFooter{
-    flex-wrap:wrap;
-    gap:10px;
-    text-align:center;
-  }
-}
+  .vx-privateAlbumFooter{flex-wrap:wrap;gap:10px;text-align:center;
+  }}
 @media (max-width:600px){
-  .vx-carouselTrack{
-    gap:10px;
-    animation-duration:11s;
+  .vx-carouselTrack{gap:10px;animation-duration:11s;
   }
-  .vx-carouselSlide{
-    width:72vw;
-    max-width:250px;
-  }
-}
+  .vx-carouselSlide{ width:72vw;max-width:250px;
+  }}
 @media (max-width:520px){
   .vx-hud{ padding:0 10px; }
-  .vx-brand{
-    gap:7px;
-    font-size:8px;
-    letter-spacing:.14em;
+  .vx-brand{gap:7px;font-size:8px;letter-spacing:.14em;
   }
   .vx-brand img{ height:24px; }
-  .vx-hudRight{
-    gap:6px;
-    font-size:8px;
-    letter-spacing:.1em;
+  .vx-hudRight{gap:6px;font-size:8px; letter-spacing:.1em;
   }
-  .vx-unlockedBadge{
-    min-width:60px;
-    padding:3px 5px !important;
+  .vx-unlockedBadge{min-width:60px;padding:3px 5px !important;
   }
-  .vx-unlockedPrefix{
-    font-size:7px;
-    letter-spacing:.14em;
+  .vx-unlockedPrefix{font-size:7px;letter-spacing:.14em;
   }
-  .vx-unlockedState{
-    font-size:7px;
-    letter-spacing:.1em;
+  .vx-unlockedState{ font-size:7px;letter-spacing:.1em;
   }
-  .vx-kicker{
-    min-height:86px;
-    padding:14px 12px;
-    font-size:8px;
-    letter-spacing:.14em;
+  .vx-kicker{min-height:86px;padding:14px 12px;font-size:8px;letter-spacing:.14em;
   }
-  .vx-kicker i{
-    width:18px;
-    flex-basis:18px;
+  .vx-kicker i{width:18px; flex-basis:18px;
   }
   .vx-pNormal{ font-size:18px; }
-  .vx-dossierItem{
-    min-height:70px;
-    padding:10px;
+  .vx-dossierItem{ min-height:70px; padding:10px;
   }
-  .vx-dossierItem strong{
-    font-size:9px;
-    letter-spacing:.04em;
+  .vx-dossierItem strong{ font-size:9px;letter-spacing:.04em;
   }
   .vx-dossierDrop strong{ font-size:11px; }
   .vx-modalCard{ padding:25px 17px 20px; }
-  .vx-modalKicker{
-    font-size:7.5px;
-    letter-spacing:.14em;
+  .vx-modalKicker{font-size:7.5px; letter-spacing:.14em;
   }
   .vx-modalTitle{ font-size:clamp(1.8rem,10vw,2.4rem); }
   .vx-modalText{ font-size:10px; }
@@ -1840,9 +1742,278 @@ video{
 }
 /* ═══════════ MOVER VAULT COMPLETO ═══════════ */
 @media (min-width:960px){
-  .vx-grid > .vx-lock.vx-lockRaise{
-    transform:translateX(-160px) translateY(40px) !important;
+  .vx-grid > .vx-lock.vx-lockRaise{transform:translateX(-160px) translateY(40px) !important;
   }}
 
-
+/* ════ MODAL · OVERLAY ════════════════ */
+.vx-modal{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:#020304D9;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+/* ══════════   MODAL · PANEL PRINCIPAL ═════════════ */
+.vx-modalCard{
+  position:relative;
+  width:min(92vw,610px);       /* ↔️ ancho modal */
+  min-height:0;
+  padding:
+    34px                       /* ⬆️ */
+    38px                       /* ➡️⬅️ */
+    32px;                      /* ⬇️ */
+  overflow:hidden;
+  border:1px solid #66501F;
+  border-radius:12px;
+  background:
+    linear-gradient(180deg,
+      #070708E8,#030304F7),
+    url("/assets/damask.png")
+    center / 360px repeat;     /* 🎨 fondo damask */
+  box-shadow:
+    0 24px 80px #000000B8,
+    inset 0 1px 0 #FFFFFF0A;
+  isolation:isolate;
+}
+/* ════════   CAPA DAMASK ══════════════ */
+.vx-modalCard::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:
+    url("/assets/damask.png")
+    center / 330px repeat;
+  opacity:.17;                 /* 🎨 intensidad damask */
+ pointer-events:none;
+}
+/* contenido encima */
+.vx-modalCard > *{
+  position:relative;
+  z-index:2;
+}
+/* ════════  BOTÓN CERRAR ═══════════════ */
+.vx-modalClose{
+  position:absolute;
+  top:14px;                    /* ⬆️⬇️ */
+  right:16px;                  /* ⬅️➡️ */
+  z-index:10;
+  display:grid;
+  place-items:center;
+  width:32px;                  /* ↗️ */
+  height:32px;
+  border:0;
+  background:transparent;
+  color:#F2EEE4;
+  font-size:26px;
+  line-height:1;
+  cursor:pointer;
+}
+/* ═════════  KICKER SUPERIOR ═════════════ */
+.vx-modalKicker{
+  width:100%;
+  margin:
+    0 auto 8px;
+  color:#D8B553;               /* 🎨 */
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size:10px;              /* ↗️ */
+  font-weight:700;
+  letter-spacing:.22em;
+  text-align:center;           /* ↔️ CENTRADO */
+  text-transform:uppercase;
+}
+/* ═══════════  TITULO ACCESS RESTRICTED ════════════ */
+.vx-modalTitle{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  margin: 0 auto 22px;
+  text-align:center;           /* ↔️ CENTRADO */
+}
+/* texto */
+.vx-modalTitleShimmer{
+  display:block;
+  max-width:440px;
+  color:#F4EEE4;
+  font-family:
+    "Cormorant Garamond",
+    Georgia,
+    serif;
+  font-size:clamp(42px,6vw,64px); /* ↗️ */
+  font-weight:400;
+  line-height:.82;
+  letter-spacing:-.035em;
+  text-align:center;
+}
+/* ═══════════  CORONA TITULO ══════════════ */
+.vx-modalTitleCrown{
+  position:absolute;
+  right:-8px;                  /* ➡️⬅️ */
+  top:50%;                     /* ⬆️⬇️ */
+  width:112px;                 /* ↗️ tamaño corona */
+  height:auto;
+  transform: translateY(-50%);
+  object-fit:contain;
+  pointer-events:none;
+}
+/* ══════════  TEXTO CENTRAL ════════════ */
+.vx-modalText{
+  max-width:470px;
+  margin: 0 auto 24px;
+  color:#D5D1C8;
+  font-family:
+    "JetBrains Mono", ui-monospace, monospace;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.8;
+  letter-spacing:.08em;
+  text-align:center;           /* ↔️ CENTRADO */
+}
+/* ════════  DIVISOR ══════════ */
+.vx-modalDivider{
+  width:90px;                  /* ↔️ */
+  height:1px;
+  margin: 0 auto 24px;
+  background:linear-gradient(90deg,
+      transparent,#9C7B31,transparent);
+}
+/* ══════════  GET MY CODE ════════════ */
+.vx-modalLink{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:min(100%,410px);       /* ↔️ botón más pequeño */
+  height:64px;                 /* ↕️ */
+  margin: 0 auto 18px;
+  overflow:hidden;
+  border:1px solid #8C6D29;
+  border-radius:3px;
+  background:linear-gradient(135deg,
+      #160104,#050505 60%,#0B0904);
+  color:#E6CB78;
+  text-decoration:none;
+  box-shadow:
+    inset 0 1px 0 #FFFFFF0D,
+    0 10px 25px #00000066;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    background .25s ease;
+}
+/* ══════ FONDO INTERNO BOTÓN ═══════════════════ */
+.vx-modalLinkBg{
+  position:absolute;
+  inset:0;
+  background:
+  linear-gradient(110deg,
+      transparent 30%,
+      #C79C2420 50%,
+      transparent 70%);
+  transform:translateX(-120%);
+  pointer-events:none;
+}
+/* ═══════  CONTENIDO BOTÓN ═════════════════ */
+.vx-modalLinkContent{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;                    /* ↔️ rosa/texto */
+  width:100%;
+  font-family:
+    "Cormorant Garamond",Georgia, serif;
+  font-size:21px;              /* ↗️ */
+  font-weight:600;
+  letter-spacing:.03em;
+}
+/* ══════════   ROSA BOTÓN ═══════════════════ */
+.vx-modalRose{
+  width:58px;                  /* ↗️ */
+  height:58px;
+  object-fit:contain;
+  transform:rotate(-12deg)scale(1.08);
+  pointer-events:none;
+}
+/* ══════════  HOVER BOTÓN ═══════════════════ */
+.vx-modalLink:hover{
+  transform:translateY(-2px);
+  border-color:#D0A746;
+  background:
+  linear-gradient(135deg,
+  #2B030A,#080504 60%,#141006);
+  }
+.vx-modalLink:hover .vx-modalLinkBg{
+  animation:vx-modalSheen .8s ease forwards;
+}
+.vx-modalLink:hover .vx-modalRose{
+  transform:rotate(6deg) scale(1.13);
+}
+@keyframes vx-modalSheen{
+  to{transform:translateX(120%);
+  }}
+/* ══════  FOOTER MODAL ═════════════ */
+.vx-modalFooter{
+  width:100%;
+  margin:0 auto;
+  color:#8D762F;
+  font-family:"JetBrains Mono",ui-monospace, monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-align:center;           /* ↔️ CENTRADO */
+  text-transform:uppercase;
+}
+/* ═══════════ HOVER BOTÓN MODAL ═══════════ */
+.vx-modalLink:hover{
+  transform:none;
+  border-color:#8C6D29;
+  backgrounºd: linear-gradient(135deg,
+  #160104,#050505 60%,#0B0904);
+  box-shadow:inset 0 1px 0 #FFFFFF0D,0 10px 25px #00000066;
+}
+/* ═══════════ TEXTO BOTÓN MODAL ═══════════ */
+.vx-modalLinkContent{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  width:100%;
+  color:#F7F1E5;      /* 🎨 letras claras */
+  font-family:"Cormorant Garamond",Georgia,serif;
+  font-size:21px;
+  font-weight:600;
+  letter-spacing:.03em;
+}
+.vx-modalLink:hover .vx-modalLinkContent{
+  color:#FFF8E8;      /* 🎨 claro también en hover */
+}
+/* ════════════  MOBILE ═══════ */
+@media(max-width:520px){
+  .vx-modal{padding:14px;
+  }
+  .vx-modalCard{width:100%;padding:34px 20px 26px;
+  }
+  .vx-modalTitleShimmer{font-size:44px;            /* ↗️ */
+  }
+  .vx-modalTitleCrown{right:-10px;width:82px;                /* ↗️ */
+  }
+  .vx-modalText{font-size:11px;
+  }
+  .vx-modalLink{width:100%;height:58px;               /* ↕️ */
+  }
+  .vx-modalRose{width:50px;height:50px;
+  }
+  .vx-modalLinkContent{font-size:18px;
+  }}
   

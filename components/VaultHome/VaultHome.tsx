@@ -42,6 +42,8 @@ import VaultActions from "../VaultActionsBtns/VaultActions";
   const ICONS =       {corona:"/assets/iconos/corona.png",
                        candado:"/assets/iconos/candado.png",
                        rosa:"/assets/iconos/rosa.png",
+                       rosa1:"/assets/iconos/rosa1.png",
+                       laurel:"/assets/iconos/laurel.png",
     };
   const TICKER_ITEMS =["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
                       "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
@@ -570,8 +572,7 @@ export default function VaultHome() {
               </div>
               </section>
                ) : null}
-               {unlocked ? (
-              <section id="protocolo" className="vx-sec vx-protocol">
+            <section id="protocolo" className="vx-sec vx-protocol">
         <Reveal>
               <p className="vx-goldk">
                ◈ ACCESS PROTOCOL
@@ -606,8 +607,8 @@ export default function VaultHome() {
                ))}
               </div>
               </section>
-               ) : null}
-              <section id="llaves" className="vx-sec vx-tint">
+          <section id="llaves" className="vx-sec vx-tint">
+              <div className="vx-chooseZone">
         <Reveal>
               <p className="vx-goldk">
                🜲 ACCESS CODE
@@ -621,6 +622,11 @@ export default function VaultHome() {
               <div className="vx-deviceStage">
         <VaultDevice />
               </div>
+        </Reveal>
+              </div>
+{/* ⬆️ .vx-chooseZone → SOLO CHOOSE YOUR CODE + DEVICE */}
+              <div className="vx-insideZone">
+        <Reveal>
               <div className="vx-insideBlock">
               <p className="vx-goldk">
                🜲 INSIDE THE VAULT
@@ -662,8 +668,9 @@ export default function VaultHome() {
                ))}
               </div>
               </div>
+              </div>
+{/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
               </section>
-
               <section id="faq" className="vx-sec">
         <Reveal>
               <p className="vx-goldk">
@@ -671,10 +678,10 @@ export default function VaultHome() {
               </p>
               <h2>
                BEFORE YOU
-              <img src={ICONS.rosa} alt="" className="vx-titleRose" draggable={false}/>
               <span className="vx-getIn">
                GET IN
               </span>
+              <img src={ICONS.rosa1} alt="" className="vx-titleRose1" draggable={false}/>
               </h2>
         </Reveal>
               <div className="vx-faq">
@@ -694,13 +701,18 @@ export default function VaultHome() {
                {open ? "–" : "+"}
               </i>
               </button>
-               {open ? <p>{f.a}</p> : null}
+               {open ? (
+              <p>
+               {f.a}
+              </p>
+               ) : null}
               </div>
         </Reveal>
                );
               })}
               </div>
               </section>
+{/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
               <footer className="vx-foot">
               <div className="vx-footGrid">
               <div>
@@ -781,13 +793,13 @@ export default function VaultHome() {
               <a className="vx-modalLink" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">
               <span className="vx-modalLinkBg" />
               <span className="vx-modalLinkContent">
-              <img src={ICONS.rosa} alt="" className="vx-modalRose" draggable={false}/>
                GET MY CODE
               </span>
               </a>
               <p className="vx-modalFooter">
                BASIC · PRO · VIP
               </p>
+               <img src={ICONS.laurel} alt="" className="vx-modalLaurel" draggable={false}/>
               </div>
               </div>
                ) : null}
@@ -810,22 +822,8 @@ export default function VaultHome() {
               </h3>
               <form onSubmit={handleVerify} className="vx-codeForm">
               <div className="vx-codeInputs">
-              <input
-                value={prefix}
-                onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-                placeholder="PREFIX"
-                maxLength={4}
-                autoCapitalize="characters"
-                autoComplete="off"
-                disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
-              <input
-                value={suffix}
-                onChange={(e) => setSuffix(e.target.value.toUpperCase())}
-                placeholder="SUFFIX"
-                maxLength={4}
-                autoCapitalize="characters"
-                autoComplete="off"
-                disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
+              <input  value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off"  disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
+              <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off"  disabled={verifyLoading || attempts >= MAX_ATTEMPTS}/>
               </div>
               <button type="submit" className="vx-gold" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}>
                {verifyLoading ? 'VERIFYING...' : 'UNLOCK'}
@@ -842,7 +840,6 @@ export default function VaultHome() {
               </div>
               </div>
                ) : null}
-
               </div>
                );
                }
