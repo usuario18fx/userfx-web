@@ -27,18 +27,25 @@ Markup.keyboard = function patchedKeyboard(buttons, ...args) {
         const helpUrl =
             process.env.USERFX_HELP_URL ||
             "https://t.me/User18Fx";
+        const botUsername =
+            process.env.USER_BOT_USERNAME ||
+            "User18Fx_bot";
+        const botBaseUrl = `https://t.me/${botUsername}`;
 
-        return originalKeyboard([
-            [BASIC_LABEL, VIP_LABEL],
+        return Markup.inlineKeyboard([
             [
-                PRO_LABEL,
-                Markup.button.webApp(ENTER_CODE_LABEL, userFxUrl),
+                Markup.button.url(BASIC_LABEL, `${botBaseUrl}?start=getcode_basic`),
+                Markup.button.url(VIP_LABEL, `${botBaseUrl}?start=getcode_vip`),
             ],
             [
-                BACK_LABEL,
-                Markup.button.webApp(HELP_LABEL, helpUrl),
+                Markup.button.url(PRO_LABEL, `${botBaseUrl}?start=getcode_pro`),
+                Markup.button.url(ENTER_CODE_LABEL, userFxUrl),
             ],
-        ], ...args);
+            [
+                Markup.button.url(BACK_LABEL, `${botBaseUrl}?start=menu`),
+                Markup.button.url(HELP_LABEL, helpUrl),
+            ],
+        ]);
     }
 
     const isChannelsKeyboard =
