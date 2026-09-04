@@ -1,195 +1,141 @@
 .vhd-root *,
 .vhd-root *::before,
-.vhd-root *::after{
-  box-sizing:border-box;
+.vhd-root *::after{box-sizing:border-box;
 }
-::selection{
-  background:#d8d45733;
+::selection{background:#d8d45733;
 }
+/* ═══════════ PANEL COMPLETO DE PUERTAS ═══════════ */
 .vhd-root{
   position:relative;
-  width:100%;
-  max-width:700px;
-  margin:36px auto 0; /*⬆️⬇️*/
-  background:#000000; /*🎨*/
+  isolation:isolate;
+  display:block;
+  width:100%;             /*↔️*/
+  max-width:700px;        /*↔️*/
+  height:425px;           /*↕️*/
+  min-height:425px;
+  margin:120px auto 0;    /*⬆️⬇️*/
   overflow:visible;
+  background:#000000;   /*🎨*/
+  z-index:10;
 }
 /* ═══════════  FONDO  ═══════════ */
 .vhd-bg{
   position:absolute;
   inset:0;
-  z-index:var(--z-bg);
+  z-index:0;
   pointer-events:none;
   overflow:hidden;
   background:center/cover no-repeat;
-  filter:blur(32px) brightness(.35) saturate(1.2);
-  transform:scale(1.15);
-  transition:filter 1.2s ease, transform 1.2s ease;
+  filter:none;
+  transform:none;
 }
-.vhd-root.is-open .vhd-bg{
-  filter:blur(14px) brightness(.6) saturate(1.1);
-  transform:scale(1);
-}
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-bg{
-  filter:blur(20px) brightness(.5) saturate(1.15);
-}
+/* ═══════════ DAMASK ═══════════ */
 .vhd-damask{
   position:absolute;
   inset:0;
-  z-index:var(--z-damask);
-  background:url("/assets/damask.png") center / 320px repeat;
-  opacity:.28;
-  pointer-events:none;
-}
-/* ═══════════  LADO DEL VIDEO / LOGO  ═══════════ */
-.vhd-logoSide{
-  position:relative;
-  z-index:var(--z-side);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  min-width:0;
-  min-height:0;
-  height:100%;
-  padding:24px clamp(24px,4vw,48px);
-  padding-top:calc(24px + var(--logo-drop));
-  overflow:hidden;
-  background:
-    url("/wallpaperBase.png")
-    center / 260px auto repeat;
-  box-shadow:none !important;
-}
-.vhd-logoGlow{
-  display: none;
-  position:absolute;
-  width:min(420px,75%);
-  aspect-ratio:1;
-  border-radius:50%;
-  animation:vhdGlow 3s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes vhdGlow{
-  0%,100%{opacity:.55; transform:scale(1);
-  }
-  50%{opacity:.85; transform:scale(1.12);
-  }}
-/* Funciona tanto para <img> como para <video> */
-.vhd-logo{
-  position:relative;
   z-index:1;
-  display:block;
-  width:min(460px,100%);
-  max-width:100%;
-  max-height:330px;
-  object-fit:contain;
-  object-position:center;
-  filter:none;
-  box-shadow:none;
-  transition:transform .4s ease;
+  background:url("/assets/damask.png")center / 320px repeat;
+  opacity:.18;             /* 🎨 INTENSIDAD DAMASK */
+  pointer-events:none;
 }
-video.vhd-logo{
-  background:transparent;
-  border:0;
-  outline:0;
-}
-/* VIDEO */
+/* ═══════════ VIDEO DENTRO DE LAS PUERTAS ═══════════ */
 .vhd-videoStage{
   position:absolute;
   inset:0;
   z-index:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   overflow:hidden;
   background:#000000;
 }
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-logo{
+/* video */
+.vhd-videoStage video{
+  display:block;
+  width:100%;              /* ↔️*/
+  height:100%;             /* ↕️*/
+  object-fit:cover;
+  object-position:center;
+  border:0;
+  outline:0;
   filter:none;
-  box-shadow:none;
-  transform:scale(1);
-}
-.vhd-logoSub{
-  position:relative;
-  z-index:1;
-  margin-top:14px;
-  color:#35331300;
-  font-family:"JetBrains Mono",monospace;
-  font-size:clamp(8px,.7vw,9px);
-  line-height:1.6;
-  letter-spacing:.2em;
-  text-align:center;
-  text-wrap:balance;
 }
 /* ═══════════  PUERTAS  ═══════════ */
 .vhd-doors{
   position:relative;
-  z-index:var(--z-doors);
+  z-index:4;
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  grid-template-areas:"doorL doorR";
+  grid-template-columns:
+    minmax(0,1fr)
+    minmax(0,1fr);
+  grid-template-areas:
+    "doorL doorR";
   grid-template-rows:1fr;
+  width:100%;              /* ↔️*/
+  height:425px;            /* ↕️*/
+  min-height:425px;
+  left:140px;                /* ⬅️➡️*/
+  bottom:32%;                 /* ⬆️⬇️*/
   overflow:visible;
-  background:transparent;
+  background:#000000;
   perspective:1200px;
   box-shadow:none !important;
-  left:40px;   /*⬅️*/
-  top:30px;    /*⬆️*/
-  width:100%;
-  height:90%;
 }
-.vhd-door{ /* PUERTAS */
-  border:5px solid var(--line);
-  transition: filter .5s ease, box-shadow .5s ease;
+/* ═══════════ PUERTA BASE ═══════════ */
+.vhd-door{
   appearance:none;
   position:relative;
-  z-index:2;
   width:100%;
   height:100%;
+  min-width:0;
   margin:0;
   padding:0;
-  border:0;
-  background:#050505; /* 🎨 negro puerta */
   overflow:hidden;
+  border:0;
+  background:#050505;
   cursor:pointer;
+  box-shadow:none !important;
   transition:
-    transform .8s cubic-bezier(.22,.61,.36,1),
-    background .3s ease;
+  transform .8s cubic-bezier(.22,.61,.36,1),background .3s ease;
 }
+/* ═══════════ PUERTA IZQUIERDA ═══════════ */
 .vhd-door.left{
   grid-area:doorL;
-  z-index:1;
-  background:
-    linear-gradient(var(--gold),var(--gold))
+  z-index:3;
+  transform-origin:left center;
+  border-right:2px solid #282828;
+  background: linear-gradient(#B6AC39CB,#B6AC39CB)
     right 26px center / 2px 120px no-repeat,
-    radial-gradient(closest-side,
-    #1c1c0915,transparent)
-    right 26px center / 24px 160px no-repeat,
+    radial-gradient(closest-side,#1C1C0915,
+    transparent)right 26px center / 24px 160px no-repeat,
     url("/doorLeft.png")center / cover no-repeat;
   box-shadow:none !important;
-    border-right:2px solid #282828;
-  transform-origin:left center;
 }
+/* ═══════════ PUERTA DERECHA ═══════════ */
 .vhd-door.right{
   grid-area:doorR;
-  z-index:1;
-  background:
-    linear-gradient(var(--gold),var(--gold))
-    left 26px center / 2px 120px no-repeat,
-    radial-gradient(closest-side,
-    #e0d75a00,transparent)
-    left 26px center / 24px 160px no-repeat,
-    url("/doorRight.avif")
-      center / cover no-repeat;
-  box-shadow:none !important;
-  border-left:2px solid #282828;
+  z-index:3;
   transform-origin:right center;
-}.vhd-door::before{/* relieve negro */
+  border-left:2px solid #282828;
+  background:linear-gradient(#B6AC39CB,#B6AC39CB)
+  left 26px center / 2px 120px no-repeat,
+  radial-gradient(closest-side,#E0D75A00,transparent) left 26px center / 24px 160px no-repeat,
+  url("/doorRight.avif") center / cover no-repeat;
+  box-shadow:none !important;
+}
+/* ═══════════ RELIEVE NEGRO ═══════════ */
+.vhd-door::before{
   content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(90deg,#FFFFFF08,transparent 18%,transparent 82%,#FFFFFF06),
-    url("/assets/damask.png") center / 420px repeat;
-  opacity:.30; /*🎨*/
+  background:linear-gradient(90deg,
+    #FFFFFF08,transparent 18%,
+    transparent 82%,#FFFFFF06
+    ), url("/assets/damask.png") center / 420px repeat;
+  opacity:.30;             /* 🎨 RELIEVE */
+  pointer-events:none;
 }
+/* ═══════════ MARCO INTERIOR ═══════════ */
 .vhd-door::after{
   content:"";
   position:absolute;
@@ -197,103 +143,96 @@ video.vhd-logo{
   border:1px solid #393939;
   pointer-events:none;
 }
+/* ═══════════ ABRIR PUERTAS ═══════════ */
+.vhd-root.is-open .vhd-door.left{
+  transform: translateX(-102%) rotateY(-22deg);
+}
+.vhd-root.is-open .vhd-door.right{
+  transform: translateX(102%) rotateY(22deg);
+}
+/* ═══════════ OPTIMIZACIÓN ═══════════ */
+.vhd-root:not(.is-open) .vhd-door{
+  will-change:transform;
+}
 /* ═══════════  TEXTO DE LAS PUERTAS  ═══════════ */
 .vhd-door-inner{
   position:absolute;
   inset:0;
-  z-index:2;
+  z-index:5;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:12px; /*20px*/
+  gap:12px;                /*↕️*/
   padding:0 10%;
   text-align:center;
+  pointer-events:none;
 }
 .vhd-door-inner span{
   max-width:100%;
-  color:#f5ed924d;
-  font-family:"JetBrains Mono",monospace;
-  font-size:10px; /*↗️*/
+  color:#F5ED924D;         /*🎨TEXTO*/
+  font-family:
+    "JetBrains Mono",monospace;
+  font-size:10px;          /*↗️*/
   font-weight:700;
   line-height:1.5;
   letter-spacing:.42em;
   text-wrap:balance;
-  transition:
-    color .5s ease,
-    letter-spacing .5s ease,
-    text-shadow .5s ease;
+  text-shadow:none !important;
 }
 .vhd-door-inner i{
   display:block;
-  width:54px; /*↔️*/
-  height:1px; /*↕️*/
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  box-shadow:none !important;
-  transition:
-    width .5s ease,
-    background .5s ease,
-    box-shadow .5s ease;
-}
-.vhd-doors video{
-  display:block;
-  width:min(290px,88%);
-  height:min(310px,74%);
-  object-fit:cover;
-  object-position:center;
-  transform:none;
-}
-/* will-change solo mientras están cerradas */
-.vhd-root:not(.is-open) .vhd-door{
-  will-change:transform;
-}
-.vhd-root.is-open .vhd-door.left{transform:translateX(-102%) rotateY(-22deg);
-}
-.vhd-root.is-open .vhd-door.right{transform:translateX(102%) rotateY(22deg);
-}
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner span{
-  color:var(--ink);
-  letter-spacing:.52em;
-  text-shadow:0 0 12px #e0de5a66;
-}
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner i{
-  width:68px;
-  background:var(--gold);
+  width:54px;              /* ↔️ LÍNEA */
+  height:1px;              /* ↕️ LÍNEA */
+  background:linear-gradient(90deg,
+  transparent,#B6AC39CB,transparent);
   box-shadow:none !important;
 }
-/* ═══════════  VIDEO DENTRO DE LAS PUERTAS  ═══════════ */
-/* Video + caption = capa base a todo el panel, detrás de las puertas */
+/* ═══════════ VIDEO DETRÁS DE LAS PUERTAS ═══════════ */
 .vhd-doors > :not(.vhd-door):not(.vhd-form){
   grid-area:1 / 1 / 2 / -1;
+  position:relative;
   z-index:0;
-  align-self:stretch;
-  min-width:0;
-  max-width:100%;
-  height:100%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
+  width:100%;
+  height:100%;
+  min-width:0;
   gap:14px;
-  padding:24px 16px;
+  padding:20px;
   overflow:hidden;
+  background:#000000;
 }
-.vhd-reveal{
-  margin:0;
+.vhd-doors video{
+  display:block;
+  width:min(360px,90%);    /* ↔️ VIDEO */
+  height:min(360px,82%);   /* ↕️ VIDEO */
+  object-fit:cover;
+  object-position:center;
+  transform:none;
+  box-shadow:none !important;
+  filter:none !important;
+}
+.vhd-reveal{margin:0;
 }
 .vhd-reveal img,
 .vhd-reveal video{
   display:block;
-  width:min(290px,88%);
-  height:min(310px,74%);
+  width:min(360px,90%);    /* ↔️ */
+  height:min(360px,82%);   /* ↕️ */
   object-fit:cover;
   object-position:center;
-  border:1px solid #3a391500;
+  border:0;
+  box-shadow:none !important;
+  filter:none !important;
 }
 .vhd-reveal figcaption{
-  margin-top:0px;
-  color:#e5e5ca73;
-  font-family:"JetBrains Mono",monospace;
+  margin-top:0;
+  color:#E5E5CA73;
+  font-family:
+    "JetBrains Mono",monospace;
   font-size:9px;
   letter-spacing:.28em;
   text-align:center;

@@ -303,32 +303,32 @@ video{
   flex-direction:column;
   align-items:flex-start;
   margin:0;
-  padding-top:26px; /* ↕️ espacio superior */
+  padding-top:26px; /*↕️*/
 }
 .vx-access{
   display:block;
-  margin:0 0 30px 0; /* ↕️ separación ACCESS → RESTRICTED */
+  margin:0 0 30px 0; /*↕️*/
   color:#F4EEE4;
-  font-size:clamp(3rem,10vw,6.4rem); /* ↗️ tamaño */
+  font-size:clamp(3rem,10vw,6.4rem); /*↗️*/
   font-weight:600;
   line-height:.82;
- transform:none;
+ transform:translateY(45px);
 }
 .vx-rest{
   display:block;
   margin:0;
-  color:#B64B5D; /* 🎨 color */
-  font-size:clamp(2.8rem,9vw,4.8rem); /* ↗️ tamaño */
+  color:#B64B5D;                    /*🎨*/
+  font-size:clamp(2.8rem,9vw,4.8rem); /*↗️*/
   font-weight:300;
   font-style:italic;
   line-height:.88;
-  transform:none;
+  transform:translateX(35px) translateY(15px); /*+➡️*/
 }
 .vx-titleCrown{
   position:absolute;
-  width:150px; /* ↗️ tamaño */
-  left:58%;    /* ➡️⬅️ mover corona */
-  top:48%;     /* ⬆️⬇️ mover corona */
+  width:150px; /*↗️*/
+  left:79%;    /*➡️*/
+  top:65%;     /*⬇️*/
   z-index:3;
   transform:translate(-50%,-50%);
 }
@@ -1530,7 +1530,6 @@ video{
   height:1px;
   background:#E0B85A66;
 }
-
 /* ═══════  ICONS ═══════════ */
 .vx-titleRose{
   display:inline-block;
@@ -1541,7 +1540,6 @@ video{
   object-fit:contain;
   transform:translateY(-2px);
 }
-
 /* ═════  WALLPAPER FROM CHOOSE CODE DOWN ═══════════════ */
 #llaves{
   max-width:none;
