@@ -2,6 +2,7 @@
 
 import React, { useCallback } from "react";
 import "./VaultActions.css";
+import "./VaultMobileCenter.css";
 
 type VaultActionsProps = {
   value: string;
