@@ -1,0 +1,86 @@
+/* ═══════════ MOBILE CENTER FIX ═══════════ */
+@media (max-width:768px){
+  /* Puertas: elimina el desplazamiento horizontal de escritorio */
+  .vhd-root{
+    left:0;
+    right:0;
+    width:calc(100vw - 24px);
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+    transform:none;
+  }
+
+  .vhd-doors{
+    left:0;                 /*⬅️➡️ CENTRO REAL DE PUERTAS*/
+    right:auto;
+    width:100%;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  /* Bloque de acciones centrado respecto a las puertas */
+  .va{
+    left:50%;               /*⬅️➡️*/
+    width:calc(100vw - 32px); /*↔️*/
+    max-width:700px;
+    margin-left:0;
+    margin-right:0;
+    transform:translateX(-50%);
+  }
+
+  .va__row{
+    width:100%;
+  }
+
+  /* Celdas BSIC-CODE centradas */
+  .va-terminal{
+    left:50%;               /*⬅️➡️*/
+    right:auto;
+    width:min(400px,calc(100% - 24px)); /*↔️*/
+    transform:translate(-50%,-310%);
+  }
+
+  /* Input invisible exactamente encima de las celdas */
+  .va-field__input--terminal{
+    left:50%;
+    right:auto;
+    width:min(400px,calc(100% - 24px));
+    transform:translateX(-50%);
+  }
+
+  /* GET MY CODE centrado debajo */
+  .va-btn{
+    left:50%;               /*⬅️➡️*/
+    right:auto;
+    width:min(360px,88%);   /*↔️*/
+    transform:translateX(-50%);
+  }
+
+  .va-btn:disabled{
+    transform:translateX(-50%);
+  }
+}
+
+@media (max-width:430px){
+  .vhd-root{
+    width:calc(100vw - 16px);
+  }
+
+  .va{
+    width:calc(100vw - 20px);
+  }
+
+  .va-terminal{
+    width:calc(100% - 12px);
+    gap:2px;
+  }
+
+  .va-terminalCell{
+    font-size:9px;
+  }
+
+  .va-btn{
+    width:92%;
+  }
+}
