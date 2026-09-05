@@ -60,6 +60,15 @@
   .va-btn:disabled{
     transform:translateX(-50%);
   }
+
+  /* Laurel del modal: centrado real, sin empuje hacia la derecha */
+  .vx-modalLaurel{
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    transform:translateY(-55px) scale(2.9);
+    transform-origin:center center;
+  }
 }
 
 @media (max-width:430px){
@@ -82,5 +91,11 @@
 
   .va-btn{
     width:92%;
+  }
+
+  .vx-modalLaurel{
+    margin-left:auto;
+    margin-right:auto;
+    transform:translateY(-55px) scale(2.9);
   }
 }
