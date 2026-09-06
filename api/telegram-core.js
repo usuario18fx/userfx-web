@@ -5,8 +5,7 @@ import crypto from "crypto";
 export const config = {
     api: {
         bodyParser: false,
-    },
-};
+    },};
 // ======================================================
 // LOGGER
 // ======================================================
@@ -14,7 +13,7 @@ const logger = winston.createLogger({
     level: "info",
     format: winston.format.json(),
     transports: [new winston.transports.Console()],
-});
+    });
 // ======================================================
 // ENVIRONMENT
 // ======================================================
@@ -76,7 +75,7 @@ async function relayVaultUpdate(update) {
         logger.error("VAULT WEBHOOK CONFIGURATION MISSING", {
             urlPresent: Boolean(VAULT_WEBHOOK_URL),
             secretPresent: Boolean(VAULT_WEBHOOK_SECRET),
-        });
+    });
         return false;
     }
     try {
@@ -85,35 +84,34 @@ async function relayVaultUpdate(update) {
             headers: {
                 "Content-Type": "application/json",
                 "x-telegram-bot-api-secret-token": VAULT_WEBHOOK_SECRET,
-            },
+    },
             body: JSON.stringify(update),
             cache: "no-store",
-        });
+    });
         const text = await response.text();
         logger.info("VAULT UPDATE RELAY", {
             ok: response.ok,
             status: response.status,
             response: text.slice(0, 500),
-        });
+    });
         return response.ok;
     }
     catch (error) {
         logger.error("VAULT UPDATE RELAY ERROR", {
             message: error?.message || null,
             stack: error?.stack || null,
-        });
+    });
         return false;
-    }
-}
+    }}
 // ======================================================
 // REQUIRED BOT TOKENS
 // ======================================================
 if (!BOT_TOKEN) {
     throw new Error("BOT_TOKEN is missing");
-}
+    }
 if (!ADMIN_BOT_TOKEN) {
     throw new Error("ADMIN_BOT_TOKEN is missing");
-}
+    }
 // ======================================================
 // BOTS
 // ======================================================
@@ -131,14 +129,14 @@ async function validateBotTokens() {
             id: userMe.id,
             username: userMe.username,
             firstName: userMe.first_name,
-        });
+    });
     }
     catch (error) {
         logger.error("USER BOT TOKEN INVALID", {
             errorCode: error?.response?.error_code || null,
             description: error?.response?.description || null,
             message: error?.message || null,
-        });
+    });
     }
     try {
         const adminMe = await adminBot.telegram.getMe();
@@ -146,16 +144,15 @@ async function validateBotTokens() {
             id: adminMe.id,
             username: adminMe.username,
             firstName: adminMe.first_name,
-        });
+    });
     }
     catch (error) {
         logger.error("ADMIN BOT TOKEN INVALID", {
             errorCode: error?.response?.error_code || null,
             description: error?.response?.description || null,
             message: error?.message || null,
-        });
-    }
-}
+    });
+    }}
 void validateBotTokens();
 // ======================================================
 // ENV VALIDATION
@@ -170,68 +167,58 @@ const requiredEnv = {
     REDIS_URL,
     ZOOM_URL,
     TELEGRAM_CALL_URL,
-};
+    };
 const missingEnv = Object.entries(requiredEnv)
     .filter(([, value]) => !value)
     .map(([key]) => key);
 if (missingEnv.length > 0) {
     throw new Error(`Missing required environment variables: ${missingEnv.join(", ")}`);
-}
+    }
 // ======================================================
 // REDIS
 // ======================================================
 let redis = null;
 logger.info("REDIS URL EXISTS", {
     exists: Boolean(REDIS_URL),
-});
-if (REDIS_URL) {
-    try {
-        redis = new Redis(REDIS_URL, {
-            maxRetriesPerRequest: 1,
-            enableReadyCheck: false,
-            connectTimeout: 3000,
-            lazyConnect: true,
-        });
-        redis.on("connect", () => {
-            logger.info("REDIS CONNECT");
-        });
-        redis.on("ready", () => {
-            logger.info("REDIS READY");
-        });
-        redis.on("error", (error) => {
-            logger.error("REDIS ERROR", {
-                message: error?.message,
-                stack: error?.stack,
-            });
-        });
-        redis.on("close", () => {
-            logger.warn("REDIS CLOSE");
-        });
+    });
+    if (REDIS_URL) {
+    try { redis = new Redis(REDIS_URL, {
+          maxRetriesPerRequest: 1,
+          enableReadyCheck: false,
+          connectTimeout: 3000,
+          lazyConnect: true,
+    });
+          redis.on("connect", () => {logger.info("REDIS CONNECT");
+    });
+          redis.on("ready", () => {logger.info("REDIS READY");
+    });
+          redis.on("error", (error) => {logger.error("REDIS ERROR", {
+          message: error?.message, stack: error?.stack,
+    });
+    });
+        redis.on("close", () => {logger.warn("REDIS CLOSE");
+    });
     }
     catch (error) {
         logger.error("REDIS INIT FAILED", {
-            message: error?.message,
-            stack: error?.stack,
-        });
+        message: error?.message,stack: error?.stack,
+    });
         redis = null;
-    }
-}
+    }}
 async function ensureRedis() {
     if (!redis)
         return null;
     try {
-        const status = String(redis.status || "");
-        if (status === "wait") {
-            await redis.connect();
-        }
-    }
-    catch (error) {
-        logger.error("REDIS CONNECT ERROR", {
+    const status = String(redis.status || "");
+    if (status === "wait") {
+    await redis.connect();
+    }}
+    catch (error) {logger.error("REDIS CONNECT ERROR", {
             message: error?.message,
-        });
+    });
     }
     return redis;
-}
+    }
 // ======================================================
 // REDIS HELPERS
 // ======================================================
@@ -242,77 +229,60 @@ async function redisGetJson(key) {
     try {
         const value = await client.get(key);
         if (!value)
-            return null;
+        return null;
         return JSON.parse(value);
     }
     catch (error) {
         logger.error("REDIS GET ERROR", {
-            key,
-            message: error?.message,
-        });
+        key,message: error?.message,
+    });
         return null;
-    }
-}
+    }}
 async function redisSetJson(key, value, ttl = null) {
     const client = await ensureRedis();
     if (!client)
-        return false;
+    return false;
     try {
         const serialized = JSON.stringify(value);
-        if (ttl) {
-            await client.set(key, serialized, "EX", ttl);
-        }
-        else {
-            await client.set(key, serialized);
-        }
-        return true;
+    if (ttl) {
+    await client.set(key, serialized, "EX", ttl);
     }
-    catch (error) {
-        logger.error("REDIS SET ERROR", {
-            key,
-            message: error?.message,
-        });
-        return false;
+    else {
+    await client.set(key, serialized);
     }
-}
+    return true;
+    }
+    catch (error) {logger.error("REDIS SET ERROR", {key, message: error?.message,
+    });
+    return false;
+    }}
 async function redisDelete(key) {
     const client = await ensureRedis();
     if (!client)
-        return;
+    return;
     try {
-        await client.del(key);
+    await client.del(key);
     }
-    catch (error) {
-        logger.error("REDIS DELETE ERROR", {
-            key,
-            message: error?.message,
-        });
-    }
-}
-async function scanKeys(pattern) {
+    catch (error) {logger.error("REDIS DELETE ERROR", {key, message: error?.message,
+    });
+    }}
+    async function scanKeys(pattern) {
     const client = await ensureRedis();
     if (!client)
-        return [];
+    return [];
     const keys = [];
     let cursor = "0";
-    try {
-        do {
-            const result = await client.scan(cursor, "MATCH", pattern, "COUNT", 100);
-            cursor = String(result[0]);
-            if (result[1]?.length) {
-                keys.push(...result[1]);
-            }
-        } while (cursor !== "0");
-        return keys;
+    try { do {
+    const result = await client.scan(cursor, "MATCH", pattern, "COUNT", 100); 
+    cursor = String(result[0]);
+    if (result[1]?.length) {keys.push(...result[1]);
+    }} while (cursor !== "0");
+    return keys;
     }
-    catch (error) {
-        logger.error("REDIS SCAN ERROR", {
-            pattern,
-            message: error?.message,
-        });
-        return [];
-    }
-}
+    catch (error) {logger.error("REDIS SCAN ERROR", {pattern,message: error?.message,
+    });
+    return [];
+    }}
 // ======================================================
 // USER DATA
 // ======================================================
@@ -340,40 +310,33 @@ async function deleteVideoRequest(userId) {
 // ======================================================
 function getPaymentKey(chargeId) {
     return `processed_payment:${chargeId}`;
-}
+    }
 async function hasProcessedPayment(chargeId) {
     const client = await ensureRedis();
     if (!chargeId || !client)
-        return false;
+    return false;
     try {
-        return Boolean(await client.exists(getPaymentKey(chargeId)));
+    return Boolean(await client.exists(getPaymentKey(chargeId)));
     }
-    catch (error) {
-        logger.error("PAYMENT CHECK ERROR", {
-            chargeId,
-            message: error?.message,
-        });
-        return false;
-    }
-}
+    catch (error) {logger.error("PAYMENT CHECK ERROR", {chargeId,message: error?.message,
+    });
+    return false;
+    }}
 async function claimPaymentProcessed(chargeId) {
     const client = await ensureRedis();
     if (!chargeId)
-        return false;
+    return false;
     if (!client)
-        return true;
+    return true;
     try {
-        const created = await client.set(getPaymentKey(chargeId), "1", "EX", PAYMENT_TTL_SECONDS, "NX");
-        return created === "OK";
+    const created = await client.set(getPaymentKey(chargeId), "1", "EX", PAYMENT_TTL_SECONDS, "NX");
+    return created === "OK";
     }
     catch (error) {
-        logger.error("PAYMENT CLAIM ERROR", {
-            chargeId,
-            message: error?.message,
-        });
-        return false;
-    }
-}
+    logger.error("PAYMENT CLAIM ERROR", { chargeId,  message: error?.message,
+    });
+    return false;
+    }}
 async function markPaymentProcessed(chargeId) {
     const client = await ensureRedis();
     if (!chargeId || !client)
@@ -382,19 +345,15 @@ async function markPaymentProcessed(chargeId) {
         await client.set(getPaymentKey(chargeId), "1", "EX", PAYMENT_TTL_SECONDS);
         return true;
     }
-    catch (error) {
-        logger.error("PAYMENT MARK ERROR", {
-            chargeId,
-            message: error?.message,
-        });
-        return false;
-    }
-}
+    catch (error) {logger.error("PAYMENT MARK ERROR", {chargeId,message: error?.message,
+    });
+    return false;
+    }}
 async function releasePaymentClaim(chargeId) {
     if (!chargeId)
-        return;
+    return;
     await redisDelete(getPaymentKey(chargeId));
-}
+    }
 // ======================================================
 // PLAN CONSTANTS
 // ======================================================
@@ -447,7 +406,7 @@ const REQUEST_STATUS = {
     AWAITING_PAYMENT: "awaiting_payment",
     PAID: "paid",
     APPROVED: "approved",
-};
+    };
 // ======================================================
 // BUTTONS
 // ======================================================
@@ -466,7 +425,7 @@ const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
 const BTN_PENDING_REQUEST = "ʀᴇǫᴜᴇꜱᴛ";
 const BTN_GET_CODE = "ɢᴇᴛ ᴄᴏᴅᴇ";
 const BTN_OPEN_VAULT = "🔐 ᴏᴘᴇɴ ᴠᴀᴜʟᴛ";
-const BTN_WEBSITE = "ᴇɴᴛᴇʀ ᴄᴏᴅᴇ";
+const BTN_WEBSITE = "🔠ᴇɴᴛᴇʀ-ᴄᴏᴅᴇ";
 // ======================================================
 // UTILITIES
 // ======================================================
@@ -503,29 +462,24 @@ function getErrorStack(error) {
     }
 function getTelegramError(error) {
     return {
-        errorCode: error?.response?.error_code ||
-            null,
-        description: error?.response?.description ||
-            null,
-        message: error?.message ||
-            null,
-        parameters: error?.response?.parameters ||
-            null,
+        errorCode: error?.response?.error_code || null,
+        description: error?.response?.description || null,
+        message: error?.message || null,
+        parameters: error?.response?.parameters || null,
     };
     }
 function secureCompare(a, b) {
     const bufA = Buffer.from(String(a));
     const bufB = Buffer.from(String(b));
-    if (bufA.length !==
-        bufB.length) {
-        return false;
+    if (bufA.length !== bufB.length) {
+    return false;
     }
     return crypto.timingSafeEqual(bufA, bufB);
     }
 function isAdmin(ctx) {
-    return (String(ctx.from?.id || "") ===
-        String(ADMIN_USER_ID));
-     }
+    return (
+    String(ctx.from?.id || "") === String(ADMIN_USER_ID));
+    }
 function getCommandArg(ctx, index = 0) {
     const parts = String(ctx.message?.text || "")
         .trim()
@@ -552,17 +506,16 @@ function getCommandArg(ctx, index = 0) {
     catch (error) {  logger.error(
         "SEND MEDIA ERROR", {  kind,  url, ...getTelegramError(error),
     });
-    }
-    }
+    }}
 //// BUTTON TRACKING //    
     async function trackButtonClick(ctx, buttonName) {
     try {
     const client = await ensureRedis();
         if (!client)
-            return;
+        return;
     const user = getUserMeta(ctx.from);
         if (!user.id)
-            return;
+        return;
     const data = {
             fullName: user.fullName,
             username: user.username,
@@ -574,54 +527,52 @@ function getCommandArg(ctx, index = 0) {
     }
     catch (error) {logger.error("TRACK BUTTON ERROR", { message: error?.message,
     });
-    }
-    }
+    }}
 //// RATE LIMIT //
     async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
     const client = await ensureRedis();
     if (!client)
-        return true;
+    return true;
     try {
         const key = `rate_limit:videocall:${userId}`;
         const count = await client.incr(key);
-        if (count === 1) {
-        await client.expire(key, windowSeconds); 
+    if (count === 1) {
+    await client.expire(key, windowSeconds); 
     }
-       return count <= limit;
+    return count <= limit;
     }
-       catch (error) { logger.error(
+    catch (error) { logger.error(
         "RATE LIMIT ERROR", { message: error?.message,});
-       return true;
-    }
-    }
+    return true;
+    }}
 //// CENTRAL CODE ENGINE // 
     function randomCodePart(length = 4) {
-      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       let result = "";
       for (let i = 0; i < length; i++) {
-      const index = crypto.randomInt(0, alphabet.length); result += alphabet[index];
+    const index = crypto.randomInt(0, alphabet.length); result += alphabet[index];
     }
-       return result;
+    return result;
     }
-  function getPlanFromPayload(payload) {
+    function getPlanFromPayload(payload) {
     if (payload === BASIC_PAYLOAD) {
-       return PLAN_CONFIG.basic;
+    return PLAN_CONFIG.basic;
     }
     if (payload === PRO_PAYLOAD) {
-       return PLAN_CONFIG.pro;
+    return PLAN_CONFIG.pro;
     }
     if (payload === VIP_PAYLOAD) {
-       return PLAN_CONFIG.vip;
+    return PLAN_CONFIG.vip;
     }
-       return null;
+    return null;
     }
-  function getCodeKey(code) {
-       return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
+    function getCodeKey(code) {
+    return `${CODE_ENGINE_NAMESPACE}:code:${code}`;
     }
-  function getUserCodeIndexKey(userId) {
-       return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
+    function getUserCodeIndexKey(userId) {
+    return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
     }
-   async function generateAccessCode(planId, source, userId, chargeId = null) {
+    async function generateAccessCode(planId, source, userId, chargeId = null) {
     const client = await ensureRedis();
     if (!client) { throw new Error("Redis is required for code generation");
     }
@@ -630,9 +581,9 @@ function getCommandArg(ctx, index = 0) {
         throw new Error(`Unknown plan: ${planId}`);
     }
     for (let attempt = 0; attempt < 20; attempt++) {
-        const code = `${plan.prefix}-${randomCodePart(4)}`;
-        const key = getCodeKey(code);
-        const record = {
+    const code = `${plan.prefix}-${randomCodePart(4)}`;
+    const key = getCodeKey(code);
+    const record = {
             code,
             planId: plan.id,
             plan: plan.name,
@@ -649,48 +600,47 @@ function getCommandArg(ctx, index = 0) {
             createdAt: new Date().toISOString(),
             redeemedAt: null,
             redeemedBy: null,
-        };
-        const created = await client.set(key, JSON.stringify(record), "NX");
-        if (created === "OK") {
-            await client.sadd(getUserCodeIndexKey(String(userId)), code);
+    };
+    const created = await client.set(key, JSON.stringify(record), "NX");
+    if (created === "OK") {
+        await client.sadd(getUserCodeIndexKey(String(userId)), code);
            logger.info("ACCESS CODE GENERATED", {
            planId,
            source,
            userId,
-       });
-       return record;
-       }
-       }
+    });
+    return record;
+    }}
     throw new Error("Unable to generate unique access code");
-       }
-   async function getAccessCode(code) {
-      const normalized = String(code || "")
+    }
+    async function getAccessCode(code) {
+    const normalized = String(code || "")
         .trim()
         .toUpperCase();
     if (!normalized) {
-       return null;
-       }
-       return redisGetJson(getCodeKey(normalized));
-       }
-   async function validateAccessCode(code) {
+    return null;
+    }
+    return redisGetJson(getCodeKey(normalized));
+    }
+    async function validateAccessCode(code) {
       const record = await getAccessCode(code);
     if (!record) {
-       return { valid: false,reason: "not_found",};
+    return { valid: false,reason: "not_found",};
        }
     if (record.status !== "active") {
-       return {valid: false, reason: "not_active",record,};
+    return {valid: false, reason: "not_active",record,};
         }
     const maxAccesses = record.maxAccesses === null
         ? null
         : Number(record.maxAccesses);
     const usedAccesses = Math.max(0, Number(record.usedAccesses) || 0);
     if (maxAccesses !== null && usedAccesses >= maxAccesses) {
-       return {valid: false, reason: "no_accesses_remaining",record,};
+    return {valid: false, reason: "no_accesses_remaining",record,};
         }
-       return { valid: true, record,};
+    return { valid: true, record,};
         }
 //// VAULT BUTTON //
-  function getOpenVaultKeyboard(code = "") {
+    function getOpenVaultKeyboard(code = "") {
     const baseUrl = String(TELEGRAM_MINI_APP_URL || "")
         .trim()
         .replace(/\/$/, "");
@@ -710,22 +660,17 @@ function getCommandArg(ctx, index = 0) {
 //// KEYBOARDS //
   function getMainKeyboard() {
       return Markup.keyboard([
-        [ BTN_VIDEOCALL,
-          BTN_GET_CODE, ] ,
-        [ BTN_CHANNELS,  
-          BTN_REFRESH, ] ,
+        [ BTN_VIDEOCALL, BTN_GET_CODE, ] ,
+        [ BTN_CHANNELS, BTN_REFRESH, ] ,
         ]).resize();
         }
   function getAccessKeyboard() {
       return Markup.keyboard([
-        [ BTN_BASIC,
-          BTN_VIP, ] ,
+        [ BTN_BASIC, BTN_VIP, ] ,
         [ BTN_PRO, ] ,
-        [ BTN_BACK_MENU,
-          Markup.button.webApp(
-          BTN_WEBSITE,
-          USERFX_SITE_URL), ] ,] ) .resize();
-         }
+        [ BTN_BACK_MENU,Markup.button.webApp(
+          BTN_WEBSITE,USERFX_SITE_URL), ] ,] ) .resize();
+        }
   function getPendingPhotoKeyboard() {
       return Markup.keyboard([
         [ BTN_PENDING_REQUEST, ],
@@ -733,36 +678,37 @@ function getCommandArg(ctx, index = 0) {
         }
   function getApprovedVideocallKeyboard() {
       return Markup.keyboard([
-        [ BTN_ZOOM,
-          BTN_TELEGRAM, ],
+        [ BTN_ZOOM, BTN_TELEGRAM, ],
         [ BTN_BACK_MENU,],]).resize();
         }
   function getVideocallInlineKeyboard() {
       return { inline_keyboard: [
         [{ text: BTN_ZOOM,
-               url: ZOOM_URL,},
+            url: ZOOM_URL,},
         { text: BTN_TELEGRAM,
-               url: TELEGRAM_CALL_URL, } , ] , ] , } ; 
+           url: TELEGRAM_CALL_URL, } , ] , ] , } ; 
         }
   function getStarsVipKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            `| ✪ ${VIP_STARS_PRICE} |`, "pay_vip_stars") , ] , ] ) ;
+            `| ✪ ${VIP_STARS_PRICE} |`, 
+            "pay_vip_stars") , ] , ] ) ;
         }
   function getStarsBasicKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            `| ✪ ${BASIC_STARS_PRICE} |`, "pay_basic_stars") , ] , ] ) ;
+            `| ✪ ${BASIC_STARS_PRICE} |`, 
+            "pay_basic_stars") , ] , ] ) ;
         }
   function getStarsProKeyboard() {
       return Markup.inlineKeyboard([
         [ Markup.button.callback(
-            `| ✪ ${PRO_STARS_PRICE} |`, "pay_pro_stars") , ] , ] ) ;
+            `| ✪ ${PRO_STARS_PRICE} |`, 
+            "pay_pro_stars") , ] , ] ) ;
         }
   function getChannelsKeyboard() {
       return Markup.keyboard([
-        [ BTN_SMOKELANDIA,
-          BTN_USERFX_SITE, ] ,
+        [ BTN_SMOKELANDIA, BTN_USERFX_SITE, ] ,
         [ BTN_BACK_MENU, ] ,]).resize();
         }
 //// ACCESS STATE // 
@@ -782,7 +728,7 @@ function getCommandArg(ctx, index = 0) {
         hasPro: tierRank(tier) >= 2,
         hasBasic: tierRank(tier) >= 1,
         entry,
-    };}
+        };}
 //// PANELS //
     async function sendMainPanel(ctx) {
     try {
@@ -817,7 +763,7 @@ function getCommandArg(ctx, index = 0) {
 ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`, getStarsVipKeyboard());
     }
     catch (error) {logger.error(
-        "VIP PANEL ERROR", getTelegramError(error));
+    "VIP PANEL ERROR", getTelegramError(error));
     }}
     async function sendBasicPanel(ctx) {
     try { await ctx.reply(
@@ -827,9 +773,8 @@ function getCommandArg(ctx, index = 0) {
 ⇀ ʙᴇɴᴇғɪᴛs
 ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹`, getStarsBasicKeyboard());
     }
-    catch (error) {
-    logger.error(
-        "BASIC PANEL ERROR", getTelegramError(error));
+    catch (error) {logger.error(
+    "BASIC PANEL ERROR", getTelegramError(error));
     }}
     async function sendProPanel(ctx) {
     try { await ctx.reply(
@@ -913,11 +858,13 @@ async function sendGeneratedCode(ctx, record) {
     ID: ${escapeHtml(user.id)}
     Chat ID: ${escapeHtml(userId)}
     ⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`, {parse_mode: "HTML",
-    });}
+    });
+    }
     catch (error) { logger.error(
     "OPEN VIDEOCALL FLOW ERROR", {
     userId,...getTelegramError(error),stack: getErrorStack(error),
-    });}}
+    });
+    }}
 //// PENDING VIDEOCALL //
     async function sendPendingVideocallPanel(ctx) {
     const userId = String(ctx.from?.id || "");
@@ -966,8 +913,9 @@ async function sendGeneratedCode(ctx, record) {
     });
     }
     catch (error) { logger.error(
-    "PENDING VIDEOCALL PANEL ERROR", {userId,  ...getTelegramError(error),
-                                          stack: getErrorStack(error),
+    "PENDING VIDEOCALL PANEL ERROR", 
+    {userId,  ...getTelegramError(error),
+     stack: getErrorStack(error),
     });
     await ctx.reply(
     "❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
@@ -1064,7 +1012,7 @@ async function sendGeneratedCode(ctx, record) {
     const claimed = await claimPaymentProcessed(chargeId);
     if (!claimed) {
     logger.warn(
-    "DUPLICATE PAYMENT", {  userId,  payload,  chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
+    "DUPLICATE PAYMENT", {userId, payload, chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
     });
     return;
     }
@@ -1100,7 +1048,6 @@ async function sendGeneratedCode(ctx, record) {
     const plan = getPlanFromPayload(payload);
     if (plan) {
     try {   
-
     const record = await generateAccessCode( plan.id,
     "telegram", userId, chargeId
     );
@@ -1122,10 +1069,7 @@ async function sendGeneratedCode(ctx, record) {
     }
     catch (error) {
     await releasePaymentClaim(chargeId);
-    logger.error("ACCESS CODE GENERATION ERROR", {
-        userId,
-        payload,
-        chargeId,
+    logger.error("ACCESS CODE GENERATION ERROR", {userId, payload, chargeId,
     ...getTelegramError(error),
     stack: getErrorStack(error),
     });

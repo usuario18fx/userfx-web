@@ -2,193 +2,132 @@ import { Telegraf, Markup } from "telegraf";
 import Redis from "ioredis";
 import winston from "winston";
 import crypto from "crypto";
-
-export const config = {
-  api: {
-    bodyParser: false,
+export const config = {api: {bodyParser: false,
   },
-};
-
+   };
 // ======================================================
 // LOGGER
 // ======================================================
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(),
-  transports: [new winston.transports.Console()],
-});
-
+const logger = winston.createLogger({level: "info",
+  format: winston.format.json(),transports: [new winston.transports.Console()],
+    });
 // ======================================================
 // ENVIRONMENT
 // ======================================================
-
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
-
 const ADMIN_CHAT_ID = String(process.env.ADMIN_CHAT_ID || "");
 const ADMIN_USER_ID = String(process.env.ADMIN_USER_ID || "");
-
 const WEBHOOK_SECRET =
   process.env.TELEGRAM_WEBHOOK_SECRET_USER ||
-  process.env.TELEGRAM_WEBHOOK_SECRET ||
-  "";
-
+  process.env.TELEGRAM_WEBHOOK_SECRET || "";
 const ADMIN_WEBHOOK_SECRET =
-  process.env.TELEGRAM_WEBHOOK_SECRET_ADMIN ||
-  "";
-
+  process.env.TELEGRAM_WEBHOOK_SECRET_ADMIN || "";
 const REDIS_URL = process.env.REDIS_URL;
-
 const ZOOM_URL = String(process.env.ZOOM_URL || "");
 const TELEGRAM_CALL_URL = String(process.env.TELEGRAM_CALL_URL || "");
-
 const SMOKELANDIA_GROUP_LINK =
-  process.env.SMOKELANDIA_GROUP_LINK ||
-  "https://t.me/SmokelandiaFx_bot";
-
+  process.env.SMOKELANDIA_GROUP_LINK || "https://t.me/SmokelandiaFx_bot";
 const USER_GROUP_LINK =
-  process.env.USER_GROUP_LINK ||
-  "https://t.me/+v57jkAGn3DA0NWJh";
+  process.env.USER_GROUP_LINK || "https://t.me/+v57jkAGn3DA0NWJh";
 
 const USERFX_SITE_URL =
-  process.env.USERFX_SITE_URL ||
-  "https://userfx-web.vercel.app";
-
+  process.env.USERFX_SITE_URL || "https://userfx-web.vercel.app";
 /*
- * Telegram Mini App / Vault.
- *
- * Example:
+ * Telegram Mini App / Vault. Example:
  * https://t.me/User18Fx_bot?startapp=vault
  */
 const TELEGRAM_MINI_APP_URL =
   process.env.TELEGRAM_MINI_APP_URL ||
   `${USERFX_SITE_URL.replace(/\/$/, "")}/vault`;
-
 const CODE_ENGINE_NAMESPACE =
   process.env.CODE_ENGINE_NAMESPACE ||
   "userfx:vault";
-
 const MAX_BODY_BYTES = 1024 * 1024;
-
 // ======================================================
 // MEDIA
 // ======================================================
-
 const ASSETS_BASE_URL =
   `${USERFX_SITE_URL.replace(/\/$/, "")}/assets`;
-
 const ASSET_WELCOME_VIDEO =
   `${ASSETS_BASE_URL}/FX-Y24V01.mp4`;
-
 const ASSET_VIDEOCALL_IMAGE =
   `${ASSETS_BASE_URL}/videocall.jpg`;
-
 const ASSET_CHANNELS_VIDEO =
   `${ASSETS_BASE_URL}/videoSMKLFX.mp4`;
-
 const ASSET_SMOKELANDIA_VIDEO =
   `${ASSETS_BASE_URL}/introSMKL.mp4`;
-
 const ASSET_USERFX_VIDEO =
   `${ASSETS_BASE_URL}/introFX.mp4`;
-
 const ASSET_GETCODE_IMAGE =
   `${ASSETS_BASE_URL}/USERFX-ID18V20.jpg`;
-
 // ======================================================
 // VAULT WEBSITE RELAY
 // ======================================================
-
 const VAULT_WEBHOOK_URL =
   process.env.VAULT_WEBHOOK_URL ||
   `${USERFX_SITE_URL.replace(/\/$/, "")}/api/telegram/webhook`;
-
 const VAULT_WEBHOOK_SECRET =
   process.env.VAULT_WEBHOOK_SECRET ||
-  process.env.TELEGRAM_WEBHOOK_SECRET ||
-  "";
-
+  process.env.TELEGRAM_WEBHOOK_SECRET || "";
 function isVaultPayload(payload: unknown) {
   const value = String(payload || "").trim();
-
   return /^(BSIC|PRX0|VIPX)-/i.test(value);
 }
-
 async function relayVaultUpdate(update: unknown) {
   if (!VAULT_WEBHOOK_URL || !VAULT_WEBHOOK_SECRET) {
     logger.error("VAULT WEBHOOK CONFIGURATION MISSING", {
       urlPresent: Boolean(VAULT_WEBHOOK_URL),
       secretPresent: Boolean(VAULT_WEBHOOK_SECRET),
     });
-
-    return false;
+  return false;
   }
-
   try {
     const response = await fetch(VAULT_WEBHOOK_URL, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
-        "x-telegram-bot-api-secret-token":
-          VAULT_WEBHOOK_SECRET,
+        "x-telegram-bot-api-secret-token":VAULT_WEBHOOK_SECRET,
       },
-
       body: JSON.stringify(update),
-
       cache: "no-store",
     });
-
     const text = await response.text();
-
     logger.info("VAULT UPDATE RELAY", {
       ok: response.ok,
       status: response.status,
       response: text.slice(0, 500),
     });
-
     return response.ok;
   } catch (error: any) {
     logger.error("VAULT UPDATE RELAY ERROR", {
       message: error?.message || null,
       stack: error?.stack || null,
     });
-
     return false;
-  }
-}
-
+  }}
 // ======================================================
 // REQUIRED BOT TOKENS
 // ======================================================
-
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is missing");
 }
-
 if (!ADMIN_BOT_TOKEN) {
   throw new Error("ADMIN_BOT_TOKEN is missing");
 }
-
 // ======================================================
 // BOTS
 // ======================================================
-
 const bot = new Telegraf(BOT_TOKEN);
 const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
-
 bot.telegram.webhookReply = false;
 adminBot.telegram.webhookReply = false;
-
 // ======================================================
 // TOKEN VALIDATION
 // ======================================================
-
 async function validateBotTokens() {
   try {
-    const userMe = await bot.telegram.getMe();
-
+const userMe = await bot.telegram.getMe();
     logger.info("USER BOT TOKEN OK", {
       id: userMe.id,
       username: userMe.username,
@@ -200,11 +139,9 @@ async function validateBotTokens() {
       description: error?.response?.description || null,
       message: error?.message || null,
     });
-  }
-
+    }
   try {
-    const adminMe = await adminBot.telegram.getMe();
-
+  const adminMe = await adminBot.telegram.getMe();
     logger.info("ADMIN BOT TOKEN OK", {
       id: adminMe.id,
       username: adminMe.username,
@@ -216,15 +153,11 @@ async function validateBotTokens() {
       description: error?.response?.description || null,
       message: error?.message || null,
     });
-  }
-}
-
+    }}
 void validateBotTokens();
-
 // ======================================================
 // ENV VALIDATION
 // ======================================================
-
 const requiredEnv = {
   BOT_TOKEN,
   ADMIN_BOT_TOKEN,
@@ -236,36 +169,27 @@ const requiredEnv = {
   ZOOM_URL,
   TELEGRAM_CALL_URL,
 };
-
 const missingEnv = Object.entries(requiredEnv)
   .filter(([, value]) => !value)
   .map(([key]) => key);
-
 if (missingEnv.length > 0) {
   throw new Error(
     `Missing required environment variables: ${missingEnv.join(", ")}`
-  );
-}
-
+     );
+     }
 // ======================================================
 // REDIS
 // ======================================================
-
-let redis: Redis | null = null;
-
-logger.info("REDIS URL EXISTS", {
-  exists: Boolean(REDIS_URL),
-});
-
+    let redis: Redis | null = null;
+    logger.info("REDIS URL EXISTS", {exists: Boolean(REDIS_URL),
+    });
 if (REDIS_URL) {
-  try {
-    redis = new Redis(REDIS_URL, {
+  try {redis = new Redis(REDIS_URL, {
       maxRetriesPerRequest: 1,
       enableReadyCheck: false,
       connectTimeout: 3000,
       lazyConnect: true,
     });
-
     redis.on("connect", () => {
       logger.info("REDIS CONNECT");
     });
@@ -273,62 +197,44 @@ if (REDIS_URL) {
     redis.on("ready", () => {
       logger.info("REDIS READY");
     });
-
     redis.on("error", (error) => {
-      logger.error("REDIS ERROR", {
-        message: error?.message,
-        stack: error?.stack,
-      });
+      logger.error("REDIS ERROR", {message: error?.message, stack: error?.stack,
     });
-
+    });
     redis.on("close", () => {
       logger.warn("REDIS CLOSE");
     });
   } catch (error: any) {
     logger.error("REDIS INIT FAILED", {
-      message: error?.message,
-      stack: error?.stack,
-    });
-
+      message: error?.message,stack: error?.stack,
+  });
     redis = null;
-  }
-}
-
+  }}
 // ======================================================
 // REDIS HELPERS
 // ======================================================
-
 async function redisGetJson<T = any>(
   key: string
 ): Promise<T | null> {
   if (!redis) return null;
-
   try {
     const value = await redis.get(key);
-
     if (!value) return null;
-
     return JSON.parse(value) as T;
   } catch (error: any) {
     logger.error("REDIS GET ERROR", {
-      key,
-      message: error?.message,
+      key,message: error?.message,
     });
-
     return null;
-  }
-}
-
+  }}
 async function redisSetJson(
   key: string,
   value: unknown,
   ttl: number | null = null
 ) {
   if (!redis) return false;
-
   try {
     const serialized = JSON.stringify(value);
-
     if (ttl) {
       await redis.set(
         key,
@@ -337,50 +243,33 @@ async function redisSetJson(
         ttl
       );
     } else {
-      await redis.set(
-        key,
-        serialized
-      );
+      await redis.set(key,serialized
+    );
     }
-
     return true;
-  } catch (error: any) {
-    logger.error("REDIS SET ERROR", {
-      key,
-      message: error?.message,
+    } catch (error: any) {
+    logger.error("REDIS SET ERROR", {key,message: error?.message,
     });
-
     return false;
-  }
-}
-
+  }}
 async function redisDelete(key: string) {
   if (!redis) return;
-
   try {
     await redis.del(key);
   } catch (error: any) {
-    logger.error("REDIS DELETE ERROR", {
-      key,
-      message: error?.message,
-    });
-  }
-}
-
+    logger.error("REDIS DELETE ERROR", {key,message: error?.message,
+   });
+  }}
 async function scanKeys(pattern: string) {
   if (!redis) return [];
-
   const keys: string[] = [];
   let cursor = "0";
-
-  try {
-    do {
-      const result = await redis.scan(
+  try {do {
+  const result = await redis.scan(
         cursor,
         "MATCH",
         pattern,
-        "COUNT",
-        100
+         "COUNT",100
   );
       cursor = result[0];
       if (result[1]?.length) {
@@ -389,8 +278,7 @@ async function scanKeys(pattern: string) {
   } while (cursor !== "0");
     return keys;
   } catch (error: any) {
-    logger.error("REDIS SCAN ERROR", {
-      pattern, message: error?.message,
+    logger.error("REDIS SCAN ERROR", {pattern, message: error?.message,
   });
   return [];
   }
@@ -406,8 +294,7 @@ async function setPaidUser(
   data: unknown
   ) {
   return redisSetJson(
-    `paid_user:${String(userId)}`,
-    data
+    `paid_user:${String(userId)}`,data
   );
   }
 //// VIDEOCALL DATA //
@@ -424,8 +311,7 @@ async function setVideoRequest(
   ) {
   return redisSetJson(
     `video_request:${String(userId)}`,
-    data,
-    VIDEO_REQUEST_TTL
+    data,VIDEO_REQUEST_TTL
   );
   }
 async function deleteVideoRequest(
@@ -447,8 +333,7 @@ async function hasProcessedPayment(
   ));
   } catch (error: any) {
     logger.error("PAYMENT CHECK ERROR", {
-      chargeId,
-      message: error?.message,
+      chargeId,message: error?.message,
   });
   return false;
   }
@@ -467,8 +352,7 @@ async function markPaymentProcessed(
     return true;
   } catch (error: any) {
     logger.error("PAYMENT MARK ERROR", {
-      chargeId,
-      message: error?.message,
+      chargeId, message: error?.message,
   });
   return false;
   }}
@@ -546,15 +430,12 @@ function escapeHtml(value = "") {
     .replace(/'/g, "&#039;");
   }
 function getUserMeta(from: any) {
-  const firstName =
-    from?.first_name || "";
-  const lastName =
-    from?.last_name || "";
-  const fullName =
-    `${firstName} ${lastName}`.trim() ||
+  const firstName = from?.first_name || "";
+  const lastName = from?.last_name || "";
+  const fullName =`${firstName} ${lastName}`.trim() ||
     "No name";
-  const username =
-    from?.username
+  const username = from
+      ?.username
       ? `@${from.username}`
       : "sin_username";
   return {
@@ -564,8 +445,7 @@ function getUserMeta(from: any) {
   };
   }
 function sleep(ms: number) {
-  return new Promise((resolve) =>
-    setTimeout(resolve, ms)
+  return new Promise((resolve) =>setTimeout(resolve, ms)
   );
   }
 function getTelegramError(error: any) {
@@ -580,19 +460,15 @@ function secureCompare(
   a: unknown,
   b: unknown
   ) {
-  const bufA =
-    Buffer.from(String(a));
-  const bufB =
-  Buffer.from(String(b));
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
   if (
-    bufA.length !==
-    bufB.length
+    bufA.length !== bufB.length
   ) {
     return false;
   }
   return crypto.timingSafeEqual(
-    bufA,
-    bufB
+    bufA,bufB
   );
   }
 function isAdmin(ctx: any) {
@@ -663,8 +539,7 @@ async function checkRateLimit(
   );
   }
     return count <= limit;
-  } catch (error: any) {
-    logger.error(
+  } catch (error: any) {logger.error(
     "RATE LIMIT ERROR",
       {message: error?.message,}
   );
@@ -678,16 +553,13 @@ function randomCodePart(length = 4) {
   let result = "";
   for (let i = 0; i < length; i++) {
     const index =
-      crypto.randomInt(
-        0,
-        alphabet.length
+      crypto.randomInt(0,alphabet.length
   );
     result += alphabet[index];
   }
   return result;
   }
-function getPlanFromPayload(
-  payload: string
+function getPlanFromPayload(payload: string
   ) {
   if (payload === BASIC_PAYLOAD) {
     return PLAN_CONFIG.basic;
@@ -719,22 +591,16 @@ async function generateAccessCode(
       "Redis is required for code generation"
   );
   }
-  const plan =
-    PLAN_CONFIG[planId];
-
+  const plan = PLAN_CONFIG[planId];
   if (!plan) {
     throw new Error(
       `Unknown plan: ${planId}`
   );
   }
-
   for (let attempt = 0; attempt < 20; attempt++) {
     const code =
       `${plan.prefix}-${randomCodePart(4)}`;
-
-    const key =
-      getCodeKey(code);
-
+    const key = getCodeKey(code);
     const record = {
       code,
       planId: plan.id,
@@ -776,8 +642,7 @@ async function generateAccessCode(
   return redisGetJson(getCodeKey(normalized)
      );
      }
-async function validateAccessCode(
-  code: string
+  async function validateAccessCode(code: string
 ) {
   const record =
     await getAccessCode(code);
@@ -793,41 +658,34 @@ async function validateAccessCode(
 function getOpenVaultKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.url(
-     BTN_OPEN_VAULT,
-     TELEGRAM_MINI_APP_URL),
-     ],]);
+     BTN_OPEN_VAULT,TELEGRAM_MINI_APP_URL),],]
+    );
      }
 //// KEYBOARDS //
 function getMainKeyboard() {
   return Markup.keyboard([
-    [BTN_VIDEOCALL,
-      BTN_GET_CODE,
-    ],
-    [BTN_CHANNELS,
-      BTN_REFRESH,
-    ],]).resize();
+    [BTN_VIDEOCALL,BTN_GET_CODE,],
+    [BTN_CHANNELS,BTN_REFRESH,],]
+  ).resize();
     }
 function getAccessKeyboard() {
   return Markup.keyboard([
-    [BTN_BASIC,
-    BTN_VIP,],
+    [BTN_BASIC,BTN_VIP,],
     [BTN_PRO,],
-    [BTN_BACK_MENU,
-    ],]).resize(); 
+    [BTN_BACK_MENU, ],]
+  ).resize(); 
     }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([
     [BTN_PENDING_REQUEST,],
-    [BTN_CANCEL,
-    ],]).resize();
+    [BTN_CANCEL,],]
+  ).resize();
     }
 function getApprovedVideocallKeyboard() {
   return Markup.keyboard([
-    [BTN_ZOOM,
-     BTN_TELEGRAM,
-    ],
-    [BTN_BACK_MENU,
-    ],]).resize();
+    [BTN_ZOOM, BTN_TELEGRAM,],
+    [BTN_BACK_MENU,],
+  ]).resize();
     }
 function getVideocallInlineKeyboard() {
   return {
@@ -854,80 +712,47 @@ function getStarsBasicKeyboard() {
     }
 function getStarsProKeyboard() {
   return Markup.inlineKeyboard([
-    [
-      Markup.button.callback(
+    [Markup.button.callback(
         "| ᴘᴀʏ ✪ ᴘʀᴏ |",
         "pay_pro_stars"
-      ),
-    ],
-  ]);
-}
-
+      ),],]);
+  }
 function getChannelsKeyboard() {
   return Markup.keyboard([
-    [
-      BTN_SMOKELANDIA,
-      BTN_USERFX_SITE,
-    ],
-    [
-      BTN_BACK_MENU,
-    ],
+    [BTN_SMOKELANDIA,BTN_USERFX_SITE,],
+    [BTN_BACK_MENU,],
   ]).resize();
 }
-
 // ======================================================
 // ACCESS STATE
 // ======================================================
-
-function tierRank(
-  tier: string | null
+function tierRank( tier: string | null
 ) {
   if (tier === TIER_VIP) return 3;
   if (tier === TIER_PRO) return 2;
   if (tier === TIER_BASIC) return 1;
-
   return 0;
 }
-
-async function getAccessState(
-  userId: string
+async function getAccessState(userId: string
 ) {
-  const entry =
-    await getPaidUser(userId);
-
-  const tier =
-    entry?.tier || null;
-
+  const entry = await getPaidUser(userId);
+  const tier = entry?.tier || null;
   return {
-    hasVip:
-      tierRank(tier) >= 3,
-
-    hasPro:
-      tierRank(tier) >= 2,
-
-    hasBasic:
-      tierRank(tier) >= 1,
-
-    entry,
+    hasVip:tierRank(tier) >= 3,
+    hasPro:tierRank(tier) >= 2,
+    hasBasic:tierRank(tier) >= 1,entry,
   };
-}
-
+   }
 // ======================================================
 // PANELS
 // ======================================================
-
-async function sendMainPanel(
-  ctx: any
+async function sendMainPanel(ctx: any
 ) {
   try {
     await typing(ctx);
-
-    await sendMediaSafe(
-      ctx,
-      "video",
-      ASSET_WELCOME_VIDEO
+    await sendMediaSafe(ctx,
+      "video",ASSET_WELCOME_VIDEO
     );
-
     await ctx.reply(
       `𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
@@ -943,64 +768,45 @@ async function sendMainPanel(
      async function sendMembershipPanel(ctx: any
      ) {
   await typing(ctx);
-
   await ctx.reply(
     `ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ
-
 ⚡ ʙᴀꜱɪᴄ
 🔥 ᴘʀᴏ
 👑 ᴠɪᴘ`,
     getAccessKeyboard()
   );
-}
-
-async function sendVipPanel(
-  ctx: any
+  }
+async function sendVipPanel(ctx: any
 ) {
-  try {
-    await ctx.reply(
+  try {await ctx.reply(
       `👑ᴛɪᴄᴋᴇᴛ ᴠɪᴘ
 ————————————
 ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
 ⇀ ʙᴇɴᴇғɪᴛs
 ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
 ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³
-
-✪ ${VIP_STARS_PRICE} Telegram Stars`,
-      getStarsVipKeyboard()
+✪ ${VIP_STARS_PRICE} Telegram Stars`, getStarsVipKeyboard()
     );
   } catch (error: any) {
     logger.error(
-      "VIP PANEL ERROR",
-      getTelegramError(error)
+      "VIP PANEL ERROR",getTelegramError(error)
     );
-  }
-}
-
-async function sendBasicPanel(
-  ctx: any
+    }}
+async function sendBasicPanel(ctx: any
 ) {
-  try {
-    await ctx.reply(
+  try {await ctx.reply(
       `⚡ᴛɪᴄᴋᴇᴛ ʙᴀꜱɪᴄ
 ————————————
 ⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
 ⇀ ʙᴇɴᴇғɪᴛs
 ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹
-
-✪ ${BASIC_STARS_PRICE} Telegram Stars`,
-      getStarsBasicKeyboard()
+✪ ${BASIC_STARS_PRICE} Telegram Stars`, getStarsBasicKeyboard()
     );
-  } catch (error: any) {
-    logger.error(
-      "BASIC PANEL ERROR",
-      getTelegramError(error)
+  } catch (error: any) {logger.error(
+      "BASIC PANEL ERROR", getTelegramError(error)
     );
-  }
-}
-
-async function sendProPanel(
-  ctx: any
+    }}
+async function sendProPanel(ctx: any
 ) {
   try {
     await ctx.reply(
@@ -1010,106 +816,69 @@ async function sendProPanel(
 ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
 ⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
 ⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹
-
-✪ ${PRO_STARS_PRICE} Telegram Stars`,
-      getStarsProKeyboard()
+✪ ${PRO_STARS_PRICE} Telegram Stars`, getStarsProKeyboard()
     );
-  } catch (error: any) {
-    logger.error(
-      "PRO PANEL ERROR",
-      getTelegramError(error)
+  } catch (error: any) {logger.error(
+      "PRO PANEL ERROR",getTelegramError(error)
     );
-  }
-}
-
+    }}
 // ======================================================
 // CHANNELS
 // ======================================================
-
-async function sendChannelsPanel(
-  ctx: any
+async function sendChannelsPanel(ctx: any
 ) {
-  await sendMediaSafe(
-    ctx,
-    "video",
-    ASSET_CHANNELS_VIDEO
+  await sendMediaSafe(ctx,
+    "video", ASSET_CHANNELS_VIDEO
   );
-
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
-ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
-    getChannelsKeyboard()
+ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`, getChannelsKeyboard()
   );
-}
-
+  }
 // ======================================================
 // REFRESH
 // ======================================================
-
-async function sendRefreshPanel(
-  ctx: any
+async function sendRefreshPanel( ctx: any
 ) {
-  const {
-    hasVip,
-    hasPro,
-    hasBasic,
+  const {hasVip, hasPro, hasBasic,
   } =
-    await getAccessState(
-      String(ctx.from?.id || "")
+    await getAccessState(String(ctx.from?.id || "")
     );
-
-  const tier =
-    hasVip
+  const tier = hasVip
       ? "👑 ᴠɪᴘ"
       : hasPro
       ? "🔥 ᴘʀᴏ"
       : hasBasic
       ? "⚡ ʙᴀꜱɪᴄ"
       : "ɴᴏ ᴘʟᴀɴ";
-
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
-ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
-    getMainKeyboard()
+ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`, getMainKeyboard()
   );
-}
-
+  }
 // ======================================================
 // SEND GENERATED CODE
 // ======================================================
-
 async function sendGeneratedCode(
   ctx: any,
   record: any
 ) {
-  const safeCode =
-    escapeHtml(record.code);
-
-  const safePlan =
-    escapeHtml(record.plan);
-
+  const safeCode = escapeHtml(record.code);
+  const safePlan = escapeHtml(record.plan);
   await ctx.reply(
     `✅ ᴀᴄᴄᴇꜱꜱ ᴜɴʟᴏᴄᴋᴇᴅ
-
 ᴘʟᴀɴ: ${safePlan}
 ᴄᴏᴅᴇ:
-
 <code>${safeCode}</code>
-
 ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`,
-    {
-      parse_mode: "HTML",
-    }
+    {parse_mode: "HTML",}
   );
-
   await ctx.reply(
     `🔐 ᴏᴘᴇɴ ᴛʜᴇ ᴠᴀᴜʟᴛ
-
 ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴅᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ᴛᴏ ᴜꜱᴇʀꜰx.`,
     getOpenVaultKeyboard()
   );
-}
-
+  }
 // ======================================================
 // VIDEOCALL FLOW
 // ======================================================
@@ -2431,10 +2200,13 @@ bot.action(
       requesterId
     ) {
       await ctx.answerCbQuery(
-    return;
+        "❌ You can't approve this request"
+      );
+      return;
     }
+    const code = ctx.match[1];
     const result = await validateAccessCode(
-    code
+      code
     );
     if (!result.valid) {
     await ctx.reply(
