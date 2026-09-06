@@ -1,6 +1,21 @@
-/* ═══════════ MOBILE CENTER FIX ═══════════ */
+/* ═══════════ MOBILE CENTER + POLISH ═══════════ */
 @media (max-width:768px){
-  /* Puertas: elimina el desplazamiento horizontal de escritorio */
+  /* Fondo del hero más negro para separar visualmente las puertas */
+  .vx-bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:5;
+    background:#0000008F;   /* 🎨 filtro negro del fondo */
+    pointer-events:none;
+  }
+
+  .vx-grid{
+    position:relative;
+    z-index:6;
+  }
+
+  /* Puertas: centrado real */
   .vhd-root{
     left:0;
     right:0;
@@ -9,6 +24,7 @@
     margin-left:auto;
     margin-right:auto;
     transform:none;
+    box-shadow:0 16px 42px #000000D9;
   }
 
   .vhd-doors{
@@ -21,8 +37,8 @@
 
   /* Bloque de acciones centrado respecto a las puertas */
   .va{
-    left:50%;               /*⬅️➡️*/
-    width:calc(100vw - 32px); /*↔️*/
+    left:50%;
+    width:calc(100vw - 32px);
     max-width:700px;
     margin-left:0;
     margin-right:0;
@@ -33,27 +49,65 @@
     width:100%;
   }
 
-  /* Celdas BSIC-CODE centradas */
+  /* INPUT / TERMINAL — marco único, limpio y sin bordes cortados */
   .va-terminal{
-    left:50%;               /*⬅️➡️*/
+    left:50%;
     right:auto;
-    width:min(400px,calc(100% - 24px)); /*↔️*/
-    transform:translate(-50%,-310%);
+    width:min(430px,calc(100% - 34px));
+    height:52px;
+    padding:7px;
+    gap:4px;
+    transform:translate(-50%,-245%);
+    grid-template-columns:repeat(9,minmax(0,1fr));
+    border:1px solid #A4843C;
+    border-radius:2px;
+    background:linear-gradient(180deg,#090A09,#020302);
+    box-shadow:
+      inset 0 1px 0 #FFFFFF0A,
+      inset 0 0 18px #000000CC,
+      0 8px 22px #000000A6;
+    overflow:hidden;
   }
 
-  /* Input invisible exactamente encima de las celdas */
+  .va-terminalCell{
+    width:100%;
+    min-width:0;
+    height:36px;
+    border:0;
+    border-right:1px solid #5A4B2D;
+    background:#070806;
+    color:#625D50;
+    font-size:11px;
+  }
+
+  .va-terminalCell:last-child{
+    border-right:0;
+  }
+
+  .va-terminalCell.is-filled{
+    border-color:#7B642F;
+    background:#111008;
+    color:#E6CC79;
+  }
+
+  /* Input real invisible exactamente encima del terminal */
   .va-field__input--terminal{
     left:50%;
     right:auto;
-    width:min(400px,calc(100% - 24px));
+    top:auto;
+    bottom:78px;
+    width:min(430px,calc(100% - 34px));
+    height:52px;
     transform:translateX(-50%);
+    z-index:30;
   }
 
-  /* GET MY CODE centrado debajo */
+  /* GET MY CODE centrado */
   .va-btn{
-    left:50%;               /*⬅️➡️*/
+    left:50%;
     right:auto;
-    width:min(360px,88%);   /*↔️*/
+    width:min(430px,calc(100% - 34px));
+    height:58px;
     transform:translateX(-50%);
   }
 
@@ -61,13 +115,98 @@
     transform:translateX(-50%);
   }
 
-  /* Laurel del modal: centrado real, sin empuje hacia la derecha */
+  /* MODAL — compacto y con jerarquía visual */
+  .vx-modal{
+    padding:16px;
+    background:#000000D9;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+
+  .vx-modalCard{
+    width:min(370px,92vw);
+    padding:24px 20px 22px;
+    border:1px solid #8C7138;
+    border-radius:8px;
+    background:
+      linear-gradient(180deg,#08090BEF,#030405F7),
+      url("/assets/damask.png") center / 220px repeat;
+    box-shadow:
+      0 20px 55px #000000E6,
+      inset 0 1px 0 #FFFFFF0D;
+  }
+
+  .vx-modalCrownStage{
+    height:88px;
+    margin:-4px 0 0;
+  }
+
+  .vx-modalTitleCrown{
+    width:82px;
+  }
+
+  .vx-modalKicker{
+    font-size:8px;
+    letter-spacing:.18em;
+    text-align:center;
+  }
+
+  .vx-modalTitle{
+    margin-top:8px;
+    font-size:42px;
+    line-height:.88;
+  }
+
+  .vx-modalText{
+    max-width:310px;
+    margin:16px auto 0;
+    font-size:10px;
+    line-height:1.65;
+    letter-spacing:.06em;
+  }
+
+  .vx-modalDivider{
+    margin-top:16px;
+  }
+
+  .vx-modalLink{
+    position:relative;
+    z-index:5;
+    width:88%;
+    height:48px;
+    margin:18px auto 0;
+  }
+
+  .vx-modalLinkContent{
+    gap:10px;
+    font-size:12px;
+  }
+
+  .vx-modalFooter{
+    margin-top:12px;
+    font-size:8px;
+    text-align:center;
+  }
+
+  /* Laurel centrado y más proporcionado */
   .vx-modalLaurel{
     display:block;
-    margin-left:auto;
-    margin-right:auto;
-    transform:translateY(-55px) scale(2.9);
+    width:58px;
+    height:46px;
+    margin:0 auto;
+    transform:translateY(-34px) scale(2.05);
     transform-origin:center center;
+    pointer-events:none;
+    user-select:none;
+    z-index:1;
+  }
+
+  .vx-modalClose{
+    top:8px;
+    right:8px;
+    width:30px;
+    height:30px;
+    font-size:20px;
   }
 }
 
@@ -77,25 +216,38 @@
   }
 
   .va{
-    width:calc(100vw - 20px);
+    width:calc(100vw - 16px);
+  }
+
+  .va-terminal,
+  .va-field__input--terminal,
+  .va-btn{
+    width:calc(100% - 20px);
   }
 
   .va-terminal{
-    width:calc(100% - 12px);
     gap:2px;
+    padding:6px;
   }
 
   .va-terminalCell{
-    font-size:9px;
+    font-size:10px;
   }
 
-  .va-btn{
-    width:92%;
+  .vx-modalCard{
+    width:min(350px,91vw);
+    padding:22px 18px 20px;
+  }
+
+  .vx-modalTitle{
+    font-size:38px;
+  }
+
+  .vx-modalText{
+    font-size:9.5px;
   }
 
   .vx-modalLaurel{
-    margin-left:auto;
-    margin-right:auto;
-    transform:translateY(-55px) scale(2.9);
+    transform:translateY(-32px) scale(1.95);
   }
 }
