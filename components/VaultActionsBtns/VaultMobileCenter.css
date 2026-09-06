@@ -49,55 +49,91 @@
     width:100%;
   }
 
-  /* INPUT / TERMINAL — marco único, limpio y sin bordes cortados */
+  /* ═══════════ INPUT 02 — MODERN FRAME ═══════════ */
   .va-terminal{
-    left:50%;
+    position:absolute;
+    left:50%;               /*⬅️➡️*/
     right:auto;
-    width:min(430px,calc(100% - 34px));
-    height:52px;
-    padding:7px;
-    gap:4px;
-    transform:translate(-50%,-245%);
+    top:50%;                /*⬆️⬇️*/
+    width:min(440px,calc(100% - 26px)); /*↔️*/
+    height:64px;            /*↕️*/
+    padding:10px 18px;
+    gap:5px;
+    transform:translate(-50%,-218%);
     grid-template-columns:repeat(9,minmax(0,1fr));
-    border:1px solid #A4843C;
-    border-radius:2px;
-    background:linear-gradient(180deg,#090A09,#020302);
+    border:1px solid #8F7135;
+    border-radius:11px;
+    background:
+      linear-gradient(180deg,#171717,#060606 52%,#020202),
+      #050505;
     box-shadow:
-      inset 0 1px 0 #FFFFFF0A,
-      inset 0 0 18px #000000CC,
-      0 8px 22px #000000A6;
-    overflow:hidden;
+      inset 0 0 0 1px #E9C86A14,
+      inset 0 8px 18px #FFFFFF08,
+      inset 0 -10px 18px #000000D9,
+      0 10px 28px #000000CC;
+    overflow:visible;
+  }
+
+  /* laterales metálicos del frame */
+  .va-terminal::before,
+  .va-terminal::after{
+    content:"";
+    position:absolute;
+    top:14px;
+    width:3px;
+    height:34px;
+    border-radius:2px;
+    background:linear-gradient(180deg,#7F6327,#F2D476,#806329);
+    box-shadow:0 0 8px #D6AE5066;
+    pointer-events:none;
+  }
+
+  .va-terminal::before{
+    left:8px;
+  }
+
+  .va-terminal::after{
+    right:8px;
   }
 
   .va-terminalCell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
     width:100%;
     min-width:0;
-    height:36px;
-    border:0;
-    border-right:1px solid #5A4B2D;
-    background:#070806;
-    color:#625D50;
+    height:42px;            /*↕️*/
+    border:1px solid #846A35;
+    border-radius:5px;
+    background:
+      linear-gradient(180deg,#10100F,#050505 72%);
+    color:#746B56;
+    font-family:"JetBrains Mono",ui-monospace,monospace;
     font-size:11px;
-  }
-
-  .va-terminalCell:last-child{
-    border-right:0;
+    font-weight:700;
+    text-align:center;
+    box-shadow:
+      inset 0 1px 0 #FFFFFF08,
+      inset 0 0 10px #000000CC;
   }
 
   .va-terminalCell.is-filled{
-    border-color:#7B642F;
-    background:#111008;
-    color:#E6CC79;
+    border-color:#D0AA53;
+    background:linear-gradient(180deg,#18150D,#080704);
+    color:#F0D27A;
+    box-shadow:
+      inset 0 0 12px #B3882924,
+      0 0 8px #D3A9491F;
   }
 
-  /* Input real invisible exactamente encima del terminal */
+  /* Input real invisible exactamente encima del frame */
   .va-field__input--terminal{
     left:50%;
     right:auto;
     top:auto;
-    bottom:78px;
-    width:min(430px,calc(100% - 34px));
-    height:52px;
+    bottom:86px;
+    width:min(440px,calc(100% - 26px));
+    height:64px;
     transform:translateX(-50%);
     z-index:30;
   }
@@ -220,18 +256,36 @@
   }
 
   .va-terminal,
-  .va-field__input--terminal,
+  .va-field__input--terminal{
+    width:calc(100% - 14px);
+  }
+
   .va-btn{
     width:calc(100% - 20px);
   }
 
   .va-terminal{
-    gap:2px;
-    padding:6px;
+    height:60px;
+    padding:9px 15px;
+    gap:4px;
+    border-radius:10px;
   }
 
   .va-terminalCell{
+    height:40px;
+    border-radius:4px;
     font-size:10px;
+  }
+
+  .va-terminal::before,
+  .va-terminal::after{
+    top:14px;
+    height:30px;
+  }
+
+  .va-field__input--terminal{
+    height:60px;
+    bottom:84px;
   }
 
   .vx-modalCard{
