@@ -20,7 +20,7 @@ const logger = winston.createLogger({
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
-const ADMIN_USER_ID = process.env.ADMIN_USER_ID;
+const ADMIN_USER_ID = process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET_USER ||
     process.env.TELEGRAM_WEBHOOK_SECRET ||
     "";
@@ -35,6 +35,8 @@ const USER_GROUP_LINK = process.env.USER_GROUP_LINK ||
     "https://t.me/+v57jkAGn3DA0NWJh";
 const USERFX_SITE_URL = process.env.USERFX_SITE_URL ||
     "https://userfx-web.vercel.app";
+const SUPABASE_URL = process.env.SUPABASE_URL || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 /*
  * Telegram Mini App / Vault.
  *
@@ -480,6 +482,183 @@ function isAdmin(ctx) {
     return (
     String(ctx.from?.id || "") === String(ADMIN_USER_ID));
     }
+// ======================================================
+// TELEGRAMFX ACCESS / SUPABASE
+// ======================================================
+const TELEGRAMFX_FIELDS = [
+    ["telegramfx_access", "TelegramFX", 1],
+    ["gallery_access", "Galería", 2],
+    ["private_chat_access", "Chat", 4],
+    ["private_call_access", "PRIV", 8],
+    ["telegram_group_access", "Grupo", 16],
+];
+
+function normalizeTelegramFxUsername(value = "") {
+    const raw = String(value || "").trim().replace(/^@+/, "");
+    if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
+    return { display: `@${raw}`, normalized: raw.toLowerCase() };
+}
+
+function telegramFxMask(record) {
+    return TELEGRAMFX_FIELDS.reduce(
+        (mask, [field, , bit]) => record?.[field] ? mask | bit : mask,
+        0
+    );
+}
+
+function telegramFxMaskToRecord(mask) {
+    const out = {};
+    for (const [field, , bit] of TELEGRAMFX_FIELDS) out[field] = Boolean(mask & bit);
+    return out;
+}
+
+function telegramFxPanelText(username, mask, saved = true) {
+    const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) =>
+        `${label}: ${mask & bit ? "✅ SÍ" : "❌ NO"}`
+    ).join("\n");
+    return `🔐 <b>TELEGRAMFX ACCESS</b>\n\n<b>${escapeHtml(username)}</b>\n\n${rows}\n\n${saved ? "Estado guardado" : "Cambios sin guardar"}`;
+}
+
+function telegramFxPanelKeyboard(usernameNormalized, mask) {
+    const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) => [
+        Markup.button.callback(
+            `${mask & bit ? "✅" : "❌"} ${label}`,
+            `tfx_toggle_${usernameNormalized}_${mask ^ bit}`
+        ),
+    ]);
+    rows.push([Markup.button.callback("💾 GUARDAR", `tfx_save_${usernameNormalized}_${mask}`)]);
+    rows.push([Markup.button.callback("⛔ REVOCAR TODO", `tfx_revoke_${usernameNormalized}_0`)]);
+    return Markup.inlineKeyboard(rows);
+}
+
+async function telegramFxRequest(pathname, options = {}) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY missing");
+    }
+
+    const response = await fetch(`${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/${pathname}`, {
+        ...options,
+        headers: {
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+        },
+    });
+
+    const text = await response.text();
+    if (!response.ok) {
+        throw new Error(`Supabase ${response.status}: ${text.slice(0, 500)}`);
+    }
+    if (!text) return null;
+    try { return JSON.parse(text); } catch { return text; }
+}
+
+async function getTelegramFxAccess(usernameNormalized) {
+    const q = encodeURIComponent(usernameNormalized);
+    const rows = await telegramFxRequest(
+        `telegramfx_access?username_normalized=eq.${q}&select=*&limit=1`
+    );
+    return Array.isArray(rows) ? rows[0] || null : null;
+}
+
+async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
+    const current = await getTelegramFxAccess(usernameNormalized);
+    const username = current?.username || `@${usernameNormalized}`;
+    const permissions = telegramFxMaskToRecord(mask);
+    const payload = {
+        username,
+        username_normalized: usernameNormalized,
+        ...permissions,
+        enabled: mask !== 0,
+        gallery_scope: permissions.gallery_access
+            ? (current?.gallery_scope && current.gallery_scope !== "none" ? current.gallery_scope : "selected")
+            : "none",
+    };
+
+    if (current) {
+        await telegramFxRequest(
+            `telegramfx_access?username_normalized=eq.${encodeURIComponent(usernameNormalized)}`,
+            {
+                method: "PATCH",
+                headers: { Prefer: "return=minimal" },
+                body: JSON.stringify(payload),
+            }
+        );
+    } else {
+        await telegramFxRequest("telegramfx_access", {
+            method: "POST",
+            headers: { Prefer: "return=minimal" },
+            body: JSON.stringify(payload),
+        });
+    }
+
+    await telegramFxRequest("telegramfx_access_audit", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({
+            username,
+            username_normalized: usernameNormalized,
+            action: current ? "update" : "create",
+            changes: permissions,
+            admin_user_id: String(admin?.id || ""),
+            admin_username: admin?.username ? `@${admin.username}` : null,
+        }),
+    });
+
+    return { ...payload };
+}
+
+async function revokeTelegramFxAccess(usernameNormalized, admin) {
+    const current = await getTelegramFxAccess(usernameNormalized);
+    const username = current?.username || `@${usernameNormalized}`;
+    const payload = {
+        telegramfx_access: false,
+        gallery_access: false,
+        private_chat_access: false,
+        private_call_access: false,
+        telegram_group_access: false,
+        enabled: false,
+        gallery_scope: "none",
+    };
+
+    if (current) {
+        await telegramFxRequest(
+            `telegramfx_access?username_normalized=eq.${encodeURIComponent(usernameNormalized)}`,
+            {
+                method: "PATCH",
+                headers: { Prefer: "return=minimal" },
+                body: JSON.stringify(payload),
+            }
+        );
+    } else {
+        await telegramFxRequest("telegramfx_access", {
+            method: "POST",
+            headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ username, username_normalized: usernameNormalized, ...payload }),
+        });
+    }
+
+    await telegramFxRequest("telegramfx_access_audit", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({
+            username,
+            username_normalized: usernameNormalized,
+            action: "revoke",
+            changes: payload,
+            admin_user_id: String(admin?.id || ""),
+            admin_username: admin?.username ? `@${admin.username}` : null,
+        }),
+    });
+}
+
+async function listTelegramFxUsers(limit = 50) {
+    return telegramFxRequest(
+        `telegramfx_access?select=username,telegramfx_access,gallery_access,private_chat_access,private_call_access,telegram_group_access,enabled,updated_at&order=updated_at.desc&limit=${limit}`
+    );
+}
+
 function getCommandArg(ctx, index = 0) {
     const parts = String(ctx.message?.text || "")
         .trim()
@@ -1712,6 +1891,138 @@ async function handleUserStart(ctx) {
     catch (error) { logger.error("NOTIFY ERROR", { requesterId,...getTelegramError(error),
         });
         }});
+// ======================================================
+// ADMIN: TELEGRAMFX ACCESS PANEL
+// ======================================================
+bot.command("access", async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    try {
+        const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
+        if (!parsed) return await ctx.reply("Uso: /access @username");
+        const record = await getTelegramFxAccess(parsed.normalized);
+        const mask = telegramFxMask(record);
+        await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
+            parse_mode: "HTML",
+            reply_markup: telegramFxPanelKeyboard(parsed.normalized, mask).reply_markup,
+        });
+    } catch (error) {
+        logger.error("TELEGRAMFX ACCESS COMMAND ERROR", {
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.reply("❌ No se pudo abrir el panel de permisos.");
+    }
+});
+
+bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    const username = String(ctx.match[1]).toLowerCase();
+    const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
+    await ctx.answerCbQuery("Cambio preparado");
+    await ctx.editMessageText(telegramFxPanelText(`@${username}`, mask, false), {
+        parse_mode: "HTML",
+        reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
+    }).catch(() => {});
+});
+
+bot.action(/^tfx_save_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    const username = String(ctx.match[1]).toLowerCase();
+    const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
+    try {
+        await saveTelegramFxAccess(username, mask, ctx.from);
+        await ctx.answerCbQuery("✅ Guardado");
+        await ctx.editMessageText(telegramFxPanelText(`@${username}`, mask, true), {
+            parse_mode: "HTML",
+            reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
+        }).catch(() => {});
+    } catch (error) {
+        logger.error("TELEGRAMFX SAVE ERROR", {
+            username,
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.answerCbQuery("❌ Error al guardar", { show_alert: true });
+    }
+});
+
+bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    const username = String(ctx.match[1]).toLowerCase();
+    try {
+        await revokeTelegramFxAccess(username, ctx.from);
+        await ctx.answerCbQuery("⛔ Acceso revocado");
+        await ctx.editMessageText(telegramFxPanelText(`@${username}`, 0, true), {
+            parse_mode: "HTML",
+            reply_markup: telegramFxPanelKeyboard(username, 0).reply_markup,
+        }).catch(() => {});
+    } catch (error) {
+        logger.error("TELEGRAMFX REVOKE ERROR", {
+            username,
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.answerCbQuery("❌ Error al revocar", { show_alert: true });
+    }
+});
+
+bot.command("find", async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    try {
+        const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
+        if (!parsed) return await ctx.reply("Uso: /find @username");
+        const record = await getTelegramFxAccess(parsed.normalized);
+        if (!record) return await ctx.reply(`❌ ${parsed.display} no está registrado.`);
+        const mask = telegramFxMask(record);
+        await ctx.reply(telegramFxPanelText(record.username || parsed.display, mask, true), {
+            parse_mode: "HTML",
+        });
+    } catch (error) {
+        logger.error("TELEGRAMFX FIND ERROR", {
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.reply("❌ No se pudo consultar el usuario.");
+    }
+});
+
+bot.command("revoke", async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    try {
+        const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
+        if (!parsed) return await ctx.reply("Uso: /revoke @username");
+        await revokeTelegramFxAccess(parsed.normalized, ctx.from);
+        await ctx.reply(`⛔ Acceso revocado para ${parsed.display}.`);
+    } catch (error) {
+        logger.error("TELEGRAMFX REVOKE COMMAND ERROR", {
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.reply("❌ No se pudo revocar el acceso.");
+    }
+});
+
+bot.command("users", async (ctx) => {
+    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    try {
+        const rows = await listTelegramFxUsers(50);
+        if (!Array.isArray(rows) || !rows.length) {
+            return await ctx.reply("No hay usuarios TelegramFX todavía.");
+        }
+        const text = rows.map((row, index) => {
+            const mask = telegramFxMask(row);
+            return `${index + 1}. ${row.username || "@unknown"} · ${mask ? "✅" : "⛔"} · ${mask.toString(2).padStart(5, "0")}`;
+        }).join("\n");
+        await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUsa /access @username para editar.`);
+    } catch (error) {
+        logger.error("TELEGRAMFX USERS ERROR", {
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.reply("❌ No se pudo cargar la lista.");
+    }
+});
+
 //// ADMIN CODE LOOKUP // 
 adminBot.command("code", async (ctx) => {
     if (!isAdmin(ctx)) {
