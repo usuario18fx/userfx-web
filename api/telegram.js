@@ -1536,6 +1536,9 @@ async function handleUserStart(ctx) {
     await sendMainPanel(ctx);
     return;
     }
+    if (/^\/(access|find|revoke|users)(?:@\w+)?(?:\s|$)/i.test(text)) {
+    return next();
+    }
     if (text.startsWith("/")) {
     await ctx.reply(
     "🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
@@ -2300,4 +2303,5 @@ export default async function handler(req, res) {
             description: error?.response ?.description ?? null,
         });
        }}
+
 
