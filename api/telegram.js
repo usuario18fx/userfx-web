@@ -1,4 +1,4 @@
-import { Telegraf, Markup } from "telegraf";
+﻿import { Telegraf, Markup } from "telegraf";
 import Redis from "ioredis";
 import winston from "winston";
 import crypto from "crypto";
@@ -1499,7 +1499,7 @@ async function handleUserStart(ctx) {
    bot.on("video", handleMedia);
    bot.on("document", handleMedia);
  //// USER TEXT ROUTER //
-   bot.on("text", async (ctx) => {
+   bot.on("text", async (ctx, next) => {
    const text = String(ctx.message?.text || "").trim();
    const userId = String(ctx.from?.id || "");
    logger.info("USER TEXT RECEIVED",{userId, text,});
@@ -2300,3 +2300,4 @@ export default async function handler(req, res) {
             description: error?.response ?.description ?? null,
         });
        }}
+
