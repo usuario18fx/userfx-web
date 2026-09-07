@@ -1,0 +1,68 @@
+name: Fix TelegramFX command routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-telegramfx-router.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch text router
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('api/telegram.js')
+          s = path.read_text(encoding='utf-8')
+
+          old_handler = 'bot.on("text", async (ctx) => {'
+          new_handler = 'bot.on("text", async (ctx, next) => {'
+          if old_handler in s:
+              s = s.replace(old_handler, new_handler, 1)
+
+          old_guard = '''    if (text.startsWith("/")) {
+    await ctx.reply(
+    "🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
+    return;
+    }'''
+
+          new_guard = '''    if (/^\\/(access|find|revoke|users)(?:@\\w+)?(?:\\s|$)/i.test(text)) {
+    return next();
+    }
+    if (text.startsWith("/")) {
+    await ctx.reply(
+    "🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
+    return;
+    }'''
+
+          if new_guard not in s:
+              if old_guard not in s:
+                  raise SystemExit('text command guard marker not found')
+              s = s.replace(old_guard, new_guard, 1)
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Validate JavaScript
+        run: node --check api/telegram.js
+
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "User Fx"
+          git config user.email "234803878+usuario18fx@users.noreply.github.com"
+          git rm .github/workflows/fix-telegramfx-router.yml
+          git add api/telegram.js
+          git commit -m "fix TelegramFX commands before text fallback"
+          git push origin main
