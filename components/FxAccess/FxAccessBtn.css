@@ -19,8 +19,7 @@
   border-radius: 28px;
   background:
     linear-gradient(145deg, #1a1b1e, #050607) padding-box,
-    linear-gradient(100deg, var(--ruby), #777d85 48%, var(--emerald))
-     border-box;
+    linear-gradient(100deg, var(--ruby), #777d85 48%, var(--emerald)) border-box;
   box-shadow:
     0 22px 50px rgb(0 0 0 / 55%),
     inset 0 1px 0 rgb(255 255 255 / 12%),
@@ -32,6 +31,7 @@
     box-shadow 220ms ease,
     filter 220ms ease;
 }
+
 .smkl-access-button::before {
   content: "";
   position: absolute;
@@ -44,6 +44,7 @@
     radial-gradient(circle at 88% 50%, rgb(67 245 160 / 12%), transparent 28%),
     linear-gradient(90deg, #12070c, #07100c);
 }
+
 .smkl-access-button::after {
   content: "";
   position: absolute;
@@ -55,6 +56,7 @@
     inset 3px 0 8px rgb(255 77 124 / 20%),
     inset -3px 0 8px rgb(67 245 160 / 18%);
 }
+
 .smkl-access-button__smoke {
   position: absolute;
   z-index: -2;
@@ -66,6 +68,7 @@
     radial-gradient(ellipse at 80% 45%, rgb(38 173 115 / 28%), transparent 35%);
   transition: opacity 300ms ease;
 }
+
 .smkl-access-button__rose {
   position: absolute;
   z-index: 4;
@@ -90,6 +93,7 @@
     transform 300ms ease,
     box-shadow 300ms ease;
 }
+
 .smkl-access-button__rose svg {
   width: 42px;
   fill: none;
@@ -99,6 +103,7 @@
   stroke-linejoin: round;
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 70%));
 }
+
 .smkl-access-button__status {
   position: relative;
   z-index: 3;
@@ -113,6 +118,7 @@
     0 0 14px rgb(67 245 160 / 70%),
     inset 0 0 5px #fff;
 }
+
 .smkl-access-button__content {
   position: relative;
   z-index: 3;
@@ -121,6 +127,7 @@
   gap: 7px;
   align-items: center;
 }
+
 .smkl-access-button__title {
   font-size: clamp(1rem, 4vw, 1.65rem);
   font-weight: 500;
@@ -129,6 +136,7 @@
   text-indent: 0.22em;
   text-shadow: 0 0 14px rgb(67 245 160 / 32%);
 }
+
 .smkl-access-button__brand {
   color: rgb(218 222 224 / 48%);
   font-size: 0.68rem;
@@ -136,12 +144,14 @@
   letter-spacing: 0.55em;
   text-indent: 0.55em;
 }
+
 .smkl-access-button__arrow {
   position: relative;
   z-index: 3;
   display: grid;
   place-items: center;
 }
+
 .smkl-access-button__arrow svg {
   width: 34px;
   fill: none;
@@ -152,6 +162,7 @@
     transform 220ms ease,
     stroke 220ms ease;
 }
+
 .smkl-access-button:hover {
   transform: translateY(-3px);
   filter: brightness(1.08);
@@ -161,47 +172,89 @@
     -10px 0 28px rgb(210 65 102 / 23%),
     10px 0 28px rgb(67 245 160 / 21%);
 }
+
 .smkl-access-button:hover .smkl-access-button__smoke {
   opacity: 1;
 }
+
 .smkl-access-button:hover .smkl-access-button__rose {
   transform: translate(-50%, -52%) rotate(8deg) scale(1.05);
   box-shadow:
     0 10px 22px rgb(0 0 0 / 70%),
     0 0 24px rgb(210 65 102 / 42%);
 }
+
 .smkl-access-button:hover .smkl-access-button__arrow svg {
   stroke: var(--emerald);
   transform: translateX(5px);
 }
+
 .smkl-access-button:active {
   transform: translateY(1px) scale(0.985);
 }
+
 .smkl-access-button:focus-visible {
   outline: 2px solid var(--emerald);
   outline-offset: 6px;
 }
+
 .smkl-access-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
   filter: grayscale(0.65);
 }
+
+.fx-access-launcher {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 22px auto 12px;
+  padding: 0 12px;
+}
+
 @media (max-width: 520px) {
-  .smkl-access-button { grid-template-columns: 32px 1fr 32px; min-height: 92px; padding: 18px 16px; border-radius: 23px;
+  .smkl-access-button {
+    grid-template-columns: 32px 1fr 32px;
+    min-height: 92px;
+    padding: 18px 16px;
+    border-radius: 23px;
   }
-  .smkl-access-button__rose {width: 48px;height: 48px;
+
+  .smkl-access-button__rose {
+    width: 48px;
+    height: 48px;
   }
-  .smkl-access-button__rose svg {width: 34px;
+
+  .smkl-access-button__rose svg {
+    width: 34px;
   }
-  .smkl-access-button__title {letter-spacing: 0.12em; text-indent: 0.12em;
+
+  .smkl-access-button__title {
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
   }
-  .smkl-access-button__brand {letter-spacing: 0.35em; text-indent: 0.35em;
+
+  .smkl-access-button__brand {
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
   }
-  .smkl-access-button__arrow svg {width: 26px;
-  }}
+
+  .smkl-access-button__arrow svg {
+    width: 26px;
+  }
+
+  .fx-access-launcher {
+    margin-top: 18px;
+    padding-inline: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .smkl-access-button,
   .smkl-access-button *,
   .smkl-access-button *::before,
-  .smkl-access-button *::after {transition: none;
-  }}
+  .smkl-access-button *::after {
+    transition: none;
+  }
+}
