@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./VaultActions.css";
 import "./VaultMobileCenter.css";
+import "./VaultIdentity.css";
 
 type VaultActionsProps = {
   value: string;
@@ -15,7 +16,7 @@ type VaultActionsProps = {
   inputRef?: React.RefObject<HTMLInputElement | null>;
 };
 
-const MAX = 9;
+const USERNAME_COOKIE = "userfx_telegram_username";
 
 const IconKey = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
@@ -34,6 +35,16 @@ const Spinner = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+function normalizeUsername(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .replace(/^@+/, "")
+    .replace(/[^A-Za-z0-9_]/g, "")
+    .slice(0, 32);
+
+  return clean ? `@${clean}` : "";
+}
+
 export default function VaultActions({
   value,
   onChange,
@@ -44,6 +55,17 @@ export default function VaultActions({
   placeholder = "BSIC-CODE",
   inputRef,
 }: VaultActionsProps) {
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(USERNAME_COOKIE) || "";
+      if (saved) setUsername(normalizeUsername(saved));
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
 
   const ripple = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     const btn = e.currentTarget;
@@ -57,10 +79,65 @@ export default function VaultActions({
     span.addEventListener("animationend", () => span.remove());
   }, []);
 
+  const handleUsernameChange = (raw: string) => {
+    const normalized = normalizeUsername(raw);
+    setUsername(normalized);
+    setUsernameError("");
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const normalized = normalizeUsername(username);
+    const usernameBody = normalized.replace(/^@/, "");
+
+    if (!/^[A-Za-z0-9_]{3,32}$/.test(usernameBody)) {
+      e.preventDefault();
+      setUsernameError("ENTER YOUR TELEGRAM @USERNAME");
+      return;
+    }
+
+    setUsername(normalized);
+    setUsernameError("");
+
+    try {
+      localStorage.setItem(USERNAME_COOKIE, normalized);
+      document.cookie =
+        `${USERNAME_COOKIE}=${encodeURIComponent(normalized)}; Path=/; SameSite=Lax; Max-Age=2592000`;
+    } catch {
+      // still allow verification; username is not a secret
+    }
+
+    onSubmit(e);
+  };
+
+  const visibleError = usernameError || error;
+
   return (
-    <div className="va">
+    <form className="va" onSubmit={handleSubmit} noValidate>
+      <div className="va-identity">
+        <label className="va-identity__label" htmlFor="vault-telegram-username">
+          TELEGRAM USERNAME
+        </label>
+        <div className={`va-identity__shell${usernameError ? " is-error" : ""}`}>
+          <span className="va-identity__at" aria-hidden="true">@</span>
+          <input
+            id="vault-telegram-username"
+            className="va-identity__input"
+            type="text"
+            inputMode="text"
+            autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            value={username}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            placeholder="username"
+            disabled={loading}
+            aria-label="Telegram username"
+          />
+        </div>
+      </div>
+
       <div className="va__row">
-        {/* ═══ GET MY CODE ═══ */}
         <button
           type="button"
           className="va-btn va-btn--ghost"
@@ -73,12 +150,11 @@ export default function VaultActions({
           <span className="va-btn__label">Get my code</span>
         </button>
 
-        {/* ═══ INPUT 02 — MODERN FRAME ═══ */}
         <div className="va-modernField">
           <span className="va-modernField__label">ACCESS CODE</span>
           <div className="va-modernField__shell">
             <span className="va-modernField__rail va-modernField__rail--left" aria-hidden="true" />
-            <div className="va-terminal">
+            <div className="va-terminal" aria-hidden="true">
               {Array.from({ length: 9 }).map((_, index) => {
                 const char = value[index] || "";
                 return (
@@ -97,6 +173,7 @@ export default function VaultActions({
               className="va-field__input va-field__input--terminal"
               type="text"
               inputMode="text"
+              enterKeyHint="go"
               value={value}
               onChange={(e) => onChange(e.target.value.toUpperCase())}
               placeholder={placeholder}
@@ -112,9 +189,13 @@ export default function VaultActions({
         </div>
       </div>
 
-      <p id="va-error" className={`va-error${error ? " is-visible" : ""}`} role="alert">
-        {error}
+      <button type="submit" className="va-submitGhost" tabIndex={-1} aria-hidden="true">
+        Verify access
+      </button>
+
+      <p id="va-error" className={`va-error${visibleError ? " is-visible" : ""}`} role="alert">
+        {visibleError}
       </p>
-    </div>
+    </form>
   );
 }
