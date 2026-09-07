@@ -4,4 +4,3 @@ dist
 node_modules
 private-album-source/
 .env.local
-private-album-source/
