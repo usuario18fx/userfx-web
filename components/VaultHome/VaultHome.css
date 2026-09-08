@@ -264,7 +264,7 @@ video{
   border-bottom:2px solid #B58B36; /* 🎨 color / grosor inferior */
   background:
     linear-gradient(180deg,#05070A33,#0203058A),
-    url("/assets/wallpaperKicker.png") center / cover no-repeat;
+  linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(0, 0, 0, 0.98));
   color:#D8E8FF;
   font-family:"JetBrains Mono",ui-monospace,monospace;
   font-size:11px;
@@ -365,15 +365,15 @@ video{
 .vx-dossier{
   width:100%;
   max-width:34rem;
-  margin-top:28px;
-  border:1px solid #E0B85A3D;
+  margin-top:20px;
+  border:2px solid #e0b03f3d;
   background:
-    linear-gradient(#07060AA3,#07060AD6),
-    url("/wallpaper1.png");
-  background-size:auto,210px;
+    linear-gradient(#000000a2),
+    url("/wallpaperVertical.png");
+  background-size:auto,600px;
   background-repeat:no-repeat,repeat;
   background-position:center;
-  box-shadow:inset 0 1px 0 #F4EEE40A, 0 12px 28px #0000002E;
+  box-shadow:inset 0 1px 0 #8d8c890a, 0 12px 28px #00000070;
 }
 .vx-dossierHead{
   display:flex;
@@ -409,8 +409,8 @@ video{
 .vx-dossierItem:nth-child(even){ border-right:0; }
 .vx-dossierItem small{
   display:block;
-  margin-bottom:8px;
-  color:var(--faint);
+  margin-bottom:1px;
+  color:#7280869d;
   font-family:var(--mono);
   font-size:8px;
   font-weight:600;
@@ -453,7 +453,7 @@ video{
   overflow:visible;
 }
 .vx-lock.vx-lockRaise{
-  top:0;
+  top:20px;
   transform:none;
 }
 .vx-accessArea{

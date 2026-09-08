@@ -50,6 +50,7 @@ const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE ||
     "userfx:vault";
 const MAX_BODY_BYTES = 1024 * 1024;
 const PAYMENT_TTL_SECONDS = 60 * 60 * 24 * 365;
+const IDENTITY_CODE_TTL_SECONDS = 15 * 60;
 // ======================================================
 // MEDIA
 // ======================================================
@@ -733,6 +734,117 @@ function getCommandArg(ctx, index = 0) {
     }
     return result;
     }
+
+// ======================================================
+// TGMX IDENTITY CODE ENGINE
+// TGMX verifies Telegram identity only. It grants no paid vault access.
+// ======================================================
+function getIdentityCodeKey(code) {
+    return `${CODE_ENGINE_NAMESPACE}:identity-code:${String(code || "").trim().toUpperCase()}`;
+}
+function getIdentityUserKey(userId) {
+    return `${CODE_ENGINE_NAMESPACE}:identity-user:${String(userId)}`;
+}
+async function generateIdentityCode(ctx) {
+    const userId = String(ctx.from?.id || "");
+    const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || "");
+
+    if (!userId) {
+        throw new Error("Telegram user id missing");
+    }
+    if (!parsedUsername) {
+        await ctx.reply(
+            "⚠️ You need a Telegram @username before requesting an identity key. Set one in Telegram Settings and try again."
+        );
+        return null;
+    }
+
+    const client = await ensureRedis();
+    if (!client) {
+        throw new Error("Redis is required for TGMX generation");
+    }
+
+    const userKey = getIdentityUserKey(userId);
+    const previousCode = await client.get(userKey);
+    if (previousCode) {
+        await client.del(getIdentityCodeKey(previousCode));
+    }
+
+    for (let attempt = 0; attempt < 20; attempt++) {
+        const code = `TGMX-${randomCodePart(4)}`;
+        const key = getIdentityCodeKey(code);
+        const createdAt = new Date();
+        const expiresAt = new Date(
+            createdAt.getTime() + IDENTITY_CODE_TTL_SECONDS * 1000
+        );
+        const record = {
+            code,
+            purpose: "telegram_identity",
+            userId,
+            telegramUsername: parsedUsername.normalized,
+            status: "active",
+            createdAt: createdAt.toISOString(),
+            expiresAt: expiresAt.toISOString(),
+        };
+
+        const created = await client.set(
+            key,
+            JSON.stringify(record),
+            "EX",
+            IDENTITY_CODE_TTL_SECONDS,
+            "NX"
+        );
+
+        if (created === "OK") {
+            await client.set(
+                userKey,
+                code,
+                "EX",
+                IDENTITY_CODE_TTL_SECONDS
+            );
+            logger.info("TGMX IDENTITY CODE GENERATED", {
+                userId,
+                username: parsedUsername.display,
+            });
+            return record;
+        }
+    }
+
+    throw new Error("Unable to generate unique TGMX identity code");
+}
+async function sendIdentityCode(ctx) {
+    try {
+        await trackButtonClick(ctx, "TGMX IDENTITY");
+        const record = await generateIdentityCode(ctx);
+        if (!record) return;
+
+        const username = normalizeTelegramFxUsername(ctx.from?.username || "");
+        const keyboard = Markup.inlineKeyboard([
+            [Markup.button.webApp("↩ RETURN TO VAULT", USERFX_SITE_URL)],
+        ]);
+
+        await ctx.reply(
+            `🔐 <b>TELEGRAM IDENTITY KEY</b>\n\n` +
+            `${escapeHtml(username?.display || "")}` +
+            `\n\n<code>${escapeHtml(record.code)}</code>` +
+            `\n\nThis TGMX key verifies your Telegram identity only.` +
+            `\nIt does not unlock BASIC, PRO or VIP.` +
+            `\n\n⏱ Expires in 15 minutes and can be used once.`,
+            {
+                parse_mode: "HTML",
+                reply_markup: keyboard.reply_markup,
+            }
+        );
+    } catch (error) {
+        logger.error("TGMX IDENTITY ERROR", {
+            userId: String(ctx.from?.id || ""),
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.reply("❌ Unable to create your Telegram identity key right now.")
+            .catch(() => {});
+    }
+}
     function getPlanFromPayload(payload) {
     if (payload === BASIC_PAYLOAD) {
     return PLAN_CONFIG.basic;
@@ -1292,6 +1404,14 @@ logger.warn("UNKNOWN PAYMENT PAYLOAD", {userId, payload, chargeId,
       "COMMAND"
       );
       });
+
+// ======================================================
+// TGMX IDENTITY COMMAND
+// ======================================================
+bot.command("identity", async (ctx) => {
+    await sendIdentityCode(ctx);
+});
+
 //// USER START //
 async function handleUserStart(ctx) {
     try {
@@ -1301,6 +1421,11 @@ async function handleUserStart(ctx) {
         .trim();
     const startPayload = String(ctx.startPayload || textPayload || "")
         .trim().toLowerCase();
+// TGMX IDENTITY START
+        if (startPayload === "identity") {
+        await sendIdentityCode(ctx);
+        return;
+        }
 //// WEBSITE DEVICE → BASIC //
         if (startPayload === 
         "getcode_basic") {
@@ -1516,6 +1641,11 @@ async function handleUserStart(ctx) {
     .info(
     "USER START RECEIVED", {
     userId,startPayload: startPayload || null,});
+    // TGMX IDENTITY START (TEXT ROUTER)
+    if (startPayload === "identity") {
+    await sendIdentityCode(ctx);
+    return;
+    }
     if (startPayload === "pay_basic") {logger.info(
     "START BASIC PAYMENT");
     await sendBasicInvoice(ctx);
@@ -1536,7 +1666,7 @@ async function handleUserStart(ctx) {
     await sendMainPanel(ctx);
     return;
     }
-    if (/^\/(access|find|revoke|users)(?:@\w+)?(?:\s|$)/i.test(text)) {
+    if (/^\/(access|find|revoke|users|identity)(?:@\w+)?(?:\s|$)/i.test(text)) {
     return next();
     }
     if (text.startsWith("/")) {
@@ -2303,5 +2433,6 @@ export default async function handler(req, res) {
             description: error?.response ?.description ?? null,
         });
        }}
+
 
 

@@ -1,8 +1,18 @@
+/* =======  SMKL ACCESS BUTTON —==== */
 .smkl-access-button {
-  --ruby: #d24166;
-  --ruby-dark: #6e142d;
-  --emerald: #43f5a0;
-  --metal: #aab0b8;
+  /* ---- Paleta coherente (toda usada de verdad) ---- */
+  --steel-hi:  #2b3350;                 /* metal iluminado   */
+  --steel-lo:  #05060f;                 /* metal en sombra   */
+  --edge:      #7d8794;                 /* filo metálico     */
+  --rose:      #ff9ab0;                 /* acento rosa       */
+  --rose-deep: #d24166;                 /* rosa profundo     */
+  --rose-glow: rgb(210 65 102 / 50%);
+  --emerald:   #43f5a0;                 /* acento esmeralda  */
+  --emerald-glow: rgb(67 245 160 / 70%);
+  --ink:       #e9fff6;                 /* texto principal   */
+  --ink-dim:   rgb(218 222 224 / 52%);  /* texto tenue       */
+  --focus-ring:#43f5a0;
+  --radius: 28px;
   position: relative;
   isolation: isolate;
   display: grid;
@@ -11,250 +21,343 @@
   width: min(100%, 560px);
   min-height: 112px;
   padding: 22px 26px;
-  overflow: visible;
-  color: #e6fff4;
+  color: var(--ink);
   font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
   cursor: pointer;
   border: 1px solid transparent;
-  border-radius: 28px;
+  border-radius: var(--radius);
+  /* Chasis metálico + filo bicolor rosa → esmeralda */
   background:
-    linear-gradient(145deg, #1a1b1e, #050607) padding-box,
-    linear-gradient(100deg, var(--ruby), #777d85 48%, var(--emerald)) border-box;
+    linear-gradient(145deg, #18233f, #060613) padding-box,
+    linear-gradient(100deg, var(--rose-deep), var(--edge) 48%, var(--emerald)) border-box;
   box-shadow:
     0 22px 50px rgb(0 0 0 / 55%),
-    inset 0 1px 0 rgb(255 255 255 / 12%),
-    inset 0 -8px 22px rgb(0 0 0 / 60%),
-    -8px 0 22px rgb(210 65 102 / 16%),
-    8px 0 22px rgb(67 245 160 / 14%);
+    0 2px 0 rgb(255 255 255 / 4%) inset,
+    0 -1px 0 rgb(0 0 0 / 40%) inset,
+    0 1px 0 rgb(255 255 255 / 12%) inset;
   transition:
-    transform 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 220ms ease,
     filter 220ms ease;
 }
-
+/* ---- Plinto interior ---- */
 .smkl-access-button::before {
   content: "";
   position: absolute;
   z-index: -1;
   inset: 8px;
   border: 1px solid rgb(255 255 255 / 8%);
-  border-radius: 20px;
+  border-radius: calc(var(--radius) - 8px);
   background:
-    radial-gradient(circle at 12% 50%, rgb(210 65 102 / 14%), transparent 28%),
-    radial-gradient(circle at 88% 50%, rgb(67 245 160 / 12%), transparent 28%),
-    linear-gradient(90deg, #12070c, #07100c);
+    radial-gradient(circle at 12% 50%, rgb(67 245 160 / 14%), transparent 30%),
+    radial-gradient(circle at 88% 50%, rgb(210 65 102 / 12%), transparent 30%),
+    linear-gradient(180deg, #131c37, #080a16);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 5%),
+    inset 0 0 40px rgb(0 0 0 / 45%);
 }
-
+/* ---- Brillo de cristal + luz de borde ---- */
 .smkl-access-button::after {
   content: "";
   position: absolute;
   z-index: 2;
   inset: 5px;
   pointer-events: none;
-  border-radius: 23px;
+  border-radius: calc(var(--radius) - 4px);
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / 10%), transparent 28%),
+    linear-gradient(245deg, rgb(255 255 255 / 6%), transparent 32%);
   box-shadow:
-    inset 3px 0 8px rgb(255 77 124 / 20%),
-    inset -3px 0 8px rgb(67 245 160 / 18%);
+    inset 3px 0 8px rgb(77 160 255 / 20%),
+    inset -3px 0 8px rgb(67 245 160 / 16%);
+  mix-blend-mode: screen;
 }
-
+/* ---- Humo / aura al pasar el cursor ---- */
 .smkl-access-button__smoke {
   position: absolute;
   z-index: -2;
   inset: -25px;
   opacity: 0;
   filter: blur(22px);
+  pointer-events: none;
   background:
-    radial-gradient(ellipse at 20% 55%, rgb(170 29 66 / 42%), transparent 35%),
+    radial-gradient(ellipse at 20% 55%, rgb(29 85 170 / 42%), transparent 35%),
     radial-gradient(ellipse at 80% 45%, rgb(38 173 115 / 28%), transparent 35%);
   transition: opacity 300ms ease;
 }
-
+/* ---------- Rosa (imagen) tipo joya ---------- */
 .smkl-access-button__rose {
   position: absolute;
   z-index: 4;
   top: 0;
   left: 50%;
   display: grid;
-  width: 58px;
-  height: 58px;
+  width: 66px;
+  height: 66px;
   place-items: center;
-  transform: translate(-50%, -48%);
-  border: 1px solid #5c2635;
+  transform: translate(-50%, -52%);
   border-radius: 50%;
-  color: var(--ruby);
   background:
-    radial-gradient(circle at 38% 28%, #e86887, #861d3b 46%, #23080f 78%),
-    #470e20;
+    radial-gradient(circle at 38% 26%, #33101a, #1a0509 60%, #0c0307 100%);
   box-shadow:
-    0 8px 18px rgb(0 0 0 / 65%),
-    0 0 16px rgb(210 65 102 / 25%),
-    inset 0 1px 3px rgb(255 255 255 / 24%);
+    0 10px 22px rgb(0 0 0 / 68%),
+    0 0 0 1px rgb(210 65 102 / 35%),
+    0 0 22px var(--rose-glow),
+    inset 0 1px 3px rgb(255 255 255 / 16%);
   transition:
-    transform 300ms ease,
-    box-shadow 300ms ease;
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 300ms ease,
+    filter 300ms ease;
 }
-
-.smkl-access-button__rose svg {
-  width: 42px;
-  fill: none;
-  stroke: #ff9bb2;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 70%));
+/* Anillo con gradiente giratorio */
+.smkl-access-button__rose::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 200deg,
+    var(--rose-deep),
+    rgb(255 154 176 / 12%),
+    var(--emerald),
+    rgb(255 154 176 / 12%),
+    var(--rose-deep)
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: roseSpin 9s linear infinite;
 }
-
+/* Destello superior */
+.smkl-access-button__rose::after {
+  content: "✦";
+  position: absolute;
+  top: -5px;
+  right: -2px;
+  font-size: 9px;
+  color: var(--rose);
+  text-shadow: 0 0 6px var(--rose-glow);
+  opacity: 0.9;
+}
+.smkl-access-button__rose img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 70%));
+  pointer-events: none;
+}
+/* ---------- Costuras metálicas con remaches ---------- */
+.smkl-access-button__seam {
+  position: absolute;
+  z-index: 5;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 5%), rgb(0 0 0 / 62%), rgb(255 255 255 / 5%));
+  box-shadow: 1px 0 0 rgb(255 255 255 / 5%);
+  pointer-events: none;
+}
+.smkl-access-button__seam::before,
+.smkl-access-button__seam::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #aeb6c2, #4a4f5a 70%);
+  box-shadow:
+    0 0 2px rgb(0 0 0 / 80%),
+    inset 0 1px 0 rgb(255 255 255 / 30%);
+}
+.smkl-access-button__seam::before { top: 12px; }
+.smkl-access-button__seam::after  { bottom: 12px; }
+.smkl-access-button__seam--l { left: 46px; }
+.smkl-access-button__seam--r { right: 46px; }
+/* ---------- Indicador de estado (beacon) ---------- */
 .smkl-access-button__status {
   position: relative;
   z-index: 3;
   width: 24px;
   height: 24px;
   margin-inline: auto;
-  border: 5px solid #1d4f3b;
   border-radius: 50%;
-  background: var(--emerald);
+  background: radial-gradient(circle at 35% 30%, #8dffcf, var(--emerald) 55%, #0f7a4d 100%);
   box-shadow:
-    0 0 0 1px #87918d,
-    0 0 14px rgb(67 245 160 / 70%),
-    inset 0 0 5px #fff;
+    0 0 0 1px rgb(120 140 130 / 60%),
+    0 0 16px var(--emerald-glow),
+    inset 0 0 5px rgb(255 255 255 / 70%);
 }
-
+.smkl-access-button__status::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid var(--emerald-glow);
+  opacity: 0;
+  transform: scale(0.5);
+  animation: statusPulse 2.4s ease-out infinite;
+}
+/* ---------- Contenido central ---------- */
 .smkl-access-button__content {
   position: relative;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   align-items: center;
+  min-width: 0;
 }
-
 .smkl-access-button__title {
   font-size: clamp(1rem, 4vw, 1.65rem);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0.22em;
   text-indent: 0.22em;
-  text-shadow: 0 0 14px rgb(67 245 160 / 32%);
+  background: linear-gradient(180deg, #ffffff, #b9e6d4 70%, #6fd7a8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgb(67 245 160 / 28%));
 }
-
 .smkl-access-button__brand {
-  color: rgb(218 222 224 / 48%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-dim);
   font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.55em;
-  text-indent: 0.55em;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
 }
-
+.smkl-access-button__brand i {
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(218 222 224 / 40%));
+}
+.smkl-access-button__brand i:last-child {
+  background: linear-gradient(90deg, rgb(218 222 224 / 40%), transparent);
+}
+/* ---------- Flecha ---------- */
 .smkl-access-button__arrow {
   position: relative;
   z-index: 3;
   display: grid;
   place-items: center;
 }
-
 .smkl-access-button__arrow svg {
   width: 34px;
   fill: none;
-  stroke: #ff9ab0;
+  stroke: var(--rose);
   stroke-width: 1.8;
-  filter: drop-shadow(0 0 6px rgb(210 65 102 / 50%));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px var(--rose-glow));
   transition:
-    transform 220ms ease,
-    stroke 220ms ease;
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    stroke 220ms ease,
+    filter 220ms ease;
 }
-
+/* ---------- Estados interactivos ---------- */
 .smkl-access-button:hover {
   transform: translateY(-3px);
-  filter: brightness(1.08);
+  filter: brightness(1.08) saturate(1.05);
   box-shadow:
-    0 28px 60px rgb(0 0 0 / 62%),
-    inset 0 1px 0 rgb(255 255 255 / 16%),
-    -10px 0 28px rgb(210 65 102 / 23%),
-    10px 0 28px rgb(67 245 160 / 21%);
+    0 30px 64px rgb(0 0 0 / 60%),
+    -10px 0 28px var(--rose-glow),
+    10px 0 28px rgb(67 245 160 / 20%),
+    inset 0 1px 0 rgb(255 255 255 / 16%);
 }
 
 .smkl-access-button:hover .smkl-access-button__smoke {
   opacity: 1;
 }
-
 .smkl-access-button:hover .smkl-access-button__rose {
-  transform: translate(-50%, -52%) rotate(8deg) scale(1.05);
+  transform: translate(-50%, -56%) rotate(6deg) scale(1.06);
   box-shadow:
-    0 10px 22px rgb(0 0 0 / 70%),
-    0 0 24px rgb(210 65 102 / 42%);
+    0 12px 26px rgb(0 0 0 / 70%),
+    0 0 0 1px rgb(255 154 176 / 35%),
+    0 0 28px var(--rose-glow),
+    inset 0 1px 3px rgb(255 255 255 / 18%);
 }
-
 .smkl-access-button:hover .smkl-access-button__arrow svg {
   stroke: var(--emerald);
   transform: translateX(5px);
+  filter: drop-shadow(0 0 8px var(--emerald-glow));
 }
-
 .smkl-access-button:active {
   transform: translateY(1px) scale(0.985);
+  filter: brightness(1.02);
+  box-shadow:
+    0 14px 34px rgb(0 0 0 / 55%),
+    inset 0 2px 8px rgb(0 0 0 / 40%);
 }
-
 .smkl-access-button:focus-visible {
-  outline: 2px solid var(--emerald);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 6px;
 }
-
 .smkl-access-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
   filter: grayscale(0.65);
+  box-shadow: none;
 }
-
-.fx-access-launcher {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  box-sizing: border-box;
-  margin: 22px auto 12px;
-  padding: 0 12px;
+.smkl-access-button:disabled .smkl-access-button__rose,
+.smkl-access-button:disabled .smkl-access-button__status::after {
+  animation: none;
 }
-
+/* ---------- Animaciones ---------- */
+@keyframes roseSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes statusPulse {
+  0%   { opacity: 0.7; transform: scale(0.5); }
+  70%  { opacity: 0;   transform: scale(1.15); }
+  100% { opacity: 0;   transform: scale(1.15); }
+}
+/* ---------- Mobile ---------- */
 @media (max-width: 520px) {
   .smkl-access-button {
+    --radius: 23px;
     grid-template-columns: 32px 1fr 32px;
     min-height: 92px;
     padding: 18px 16px;
-    border-radius: 23px;
   }
-
-  .smkl-access-button__rose {
-    width: 48px;
-    height: 48px;
-  }
-
-  .smkl-access-button__rose svg {
-    width: 34px;
-  }
-
+  .smkl-access-button__rose { width: 50px; height: 50px; }
+  .smkl-access-button__seam--l { left: 34px; }
+  .smkl-access-button__seam--r { right: 34px; }
   .smkl-access-button__title {
     letter-spacing: 0.12em;
     text-indent: 0.12em;
   }
-
   .smkl-access-button__brand {
-    letter-spacing: 0.35em;
-    text-indent: 0.35em;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+    gap: 6px;
   }
-
-  .smkl-access-button__arrow svg {
-    width: 26px;
-  }
-
-  .fx-access-launcher {
-    margin-top: 18px;
-    padding-inline: 8px;
-  }
+  .smkl-access-button__brand i { width: 12px; }
+  .smkl-access-button__arrow svg { width: 26px; }
+  .smkl-access-button__status { width: 20px; height: 20px; }
 }
-
+/* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .smkl-access-button,
   .smkl-access-button *,
   .smkl-access-button *::before,
   .smkl-access-button *::after {
-    transition: none;
+    transition: none !important;
+    animation: none !important;
   }
+  .smkl-access-button:hover { transform: none; }
+  .smkl-access-button:hover .smkl-access-button__rose { transform: translate(-50%, -52%); }
+  .smkl-access-button:hover .smkl-access-button__arrow svg { transform: none; }
 }

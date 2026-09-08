@@ -9,7 +9,10 @@ import "../VaultHome/VaultHome.css";
 import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
 import VaultActions from "../VaultActionsBtns/VaultActions";
 
-  const LOGO="/assets/userfx-logo-sin.png";
+import { FxAccessBtn as FxAccessBtn } from "../FxAccess/FxAccessBtn";
+import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
+
+const LOGO="/assets/userfx-logo-sin.png";
   const BRICK="/assets/brick-wall.png";
   const DAMASK="/assets/damask.png";
 
@@ -202,6 +205,8 @@ export default function VaultHome() {
   const [activePlanId, setActivePlanId] = useState<AccessPlanId | null>(null);
   const [remainingAccesses, setRemainingAccesses] = useState<number | null>(null);
   const [unlimitedAccess, setUnlimitedAccess] = useState(false);
+  
+const [fxAccessOpen, setFxAccessOpen] = useState(false);
 
   const activePlanPrefix = activePlanId
     ? ACCESS_PLAN_PREFIX[activePlanId]
@@ -401,7 +406,7 @@ export default function VaultHome() {
               </span>
               </a>
               <div className="vx-hudRight">
-              <VisitorCounter />
+         <VisitorCounter/>
               <time>
                {clock}
               </time>
@@ -510,15 +515,14 @@ export default function VaultHome() {
               </div>
               </div>
             <aside className="vx-lock vx-lockRaise">
-      <VaultHeroDoors unlocked={unlocked}/>
-             {!unlocked ? (
-      <VaultActions value={inlineCodeValue} onChange={handleInlineCodeChange} onSubmit={handleVerify} onGetCode={() => setDm(true)} loading={verifyLoading} error={verifyError} placeholder={inlineCodeTemplate} inputRef={inlineCodeRef}/>
+        <VaultHeroDoors unlocked={unlocked}/>
+              {!unlocked ? (
+        <VaultActions value={inlineCodeValue} onChange={handleInlineCodeChange} onSubmit={handleVerify} onGetCode={() => setDm(true)} loading={verifyLoading} error={verifyError} placeholder={inlineCodeTemplate} inputRef={inlineCodeRef}/>
              ) : null}
             </aside>
-{/*➡️ CIERRE PANEL DERECHO */}
               </div>
             </section>
-      <Ticker items={TICKER_ITEMS} />
+        <Ticker items={TICKER_ITEMS} />
                {unlocked ? (
             <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
               <div className="vx-privateAlbumInner">
