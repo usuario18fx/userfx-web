@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import "./VaultActions.css";
 import "./VaultMobileCenter.css";
 import "./VaultIdentity.css";
+import "./VaultMobilePolish.css";
 
 import { FxAccessBtn } from "../FxAccess/FxAccessBtn";
 import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
