@@ -5,23 +5,59 @@ import {
   useRef,
   useState,
 } from "react";
+import type { RefObject } from "react";
 import { createPortal } from "react-dom";
 import "./FxAccessModal.css";
 
-type AccessCredentials = {
-  name: string;
-  email: string;
-  password: string;
-};
+type AccessStep = "username" | "identity" | "access";
 
 type FxAccessModalProps = {
   id?: string;
   open: boolean;
   onClose: () => void;
-  onSubmit?: (
-    credentials: AccessCredentials,
-  ) => void | Promise<void>;
+  accessCode: string;
+  onAccessCodeChange: (value: string) => void;
+  onAccessSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onGetCode: () => void;
+  accessLoading?: boolean;
+  accessError?: string;
+  accessPlaceholder?: string;
+  inputRef?: RefObject<HTMLInputElement | null>;
 };
+
+const USERNAME_COOKIE = "userfx_telegram_username";
+const TELEGRAM_IDENTITY_URL = "https://t.me/User18Fx_bot?start=identity";
+
+function normalizeUsername(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .replace(/^@+/, "")
+    .replace(/[^A-Za-z0-9_]/g, "")
+    .slice(0, 32);
+
+  return clean ? `@${clean}` : "";
+}
+
+function normalizeIdentityCode(value: string) {
+  const compact = String(value || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 8);
+
+  if (compact.length <= 4) return compact;
+  return `${compact.slice(0, 4)}-${compact.slice(4)}`;
+}
+
+function persistUsername(username: string) {
+  try {
+    localStorage.setItem(USERNAME_COOKIE, username);
+    document.cookie =
+      `${USERNAME_COOKIE}=${encodeURIComponent(username)}; ` +
+      "Path=/; SameSite=Lax; Max-Age=2592000";
+  } catch {
+    // Identity verification still uses the username sent to the API.
+  }
+}
 
 function RoseIcon({ className = "" }: { className?: string }) {
   return (
@@ -42,30 +78,11 @@ function UserIcon() {
   );
 }
 
-function MailIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="m4 7 8 6 8-6" />
-    </svg>
-  );
-}
-
 function LockIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <rect x="5" y="10" width="14" height="11" rx="2" />
       <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" />
-    </svg>
-  );
-}
-
-function EyeIcon({ slashed }: { slashed: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
-      <circle cx="12" cy="12" r="2.5" />
-      {slashed && <path d="m4 4 16 16" />}
     </svg>
   );
 }
@@ -83,42 +100,101 @@ export function FxAccessModal({
   id,
   open,
   onClose,
-  onSubmit,
+  accessCode,
+  onAccessCodeChange,
+  onAccessSubmit,
+  onGetCode,
+  accessLoading = false,
+  accessError = "",
+  accessPlaceholder = "BSIC-CODE",
+  inputRef,
 }: FxAccessModalProps) {
   const generatedId = useId();
   const modalId =
     id ?? `fx-access-modal-${generatedId.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   const stageRef = useRef<HTMLDivElement>(null);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const primaryInputRef = useRef<HTMLInputElement>(null);
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
   const loadingRef = useRef(false);
   const onCloseRef = useRef(onClose);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<AccessStep>("username");
+  const [username, setUsername] = useState("");
+  const [identityCode, setIdentityCode] = useState("");
+  const [identityLoading, setIdentityLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [credentials, setCredentials] = useState<AccessCredentials>({
-    name: "",
-    email: "",
-    password: "",
-  });
+
+  const busy = identityLoading || accessLoading;
+  const visibleError = error || (step === "access" ? accessError : "");
 
   useEffect(() => {
-    loadingRef.current = loading;
-  }, [loading]);
+    loadingRef.current = busy;
+  }, [busy]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
 
   useEffect(() => {
-    if (open) return;
-    setShowPassword(false);
-    setLoading(false);
+    if (!open) return;
+
+    let cancelled = false;
+
     setError(null);
-    setCredentials((current) => ({ ...current, password: "" }));
+    setIdentityCode("");
+    setStep("username");
+
+    try {
+      const saved = localStorage.getItem(USERNAME_COOKIE) || "";
+      if (saved) setUsername(normalizeUsername(saved));
+    } catch {
+      // Ignore storage failures.
+    }
+
+    setIdentityLoading(true);
+
+    fetch("/api/identity", {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (cancelled || !data?.verified) return;
+
+        const verifiedUsername = normalizeUsername(data.username || "");
+        if (!verifiedUsername) return;
+
+        setUsername(verifiedUsername);
+        persistUsername(verifiedUsername);
+        setStep("access");
+      })
+      .catch(() => {
+        // A missing identity session simply starts at step one.
+      })
+      .finally(() => {
+        if (!cancelled) setIdentityLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = window.setTimeout(() => {
+      if (step === "access") {
+        inputRef?.current?.focus();
+      } else {
+        primaryInputRef.current?.focus();
+      }
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [open, step, inputRef]);
 
   useEffect(() => {
     if (!open) return;
@@ -137,10 +213,6 @@ export function FxAccessModal({
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
-
-    const focusTimer = window.setTimeout(() => {
-      nameInputRef.current?.focus();
-    }, 150);
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -188,7 +260,6 @@ export function FxAccessModal({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
       document.body.style.paddingRight = previousPaddingRight;
@@ -196,45 +267,114 @@ export function FxAccessModal({
     };
   }, [open]);
 
-  const updateCredential = (
-    field: keyof AccessCredentials,
-    value: string,
-  ) => {
-    setCredentials((current) => ({ ...current, [field]: value }));
-    if (error) setError(null);
-  };
-
   const handleClose = () => {
-    if (!loading) onCloseRef.current();
+    if (!busy) onCloseRef.current();
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!onSubmit || loading) return;
+  const handleUsernameSubmit = () => {
+    const normalized = normalizeUsername(username);
+    const usernameBody = normalized.replace(/^@/, "");
 
-    const name = credentials.name.trim();
-    const email = credentials.email.trim().toLowerCase();
+    if (!/^[A-Za-z0-9_]{3,32}$/.test(usernameBody)) {
+      setError("ENTER YOUR TELEGRAM @USERNAME");
+      primaryInputRef.current?.focus();
+      return;
+    }
 
-    if (!name) {
-      setError("Escribe tu nombre para continuar.");
-      nameInputRef.current?.focus();
+    setUsername(normalized);
+    persistUsername(normalized);
+    setError(null);
+    setStep("identity");
+  };
+
+  const handleIdentitySubmit = async () => {
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedCode = normalizeIdentityCode(identityCode);
+
+    if (!/^TGMX-[A-HJ-NP-Z2-9]{4}$/.test(normalizedCode)) {
+      setError("ENTER YOUR COMPLETE TGMX IDENTITY KEY");
+      primaryInputRef.current?.focus();
       return;
     }
 
     try {
-      setLoading(true);
+      setIdentityLoading(true);
       setError(null);
-      await onSubmit({ name, email, password: credentials.password });
+
+      const response = await fetch("/api/identity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          username: normalizedUsername,
+          code: normalizedCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.verified) {
+        throw new Error(data?.error || "IDENTITY VERIFICATION FAILED");
+      }
+
+      const verifiedUsername = normalizeUsername(data.username || normalizedUsername);
+      setUsername(verifiedUsername);
+      persistUsername(verifiedUsername);
+      setIdentityCode("");
+      setStep("access");
     } catch (submissionError) {
       setError(
         submissionError instanceof Error && submissionError.message
           ? submissionError.message
-          : "Acceso denegado. Revisa tus datos e inténtalo de nuevo.",
+          : "IDENTITY VERIFICATION FAILED",
       );
     } finally {
-      setLoading(false);
+      setIdentityLoading(false);
     }
   };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (busy) return;
+
+    if (step === "username") {
+      handleUsernameSubmit();
+      return;
+    }
+
+    if (step === "identity") {
+      await handleIdentitySubmit();
+      return;
+    }
+
+    persistUsername(normalizeUsername(username));
+    onAccessSubmit(event);
+  };
+
+  const openTelegramIdentity = () => {
+    window.open(TELEGRAM_IDENTITY_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const bubbleText =
+    step === "username"
+      ? "Acceso privado. Identifícate con Telegram."
+      : step === "identity"
+        ? "Solicita tu clave TGMX en Telegram y escríbela aquí."
+        : `${username} · identidad verificada.`;
+
+  const titleText =
+    step === "username"
+      ? "¿QUIÉN ENTRA?"
+      : step === "identity"
+        ? "IDENTITY CHECK"
+        : "PRIVATE ACCESS";
+
+  const stepLabel =
+    step === "username"
+      ? "PASO 1 · TELEGRAM USERNAME"
+      : step === "identity"
+        ? "PASO 2 · TGMX IDENTITY"
+        : "PASO 3 · ACCESS CODE";
 
   if (!open || typeof document === "undefined") return null;
 
@@ -256,7 +396,7 @@ export function FxAccessModal({
         aria-modal="true"
         aria-labelledby={`${modalId}-title`}
         aria-describedby={`${modalId}-desc`}
-        aria-busy={loading}
+        aria-busy={busy}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
@@ -264,7 +404,7 @@ export function FxAccessModal({
           className="smkl-modal__close"
           onClick={handleClose}
           aria-label="Cerrar acceso"
-          disabled={loading}
+          disabled={busy}
         >
           <span />
           <span />
@@ -274,11 +414,11 @@ export function FxAccessModal({
           <div className="smkl-modal__brand-line" />
           <RoseIcon className="smkl-modal__brand-rose" />
           <div className="smkl-modal__brand-line" />
-          <strong>fx</strong>
+          <strong>USER FX</strong>
         </header>
 
         <div className="smkl-modal__bubble" id={`${modalId}-desc`}>
-          Acceso privado. Identifícate.
+          {bubbleText}
         </div>
 
         <div className="smkl-robot" aria-hidden="true">
@@ -313,7 +453,7 @@ export function FxAccessModal({
 
           <RoseIcon className="smkl-panel__rose" />
 
-          <h2 id={`${modalId}-title`}>¿QUIÉN ENTRA?</h2>
+          <h2 id={`${modalId}-title`}>{titleText}</h2>
 
           <div className="smkl-panel__divider" aria-hidden="true">
             <span />
@@ -321,124 +461,145 @@ export function FxAccessModal({
             <span />
           </div>
 
-          <form className="smkl-form" onSubmit={handleSubmit}>
-            <div className="smkl-form__field">
-              <span className="smkl-form__icon">
-                <UserIcon />
-              </span>
-
-              <label
-                className="smkl-sr-only"
-                htmlFor={`${modalId}-name`}
-              >
-                Tu nombre
-              </label>
-
-              <input
-                ref={nameInputRef}
-                id={`${modalId}-name`}
-                type="text"
-                name="name"
-                placeholder="Tu nombre"
-                value={credentials.name}
-                onChange={(event) =>
-                  updateCredential("name", event.target.value)
-                }
-                autoComplete="name"
-                disabled={loading}
-                required
-              />
-            </div>
+          <form className="smkl-form" onSubmit={handleSubmit} noValidate>
+            <p
+              style={{
+                margin: "0",
+                color: "rgba(255,255,255,.48)",
+                fontSize: ".72rem",
+                letterSpacing: ".16em",
+              }}
+            >
+              {stepLabel}
+            </p>
 
             <div className="smkl-form__field">
               <span className="smkl-form__icon">
-                <MailIcon />
+                {step === "username" ? <UserIcon /> : <LockIcon />}
               </span>
 
-              <label
-                className="smkl-sr-only"
-                htmlFor={`${modalId}-email`}
-              >
-                Tu correo electrónico
-              </label>
-
-                          <input
-                id={`${modalId}-email`}
-                type="email"
-                name="email"
-                placeholder="Tu correo"
-                value={credentials.email}
-                onChange={(event) =>
-                  updateCredential("email", event.target.value)
-                }
-                autoComplete="email"
-                inputMode="email"
-                spellCheck={false}
-                disabled={loading}
-                required
-              />
+              {step === "username" ? (
+                <>
+                  <label className="smkl-sr-only" htmlFor={`${modalId}-username`}>
+                    Telegram username
+                  </label>
+                  <input
+                    ref={primaryInputRef}
+                    id={`${modalId}-username`}
+                    type="text"
+                    name="username"
+                    placeholder="@username"
+                    value={username}
+                    onChange={(event) => {
+                      setUsername(normalizeUsername(event.target.value));
+                      setError(null);
+                    }}
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    disabled={busy}
+                    required
+                  />
+                </>
+              ) : step === "identity" ? (
+                <>
+                  <label className="smkl-sr-only" htmlFor={`${modalId}-identity-code`}>
+                    TGMX identity code
+                  </label>
+                  <input
+                    ref={primaryInputRef}
+                    id={`${modalId}-identity-code`}
+                    type="text"
+                    name="identity-code"
+                    placeholder="TGMX-XXXX"
+                    value={identityCode}
+                    onChange={(event) => {
+                      setIdentityCode(normalizeIdentityCode(event.target.value));
+                      setError(null);
+                    }}
+                    autoComplete="one-time-code"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    maxLength={9}
+                    disabled={busy}
+                    required
+                  />
+                </>
+              ) : (
+                <>
+                  <label className="smkl-sr-only" htmlFor={`${modalId}-access-code`}>
+                    Vault access code
+                  </label>
+                  <input
+                    ref={inputRef}
+                    id={`${modalId}-access-code`}
+                    type="text"
+                    name="access-code"
+                    placeholder={accessPlaceholder}
+                    value={accessCode}
+                    onChange={(event) =>
+                      onAccessCodeChange(event.target.value.toUpperCase())
+                    }
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    maxLength={9}
+                    disabled={accessLoading}
+                    required
+                  />
+                </>
+              )}
             </div>
 
-            <div className="smkl-form__field">
-              <span className="smkl-form__icon">
-                <LockIcon />
-              </span>
-
-              <label
-                className="smkl-sr-only"
-                htmlFor={`${modalId}-password`}
-              >
-                Contraseña
-              </label>
-
-              <input
-                id={`${modalId}-password`}
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Contraseña"
-                value={credentials.password}
-                onChange={(event) =>
-                  updateCredential("password", event.target.value)
-                }
-                autoComplete="current-password"
-                disabled={loading}
-                required
-              />
-
-              <button
-                type="button"
-                className="smkl-form__password-toggle"
-                onClick={() =>
-                  setShowPassword((current) => !current)
-                }
-                aria-label={
-                  showPassword
-                    ? "Ocultar contraseña"
-                    : "Mostrar contraseña"
-                }
-                aria-pressed={showPassword}
-                disabled={loading}
-              >
-                <EyeIcon slashed={!showPassword} />
-              </button>
-            </div>
-
-            {error && (
+            {visibleError && (
               <p
                 className="smkl-form__error"
                 id={`${modalId}-error`}
                 role="alert"
               >
-                {error}
+                {visibleError}
               </p>
+            )}
+
+            {step === "identity" && (
+              <button
+                type="button"
+                className="smkl-form__submit"
+                onClick={openTelegramIdentity}
+                disabled={busy}
+              >
+                <span>GET TGMX</span>
+              </button>
+            )}
+
+            {step === "access" && (
+              <button
+                type="button"
+                className="smkl-form__submit"
+                onClick={onGetCode}
+                disabled={accessLoading}
+              >
+                <span>GET MY CODE</span>
+              </button>
             )}
 
             <button
               type="submit"
-              className={`smkl-form__submit${loading ? " is-loading" : ""}`}
-              disabled={loading || !onSubmit}
+              className={`smkl-form__submit${busy ? " is-loading" : ""}`}
+              disabled={busy}
             >
-              <span>{loading ? "VERIFICANDO..." : "ENTRAR"}</span>
+              <span>
+                {busy
+                  ? "VERIFICANDO..."
+                  : step === "username"
+                    ? "CONTINUAR"
+                    : step === "identity"
+                      ? "VERIFY IDENTITY"
+                      : "ENTER VAULT"}
+              </span>
             </button>
           </form>
         </section>
