@@ -10,6 +10,7 @@ const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const SESSION_COOKIE = "userfx_vault_session";
+const IDENTITY_COOKIE = "userfx_identity_session";
 const USERNAME_COOKIE = "userfx_telegram_username";
 
 const MAX_ATTEMPTS = 5;
@@ -66,7 +67,7 @@ function getClientIp(req) {
 }
 
 function hashValue(value) {
-  return crypto.createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(String(value)).digest("hex");
 }
 
 function createWatermarkId(fullCode) {
@@ -146,6 +147,36 @@ function normalizeTelegramUsername(value) {
     display: `@${raw}`,
     normalized: raw.toLowerCase(),
   };
+}
+
+function identitySessionKey(token) {
+  return `${CODE_ENGINE_NAMESPACE}:identity-session:${hashValue(token)}`;
+}
+
+async function readIdentitySession(redis, req) {
+  const cookies = parseCookies(req);
+  const token = String(cookies[IDENTITY_COOKIE] || "");
+
+  if (!token) return null;
+
+  const raw = await redis.get(identitySessionKey(token));
+  if (!raw) return null;
+
+  try {
+    const record = JSON.parse(raw);
+
+    if (
+      record?.purpose !== "telegram_identity_session" ||
+      !record?.userId ||
+      !record?.telegramUsername
+    ) {
+      return null;
+    }
+
+    return record;
+  } catch {
+    return null;
+  }
 }
 
 async function getTelegramFxAccess(usernameNormalized) {
@@ -387,6 +418,25 @@ export default async function handler(req, res) {
       });
     }
 
+    const identitySession = await readIdentitySession(redis, req);
+
+    if (!identitySession) {
+      return res.status(401).json({
+        ok: false,
+        error: "TGMX IDENTITY VERIFICATION REQUIRED",
+      });
+    }
+
+    if (
+      String(identitySession.telegramUsername).toLowerCase() !==
+      telegramUsername.normalized
+    ) {
+      return res.status(403).json({
+        ok: false,
+        error: "VERIFIED TELEGRAM IDENTITY DOES NOT MATCH",
+      });
+    }
+
     const telegramAccess =
       await getTelegramFxAccess(telegramUsername.normalized);
 
@@ -447,6 +497,16 @@ export default async function handler(req, res) {
       return res.status(500).json({
         ok: false,
         error: "Invalid access record.",
+      });
+    }
+
+    if (
+      !record.userId ||
+      String(record.userId) !== String(identitySession.userId)
+    ) {
+      return res.status(403).json({
+        ok: false,
+        error: "ACCESS CODE DOES NOT BELONG TO VERIFIED TELEGRAM USER",
       });
     }
 
