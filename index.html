@@ -5,6 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>𝐔sᴇʀ Ŧҳ — ᴋᴇᴇᴘ ɪᴛ ʟɪᴛ</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      html,
+      body,
+      #root {
+        min-height: 100%;
+        background:
+          linear-gradient(rgba(0, 0, 0, .36), rgba(0, 0, 0, .58)),
+          url('/wallpaper1.png') center top / cover fixed no-repeat !important;
+      }
+
+      .vx,
+      .vx-open {
+        background:
+          linear-gradient(rgba(0, 0, 0, .22), rgba(0, 0, 0, .48)),
+          url('/wallpaper1.png') center top / cover no-repeat !important;
+      }
+
+      .smkl-access-button {
+        margin-top: -64px !important;
+      }
+
+      .smkl-modal__backdrop {
+        background:
+          linear-gradient(rgba(0, 0, 0, .46), rgba(0, 0, 0, .72)),
+          url('/wallpaper1.png') center / cover no-repeat !important;
+      }
+
+      .smkl-modal__stage {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+
+      .smkl-modal__bubble {
+        order: 1;
+      }
+
+      .smkl-robot {
+        order: 2;
+      }
+
+      .smkl-panel {
+        order: 3;
+        width: 100%;
+        background:
+          linear-gradient(rgba(7, 7, 8, .72), rgba(7, 7, 8, .84)),
+          url('/wallpaperModal.png') left center / cover no-repeat !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+      }
+
+      .smkl-modal__brand {
+        order: 4;
+        padding: 0 !important;
+        margin-top: 18px;
+      }
+
+      .smkl-modal__brand-line,
+      .smkl-modal__brand-rose {
+        display: none !important;
+      }
+
+      .smkl-modal__brand strong {
+        font-size: .95rem !important;
+        font-weight: 600 !important;
+        letter-spacing: .48em !important;
+        text-indent: .48em !important;
+        color: rgba(255, 255, 255, .74) !important;
+        background: none !important;
+        -webkit-text-fill-color: currentColor !important;
+        filter: none !important;
+      }
+
+      @media (max-width: 520px) {
+        .smkl-access-button {
+          margin-top: -88px !important;
+        }
+
+        .smkl-modal {
+          padding: 12px 16px 28px !important;
+        }
+
+        .smkl-modal__stage {
+          width: min(100%, 390px) !important;
+        }
+
+        .smkl-modal__brand {
+          margin-top: 16px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
