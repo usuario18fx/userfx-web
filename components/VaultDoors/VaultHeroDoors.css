@@ -78,7 +78,7 @@
   background:#000000;
   perspective:1200px;
   box-shadow:none !important;
-   pointer-events:none !important;
+  pointer-events:none !important;
 }
 /* ═══════════ PUERTA BASE ═══════════ */
 .vhd-door{
@@ -91,7 +91,8 @@
   padding:0;
   overflow:hidden;
   border:0;
-  background:transparent !important;
+  background:#050505;
+  opacity:1;
   pointer-events:auto;
   cursor:pointer;
   box-shadow:none !important;
@@ -104,11 +105,11 @@
   z-index:3;
   transform-origin:left center;
   border-right:2px solid #282828;
-  background: linear-gradient(#B6AC39CB,#B6AC39CB)
+  background:linear-gradient(#B6AC39CB,#B6AC39CB)
     right 26px center / 2px 120px no-repeat,
     radial-gradient(closest-side,#1C1C0915,
     transparent)right 26px center / 24px 160px no-repeat,
-    url("/doorLeft.png")center / cover no-repeat;
+    url("/doorLeft.png") center / cover no-repeat !important;
   box-shadow:none !important;
 }
 /* ═══════════ PUERTA DERECHA ═══════════ */
@@ -118,9 +119,9 @@
   transform-origin:right center;
   border-left:2px solid #282828;
   background:linear-gradient(#B6AC39CB,#B6AC39CB)
-  left 26px center / 2px 120px no-repeat,
-  radial-gradient(closest-side,#E0D75A00,transparent) left 26px center / 24px 160px no-repeat,
-  url("/doorRight.avif") center / cover no-repeat;
+    left 26px center / 2px 120px no-repeat,
+    radial-gradient(closest-side,#E0D75A00,transparent) left 26px center / 24px 160px no-repeat,
+    url("/doorRight.avif") center / cover no-repeat !important;
   box-shadow:none !important;
 }
 /* ═══════════ RELIEVE NEGRO ═══════════ */
@@ -223,7 +224,9 @@
   width:min(360px,90%);    /* ↔️ */
   height:min(360px,82%);   /* ↕️ */
   object-fit:cover;
-  object-position:center;
+  object-position:center bottom;
+  transform:scale(1.10);
+  transform-origin:center bottom;
   border:0;
   box-shadow:none !important;
   filter:none !important;
@@ -426,7 +429,12 @@
   .vhd-doors > :not(.vhd-door):not(.vhd-form){padding:18px 12px;
   }
   .vhd-reveal img,
-  .vhd-reveal video{width:min(250px,88%); height:min(260px,72%);
+  .vhd-reveal video{
+    width:min(250px,88%);
+    height:min(260px,72%);
+    object-position:center bottom;
+    transform:scale(1.18);
+    transform-origin:center bottom;
   }
   /* INPUT INFERIOR */
   .vhd-form{ left:50%; right:auto; bottom:-74px; width:calc(100% - 24px); min-height:54px; margin:0; padding:6px 6px 6px 10px; transform:translateX(-50%); background:linear-gradient(90deg,#06090a45,#06080a12,#06080a45),url("/wallpaper2.png") center / 190px auto repeat-x;box-shadow:none !important;
@@ -446,7 +454,7 @@
   .vhd-go,
   .vhd-form{animation:none !important; transition:none !important;
   }
-   .vhd-logoGlow{animation:none !important;
+  .vhd-logoGlow{animation:none !important;
   }
   .vhd-door{transition:opacity .3s ease !important;
   }
@@ -464,7 +472,7 @@
 @media (hover:hover){
   .vhd-root:not(.is-open) .vhd-door:hover{filter:brightness(1.12);
   }}
-  @media (max-width: 700px) {
+@media (max-width: 700px) {
   .vhd-root {transform: translateX(calc(-50% + 18px));
   }
   .fx-access-launcher {transform: translateX(calc(-50% + 18px));
