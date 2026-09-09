@@ -249,7 +249,7 @@ export function FxAccessModal({
     const usernameBody = normalized.replace(/^@/, "");
 
     if (!/^[A-Za-z0-9_]{3,32}$/.test(usernameBody)) {
-      setError("ENTER YOUR TELEGRAM @USERNAME");
+      setError("DROP YOUR TELEGRAM @USERNAME");
       primaryInputRef.current?.focus();
       return;
     }
@@ -263,7 +263,7 @@ export function FxAccessModal({
     const normalizedUsername = normalizeUsername(username);
     const normalizedCode = normalizeIdentityCode(identityCode);
     if (!/^TGMX-[A-HJ-NP-Z2-9]{4}$/.test(normalizedCode)) {
-      setError("ENTER YOUR COMPLETE TGMX IDENTITY KEY");
+      setError("DROP THE FULL TGMX IDENTITY KEY");
       primaryInputRef.current?.focus();
       return;
     }
@@ -277,7 +277,7 @@ export function FxAccessModal({
   }),});
   const data = await response.json();
     if (!response.ok || !data?.verified) {
-        throw new Error(data?.error || "IDENTITY VERIFICATION FAILED");
+        throw new Error(data?.error || "IDENTITY CHECK DIDN'T GO THROUGH");
   }
   const verifiedUsername = normalizeUsername(data.username || normalizedUsername);
       setUsername(verifiedUsername);
@@ -286,7 +286,7 @@ export function FxAccessModal({
       setStep("access");
   } catch (submissionError) {setError(submissionError instanceof Error && submissionError.message
           ? submissionError.message
-          : "IDENTITY VERIFICATION FAILED",
+          : "IDENTITY CHECK DIDN'T GO THROUGH",
   );
   } finally {
       setIdentityLoading(false);
@@ -308,21 +308,21 @@ export function FxAccessModal({
     window.open(TELEGRAM_IDENTITY_URL, "_blank", "noopener,noreferrer");
   };
   const bubbleText = step === "username"
-      ? "Acceso privado. Identifícate con Telegram."
+      ? "Private access. Link up with Telegram."
       : step === "identity"
-        ? "Solicita tu clave TGMX en Telegram y escríbela aquí."
-        : `${username} · identidad verificada.`;
+        ? "Grab your TGMX key on Telegram, then drop it here."
+        : `${username} · identity locked in.`;
   const titleText =
     step === "username"
-      ? "¿QUIÉN ENTRA?"
+      ? "WHO'S PULLING UP?"
       : step === "identity"
         ? "IDENTITY CHECK"
         : "PRIVATE ACCESS";
   const stepLabel = step === "username"
-      ? "PASO 1 · TELEGRAM USERNAME"
+      ? "STEP 1 · TELEGRAM USERNAME"
       : step === "identity"
-        ? "PASO 2 · TGMX IDENTITY"
-        : "PASO 3 · ACCESS CODE";
+        ? "STEP 2 · TGMX IDENTITY"
+        : "STEP 3 · ACCESS CODE";
   if (!open || typeof document === "undefined") return null;
   return createPortal(
           <div className="smkl-modal" role="presentation" onMouseDown={(event) => {if (event.target === event.currentTarget) handleClose();}}>
@@ -336,7 +336,7 @@ export function FxAccessModal({
                aria-describedby={`${modalId}-desc`}
                aria-busy={busy}
                onMouseDown={(event) => event.stopPropagation()}>
-          <button type="button" className="smkl-modal__close" onClick={handleClose}  aria-label="Cerrar acceso"  disabled={busy}>
+          <button type="button" className="smkl-modal__close" onClick={handleClose}  aria-label="Close access"  disabled={busy}>
           <span/>
           <span/>
           </button>
@@ -450,9 +450,9 @@ export function FxAccessModal({
             )}
           <button type="submit" className={`smkl-form__submit${busy ? " is-loading" : ""}`} disabled={busy}>
           <span>
-           {busy ? "VERIFICANDO..."
+           {busy ? "CHECKING..."
                  : step === "username"
-                   ? "CONTINUAR"
+                   ? "KEEP GOING"
                    : step === "identity"
                      ? "VERIFY IDENTITY"
                      : "ENTER VAULT"}
