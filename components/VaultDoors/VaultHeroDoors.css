@@ -388,9 +388,7 @@
     min-height:340px;
     height:auto;
     padding:20px 16px 38px;
-    background:
-      url("/wallpaperVideo.png")
-      center / cover no-repeat;
+    background:url("/wallpaperVideo.png") center bottom / cover no-repeat;
   }
   .vhd-logoGlow{
     width:280px;
@@ -437,7 +435,17 @@
     transform-origin:center bottom;
   }
   /* INPUT INFERIOR */
-  .vhd-form{ left:50%; right:auto; bottom:-74px; width:calc(100% - 24px); min-height:54px; margin:0; padding:6px 6px 6px 10px; transform:translateX(-50%); background:linear-gradient(90deg,#06090a45,#06080a12,#06080a45),url("/wallpaper2.png") center / 190px auto repeat-x;box-shadow:none !important;
+  .vhd-form{
+    left:50%;
+    right:auto;
+    bottom:-74px;
+    width:calc(100% - 24px);
+    min-height:54px;
+    margin:0;
+    padding:6px 6px 6px 10px;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg,#06090a45,#06080a12,#06080a45),url("/wallpaperInput.png") center / 190px auto repeat-x;
+    box-shadow:none !important;
   }
   .vhd-input{ min-width:0; height:42px; padding:0 6px; font-size:10px; letter-spacing:.12em;
   }}
