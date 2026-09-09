@@ -8,8 +8,8 @@ type VaultHeroDoorsProps = {
 };
 
 export default function VaultHeroDoors({
-  unlocked = false,
-}: VaultHeroDoorsProps) {
+  unlocked = false,}: 
+VaultHeroDoorsProps) {
   const [open, setOpen] = useState(false);
   return (
     <div className={`vhd-root${open ? " is-open" : ""}`}>

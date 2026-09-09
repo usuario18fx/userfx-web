@@ -184,7 +184,6 @@ video{
   font-weight:700;
   letter-spacing:.16em;
 }
-
 /* ═══════════════════════════════════════
    HERO
    ═══════════════════════════════════════ */
@@ -260,11 +259,9 @@ video{
   margin:22px 0 0;
   padding:18px 26px; /* ↔️ espacio interno */
   overflow:hidden;
-  border:1px solid #2C3036;
-  border-bottom:2px solid #B58B36; /* 🎨 color / grosor inferior */
-  background:
-    linear-gradient(180deg,#05070A33,#0203058A),
-  linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(0, 0, 0, 0.98));
+  border:transparent;
+  border-bottom:transparent; /* 🎨 color / grosor inferior */
+  background:transparent;
   color:#D8E8FF;
   font-family:"JetBrains Mono",ui-monospace,monospace;
   font-size:11px;
@@ -279,10 +276,9 @@ video{
   bottom:-1px;   /* ⬆️⬇️ posición */
   height:1px;
   background:linear-gradient(90deg,
-    transparent,
-    #D5AD53,#F0D47D,
-    #D5AD53,transparent
-  );}
+    transparent,#D5AD53,#F0D47D,
+    #D5AD53,transparent);
+}
 .vx-kicker > *{
   position:relative;
   z-index:1;
@@ -293,10 +289,7 @@ video{
   flex:0 0 26px;
   background:#0754B28C;
 }
-
-/* ═══════════════════════════════════════
-   TITLE
-   ═══════════════════════════════════════ */
+/* ════════════  TITLE ═══════════ */
 .vx-title{
   position:relative;
   display:flex;

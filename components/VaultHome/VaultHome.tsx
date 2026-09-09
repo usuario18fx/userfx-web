@@ -517,7 +517,15 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
             <aside className="vx-lock vx-lockRaise">
         <VaultHeroDoors unlocked={unlocked}/>
               {!unlocked ? (
-        <VaultActions value={inlineCodeValue} onChange={handleInlineCodeChange} onSubmit={handleVerify} onGetCode={() => setDm(true)} loading={verifyLoading} error={verifyError} placeholder={inlineCodeTemplate} inputRef={inlineCodeRef}/>
+        <VaultActions
+  value={inlineCodeValue}
+  onChange={handleInlineCodeChange}
+  onSubmit={handleVerify}
+  onGetCode={() => setDm(true)}
+  loading={verifyLoading}
+  error={verifyError}
+  placeholder={inlineCodeTemplate}
+  inputRef={inlineCodeRef}/>
              ) : null}
             </aside>
               </div>

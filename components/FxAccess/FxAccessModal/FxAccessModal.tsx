@@ -1,18 +1,10 @@
-import {
-  FormEvent,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, useEffect, useId, useRef,useState,} from "react";
 import type { RefObject } from "react";
 import { createPortal } from "react-dom";
 import "./FxAccessModal.css";
 
 type AccessStep = "username" | "identity" | "access";
-
-type FxAccessModalProps = {
-  id?: string;
+type FxAccessModalProps = { id?: string;
   open: boolean;
   onClose: () => void;
   accessCode: string;
@@ -177,12 +169,9 @@ export function FxAccessModal({
       .finally(() => {
         if (!cancelled) setIdentityLoading(false);
       });
-
     return () => {
       cancelled = true;
-    };
-  }, [open]);
-
+    };}, [open]);
   useEffect(() => {
     if (!open) return;
     const timer = window.setTimeout(() => {
@@ -190,41 +179,31 @@ export function FxAccessModal({
         inputRef?.current?.focus();
       } else {
         primaryInputRef.current?.focus();
-      }
-    }, 120);
-
+      }}, 120);
     return () => window.clearTimeout(timer);
   }, [open, step, inputRef]);
-
   useEffect(() => {
     if (!open) return;
-
     previouslyFocusedElement.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
-
     const previousOverflow = document.body.style.overflow;
     const previousPaddingRight = document.body.style.paddingRight;
     const scrollbarWidth =
       window.innerWidth - document.documentElement.clientWidth;
-
     document.body.style.overflow = "hidden";
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         if (!loadingRef.current) onCloseRef.current();
         return;
       }
-
       if (event.key !== "Tab") return;
-
       const stage = stageRef.current;
       if (!stage) return;
-
       const focusableElements = Array.from(
         stage.querySelectorAll<HTMLElement>(focusableSelector),
       ).filter(
@@ -232,31 +211,25 @@ export function FxAccessModal({
           !element.hasAttribute("disabled") &&
           element.getAttribute("aria-hidden") !== "true",
       );
-
       if (!focusableElements.length) {
         event.preventDefault();
         return;
       }
-
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
       const activeElement = document.activeElement;
-
       if (!stage.contains(activeElement)) {
         event.preventDefault();
         firstElement.focus();
         return;
       }
-
       if (event.shiftKey && activeElement === firstElement) {
         event.preventDefault();
         lastElement.focus();
       } else if (!event.shiftKey && activeElement === lastElement) {
         event.preventDefault();
         firstElement.focus();
-      }
-    };
-
+      }};
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -286,325 +259,211 @@ export function FxAccessModal({
     setError(null);
     setStep("identity");
   };
-
   const handleIdentitySubmit = async () => {
     const normalizedUsername = normalizeUsername(username);
     const normalizedCode = normalizeIdentityCode(identityCode);
-
     if (!/^TGMX-[A-HJ-NP-Z2-9]{4}$/.test(normalizedCode)) {
       setError("ENTER YOUR COMPLETE TGMX IDENTITY KEY");
       primaryInputRef.current?.focus();
       return;
     }
-
-    try {
-      setIdentityLoading(true);
-      setError(null);
-
-      const response = await fetch("/api/identity", {
-        method: "POST",
+    try {setIdentityLoading(true);
+         setError(null);
+    const response = await fetch("/api/identity", {method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({
-          username: normalizedUsername,
-          code: normalizedCode,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data?.verified) {
+        credentials: "same-origin",body: JSON.stringify({
+        username: normalizedUsername,
+        code: normalizedCode,
+  }),});
+  const data = await response.json();
+    if (!response.ok || !data?.verified) {
         throw new Error(data?.error || "IDENTITY VERIFICATION FAILED");
-      }
-
-      const verifiedUsername = normalizeUsername(data.username || normalizedUsername);
+  }
+  const verifiedUsername = normalizeUsername(data.username || normalizedUsername);
       setUsername(verifiedUsername);
       persistUsername(verifiedUsername);
       setIdentityCode("");
       setStep("access");
-    } catch (submissionError) {
-      setError(
-        submissionError instanceof Error && submissionError.message
+  } catch (submissionError) {setError(submissionError instanceof Error && submissionError.message
           ? submissionError.message
           : "IDENTITY VERIFICATION FAILED",
-      );
-    } finally {
+  );
+  } finally {
       setIdentityLoading(false);
-    }
-  };
-
+  }};
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (busy) return;
-
-    if (step === "username") {
-      handleUsernameSubmit();
+    if (step === "username") {handleUsernameSubmit();
       return;
-    }
-
+  }
     if (step === "identity") {
       await handleIdentitySubmit();
       return;
-    }
-
+  }
     persistUsername(normalizeUsername(username));
     onAccessSubmit(event);
   };
-
   const openTelegramIdentity = () => {
     window.open(TELEGRAM_IDENTITY_URL, "_blank", "noopener,noreferrer");
   };
-
-  const bubbleText =
-    step === "username"
+  const bubbleText = step === "username"
       ? "Acceso privado. Identifícate con Telegram."
       : step === "identity"
         ? "Solicita tu clave TGMX en Telegram y escríbela aquí."
         : `${username} · identidad verificada.`;
-
   const titleText =
     step === "username"
       ? "¿QUIÉN ENTRA?"
       : step === "identity"
         ? "IDENTITY CHECK"
         : "PRIVATE ACCESS";
-
-  const stepLabel =
-    step === "username"
+  const stepLabel = step === "username"
       ? "PASO 1 · TELEGRAM USERNAME"
       : step === "identity"
         ? "PASO 2 · TGMX IDENTITY"
         : "PASO 3 · ACCESS CODE";
-
   if (!open || typeof document === "undefined") return null;
-
   return createPortal(
-    <div
-      className="smkl-modal"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) handleClose();
-      }}
-    >
-      <div className="smkl-modal__backdrop" />
-
-      <div
-        ref={stageRef}
-        className="smkl-modal__stage"
-        id={modalId}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`${modalId}-title`}
-        aria-describedby={`${modalId}-desc`}
-        aria-busy={busy}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="smkl-modal__close"
-          onClick={handleClose}
-          aria-label="Cerrar acceso"
-          disabled={busy}
-        >
-          <span />
-          <span />
-        </button>
-
-        <header className="smkl-modal__brand">
-          <div className="smkl-modal__brand-line" />
-          <RoseIcon className="smkl-modal__brand-rose" />
-          <div className="smkl-modal__brand-line" />
-          <strong>USER FX</strong>
-        </header>
-
-        <div className="smkl-modal__bubble" id={`${modalId}-desc`}>
-          {bubbleText}
-        </div>
-
-        <div className="smkl-robot" aria-hidden="true">
+          <div className="smkl-modal" role="presentation" onMouseDown={(event) => {if (event.target === event.currentTarget) handleClose();}}>
+          <div className="smkl-modal__backdrop" />
+          <div ref={stageRef}
+               className="smkl-modal__stage"
+               id={modalId}
+               role="dialog"
+               aria-modal="true"
+               aria-labelledby={`${modalId}-title`}
+               aria-describedby={`${modalId}-desc`}
+               aria-busy={busy}
+               onMouseDown={(event) => event.stopPropagation()}>
+          <button type="button" className="smkl-modal__close" onClick={handleClose}  aria-label="Cerrar acceso"  disabled={busy}>
+          <span/>
+          <span/>
+          </button>
+          <div className="smkl-modal__bubble smkl-modal__bubble--screen">
+          <span className="smkl-typing-text">
+           {bubbleText}
+          </span>
+          <div className="smkl-screen-userfx">
+          <div className="smkl-modal__brand-line"/>
+          <strong>
+            USER🜲FX
+          </strong>
+           <div className="smkl-modal__brand-line"/>
+          </div>
+          </div>
+          <div className="smkl-robot" aria-hidden="true">
           <div className="smkl-robot__ear smkl-robot__ear--left" />
           <div className="smkl-robot__ear smkl-robot__ear--right" />
-
           <div className="smkl-robot__head">
-            <RoseIcon className="smkl-robot__head-rose" />
-
-            <div className="smkl-robot__face">
-              <span className="smkl-robot__eye" />
-              <span className="smkl-robot__eye" />
-              <span className="smkl-robot__mouth" />
-            </div>
+    <RoseIcon className="smkl-robot__head-rose" />
+          <div className="smkl-robot__face">
+          <span className="smkl-robot__eye" />
+          <span className="smkl-robot__eye" />
+          <span className="smkl-robot__mouth" />
           </div>
-        </div>
-
-        <section className="smkl-panel">
+          </div>
+          </div>
+          <section className="smkl-panel">
           <div className="smkl-robot__hand smkl-robot__hand--left">
             <i />
             <i />
             <i />
             <i />
           </div>
-
           <div className="smkl-robot__hand smkl-robot__hand--right">
             <i />
             <i />
             <i />
             <i />
           </div>
-
-          <RoseIcon className="smkl-panel__rose" />
-
-          <h2 id={`${modalId}-title`}>{titleText}</h2>
-
+    <RoseIcon className="smkl-panel__rose"/>
+          <div className="smkl-modal__brand-line" />
+          <h2 id={`${modalId}-title`}>
+            {titleText} 
+          </h2>
+          <div className="smkl-modal__brand-line" />
           <div className="smkl-panel__divider" aria-hidden="true">
-            <span />
-            <RoseIcon />
-            <span />
+          <span />
+    <RoseIcon />
+          <span />
           </div>
-
           <form className="smkl-form" onSubmit={handleSubmit} noValidate>
-            <p
-              style={{
-                margin: "0",
-                color: "rgba(255,255,255,.48)",
+            <p style={{margin: "0",
+                color: "#ffffff7a",
                 fontSize: ".72rem",
-                letterSpacing: ".16em",
-              }}
-            >
-              {stepLabel}
-            </p>
-
-            <div className="smkl-form__field">
-              <span className="smkl-form__icon">
-                {step === "username" ? <UserIcon /> : <LockIcon />}
-              </span>
-
-              {step === "username" ? (
-                <>
-                  <label className="smkl-sr-only" htmlFor={`${modalId}-username`}>
-                    Telegram username
-                  </label>
-                  <input
-                    ref={primaryInputRef}
-                    id={`${modalId}-username`}
-                    type="text"
-                    name="username"
-                    placeholder="@username"
-                    value={username}
-                    onChange={(event) => {
-                      setUsername(normalizeUsername(event.target.value));
-                      setError(null);
-                    }}
-                    autoComplete="username"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    disabled={busy}
-                    required
-                  />
-                </>
-              ) : step === "identity" ? (
-                <>
-                  <label className="smkl-sr-only" htmlFor={`${modalId}-identity-code`}>
-                    TGMX identity code
-                  </label>
-                  <input
-                    ref={primaryInputRef}
-                    id={`${modalId}-identity-code`}
-                    type="text"
-                    name="identity-code"
-                    placeholder="TGMX-XXXX"
-                    value={identityCode}
-                    onChange={(event) => {
-                      setIdentityCode(normalizeIdentityCode(event.target.value));
-                      setError(null);
-                    }}
-                    autoComplete="one-time-code"
-                    autoCapitalize="characters"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    maxLength={9}
-                    disabled={busy}
-                    required
-                  />
-                </>
-              ) : (
-                <>
-                  <label className="smkl-sr-only" htmlFor={`${modalId}-access-code`}>
-                    Vault access code
-                  </label>
-                  <input
-                    ref={inputRef}
-                    id={`${modalId}-access-code`}
-                    type="text"
-                    name="access-code"
-                    placeholder={accessPlaceholder}
-                    value={accessCode}
-                    onChange={(event) =>
-                      onAccessCodeChange(event.target.value.toUpperCase())
-                    }
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    maxLength={9}
-                    disabled={accessLoading}
-                    required
-                  />
-                </>
-              )}
-            </div>
-
-            {visibleError && (
-              <p
-                className="smkl-form__error"
-                id={`${modalId}-error`}
-                role="alert"
-              >
-                {visibleError}
-              </p>
+                letterSpacing: ".16em",}}>
+          {stepLabel}
+          </p>
+          <div className="smkl-form__field">
+          <span className="smkl-form__icon">
+          {step === "username" ? <UserIcon /> : <LockIcon />}
+          </span>
+          {step === "username" ? (
+          <>
+          <label className="smkl-sr-only" htmlFor={`${modalId}-username`}>
+           Telegram username
+          </label>
+          <input
+            ref={primaryInputRef}
+            id={`${modalId}-username`}
+            type="text"
+            name="username"                
+            placeholder="@username"
+            value={username}
+            onChange={(event) => {setUsername(normalizeUsername(event.target.value));setError(null);}} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} disabled={busy} required/>
+          </>
+          ) : step === "identity" ? (
+          <>
+          <label className="smkl-sr-only" htmlFor={`${modalId}-identity-code`}>
+           TGMX identity code
+          </label>
+          <input ref={primaryInputRef} id={`${modalId}-identity-code`} type="text" name="identity-code" placeholder="TGMX-XXXX" value={identityCode} onChange={(event) => { setIdentityCode(normalizeIdentityCode(event.target.value));setError(null);}}autoComplete="one-time-code" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={9} disabled={busy} required/>
+          </>
+          ) : (
+          <>
+          <label className="smkl-sr-only" htmlFor={`${modalId}-access-code`}>
+           Vault access code
+          </label>
+          <input ref={inputRef} id={`${modalId}-access-code`} type="text" name="access-code" placeholder={accessPlaceholder} value={accessCode} onChange={(event) => onAccessCodeChange(event.target.value.toUpperCase())}  autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={9} disabled={accessLoading} required/>
+          </>
+           )}
+          </div>
+          {visibleError && (
+          <p className="smkl-form__error" id={`${modalId}-error`} role="alert" >
+          {visibleError}
+          </p>
+          )}
+          {step === "identity" && (
+          <button type="button" className="smkl-form__submit" onClick={openTelegramIdentity} disabled={busy}>
+          <span>
+           GET TGMX
+          </span>
+          </button>
+           )}
+          {step === "access" && (
+          <button type="button"  className="smkl-form__submit" onClick={onGetCode} disabled={accessLoading}>
+          <span>
+           GET MY CODE
+          </span>
+          </button>
             )}
-
-            {step === "identity" && (
-              <button
-                type="button"
-                className="smkl-form__submit"
-                onClick={openTelegramIdentity}
-                disabled={busy}
-              >
-                <span>GET TGMX</span>
-              </button>
-            )}
-
-            {step === "access" && (
-              <button
-                type="button"
-                className="smkl-form__submit"
-                onClick={onGetCode}
-                disabled={accessLoading}
-              >
-                <span>GET MY CODE</span>
-              </button>
-            )}
-
-            <button
-              type="submit"
-              className={`smkl-form__submit${busy ? " is-loading" : ""}`}
-              disabled={busy}
-            >
-              <span>
-                {busy
-                  ? "VERIFICANDO..."
-                  : step === "username"
-                    ? "CONTINUAR"
-                    : step === "identity"
-                      ? "VERIFY IDENTITY"
-                      : "ENTER VAULT"}
-              </span>
-            </button>
+          <button type="submit" className={`smkl-form__submit${busy ? " is-loading" : ""}`} disabled={busy}>
+          <span>
+           {busy ? "VERIFICANDO..."
+                 : step === "username"
+                   ? "CONTINUAR"
+                   : step === "identity"
+                     ? "VERIFY IDENTITY"
+                     : "ENTER VAULT"}
+          </span>
+          </button>
           </form>
-        </section>
-      </div>
-    </div>,
-    document.body,
-  );
-}
+          </section>
+          <header className="smkl-modal__brand smkl-modal__brand--bottom">
+          </header>
+          </div>
+          </div>,
+           document.body,
+          );
+          }
