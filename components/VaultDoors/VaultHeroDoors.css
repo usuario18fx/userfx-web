@@ -91,7 +91,7 @@
   padding:0;
   overflow:hidden;
   border:0;
-  background:#050505;
+  background:transparent !important;
   pointer-events:auto;
   cursor:pointer;
   box-shadow:none !important;
@@ -380,8 +380,7 @@
     overflow:visible;
     perspective:none;
   }
-  /* VIDEO */
-  .vhd-logoSide{
+  .vhd-logoSide{  /* VIDEO */
     width:100%;
     min-height:340px;
     height:auto;
@@ -454,9 +453,6 @@
   .vhd-root.is-open .vhd-door.left,
   .vhd-root.is-open .vhd-door.right{transform:none; opacity:0;
   }}
-#faq.vx-sec{max-width:none; padding-left:max(16px,calc(50% - 36rem)); padding-right:max(16px,calc(50% - 36rem)); padding-bottom:0; background:
-url("/wallpaper.png"); background-repeat:no-repeat,repeat; background-position:center,center;
-}
 @media (hover:hover){.vhd-root:not(.is-open) .vhd-door:hover{filter:none !important;
   }}
 /* móvil */
@@ -469,9 +465,7 @@ url("/wallpaper.png"); background-repeat:no-repeat,repeat; background-position:c
   .vhd-root:not(.is-open) .vhd-door:hover{filter:brightness(1.12);
   }}
   @media (max-width: 700px) {
-  .vhd-root {
-    transform: translateX(calc(-50% + 18px));
+  .vhd-root {transform: translateX(calc(-50% + 18px));
   }
-  .fx-access-launcher {
-    transform: translateX(calc(-50% + 18px));
+  .fx-access-launcher {transform: translateX(calc(-50% + 18px));
   }}

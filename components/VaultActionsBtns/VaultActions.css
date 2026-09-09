@@ -1,20 +1,23 @@
 /* ======   VAULT ACTIONS ================= */
 /* Contenedor del nuevo botón GET ACCESS */
 .fx-access-launcher {
-  position: relative;
-  left: 95px;      /* - ←   + → */
-  top: -79px;      /* - ↑   + ↓ */
+  position: absolute;
+  left: 135px !important;      /* + → */
+  top: -10px;                  /* + ↑ */
   z-index: 20;
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
 }
 /* ==========  BOTÓN =============================== */
-.fx-access-launcher .smkl-access-button {width: min(470px, 100%); margin: 0 auto;
+.fx-access-launcher .smkl-access-button {
+  width: min(470px, 100%); 
+  margin: 0 auto;
 }
 /* ===========  TABLET ===================== */
 @media (max-width: 900px) {
-  .fx-access-launcher{left: 35px; top: -55px;
+  .fx-access-launcher {
+    left: 35px; top: -55px;
   }}
 /* ============  MOBILE =================== */
 @media (max-width: 700px) {
@@ -28,7 +31,10 @@
     display: flex;
     justify-content: center;
   }
-  .fx-access-launcher .smkl-access-button {width: 100%; max-width: 470px; margin: 0 auto;
+  .fx-access-launcher .smkl-access-button {
+    width: 100%; 
+    max-width: 470px; 
+    margin: 0 auto;
   }}
 /* =========   MOBILE PEQUEÑO =================== */
 @media (max-width: 430px) {

@@ -1,0 +1,28 @@
+html,
+body,
+#root{
+min-height:100%;
+}
+body{
+margin:0;
+background-color:#050505;
+background-image:url("/wallpaperGeneral.png");
+background-position:center top;
+background-size:100% auto;
+background-repeat:repeat-y;
+background-attachment:scroll;
+}
+#root{
+background:transparent!important;
+}
+html,
+body,
+#root,
+main,
+section{
+background-color:transparent!important;
+}
+
+body{
+background:#050505 url("/wallpaperGeneral.png") center top/100% auto repeat-y!important;
+}

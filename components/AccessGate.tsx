@@ -114,7 +114,7 @@ const GATE_CSS = `
   margin:0 auto 12px;
   display:block;
 }
-.access-gate__{
+.access-gate__kicker{
   margin:0 0 24px;
   color:#e0b85a;
   font-size:10px;

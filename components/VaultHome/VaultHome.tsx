@@ -54,25 +54,25 @@ const LOGO="/assets/userfx-logo-sin.png";
                       "| ALL RIGHTS RESERVED |",
     ];
   const STEPS  =      [{n: "01",
-                        title: "UNLOCK YOUR ACCESS",
-                        text: "Each key unlocks the private collection for a set number of entries.",},
+                        title: "OPEN THE TELEGRAM BOT",
+                        text: "Open our Telegram bot to explore the available access levels and see what each option includes.",},
                        {n: "02",
-                        title: "REQUEST YOUR KEY",
-                        text: "Choose ʙᴀꜱɪᴄ ᴘʀᴏ or ᴠɪᴘ, then use ɢᴇᴛ ᴍʏ ᴄᴏᴅᴇ to request your private key.",},
+                        title: "CHOOSE YOUR ACCESS",
+                        text: "Select ʙᴀꜱɪᴄ, ᴠɪᴘ or ᴘʀᴏ based on the experience and level of access you prefer.",},
                        {n: "03",
-                        title: "RECEIVE YOUR KEY",
-                        text: "Once confirmed, you receive your private code. Keep it safe.",},
+                        title: "COMPLETE YOUR PAYMENT",
+                        text: "Finish your payment securely inside Telegram. Once confirmed, your unique private code is delivered instantly.",},
                        {n: "04",
-                        title: "OPEN THE VAULT",
-                        text: "Enter your complete access code. The door verifies it and unlocks your plan.",},
-    ];
+                        title: "UNLOCK THE VAULT",
+                        text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan.",},
+                       ];
   const FAQS = [
     { q: "How do I get a code?",
-      a: "Choose your access level and use GET MY CODE to continue through Telegram.",},
+      a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest.",},
     { q: "How many times can I enter?",
-      a: "BASIC includes 1 entry, PRO includes 10 entries, and VIP includes unlimited entries.",},
+      a: "Each plan offers a different level of access, from occasional entry to a more flexible experience.",},
     { q: "Can I share my code?",
-      a: "No. Your key is personal and non-transferable.",},
+      a: "Your key is personal and non-transferable.",},
     { q: "What happens if I don’t receive my code?",
       a: "Contact @User18Fx_bot and we’ll review your request.",},
     { q: "Are refunds available?",
@@ -132,7 +132,6 @@ function Reveal({ children, delay = 0, className = "",
     io.observe(el);
     return () => io.disconnect();
     }, []);
-
     return (
               <div ref={ref} className={`vx-reveal ${on ? "is-on" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
                {children}
@@ -145,8 +144,10 @@ function Reveal({ children, delay = 0, className = "",
     return (
               <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
               <div className="vx-tickerTrack">
-              <span>{line.repeat(4)}</span>
-              <span>{line.repeat(4)}</span>
+              <span>
+                {line.repeat(4)}</span>
+              <span>
+                {line.repeat(4)}</span>
               </div>
               </div>
     );
@@ -651,10 +652,12 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
               </h2>
               <div className="vx-insideRow">
               <p className="vx-lead">
-               You’re only seeing part of it. Every Friday at 22:00 UTC a new drop
-               is added. This is just a glimpse of
+              A private space where sexy, free-spirited, open-minded guys can connect. 
+              Join one-on-one or group video calls and share the moment with guys who match your vibe.
+              You’re only seeing a preview. A new exclusive drop arrives every Friday at 
+              22:00 UTC—this is just a glimpse of what’s waiting inside.
               <strong>
-               —Nocturna—
+               —Keep it lit—
               </strong>
               </p>
               <div className="vx-count">
