@@ -115,6 +115,145 @@
   text-shadow: 0 0 10px rgba(93, 255, 193, 0.28) !important;
 }
 
+/* =========================================================
+   DESKTOP — MISMO DISEÑO / PROPORCIONES QUE MOBILE
+   ========================================================= */
+@media (min-width: 481px) {
+  .smkl-modal {
+    place-items: center !important;
+    padding: 12px !important;
+  }
+
+  .smkl-modal__stage {
+    width: min(94vw, 420px) !important;
+    max-width: 420px !important;
+    margin: 0 auto !important;
+  }
+
+  .smkl-modal__close {
+    top: 8px !important;
+    right: 12px !important;
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .smkl-modal__close span {
+    width: 12px !important;
+  }
+
+  .smkl-modal__brand strong {
+    font-size: 1.6rem !important;
+  }
+
+  .smkl-modal__brand-rose {
+    width: 28px !important;
+  }
+
+  .smkl-modal__brand-line {
+    width: 50px !important;
+  }
+
+  .smkl-modal__bubble {
+    margin: 12px auto 14px !important;
+    padding: 6px 14px !important;
+    font-size: .7rem !important;
+  }
+
+  .smkl-robot {
+    width: 110px !important;
+    height: 86px !important;
+  }
+
+  .smkl-robot__head {
+    inset: 0 8px !important;
+  }
+
+  .smkl-robot__face {
+    inset: 14px 16px 12px !important;
+    gap: 12px !important;
+  }
+
+  .smkl-robot__eye {
+    width: 10px !important;
+    height: 18px !important;
+  }
+
+  .smkl-robot__mouth {
+    bottom: 12px !important;
+    width: 12px !important;
+  }
+
+  .smkl-robot__ear {
+    top: 28px !important;
+    height: 32px !important;
+    width: 10px !important;
+  }
+
+  .smkl-panel {
+    margin-top: -16px !important;
+    padding: 36px 14px 16px !important;
+    border-radius: 16px !important;
+    border-color: rgba(201, 163, 74, 0.32) !important;
+  }
+
+  .smkl-panel__rose {
+    top: -18px !important;
+    width: 34px !important;
+  }
+
+  .smkl-panel h2 {
+    font-size: .8rem !important;
+  }
+
+  .smkl-panel__divider {
+    margin: 6px 0 10px !important;
+  }
+
+  .smkl-robot__hand {
+    top: -12px !important;
+    width: 42px !important;
+    height: 26px !important;
+  }
+
+  .smkl-robot__hand i {
+    height: 18px !important;
+  }
+
+  .smkl-form {
+    gap: 8px !important;
+  }
+
+  .smkl-form__field {
+    min-height: 38px !important;
+    padding: 0 8px !important;
+    border-radius: 10px !important;
+  }
+
+  .smkl-form__icon svg,
+  .smkl-form__password-toggle svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .smkl-form__field input {
+    font-size: .8rem !important;
+  }
+
+  .smkl-form__error {
+    font-size: .7rem !important;
+    padding: 6px 10px !important;
+  }
+
+  .smkl-form__submit {
+    min-height: 40px !important;
+  }
+
+  .smkl-form__submit span {
+    font-size: .75rem !important;
+  }
+}
+
+/* MOBILE — conserva exactamente el diseño actual */
 @media (max-width: 480px) {
   .smkl-modal__stage {
     width: min(94vw, 420px) !important;
