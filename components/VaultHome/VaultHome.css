@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
-
 html,body,#root{
 margin:0;
 padding:0;
@@ -11,21 +10,18 @@ background:transparent!important;
 *::after{
   box-sizing:border-box;
 }
-
 html,
 body{
   width:100%;
   max-width:100%;
   overflow-x:clip;
 }
-
 img,
 svg,
 video{
   display:block;
   max-width:100%;
 }
-
 .vx{
 --ink:#07060a;
 --bone:#f4eee4;
@@ -41,7 +37,6 @@ font-family:var(--display);
 background:transparent!important;
 min-height:100dvh;
 }
-
 /* ═══════════════════════════════════════
    REVEAL
    ═══════════════════════════════════════ */
@@ -59,7 +54,6 @@ min-height:100dvh;
   transform:none;
   filter:none;
 }
-
 /* ═══════════════════════════════════════
    HUD
    ═══════════════════════════════════════ */
@@ -84,7 +78,6 @@ min-height:100dvh;
   backdrop-filter:blur(10px) brightness(1.3) saturate(1.35);
   -webkit-backdrop-filter:blur(10px) brightness(1.3) saturate(1.35);
 }
-
 .vx-brand{
   display:flex;
   align-items:center;
@@ -96,7 +89,6 @@ min-height:100dvh;
   letter-spacing:.22em;
 }
 .vx-brand img{ height:28px; }
-
 .vx-live{
   width:6px;
   height:6px;
@@ -105,7 +97,6 @@ min-height:100dvh;
   background:var(--rose);
   box-shadow:0 0 10px #DD334F;
 }
-
 .vx-hudRight{
   display:flex;
   align-items:center;
@@ -123,7 +114,6 @@ min-height:100dvh;
   font-weight:600;
   cursor:pointer;
 }
-
 .vx-visitorCount{
   display:inline-flex;
   align-items:center;
@@ -143,7 +133,6 @@ min-height:100dvh;
   border-color:#E0B85A66;
   color:var(--gold);
 }
-
 .vx-visitorIcon{
   width:18px;
   height:18px;
@@ -152,7 +141,6 @@ min-height:100dvh;
   pointer-events:none;
   filter:drop-shadow(0 0 4px #E0B85A40);
 }
-
 .vx-unlockedBadge{
   display:inline-flex;
   flex-direction:column;
@@ -509,9 +497,7 @@ min-height:100dvh;
     top:18px;
     left:0;
     font-size:11px;
-  }
-}
-
+  }}
 /* ══════  TICKER ═══════════ */
 .vx-ticker{
   position:relative;
@@ -636,7 +622,8 @@ min-height:100dvh;
   max-width:56rem;
   margin:0 auto;
   padding:72px 16px;
-  border-top:1px solid var(--line);
+  border-top:none !important;
+  border-bottom: none !important;
 }
 .vx-tint{
   max-width:none;
@@ -665,24 +652,21 @@ min-height:100dvh;
   margin-left:.12em;
   color:#B64B5D;
   font-style:italic;
-  text-shadow:0 0 18px #B64B5D40;
+  text-shadow:0 0 18px #b64b5d58;
 }
 /* ════════════  PROTOCOL ════════════ */
 .vx-step{
   position:relative;
   display:grid;
   grid-template-columns:72px 1fr;
-  gap:16px;
-  margin:0;
-  padding:22px 18px;
-  border:0;
-  outline:0;
-  background:linear-gradient(20deg,#1f46794f), url("/assets/damask.png");
-  box-shadow:none;
-  transition:
-    border-color .3s ease,
-    transform .3s ease,
-    background-color .3s ease;
+  gap:20px;
+  min-height:175px;
+  padding:28px 32px; /* ↔️↕️ padding */
+  border:1px solid #8E6E2C;
+  background:
+    linear-gradient(180deg,#0B0D10E8,#050607F5),
+    url("/assets/damask.png") center / 320px repeat;
+  color:#EAE5DD;
 }
 .vx-step:hover{ transform:translateX(4px); }
 .vx-stepNum{
@@ -738,19 +722,6 @@ min-height:100dvh;
 .vx-stepRight{
   align-self:flex-end;
   transform:translateX(0); /* ➡️⬅️ */
-}
-.vx-step{
-  position:relative;
-  display:grid;
-  grid-template-columns:72px 1fr;
-  gap:20px;
-  min-height:175px;
-  padding:28px 32px; /* ↔️↕️ padding */
-  border:1px solid #8E6E2C;
-  background:
-    linear-gradient(180deg,#0B0D10E8,#050607F5),
-    url("/assets/damask.png") center / 320px repeat;
-  color:#EAE5DD;
 }
 .vx-stepNum{
   color:#C79D42; /* 🎨 */
@@ -1241,8 +1212,6 @@ min-height:100dvh;
   background:linear-gradient(
   #03050770,#03050759),
     url("/wallpaper.png")
-    center / cover no-repeat,
-    url("/wallpaper.png")
     center / cover no-repeat;
   padding-top:90px;    /* ⬆️ */
   padding-bottom:1px; /* ⬇️ */
@@ -1256,17 +1225,18 @@ min-height:100dvh;
   margin-left:auto;
   margin-right:auto;
   background:
-    linear-gradient(#05050754,#050507e7),
+    linear-gradient(#0505070d,#05050727),
     url("/wallpaper.png");
-  transform: translateY(-45px);
+  transform: translateY(-40px);
   }
   #faq.vx-sec {
     max-width:none; 
     padding-left:max(16px,calc(50% - 36rem)); 
     padding-right:max(16px,calc(50% - 36rem)); 
     padding-bottom:0; 
-    background: url("/wallpaper.png"); background-repeat:no-repeat,repeat; background-position:center,center;
-}
+    border-top:none !important;
+    border-bottom: none !important;
+              }
 /* ═══════════  CHOOSE YOUR CODE ════════ */
 .vx-chooseZone{
   position:relative;
@@ -1275,8 +1245,8 @@ min-height:100dvh;
   margin-left:calc(50% - 50vw);        /*⬅️➡️*/
   margin-right:calc(50% - 50vw);
   padding:1px/*⬆️*/ max(24px,calc(50vw - 30rem))/*↔️*/ 1px/*⬇️*/;
-  background-color:#05060721;
-  background:linear-gradient(#0505071a,#05050729), url("/wallpaper1.png");
+  background-color:#05060707;
+  background:linear-gradient(#0505071a,#05050782), url("/wallpaper1.png");
   background-position:center center;
   background-size:100% auto;
   background-repeat:no-repeat;
@@ -1288,9 +1258,7 @@ min-height:100dvh;
   width:100%;
   padding-top:80px;       /* ⬆️ */
   padding-bottom:80px;    /* ⬇️ */
-  background:
-  url("/wallpaperVertical.png")
-  center top / 100% auto repeat-y; /* 🎨 fondo general */
+  background:url("/wallpaper1-1.png") 50% 65% / cover no-repeat;
 }
 #llaves.vx-sec{
   min-height:0 !important;
@@ -1304,6 +1272,32 @@ min-height:100dvh;
   padding-bottom:0 !important;
   margin-bottom:0 !important;
 }
+/* ═══════  FONDO ÚNICO · FAQ + FOOTER ═════════════════════ */
+.vx-finalBackdrop{
+  position:relative;
+  width:100%;
+  background:
+    url("/wallpaper1-1.png")
+    center top / cover no-repeat;
+  overflow:hidden;
+}
+.vx-finalBackdrop #faq{
+  position:relative;
+  z-index:1;
+  background:transparent !important;
+}
+.vx-finalBackdrop .vx-foot{
+  position:relative;
+  z-index:1;
+  background:transparent !important;
+}
+@media(max-width:520px){
+  .vx-finalBackdrop{
+    background-image:url("/wallpaper1-1.png");
+    background-position:50% 40%;
+    background-size:140% auto;
+    background-repeat:no-repeat;
+  }}
 /* ════════════  RESPONSIVE ═════════════ */
 @media (min-width:900px){
   .vx-step small{
@@ -1425,4 +1419,108 @@ min-height:100dvh;
 @media (min-width:960px){
   .vx-grid > .vx-lock.vx-lockRaise{transform:translateX(-160px) translateY(40px) !important;
   }}
-
+#faq > .vx-reveal{
+  background:
+    linear-gradient(#05050754,#050507e7),
+    url("/wallpaper1-1.png");
+}
+/* ══════════  ✦ STARS · CADA STEP DEL PROTOCOLO ═════════ */
+.vx-step{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+/* CAPA GENERAL */
+.vx-stepStars{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:radial-gradient(
+      ellipse at bottom,
+      #164d8c20 0%,
+      #090a0f25 100%
+    );}
+/* CONTENIDO ARRIBA DE LAS ESTRELLAS */
+.vx-step > .vx-stepNum,
+.vx-step > div:not(.vx-stepStars),
+.vx-step > small{
+  position:relative;
+  z-index:2;
+}
+/* ═════ ESTRELLAS PEQUEÑAS ═════ */
+.vx-stars1{
+  position:absolute;
+  inset: 0;
+  width:1px;
+  height:1px;
+  background:transparent;
+  box-shadow:11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 
+             1833px 832px #fff, 1424px 285px #fff, 1377px 1596px #fff, 432px 153px #00ffbf, 1348px 1410px #00ffbf,
+             1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px #00ffbf, 52vw 101px #f9d802, 71vw 57px #ffffff, 
+             89vw 137px #f9d802, 1833px 832px #00ffbf, 1424px 285px #fff, 1377px 1596px #00ffbf, 432px 153px #fff,
+             1348px 1410px #00ffbf, 1529px 954px #f9d802,1102px 387px #f9d802, 11vw 126px #f9d802, 31vw 38px #ffffff,
+             52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #fff, 1424px 285px #fff, 1377px 
+             1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px
+             #00ffbf, 52vw 101px #f9d802,71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #f9d802, 1424px 285px #fff,
+             1377px 1596px #f9d802, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #f9d802, 1102px 387px #f9d802;
+  opacity:.75;
+  animation:vxStepStars 18s linear infinite;
+}
+/* ═════ ESTRELLAS MEDIANAS ═════ */
+.vx-stars2{
+  position:absolute;
+  width:2px;
+  height:2px;
+  inset: 0;
+  border-radius: 50%;
+  background:transparent;
+  box-shadow:11vw 126px #00ffbf, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 
+             1833px 832px #fff, 1424px 285px #fff, 1377px 1596px #fff, 432px 153px #fff, 1348px 1410px #00ffbf,
+             1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 
+             89vw 137px #00ffbf, 1833px 832px #00ffbf, 1424px 285px #fff, 1377px 1596px #f9d802, 432px 153px #fff,
+             1348px 1410px #f9d802, 1529px 954px #f9d802,1102px 387px #f9d802, 11vw 126px #f9d802, 31vw 38px #ffffff,
+             52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #fff, 1424px 285px #fff, 1377px 
+             1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px
+             #ffffff, 52vw 101px #f9d802,71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #f9d802, 1424px 285px #fff,
+             1377px 1596px #00ffbf, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #f9d802, 1102px 387px #f9d802;
+  opacity:.70;
+  animation:vxStepStars 28s linear infinite;
+}
+/* ═════ ESTRELLAS GRANDES ═════ */
+.vx-stars3{
+  position:absolute;
+   inset: 0;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 
+             1833px 832px #fff, 1424px 285px #fff, 1377px 1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802,
+             1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 
+             89vw 137px #f9d802, 1833px 832px #f9d802, 1424px 285px #fff, 1377px 1596px #f9d802, 432px 153px #fff,
+             1348px 1410px #f9d802, 1529px 954px #f9d802,1102px 387px #f9d802, 11vw 126px #f9d802, 31vw 38px #ffffff,
+             52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #fff, 1424px 285px #fff, 1377px 
+             1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px
+             #ffffff, 52vw 101px #f9d802,71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #f9d802, 1424px 285px #fff,
+             1377px 1596px #f9d802, 432px 153px #00ffbf, 1348px 1410px #f9d802, 1529px 954px #f9d802, 1102px 387px #f9d802,
+             11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 
+             1833px 832px #00ffbf, 1424px 285px #fff, 1377px 1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802,
+             1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px #ffffff, 52vw 101px #f9d802, 71vw 57px #ffffff, 
+             89vw 137px #f9d802, 1833px 832px #00ffbf, 1424px 285px #fff, 1377px 1596px #f9d802, 432px 153px #fff,
+             1348px 1410px #00ffbf, 1529px 954px #f9d802,1102px 387px #f9d802, 11vw 126px #f9d802, 31vw 38px #ffffff,
+             52vw 101px #f9d802, 71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #fff, 1424px 285px #fff, 1377px 
+             1596px #fff, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #fff, 11vw 126px #f9d802, 31vw 38px
+             #ffffff, 52vw 101px #f9d802,71vw 57px #ffffff, 89vw 137px #f9d802, 1833px 832px #f9d802, 1424px 285px #fff,
+             1377px 1596px #00ffbf, 432px 153px #fff, 1348px 1410px #f9d802, 1529px 954px #f9d802, 1102px 387px #f9d802;
+  opacity:.80;
+  animation:vxStepStars 40s linear infinite;
+}
+/* MOVIMIENTO */
+@keyframes vxStepStars{
+  from{transform:translateY(290px);
+  }
+  to{transform:translateY(-290px);
+  }
+}

@@ -26,3 +26,22 @@ background-color:transparent!important;
 body{
 background:#050505 url("/wallpaperGeneral.png") center top/100% auto repeat-y!important;
 }
+.vx-open{
+position:relative;
+background:
+linear-gradient(#00000022,#00000022),
+url("/wallpaperGeneral.png") center top/cover no-repeat!important;
+}
+
+.vx-damask{
+opacity:.12!important;
+}
+
+.vx-brick{
+opacity:.04!important;
+}
+
+.vx-blobA,
+.vx-blobB{
+opacity:.18!important;
+}

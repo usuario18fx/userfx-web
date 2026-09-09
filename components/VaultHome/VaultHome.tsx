@@ -601,25 +601,31 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
                {STEPS.map((s, i) => (
         <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
               <article className="vx-step">
-              <b className="vx-stepNum">
+  {/* ✦ FONDO DE ESTRELLAS */}
+               <div className="vx-stepStars" aria-hidden="true">
+               <div className="vx-stars vx-stars1" />
+               <div className="vx-stars vx-stars2" />
+               <div className="vx-stars vx-stars3" />
+               </div>
+               <b className="vx-stepNum">
                {s.n}
-              </b>
-              <div>
-              <h3>
+               </b>
+               <div>
+               <h3>
                {s.title}
-              </h3>
-              <p>
+               </h3>
+               <p>
                {s.text}
-              </p>
-              </div>
-              <small>
-               {s.n} / 04
-              </small>
-              </article>
+               </p>
+               </div>
+               <small>
+                {s.n} / 04
+               </small>
+               </article>
         </Reveal>
                ))}
               </div>
-              </section>
+          </section>
           <section id="llaves" className="vx-sec vx-tint">
               <div className="vx-chooseZone">
         <Reveal>
@@ -685,8 +691,9 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
               </div>
               </div>
 {/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
-              </section>
-              <section id="faq" className="vx-sec">
+            </section>
+            <div className="vx-finalBackdrop">
+            <section id="faq" className="vx-sec">
         <Reveal>
               <p className="vx-goldk">
                ◈ PRIVATE INFORMATION
@@ -726,9 +733,9 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
                );
               })}
               </div>
-              </section>
+            </section>
 {/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
-              <footer className="vx-foot">
+            <footer className="vx-foot">
               <div className="vx-footGrid">
               <div>
               <div className="vx-footBrand">
@@ -774,7 +781,8 @@ const [fxAccessOpen, setFxAccessOpen] = useState(false);
                by Canadian copyright law. Digital purchases are final once access is
                delivered, except where Ontario law requires otherwise.
               </p>
-              </footer>
+            </footer>
+            </div>
         <Ticker items={TICKER_ITEMS} reverse />
                {dm ? (
               <div className="vx-modal" onClick={() => setDm(false)}>
