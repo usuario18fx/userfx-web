@@ -1,9 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React,{useEffect,useState}from "react";
 import "./VaultActions.css";
-import "./VaultMobileCenter.css";
 import "./VaultIdentity.css";
-import "./VaultMobilePolish.css";
 import { FxAccessBtn } from "../FxAccess/FxAccessBtn";
 import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
 
@@ -17,9 +15,18 @@ import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
               inputRef?: React.RefObject<HTMLInputElement | null>;
                       };
   export default function VaultActions({ 
-    value, onChange, onSubmit, onGetCode, loading = false, error = "", placeholder = "BSIC-CODE", inputRef,}: 
+    value, onChange, onSubmit, onGetCode, loading = false, error = "", placeholder = "ACCESS KEY", inputRef,}: 
       VaultActionsProps) {
   const [fxAccessOpen, setFxAccessOpen] = useState(false);
+
+  useEffect(()=>{
+    const params=new URLSearchParams(window.location.search);
+    const returnToIdentity=params.get("identity")==="1"||localStorage.getItem("userfx_identity_return")==="1";
+    if(returnToIdentity){
+      setFxAccessOpen(true);
+    }
+  },[]);
+
   return (
           <>
           <div className="fx-access-launcher">
