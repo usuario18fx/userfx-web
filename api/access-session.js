@@ -5,6 +5,11 @@ const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE =
   process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
+const IDENTITY_COOKIE = "userfx_identity_session";
+const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const IDENTITY_ACCESS_SECONDS = 30 * 60;
 
 function getRedis() {
   if (!REDIS_URL) {
@@ -28,7 +33,7 @@ function getRedis() {
 }
 
 function hashValue(value) {
-  return crypto.createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(String(value)).digest("hex");
 }
 
 function parseCookies(header) {
@@ -64,6 +69,22 @@ function isSecureRequest(req) {
   return process.env.NODE_ENV === "production" || forwardedProto === "https";
 }
 
+function serializeSessionCookie(req, token, maxAge) {
+  const parts = [
+    `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    `Max-Age=${Math.max(0, Math.floor(maxAge))}`,
+  ];
+
+  if (isSecureRequest(req)) {
+    parts.push("Secure");
+  }
+
+  return parts.join("; ");
+}
+
 function clearSessionCookie(req) {
   const parts = [
     `${SESSION_COOKIE}=`,
@@ -87,11 +108,73 @@ function getSessionToken(req) {
   return /^[A-Za-z0-9_-]{40,64}$/.test(token) ? token : "";
 }
 
+async function readIdentitySession(redis, req) {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = String(cookies[IDENTITY_COOKIE] || "");
+  if (!token) return null;
+
+  const key = `${CODE_ENGINE_NAMESPACE}:identity-session:${hashValue(token)}`;
+  const raw = await redis.get(key);
+  if (!raw) return null;
+
+  try {
+    const record = JSON.parse(raw);
+    if (
+      record?.purpose !== "telegram_identity_session" ||
+      !record?.userId ||
+      !record?.telegramUsername
+    ) {
+      return null;
+    }
+    if (record.expiresAt && Date.parse(record.expiresAt) <= Date.now()) {
+      return null;
+    }
+    return record;
+  } catch {
+    return null;
+  }
+}
+
+async function getTelegramFxAccess(usernameNormalized) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  const params = new URLSearchParams({
+    username_normalized: `eq.${usernameNormalized}`,
+    select: "username,username_normalized,telegramfx_access,enabled",
+    limit: "1",
+  });
+
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(
+      `Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`
+    );
+  }
+
+  const rows = await response.json();
+  return Array.isArray(rows) && rows.length ? rows[0] : null;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
 
-  if (req.method !== "GET" && req.method !== "DELETE") {
+  if (!["GET", "POST", "DELETE"].includes(req.method)) {
     return res.status(405).json({
       ok: false,
       error: "Method not allowed.",
@@ -100,6 +183,82 @@ export default async function handler(req, res) {
 
   try {
     const redis = getRedis();
+
+    if (req.method === "POST") {
+      const identity = await readIdentitySession(redis, req);
+
+      if (!identity) {
+        return res.status(401).json({
+          ok: false,
+          authenticated: false,
+          error: "TGMX IDENTITY VERIFICATION REQUIRED",
+        });
+      }
+
+      const usernameNormalized = String(identity.telegramUsername || "")
+        .trim()
+        .replace(/^@+/, "")
+        .toLowerCase();
+
+      const telegramAccess = await getTelegramFxAccess(usernameNormalized);
+
+      if (
+        !telegramAccess ||
+        telegramAccess.enabled !== true ||
+        telegramAccess.telegramfx_access !== true
+      ) {
+        return res.status(403).json({
+          ok: false,
+          authenticated: false,
+          error: "TELEGRAMFX ACCESS IS NOT ACTIVE",
+        });
+      }
+
+      const token = crypto.randomBytes(32).toString("base64url");
+      const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${hashValue(token)}`;
+      const createdAt = new Date().toISOString();
+      const expiresAt = new Date(
+        Date.now() + IDENTITY_ACCESS_SECONDS * 1000
+      ).toISOString();
+
+      const session = {
+        planId: "vip",
+        accessMode: "telegram_identity",
+        telegramUsername: usernameNormalized,
+        telegramUserId: String(identity.userId),
+        maxAccesses: null,
+        usedAccesses: 0,
+        remainingAccesses: null,
+        unlimitedAccess: true,
+        createdAt,
+        expiresAt,
+      };
+
+      await redis.set(
+        sessionKey,
+        JSON.stringify(session),
+        "EX",
+        IDENTITY_ACCESS_SECONDS
+      );
+
+      res.setHeader(
+        "Set-Cookie",
+        serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS)
+      );
+
+      return res.status(200).json({
+        ok: true,
+        authenticated: true,
+        planId: session.planId,
+        accessMode: session.accessMode,
+        maxAccesses: session.maxAccesses,
+        usedAccesses: session.usedAccesses,
+        remainingAccesses: session.remainingAccesses,
+        unlimitedAccess: session.unlimitedAccess,
+        expiresAt,
+      });
+    }
+
     const token = getSessionToken(req);
 
     if (!token) {
