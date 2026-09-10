@@ -456,9 +456,65 @@ background:#62ffd0;
 box-shadow:0 0 6px #62ffd0;
 animation:robotCursor 1s steps(1) infinite;
 }
+
+.smkl-typing-viewport .smkl-typing-text{
+display:inline-block;
+max-width:none!important;
+overflow:visible!important;
+white-space:nowrap;
+width:max-content!important;
+clip-path:inset(0 100% 0 0);
+animation:
+smklTypingReveal 9s steps(70,end) 1s forwards,
+smklTypingPan 12s linear 5s forwards,
+robotMessageHide .5s ease 68.3s forwards!important;
+will-change:transform,clip-path;
+}
+.smkl-typing-viewport{
+position:relative;
+z-index:3;
+width:100%;
+overflow:hidden;
+white-space:nowrap;
+text-align:left;
+}
+.smkl-typing-viewport .smkl-typing-text{
+display:inline-block;
+max-width:none!important;
+overflow:visible!important;
+white-space:nowrap;
+width:max-content!important;
+clip-path:inset(0 100% 0 0);
+animation:
+smklTypingReveal 9s steps(70,end) 1s forwards,
+smklTypingPan 12s linear 5s forwards,
+robotMessageHide .5s ease 68.3s forwards!important;
+will-change:transform,clip-path;
+}
+@keyframes smklTypingReveal{
+from{clip-path:inset(0 100% 0 0);}
+to{clip-path:inset(0 0 0 0);}
+}
+@keyframes smklTypingPan{
+0%{transform:translateX(0);
+}
+100%{transform:translateX(calc(-100% + 300px));
+}}
+
+@media(max-width:480px){
+.smkl-typing-viewport .smkl-typing-text{
+animation:
+smklTypingReveal 9s steps(70,end) 1s forwards,
+smklTypingPanMobile 12s linear 5s forwards,
+robotMessageHide .5s ease 68.3s forwards!important;
+}}
+@keyframes smklTypingPanMobile{
+0%{transform:translateX(0);
+}
+100%{transform:translateX(calc(-100% + 240px));
+}}
 /*===========ANIMACION ESCRITURA================*/
-@keyframes robotTyping{
-from{width:0;
+@keyframes robotTyping{from{width:0;
 }
 to{width:100%;
 }}

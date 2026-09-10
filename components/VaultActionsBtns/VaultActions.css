@@ -26,6 +26,7 @@
     left: 50%;
     top: -30px;
     width: min(92vw, 470px);
+    height: auto;
     margin: 0;
     transform:translateX(-50%);
     display: flex;

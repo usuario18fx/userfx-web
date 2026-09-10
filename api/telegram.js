@@ -123,6 +123,124 @@ const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
 bot.telegram.webhookReply = false;
 adminBot.telegram.webhookReply = false;
 // ======================================================
+// USER BOT VOICE · NATIVE GEN-Z ENGLISH + SMALL CAPS
+// Applies to every outgoing USER-bot message/caption/button.
+// Preserves HTML, URLs, @usernames and private access codes.
+// ======================================================
+const FX_SMALL_CAPS = Object.freeze({
+    a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ꜰ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",
+    k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"ꜱ",t:"ᴛ",
+    u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ",
+});
+
+function fxGenZRewrite(value = "") {
+    return String(value)
+        .replace(/\bPlease try again\b/gi, "Run it back in a sec")
+        .replace(/\bPlease\b/gi, "Just")
+        .replace(/\bUnable to\b/gi, "Couldn't")
+        .replace(/\bYou already have\b/gi, "You've already got")
+        .replace(/\bYou need to\b/gi, "You'll need to")
+        .replace(/\bYou need\b/gi, "You'll need")
+        .replace(/\bThank you\b/gi, "Appreciate you")
+        .replace(/\bTry again\b/gi, "Run it back")
+        .replace(/\bSomething went wrong\b/gi, "That didn't land")
+        .replace(/\bInvalid code\b/gi, "That code isn't hitting")
+        .replace(/\bAccess denied\b/gi, "You're not cleared for this yet")
+        .replace(/\bNot authorized\b/gi, "You're not cleared for this yet")
+        .replace(/\bRequest sent\b/gi, "You're in — request sent")
+        .replace(/\bPayment confirmed\b/gi, "Payment locked in")
+        .replace(/\bPayment received\b/gi, "Payment locked in")
+        .replace(/\bExpired\b/gi, "That one timed out")
+        .replace(/\bCode expired\b/gi, "That code timed out");
+}
+
+function fxSmallCapsSegment(value = "") {
+    return String(value).replace(/[A-Za-z]/g, (char) => {
+        const lower = char.toLowerCase();
+        return FX_SMALL_CAPS[lower] || char;
+    });
+}
+
+function fxBotTone(value = "") {
+    const text = fxGenZRewrite(value);
+
+    const protectedToken =
+        /(<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;
+
+    return text
+        .split(protectedToken)
+        .map((part) => {
+            if (!part) return part;
+
+            protectedToken.lastIndex = 0;
+            if (protectedToken.test(part)) {
+                protectedToken.lastIndex = 0;
+                return part;
+            }
+
+            protectedToken.lastIndex = 0;
+            return fxSmallCapsSegment(part);
+        })
+        .join("");
+}
+
+function fxStyleReplyMarkup(replyMarkup) {
+    if (!replyMarkup || typeof replyMarkup !== "object") {
+        return replyMarkup;
+    }
+
+    const clone =
+        typeof structuredClone === "function"
+            ? structuredClone(replyMarkup)
+            : JSON.parse(JSON.stringify(replyMarkup));
+
+    const styleButton = (button) => {
+        if (button && typeof button.text === "string") {
+            button.text = fxBotTone(button.text);
+        }
+        return button;
+    };
+
+    if (Array.isArray(clone.inline_keyboard)) {
+        clone.inline_keyboard = clone.inline_keyboard.map((row) =>
+            row.map(styleButton)
+        );
+    }
+
+    if (Array.isArray(clone.keyboard)) {
+        clone.keyboard = clone.keyboard.map((row) =>
+            row.map(styleButton)
+        );
+    }
+
+    return clone;
+}
+
+const fxOriginalUserCallApi =
+    bot.telegram.callApi.bind(bot.telegram);
+
+bot.telegram.callApi = function fxStyledCallApi(
+    method,
+    payload = {},
+    signal
+) {
+    const nextPayload = { ...payload };
+
+    for (const field of ["text", "caption", "title", "description"]) {
+        if (typeof nextPayload[field] === "string") {
+            nextPayload[field] = fxBotTone(nextPayload[field]);
+        }
+    }
+
+    if (nextPayload.reply_markup &&
+        typeof nextPayload.reply_markup === "object") {
+        nextPayload.reply_markup =
+            fxStyleReplyMarkup(nextPayload.reply_markup);
+    }
+
+    return fxOriginalUserCallApi(method, nextPayload, signal);
+};
+// ======================================================
 // TOKEN VALIDATION
 // ======================================================
 async function validateBotTokens() {
@@ -487,48 +605,47 @@ function isAdmin(ctx) {
 // TELEGRAMFX ACCESS / SUPABASE
 // ======================================================
 const TELEGRAMFX_FIELDS = [
-    ["telegramfx_access", "TelegramFX", 1],
-    ["gallery_access", "Galería", 2],
-    ["private_chat_access", "Chat", 4],
-    ["private_call_access", "PRIV", 8],
-    ["telegram_group_access", "Grupo", 16],
-];
-
+    ["telegramfx_access", "ᴛᴇʟᴇɢʀᴀᴍꜰx", 1],
+    ["gallery_access", "ɢᴀʟʟᴇʀʏ", 2],
+    ["private_chat_access", "ᴄʜᴀᴛ", 4],
+    ["private_call_access", "ᴘʀɪᴠ", 8],
+    ["telegram_group_access", "ɢʀᴏᴜᴘ", 16],
+  ];
 function normalizeTelegramFxUsername(value = "") {
     const raw = String(value || "").trim().replace(/^@+/, "");
     if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
     return { display: `@${raw}`, normalized: raw.toLowerCase() };
-}
-
+  }
 function telegramFxMask(record) {
     return TELEGRAMFX_FIELDS.reduce(
         (mask, [field, , bit]) => record?.[field] ? mask | bit : mask,
         0
-    );
-}
+  );
+  }
 
 function telegramFxMaskToRecord(mask) {
     const out = {};
     for (const [field, , bit] of TELEGRAMFX_FIELDS) out[field] = Boolean(mask & bit);
     return out;
-}
-
+  }
 function telegramFxPanelText(username, mask, saved = true) {
     const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) =>
-        `${label}: ${mask & bit ? "✅ SÍ" : "❌ NO"}`
+        `${label}: ${mask & bit ? "✔" : "✘"}`
     ).join("\n");
-    return `🔐 <b>TELEGRAMFX ACCESS</b>\n\n<b>${escapeHtml(username)}</b>\n\n${rows}\n\n${saved ? "Estado guardado" : "Cambios sin guardar"}`;
-}
+    return `🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ𝐅𝐗 ᴀᴄᴄᴇꜱꜱ</b>\n\n<b>${escapeHtml(username)}</b>\n\n${rows}\n\n${saved 
+        ? "ꜱᴛᴀᴛᴇ ꜱᴀᴠᴇᴅ" 
+        : "ᴜɴꜱᴀᴠᴇᴅ ᴄʜᴀɴɢᴇꜱ"}`;
+  }
 
 function telegramFxPanelKeyboard(usernameNormalized, mask) {
     const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) => [
         Markup.button.callback(
-            `${mask & bit ? "✅" : "❌"} ${label}`,
+            `${mask & bit ? "✔" : "✘"} ${label}`,
             `tfx_toggle_${usernameNormalized}_${mask ^ bit}`
-        ),
+    ),
     ]);
-    rows.push([Markup.button.callback("💾 GUARDAR", `tfx_save_${usernameNormalized}_${mask}`)]);
-    rows.push([Markup.button.callback("⛔ REVOCAR TODO", `tfx_revoke_${usernameNormalized}_0`)]);
+    rows.push([Markup.button.callback("💾sᴀᴠᴇ", `tfx_save_${usernameNormalized}_${mask}`)]);
+    rows.push([Markup.button.callback("⛔ʀᴇᴠᴏᴋᴇ ᴀʟʟ", `tfx_revoke_${usernameNormalized}_0`)]);
     return Markup.inlineKeyboard(rows);
 }
 
@@ -641,7 +758,7 @@ async function revokeTelegramFxAccess(usernameNormalized, admin) {
     }
 
     await telegramFxRequest("telegramfx_access_audit", {
-        method: "POST",
+        method: "ᴘᴏꜱᴛ",
         headers: { Prefer: "return=minimal" },
         body: JSON.stringify({
             username,
@@ -684,7 +801,7 @@ function getCommandArg(ctx, index = 0) {
     await ctx.replyWithPhoto(url, extra);
     }
     catch (error) {  logger.error(
-        "SEND MEDIA ERROR", {  kind,  url, ...getTelegramError(error),
+        "ꜱᴇɴᴅ ᴍᴇᴅɪᴀ ᴇʀʀᴏʀ", {  kind,  url, ...getTelegramError(error),
     });
     }}
 //// BUTTON TRACKING //    
@@ -705,7 +822,7 @@ function getCommandArg(ctx, index = 0) {
     };
     await client.set(`button_click:${user.id}:${Date.now()}`, JSON.stringify(data), "EX", 60 * 60 * 24 * 30);
     }
-    catch (error) {logger.error("TRACK BUTTON ERROR", { message: error?.message,
+    catch (error) {logger.error("ᴛʀᴀᴄᴋ ʙᴜᴛᴛᴏɴ ᴇʀʀᴏʀ", { message: error?.message,
     });
     }}
 //// RATE LIMIT //
@@ -722,7 +839,7 @@ function getCommandArg(ctx, index = 0) {
     return count <= limit;
     }
     catch (error) { logger.error(
-        "RATE LIMIT ERROR", { message: error?.message,});
+        "ʀᴀᴛᴇ ʟɪᴍɪᴛ ᴇʀʀᴏʀ", { message: error?.message,});
     return true;
     }}
 //// CENTRAL CODE ENGINE // 
@@ -751,11 +868,11 @@ async function generateIdentityCode(ctx, options = {}) {
     const replaceExisting = Boolean(options.replaceExisting);
 
     if (!userId) {
-        throw new Error("Telegram user id missing");
+        throw new Error("ᴛᴇʟᴇɢʀᴀᴍ ᴜꜱᴇʀ ɪᴅ ᴍɪꜱꜱɪɴɢ");
     }
     if (!parsedUsername) {
         await ctx.reply(
-            "⚠️ You need a Telegram @username before requesting an identity key. Set one in Telegram Settings and try again."
+            "⚠️ʏᴏᴜ ɴᴇᴇᴅ ᴀ ᴛᴇʟᴇɢʀᴀᴍ @ᴜꜱᴇʀɴᴀᴍᴇ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɴ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ. ꜱᴇᴛ ᴏɴᴇ ɪɴ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴇᴛᴛɪɴɢꜱ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ."
         );
         return null;
     }
@@ -782,7 +899,7 @@ async function generateIdentityCode(ctx, options = {}) {
                 const previousRecord = JSON.parse(previousRaw);
                 if (previousRecord.status === "consumed") {
                     await ctx.reply(
-                        "✅ ʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ʜᴀꜱ ᴀʟʀᴇᴀᴅʏ ʙᴇᴇɴ ᴜꜱᴇᴅ."
+                        "✔ ʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ʜᴀꜱ ᴀʟʀᴇᴀᴅʏ ʙᴇᴇɴ ᴜꜱᴇᴅ."
                     );
                     return null;
                 }
@@ -835,25 +952,25 @@ async function generateIdentityCode(ctx, options = {}) {
         }
     }
 
-    throw new Error("Unable to generate unique TGMX identity code");
+    throw new Error("ᴜɴᴀʙʟᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ᴜɴɪǫᴜᴇ ᴛɢᴍx ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ");
 }
 async function sendIdentityCode(ctx, options = {}) {
     try {
-        await trackButtonClick(ctx, options.replaceExisting ? "TGMX SEND AGAIN" : "TGMX IDENTITY");
+        await trackButtonClick(ctx, options.replaceExisting ? "ᴛɢᴍx ꜱᴇɴᴅ ᴀɢᴀɪɴ" : "ᴛɢᴍx ɪᴅᴇɴᴛɪᴛʏ");
         const record = await generateIdentityCode(ctx, options);
         if (!record) return;
 
         const username = normalizeTelegramFxUsername(ctx.from?.username || "");
         const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1`;
         const keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback("↻ SEND AGAIN", `tgmx_resend_${record.code}`)],
-            [Markup.button.webApp("ENTER CODE", returnUrl)],
+            [Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`)],
+            [Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)],
         ]);
 
         await ctx.reply(
             `🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` +
             `${escapeHtml(username?.display || "")}` +
-            `\n\n<code>⇀ ${escapeHtml(record.code)}</code>` +
+            `\n\n⇀ <code>${escapeHtml(record.code)}</code>`+
             `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` +
             `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` +
             `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`,
@@ -868,7 +985,7 @@ async function sendIdentityCode(ctx, options = {}) {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         })
-        await ctx.reply("❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ ʀɪɢʜᴛ ɴᴏᴡ.")
+        await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ ʀɪɢʜᴛ ɴᴏᴡ.")
             .catch(() => {});
     }
 }
@@ -914,22 +1031,22 @@ async function sendIdentityCode(ctx, options = {}) {
             source,
             userId: String(userId),
             chargeId,
-            status: "active",
+            status: "ᴀᴄᴛɪᴠᴇ",
             createdAt: new Date().toISOString(),
             redeemedAt: null,
             redeemedBy: null,
     };
     const created = await client.set(key, JSON.stringify(record), "NX");
-    if (created === "OK") {
+    if (created === "ᴏᴋ") {
         await client.sadd(getUserCodeIndexKey(String(userId)), code);
-           logger.info("ACCESS CODE GENERATED", {
+           logger.info("ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ɢᴇɴᴇʀᴀᴛᴇᴅ", {
            planId,
            source,
            userId,
     });
     return record;
     }}
-    throw new Error("Unable to generate unique access code");
+    throw new Error("ᴜɴᴀʙʟᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ᴜɴɪǫᴜᴇ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ");
     }
     async function getAccessCode(code) {
     const normalized = String(code || "")
@@ -1051,7 +1168,7 @@ async function sendIdentityCode(ctx, options = {}) {
     async function sendMainPanel(ctx) {
     try {
         await typing(ctx);
-        await sendMediaSafe(ctx, "video", ASSET_WELCOME_VIDEO);
+        await sendMediaSafe(ctx, "ᴠɪᴅᴇᴏ", ASSET_WELCOME_VIDEO);
         await ctx.reply(
        `𓂅 Ŧҳ🜲 |ᴇxᴄʟᴜꜱɪᴠᴇ ꜱᴘᴀᴄᴇ|
 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.
@@ -1134,7 +1251,7 @@ async function sendGeneratedCode(ctx, record) {
     const safePlan = escapeHtml(record.plan);
     const keyboard = getOpenVaultKeyboard(record.code);
     await ctx.reply(
-      `✅ ᴀᴄᴄᴇꜱꜱ 𝐔𝐍𝐋𝐎𝐂𝐊𝐄𝐃
+      `✔ ᴀᴄᴄᴇꜱꜱ 𝐔𝐍𝐋𝐎𝐂𝐊𝐄𝐃
     ᴘʟᴀɴ: ${safePlan}
     ᴄᴏᴅᴇ:
     <code>${safeCode}</code>
@@ -1151,7 +1268,7 @@ async function sendGeneratedCode(ctx, record) {
     const allowed = await checkRateLimit(userId, 3, 300);
     if (!allowed) {
     await ctx.reply(
-        "⏳ Please wait before requesting again.");
+        "⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɢᴀɪɴ.");
     return;
     }
     const currentRequest = await getVideoRequest(userId);
@@ -1219,7 +1336,7 @@ async function sendGeneratedCode(ctx, record) {
     break;
     case REQUEST_STATUS.APPROVED: message =
     `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-    ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔️
+    ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔
     ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
     keyboard = getApprovedVideocallKeyboard();break; default:
     await ctx.reply(
@@ -1236,14 +1353,14 @@ async function sendGeneratedCode(ctx, record) {
      stack: getErrorStack(error),
     });
     await ctx.reply(
-    "❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    "✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
     }}
 //// APPROVED VIDEOCALL //
    async function sendApprovedVideocallFlow(userId) {
     const targetUserId = String(userId);
     try {
     await bot.telegram.sendMessage(targetUserId, 
-    `✔️︎ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
+    `✔ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
     ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`);
     await bot.telegram.sendMessage(targetUserId, 
     `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
@@ -1321,7 +1438,7 @@ async function sendGeneratedCode(ctx, record) {
     return;
     const chargeId = payment.telegram_payment_charge_id;
     const payload = payment.invoice_payload;
-    logger.info("SUCCESSFUL PAYMENT", { userId, payload, chargeId,});
+    logger.info("ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟ ᴘᴀʏᴍᴇɴᴛ", { userId, payload, chargeId,});
     if (isVaultPayload(payload)) {
     const relayed = await relayVaultUpdate(ctx.update);
     if (relayed)
@@ -1330,7 +1447,7 @@ async function sendGeneratedCode(ctx, record) {
     const claimed = await claimPaymentProcessed(chargeId);
     if (!claimed) {
     logger.warn(
-    "DUPLICATE PAYMENT", {userId, payload, chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
+    "ᴅᴜᴘʟɪᴄᴀᴛᴇ ᴘᴀʏᴍᴇɴᴛ", {userId, payload, chargeId, alreadyProcessed: await hasProcessedPayment(chargeId),
     });
     return;
     }
@@ -1348,7 +1465,7 @@ async function sendGeneratedCode(ctx, record) {
     await setVideoRequest(userId, { ...request, status: REQUEST_STATUS.PAID, paidAt: Date.now(), telegramPaymentChargeId: chargeId,
     });
     await ctx.reply(
-    `✅ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
+    `✔ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
     📞ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`, {reply_markup: getVideocallInlineKeyboard(),
     });
     }        
@@ -1387,7 +1504,7 @@ async function sendGeneratedCode(ctx, record) {
     }
     catch (error) {
     await releasePaymentClaim(chargeId);
-    logger.error("ACCESS CODE GENERATION ERROR", {userId, payload, chargeId,
+    logger.error("ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ɢᴇɴᴇʀᴀᴛɪᴏɴ ᴇʀʀᴏʀ", {userId, payload, chargeId,
     ...getTelegramError(error),
     stack: getErrorStack(error),
     });
@@ -1396,7 +1513,7 @@ async function sendGeneratedCode(ctx, record) {
     ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
     return;
     }}
-logger.warn("UNKNOWN PAYMENT PAYLOAD", {userId, payload, chargeId,
+logger.warn("ᴜɴᴋɴᴏᴡɴ ᴘᴀʏᴍᴇɴᴛ ᴘᴀʏʟᴏᴀᴅ", {userId, payload, chargeId,
     });
     }
 //// GET CODE PANEL //
@@ -1426,20 +1543,17 @@ logger.warn("UNKNOWN PAYMENT PAYLOAD", {userId, payload, chargeId,
        ).catch(() => {});
        }}
      bot.command(
-      "getcode", async (ctx) => {
+      "ɢᴇᴛᴄᴏᴅᴇ", async (ctx) => {
       await openGetCodePanel(ctx,
       "COMMAND"
       );
       });
-
-// ======================================================
-// TGMX IDENTITY COMMAND
-// ======================================================
-bot.command("identity", async (ctx) => {
+// ===== // TGMX IDENTITY COMMAND ===========================
+  bot.command(
+    "ɪᴅᴇɴᴛɪᴛʏ", async (ctx) => {
     await sendIdentityCode(ctx);
-});
-
-bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
+     });
+  bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
     const requestedCode = String(ctx.match?.[1] || "").trim().toUpperCase();
     const userId = String(ctx.from?.id || "");
     const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || "");
@@ -1448,49 +1562,42 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
         if (!userId || !parsedUsername) {
             await ctx.answerCbQuery("Unable to verify this request.", { show_alert: true });
             return;
-        }
+    }
 
         const access = await getTelegramFxAccess(parsedUsername.normalized);
         if (!access || !access.enabled || !access.telegramfx_access) {
             await ctx.answerCbQuery("Your account is not registered for private access.", { show_alert: true });
             return;
         }
-
         const client = await ensureRedis();
         if (!client) throw new Error("Redis unavailable");
-
         const raw = await client.get(getIdentityCodeKey(requestedCode));
         if (raw) {
             let record = null;
             try { record = JSON.parse(raw); } catch {}
-
             if (
                 record &&
                 (String(record.userId || "") !== userId ||
                  String(record.telegramUsername || "").toLowerCase() !== parsedUsername.normalized)
             ) {
-                await ctx.answerCbQuery("This code does not belong to your account.", { show_alert: true });
+                await ctx.answerCbQuery("Tʜɪꜱ ᴄᴏᴅᴇ ᴅᴏᴇꜱ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ.", { show_alert: true });
                 return;
             }
-
             if (record?.status === "consumed") {
-                await ctx.answerCbQuery("This identity code was already used.", { show_alert: true });
+                await ctx.answerCbQuery("ᴛʜɪꜱ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ᴡᴀꜱ ᴀʟʀᴇᴀᴅʏ ᴜꜱᴇᴅ.", { show_alert: true });
                 return;
-            }
-        }
-
-        await ctx.answerCbQuery("Sending a new code…");
+            }}
+        await ctx.answerCbQuery("ꜱᴇɴᴅɪɴɢ ᴀ ɴᴇᴡ ᴄᴏᴅᴇ…");
         await sendIdentityCode(ctx, { replaceExisting: true });
     } catch (error) {
-        logger.error("TGMX SEND AGAIN ERROR", {
+        logger.error("𝐓𝐆𝐑𝐌𝐗 ꜱᴇɴᴅ ᴀɢᴀɪɴ ᴇʀʀᴏʀ", {
             userId,
             code: requestedCode,
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
         await ctx.answerCbQuery("Couldn't generate a new code.", { show_alert: true }).catch(() => {});
-    }
-});
+    }});
 
 //// USER START //
 async function handleUserStart(ctx) {
@@ -1510,7 +1617,7 @@ async function handleUserStart(ctx) {
         if (startPayload === 
         "getcode_basic") {
         await trackButtonClick( ctx,
-        "WEBSITE GET CODE BASIC");
+        "ᴡᴇʙꜱɪᴛᴇ ɢᴇᴛ ᴄᴏᴅᴇ ʙᴀꜱɪᴄ");
         await sendBasicPanel(ctx);
         return;
         }
@@ -1518,7 +1625,7 @@ async function handleUserStart(ctx) {
         if (startPayload === 
         "getcode_pro") {
         await trackButtonClick(ctx,
-        "WEBSITE GET CODE PRO");
+        "Wᴡᴇʙꜱɪᴛᴇ ɢᴇᴛ ᴄᴏᴅᴇ ᴘʀᴏ");
         await sendProPanel(ctx);
         return;
         }
@@ -1526,38 +1633,38 @@ async function handleUserStart(ctx) {
         if (startPayload === 
         "getcode_vip") {
         await trackButtonClick(ctx,
-        "WEBSITE GET CODE VIP");
+        "ᴡᴇʙꜱɪᴛᴇ ɢᴇᴛ ᴄᴏᴅᴇ ᴠɪᴘ");
         await sendVipPanel(ctx);
         return;
         }
         logger.info(
-        "USER START RECEIVED",{userId: String(ctx.from?.id || ""),
+        "ᴜꜱᴇʀ ꜱᴛᴀʀᴛ ʀᴇᴄᴇɪᴠᴇᴅ",{userId: String(ctx.from?.id || ""),
             chatId: String(ctx.chat?.id || ""),
             startPayload: startPayload || null,
             messageText: messageText || null,});
         if (startPayload === 
         "getcode") {
         logger.info(
-        "START GET CODE", {userId: String(ctx.from?.id || ""),});
+        "ꜱᴛᴀʀᴛ ɢᴇᴛ ᴄᴏᴅᴇ", {userId: String(ctx.from?.id || ""),});
         await openGetCodePanel(ctx,
         "WEBSITE");
         return;
         }
         if (startPayload === 
         "pay_basic") {logger.info(
-        "START BASIC PAYMENT");
+        "ꜱᴛᴀʀᴛ ʙᴀꜱɪᴄ ᴘᴀʏᴍᴇɴᴛ");
         await sendBasicInvoice(ctx);
         return;
         }
         if (startPayload === 
         "pay_pro") {logger.info(
-        "START PRO PAYMENT");
+        "ꜱᴛᴀʀᴛ ᴘʀᴏ ᴘᴀʏᴍᴇɴᴛ");
         await sendProInvoice(ctx);
         return;
         }
         if (startPayload === 
         "pay_vip") {logger.info(
-        "START VIP PAYMENT");
+        "ꜱᴛᴀʀᴛ ᴠɪᴘ ᴘᴀʏᴍᴇɴᴛ");
         await sendVipInvoice(ctx);
         return;
         }
@@ -1570,7 +1677,7 @@ async function handleUserStart(ctx) {
         }
         catch (error) {
         logger.error(
-        "START ERROR", {...getTelegramError(error), stack: getErrorStack(error),
+        "ꜱᴛᴀʀᴛ ᴇʀʀᴏʀ", {...getTelegramError(error), stack: getErrorStack(error),
         });
         await ctx.reply(
         "⚠️ᴜɴᴀʙʟᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ."
@@ -1632,10 +1739,10 @@ async function handleUserStart(ctx) {
         }
         catch (error) {
         logger.error(
-        "PRE CHECKOUT ERROR", getTelegramError(error));
+        "ᴘʀᴇ ᴄʜᴇᴄᴋᴏᴜᴛ ᴇʀʀᴏʀ", getTelegramError(error));
         try {
         await ctx.answerPreCheckoutQuery(false, 
-        "Unable to process payment right now.");
+        "ᴜɴᴀʙʟᴇ ᴛᴏ ᴘʀᴏᴄᴇꜱꜱ ᴘᴀʏᴍᴇɴᴛ ʀɪɢʜᴛ ɴᴏᴡ.");
         }
         catch {
         }} });
@@ -1719,7 +1826,7 @@ async function handleUserStart(ctx) {
     .trim()
     .toLowerCase(); logger
     .info(
-    "USER START RECEIVED", {
+    "ᴜꜱᴇʀ ꜱᴛᴀʀᴛ ʀᴇᴄᴇɪᴠᴇᴅ", {
     userId,startPayload: startPayload || null,});
     // TGMX IDENTITY START (TEXT ROUTER)
     if (startPayload === "identity") {
@@ -1727,19 +1834,19 @@ async function handleUserStart(ctx) {
     return;
     }
     if (startPayload === "pay_basic") {logger.info(
-    "START BASIC PAYMENT");
+    "ꜱᴛᴀʀᴛ ʙᴀꜱɪᴄ ᴘᴀʏᴍᴇɴᴛ");
     await sendBasicInvoice(ctx);
     return;
     }
     if (startPayload === 
     "pay_pro") {logger.info(
-    "START PRO PAYMENT");
+    "ꜱᴛᴀʀᴛ ᴘʀᴏ ᴘᴀʏᴍᴇɴᴛ");
     await sendProInvoice(ctx);
     return;
     }
     if (startPayload === 
     "pay_vip") {logger.info(
-    "START VIP PAYMENT");
+    "ꜱᴛᴀʀᴛ ᴠɪᴘ ᴘᴀʏᴍᴇɴᴛ");
     await sendVipInvoice(ctx);
     return;
     }
@@ -1757,50 +1864,51 @@ async function handleUserStart(ctx) {
 //// GET CODE //
     if (text === BTN_GET_CODE) {
     return await openGetCodePanel(ctx,
-    "BUTTON"
+    "ʙᴜᴛᴛᴏɴ"
     );
     }
 //// VIDEOCALL // 
     if (text === BTN_VIDEOCALL) {
     await trackButtonClick(ctx, 
-    "VIDEOCALL");
+    "ᴠɪᴅᴇᴏᴄᴀʟʟ");
     await sendMediaSafe(ctx, 
-    "photo", ASSET_VIDEOCALL_IMAGE);
+    "ᴘʜᴏᴛᴏ", ASSET_VIDEOCALL_IMAGE);
     return await openVideocallFlow(ctx);
     }
 //// PENDING REQUEST //
     if (text === BTN_PENDING_REQUEST) {
     await trackButtonClick(ctx, 
-    "PENDING VIDEOCALL REQUEST");
+    "ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ");
     return await sendPendingVideocallPanel(ctx);
     }
  //// VIP //
     if (text === BTN_VIP) {
     await trackButtonClick(ctx, 
-    "VIP");
+    "ᴠɪᴘ");
     return await sendVipPanel(ctx);
     }
 //// BASIC  //
     if (text === BTN_BASIC) {
     await trackButtonClick(ctx, 
-    "BASIC");
+    "ʙᴀꜱɪᴄ");
     return await sendBasicPanel(ctx);
     }
 //// PRO //
     if (text === BTN_PRO) {
     await trackButtonClick(ctx, 
-    "PRO");        
+    "ᴘʀᴏ");        
     return await sendProPanel(ctx);
     }
 //// CHANNELS //
     if (text === BTN_CHANNELS) {
     await trackButtonClick(ctx, 
-    "CHANNELS");
+    "ᴄʜᴀɴɴᴇʟꜱ");
     return await sendChannelsPanel(ctx);
      }
 //// REFRESH //
     if (text === BTN_REFRESH) {
-        await trackButtonClick(ctx, "REFRESH");
+        await trackButtonClick(ctx, 
+        "ʀᴇꜰʀᴇꜱʜ");
         return await sendRefreshPanel(ctx);
     }
 //// CANCEL //
@@ -1814,7 +1922,8 @@ async function handleUserStart(ctx) {
 }
 // // ZOOM //
     if (text === BTN_ZOOM) {
-    return await ctx.reply("📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
+    return await ctx.reply(
+    "📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
         reply_markup: {inline_keyboard: [
      [{ text: "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ",
         url: ZOOM_URL,},],],},});
@@ -1822,21 +1931,23 @@ async function handleUserStart(ctx) {
 //// TELEGRAM CALL // 
     if (text === BTN_TELEGRAM) {return await ctx.reply(
       "💬ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {reply_markup: { inline_keyboard: [
-      [{text: "📹ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
+      [{text: 
+    "📹ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ",
        url: TELEGRAM_CALL_URL,},],],},});
        }
 //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
     await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO);
     return await ctx.reply("​", {reply_markup: {inline_keyboard:[[{ text: 
-        "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
+    "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ",
     url: SMOKELANDIA_GROUP_LINK,},],],},});
     }
 //// USERFX SITE //
    if (text === BTN_USERFX_SITE) {
     await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO);
     return await ctx.reply("​", {reply_markup: { inline_keyboard: [
-    [{ text: "𝐔𝐬ᴇʀ 🜲∓ҳ",
+    [{ text: 
+        "𝐔𝐬ᴇʀ 🜲∓ҳ",
        web_app: { url: USERFX_SITE_URL },},],],},});
      }
 /// PHOTO WAITING // 
@@ -1853,17 +1964,18 @@ async function handleUserStart(ctx) {
     }
         return await sendMainPanel(ctx);
     }
-    catch (error) {logger.error("TEXT HANDLER ERROR", {
+    catch (error) {logger.error("ᴛᴇxᴛ ʜᴀɴᴅʟᴇʀ ᴇʀʀᴏʀ", {
         ...getTelegramError(error),
         stack: getErrorStack(error),
     });
     
     bot.on("message", async (ctx) => {
-    logger.warn("UNHANDLED MESSAGE TYPE", {
+    logger.warn("ᴜɴʜᴀɴᴅʟᴇᴅ ᴍᴇꜱꜱᴀɢᴇ ᴛʏᴘᴇ", {
         userId: ctx.from?.id,
         keys: Object.keys(ctx.message || {}),
     });
-    await ctx.reply("👀 ᴇɴᴠɪ́ᴀ /start ᴘᴀʀᴀ ᴀʙʀɪʀ ᴇʟ ᴍᴇɴᴜ́.", getMainKeyboard()).catch(() => {});
+    await ctx.reply(
+        "👀  ꜱᴇɴᴅ /ꜱᴛᴀʀᴛ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
 });
     }});
 //// SUCCESSFUL PAYMENT HANDLER // 
@@ -1875,26 +1987,26 @@ async function handleUserStart(ctx) {
     const targetId = getCommandArg(ctx) || String(ctx.from?.id || "");
     if (!targetId) return;
     await deleteVideoRequest(targetId);
-    await ctx.reply(`✅ Videocall request cleared for ${targetId}.`);
+    await ctx.reply(`✔ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴄʟᴇᴀʀᴇᴅ ꜰᴏʀ ${targetId}.`);
     });
     
     bot.command("resetvc", async (ctx) => {
     if (!isAdmin(ctx)) {
-        await ctx.reply("❌ Unauthorized.");
+        await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
         return;
     }
     const targetId = getCommandArg(ctx) || String(ctx.from?.id || "");
     try { if (!targetId) return;
     const request = await getVideoRequest(targetId); if (!request) {
-            await ctx.reply(`✅ No active videocall request found for ${targetId}.`);
+            await ctx.reply(`✔ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ ${targetId}.`);
             return;
         }
       await deleteVideoRequest(targetId);
       await ctx.reply(
-                `✅ Videocall request reset for ${targetId}.
-                 Previous status:
+                `✔ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ʀᴇꜱᴇᴛ ꜰᴏʀ ${targetId}.
+                 ᴘʀᴇᴠɪᴏᴜꜱ ꜱᴛᴀᴛᴜꜱ:
       ${request.status || "unknown"}
-                 The user can now request a new videocall.`); logger.info("VIDEOCALL REQUEST RESET", {
+                 ᴛʜᴇ ᴜꜱᴇʀ ᴄᴀɴ ɴᴏᴡ ʀᴇǫᴜᴇꜱᴛ ᴀ ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ.`); logger.info("VIDEOCALL REQUEST RESET", {
       userId: targetId, previousStatus: request.status || null,
     });
     }
@@ -1902,25 +2014,25 @@ async function handleUserStart(ctx) {
     userId: targetId,...getTelegramError(error),stack: getErrorStack(error),
     });
         await ctx.reply(
-            "❌ Error resetting videocall request.");
+            "✘ ᴇʀʀᴏʀ ʀᴇꜱᴇᴛᴛɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.");
     }});
 //// REPORT // 
     bot.command("report", async (ctx) => {
     if (!isAdmin(ctx)) {
         await ctx.reply(
-            "❌ Unauthorized.");
+            "✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ..");
         return;
     }
     const client = await ensureRedis();
     if (!client) {
         await ctx.reply(
-            "❌ Redis is not available.");
+            "✘ ʀᴇᴅɪꜱ ɪꜱ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.");
         return;
     }
     try {
         const keys = await scanKeys("button_click:*");
         if (!keys.length) {
-            await ctx.reply("📊 No button clicks recorded yet.");
+            await ctx.reply("📊 ɴᴏ ʙᴜᴛᴛᴏɴ ᴄʟɪᴄᴋꜱ ʀᴇᴄᴏʀᴅᴇᴅ ʏᴇᴛ.");
             return;
         }
     const values = await client.mget(...keys);
@@ -1934,7 +2046,7 @@ async function handleUserStart(ctx) {
     .filter(Boolean)
     .sort((a, b) => new Date(b.clickedAt)
     .getTime() - new Date(a.clickedAt).getTime()); 
-    let report = "📊 BUTTON CLICK REPORT\n\n";
+    let report = "📊 ʙᴜᴛᴛᴏɴ ᴄʟɪᴄᴋ ʀᴇᴘᴏʀᴛ\n\n";
     clicks.forEach((click, index) => {
     report += `<b>${index + 1}. ${escapeHtml(click.fullName)}</b>\n` +
               `Username: ${escapeHtml(click.username)}\n` +
@@ -1954,7 +2066,7 @@ async function handleUserStart(ctx) {
     catch (error) { logger.error("REPORT ERROR", {
     ...getTelegramError(error),stack: getErrorStack(error),
     });
-    await ctx.reply("❌ Error generating report.");
+    await ctx.reply("✘ ᴇʀʀᴏʀ ɢᴇɴᴇʀᴀᴛɪɴɢ ʀᴇᴘᴏʀᴛ.");
     }
     });
 //// ADMIN BOT / MY ID  // 
@@ -1969,7 +2081,7 @@ async function handleUserStart(ctx) {
     adminBot.action(/^approve_stars_(\d+)$/, async (ctx) => {
        const adminId = String(ctx.from?.id || "");
        if (adminId !== String(ADMIN_USER_ID)) {
-       await ctx.answerCbQuery("❌ Unauthorized");
+       await ctx.answerCbQuery("✘ Unauthorized");
       return;
     }
     const requesterId = String(ctx.match[1]);
@@ -1993,7 +2105,7 @@ async function handleUserStart(ctx) {
            ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`);
         await sendStars130Invoice(requesterId);
     }
-        catch (error) { logger.error("APPROVE STARS ERROR", {requesterId,
+        catch (error) { logger.error("ᴀᴘᴘʀᴏᴠᴇ ꜱᴛᴀʀꜱ ᴇʀʀᴏʀ", {requesterId,
         ...getTelegramError(error), stack: getErrorStack(error),
         });
         const current = await getVideoRequest(requesterId);
@@ -2001,7 +2113,7 @@ async function handleUserStart(ctx) {
         });
         }
         try {
-         await bot.telegram.sendMessage(requesterId, "❌ Unable to create the payment invoice. Please try again.");
+         await bot.telegram.sendMessage(requesterId, "✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ ɪɴᴠᴏɪᴄᴇ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ.");
         }
         catch {
         }
@@ -2012,7 +2124,7 @@ async function handleUserStart(ctx) {
       const adminId = String(ctx.from?.id || "");
       if (adminId !== String(ADMIN_USER_ID)) {
       await ctx.answerCbQuery(
-        "❌ Unauthorized");
+        "✘ Unauthorized");
       return;}
     const requesterId = String(ctx.match[1]);
     const pending = await getVideoRequest(requesterId);
@@ -2022,7 +2134,7 @@ async function handleUserStart(ctx) {
     }
     try {
         await ctx.answerCbQuery( 
-            "📞 Videocall selected");
+            "📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ꜱᴇʟᴇᴄᴛᴇᴅ");
         await ctx .editMessageReplyMarkup({inline_keyboard: [],})
             .catch(() => { });
         await setVideoRequest(requesterId, {...pending,
@@ -2041,17 +2153,17 @@ async function handleUserStart(ctx) {
     adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
     const adminId = String(ctx.from?.id || "");
     if (adminId !== String(ADMIN_USER_ID)) {
-        await ctx.answerCbQuery("❌ Unauthorized");
+        await ctx.answerCbQuery("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ");
         return;
     }
     const requesterId = String(ctx.match[1]);
     const pending = await getVideoRequest(requesterId);
     if (!pending) {
-        await ctx.answerCbQuery("Request not found");
+        await ctx.answerCbQuery("ʀᴇǫᴜᴇꜱᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ");
         return;
         }
     try {
-        await ctx.answerCbQuery("❌ ʀᴇᴊᴇᴄᴛᴇᴅ");
+        await ctx.answerCbQuery("✘ ʀᴇᴊᴇᴄᴛᴇᴅ");
         await ctx
             .editMessageReplyMarkup({
             inline_keyboard: [],
@@ -2075,7 +2187,7 @@ async function handleUserStart(ctx) {
     const clickedUserId = String(ctx.from?.id || "");
     if (clickedUserId !== requesterId) {
     await ctx.answerCbQuery(
-      "❌ Unauthorized");
+      "✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ");
     return;
     }
     try {
@@ -2086,7 +2198,7 @@ async function handleUserStart(ctx) {
             .catch(() => { });
         const user = getUserMeta(ctx.from);
         await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, 
-            `🔔 <b>NOTIFY REQUEST</b>
+            `🔔 <b>ɴᴏᴛɪꜰʏ ʀᴇǫᴜᴇꜱᴛ</b>
       Username: ${escapeHtml(user.username)}
       ID: ${escapeHtml(user.id)}
       Target: ${escapeHtml(requesterId)}`, { parse_mode: "HTML",});
@@ -2101,14 +2213,14 @@ async function handleUserStart(ctx) {
        url: SMOKELANDIA_GROUP_LINK,
     },],],},});
     }
-    catch (error) { logger.error("NOTIFY ERROR", { requesterId,...getTelegramError(error),
+    catch (error) { logger.error("ɴᴏᴛɪꜰʏ ᴇʀʀᴏʀ", { requesterId,...getTelegramError(error),
         });
         }});
 // ======================================================
 // ADMIN: TELEGRAMFX ACCESS PANEL
 // ======================================================
 bot.command("access", async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
     try {
         const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
         if (!parsed) return await ctx.reply("Uso: /access @username");
@@ -2119,52 +2231,50 @@ bot.command("access", async (ctx) => {
             reply_markup: telegramFxPanelKeyboard(parsed.normalized, mask).reply_markup,
         });
     } catch (error) {
-        logger.error("TELEGRAMFX ACCESS COMMAND ERROR", {
+        logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ᴀᴄᴄᴇꜱꜱ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
-        await ctx.reply("❌ No se pudo abrir el panel de permisos.");
-    }
-});
+        await ctx.reply("✘ ᴛʜᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴꜱ ᴘᴀɴᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴏᴘᴇɴᴇᴅ.");
+        }});
 
 bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
     const username = String(ctx.match[1]).toLowerCase();
     const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
-    await ctx.answerCbQuery("Cambio preparado");
+    await ctx.answerCbQuery("ᴄʜᴀɴɢᴇ ᴘʀᴇᴘᴀʀᴇᴅ");
     await ctx.editMessageText(telegramFxPanelText(`@${username}`, mask, false), {
         parse_mode: "HTML",
         reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
     }).catch(() => {});
-});
+    });
 
 bot.action(/^tfx_save_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ");
     const username = String(ctx.match[1]).toLowerCase();
     const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
     try {
         await saveTelegramFxAccess(username, mask, ctx.from);
-        await ctx.answerCbQuery("✅ Guardado");
+        await ctx.answerCbQuery("✔ ꜱᴀᴠᴇ");
         await ctx.editMessageText(telegramFxPanelText(`@${username}`, mask, true), {
             parse_mode: "HTML",
             reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
         }).catch(() => {});
     } catch (error) {
-        logger.error("TELEGRAMFX SAVE ERROR", {
+        logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ꜱᴀᴠᴇ ᴇʀʀᴏʀ", {
             username,
             ...getTelegramError(error),
             stack: getErrorStack(error),
-        });
-        await ctx.answerCbQuery("❌ Error al guardar", { show_alert: true });
-    }
-});
+    });
+        await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ꜱᴀᴠɪɴɢ", { show_alert: true });
+    }});
 
 bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.answerCbQuery("❌ Unauthorized");
+    if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
     const username = String(ctx.match[1]).toLowerCase();
     try {
         await revokeTelegramFxAccess(username, ctx.from);
-        await ctx.answerCbQuery("⛔ Acceso revocado");
+        await ctx.answerCbQuery("⛔ ᴀᴄᴄᴇꜱꜱ ʀᴇᴠᴏᴋᴇᴅ");
         await ctx.editMessageText(telegramFxPanelText(`@${username}`, 0, true), {
             parse_mode: "HTML",
             reply_markup: telegramFxPanelKeyboard(username, 0).reply_markup,
@@ -2174,49 +2284,46 @@ bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
             username,
             ...getTelegramError(error),
             stack: getErrorStack(error),
-        });
-        await ctx.answerCbQuery("❌ Error al revocar", { show_alert: true });
-    }
-});
+    });
+        await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ʀᴇᴠᴏᴋɪɴɢ", { show_alert: true });
+    }});
 
 bot.command("find", async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
     try {
         const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
         if (!parsed) return await ctx.reply("Uso: /find @username");
         const record = await getTelegramFxAccess(parsed.normalized);
-        if (!record) return await ctx.reply(`❌ ${parsed.display} no está registrado.`);
+        if (!record) return await ctx.reply(`✘ ${parsed.display} no está registrado.`);
         const mask = telegramFxMask(record);
         await ctx.reply(telegramFxPanelText(record.username || parsed.display, mask, true), {
             parse_mode: "HTML",
         });
     } catch (error) {
-        logger.error("TELEGRAMFX FIND ERROR", {
+        logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ꜰɪɴᴅ ᴇʀʀᴏʀ", {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
-        await ctx.reply("❌ No se pudo consultar el usuario.");
-    }
-});
+        await ctx.reply("✘ ᴛʜᴇ ᴜꜱᴇʀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ǫᴜᴇʀɪᴇᴅ.");
+    }});
 
 bot.command("revoke", async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
     try {
         const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
         if (!parsed) return await ctx.reply("Uso: /revoke @username");
         await revokeTelegramFxAccess(parsed.normalized, ctx.from);
         await ctx.reply(`⛔ Acceso revocado para ${parsed.display}.`);
     } catch (error) {
-        logger.error("TELEGRAMFX REVOKE COMMAND ERROR", {
+        logger.error("Tᴛᴇʟᴇɢʀᴀᴍꜰx ʀᴇᴠᴏᴋᴇ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {
             ...getTelegramError(error),
             stack: getErrorStack(error),
         });
-        await ctx.reply("❌ No se pudo revocar el acceso.");
-    }
-});
+        await ctx.reply("✘ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʀᴇᴠᴏᴋᴇᴅ.");
+    }});
 
 bot.command("users", async (ctx) => {
-    if (!isAdmin(ctx)) return await ctx.reply("❌ Unauthorized.");
+    if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
     try {
         const rows = await listTelegramFxUsers(50);
         if (!Array.isArray(rows) || !rows.length) {
@@ -2231,15 +2338,13 @@ bot.command("users", async (ctx) => {
         logger.error("TELEGRAMFX USERS ERROR", {
             ...getTelegramError(error),
             stack: getErrorStack(error),
-        });
-        await ctx.reply("❌ No se pudo cargar la lista.");
-    }
-});
-
+    });
+        await ctx.reply("✘ No se pudo cargar la lista.");
+    }});
 //// ADMIN CODE LOOKUP // 
 adminBot.command("code", async (ctx) => {
     if (!isAdmin(ctx)) {
-        await ctx.reply("❌ Unauthorized.");
+        await ctx.reply("✘ Unauthorized.");
         return;
     }
     const code = getCommandArg(ctx);
@@ -2249,12 +2354,12 @@ adminBot.command("code", async (ctx) => {
     }
     const result = await validateAccessCode(code);
     if (!result.valid) {
-        await ctx.reply(`❌ Code invalid.\n\nReason: ${result.reason}`);
+        await ctx.reply(`✘ Code invalid.\n\nReason: ${result.reason}`);
         return;
     }
     const record = result.record;
-    await ctx.reply(`✅ CODE FOUND\n\nCode: ${record.code}\nPlan: ${record.plan}\nPlan ID: ${record.planId}\nSource: ${record.source}\nUser ID: ${record.userId}\nStatus: ${record.status}\nUsed accesses: ${record.usedAccesses ?? 0}\nRemaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}\nCreated: ${record.createdAt}`);
-});
+    await ctx.reply(`✔ CODE FOUND\n\nCode: ${record.code}\nPlan: ${record.plan}\nPlan ID: ${record.planId}\nSource: ${record.source}\nUser ID: ${record.userId}\nStatus: ${record.status}\nUsed accesses: ${record.usedAccesses ?? 0}\nRemaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}\nCreated: ${record.createdAt}`);
+    });
 //// ERROR HANDLERS //
     bot.catch((error, ctx) => {
     logger.error("BOT ERROR", {
@@ -2300,7 +2405,7 @@ function readRawBody(req) {
         req.on("end", () => resolve(body));
         req.on("error", (error) => reject(error));
     });
-}
+    }
 async function getRequestBody(req) {
     if (req.body !== undefined &&
         req.body !== null &&
@@ -2324,9 +2429,7 @@ function getQueryValue(req, key) {
     }
     return String(value || "");
 }
-// ======================================================
-// TELEGRAM BODY PARSER
-// ======================================================
+// ========  TELEGRAM BODY PARSER =================
 function parseTelegramBody(rawBody) {
     if (rawBody === undefined ||
         rawBody === null) {
@@ -2479,15 +2582,15 @@ export default async function handler(req, res) {
             await bot.handleUpdate(update);
             return res .status(200)
                        .json({ ok: true,
-                               bot: "user",
+                               bot: "ᴜꜱᴇʀ",
             });}
             return res .status(401)
                        .json({ ok: false,
-            error: "invalid_webhook_route",
+            error: "ɪɴᴠᴀʟɪᴅ_ᴡᴇʙʜᴏᴏᴋ_ʀᴏᴜᴛᴇ",
         });
         }
     catch (error) {
-        logger.error("BOT HANDLE UPDATE ERROR", {
+        logger.error("ʙᴏᴛ ʜᴀɴᴅʟᴇ ᴜᴘᴅᴀᴛᴇ ᴇʀʀᴏʀ", {
         name: error?.name ?? null,
         message: error?.message ?? null,
         stack: getErrorStack(error),
@@ -2495,7 +2598,7 @@ export default async function handler(req, res) {
         });
         return res.status(500)
                   .json({ ok: false,
-            error: "telegram_handler_error",
+            error: "ᴛᴇʟᴇɢʀᴀᴍ_ʜᴀɴᴅʟᴇʀ_ᴇʀʀᴏʀ",
             message: error?.message ??
                 "unknown_error",
             description: error?.response ?.description ?? null,

@@ -99,7 +99,7 @@ export function FxAccessModal({
   onGetCode,
   accessLoading = false,
   accessError = "",
-  accessPlaceholder = "ACCESS KEY",
+ accessPlaceholder = "ACCESS KEY",
   inputRef,
 }: FxAccessModalProps) {
   const generatedId = useId();
@@ -116,11 +116,12 @@ export function FxAccessModal({
   const [username, setUsername] = useState("");
   const [identityCode, setIdentityCode] = useState("");
   const [identityLoading, setIdentityLoading] = useState(false);
+  const [privateLoading, setPrivateLoading] = useState(false);
   const [identityEntryReady,setIdentityEntryReady]=useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const busy = identityLoading || accessLoading;
-  const visibleError = error || (step === "access" ? accessError : "");
+  const busy = identityLoading || privateLoading;
+  const visibleError = error;
 
   useEffect(() => {
     loadingRef.current = busy;
@@ -200,9 +201,7 @@ export function FxAccessModal({
   useEffect(() => {
     if (!open) return;
     const timer = window.setTimeout(() => {
-      if (step === "access") {
-        inputRef?.current?.focus();
-      } else if (step === "identity" && identityEntryReady) {
+      if (step === "identity" && identityEntryReady) {
         primaryInputRef.current?.focus();
       } else if (step === "username") {
         primaryInputRef.current?.focus();
@@ -305,9 +304,26 @@ export function FxAccessModal({
         username: normalizedUsername,
         code: normalizedCode,
   }),});
-  const data = await response.json();
-    if (!response.ok || !data?.verified) {
-        throw new Error(data?.error || "IDENTITY CHECK DIDN'T GO THROUGH");
+  const raw = await response.text();
+  let data:any = {};
+  try {
+  data = raw ? JSON.parse(raw) : {};
+  } catch {
+  data = {};
+  }
+
+  if (!response.ok) {
+  throw new Error(
+    data?.error ||
+    `IDENTITY API ERROR ${response.status}`
+  );
+  }
+
+  if (!data?.verified) {
+  throw new Error(
+    data?.error ||
+    "IDENTITY CHECK DIDN'T GO THROUGH"
+  );
   }
   const verifiedUsername = normalizeUsername(data.username || normalizedUsername);
       setUsername(verifiedUsername);
@@ -322,7 +338,37 @@ export function FxAccessModal({
   );
   } finally {
       setIdentityLoading(false);
-  }};
+  }};  const handlePrivateAccess = async () => {
+    try {
+      setPrivateLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/access-session", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.authenticated) {
+        throw new Error(data?.error || "PRIVATE ACCESS DIDN'T GO THROUGH");
+      }
+
+      onCloseRef.current();
+      window.location.reload();
+    } catch (submissionError) {
+      setError(
+        submissionError instanceof Error && submissionError.message
+          ? submissionError.message
+          : "PRIVATE ACCESS DIDN'T GO THROUGH"
+      );
+    } finally {
+      setPrivateLoading(false);
+    }
+  };
+
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -336,7 +382,7 @@ export function FxAccessModal({
       return;
   }
     persistUsername(normalizeUsername(username));
-    onAccessSubmit(event);
+    await handlePrivateAccess();
   };
 
   const openTelegramIdentity = () => {
@@ -350,7 +396,7 @@ export function FxAccessModal({
   const bubbleText = step === "username"
       ? "Hey sexy,  welcome, if you already have a special code, enter it here"
       : step === "identity"
-        ? `${username} · grab your special code on Telegram.`
+        ? `${username} ·ᴛʜᴇ ʙᴏᴛ, ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴀ ᴍᴇꜱꜱᴀɢᴇ ᴡɪᴛʜ ᴛʜᴇ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴄᴏᴘʏ ɪᴛ ᴀɴᴅ ᴇɴᴛᴇʀ ɪᴛ ʜᴇʀᴇ.`
         : `${username} · identity locked in.`;
   const titleText =
     step === "username"
@@ -370,8 +416,6 @@ export function FxAccessModal({
           .smkl-modal__stage{--smkl-button-height:40px;--smkl-button-font:.75rem;}
           .smkl-form__submit{min-height:var(--smkl-button-height)!important;height:var(--smkl-button-height)!important;}
           .smkl-form__submit span{font-size:var(--smkl-button-font)!important;}
-          .smkl-typing-viewport{position:relative;z-index:3;width:100%;overflow:hidden;white-space:nowrap;text-align:left;}
-          .smkl-typing-viewport .smkl-typing-text{display:inline-block;max-width:none!important;overflow:visible!important;white-space:nowrap;width:max-content!important;clip-path:inset(0 100% 0 0);animation:smklTypingReveal 9s steps(70,end) 1s forwards,smklTypingPan 14s ease-in-out 11s infinite alternate,robotMessageHide .5s ease 68.3s forwards!important;will-change:transform,clip-path;}
           .smkl-identity-user{margin:2px 0 10px;padding:10px 14px;border:1px solid #245a7866;border-radius:10px;background:#03070899;color:#dce7ed;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-align:center;}
           @keyframes smklTypingReveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
           @keyframes smklTypingPan{0%,12%{transform:translateX(0)}88%,100%{transform:translateX(calc(-100% + min(72vw,330px)))}}
@@ -448,7 +492,7 @@ export function FxAccessModal({
           {stepLabel}
           </p>
 
-          {step === "identity" && (
+          {(step === "identity" || step === "access") && (
           <p className="smkl-identity-user">
           {username}
           </p>
@@ -470,14 +514,6 @@ export function FxAccessModal({
           </div>
           )}
 
-          {step === "access" && (
-          <div className="smkl-form__field">
-          <span className="smkl-form__icon"><LockIcon /></span>
-          <label className="smkl-sr-only" htmlFor={`${modalId}-access-code`}>Private access key</label>
-          <input ref={inputRef} id={`${modalId}-access-code`} type="text" name="access-code" placeholder={accessPlaceholder} value={accessCode} onChange={(event) => onAccessCodeChange(event.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={9} disabled={accessLoading} required/>
-          </div>
-          )}
-
           {visibleError && (
           <p className="smkl-form__error" id={`${modalId}-error`} role="alert" >
           {visibleError}
@@ -487,12 +523,6 @@ export function FxAccessModal({
           {step === "identity" && !identityEntryReady && (
           <button type="button" className="smkl-form__submit" onClick={openTelegramIdentity} disabled={busy}>
           <span>GET SPECIAL CODE</span>
-          </button>
-          )}
-
-          {step === "access" && (
-<button type="button" className="smkl-form__submit" onClick={onGetCode} disabled={accessLoading}>
-          <span>OPEN TELEGRAM FX</span>
           </button>
           )}
 
@@ -517,3 +547,6 @@ export function FxAccessModal({
            document.body,
           );
           }
+
+
+
