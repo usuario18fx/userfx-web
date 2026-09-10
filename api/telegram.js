@@ -745,9 +745,10 @@ function getIdentityCodeKey(code) {
 function getIdentityUserKey(userId) {
     return `${CODE_ENGINE_NAMESPACE}:identity-user:${String(userId)}`;
 }
-async function generateIdentityCode(ctx) {
+async function generateIdentityCode(ctx, options = {}) {
     const userId = String(ctx.from?.id || "");
     const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || "");
+    const replaceExisting = Boolean(options.replaceExisting);
 
     if (!userId) {
         throw new Error("Telegram user id missing");
@@ -755,6 +756,14 @@ async function generateIdentityCode(ctx) {
     if (!parsedUsername) {
         await ctx.reply(
             "⚠️ You need a Telegram @username before requesting an identity key. Set one in Telegram Settings and try again."
+        );
+        return null;
+    }
+
+    const access = await getTelegramFxAccess(parsedUsername.normalized);
+    if (!access || !access.enabled || !access.telegramfx_access) {
+        await ctx.reply(
+            "⛔ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀᴄᴄᴏᴜɴᴛ ɪꜱ ɴᴏᴛ ʀᴇɢɪꜱᴛᴇʀᴇᴅ ꜰᴏʀ ᴘʀɪᴠᴀᴛᴇ ᴀᴄᴄᴇꜱꜱ."
         );
         return null;
     }
@@ -767,7 +776,23 @@ async function generateIdentityCode(ctx) {
     const userKey = getIdentityUserKey(userId);
     const previousCode = await client.get(userKey);
     if (previousCode) {
+        const previousRaw = await client.get(getIdentityCodeKey(previousCode));
+        if (previousRaw) {
+            try {
+                const previousRecord = JSON.parse(previousRaw);
+                if (previousRecord.status === "consumed") {
+                    await ctx.reply(
+                        "✅ ʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ʜᴀꜱ ᴀʟʀᴇᴀᴅʏ ʙᴇᴇɴ ᴜꜱᴇᴅ."
+                    );
+                    return null;
+                }
+                if (previousRecord.status === "active" && !replaceExisting) {
+                    return previousRecord;
+                }
+            } catch {}
+        }
         await client.del(getIdentityCodeKey(previousCode));
+        await client.del(userKey);
     }
 
     for (let attempt = 0; attempt < 20; attempt++) {
@@ -812,21 +837,23 @@ async function generateIdentityCode(ctx) {
 
     throw new Error("Unable to generate unique TGMX identity code");
 }
-async function sendIdentityCode(ctx) {
+async function sendIdentityCode(ctx, options = {}) {
     try {
-        await trackButtonClick(ctx, "TGMX IDENTITY");
-        const record = await generateIdentityCode(ctx);
+        await trackButtonClick(ctx, options.replaceExisting ? "TGMX SEND AGAIN" : "TGMX IDENTITY");
+        const record = await generateIdentityCode(ctx, options);
         if (!record) return;
 
         const username = normalizeTelegramFxUsername(ctx.from?.username || "");
+        const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1`;
         const keyboard = Markup.inlineKeyboard([
-            [Markup.button.webApp("↩ RETURN TO VAULT", USERFX_SITE_URL)],
+            [Markup.button.callback("↻ SEND AGAIN", `tgmx_resend_${record.code}`)],
+            [Markup.button.webApp("ENTER CODE", returnUrl)],
         ]);
 
         await ctx.reply(
             `🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` +
             `${escapeHtml(username?.display || "")}` +
-            `\n\n<code>${escapeHtml(record.code)}</code>` +
+            `\n\n<code>⇀ ${escapeHtml(record.code)}</code>` +
             `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` +
             `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` +
             `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`,
@@ -1410,6 +1437,59 @@ logger.warn("UNKNOWN PAYMENT PAYLOAD", {userId, payload, chargeId,
 // ======================================================
 bot.command("identity", async (ctx) => {
     await sendIdentityCode(ctx);
+});
+
+bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
+    const requestedCode = String(ctx.match?.[1] || "").trim().toUpperCase();
+    const userId = String(ctx.from?.id || "");
+    const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || "");
+
+    try {
+        if (!userId || !parsedUsername) {
+            await ctx.answerCbQuery("Unable to verify this request.", { show_alert: true });
+            return;
+        }
+
+        const access = await getTelegramFxAccess(parsedUsername.normalized);
+        if (!access || !access.enabled || !access.telegramfx_access) {
+            await ctx.answerCbQuery("Your account is not registered for private access.", { show_alert: true });
+            return;
+        }
+
+        const client = await ensureRedis();
+        if (!client) throw new Error("Redis unavailable");
+
+        const raw = await client.get(getIdentityCodeKey(requestedCode));
+        if (raw) {
+            let record = null;
+            try { record = JSON.parse(raw); } catch {}
+
+            if (
+                record &&
+                (String(record.userId || "") !== userId ||
+                 String(record.telegramUsername || "").toLowerCase() !== parsedUsername.normalized)
+            ) {
+                await ctx.answerCbQuery("This code does not belong to your account.", { show_alert: true });
+                return;
+            }
+
+            if (record?.status === "consumed") {
+                await ctx.answerCbQuery("This identity code was already used.", { show_alert: true });
+                return;
+            }
+        }
+
+        await ctx.answerCbQuery("Sending a new code…");
+        await sendIdentityCode(ctx, { replaceExisting: true });
+    } catch (error) {
+        logger.error("TGMX SEND AGAIN ERROR", {
+            userId,
+            code: requestedCode,
+            ...getTelegramError(error),
+            stack: getErrorStack(error),
+        });
+        await ctx.answerCbQuery("Couldn't generate a new code.", { show_alert: true }).catch(() => {});
+    }
 });
 
 //// USER START //
@@ -2169,23 +2249,11 @@ adminBot.command("code", async (ctx) => {
     }
     const result = await validateAccessCode(code);
     if (!result.valid) {
-        await ctx.reply(`❌ Code invalid.
-
-Reason: ${result.reason}`);
+        await ctx.reply(`❌ Code invalid.\n\nReason: ${result.reason}`);
         return;
     }
     const record = result.record;
-    await ctx.reply(`✅ CODE FOUND
-
-Code: ${record.code}
-Plan: ${record.plan}
-Plan ID: ${record.planId}
-Source: ${record.source}
-User ID: ${record.userId}
-Status: ${record.status}
-Used accesses: ${record.usedAccesses ?? 0}
-Remaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}
-Created: ${record.createdAt}`);
+    await ctx.reply(`✅ CODE FOUND\n\nCode: ${record.code}\nPlan: ${record.plan}\nPlan ID: ${record.planId}\nSource: ${record.source}\nUser ID: ${record.userId}\nStatus: ${record.status}\nUsed accesses: ${record.usedAccesses ?? 0}\nRemaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}\nCreated: ${record.createdAt}`);
 });
 //// ERROR HANDLERS //
     bot.catch((error, ctx) => {
@@ -2390,12 +2458,12 @@ export default async function handler(req, res) {
     bot: isAdminWebhookRoute ? "admin" : "user",
     updateId: update.update_id ?? null,
     hasMessage: Boolean(update.message),
-    hasText: Boolean(update.message?.text),          // ← agrega
-    messageText: update.message?.text?.slice(0, 100) || null, // ← agrega
+    hasText: Boolean(update.message?.text),
+    messageText: update.message?.text?.slice(0, 100) || null,
     messageType: Object.keys(update.message || {}).find(
         k => ["text","photo","video","document","sticker","animation",
               "voice","video_note","location","contact","poll"]
-        .includes(k)) || "other",                                     // ← agrega
+        .includes(k)) || "other",
     hasCallback: Boolean(update.callback_query),
     hasPhoto: Boolean(update.message?.photo),
     hasPayment: Boolean(update.message?.successful_payment),
