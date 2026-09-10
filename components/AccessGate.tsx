@@ -13,19 +13,53 @@ export default function AccessGate() {
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
 
-  // Revisa sesión previa + dispara tracking de apertura del Mini App (una sola vez)
+  // La sesión del servidor es la fuente principal de verdad.
+  // sessionStorage queda solo como reflejo local del estado autenticado.
   useEffect(() => {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored === 'true') setUnlocked(true);
-    setChecking(false);
+    let cancelled = false;
 
-    fetch('/api/miniapp-track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        initData: window.Telegram?.WebApp?.initData || '',
-      }),
-    }).catch(() => {}); // un fallo de tracking no debe bloquear el acceso
+    async function bootstrapSession() {
+      try {
+        const res = await fetch('/api/access-session', {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: { Accept: 'application/json' },
+          cache: 'no-store',
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!cancelled && res.ok && data?.authenticated === true) {
+          sessionStorage.setItem(STORAGE_KEY, 'true');
+          setUnlocked(true);
+        } else if (!cancelled) {
+          sessionStorage.removeItem(STORAGE_KEY);
+          setUnlocked(false);
+        }
+      } catch {
+        if (!cancelled) {
+          // No conceder acceso únicamente por un valor local si el servidor no pudo validarlo.
+          sessionStorage.removeItem(STORAGE_KEY);
+          setUnlocked(false);
+        }
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+
+      fetch('/api/miniapp-track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          initData: window.Telegram?.WebApp?.initData || '',
+        }),
+      }).catch(() => {});
+    }
+
+    bootstrapSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,6 +76,7 @@ export default function AccessGate() {
     try {
       const res = await fetch('/api/verify', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix, suffix }),
       });
@@ -62,7 +97,7 @@ export default function AccessGate() {
     }
   }
 
-  if (checking) return null; // evita flash del form antes de leer sessionStorage
+  if (checking) return null;
 
   if (unlocked) return <VaultHome />;
 
@@ -73,8 +108,8 @@ export default function AccessGate() {
         <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
         <p className="access-gate__kicker">𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT</p>
         <div className="access-gate__inputs">
-          <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}  placeholder="PREFIX"   maxLength={4}  autoCapitalize="characters"  autoComplete="off"  disabled={loading || attempts >= MAX_ATTEMPTS} />
-          <input  value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX"  maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS}/>
+          <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+          <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
         </div>
         <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
           {loading ? 'Verificando...' : 'Entrar'}
