@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VaultHome from "./components/VaultHome/VaultHome";
 import PrivateRoom from "./components/PrivateRoom/PrivateRoom";
+import "./components/VaultHome/mobile-polish.css";
 
 function getRoute() {
   return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
