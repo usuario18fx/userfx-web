@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useId, useRef,useState,} from "react";
+﻿import { FormEvent, useEffect, useId, useRef,useState,} from "react";
 import type { RefObject } from "react";
 import { createPortal } from "react-dom";
 import "./FxAccessModal.css";
@@ -361,14 +361,8 @@ export function FxAccessModal({
   const stepLabel = step === "username"
       ? "STEP 1 · TELEGRAM USERNAME"
       : step === "identity"
-<<<<<<< HEAD
         ? "STEP 2 · IDENTITY"
         : "STEP 3 · PRIVATE ACCESS";
-
-=======
-        ? "STEP 2 · TGMX IDENTITY"
-        : "STEP 3 · PRIVATE ACCESS";
->>>>>>> 31a58b0 (backup local before identity flow)
   if (!open || typeof document === "undefined") return null;
   return createPortal(
           <div className="smkl-modal" role="presentation" onMouseDown={(event) => {if (event.target === event.currentTarget) handleClose();}}>
@@ -462,44 +456,9 @@ export function FxAccessModal({
 
           {step === "username" && (
           <div className="smkl-form__field">
-<<<<<<< HEAD
-          <span className="smkl-form__icon"><UserIcon /></span>
+<span className="smkl-form__icon"><UserIcon /></span>
           <label className="smkl-sr-only" htmlFor={`${modalId}-username`}>Telegram username</label>
           <input ref={primaryInputRef} id={`${modalId}-username`} type="text" name="username" placeholder="@username" value={username} onChange={(event) => {setUsername(normalizeUsername(event.target.value));setError(null);}} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} disabled={busy} required/>
-=======
-          <span className="smkl-form__icon">
-          {step === "username" ? <UserIcon /> : <LockIcon />}
-          </span>
-          {step === "username" ? (
-          <>
-          <label className="smkl-sr-only" htmlFor={`${modalId}-username`}>
-           Telegram username
-          </label>
-          <input
-            ref={primaryInputRef}
-            id={`${modalId}-username`}
-            type="text"
-            name="username"                
-            placeholder="@username"
-            value={username}
-            onChange={(event) => {setUsername(normalizeUsername(event.target.value));setError(null);}} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} disabled={busy} required/>
-          </>
-          ) : step === "identity" ? (
-          <>
-          <label className="smkl-sr-only" htmlFor={`${modalId}-identity-code`}>
-           TGMX identity code
-          </label>
-          <input ref={primaryInputRef} id={`${modalId}-identity-code`} type="text" name="identity-code" placeholder="TGMX-XXXX" value={identityCode} onChange={(event) => { setIdentityCode(normalizeIdentityCode(event.target.value));setError(null);}}autoComplete="one-time-code" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={9} disabled={busy} required/>
-          </>
-          ) : (
-          <>
-          <label className="smkl-sr-only" htmlFor={`${modalId}-access-code`}>
-           Private access key
-          </label>
-          <input ref={inputRef} id={`${modalId}-access-code`} type="text" name="access-code" placeholder={accessPlaceholder} value={accessCode} onChange={(event) => onAccessCodeChange(event.target.value.toUpperCase())}  autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={9} disabled={accessLoading} required/>
-          </>
-           )}
->>>>>>> 31a58b0 (backup local before identity flow)
           </div>
           )}
 
@@ -532,15 +491,8 @@ export function FxAccessModal({
           )}
 
           {step === "access" && (
-<<<<<<< HEAD
-          <button type="button" className="smkl-form__submit" onClick={onGetCode} disabled={accessLoading}>
+<button type="button" className="smkl-form__submit" onClick={onGetCode} disabled={accessLoading}>
           <span>OPEN TELEGRAM FX</span>
-=======
-          <button type="button"  className="smkl-form__submit" onClick={onGetCode} disabled={accessLoading}>
-          <span>
-           OPEN TELEGRAM FX
-          </span>
->>>>>>> 31a58b0 (backup local before identity flow)
           </button>
           )}
 
