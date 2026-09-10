@@ -10,9 +10,9 @@
   display: grid;
   grid-template-columns: 68px 1fr 52px;
   align-items: center;
-  width: min(100%, 470px);
-  min-height: 92px;
-  padding: 10px 18px;
+  width: min(82%, 425px) !important;
+  min-height: 55px;
+  padding: 8px 6px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid #4a97dc38;
