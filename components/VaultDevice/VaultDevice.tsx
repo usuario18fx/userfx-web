@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './VaultDevice.css';
+import './VaultDevice.mobile.css';
 /* ─── Types ─── */
   interface Benefit { icon: string;
                       text: string;
