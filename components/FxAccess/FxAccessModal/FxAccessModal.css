@@ -311,11 +311,11 @@ opacity:.58!important;
 }
 .smkl-form__icon svg,
 .smkl-form__password-toggle svg{
-width:14px!important;
-height:14px!important;
+width:21px!important;
+height:21px!important;
 fill:none;
-stroke:#ffffff;
-stroke-width:1.4;
+stroke:#5089fa;
+stroke-width:2;
 }
 .smkl-form__field input{
 width:100%;

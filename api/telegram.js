@@ -824,24 +824,24 @@ async function sendIdentityCode(ctx) {
         ]);
 
         await ctx.reply(
-            `🔐 <b>TELEGRAM IDENTITY KEY</b>\n\n` +
+            `🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` +
             `${escapeHtml(username?.display || "")}` +
             `\n\n<code>${escapeHtml(record.code)}</code>` +
-            `\n\nThis TGMX key verifies your Telegram identity only.` +
-            `\nIt does not unlock BASIC, PRO or VIP.` +
-            `\n\n⏱ Expires in 15 minutes and can be used once.`,
+            `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` +
+            `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` +
+            `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`,
             {
                 parse_mode: "HTML",
                 reply_markup: keyboard.reply_markup,
             }
         );
     } catch (error) {
-        logger.error("TGMX IDENTITY ERROR", {
+        logger.error("T𝙶𝙼𝚇 𝙸𝙳𝙴𝙽𝚃𝙸𝚃𝚈 𝙴𝚁𝚁𝙾𝚁", {
             userId: String(ctx.from?.id || ""),
             ...getTelegramError(error),
             stack: getErrorStack(error),
-        });
-        await ctx.reply("❌ Unable to create your Telegram identity key right now.")
+        })
+        await ctx.reply("❌ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ ʀɪɢʜᴛ ɴᴏᴡ.")
             .catch(() => {});
     }
 }
