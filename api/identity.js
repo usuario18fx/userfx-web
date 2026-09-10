@@ -98,7 +98,11 @@ function normalizeIdentityCode(value) {
 }
 
 function identityCodeKey(code) {
-  return `${CODE_ENGINE_NAMESPACE}:identity-code:${code}`;
+  const normalized = String(code || "").trim().toUpperCase();
+  const storedCode = normalized.startsWith("SPCL-")
+    ? `TGMX-${normalized.slice(5)}`
+    : normalized;
+  return `${CODE_ENGINE_NAMESPACE}:identity-code:${storedCode}`;
 }
 
 function identitySessionKey(token) {
