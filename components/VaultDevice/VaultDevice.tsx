@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import './VaultDevice.css';
 import './VaultDevice.mobile.css';
 /* ─── Types ─── */
@@ -189,9 +189,6 @@ import './VaultDevice.mobile.css';
       <div className="vd-option-name">
         Basic
       </div>
-      <div className="vd-option-desc">
-        · 𝟭 ꜱᴇꜱꜱɪᴏɴ
-      </div>
       </div>
       <div className="vd-option-arrow">
         ›
@@ -208,9 +205,6 @@ import './VaultDevice.mobile.css';
       <div className="vd-option-name">
         PRO
       </div>
-      <div className="vd-option-desc">
-        ·𝟭𝟬 ᴇɴᴛʀɪᴇꜱ
-      </div>
       </div>
       <div className="vd-option-arrow">
         ›
@@ -226,9 +220,6 @@ import './VaultDevice.mobile.css';
       <div className="vd-option-info">
       <div className="vd-option-name">
         VIP
-      </div>
-      <div className="vd-option-desc">
-        ·ᴜɴʟɪᴍɪᴛᴇᴅ
       </div>
       </div>
       <div className="vd-option-arrow">
@@ -317,3 +308,4 @@ import './VaultDevice.mobile.css';
       </div>
       );
        }
+
