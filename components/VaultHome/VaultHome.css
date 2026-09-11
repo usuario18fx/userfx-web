@@ -1246,7 +1246,7 @@ min-height:100dvh;
 .vx-insideZone{
   position:relative;
   width:100%;
-  padding-top:80px;       /* ⬆️ */
+  padding-top:40px;       /* ⬆️ */
   padding-bottom:80px;    /* ⬇️ */
   background:url("/wallpaper1-1.png") 50% 65% / cover no-repeat;
 }
