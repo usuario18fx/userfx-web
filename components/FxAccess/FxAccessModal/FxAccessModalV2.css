@@ -102,6 +102,14 @@
   color:#7ee6ff42;
 }
 
+.smkl-panel .smkl-get-special-code[style]{
+  display:flex!important;
+  width:184px!important;
+  min-width:184px!important;
+  height:40px!important;
+  margin:8px auto 0!important;
+}
+
 .smkl-telegram-check-note{
   margin:0;
   color:#8bb9c7;
