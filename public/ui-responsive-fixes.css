@@ -1,8 +1,6 @@
 /* USERFX · responsive/mobile refinements · 2026-09-10 */
 
-/* =========================================
-   VERIFY · animated premium border
-   ========================================= */
+/* VERIFY · force premium animated style */
 .smkl-form__submit.smkl-form__submit--inline{
   position:relative!important;
   isolation:isolate!important;
@@ -56,9 +54,7 @@
   transform:scale(.95)!important;
 }
 
-/* =========================================
-   GET SPECIAL CODE · secondary premium button
-   ========================================= */
+/* GET SPECIAL CODE · same family, secondary */
 .smkl-get-special-code{
   position:relative!important;
   isolation:isolate!important;
@@ -110,53 +106,95 @@
   transform:scale(.96)!important;
 }
 
-/* =========================================
-   MOBILE HERO
-   ========================================= */
+/* GET IN · same visible premium family on STEP 3 */
+.smkl-form__submit.smkl-form__submit--get-in{
+  position:relative!important;
+  isolation:isolate!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:180px!important;
+  min-width:180px!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:10px auto 0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:linear-gradient(90deg,#0a7377,#77cdff,#0a6177,#0a7777,#77efff,#0a6a77)!important;
+  background-size:250%!important;
+  background-position:left!important;
+  box-shadow:0 8px 22px #00000066,0 0 16px #45dfff33!important;
+  transition:background-position 1s ease,transform .15s ease!important;
+}
+
+.smkl-form__submit.smkl-form__submit--get-in::before{
+  content:""!important;
+  position:absolute!important;
+  inset:2px!important;
+  z-index:0!important;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#0d151df5,#05080dfa)!important;
+}
+
+.smkl-form__submit.smkl-form__submit--get-in span{
+  position:relative!important;
+  z-index:2!important;
+  color:#d6f0ff!important;
+  font-family:"Cinzel",Georgia,serif!important;
+  font-size:.72rem!important;
+  font-weight:700!important;
+  letter-spacing:.24em!important;
+  text-indent:.24em!important;
+}
+
+.smkl-form__submit.smkl-form__submit--get-in:hover{
+  background-position:right!important;
+}
+
+/* MOBILE HERO */
 @media(max-width:520px){
   .vx-title{
     position:relative!important;
-    padding-top:12px!important;
+    padding-top:18px!important;
   }
 
-  /* ACCESS higher, no overlap with RESTRICTED */
   .vx-access{
     display:block!important;
     width:fit-content!important;
     max-width:100%!important;
-    margin:0 0 12px 0!important;
-    font-size:clamp(46px,13.8vw,60px)!important;
+    margin:0 0 10px 0!important;
+    font-size:clamp(48px,14.6vw,62px)!important;
     line-height:.76!important;
     letter-spacing:-.035em!important;
-    transform:translateY(-12px)!important;
+    transform:translateY(-8px)!important;
   }
 
   .vx-rest{
     display:block!important;
     margin:0!important;
     font-family:"Arial Black","Segoe UI Black",Arial,sans-serif!important;
-    font-size:clamp(35px,10.2vw,46px)!important;
+    font-size:clamp(36px,10.5vw,48px)!important;
     font-weight:900!important;
     font-style:italic!important;
-    line-height:.84!important;
-    letter-spacing:-1.35px!important;
+    line-height:.86!important;
+    letter-spacing:-1.4px!important;
     color:#c64b61!important;
-    transform:translateX(14px) translateY(-8px)!important;
+    transform:translateX(14px) translateY(0)!important;
   }
 
-  /* title crown · subtle circular/floating motion */
   .vx-titleCrown{
     position:absolute!important;
-    width:100px!important;
+    width:96px!important;
     left:76%!important;
-    top:26%!important;
+    top:31%!important;
     right:auto!important;
     z-index:4!important;
     transform-origin:50% 50%!important;
-    animation:vxMobileCrownFloat 5.8s ease-in-out infinite!important;
+    animation:vxMobileCrownFloat 5.6s ease-in-out infinite!important;
   }
 
-  /* GET ACCESS under doors · average mobile size */
   .vx-lock .vx-getCodeBtn{
     position:relative!important;
     top:auto!important;
@@ -166,56 +204,38 @@
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    width:clamp(245px,72vw,295px)!important;
-    min-width:245px!important;
-    height:60px!important;
-    min-height:60px!important;
-    margin:16px auto 6px!important;
-    padding:8px 20px!important;
+    width:clamp(230px,68vw,280px)!important;
+    min-width:230px!important;
+    height:56px!important;
+    min-height:56px!important;
+    margin:14px auto 4px!important;
+    padding:8px 18px!important;
     font-size:13px!important;
     letter-spacing:.14em!important;
     transform:none!important;
     overflow:hidden!important;
-    box-shadow:0 10px 24px #0000006b,0 0 20px #258cff29!important;
+    box-shadow:0 10px 24px #0000006b,0 0 18px #258cff22!important;
   }
 
-  .vx-lock .vx-getCodeBtn:hover{
-    transform:translateY(-1px)!important;
-  }
-
-  .vx-lock .vx-getCodeBtn:active{
-    transform:translateY(1px) scale(.98)!important;
-  }
-
-  /* modal buttons on mobile */
-  .smkl-form__submit.smkl-form__submit--inline{
-    width:180px!important;
-    min-width:180px!important;
+  .smkl-form__submit.smkl-form__submit--inline,
+  .smkl-form__submit.smkl-form__submit--get-in{
+    width:184px!important;
+    min-width:184px!important;
     height:45px!important;
     min-height:45px!important;
   }
 
   .smkl-get-special-code{
-    width:180px!important;
-    min-width:180px!important;
+    width:184px!important;
+    min-width:184px!important;
     height:40px!important;
-    min-height:40px!important;
   }
 }
 
 @keyframes vxMobileCrownFloat{
-  0%,100%{
-    transform:translate(-50%,-50%) rotate(-1.4deg) translateY(0);
-  }
-  25%{
-    transform:translate(-50%,-50%) rotate(.8deg) translate(2px,-3px);
-  }
-  50%{
-    transform:translate(-50%,-50%) rotate(1.4deg) translate(0,1px);
-  }
-  75%{
-    transform:translate(-50%,-50%) rotate(-.5deg) translate(-2px,-1px);
-  }
+  0%,100%{transform:translate(-50%,-50%) rotate(-1.2deg) translateY(0);}
+  35%{transform:translate(-50%,-50%) rotate(1.2deg) translateY(-3px);}
+  68%{transform:translate(-50%,-50%) rotate(-.5deg) translateY(2px);}
 }
 
 @media(prefers-reduced-motion:reduce){
