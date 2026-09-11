@@ -86,14 +86,34 @@
     border-color 250ms ease,
     box-shadow 250ms ease;
 }
+.smkl-access-button__rose {
+  position: relative;
+  overflow: visible;
+  rotate: 0deg !important;
+}
 .smkl-access-button__rose img {
-  width: 68%;
-  height: 68%;
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
-  transform: none;
-  filter:saturate(0.3)brightness(1.3)
-  drop-shadow(0 0 6px #168affe7);
-  transition: filter 250ms ease;
+  pointer-events: none;
+  transform: translate(-50%, -52%) rotate(0deg) !important;
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(.18,.85,.25,1.25);
+}
+/* ============  ROSA CON HOJAS EN HOVER =================== */
+.smkl-access-button__rose-hover {
+  opacity: 0;
+  z-index: 3;
+  transform: translate(-50%, -50%) rotate(0deg);;
+}
+.smkl-access-button:hover
+.smkl-access-button__rose-hover {
+  opacity: 1;
+  transform:translate(-50%, -50%) scale(1.40) rotate(0deg);;
+   animation: roseLeavesBloom 300ms cubic-bezier(.22,.61,.36,1);
 }
 /* corner hardware */
 .smkl-access-button__rose::before,
@@ -113,6 +133,14 @@
 .smkl-access-button__rose::after {
   right: 5px;
   bottom: 5px;
+}
+.smkl-access-button__rose-normal {/* Rosa normal */
+  opacity: 1;
+  z-index: 2;
+}
+.fx-access-launcher {
+  position: relative;
+  left: 150px;
 }
 /* =======   DIVIDERS ============================== */
 .smkl-access-button__seam {
@@ -194,8 +222,7 @@
     stroke 250ms ease,
     filter 250ms ease;
 }
-/* status light */
-.smkl-access-button__status {
+.smkl-access-button__status {/* status light */
   position: absolute;
   z-index: 6;
   top: 10px;
@@ -207,44 +234,43 @@
  box-shadow:
     0 0 7px #58ffaabf;
 }
-/* ============  ROSA CON HOJAS EN HOVER =================== */
-.smkl-access-button__rose {
-  position: relative;
-  overflow: visible;
-  rotate: 0deg !important;
+/* =========   BTM SPECIAL CODE =============== */
+.smkl-get-special-code{
+display:flex;
+align-items:center;
+justify-content:center;
+width:55%;
+height:42px;
+margin:6px auto 0;
+padding:0 14px;
+border:1px solid #255893;
+border-radius:8px;
+background:linear-gradient(
+180deg,
+#183f6dfa,
+#0d1520fa 55%,
+#07090dfc);
+color:#63ffd0;
+font-family:"Cinzel",serif;
+font-size:.68rem;
+font-weight:600;
+letter-spacing:.18em;
+cursor:pointer;
+box-shadow:
+0 6px 18px #00000055,
+inset 0 1px 0 #ffffff10;
+transition:
+transform .18s ease,
+border-color .18s ease,
+box-shadow .18s ease;
 }
-.smkl-access-button__rose img {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  pointer-events: none;
-  transform: translate(-50%, -52%) rotate(0deg) !important;
-  transition:
-    opacity 260ms ease,
-    transform 420ms cubic-bezier(.18,.85,.25,1.25);
-}
-/* Rosa normal */
-.smkl-access-button__rose-normal {
-  opacity: 1;
-  z-index: 2;
-}
-/* Rosa con hojas */
-.smkl-access-button__rose-hover {
-  opacity: 0;
-  z-index: 3;
-  transform: translate(-50%, -50%) rotate(0deg);;
-}
-.smkl-access-button:hover
-.smkl-access-button__rose-hover {
-  opacity: 1;
-  transform:translate(-50%, -50%) scale(1.40) rotate(0deg);;
-   animation: roseLeavesBloom 300ms cubic-bezier(.22,.61,.36,1);
-}
-.fx-access-launcher {
-  position: relative;
-  left: 150px;
+.smkl-get-special-code:hover{
+transform:translateY(-1px);
+border-color:#3f7fcb;
+box-shadow:
+0 8px 20px #00000066,
+0 0 14px #2f7cff22,
+inset 0 1px 0 #ffffff14;
 }
 /* =============   HOVER ======================== */
 @media (hover: hover) {
@@ -294,7 +320,7 @@
   }}
 /* ==============   MOBILE ================ */
 @media (max-width: 520px) {
-  .smkl-access-button {grid-template-columns:52px 1fr 40px;width:min(94vw, 390px);min-height:78px;padding:8px 12px;
+  .smkl-access-button {grid-template-columns:52px 1fr 40px;width:min(74vw, 360px);min-height:78px;padding:8px 12px;
   }
   .smkl-access-button__rose {width:42px; height: 42px;
   }
@@ -310,3 +336,17 @@
   }
   .smkl-access-button__brand i {width:10px;
   }}
+  @media (max-width:560px){
+.smkl-access-button{
+position:absolute!important;
+top: -8px!important;
+right:60px!important;
+left:auto!important;
+margin:0!important;
+z-index:30!important;
+width:170px!important;
+min-height:46px!important;
+height:46px!important;
+padding-top:0!important;
+padding-bottom:0!important;
+}}

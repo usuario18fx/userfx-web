@@ -78,8 +78,7 @@ const LOGO="/assets/userfx-logo-sin.png";
     { q: "Are refunds available?",
       a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures.",},
     ];
-
-    function nextFridayUtc() {
+  function nextFridayUtc() {
   const now = new Date();
   const day = now.getUTCDay(); let add = (5 - day + 7) % 7;
   const target = new Date(Date.UTC(
@@ -91,8 +90,7 @@ const LOGO="/assets/userfx-logo-sin.png";
     }
     return target;
     }
-
-    function useCountdown() {
+  function useCountdown() {
   const [label, setLabel] = useState("· · ·");
 
   useEffect(() => {
@@ -138,7 +136,6 @@ function Reveal({ children, delay = 0, className = "",
               </div>
     );
     }
-
   function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
     const line = items.join("   🜲   ") + "   🜲   ";
     return (

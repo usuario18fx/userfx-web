@@ -34,7 +34,7 @@ import './VaultDevice.mobile.css';
                   rayo: "/assets/iconos/rayo.png",
                   rosa: "/assets/iconos/rosa.png",
                   telegram: "/assets/iconos/telegram.png",
-                  vip: "/assets/iconos/vip.png",
+                  vipcard: "/assets/iconos/vipCard.png",
                   bordeDevice: "/assets/iconos/bordeDevice.png",
                   bordeBtn: "/assets/iconos/bordeBtn.png",
                   quickly: "/assets/iconos/quickly.png",
@@ -72,8 +72,7 @@ import './VaultDevice.mobile.css';
             items: 
          [{ icon: ICONS.fuego, text:'Regular viewers', sub: 'Made for people who want more than one session' },
           { icon: '💎', text:'More value per entry', sub: 'Code saved. Access secured.' },
-  
-          { icon: ICONS.vip, text:'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
+          { icon: ICONS.vipcard, text:'VIP-ready', sub: 'A natural step up before going all-access' },],},],},
   vip:{title:'VIP',
             emoji: ICONS.corona,
             stars: 1500,

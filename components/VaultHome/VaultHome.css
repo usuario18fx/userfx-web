@@ -489,15 +489,7 @@ min-height:100dvh;
   outline:2px solid #FFF1B3;
   outline-offset:4px;
 }
-@media (max-width:520px){
-  .vx-lock .vx-getCodeBtn{
-    width:230px;
-    height:50px;
-    min-height:50px;
-    top:18px;
-    left:0;
-    font-size:11px;
-  }}
+
 /* ══════  TICKER ═══════════ */
 .vx-ticker{
   position:relative;
@@ -615,7 +607,6 @@ min-height:100dvh;
 .vx-ticker.is-rev .vx-tickerTrack{
   line-height:34px;
 }
-
 /* ════════════  SECTIONS ═════════════ */
 .vx-sec{
   width:100%;
@@ -891,7 +882,6 @@ min-height:100dvh;
   from{ transform:translate3d(0,0,0); }
   to{ transform:translate3d(calc(-50% - 7px),0,0); }
 }
-
 /* ════════════  FAQ ═══════════════ */
 .vx-faq{
   margin-top:18px;
@@ -1277,7 +1267,7 @@ min-height:100dvh;
   position:relative;
   width:100%;
   background:
-    url("/wallpaper1-1.png")
+    url("/wallpaperGeneral.png")
     center top / cover no-repeat;
   overflow:hidden;
 }
@@ -1294,7 +1284,7 @@ min-height:100dvh;
 @media(max-width:520px){
   .vx-finalBackdrop{
     background-image:url("/wallpaper1-1.png");
-    background-position:50% 40%;
+    background-position:50% 31%;
     background-size:140% auto;
     background-repeat:no-repeat;
   }}
@@ -1322,17 +1312,7 @@ min-height:100dvh;
   .vx-lock{ justify-self:start; }
   .vx-grid > .vx-lock.vx-lockRaise{transform:translateY(-10px) translateX(-190px);
   }}
-@media (max-width:900px){
-  .vx-grid{ grid-template-columns:minmax(0,1fr) !important;gap:36px;
-  }
-  .vx-lock{
-    width:calc(100% - 24px);
-    max-width:420px;
-    min-width:0;
-    margin:0 auto;
-  }
-  .vx-lock.vx-lockRaise{ top:0;transform:none;
-  }}
+
 @media (max-width:768px){
   .vx-title{ position:relative; }
   .vx-titleCrown{
@@ -1410,7 +1390,7 @@ min-height:100dvh;
   }
   .vx-dossierDrop strong{ font-size:11px; }
 
-  .vx-ticker.is-rev{ position:relative; top:-1px; margin-bottom:-52px;z-index:20;
+  .vx-ticker.is-rev{ position:relative; top:-1px; margin-bottom:-52px; z-index:20;
   }}
 @media (max-width:420px){
   .vx-access{ font-size:clamp(48px,15vw,64px) !important; }
@@ -1420,10 +1400,16 @@ min-height:100dvh;
   .vx-grid > .vx-lock.vx-lockRaise{transform:translateX(-160px) translateY(40px) !important;
   }}
 #faq > .vx-reveal{
-  background:
-    linear-gradient(#05050754,#050507e7),
-    url("/wallpaper1-1.png");
+  background:transparent !important;
 }
+@media (max-width:560px){
+.vd-menu-header p{
+  font-size:18px;
+  padding:6px 12px;
+  line-height:1.15;
+  letter-spacing:.03em;
+   padding-top:32px;
+  }}
 /* ══════════  ✦ STARS · CADA STEP DEL PROTOCOLO ═════════ */
 .vx-step{
   position:relative;
@@ -1522,5 +1508,213 @@ min-height:100dvh;
   from{transform:translateY(290px);
   }
   to{transform:translateY(-290px);
-  }
+  }}
+@media (max-width:560px){
+  .vd-menu-header{
+  padding:48px 6px 8px;
+  font-size:18px;
+}}
+/* ═══════════════════════════════════════════════
+   MOBILE · DOORS + GET ACCESS
+   ═══════════════════════════════════════════════ */
+.vx-lock .vx-getCodeBtn{
+position:relative!important;
+bottom:auto!important;
+right:auto!important;
+left:auto!important;
+top:auto!important;
+display:flex!important;
+align-items:center;
+justify-content:center;
+width:min(72%,220px)!important;
+height:44px!important;
+min-height:44px!important;
+margin:8px auto 0!important;
+padding:6px 16px!important;
+transform:none!important;
 }
+/* resplandor suave */
+.vx-lock .vx-getCodeBtn{
+overflow:hidden;
+box-shadow:
+0 8px 20px #00000073,
+0 0 16px #2d8cff25!important;
+}
+.vx-lock .vx-getCodeBtn::after{
+content:"";
+position:absolute;
+top:-40%;
+left:-55%;
+width:35%;
+height:180%;
+background:linear-gradient(90deg,
+transparent,
+#ffffff38,
+transparent);
+transform:skewX(-20deg);
+animation:vxAccessShine 4.5s ease-in-out infinite;
+pointer-events:none;
+}
+@keyframes vxAccessShine{
+0%,68%{ left:-55%;opacity:0;
+}
+72%{opacity:.7;
+}
+88%{left:125%; opacity:.35;
+}
+100%{left:125%; opacity:0;
+}}
+/* ══════ WHAT'S INSIDE · WALLPAPER GENERAL ══════════════════ */
+.vx-insideZone{
+position:relative!important;
+width:100%!important;
+background:
+linear-gradient(180deg,
+#02030575 0%,
+#02030542 42%,
+#0203051c 100%),
+url("/wallpaperGeneral.png")!important;
+background-size:cover!important;
+background-repeat:no-repeat!important;
+/* ⬆️ mueve visualmente el wallpaper hacia arriba */
+background-position:center 28%!important;
+}
+/* ════════   MOBILE ══════════ */
+@media(max-width:520px){
+.vx-lock{
+display:flex;
+flex-direction:column;
+align-items:center;
+width:calc(100% - 20px)!important;
+margin:0 auto!important;
+}
+.vx-lock.vx-lockRaise{
+top:0!important;
+transform:none!important;
+}
+.vx-accessArea{
+width:100%!important;
+padding-top:4px!important;
+gap:6px!important;
+}
+.vx-lock .vx-getCodeBtn{
+width:72%!important;
+height:42px!important;
+min-height:42px!important;
+margin:6px auto 0!important;
+padding:4px 14px!important;
+}
+/* fondo de WHAT'S INSIDE en celular */
+.vx-insideZone{
+padding-top:54px!important;
+padding-bottom:60px!important;
+background-position:center 20%!important;
+background-size:cover!important;
+}}
+.vx-lock{
+position:relative;
+background:
+linear-gradient(180deg,
+#02030542 0%,
+#02030558 55%,
+#02030588 100%),
+url("/wallpaperGeneral.png");
+background-size:cover;
+background-repeat:no-repeat;
+background-position:center 28%;
+padding:18px 12px 14px;
+border-radius:20px;
+overflow:visible;
+}
+@media(max-width:520px){
+.vx-lock{
+width:calc(100% - 20px)!important;
+margin:0 auto!important;
+padding:12px 8px 10px!important;
+background:
+linear-gradient(180deg,
+#02030536 0%,#02030552 55%,#02030582 100%),
+url("/wallpaperGeneral.png")!important;
+background-size:cover!important;
+background-position:center 22%!important;
+background-repeat:no-repeat!important;
+}}
+/* ═══   DEVICE ·  ═════════════════════════ */
+.vx-deviceStage{
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+width:100%;
+max-width:100%;
+margin:0 auto;
+padding:8px 0;
+overflow:visible;
+}
+.vx-deviceStage .vd-device{
+margin-left:auto!important;
+margin-right:auto!important;
+}
+/* ════   WHAT'S INSIDE · ═════════════════════ */
+.vx-insideZone{
+background:
+linear-gradient(180deg,
+#0203053d 0%,
+#02030550 55%,
+#02030591 100%),
+url("/wallpaperGeneral.png")!important;
+background-size:cover!important;
+background-repeat:no-repeat!important;
+background-position:center 8%!important;/**/
+}
+/* ═════════ MOBILE ═════════ */
+@media(max-width:520px){
+.vx-deviceStage{
+display:flex!important;
+justify-content:center!important;
+align-items:center!important;
+width:100%!important;
+margin:0 auto!important;
+padding:4px 0 8px!important;
+}
+/* dispositivo centrado */
+.vx-deviceStage .vd-device{
+position:relative!important;
+left:50%!important;
+right:auto!important;
+margin:0!important;
+transform:
+translateX(-50%)translateY(8%)
+scale(.92)!important;
+transform-origin:center top!important;
+}
+/* WHAT'S INSIDE todavía más arriba */
+.vx-insideZone{
+padding-top:24px!important;
+background-position:center top!important;
+background-size:cover!important;
+}}
+/* ═══════  TITLE · CROWN  ═════════════════ */
+@media(max-width:520px){
+/* CORONA */
+.vx-titleCrown{
+position:absolute!important;
+width:92px!important;
+left:72%!important;
+top:30%!important;
+transform:translate(-50%,-50%)!important;
+z-index:3!important;
+}
+/* RESTRICTED */
+.vx-rest{display:block!important;
+margin:0!important;
+font-family:
+"Arial Black","Segoe UI Black",Arial,sans-serif!important;
+font-size:2.25rem!important;
+font-weight:900!important;
+font-style:italic!important;
+letter-spacing:-1px!important;
+line-height:.84!important;
+color:#B64B5D!important;
+transform:translateX(16px)translateY(-16px)!important;
+}}

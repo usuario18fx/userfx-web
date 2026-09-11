@@ -12,27 +12,35 @@ const SIDE_ACTIONS = [
   ["Videocall", "Jump back to the call stage"],
   ["Profile", "View the active private profile"],
   ["Notes", "Keep private notes for this file"],
-  ["Share", "Prepare a private share action"],
   ["Report", "Flag this file for review"],
 ];
 
 function MessageButton() {
   return (
-    <button id="btn-message" className="button-message" type="button">
+      <button id="btn-message" className="button-message" type="button">
       <div className="content-avatar">
-        <div className="status-user" />
-        <div className="avatar">
-          <svg className="user-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12,12.5c-3.04,0-5.5,1.73-5.5,3.5s2.46,3.5,5.5,3.5,5.5-1.73,5.5-3.5-2.46-3.5-5.5-3.5Zm0-.5c1.66,0,3-1.34,3-3s-1.34-3-3-3-3,1.34-3,3,1.34,3,3,3Z" />
-          </svg>
-        </div>
+      <div className="status-user" />
+      <div className="avatar">
+      <svg className="user-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12,12.5c-3.04,0-5.5,1.73-5.5,3.5s2.46,3.5,5.5,3.5,5.5-1.73,5.5-3.5-2.46-3.5-5.5-3.5Zm0-.5c1.66,0,3-1.34,3-3s-1.34-3-3-3-3,1.34-3,3,1.34,3,3,3Z" />
+      </svg>
+      </div>
       </div>
       <div className="notice-content">
-        <div className="username">Jessica Sanders</div>
-        <div className="lable-message">Message<span className="number-message">3</span></div>
-        <div className="user-id">@jessisanders</div>
+      <div className="username">
+        User FX
       </div>
-    </button>
+      <div className="lable-message">
+        Message
+      <span className="number-message">
+        3
+      </span>
+      </div>
+      <div className="user-id">
+        @User18Fx
+      </div>
+      </div>
+      </button>
   );
 }
 
@@ -93,103 +101,126 @@ export default function PrivateRoom() {
       .catch(() => { if (!cancelled) window.location.hash = "#/"; });
     return () => { cancelled = true; };
   }, []);
-
   useEffect(() => {
     localStorage.setItem("userfx_private_likes", JSON.stringify(likes));
   }, [likes]);
-
   const selectedFile = FILES[selected];
   const totalLikes = useMemo(() => Object.values(likes).filter(Boolean).length, [likes]);
-
   if (!sessionReady) {
-    return <main className="pvr-loading">CHECKING PRIVATE ACCESS…</main>;
+   return <main className="pvr-loading">
+            CHECKING PRIVATE ACCESS…
+          </main>;
   }
 
   return (
-    <main className="pvr-page">
-      <header className="pvr-topbar">
-        <button className="pvr-back" type="button" onClick={() => { window.location.hash = "#/"; }}>← USER FX</button>
-        <span>PRIVATE ROOM · ID18</span>
-        <span className="pvr-live-dot">ONLINE</span>
-      </header>
-
-      <section className="pvr-call-stage" id="videocall-stage">
-        <div className="pvr-call-copy">
-          <span className="pvr-kicker">PRIVATE VIDEOCALL</span>
-          <h1>YOUR ROOM.<br/><em>YOUR CALL.</em></h1>
-          <p>The videocall stage is the first thing inside. Start here, then move through the private files below.</p>
+          <main className="pvr-page">
+          <header className="pvr-topbar">
+          <button className="pvr-back" type="button" onClick={() => { window.location.hash = "#/"; }}>
+            ← USER FX
+          </button>
+          <span>
+            PRIVATE ROOM · ID18
+          </span>
+          <span className="pvr-live-dot">
+           ONLINE</span>
+          </header>
+          <section className="pvr-call-stage" id="videocall-stage">
+          <div className="pvr-call-copy">
+          <span className="pvr-kicker">
+            PRIVATE VIDEOCALL
+          </span>
+          <h1>
+           YOUR ROOM.
+          <br/><em>
+           YOUR CALL.
+          </em></h1>
+          <p>
+           The videocall stage is the first thing inside. Start here, then move through the private files below. 
+          </p>
           <div className="pvr-call-actions">
-            <button className="pvr-get-in" type="button">GET IN</button>
-            <UpgradeButton />
-            <MessageButton />
+          <button className="pvr-get-in" type="button">GET IN</button>
+    <UpgradeButton />
+    <MessageButton />
           </div>
-        </div>
-
-        <div className="pvr-video-shell">
+          </div>
+          <div className="pvr-video-shell">
           <div className="pvr-video-screen">
-            <span className="pvr-video-status">READY</span>
-            <div className="pvr-video-center">
-              <div className="pvr-camera-ring"><span /></div>
-              <strong>VIDEOCALL STAGE</strong>
-              <small>PRIVATE SESSION READY</small>
-            </div>
+          <span className="pvr-video-status">READY</span>
+          <div className="pvr-video-center">
+          <div className="pvr-camera-ring"><span /></div>
+          <strong>
+            VIDEOCALL STAGE
+          </strong>
+          <small>
+            PRIVATE SESSION READY
+          </small>
           </div>
-        </div>
-      </section>
-
+          </div>
+          </div>
+          </section>
       <section className="pvr-gallery-section">
-        <div className="pvr-section-head">
+          <div className="pvr-section-head">
           <div>
-            <span>PRIVATE COLLECTION</span>
-            <h2>SELECT A FILE</h2>
+          <span>
+           PRIVATE COLLECTION
+          </span>
+          <h2>
+            SELECT A FILE
+          </h2>
           </div>
-          <HeartButton
-            checked={Boolean(likes[selectedFile.id])}
-            onChange={() => setLikes((current) => ({ ...current, [selectedFile.id]: !current[selectedFile.id] }))}
-            count={totalLikes}
-          />
-        </div>
-
-        <div className="pvr-workspace">
+    <HeartButton checked={Boolean(likes[selectedFile.id])} onChange={() => setLikes((current) => ({ ...current, [selectedFile.id]: !current[selectedFile.id] }))} count={totalLikes}/>
+          </div>
+          <div className="pvr-workspace">
           <div className="pvr-carousel" role="list">
             {FILES.map((file, index) => (
-              <button
-                type="button"
-                role="listitem"
-                key={file.id}
-                className={`pvr-photo-card${selected === index ? " is-selected" : ""}`}
-                onClick={() => setSelected(index)}
-              >
-                <img src={file.src} alt={file.title} />
-                <span>{file.title}</span>
-              </button>
+          <button type="button" role="listitem" key={file.id} className={`pvr-photo-card${selected === index ? " is-selected" : ""}`} onClick={() => setSelected(index)}>
+          <img src={file.src} alt={file.title} />
+          <span>{file.title}</span>
+          </button>
             ))}
           </div>
-
           <aside className="pvr-side-menu">
-            <div className="pvr-selected-preview">
-              <img src={selectedFile.src} alt={selectedFile.title} />
-              <div><span>SELECTED</span><strong>{selectedFile.title}</strong></div>
-            </div>
-
-            <div className="pvr-side-actions">
-              {SIDE_ACTIONS.map(([label, description]) => (
-                <button type="button" key={label}>
-                  <strong>{label}</strong>
-                  <span>{description}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="pvr-permission-panel">
-              <button type="button" className="pvr-permission pvr-permission--wide">TelegramFX</button>
-              <div className="pvr-permission-row"><button type="button" className="pvr-permission">Gallery</button><button type="button" className="pvr-permission">Chat</button></div>
-              <div className="pvr-permission-row"><button type="button" className="pvr-permission">Priv</button><button type="button" className="pvr-permission">Group</button></div>
-              <div className="pvr-permission-row pvr-permission-row--final"><button type="button" className="pvr-permission pvr-permission--save">SAVE</button><button type="button" className="pvr-permission pvr-permission--revoke">REVOKE ALL</button></div>
-            </div>
+          <div className="pvr-selected-preview">
+          <img src={selectedFile.src} alt={selectedFile.title} />
+          <div><span>
+           SELECTED
+          </span>
+          <strong>
+            {selectedFile.title}
+          </strong></div>
+          </div>
+          <div className="pvr-side-actions">
+           {SIDE_ACTIONS.map(([label, description]) => (
+          <button type="button" key={label}>
+          <strong>
+            {label}</strong>
+          <span>
+            {description}</span>
+          </button>
+            ))}
+          </div>
+          <div className="pvr-permission-panel">
+          <button type="button" className="pvr-permission pvr-permission--wide">
+            TelegramFX
+          </button>
+          <div className="pvr-permission-row"><button type="button" className="pvr-permission">
+            Gallery
+          </button><button type="button" className="pvr-permission">
+            Chat
+          </button></div>
+          <div className="pvr-permission-row"><button type="button" className="pvr-permission">
+            Priv
+          </button><button type="button" className="pvr-permission">
+            Group
+          </button>
+          <button type="button" className="pvr-permission pvr-permission--revoke">
+            REVOKE ALL
+          </button>
+          </div>
+          </div>
           </aside>
-        </div>
-      </section>
-    </main>
+          </div>
+          </section>
+          </main>
   );
 }
