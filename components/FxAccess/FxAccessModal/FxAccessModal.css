@@ -189,67 +189,197 @@ transform:translateX(-50%);
 fill:#25050d;
 stroke:#296b9e;
 opacity:.45;
+}´
+/* ===== ROBOT EYES ===== */
+.smkl-robot__eyes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
 }
-/*==================PANEL===============*/
+.smkl-robot__eye {
+  width: 12px;
+  height: 26px;
+  border-radius: 999px;
+  background: #65ffd1;
+  box-shadow: 0 0 10px #65ffd18c,
+    0 0 24px #65ffd12e;
+  transform-origin: center;
+  animation:smklEyeGlow 2.3s ease-in-out infinite,smklEyeBlink 6s infinite;
+}
+/*======= NUEVO FONDO USER FX =================== */
 .smkl-panel{
-position:relative;
-z-index:3;
-width:100%!important;
-margin-top:-16px!important;
-padding:36px 14px 16px!important;
-border:1px solid #3f8fea6c!important;
-border-radius:16px!important;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.smkl-panel > h2,
+.smkl-panel__divider,
+.smkl-plan-switcher,
+.smkl-form{
+  width:min(100%, 420px);
+  margin-inline:auto;
+}
+.smkl-plan-switcher{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  margin:14px auto 12px;
+}
+.smkl-plan-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+  min-height:44px;
+  padding:0 10px;
+}
+.smkl-plan-pill__icon{
+  width:18px;
+  height:18px;
+  object-fit:contain;
+  flex:0 0 18px;
+  display:block;
+}
+.smkl-plan-pill__name{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+.smkl-form{
+  display:grid;
+  gap:12px;
+  justify-items:center;
+}
+.smkl-form__field--username,
+.smkl-plan-access-field{width:100%;margin-inline:auto;
+}
+.smkl-telegram-check-note,
+.smkl-form__error{width:100%; text-align:center;
+}
+.smkl-form__submit{margin-inline:auto;
+}
+.smkl-telegram-mode-btn{
+position:absolute!important;
+top:155px!important;
+right:-68px!important;
+z-index:45!important;
+width:60px!important;
+min-width:60px!important;
+height:60px!important;
+min-height:60px!important;
+padding:0!important;
+display:grid!important;
+place-items:center!important;
+font-size:0!important;
+letter-spacing:0!important;
+overflow:hidden!important;
+border:0!important;
+border-radius:18px!important;
 background:
-linear-gradient(20deg,#41607858,#2c393f12),
-url("/wallpaperModal.png") center/cover no-repeat!important;
-box-shadow:0 26px 60px #000000b3,0 0 28px #1f4b8c21,
-0 0 35px #10241d14,
-inset 0 1px 0 #10241d14!important;
+linear-gradient(15deg,
+#0b426d,#1698ee,#43b6ff,
+#126fa8,#0b426d,#1698ee)!important;
+background-size:300%!important;
+background-position:left center!important;
+box-shadow:
+0 14px 22px -12px #1698ee88,
+0 0 16px #1698ee55,
+inset 0 1px 0 #ffffff55!important;
+cursor:pointer!important;
+animation:
+smklTelegramGradient 4s linear infinite,
+smklTelegramPulse 1.65s ease-in-out infinite!important;
+transition:
+transform .20s ease,
+box-shadow .30s ease,
+background-position 1s ease!important;
 }
-.smkl-panel__rose{
-position:absolute;
-top:-18px!important;
-left:50%;
-width:34px!important;
-transform:translateX(-50%);
-fill:#2d0812;
-stroke:#9f2a47;
-opacity:.55;
+.smkl-telegram-mode-btn::before{
+content:""!important;
+display:block!important;
+width:49px!important;
+height:49px!important;
+background: url("/assets/iconos/telegram.png")
+center/contain no-repeat!important;
+filter:drop-shadow(0 0 5px #42baff55)!important;
+transition:
+transform .25s ease,
+filter .25s ease!important;
 }
-.smkl-panel h2{
-position:relative;
-z-index:2;
-margin:0;
-font-size:.8rem!important;
-font-family:"Cinzel",serif;
-font-weight:600;
-letter-spacing:.30em;
-text-indent:.30em;
-text-align:center;
-color:#fffffff5!important;
-text-shadow:0 2px 10px #000000cc!important;
+.smkl-telegram-mode-btn:hover{
+background-position:right center!important;
+transform:
+translateY(-2px)
+scale(1.05)!important;
+box-shadow:
+0 16px 25px -10px #1698ee99,
+0 0 24px #42baff77,
+inset 0 1px 0 #ffffff75!important;
 }
-.smkl-panel__divider{
-position:relative;
-z-index:2;
-display:grid;
-grid-template-columns:1fr 14px 1fr;
-align-items:center;
-gap:8px;
-margin:6px 0 10px!important;
+.smkl-telegram-mode-btn:hover::before{
+transform:
+scale(1.08)
+rotate(-3deg)!important;
+filter:drop-shadow(0 0 9px #5dc7ff99)!important;
 }
-.smkl-panel__divider span{
-height:1px;
-background:linear-gradient(90deg,transparent,#8c1f3633);
+.smkl-telegram-mode-btn:active{
+transform:scale(.94)!important;
 }
-.smkl-panel__divider span:last-child{
-background:linear-gradient(90deg,#1f698c33,transparent);
+.smkl-telegram-mode-btn.is-active{
+background-position:right center!important;
+box-shadow:
+0 0 0 1px #59cfff88,
+0 0 26px #1698ee88,
+0 14px 22px -12px #1698ee99!important;
 }
-.smkl-panel__divider svg{
-width:14px;
-fill:#8c1f361a;
-stroke:#c9a34a33;
+.smkl-telegram-mode-btn:disabled{
+opacity:.38!important;
+filter:saturate(.35)!important;
+cursor:not-allowed!important;
+animation:none!important;
+transform:none!important;
 }
+@media(max-width:520px){
+.smkl-telegram-mode-btn{
+top:145px!important;
+right:-58px!important;
+width:54px!important;
+min-width:54px!important;
+height:54px!important;
+min-height:54px!important;
+border-radius:16px!important;
+}
+.smkl-telegram-mode-btn::before{
+width:44px!important;
+height:44px!important;
+}}
+@keyframes smklTelegramGradient{
+0%{background-position:0% center;
+}
+50%{background-position:100% center;
+}
+100%{background-position:0% center;
+}}
+@keyframes smklTelegramPulse{
+0%,100%{
+box-shadow:
+0 14px 22px -12px #1698ee77,
+0 0 14px #1698ee44,
+inset 0 1px 0 #ffffff55;
+transform:scale(1);
+}
+50%{box-shadow:
+0 14px 27px -9px #1698eebb,
+0 0 30px #42baff88,
+inset 0 1px 0 #ffffff80;
+transform:scale(1.055);
+}}
 /*==============MANOS============================*/
 .smkl-robot__hand{
 position:absolute!important;
@@ -260,44 +390,48 @@ display:flex!important;
 align-items:center!important;
 justify-content:center!important;
 gap:4px!important;
-z-index:12!important;
+z-index:20!important;
 border-radius:10px!important;
 background:
 linear-gradient(180deg,
-#10233c 0%,
-#07111d 58%,
+#10233c 0%,#07111d 58%,
 #03070d 100%)!important;
 border:1px solid #183f6b!important;
 box-shadow:
 0 7px 14px #00000066,
 inset 0 1px 0 #4a8fd32e!important;
+pointer-events:none!important;
 }
 .smkl-robot__hand--left{
-left:-22px!important;
+left:-2px!important;
 right:auto!important;
+top:-1px!important;
 }
+
 .smkl-robot__hand--right{
-right:-22px!important;
+right:-2px!important;
+top:-1px!important;
 left:auto!important;
 }
 .smkl-robot__hand i{
 display:block!important;
-width:7px!important;
+width:6px!important;
 height:22px!important;
 border-radius:5px!important;
 background:linear-gradient(180deg,
-#162d4b,#07111f)!important;
-box-shadow:inset 0 1px 1px #ffffff12,
-0 0 4px #0b5aa744!important;
+#18385f 0%,#0b1b31 55%,#050b13 100%)!important;
+box-shadow:
+inset 0 1px 1px #ffffff16,
+0 0 5px #0b5aa755!important;
 }
 @media(max-width:520px){
-.smkl-robot__hand{top:16px!important;width:52px!important;height:31px!important;
+.smkl-robot__hand{top:17px!important;width:50px!important;height:30px!important;gap:3px!important;
 }
-.smkl-robot__hand--left{left:-18px!important;
+.smkl-robot__hand--left{left:-22px!important;
 }
-.smkl-robot__hand--right{right:-18px!important;
+.smkl-robot__hand--right{right:-22px!important;
 }
-.smkl-robot__hand i{width:6px!important;height:20px!important;
+.smkl-robot__hand i{width:6px!important;height:19px!important;
 }}
 /*==================FORM==================*/
 .smkl-form{
@@ -576,7 +710,6 @@ border-radius:8px;
 background:linear-gradient(180deg,#255893fa,#12161bfa 52%,#0a0b0efc)!important;
 box-shadow:0 8px 22px #00000061,inset 0 1px 0 #ffffff0f!important;
 }
-
 .smkl-form__submit span{
 position:relative;
 z-index:2;
@@ -588,12 +721,10 @@ text-indent:.30em;
 color:#5dffc1!important;
 text-shadow:0 0 10px #5dffc147!important;
 }
-
 .smkl-form__submit:disabled{
 opacity:.45;
 cursor:not-allowed;
 }
-
 .smkl-inline-access .smkl-form__submit--inline{
 width:150px!important;
 min-width:150px!important;
@@ -886,10 +1017,8 @@ content:""!important;
 position:absolute!important;
 inset:2px!important;
 border-radius:8px!important;
-background:
-linear-gradient(180deg,
-#0a1115 0%,
-#050809 100%)!important;
+background:linear-gradient(180deg,
+#0a1115 0%,#050809 100%)!important;
 z-index:-1!important;
 }
 .smkl-plan-pill:hover{
@@ -964,10 +1093,8 @@ transform:none!important;
 .smkl-form__submit--verify{
 width:140px!important;
 height:40px!important;
-
 border:none!important;
 border-radius:10px!important;
-
 background:
 linear-gradient(to right,
 #0a776e,#77ffdd,#0a775f,
@@ -1028,78 +1155,12 @@ transition-duration:1s!important;
 }
 100%{background-position:0% center;
 }}
-/* ===== FLOATING ACTIONS ===== */
-.smkl-floating-actions {
-  position: absolute;
-  top: 126px;
-  right: -74px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 12;
-}
-.smkl-floating-telegram,
-.smkl-floating-special {
-  width: 60px;
-  height: 60px;
-  border: 0;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: transform 0.24s ease, box-shadow 0.24s ease;
-}
-.smkl-floating-telegram {
-  background: linear-gradient(180deg, #0d6bcf, #10385d);
-  box-shadow: 0 0 20px #44abff47;
-}
-.smkl-floating-telegram img {
-  width: 27px;
-  height: 27px;
-  top:50px;
-  object-fit: contain;
-}
-.smkl-floating-special {
-  background: linear-gradient(15deg,
-  #ddff00,#b8d100,#93a300,
-  #6e7500,#ddff00, #b8d100,
-  #93a300,#6e7500)no-repeat;
-  background-size: 300%;
-  background-position: left center;
-  box-shadow: 0 18px 14px -12px #ddff0066;
-}
-.smkl-floating-special svg {
-  width: 28px;
-  fill: #000;
-  transition: 0.3s ease;
-}
-.smkl-floating-telegram:hover,
-.smkl-floating-special:hover {transform: translateY(-2px) scale(1.04);
-}
-.smkl-floating-special.is-pulsing {animation: smklPulseSpecial 1.25s ease-in-out infinite;
-}
 @keyframes smklPulseSpecial {
   0%, 100% {box-shadow: 0 0 0 0 rgba(217, 255, 0, 0.22), 0 18px 14px -12px rgba(221, 255, 0, 0.4);
   }
   50% {box-shadow: 0 0 0 12px rgba(217, 255, 0, 0), 0 18px 18px -10px rgba(221, 255, 0, 0.55);
   }}
-/* ===== ROBOT EYES ===== */
-.smkl-robot__eyes {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-.smkl-robot__eye {
-  width: 12px;
-  height: 26px;
-  border-radius: 999px;
-  background: #65ffd1;
-  box-shadow: 0 0 10px #65ffd18c,
-    0 0 24px #65ffd12e;
-  transform-origin: center;
-  animation:smklEyeGlow 2.3s ease-in-out infinite,smklEyeBlink 6s infinite;
-}
+
 @keyframes smklEyeGlow {
   0%, 100% {opacity: 0.9;filter: brightness(1);
   }
