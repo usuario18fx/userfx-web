@@ -9,7 +9,12 @@ const IDENTITY_COOKIE = "userfx_identity_session";
 const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
 const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const IDENTITY_ACCESS_SECONDS = 30 * 60;
+
+/*
+ * SPCL membership is not presented as a paid-plan expiration.
+ * Keep the browser/session durable while TelegramFX access remains enabled.
+ */
+const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
 
 function getRedis() {
   if (!REDIS_URL) {
@@ -191,7 +196,7 @@ export default async function handler(req, res) {
         return res.status(401).json({
           ok: false,
           authenticated: false,
-          error: "TGMX IDENTITY VERIFICATION REQUIRED",
+          error: "SPCL IDENTITY VERIFICATION REQUIRED",
         });
       }
 
@@ -222,8 +227,11 @@ export default async function handler(req, res) {
       ).toISOString();
 
       const session = {
+        /* Internal media compatibility only. Never use this as the SPCL UI label. */
         planId: "vip",
         accessMode: "telegram_identity",
+        accessLabel: "SPCL",
+        memberAccess: true,
         telegramUsername: usernameNormalized,
         telegramUserId: String(identity.userId),
         maxAccesses: null,
@@ -251,11 +259,13 @@ export default async function handler(req, res) {
         authenticated: true,
         planId: session.planId,
         accessMode: session.accessMode,
+        accessLabel: session.accessLabel,
+        memberAccess: true,
         maxAccesses: session.maxAccesses,
         usedAccesses: session.usedAccesses,
         remainingAccesses: session.remainingAccesses,
         unlimitedAccess: session.unlimitedAccess,
-        expiresAt,
+        expiresAt: null,
       });
     }
 
@@ -320,16 +330,46 @@ export default async function handler(req, res) {
       });
     }
 
+    if (session.accessMode === "telegram_identity") {
+      const telegramAccess = await getTelegramFxAccess(
+        String(session.telegramUsername || "")
+          .trim()
+          .replace(/^@+/, "")
+          .toLowerCase()
+      );
+
+      if (
+        !telegramAccess ||
+        telegramAccess.enabled !== true ||
+        telegramAccess.telegramfx_access !== true
+      ) {
+        await redis.del(sessionKey);
+        res.setHeader("Set-Cookie", clearSessionCookie(req));
+        return res.status(200).json({
+          ok: true,
+          authenticated: false,
+        });
+      }
+    }
+
     return res.status(200).json({
       ok: true,
       authenticated: true,
       planId: session.planId,
       accessMode: session.accessMode,
+      accessLabel:
+        session.accessMode === "telegram_identity"
+          ? "SPCL"
+          : session.accessLabel || null,
+      memberAccess: session.accessMode === "telegram_identity",
       maxAccesses: session.maxAccesses,
       usedAccesses: session.usedAccesses,
       remainingAccesses: session.remainingAccesses,
       unlimitedAccess: session.unlimitedAccess,
-      expiresAt: session.expiresAt,
+      expiresAt:
+        session.accessMode === "telegram_identity"
+          ? null
+          : session.expiresAt,
     });
   } catch (error) {
     console.error("[api/access-session]", error);
