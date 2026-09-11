@@ -179,14 +179,21 @@
 }
 
 /* top screen hint */
+.smkl-modal__bubble--screen:has(.smkl-special-code-hint){
+  padding-bottom:20px!important;
+}
+
 .smkl-special-code-hint{
   position:absolute;
-  right:10px;
-  bottom:4px;
+  left:50%;
+  right:auto;
+  bottom:3px;
   z-index:5;
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:5px;
+  max-width:92%;
   padding:2px 5px;
   border:0;
   background:transparent;
@@ -195,8 +202,10 @@
   font-size:.43rem;
   font-weight:700;
   letter-spacing:.05em;
-  opacity:.72;
+  white-space:nowrap;
+  opacity:.78;
   cursor:pointer;
+  transform:translateX(-50%);
 }
 
 .smkl-special-code-hint[hidden]{display:none!important;}
@@ -205,6 +214,7 @@
   width:12px;
   height:9px;
   fill:#dfff24;
+  flex:0 0 auto;
   filter:drop-shadow(0 0 4px #ddff0066);
 }
 
@@ -280,27 +290,50 @@
     min-height:45px!important;
   }
 
+  /* keep crown fully inside the viewport while visually floating at modal edge */
   .smkl-special-code-fab{
-    top:52%;
-    right:-30px;
-    width:48px;
-    height:48px;
-    border-radius:15px;
+    position:fixed!important;
+    top:58%!important;
+    right:8px!important;
+    left:auto!important;
+    width:50px!important;
+    height:50px!important;
+    border-radius:15px!important;
+    transform:translateY(-50%)!important;
+  }
+
+  .smkl-special-code-fab:hover{
+    transform:translateY(-50%) scale(1.04)!important;
+  }
+
+  .smkl-special-code-fab:active{
+    transform:translateY(-50%) scale(.94)!important;
   }
 
   .smkl-special-code-fab svg{
-    width:24px;
-    height:18px;
+    width:25px;
+    height:19px;
   }
 
   .smkl-special-code-fab__tip{
     display:none;
   }
 
+  .smkl-modal__bubble--screen:has(.smkl-special-code-hint){
+    min-height:52px!important;
+    padding-top:9px!important;
+    padding-bottom:18px!important;
+  }
+
   .smkl-special-code-hint{
-    right:7px;
-    bottom:3px;
-    font-size:.39rem;
+    left:50%!important;
+    right:auto!important;
+    bottom:2px!important;
+    max-width:88%!important;
+    padding:1px 4px!important;
+    font-size:.38rem!important;
+    letter-spacing:.035em!important;
+    transform:translateX(-50%)!important;
   }
 }
 
