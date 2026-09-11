@@ -1,14 +1,16 @@
 /* USERFX · responsive/mobile refinements · 2026-09-10 */
 
-/* VERIFY · animated premium border */
-.smkl-form__submit--inline{
+/* =========================================
+   VERIFY · animated premium border
+   ========================================= */
+.smkl-form__submit.smkl-form__submit--inline{
   position:relative!important;
-  isolation:isolate;
+  isolation:isolate!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  width:160px!important;
-  min-width:160px!important;
+  width:180px!important;
+  min-width:180px!important;
   height:44px!important;
   min-height:44px!important;
   margin:10px auto 0!important;
@@ -19,78 +21,84 @@
   background:linear-gradient(90deg,#0a7377,#77cdff,#0a6177,#0a7777,#77efff,#0a6a77)!important;
   background-size:250%!important;
   background-position:left!important;
-  box-shadow:0 8px 22px #00000066,0 0 15px #45dfff20!important;
-  cursor:pointer;
+  box-shadow:0 8px 22px #00000066,0 0 16px #45dfff33!important;
+  cursor:pointer!important;
   transition:background-position 1s ease,transform .15s ease,box-shadow .25s ease!important;
 }
 
-.smkl-form__submit--inline::before{
-  content:"";
-  position:absolute;
-  inset:2px;
-  z-index:-1;
-  border-radius:8px;
-  background:linear-gradient(180deg,#0b1117f5,#030609fa)!important;
-  transition:background-position 1s ease;
+.smkl-form__submit.smkl-form__submit--inline::before{
+  content:""!important;
+  position:absolute!important;
+  inset:2px!important;
+  z-index:0!important;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#0d151df5,#05080dfa)!important;
 }
 
-.smkl-form__submit--inline span{
-  position:relative;
-  z-index:2;
+.smkl-form__submit.smkl-form__submit--inline span{
+  position:relative!important;
+  z-index:2!important;
   color:#d6f0ff!important;
   font-family:"Cinzel",Georgia,serif!important;
   font-size:.72rem!important;
   font-weight:700!important;
   letter-spacing:.24em!important;
   text-indent:.24em!important;
-  text-shadow:0 0 9px #77efff45!important;
+  text-shadow:0 0 8px #77efff66!important;
 }
 
-.smkl-form__submit--inline:hover{
+.smkl-form__submit.smkl-form__submit--inline:hover{
   background-position:right!important;
-  box-shadow:0 9px 24px #00000070,0 0 20px #77efff32!important;
+  box-shadow:0 9px 24px #00000070,0 0 20px #77efff38!important;
 }
 
-.smkl-form__submit--inline:active{
+.smkl-form__submit.smkl-form__submit--inline:active{
   transform:scale(.95)!important;
 }
 
-/* GET SPECIAL CODE · same family, secondary */
+/* =========================================
+   GET SPECIAL CODE · secondary premium button
+   ========================================= */
 .smkl-get-special-code{
   position:relative!important;
-  isolation:isolate;
+  isolation:isolate!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  width:190px!important;
-  min-width:190px!important;
-  height:42px!important;
-  min-height:42px!important;
+  width:180px!important;
+  min-width:180px!important;
+  height:40px!important;
+  min-height:40px!important;
   margin:8px auto 0!important;
   padding:0 14px!important;
   overflow:hidden!important;
   border:0!important;
   border-radius:10px!important;
-  background:linear-gradient(90deg,#0a6177,#327da7,#0a7377,#57b9d7,#0a6177)!important;
+  background:linear-gradient(90deg,#085c68,#3d9fc4,#086777,#44b5c9,#085c68)!important;
   background-size:250%!important;
   background-position:left!important;
-  box-shadow:0 7px 18px #0000005c,0 0 12px #43d9ff18!important;
+  box-shadow:0 7px 18px #00000055,0 0 12px #43d9ff22!important;
   color:#d6f0ff!important;
   font-family:"Cinzel",Georgia,serif!important;
-  font-size:.63rem!important;
+  font-size:.62rem!important;
   font-weight:700!important;
   letter-spacing:.16em!important;
-  cursor:pointer;
+  cursor:pointer!important;
   transition:background-position 1s ease,transform .15s ease,box-shadow .25s ease!important;
 }
 
 .smkl-get-special-code::before{
-  content:"";
-  position:absolute;
-  inset:2px;
-  z-index:-1;
-  border-radius:8px;
-  background:linear-gradient(180deg,#0a1016f5,#04070afa)!important;
+  content:""!important;
+  position:absolute!important;
+  inset:2px!important;
+  z-index:0!important;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#0a1118f5,#04070afa)!important;
+}
+
+.smkl-get-special-code span{
+  position:relative!important;
+  z-index:2!important;
 }
 
 .smkl-get-special-code:hover{
@@ -102,51 +110,53 @@
   transform:scale(.96)!important;
 }
 
-/* MOBILE HERO */
+/* =========================================
+   MOBILE HERO
+   ========================================= */
 @media(max-width:520px){
-  /* ACCESS is separated from RESTRICTED instead of sitting behind it */
   .vx-title{
     position:relative!important;
-    padding-top:18px!important;
+    padding-top:12px!important;
   }
 
+  /* ACCESS higher, no overlap with RESTRICTED */
   .vx-access{
     display:block!important;
     width:fit-content!important;
     max-width:100%!important;
-    margin:0 0 6px 0!important;
-    font-size:clamp(48px,14.6vw,62px)!important;
-    line-height:.78!important;
+    margin:0 0 12px 0!important;
+    font-size:clamp(46px,13.8vw,60px)!important;
+    line-height:.76!important;
     letter-spacing:-.035em!important;
-    transform:translateY(0)!important;
+    transform:translateY(-12px)!important;
   }
 
   .vx-rest{
     display:block!important;
     margin:0!important;
     font-family:"Arial Black","Segoe UI Black",Arial,sans-serif!important;
-    font-size:clamp(36px,10.5vw,48px)!important;
+    font-size:clamp(35px,10.2vw,46px)!important;
     font-weight:900!important;
     font-style:italic!important;
-    line-height:.86!important;
-    letter-spacing:-1.4px!important;
+    line-height:.84!important;
+    letter-spacing:-1.35px!important;
     color:#c64b61!important;
-    transform:translateX(14px) translateY(0)!important;
+    transform:translateX(14px) translateY(-8px)!important;
   }
 
-  /* title crown · light circular/floating motion */
+  /* title crown · subtle circular/floating motion */
   .vx-titleCrown{
     position:absolute!important;
-    width:96px!important;
+    width:100px!important;
     left:76%!important;
-    top:31%!important;
+    top:26%!important;
     right:auto!important;
     z-index:4!important;
     transform-origin:50% 50%!important;
-    animation:vxMobileCrownFloat 5.6s ease-in-out infinite!important;
+    animation:vxMobileCrownFloat 5.8s ease-in-out infinite!important;
   }
 
-  /* GET ACCESS under the doors · readable mobile size */
+  /* GET ACCESS under doors · average mobile size */
   .vx-lock .vx-getCodeBtn{
     position:relative!important;
     top:auto!important;
@@ -156,17 +166,17 @@
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    width:clamp(230px,68vw,280px)!important;
-    min-width:230px!important;
-    height:56px!important;
-    min-height:56px!important;
-    margin:14px auto 4px!important;
-    padding:8px 18px!important;
+    width:clamp(245px,72vw,295px)!important;
+    min-width:245px!important;
+    height:60px!important;
+    min-height:60px!important;
+    margin:16px auto 6px!important;
+    padding:8px 20px!important;
     font-size:13px!important;
     letter-spacing:.14em!important;
     transform:none!important;
     overflow:hidden!important;
-    box-shadow:0 10px 24px #0000006b,0 0 18px #258cff22!important;
+    box-shadow:0 10px 24px #0000006b,0 0 20px #258cff29!important;
   }
 
   .vx-lock .vx-getCodeBtn:hover{
@@ -177,29 +187,34 @@
     transform:translateY(1px) scale(.98)!important;
   }
 
-  .smkl-form__submit--inline{
-    width:164px!important;
-    min-width:164px!important;
+  /* modal buttons on mobile */
+  .smkl-form__submit.smkl-form__submit--inline{
+    width:180px!important;
+    min-width:180px!important;
     height:45px!important;
     min-height:45px!important;
   }
 
   .smkl-get-special-code{
-    width:196px!important;
-    min-width:196px!important;
-    height:42px!important;
+    width:180px!important;
+    min-width:180px!important;
+    height:40px!important;
+    min-height:40px!important;
   }
 }
 
 @keyframes vxMobileCrownFloat{
   0%,100%{
-    transform:translate(-50%,-50%) rotate(-1.2deg) translateY(0);
+    transform:translate(-50%,-50%) rotate(-1.4deg) translateY(0);
   }
-  35%{
-    transform:translate(-50%,-50%) rotate(1.2deg) translateY(-3px);
+  25%{
+    transform:translate(-50%,-50%) rotate(.8deg) translate(2px,-3px);
   }
-  68%{
-    transform:translate(-50%,-50%) rotate(-.5deg) translateY(2px);
+  50%{
+    transform:translate(-50%,-50%) rotate(1.4deg) translate(0,1px);
+  }
+  75%{
+    transform:translate(-50%,-50%) rotate(-.5deg) translate(-2px,-1px);
   }
 }
 
