@@ -11,19 +11,37 @@
     visible: true,
   };
 
+  let syncQueued = false;
+
   function setButtonMessage(button, message) {
     const tip = button?.querySelector?.(".smkl-special-code-fab__tip");
-    if (tip) tip.textContent = message;
+    if (!tip) return;
+    if (tip.textContent !== message) tip.textContent = message;
+  }
+
+  function setClassState(element, className, enabled) {
+    if (!element) return;
+    const hasClass = element.classList.contains(className);
+    if (hasClass !== enabled) element.classList.toggle(className, enabled);
   }
 
   function applyState(button) {
     if (!button) return;
 
-    button.hidden = !state.visible;
-    button.disabled = !state.enabled;
-    button.classList.toggle("is-ready", state.enabled);
-    button.classList.toggle("is-locked", !state.enabled);
-    button.setAttribute("aria-disabled", state.enabled ? "false" : "true");
+    const shouldHide = !state.visible;
+    const shouldDisable = !state.enabled;
+    const ariaDisabled = state.enabled ? "false" : "true";
+
+    if (button.hidden !== shouldHide) button.hidden = shouldHide;
+    if (button.disabled !== shouldDisable) button.disabled = shouldDisable;
+
+    setClassState(button, "is-ready", state.enabled);
+    setClassState(button, "is-locked", !state.enabled);
+
+    if (button.getAttribute("aria-disabled") !== ariaDisabled) {
+      button.setAttribute("aria-disabled", ariaDisabled);
+    }
+
     setButtonMessage(button, state.enabled ? "GET SPECIAL CODE" : "VERIFY USERNAME FIRST");
   }
 
@@ -32,7 +50,7 @@
     if (!state.enabled || button.disabled) return;
 
     setButtonMessage(button, "OPENING TELEGRAM...");
-    button.classList.remove("is-ready");
+    setClassState(button, "is-ready", false);
 
     try {
       localStorage.setItem("userfx_identity_return", "1");
@@ -42,7 +60,7 @@
 
     window.setTimeout(() => {
       if (state.enabled) {
-        button.classList.add("is-ready");
+        setClassState(button, "is-ready", true);
         setButtonMessage(button, "GET SPECIAL CODE");
       }
     }, 1800);
@@ -67,21 +85,31 @@
     applyState(button);
   }
 
+  function queueSync() {
+    if (syncQueued) return;
+    syncQueued = true;
+
+    requestAnimationFrame(() => {
+      syncQueued = false;
+      syncFloatingButton();
+    });
+  }
+
   window.addEventListener("userfx:special-code-state", (event) => {
     const detail = event?.detail || {};
     state = {
       enabled: Boolean(detail.enabled),
       visible: detail.visible !== false,
     };
-    syncFloatingButton();
+    queueSync();
   });
 
-  const observer = new MutationObserver(syncFloatingButton);
+  const observer = new MutationObserver(queueSync);
   observer.observe(document.documentElement, { childList: true, subtree: true });
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", syncFloatingButton, { once: true });
+    document.addEventListener("DOMContentLoaded", queueSync, { once: true });
   } else {
-    syncFloatingButton();
+    queueSync();
   }
 })();
