@@ -1,9 +1,7 @@
 /* USERFX · Access modal V2 */
-
 .smkl-step-unlock-icon{
   display:none!important;
 }
-
 .smkl-access-mode-switch{
   position:static!important;
   display:flex;
@@ -13,7 +11,6 @@
   width:100%;
   margin:-4px 0 10px;
 }
-
 .smkl-plan-tabs{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -21,7 +18,6 @@
   flex:1;
   width:100%;
 }
-
 .smkl-plan-tab,
 .smkl-telegram-mode-btn{
   min-height:38px;
@@ -36,19 +32,16 @@
   cursor:pointer;
   transition:transform .16s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease;
 }
-
 .smkl-plan-tab.is-active{
   color:#63ffd0;
   border-color:#35d6c4;
   background:linear-gradient(180deg,#153d45,#071014 72%);
   box-shadow:0 0 0 1px #35d6c41f,0 0 14px #35d6c426;
 }
-
 /* TELEGRAM · floating outside the panel, above SPECIAL CODE */
 .smkl-panel{
   position:relative!important;
 }
-
 .smkl-telegram-mode-btn{
   position:absolute!important;
   top:22px!important;
@@ -69,7 +62,6 @@
   border:1px solid #2ca5e088!important;
   box-shadow:0 12px 22px -12px #2ca5e099,0 0 18px #2ca5e044,inset 0 1px 0 #ffffff24!important;
 }
-
 .smkl-telegram-mode-btn::before{
   content:"";
   display:block;
@@ -79,28 +71,23 @@
   filter:drop-shadow(0 0 7px #2ca5e077);
   transition:transform .18s ease,filter .18s ease;
 }
-
 .smkl-telegram-mode-btn:hover{
   transform:translateY(-2px) scale(1.04);
   border-color:#59cfff!important;
   box-shadow:0 14px 24px -12px #2ca5e0bb,0 0 24px #2ca5e077,inset 0 1px 0 #ffffff35!important;
 }
-
 .smkl-telegram-mode-btn:hover::before{
   transform:scale(1.08);
   filter:drop-shadow(0 0 10px #59cfffaa);
 }
-
 .smkl-telegram-mode-btn.is-active{
   border-color:#59cfff!important;
   background:linear-gradient(180deg,#1684bd,#0c3855 72%)!important;
   box-shadow:0 0 20px #2ca5e066,inset 0 1px 0 #ffffff40!important;
 }
-
 .smkl-telegram-mode-btn.is-active::before{
   filter:drop-shadow(0 0 11px #59cfffcc);
 }
-
 .smkl-plan-access-field{
   position:relative;
   display:flex;
@@ -114,7 +101,6 @@
   background:linear-gradient(180deg,#101820f2,#050708fa);
   box-shadow:inset 0 1px 0 #ffffff0d,0 8px 20px #0000004d;
 }
-
 .smkl-plan-prefix{
   flex:0 0 auto;
   color:#7ee6ff;
@@ -124,7 +110,6 @@
   letter-spacing:.14em;
   opacity:.9;
 }
-
 .smkl-plan-access-field input{
   flex:1;
   min-width:0;
@@ -140,11 +125,9 @@
   letter-spacing:.16em;
   text-transform:uppercase;
 }
-
 .smkl-plan-access-field input::placeholder{
   color:#7ee6ff42;
 }
-
 .smkl-panel .smkl-get-special-code[style]{
   display:flex!important;
   width:184px!important;
@@ -152,7 +135,6 @@
   height:40px!important;
   margin:8px auto 0!important;
 }
-
 .smkl-telegram-check-note{
   margin:0;
   color:#8bb9c7;
@@ -162,63 +144,42 @@
   text-align:center;
   letter-spacing:.05em;
 }
-
 .smkl-telegram-check-note.is-ready{
   color:#79ffd4;
 }
-
 .smkl-form__submit--telegram-check{
   width:184px!important;
   min-width:184px!important;
   height:44px!important;
   min-height:44px!important;
 }
-
 .smkl-special-code-fab.is-locked{
   opacity:.38!important;
   filter:saturate(.35)!important;
   cursor:not-allowed!important;
   animation:none!important;
 }
-
 .smkl-special-code-fab.is-ready{
   opacity:1!important;
   filter:none!important;
   animation:smklSpecialReadyPulse 1.45s ease-in-out infinite!important;
 }
-
 .smkl-special-code-fab__tip{
   left:calc(100% + 10px)!important;
   right:auto!important;
 }
-
 @keyframes smklSpecialReadyPulse{
-  0%,100%{
-    box-shadow:0 14px 22px -12px #ddff0070,0 0 14px #ddff0038,inset 0 1px 0 #ffffff55;
-    transform:scale(1);
+  0%,100%{ box-shadow:0 14px 22px -12px #ddff0070,0 0 14px #ddff0038,inset 0 1px 0 #ffffff55;transform:scale(1);
   }
-  50%{
-    box-shadow:0 14px 26px -10px #ddff00a0,0 0 30px #ddff0070,inset 0 1px 0 #ffffff80;
-    transform:scale(1.07);
-  }
-}
-
+  50%{box-shadow:0 14px 26px -10px #ddff00a0,0 0 30px #ddff0070,inset 0 1px 0 #ffffff80;transform:scale(1.07);
+  }}
 @media(max-width:520px){
-  .smkl-access-mode-switch{
-    gap:7px;
-    margin-top:-6px;
+  .smkl-access-mode-switch{gap:7px;margin-top:-6px;
   }
-
-  .smkl-plan-tabs{
-    gap:5px;
+  .smkl-plan-tabs{gap:5px;
   }
-
-  .smkl-plan-tab{
-    min-height:34px;
-    font-size:.55rem;
-    letter-spacing:.08em;
+  .smkl-plan-tab{min-height:34px;font-size:.55rem;letter-spacing:.08em;
   }
-
   /* stacked on the right: Telegram above, Special Code below */
   .smkl-telegram-mode-btn{
     position:fixed!important;
@@ -232,30 +193,16 @@
     border-radius:15px!important;
     transform:translateY(-50%)!important;
   }
-
-  .smkl-telegram-mode-btn:hover{
-    transform:translateY(-50%) scale(1.04)!important;
+  .smkl-telegram-mode-btn:hover{transform:translateY(-50%) scale(1.04)!important;
   }
-
-  .smkl-telegram-mode-btn:active{
-    transform:translateY(-50%) scale(.94)!important;
+  .smkl-telegram-mode-btn:active{transform:translateY(-50%) scale(.94)!important;
   }
-
-  .smkl-telegram-mode-btn::before{
-    width:28px;
-    height:28px;
+  .smkl-telegram-mode-btn::before{width:28px;height:28px;
   }
-
-  .smkl-plan-access-field{
-    min-height:50px;
-    padding:0 13px;
+  .smkl-plan-access-field{min-height:50px;padding:0 13px;
   }
-
-  .smkl-plan-access-field input{
-    height:48px;
-    font-size:.86rem;
+  .smkl-plan-access-field input{height:48px; font-size:.86rem;
   }
-
   .smkl-special-code-fab__tip{
     display:block!important;
     left:calc(100% + 7px)!important;
@@ -267,5 +214,4 @@
     opacity:1!important;
     visibility:visible!important;
     transform:translateY(-50%)!important;
-  }
-}
+  }}
