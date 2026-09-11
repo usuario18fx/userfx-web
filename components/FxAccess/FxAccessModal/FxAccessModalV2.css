@@ -43,19 +43,40 @@
 }
 
 .smkl-telegram-mode-btn{
+  position:relative;
   width:42px;
   min-width:42px;
   padding:0;
   display:grid;
   place-items:center;
-  font-size:1.05rem;
+  font-size:0;
   letter-spacing:0;
+  overflow:hidden;
+}
+
+.smkl-telegram-mode-btn::before{
+  content:"";
+  display:block;
+  width:25px;
+  height:25px;
+  background:url("/assets/iconos/telegram.png") center/contain no-repeat;
+  filter:drop-shadow(0 0 5px #2ca5e055);
+  transition:transform .18s ease,filter .18s ease;
+}
+
+.smkl-telegram-mode-btn:hover::before{
+  transform:scale(1.08);
+  filter:drop-shadow(0 0 8px #2ca5e088);
 }
 
 .smkl-telegram-mode-btn.is-active{
   border-color:#2ca5e0;
   background:linear-gradient(180deg,#1684bd,#0c3855 72%);
   box-shadow:0 0 16px #2ca5e044;
+}
+
+.smkl-telegram-mode-btn.is-active::before{
+  filter:drop-shadow(0 0 9px #59cfffaa);
 }
 
 .smkl-plan-access-field{
@@ -180,6 +201,11 @@
     width:38px;
     min-width:38px;
     min-height:34px;
+  }
+
+  .smkl-telegram-mode-btn::before{
+    width:22px;
+    height:22px;
   }
 
   .smkl-plan-access-field{
