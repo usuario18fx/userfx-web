@@ -2,26 +2,48 @@
   const MEMBER_MODE = "telegram_identity";
   const MEMBER_SECTION_ID = "member-private-section";
 
-  const PRIVATE_MEDIA = [
-    "userfx-album/BSIC/BSIC-01.jpg",
-    "userfx-album/BSIC/BSIC-02.jpg",
-    "userfx-album/BSIC/BSIC-03.jpg",
-    "userfx-album/BSIC/BSIC-04.jpg",
-    "userfx-album/BSIC/BSIC-05.jpg",
-    "userfx-album/PRX0/PRX0-01.jpg",
-    "userfx-album/PRX0/PRX0-02.jpg",
-    "userfx-album/PRX0/PRX0-03.jpg",
-    "userfx-album/VIPX/VIPX-01.jpg",
-    "userfx-album/VIPX/VIPX-02.jpg",
-    "userfx-album/VIPX/VIPX-03.jpg",
-    "userfx-album/VIPX/VIPX-04.jpg",
-  ];
+  const MEDIA = {
+    basic: [
+      "userfx-album/BSIC/BSIC-01.jpg",
+      "userfx-album/BSIC/BSIC-02.jpg",
+      "userfx-album/BSIC/BSIC-03.jpg",
+      "userfx-album/BSIC/BSIC-04.jpg",
+      "userfx-album/BSIC/BSIC-05.jpg",
+    ],
+    pro: [
+      "userfx-album/PRX0/PRX0-01.jpg",
+      "userfx-album/PRX0/PRX0-02.jpg",
+      "userfx-album/PRX0/PRX0-03.jpg",
+    ],
+    vip: [
+      "userfx-album/VIPX/VIPX-01.jpg",
+      "userfx-album/VIPX/VIPX-02.jpg",
+      "userfx-album/VIPX/VIPX-03.jpg",
+      "userfx-album/VIPX/VIPX-04.jpg",
+    ],
+  };
 
+  let authenticated = false;
   let memberActive = false;
+  let planId = null;
   let syncQueued = false;
 
   const privateUrl = (pathname) =>
     `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+
+  function getPrivateMedia() {
+    if (!authenticated) return [];
+    if (memberActive || planId === "vip") {
+      return [...MEDIA.basic, ...MEDIA.pro, ...MEDIA.vip];
+    }
+    if (planId === "pro") {
+      return [...MEDIA.basic, ...MEDIA.pro];
+    }
+    if (planId === "basic") {
+      return [...MEDIA.basic];
+    }
+    return [];
+  }
 
   function scrambleText(node, finalText) {
     if (!node || node.dataset.scrambling === "1") return;
@@ -67,7 +89,12 @@
   function hideLegacyAlbum() {
     const legacy = document.querySelector(".vx-privateAlbum");
     if (!legacy) return;
-    legacy.setAttribute("data-userfx-legacy-private", "true");
+
+    if (authenticated) {
+      legacy.setAttribute("data-userfx-legacy-private", "true");
+    } else {
+      legacy.removeAttribute("data-userfx-legacy-private");
+    }
   }
 
   function ensureDoorsState() {
@@ -76,6 +103,7 @@
 
     if (!memberActive) {
       root.classList.remove("is-spcl-member");
+      root.querySelector(".vhd-member-getin")?.remove();
       return;
     }
 
@@ -96,38 +124,53 @@
     }
   }
 
-  function ensureMemberGallery() {
+  function ensurePrivateGallery() {
     const carousel = document.querySelector(".vx-carousel");
     if (!carousel) return;
 
     const existing = document.getElementById(MEMBER_SECTION_ID);
-    if (!memberActive) {
+    const privateMedia = getPrivateMedia();
+
+    if (!authenticated || !privateMedia.length) {
       existing?.remove();
       return;
     }
 
-    if (existing) return;
+    const label = memberActive
+      ? "✦ SPCL MEMBER ACCESS"
+      : planId === "vip"
+        ? "✦ VIP PRIVATE ACCESS"
+        : planId === "pro"
+          ? "✦ PRO PRIVATE ACCESS"
+          : "✦ BASIC PRIVATE ACCESS";
+
+    if (existing?.dataset.gallerySignature === `${memberActive}:${planId}:${privateMedia.length}`) {
+      return;
+    }
+
+    existing?.remove();
 
     const section = document.createElement("section");
     section.id = MEMBER_SECTION_ID;
     section.className = "vx-memberPrivate";
-    section.setAttribute("aria-label", "SPCL member private gallery");
+    section.dataset.gallerySignature = `${memberActive}:${planId}:${privateMedia.length}`;
+    section.setAttribute("aria-label", "Private gallery");
 
     section.innerHTML = `
       <div class="vx-memberPrivate__head">
         <div>
-          <p class="vx-memberPrivate__kicker">✦ SPCL MEMBER ACCESS</p>
+          <p class="vx-memberPrivate__kicker">${label}</p>
           <h2 class="vx-memberPrivate__title">PRIVATE GALLERY</h2>
         </div>
-        <p class="vx-memberPrivate__note">MEMBER ACCESS · NO PLAN LABEL</p>
+        <p class="vx-memberPrivate__note">${memberActive ? "MEMBER ACCESS · SPCL" : "PAID ACCESS"}</p>
       </div>
       <div class="vx-memberPrivate__grid">
-        ${PRIVATE_MEDIA.map((pathname, index) => `
+        ${privateMedia.map((pathname, index) => `
           <figure class="vx-memberPrivate__item" oncontextmenu="return false">
-            <img src="${privateUrl(pathname)}" alt="Private member image ${index + 1}" draggable="false" loading="lazy" />
+            <img src="${privateUrl(pathname)}" alt="Private image ${index + 1}" draggable="false" loading="lazy" />
             <figcaption>
               <span>USER 🜲 FX</span>
-              <small>MEMBER FILE ${String(index + 1).padStart(2, "0")}</small>
+              <small>PRIVATE FILE ${String(index + 1).padStart(2, "0")}</small>
             </figcaption>
           </figure>
         `).join("")}
@@ -208,7 +251,7 @@
     updateHeaderBadge();
     hideLegacyAlbum();
     ensureDoorsState();
-    ensureMemberGallery();
+    ensurePrivateGallery();
     ensureFooterActions();
   }
 
@@ -230,13 +273,14 @@
         cache: "no-store",
       });
       const data = await response.json().catch(() => ({}));
-      memberActive = Boolean(
-        response.ok &&
-          data?.authenticated === true &&
-          data?.accessMode === MEMBER_MODE,
-      );
+
+      authenticated = Boolean(response.ok && data?.authenticated === true);
+      memberActive = Boolean(authenticated && data?.accessMode === MEMBER_MODE);
+      planId = authenticated ? String(data?.planId || "") : null;
     } catch {
+      authenticated = false;
       memberActive = false;
+      planId = null;
     }
 
     queueSync();
