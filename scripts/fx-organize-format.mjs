@@ -76,7 +76,9 @@ function compactCss(content) {
         next = next.replace(/^(\s*[.#\w\[\]:>,+~*][^{]*?)\s+\{$/, "$1{");
       }
 
-      const match = next.match(/^(\s*)(--?[A-Za-z][A-Za-z0-9-]*|[A-Za-z][A-Za-z0-9-]*):\s*(.+?);\s*(\/\*.*\*\/)?$/);
+      const match = next.match(
+        /^(\s*)(--?[A-Za-z][A-Za-z0-9-]*|[A-Za-z][A-Za-z0-9-]*):\s*(.+?);\s*(\/\*.*\*\/)?$/,
+      );
       if (!match) return next;
 
       const [, indent, property, value, existingComment] = match;
@@ -112,7 +114,7 @@ removeImport(files.app, "./components/VaultHome/mobile-polish.css");
 removeImport(files.main, "./components/FxAccess/FxAccessModal/FxAccessTabs.css");
 removeImport(files.modalTsx, "./FxAccessModalV2.css");
 
-console.log("USER FX · 2/4 · Running Prettier...");
+console.log("USER FX · 2/4 · Running Prettier across project code...");
 execFileSync(
   process.platform === "win32" ? "npx.cmd" : "npx",
   [
@@ -120,10 +122,13 @@ execFileSync(
     "--write",
     "app.jsx",
     "main.jsx",
+    "index.html",
     "global.css",
     "components/**/*.{ts,tsx,js,jsx,css}",
     "api/**/*.{ts,js}",
     "lib/**/*.{ts,js}",
+    "public/**/*.{css,js,html}",
+    "scripts/**/*.{js,mjs,ts}",
     "*.{js,ts,json}",
   ],
   { cwd: ROOT, stdio: "inherit" },
@@ -132,7 +137,6 @@ execFileSync(
 console.log("USER FX · 3/4 · Applying compact COOL CSS format + adjustment markers...");
 for (const file of walk(ROOT)) {
   if (!file.endsWith(".css")) continue;
-  if (file.includes(`${path.sep}public${path.sep}`)) continue;
   write(file, compactCss(read(file)));
 }
 
@@ -143,4 +147,6 @@ console.log("  FxAccessModalV2.css → components/FxAccess/FxAccessModal/FxAcces
 console.log("  FxAccessTabs.css → components/FxAccess/FxAccessModal/FxAccessModal.css");
 console.log("Removed stale:");
 console.log("  FxAccessModalVisibility.css");
+console.log("Formatted:");
+console.log("  TS / TSX / JS / JSX / CSS / HTML across the project");
 console.log("Next: npm run build");
