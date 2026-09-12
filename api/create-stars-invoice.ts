@@ -3,9 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 type Data = { invoiceLink?: string; error?: string };
 
 const PRICING: Record<string, { stars: number; days: number; title: string }> = {
-  basic: { stars: 100, days: 7, title: 'BASIC' },
-  pro: { stars: 250, days: 30, title: 'PRO' },
-  vip: { stars: 500, days: 90, title: 'VIP' },
+  basic: { stars: 350, days: 7, title: 'BASIC' },
+  pro: { stars: 750, days: 30, title: 'PRO' },
+  vip: { stars: 1500, days: 90, title: 'VIP' },
 };
 
 export default async function handler(
@@ -23,7 +23,7 @@ export default async function handler(
     return res.status(400).json({ error: 'plan invalido' });
   }
 
-  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const BOT_TOKEN = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
   if (!BOT_TOKEN) {
     return res.status(500).json({ error: 'BOT_TOKEN missing' });
   }
