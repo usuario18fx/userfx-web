@@ -1,0 +1,178 @@
+/* USER FX · MODAL SIDE TABS
+   Telegram + Special Code
+   Ambos botones se comportan como pestañas pegadas al borde derecho del modal.
+*/
+
+/*=============================================*/
+/* AJUSTES GENERALES DE LAS DOS PESTAÑAS        */
+/*=============================================*/
+.smkl-modal__stage .smkl-telegram-mode-btn,
+.smkl-modal__stage .smkl-special-code-fab{
+  position:absolute!important;
+  right:-46px!important;      /* ⬅️➡️ PEGADO AL MODAL */
+  width:46px!important;       /* ↔️ ANCHO DE PESTAÑA */
+  min-width:46px!important;
+  height:54px!important;      /* ↕️ ALTO DE PESTAÑA */
+  min-height:54px!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0 10px 10px 0!important;
+  transform:none!important;
+  transition:transform .20s ease,box-shadow .28s ease,background-position .8s ease!important;
+}
+
+/*=============================================*/
+/* TELEGRAM · PESTAÑA SUPERIOR                  */
+/*=============================================*/
+.smkl-modal__stage .smkl-telegram-mode-btn{
+  top:122px!important;        /* ⬆️⬇️ MOVER TELEGRAM */
+  z-index:46!important;
+  background:linear-gradient(15deg,
+  #0b426d,#0070bb,#0078c2,
+  #0173b9,#0b426d,#006ab0)!important;
+  background-size:300%!important;
+  background-position:left center!important;
+  box-shadow:
+  5px 7px 15px #00000055,
+  0 0 10px #1698ee55,
+  inset 1px 0 0 #ffffff40!important;
+  animation:smklTelegramTabGradient 4s linear infinite!important;
+}
+
+.smkl-modal__stage .smkl-telegram-mode-btn::before{
+  content:""!important;
+  display:block!important;
+  width:36px!important;       /* ↔️ ICONO TELEGRAM */
+  height:36px!important;      /* ↕️ ICONO TELEGRAM */
+  background:url("/assets/iconos/telegram.png") center/contain no-repeat!important;
+  filter:drop-shadow(0 0 4px #42baff55)!important;
+  transform:translateY(-3px) rotate(-90deg) scale(.92)!important;
+  transform-origin:center!important;
+}
+
+.smkl-modal__stage .smkl-telegram-mode-btn:hover{
+  background-position:right center!important;
+  transform:translateX(2px)!important;
+  box-shadow:
+  6px 8px 17px #00000060,
+  0 0 15px #42baff66,
+  inset 1px 0 0 #ffffff55!important;
+}
+
+.smkl-modal__stage .smkl-telegram-mode-btn:disabled{
+  opacity:.38!important;
+  filter:saturate(.35)!important;
+  cursor:not-allowed!important;
+  animation:none!important;
+  transform:none!important;
+}
+
+@keyframes smklTelegramTabGradient{
+  0%{background-position:0% center;}
+  50%{background-position:100% center;}
+  100%{background-position:0% center;}
+}
+
+/*=============================================*/
+/* SPECIAL CODE · PESTAÑA INFERIOR              */
+/* MISMO TAMAÑO Y FORMA QUE TELEGRAM            */
+/*=============================================*/
+.smkl-modal__stage .smkl-special-code-fab{
+  top:182px!important;        /* ⬆️⬇️ MOVER SPECIAL */
+  z-index:45!important;
+  background:linear-gradient(15deg,
+  #626900,#8f9d00,#b8d100,
+  #dfff00,#8f9d00,#626900)!important;
+  background-size:300%!important;
+  background-position:left center!important;
+  box-shadow:
+  5px 7px 15px #00000055,
+  0 0 8px #ddff0038,
+  inset 1px 0 0 #ffffff38!important;
+}
+
+.smkl-modal__stage .smkl-special-code-fab svg{
+  width:24px!important;       /* ↔️ ICONO CORONA */
+  height:18px!important;      /* ↕️ ICONO CORONA */
+  fill:#050505!important;
+  transform:translateY(0px) scale(1)!important;
+  filter:none!important;
+}
+
+.smkl-modal__stage .smkl-special-code-fab:hover{
+  background-position:right center!important;
+  transform:translateX(2px)!important;
+  box-shadow:
+  6px 8px 17px #00000060,
+  0 0 12px #ddff0048,
+  inset 1px 0 0 #ffffff48!important;
+}
+
+.smkl-modal__stage .smkl-special-code-fab.is-locked{
+  opacity:.38!important;
+  filter:saturate(.35)!important;
+  cursor:not-allowed!important;
+  animation:none!important;
+  transform:none!important;
+}
+
+.smkl-modal__stage .smkl-special-code-fab.is-ready{
+  opacity:1!important;
+  filter:none!important;
+  animation:smklSpecialTabPulse 3.2s ease-in-out infinite!important;
+}
+
+@keyframes smklSpecialTabPulse{
+  0%,100%{
+    box-shadow:
+    5px 7px 15px #00000055,
+    0 0 7px #ddff0030,
+    inset 1px 0 0 #ffffff38;
+    transform:scale(1);
+  }
+  50%{
+    box-shadow:
+    5px 7px 16px #00000058,
+    0 0 11px #ddff0042,
+    inset 1px 0 0 #ffffff46;
+    transform:scale(1.018);
+  }
+}
+
+/*=============================================*/
+/* MOBILE                                       */
+/*=============================================*/
+@media(max-width:520px){
+  .smkl-modal__stage .smkl-telegram-mode-btn{
+    top:145px!important;     /* ⬆️⬇️ TELEGRAM MOBILE */
+    right:-42px!important;
+    width:42px!important;
+    min-width:42px!important;
+    height:50px!important;
+    min-height:50px!important;
+  }
+
+  .smkl-modal__stage .smkl-special-code-fab{
+    top:201px!important;     /* ⬆️⬇️ SPECIAL MOBILE */
+    right:-42px!important;
+    width:42px!important;
+    min-width:42px!important;
+    height:50px!important;
+    min-height:50px!important;
+  }
+
+  .smkl-modal__stage .smkl-telegram-mode-btn::before{
+    width:32px!important;
+    height:32px!important;
+    transform:translateY(-2px) rotate(-90deg) scale(.92)!important;
+  }
+
+  .smkl-modal__stage .smkl-special-code-fab svg{
+    width:22px!important;
+    height:16px!important;
+  }
+}
