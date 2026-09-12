@@ -34,7 +34,7 @@ import './VaultDevice.mobile.css';
                   rayo: "/assets/iconos/rayo.png",
                   rosa: "/assets/iconos/rosa.png",
                   telegram: "/assets/iconos/telegram.png",
-                  vipcard: "/assets/iconos/vipCard.png",
+                  vipcard: "/assets/iconos/vipcard.png",
                   bordeDevice: "/assets/iconos/bordeDevice.png",
                   bordeBtn: "/assets/iconos/bordeBtn.png",
                   quickly: "/assets/iconos/quickly.png",
