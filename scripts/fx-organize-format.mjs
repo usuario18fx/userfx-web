@@ -9,11 +9,20 @@ const files = {
   main: path.join(ROOT, "main.jsx"),
   vaultCss: path.join(ROOT, "components", "VaultHome", "VaultHome.css"),
   vaultMobile: path.join(ROOT, "components", "VaultHome", "mobile-polish.css"),
+  deviceTsx: path.join(ROOT, "components", "VaultDevice", "VaultDevice.tsx"),
+  deviceCss: path.join(ROOT, "components", "VaultDevice", "VaultDevice.css"),
+  deviceMobile: path.join(ROOT, "components", "VaultDevice", "VaultDevice.mobile.css"),
   modalTsx: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModal.tsx"),
   modalCss: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModal.css"),
   modalV2: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModalV2.css"),
   modalTabs: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessTabs.css"),
-  modalVisibility: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModalVisibility.css"),
+  modalVisibility: path.join(
+    ROOT,
+    "components",
+    "FxAccess",
+    "FxAccessModal",
+    "FxAccessModalVisibility.css",
+  ),
 };
 
 function exists(file) {
@@ -102,6 +111,7 @@ function walk(dir, result = []) {
 
 console.log("USER FX · 1/4 · Unifying CSS...");
 appendCss(files.vaultCss, files.vaultMobile, "MOBILE POLISH → VaultHome.css");
+appendCss(files.deviceCss, files.deviceMobile, "MOBILE → VaultDevice.css");
 appendCss(files.modalCss, files.modalV2, "MODAL V2 → FxAccessModal.css");
 appendCss(files.modalCss, files.modalTabs, "ACCESS TABS → FxAccessModal.css");
 
@@ -111,6 +121,7 @@ if (exists(files.modalVisibility)) {
 }
 
 removeImport(files.app, "./components/VaultHome/mobile-polish.css");
+removeImport(files.deviceTsx, "./VaultDevice.mobile.css");
 removeImport(files.main, "./components/FxAccess/FxAccessModal/FxAccessTabs.css");
 removeImport(files.modalTsx, "./FxAccessModalV2.css");
 
@@ -143,6 +154,7 @@ for (const file of walk(ROOT)) {
 console.log("USER FX · 4/4 · Done.");
 console.log("Unified:");
 console.log("  mobile-polish.css → components/VaultHome/VaultHome.css");
+console.log("  VaultDevice.mobile.css → components/VaultDevice/VaultDevice.css");
 console.log("  FxAccessModalV2.css → components/FxAccess/FxAccessModal/FxAccessModal.css");
 console.log("  FxAccessTabs.css → components/FxAccess/FxAccessModal/FxAccessModal.css");
 console.log("Removed stale:");

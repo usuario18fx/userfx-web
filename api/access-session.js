@@ -2,13 +2,11 @@ import crypto from "crypto";
 import Redis from "ioredis";
 
 const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE =
-  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
 const IDENTITY_COOKIE = "userfx_identity_session";
 const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 /*
  * SPCL membership is not presented as a paid-plan expiration.
@@ -91,13 +89,7 @@ function serializeSessionCookie(req, token, maxAge) {
 }
 
 function clearSessionCookie(req) {
-  const parts = [
-    `${SESSION_COOKIE}=`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    "Max-Age=0",
-  ];
+  const parts = [`${SESSION_COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
 
   if (isSecureRequest(req)) {
     parts.push("Secure");
@@ -151,24 +143,19 @@ async function getTelegramFxAccess(usernameNormalized) {
     limit: "1",
   });
 
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(
-      `Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`
-    );
+    throw new Error(`Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`);
   }
 
   const rows = await response.json();
@@ -222,9 +209,7 @@ export default async function handler(req, res) {
       const token = crypto.randomBytes(32).toString("base64url");
       const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${hashValue(token)}`;
       const createdAt = new Date().toISOString();
-      const expiresAt = new Date(
-        Date.now() + IDENTITY_ACCESS_SECONDS * 1000
-      ).toISOString();
+      const expiresAt = new Date(Date.now() + IDENTITY_ACCESS_SECONDS * 1000).toISOString();
 
       const session = {
         /* Internal media compatibility only. Never use this as the SPCL UI label. */
@@ -242,17 +227,9 @@ export default async function handler(req, res) {
         expiresAt,
       };
 
-      await redis.set(
-        sessionKey,
-        JSON.stringify(session),
-        "EX",
-        IDENTITY_ACCESS_SECONDS
-      );
+      await redis.set(sessionKey, JSON.stringify(session), "EX", IDENTITY_ACCESS_SECONDS);
 
-      res.setHeader(
-        "Set-Cookie",
-        serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS)
-      );
+      res.setHeader("Set-Cookie", serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS));
 
       return res.status(200).json({
         ok: true,
@@ -335,7 +312,7 @@ export default async function handler(req, res) {
         String(session.telegramUsername || "")
           .trim()
           .replace(/^@+/, "")
-          .toLowerCase()
+          .toLowerCase(),
       );
 
       if (
@@ -358,18 +335,13 @@ export default async function handler(req, res) {
       planId: session.planId,
       accessMode: session.accessMode,
       accessLabel:
-        session.accessMode === "telegram_identity"
-          ? "SPCL"
-          : session.accessLabel || null,
+        session.accessMode === "telegram_identity" ? "SPCL" : session.accessLabel || null,
       memberAccess: session.accessMode === "telegram_identity",
       maxAccesses: session.maxAccesses,
       usedAccesses: session.usedAccesses,
       remainingAccesses: session.remainingAccesses,
       unlimitedAccess: session.unlimitedAccess,
-      expiresAt:
-        session.accessMode === "telegram_identity"
-          ? null
-          : session.expiresAt,
+      expiresAt: session.accessMode === "telegram_identity" ? null : session.expiresAt,
     });
   } catch (error) {
     console.error("[api/access-session]", error);

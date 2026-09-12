@@ -2,7 +2,9 @@ const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 function normalizeTelegramUsername(value) {
-  const raw = String(value || "").trim().replace(/^@+/, "");
+  const raw = String(value || "")
+    .trim()
+    .replace(/^@+/, "");
   if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
   return { display: `@${raw}`, normalized: raw.toLowerCase() };
 }
@@ -18,22 +20,21 @@ async function getTelegramFxAccess(usernameNormalized) {
     limit: "1",
   });
 
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      Accept: "application/json",
     },
-  );
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Supabase eligibility lookup failed (${response.status}): ${detail.slice(0, 240)}`);
+    throw new Error(
+      `Supabase eligibility lookup failed (${response.status}): ${detail.slice(0, 240)}`,
+    );
   }
 
   const rows = await response.json();
@@ -59,9 +60,7 @@ export default async function handler(req, res) {
     }
 
     const row = await getTelegramFxAccess(username.normalized);
-    const eligible = Boolean(
-      row && row.enabled === true && row.telegramfx_access === true,
-    );
+    const eligible = Boolean(row && row.enabled === true && row.telegramfx_access === true);
 
     return res.status(200).json({
       ok: true,

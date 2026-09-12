@@ -48,8 +48,11 @@ function parseCookies(req) {
     if (idx === -1) continue;
     const key = part.slice(0, idx).trim();
     const value = part.slice(idx + 1).trim();
-    try { out[key] = decodeURIComponent(value); }
-    catch { out[key] = value; }
+    try {
+      out[key] = decodeURIComponent(value);
+    } catch {
+      out[key] = value;
+    }
   }
   return out;
 }
@@ -74,34 +77,32 @@ function serializeIdentityCookie(req, token, maxAge) {
 }
 
 function clearIdentityCookie(req) {
-  const parts = [
-    `${IDENTITY_COOKIE}=`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    "Max-Age=0",
-  ];
+  const parts = [`${IDENTITY_COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
 }
 
 function normalizeTelegramUsername(value) {
-  const raw = String(value || "").trim().replace(/^@+/, "");
+  const raw = String(value || "")
+    .trim()
+    .replace(/^@+/, "");
   if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
   return { display: `@${raw}`, normalized: raw.toLowerCase() };
 }
 
 function normalizeIdentityCode(value) {
-  const raw = String(value || "").trim().toUpperCase();
+  const raw = String(value || "")
+    .trim()
+    .toUpperCase();
   const match = raw.match(/(?:SPCL|TGMX)-[A-HJ-NP-Z2-9]{4}/);
   return match ? match[0] : null;
 }
 
 function identityCodeKey(code) {
-  const normalized = String(code || "").trim().toUpperCase();
-  const storedCode = normalized.startsWith("SPCL-")
-    ? `TGMX-${normalized.slice(5)}`
-    : normalized;
+  const normalized = String(code || "")
+    .trim()
+    .toUpperCase();
+  const storedCode = normalized.startsWith("SPCL-") ? `TGMX-${normalized.slice(5)}` : normalized;
   return `${CODE_ENGINE_NAMESPACE}:identity-code:${storedCode}`;
 }
 
@@ -202,8 +203,9 @@ export default async function handler(req, res) {
     }
 
     let record;
-    try { record = JSON.parse(rawRecord); }
-    catch {
+    try {
+      record = JSON.parse(rawRecord);
+    } catch {
       await recordFailedAttempt(redis, ip);
       return res.status(401).json({ ok: false, error: "IDENTITY VERIFICATION FAILED" });
     }

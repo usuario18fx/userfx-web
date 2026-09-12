@@ -7,9 +7,7 @@ type VaultHeroDoorsProps = {
   unlocked?: boolean;
 };
 
-export default function VaultHeroDoors({
-  unlocked = false,}: 
-VaultHeroDoorsProps) {
+export default function VaultHeroDoors({ unlocked = false }: VaultHeroDoorsProps) {
   const [open, setOpen] = useState(false);
   return (
     <div className={`vhd-root${open ? " is-open" : ""}`}>
@@ -22,34 +20,30 @@ VaultHeroDoorsProps) {
             muted
             loop
             playsInline
-            preload="auto"/>
-        </div> 
+            preload="auto"
+          />
+        </div>
         <button
           type="button"
           className="vhd-door left"
           onClick={() => setOpen((v) => !v)}
           aria-label="Open left vault door">
-            <div className="vhd-door-inner">
-            <span>
-                  USER FX
-            </span>
+          <div className="vhd-door-inner">
+            <span>USER FX</span>
             <i />
-            </div> 
-        </button> 
+          </div>
+        </button>
         <button
           type="button"
           className="vhd-door right"
           onClick={() => setOpen((v) => !v)}
           aria-label="Open right vault door">
           <div className="vhd-door-inner">
-            <span>
-                  PRIVATE
-            </span>
+            <span>PRIVATE</span>
             <i />
-          </div> 
-        </button> 
-      </div> 
-    </div> 
+          </div>
+        </button>
+      </div>
+    </div>
   );
-
 }

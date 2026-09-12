@@ -2,12 +2,10 @@ import crypto from "crypto";
 import Redis from "ioredis";
 
 const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE =
-  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 
 const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const SESSION_COOKIE = "userfx_vault_session";
 const IDENTITY_COOKIE = "userfx_identity_session";
@@ -57,11 +55,7 @@ function getRedis() {
 }
 
 function getClientIp(req) {
-  return String(
-    req.headers["x-forwarded-for"] ||
-      req.socket?.remoteAddress ||
-      "unknown"
-  )
+  return String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown")
     .split(",")[0]
     .trim();
 }
@@ -72,16 +66,13 @@ function hashValue(value) {
 
 function createWatermarkId(fullCode) {
   const prefix = String(fullCode || "").split("-")[0] || "USER";
-  const fingerprint = hashValue(`watermark:${fullCode}`)
-    .slice(0, 8)
-    .toUpperCase();
+  const fingerprint = hashValue(`watermark:${fullCode}`).slice(0, 8).toUpperCase();
 
   return `${prefix}-${fingerprint}`;
 }
 
 async function checkRateLimit(redis, ip) {
-  const key =
-    `${CODE_ENGINE_NAMESPACE}:verify-rate:${hashValue(ip).slice(0, 24)}`;
+  const key = `${CODE_ENGINE_NAMESPACE}:verify-rate:${hashValue(ip).slice(0, 24)}`;
   const attempts = await redis.incr(key);
 
   if (attempts === 1) {
@@ -181,36 +172,28 @@ async function readIdentitySession(redis, req) {
 
 async function getTelegramFxAccess(usernameNormalized) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error(
-      "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
-    );
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
   }
 
   const params = new URLSearchParams({
     username_normalized: `eq.${usernameNormalized}`,
-    select:
-      "username,username_normalized,telegramfx_access,gallery_access,enabled",
+    select: "username,username_normalized,telegramfx_access,gallery_access,enabled",
     limit: "1",
   });
 
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(
-      `Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`
-    );
+    throw new Error(`Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`);
   }
 
   const rows = await response.json();
@@ -221,9 +204,7 @@ function getAccessState(record, planId) {
   const maxAccesses = PLAN_ACCESS_LIMITS[planId];
   const parsedUsedAccesses = Number(record.usedAccesses);
   const fallbackUsedAccesses =
-    record.status === "consumed" && Number.isFinite(maxAccesses)
-      ? maxAccesses
-      : 0;
+    record.status === "consumed" && Number.isFinite(maxAccesses) ? maxAccesses : 0;
 
   const usedAccesses = Number.isFinite(parsedUsedAccesses)
     ? Math.max(0, Math.floor(parsedUsedAccesses))
@@ -263,8 +244,7 @@ async function createAccessSession({
 }) {
   const token = crypto.randomBytes(32).toString("base64url");
   const sessionHash = hashValue(token);
-  const sessionKey =
-    `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
+  const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
 
   const sessionSeconds = getSessionSeconds(planId);
   const sessionExpiresAt = Date.now() + sessionSeconds * 1000;
@@ -281,10 +261,7 @@ async function createAccessSession({
     ...record,
     watermarkId,
     telegramUsername: telegramUsername.normalized,
-    status:
-      remainingAccesses === 0 && accessState.maxAccesses !== null
-        ? "consumed"
-        : "active",
+    status: remainingAccesses === 0 && accessState.maxAccesses !== null ? "consumed" : "active",
     maxAccesses: accessState.maxAccesses,
     usedAccesses,
     remainingAccesses,
@@ -313,8 +290,7 @@ async function createAccessSession({
     expiresAt: new Date(sessionExpiresAt).toISOString(),
   });
 
-  const watermarkLookupKey =
-    `${CODE_ENGINE_NAMESPACE}:watermark:${watermarkId}`;
+  const watermarkLookupKey = `${CODE_ENGINE_NAMESPACE}:watermark:${watermarkId}`;
 
   const watermarkLookupRecord = JSON.stringify({
     watermarkId,
@@ -344,8 +320,8 @@ async function createAccessSession({
       JSON.stringify(updatedRecord),
       sessionRecord,
       String(sessionSeconds),
-      watermarkLookupRecord
-    )
+      watermarkLookupRecord,
+    ),
   );
 
   if (result !== 1) {
@@ -355,13 +331,9 @@ async function createAccessSession({
     };
   }
 
-  const persistentMaxAge =
-    planId === "vip" ? sessionSeconds : undefined;
+  const persistentMaxAge = planId === "vip" ? sessionSeconds : undefined;
 
-  res.setHeader(
-    "Set-Cookie",
-    serializeSessionCookie(req, token, persistentMaxAge)
-  );
+  res.setHeader("Set-Cookie", serializeSessionCookie(req, token, persistentMaxAge));
 
   return {
     ok: true,
@@ -397,19 +369,12 @@ export default async function handler(req, res) {
       });
     }
 
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body || {};
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
 
     const cookies = parseCookies(req);
-    const usernameInput =
-      body.username ||
-      cookies[USERNAME_COOKIE] ||
-      "";
+    const usernameInput = body.username || cookies[USERNAME_COOKIE] || "";
 
-    const telegramUsername =
-      normalizeTelegramUsername(usernameInput);
+    const telegramUsername = normalizeTelegramUsername(usernameInput);
 
     if (!telegramUsername) {
       return res.status(400).json({
@@ -427,18 +392,14 @@ export default async function handler(req, res) {
       });
     }
 
-    if (
-      String(identitySession.telegramUsername).toLowerCase() !==
-      telegramUsername.normalized
-    ) {
+    if (String(identitySession.telegramUsername).toLowerCase() !== telegramUsername.normalized) {
       return res.status(403).json({
         ok: false,
         error: "VERIFIED TELEGRAM IDENTITY DOES NOT MATCH",
       });
     }
 
-    const telegramAccess =
-      await getTelegramFxAccess(telegramUsername.normalized);
+    const telegramAccess = await getTelegramFxAccess(telegramUsername.normalized);
 
     if (
       !telegramAccess ||
@@ -475,8 +436,7 @@ export default async function handler(req, res) {
     }
 
     const fullCode = `${safePrefix}-${safeSuffix}`;
-    const redisKey =
-      `${CODE_ENGINE_NAMESPACE}:code:${fullCode}`;
+    const redisKey = `${CODE_ENGINE_NAMESPACE}:code:${fullCode}`;
 
     const rawRecord = await redis.get(redisKey);
 
@@ -500,10 +460,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (
-      !record.userId ||
-      String(record.userId) !== String(identitySession.userId)
-    ) {
+    if (!record.userId || String(record.userId) !== String(identitySession.userId)) {
       return res.status(403).json({
         ok: false,
         error: "ACCESS CODE DOES NOT BELONG TO VERIFIED TELEGRAM USER",
@@ -511,8 +468,9 @@ export default async function handler(req, res) {
     }
 
     const expectedPlanId = PREFIX_TO_PLAN[safePrefix];
-    const recordPlanId =
-      String(record.planId || "").trim().toLowerCase();
+    const recordPlanId = String(record.planId || "")
+      .trim()
+      .toLowerCase();
 
     if (recordPlanId !== expectedPlanId) {
       console.error("[verify] Prefix and plan mismatch", {
@@ -527,13 +485,9 @@ export default async function handler(req, res) {
       });
     }
 
-    const accessState =
-      getAccessState(record, recordPlanId);
+    const accessState = getAccessState(record, recordPlanId);
 
-    if (
-      accessState.remainingAccesses !== null &&
-      accessState.remainingAccesses <= 0
-    ) {
+    if (accessState.remainingAccesses !== null && accessState.remainingAccesses <= 0) {
       return res.status(401).json({
         ok: false,
         error: "This code has no accesses remaining.",
@@ -563,8 +517,7 @@ export default async function handler(req, res) {
     if (!session.ok) {
       return res.status(409).json({
         ok: false,
-        error:
-          "The code changed while it was being verified. Try again.",
+        error: "The code changed while it was being verified. Try again.",
       });
     }
 

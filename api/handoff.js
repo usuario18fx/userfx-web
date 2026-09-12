@@ -5,7 +5,10 @@ const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
 const HANDOFF_TTL_SECONDS = 5 * 60;
-const CANONICAL_ORIGIN = String(process.env.USERFX_CANONICAL_URL || "https://user18fx.com").replace(/\/$/, "");
+const CANONICAL_ORIGIN = String(process.env.USERFX_CANONICAL_URL || "https://user18fx.com").replace(
+  /\/$/,
+  "",
+);
 
 function getRedis() {
   if (!REDIS_URL) throw new Error("Missing REDIS_URL");
@@ -126,12 +129,7 @@ export default async function handler(req, res) {
         expiresAt: new Date(Date.now() + HANDOFF_TTL_SECONDS * 1000).toISOString(),
       };
 
-      await redis.set(
-        handoffKey,
-        JSON.stringify(record),
-        "EX",
-        Math.min(HANDOFF_TTL_SECONDS, ttl)
-      );
+      await redis.set(handoffKey, JSON.stringify(record), "EX", Math.min(HANDOFF_TTL_SECONDS, ttl));
 
       return res.status(200).json({
         ok: true,
@@ -155,7 +153,7 @@ export default async function handler(req, res) {
         return current
       `,
       1,
-      handoffKey
+      handoffKey,
     );
 
     if (!rawRecord) {

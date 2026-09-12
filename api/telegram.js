@@ -21,21 +21,29 @@ function arrangeTelegramFxKeyboard(replyMarkup) {
 
   const buttons = replyMarkup.inline_keyboard.flat().filter(Boolean);
   const isPanel = buttons.some((button) =>
-    String(button?.callback_data || "").startsWith("tfx_toggle_")
+    String(button?.callback_data || "").startsWith("tfx_toggle_"),
   );
 
   if (!isPanel) return replyMarkup;
 
   const findByText = (needle) =>
-    buttons.find((button) => String(button?.text || "").toLowerCase().includes(needle));
+    buttons.find((button) =>
+      String(button?.text || "")
+        .toLowerCase()
+        .includes(needle),
+    );
 
   const telegramfx = findByText("ᴛᴇʟᴇɢʀᴀᴍꜰx");
   const gallery = findByText("ɢᴀʟʟᴇʀʏ");
   const chat = findByText("ᴄʜᴀᴛ");
   const priv = findByText("ᴘʀɪᴠ");
   const group = findByText("ɢʀᴏᴜᴘ");
-  const save = buttons.find((button) => String(button?.callback_data || "").startsWith("tfx_save_"));
-  const revoke = buttons.find((button) => String(button?.callback_data || "").startsWith("tfx_revoke_"));
+  const save = buttons.find((button) =>
+    String(button?.callback_data || "").startsWith("tfx_save_"),
+  );
+  const revoke = buttons.find((button) =>
+    String(button?.callback_data || "").startsWith("tfx_revoke_"),
+  );
 
   if (!telegramfx || !gallery || !chat || !priv || !group || !save || !revoke) {
     return replyMarkup;
@@ -51,12 +59,7 @@ function arrangeTelegramFxKeyboard(replyMarkup) {
 
   return {
     ...replyMarkup,
-    inline_keyboard: [
-      [telegramfx],
-      [gallery, chat],
-      [priv, group],
-      [save, revoke],
-    ],
+    inline_keyboard: [[telegramfx], [gallery, chat], [priv, group], [save, revoke]],
   };
 }
 

@@ -24,8 +24,7 @@ const PLAN_TO_PREFIX = Object.freeze({
 
 const WATERMARK_PLANS = new Set(["pro", "vip"]);
 
-const PRIVATE_PATH_PATTERN =
-  /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
+const PRIVATE_PATH_PATTERN = /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
 
 function getRequestedPathname(req) {
   const origin = `https://${req.headers.host || "userfx.local"}`;
@@ -135,11 +134,7 @@ async function applyWatermark(inputBuffer, watermarkId) {
 }
 
 function getBufferEtag(buffer) {
-  const digest = crypto
-    .createHash("sha256")
-    .update(buffer)
-    .digest("hex")
-    .slice(0, 32);
+  const digest = crypto.createHash("sha256").update(buffer).digest("hex").slice(0, 32);
 
   return `"wm-${digest}"`;
 }
@@ -180,9 +175,7 @@ export default async function handler(req, res) {
     const shouldWatermark = WATERMARK_PLANS.has(String(session.planId));
     const result = await get(pathname, {
       access: "private",
-      ifNoneMatch: shouldWatermark
-        ? undefined
-        : req.headers["if-none-match"] || undefined,
+      ifNoneMatch: shouldWatermark ? undefined : req.headers["if-none-match"] || undefined,
     });
 
     if (!result) {

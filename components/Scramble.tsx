@@ -38,13 +38,10 @@ export default function Scramble({
     let frame = 0;
 
     startRef.current = window.setTimeout(() => {
-
       const tick = () => {
         frame += 1;
 
-        const settled = Math.floor(
-          (frame / total) * text.length
-        );
+        const settled = Math.floor((frame / total) * text.length);
 
         let s = "";
 
@@ -56,29 +53,19 @@ export default function Scramble({
             continue;
           }
 
-          s += i < settled
-            ? ch
-            : GLYPHS[
-                Math.floor(
-                  Math.random() * GLYPHS.length
-                )
-              ];
+          s += i < settled ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
         }
 
         setOut(s);
 
         if (frame < total) {
-          timerRef.current = window.setTimeout(
-            tick,
-            42
-          );
+          timerRef.current = window.setTimeout(tick, 42);
         } else {
           setOut(text);
         }
       };
 
       tick();
-
     }, customDelay);
   }
 
@@ -100,17 +87,8 @@ export default function Scramble({
     <span
       className={className}
       aria-label={text}
-      onMouseEnter={
-        hover
-          ? () => runScramble(0)
-          : undefined
-      }
-      onFocus={
-        hover
-          ? () => runScramble(0)
-          : undefined
-      }
-    >
+      onMouseEnter={hover ? () => runScramble(0) : undefined}
+      onFocus={hover ? () => runScramble(0) : undefined}>
       {out}
     </span>
   );

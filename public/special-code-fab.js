@@ -4,8 +4,7 @@
   const READY_MESSAGE =
     "USERNAME VERIFIED. TAP THE CROWN TO GET YOUR SPECIAL CODE IN TELEGRAM, THEN COME BACK AND ENTER IT HERE.";
 
-  const ACCESS_MESSAGE =
-    "YOU MADE IT! ACCESS IS UNLOCKED — WELCOME TO USER FX.";
+  const ACCESS_MESSAGE = "YOU MADE IT! ACCESS IS UNLOCKED — WELCOME TO USER FX.";
 
   const crownSvg = `
     <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -276,9 +275,7 @@
   function applyReadyUi(stage) {
     if (!stage) return;
 
-    const accessCleared = Boolean(
-      stage.querySelector(".smkl-form__submit--get-in"),
-    );
+    const accessCleared = Boolean(stage.querySelector(".smkl-form__submit--get-in"));
 
     setClassState(stage, "is-special-ready", state.enabled && !accessCleared);
     setClassState(stage, "is-access-cleared", accessCleared);
@@ -291,17 +288,12 @@
         telegramButton.disabled = shouldDisableTelegram;
       }
 
-      telegramButton.setAttribute(
-        "aria-disabled",
-        shouldDisableTelegram ? "true" : "false",
-      );
+      telegramButton.setAttribute("aria-disabled", shouldDisableTelegram ? "true" : "false");
 
       if (shouldDisableTelegram) {
         telegramButton.setAttribute(
           "title",
-          accessCleared
-            ? "Private access unlocked"
-            : "Telegram username already verified",
+          accessCleared ? "Private access unlocked" : "Telegram username already verified",
         );
       }
     }

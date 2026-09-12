@@ -35,8 +35,7 @@ export default function Crown4D() {
       ref={crownRef}
       className={styles.scene}
       onPointerMove={handleMove}
-      onPointerLeave={handleLeave}
-    >
+      onPointerLeave={handleLeave}>
       <div className={styles.floating}>
         <div className={styles.crown}>
           <img
@@ -46,12 +45,7 @@ export default function Crown4D() {
             draggable={false}
           />
 
-          <img
-            src="/assets/iconos/corona.png"
-            alt=""
-            className={styles.image}
-            draggable={false}
-          />
+          <img src="/assets/iconos/corona.png" alt="" className={styles.image} draggable={false} />
 
           <span className={styles.light} />
 

@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import VaultHome from './VaultHome';
+import { useState, useEffect } from "react";
+import VaultHome from "./VaultHome/VaultHome";
 
-const STORAGE_KEY = 'vault_unlocked';
+const STORAGE_KEY = "vault_unlocked";
 const MAX_ATTEMPTS = 5;
 
 export default function AccessGate() {
-  const [prefix, setPrefix] = useState('');
-  const [suffix, setSuffix] = useState('');
+  const [prefix, setPrefix] = useState("");
+  const [suffix, setSuffix] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [attempts, setAttempts] = useState(0);
 
   // La sesión del servidor es la fuente principal de verdad.
@@ -20,17 +20,17 @@ export default function AccessGate() {
 
     async function bootstrapSession() {
       try {
-        const res = await fetch('/api/access-session', {
-          method: 'GET',
-          credentials: 'same-origin',
-          headers: { Accept: 'application/json' },
-          cache: 'no-store',
+        const res = await fetch("/api/access-session", {
+          method: "GET",
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
         });
 
         const data = await res.json().catch(() => null);
 
         if (!cancelled && res.ok && data?.authenticated === true) {
-          sessionStorage.setItem(STORAGE_KEY, 'true');
+          sessionStorage.setItem(STORAGE_KEY, "true");
           setUnlocked(true);
         } else if (!cancelled) {
           sessionStorage.removeItem(STORAGE_KEY);
@@ -46,11 +46,11 @@ export default function AccessGate() {
         if (!cancelled) setChecking(false);
       }
 
-      fetch('/api/miniapp-track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("/api/miniapp-track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          initData: window.Telegram?.WebApp?.initData || '',
+          initData: window.Telegram?.WebApp?.initData || "",
         }),
       }).catch(() => {});
     }
@@ -66,32 +66,32 @@ export default function AccessGate() {
     e.preventDefault();
 
     if (attempts >= MAX_ATTEMPTS) {
-      setError('Demasiados intentos. Recarga la página.');
+      setError("Demasiados intentos. Recarga la página.");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('/api/verify', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/verify", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prefix, suffix }),
       });
       const data = await res.json();
 
       if (data.ok) {
-        sessionStorage.setItem(STORAGE_KEY, 'true');
+        sessionStorage.setItem(STORAGE_KEY, "true");
         setUnlocked(true);
       } else {
         setAttempts((n) => n + 1);
-        setError(data.error || 'Código inválido');
-        setSuffix('');
+        setError(data.error || "Código inválido");
+        setSuffix("");
       }
     } catch {
-      setError('Error de conexión');
+      setError("Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -108,11 +108,27 @@ export default function AccessGate() {
         <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
         <p className="access-gate__kicker">𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT</p>
         <div className="access-gate__inputs">
-          <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
-          <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+          <input
+            value={prefix}
+            onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+            placeholder="PREFIX"
+            maxLength={4}
+            autoCapitalize="characters"
+            autoComplete="off"
+            disabled={loading || attempts >= MAX_ATTEMPTS}
+          />
+          <input
+            value={suffix}
+            onChange={(e) => setSuffix(e.target.value.toUpperCase())}
+            placeholder="SUFFIX"
+            maxLength={4}
+            autoCapitalize="characters"
+            autoComplete="off"
+            disabled={loading || attempts >= MAX_ATTEMPTS}
+          />
         </div>
         <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
-          {loading ? 'Verificando...' : 'Entrar'}
+          {loading ? "Verificando..." : "Entrar"}
         </button>
         {error && (
           <p role="alert" className="access-error">

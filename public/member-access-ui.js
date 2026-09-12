@@ -28,8 +28,7 @@
   let planId = null;
   let syncQueued = false;
 
-  const privateUrl = (pathname) =>
-    `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+  const privateUrl = (pathname) => `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
 
   function getPrivateMedia() {
     if (!authenticated) return [];
@@ -165,7 +164,9 @@
         <p class="vx-memberPrivate__note">${memberActive ? "MEMBER ACCESS · SPCL" : "PAID ACCESS"}</p>
       </div>
       <div class="vx-memberPrivate__grid">
-        ${privateMedia.map((pathname, index) => `
+        ${privateMedia
+          .map(
+            (pathname, index) => `
           <figure class="vx-memberPrivate__item" oncontextmenu="return false">
             <img src="${privateUrl(pathname)}" alt="Private image ${index + 1}" draggable="false" loading="lazy" />
             <figcaption>
@@ -173,7 +174,9 @@
               <small>PRIVATE FILE ${String(index + 1).padStart(2, "0")}</small>
             </figcaption>
           </figure>
-        `).join("")}
+        `,
+          )
+          .join("")}
       </div>
     `;
 

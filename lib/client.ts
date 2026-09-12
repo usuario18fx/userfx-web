@@ -65,10 +65,7 @@ export function generateVaultCode(): {
   const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
   const block = (length: number): string =>
-    Array.from(
-      { length },
-      () => alphabet[Math.floor(Math.random() * alphabet.length)],
-    ).join("");
+    Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
 
   const a = block(4);
   const b = block(4);
@@ -78,4 +75,5 @@ export function generateVaultCode(): {
   return {
     full,
     last4: b,
-  };}
+  };
+}

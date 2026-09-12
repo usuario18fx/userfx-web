@@ -3,19 +3,11 @@ import path from "node:path";
 import process from "node:process";
 import { put } from "@vercel/blob";
 
-const SOURCE_ROOT = path.resolve(
-  process.cwd(),
-  process.argv[2] || "private-album-source"
-);
+const SOURCE_ROOT = path.resolve(process.cwd(), process.argv[2] || "private-album-source");
 const ALBUM_PREFIXES = ["BSIC", "PRX0", "VIPX"];
 
-if (
-  !process.env.VERCEL_OIDC_TOKEN &&
-  !process.env.BLOB_READ_WRITE_TOKEN
-) {
-  throw new Error(
-    "Missing VERCEL_OIDC_TOKEN or BLOB_READ_WRITE_TOKEN. Run vercel env pull first."
-  );
+if (!process.env.VERCEL_OIDC_TOKEN && !process.env.BLOB_READ_WRITE_TOKEN) {
+  throw new Error("Missing VERCEL_OIDC_TOKEN or BLOB_READ_WRITE_TOKEN. Run vercel env pull first.");
 }
 
 let uploaded = 0;
@@ -23,9 +15,7 @@ let uploaded = 0;
 for (const prefix of ALBUM_PREFIXES) {
   const sourceDirectory = path.join(SOURCE_ROOT, prefix);
   const filenames = (await readdir(sourceDirectory))
-    .filter((filename) =>
-      new RegExp(`^${prefix}-[0-9]{2}\\.jpg$`).test(filename)
-    )
+    .filter((filename) => new RegExp(`^${prefix}-[0-9]{2}\\.jpg$`).test(filename))
     .sort();
 
   for (const filename of filenames) {
