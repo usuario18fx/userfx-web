@@ -1,12 +1,7 @@
-/* USERFX · ACCESS MODAL V2
-   Estilos unificados del modal.
-   Ajusta aquí Telegram, Special Code, planes, iconos, formulario y responsive.
-*/
-
+/* USERFX · ACCESS MODAL  */
 .smkl-step-unlock-icon{
   display:none!important;
 }
-
 /*=============================================*/
 /* PANEL PRINCIPAL                              */
 /*=============================================*/
@@ -47,12 +42,10 @@
   pointer-events:none!important;
   z-index:0!important;
 }
-
 .smkl-panel > *{
   position:relative;
   z-index:2;
 }
-
 .smkl-panel__rose{
   position:absolute!important;
   top:-17px!important;     /* ⬆️⬇️ ROSA DEL PANEL */
@@ -65,20 +58,61 @@
   opacity:.34!important;
   pointer-events:none!important;
 }
-
+/*=============================================*/
+/* TITULO PRIVATE ACCESS · CENTRADO             */
+/*=============================================*/
 .smkl-panel h2{
-  margin:0!important;
   width:100%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  text-indent:0!important;
   font-family:"Cinzel",serif!important;
   font-size:.78rem!important;
   font-weight:700!important;
   letter-spacing:.28em!important;
-  text-indent:.28em!important;
-  text-align:center!important;
   color:#fff!important;
   text-shadow:0 2px 10px #000!important;
 }
-
+/*=============================================*/
+/* TELEGRAM ACCESS · TEXTO LATERAL              */
+/*=============================================*/
+.smkl-telegram-mode-btn::after{
+  content:"TELEGRAM ACCESS"!important;
+  position:absolute!important;
+  left:calc(100% + 10px)!important; /* ➡️ TEXTO A LA DERECHA */
+  right:auto!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:max-content!important;
+  height:auto!important;
+  padding:7px 12px!important;
+  border:1px solid #23d8c7!important;
+  border-radius:9px!important;
+  background:#06191c!important;
+  color:#8ffff0!important;
+  font-family:"JetBrains Mono",ui-monospace,monospace!important;
+  font-size:.66rem!important;
+  font-weight:800!important;
+  letter-spacing:.12em!important;
+  white-space:nowrap!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  box-shadow:
+  0 0 10px #15cfbd25,
+  inset 0 1px 0 #ffffff14!important;
+  transition:
+  opacity .18s ease,
+  transform .18s ease!important;
+}
+/* MOSTRAR TEXTO AL PASAR EL MOUSE */
+.smkl-telegram-mode-btn:hover::after{
+  opacity:1!important;
+  transform:translateY(-50%) translateX(3px)!important;
+}
 .smkl-panel__divider{
   display:grid!important;
   grid-template-columns:1fr 14px 1fr!important;
@@ -87,16 +121,13 @@
   width:min(100%,390px)!important;
   margin:6px auto 10px!important;
 }
-
 .smkl-panel__divider span{
   height:1px!important;
   background:linear-gradient(90deg,transparent,#42677d45)!important;
 }
-
 .smkl-panel__divider span:last-child{
   background:linear-gradient(90deg,#42677d45,transparent)!important;
 }
-
 .smkl-panel__divider svg{
   width:14px!important;
   height:14px!important;
@@ -104,7 +135,6 @@
   stroke:#5376a9!important;
   opacity:.4!important;
 }
-
 /*=============================================*/
 /* ROBOT · OJOS                                 */
 /*=============================================*/
@@ -116,7 +146,6 @@
   width:100%!important;
   height:100%!important;
 }
-
 .smkl-robot__eye{
   display:block!important;
   width:14px!important;    /* ↔️ OJO */
@@ -127,17 +156,14 @@
   transform-origin:center!important;
   animation:smklEyeGlow 2.4s ease-in-out infinite,smklEyeBlink 6s infinite!important;
 }
-
 @keyframes smklEyeGlow{
   0%,100%{filter:brightness(1);opacity:.92;}
   50%{filter:brightness(1.28);opacity:1;}
 }
-
 @keyframes smklEyeBlink{
   0%,41%,43%,71%,73%,100%{transform:scaleY(1);}
   42%,72%{transform:scaleY(.08);}
 }
-
 /*=============================================*/
 /* ROBOT · MANOS                                */
 /*=============================================*/
@@ -157,17 +183,14 @@
   box-shadow:0 7px 14px #00000066,inset 0 1px 0 #4a8fd32e!important;
   pointer-events:none!important;
 }
-
 .smkl-robot__hand--left{
   left:-12px!important;    /* ⬅️➡️ MANO IZQ */
   right:auto!important;
 }
-
 .smkl-robot__hand--right{
   right:-12px!important;   /* ⬅️➡️ MANO DER */
   left:auto!important;
 }
-
 .smkl-robot__hand i{
   display:block!important;
   width:6px!important;
@@ -176,7 +199,6 @@
   background:linear-gradient(180deg,#18385f 0%,#0b1b31 55%,#050b13 100%)!important;
   box-shadow:inset 0 1px 1px #ffffff16,0 0 5px #0b5aa755!important;
 }
-
 /*=============================================*/
 /* BOTONES BASIC · PRO · VIP                    */
 /*=============================================*/
@@ -187,30 +209,40 @@
   width:100%!important;
   margin:10px auto 12px!important;
 }
-
 .smkl-plan-pill{
-  position:relative!important;
-  isolation:isolate!important;
-  min-width:0!important;
-  height:44px!important;   /* ↕️ BOTÓN */
-  min-height:44px!important;
-  padding:0 8px!important;
-  border:0!important;
-  border-radius:10px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:7px!important;       /* ↔️ ICONO / TEXTO */
-  overflow:hidden!important;
-  background:linear-gradient(90deg,#0a776e,#77ffdd,#0a775f,#0aa886,#77ffdd,#0a7753)!important;
-  background-size:250%!important;
-  background-position:left center!important;
-  box-shadow:0 7px 16px #00000048,0 0 9px #29d9ae16!important;
-  cursor:pointer!important;
-  animation:smklPlanGradient 4s linear infinite!important;
-  transition:transform .18s ease,box-shadow .22s ease,opacity .2s ease!important;
+position:relative!important;
+isolation:isolate!important;
+height:40px!important;
+min-height:40px!important;
+padding:0!important;
+border:0!important;
+border-radius:10px!important;
+background:
+linear-gradient(90deg,
+#005cc6,#016bc2,
+#1784ff,#0a61a8,
+#016bc2,#005cc6)!important;
+background-size:250%!important;
+background-position:left center!important;
+display:flex!important;
+align-items:center!important;
+justify-content:center!important;
+color:#77d2ff!important;
+font-family:"Cinzel",serif!important;
+font-size:.68rem!important;
+font-weight:800!important;
+letter-spacing:.16em!important;
+cursor:pointer!important;
+overflow:hidden!important;
+box-shadow:
+0 7px 16px #00000048,
+0 0 9px #29d9ae16!important;
+animation:smklPlanGradient 4s linear infinite!important;
+transition:
+transform .18s ease,
+box-shadow .22s ease,
+opacity .2s ease!important;
 }
-
 .smkl-plan-pill::before{
   content:""!important;
   position:absolute!important;
@@ -219,7 +251,6 @@
   background:linear-gradient(180deg,#0a1115 0%,#050809 100%)!important;
   z-index:-1!important;
 }
-
 /* 🔥👑🌹 ICONOS GENERALES */
 .smkl-plan-pill__icon{
   display:block!important;
@@ -231,56 +262,48 @@
   z-index:2!important;
   transform:scale(1) translateX(0px) translateY(0px)!important;
 }
-
 /* BASIC · 🌹 */
 .smkl-plan-pill:nth-child(1) .smkl-plan-pill__icon{
   content:url("/assets/iconos/basic.png")!important;
   width:20px!important;
   height:20px!important;
-  transform:scale(1) translateX(0px) translateY(0px)!important;
+  transform:scale(2) translateX(-9px)!important;
 }
-
 /* PRO · 🔥 */
 .smkl-plan-pill:nth-child(2) .smkl-plan-pill__icon{
   content:url("/assets/iconos/pro.png")!important;
-  width:20px!important;
-  height:20px!important;
-  transform:scale(1) translateX(0px) translateY(0px)!important;
+  width:17px!important;
+  height:17px!important;
+  transform:scale(2) translateX(-7px) translateY(0px)!important;
 }
-
 /* VIP · 👑 */
 .smkl-plan-pill:nth-child(3) .smkl-plan-pill__icon{
   content:url("/assets/iconos/vip.png")!important;
   width:20px!important;
   height:20px!important;
-  transform:scale(1) translateX(0px) translateY(0px)!important;
+  transform:scale(2) translateX(-11px) translateY(0px)!important;
 }
-
 .smkl-plan-pill__name{
   position:relative!important;
   z-index:2!important;
   font-family:"Cinzel",serif!important;
-  font-size:.62rem!important;
+  font-size:.75rem!important;
   font-weight:800!important;
   letter-spacing:.11em!important;
   color:#77ffb4!important;
   white-space:nowrap!important;
 }
-
 .smkl-plan-pill:hover{
   transform:translateY(-1px)!important;
   box-shadow:0 8px 18px #00000055,0 0 16px #77ffdd3d!important;
 }
-
 .smkl-plan-pill:active{
   transform:scale(.95)!important;
 }
-
 .smkl-plan-pill.is-active{
   box-shadow:0 0 0 1px #77ffdd80,0 0 18px #77ffdd4a,0 7px 18px #00000050!important;
   transform:translateY(-1px)!important;
 }
-
 .smkl-plan-pill.is-disabled,
 .smkl-plan-pill:disabled{
   opacity:.28!important;
@@ -289,13 +312,11 @@
   animation:none!important;
   transform:none!important;
 }
-
 @keyframes smklPlanGradient{
   0%{background-position:0% center;}
   50%{background-position:100% center;}
   100%{background-position:0% center;}
 }
-
 /*=============================================*/
 /* FORMULARIO                                   */
 /*=============================================*/
@@ -308,13 +329,11 @@
   width:100%!important;
   margin:0 auto!important;
 }
-
 .smkl-form__field--username,
 .smkl-plan-access-field{
   width:100%!important;
   margin-inline:auto!important;
 }
-
 .smkl-plan-access-field{
   position:relative!important;
   display:flex!important;
@@ -326,7 +345,6 @@
   background:linear-gradient(180deg,#101820f2,#050708fa)!important;
   box-shadow:inset 0 1px 0 #ffffff0d,0 8px 20px #0000004d!important;
 }
-
 .smkl-plan-access-field input{
   width:100%!important;
   min-width:0!important;
@@ -343,11 +361,9 @@
   letter-spacing:.18em!important;
   text-transform:uppercase!important;
 }
-
 .smkl-plan-access-field input::placeholder{
   color:#5795a59c!important;
 }
-
 .smkl-form__field--username{
   position:relative!important;
   display:flex!important;
@@ -360,7 +376,6 @@
   border-radius:10px!important;
   background:linear-gradient(180deg,#141516f5,#050607fa)!important;
 }
-
 .smkl-form__field--username input{
   width:190px!important;
   max-width:70%!important;
@@ -378,7 +393,6 @@
   font-weight:700!important;
   letter-spacing:.18em!important;
 }
-
 .smkl-form__icon--username{
   position:static!important;
   width:20px!important;
@@ -389,7 +403,6 @@
   margin:0!important;
   transform:none!important;
 }
-
 .smkl-form__icon--username svg{
   width:20px!important;
   height:28px!important;
@@ -397,13 +410,11 @@
   stroke:#5089fa!important;
   stroke-width:2!important;
 }
-
 .smkl-telegram-check-note,
 .smkl-form__error{
   width:100%!important;
   text-align:center!important;
 }
-
 .smkl-telegram-check-note{
   margin:0!important;
   color:#8bb9c7!important;
@@ -412,11 +423,9 @@
   line-height:1.45!important;
   letter-spacing:.05em!important;
 }
-
 .smkl-telegram-check-note.is-ready{
   color:#79ffd4!important;
 }
-
 /*=============================================*/
 /* VERIFY / CHECK USER                          */
 /*=============================================*/
@@ -441,15 +450,10 @@
   cursor:pointer!important;
   animation:smklVerifyGradient 4s linear infinite!important;
 }
-
-.smkl-form__submit--verify::before{
-  content:"VERIFY ACCESS"!important;
+.smkl-form__submit--verify::before{content:"VERIFY ACCESS"!important;
 }
-
-.smkl-form__submit--telegram-check::before{
-  content:"CHECK USER"!important;
+.smkl-form__submit--telegram-check::before{content:"CHECK USER"!important;
 }
-
 .smkl-form__submit--verify::before,
 .smkl-form__submit--telegram-check::before{
   position:absolute!important;
@@ -466,182 +470,40 @@
   letter-spacing:.16em!important;
   z-index:2!important;
 }
-
 .smkl-form__submit--verify span,
 .smkl-form__submit--telegram-check span{
   opacity:0!important;
   pointer-events:none!important;
 }
-
 @keyframes smklVerifyGradient{
   0%{background-position:0% center;}
   50%{background-position:100% center;}
   100%{background-position:0% center;}
 }
-
 /*=============================================*/
-/* BOTÓN TELEGRAM · PESTAÑA EXTERNA             */
-/* AJUSTES PRINCIPALES: top / right / width      */
+/* TEXTO · SPECIAL CODE                        */
 /*=============================================*/
-.smkl-telegram-mode-btn{  /* BOTÓN TELEGRAM */
-  position:absolute!important;
-  top:122px!important;       /* ⬆️⬇️ */
-  right:-46px!important;     /* ⬅️➡️ */
-  width:20px!important;      /* ↔️ */
-  min-width:20px!important;
-  height:31px!important;     /* ↕️ */
-  min-height:31px!important;
-  border-radius:0 9px 9px 0!important;
-  z-index:45!important;
-  padding:0!important;
-  display:grid!important;
-  place-items:center!important;
-  overflow:visible!important;
-  border:0!important;
-  background:linear-gradient(15deg,
-  #0b426d,#0070bb,#0078c2,
-  #0173b9,#0b426d,#006ab0)!important;
-  background-size:300%!important;
-  background-position:left center!important;
-  box-shadow:
-  0 14px 22px -12px #1698ee88,
-  0 0 16px #1698ee55,
-  inset 0 1px 0 #ffffff55!important;
-  cursor:pointer!important;
-  animation:
-  smklTelegramGradient 4s linear infinite,
-  smklTelegramPulse 1.65s ease-in-out infinite!important;
-  transition:
-  transform .20s ease,
-  box-shadow .30s ease,
-  background-position 1s ease!important;
-}
-
-.smkl-telegram-mode-btn::before{ /* ICONO TELEGRAM */
-  content:""!important;
-  display:block!important;
-  width:50px!important;       /* ↔️ ICONO */
-  height:31px!important;      /* ↕️ ICONO */
-  background:url("/assets/iconos/telegram.png") center/contain no-repeat!important;
-  filter:drop-shadow(0 0 5px #42baff55)!important;
-  transform:translateX(0px) translateY(0px) scale(1)!important;
-  transition:transform .25s ease,filter .25s ease!important;
-}
-
-.smkl-telegram-mode-btn:hover{
-  background-position:right center!important;
-  transform:translateY(1px) scale(.80)!important;
-  box-shadow:
-  0 16px 25px -10px #1698ee99,
-  0 0 24px #42baff77,
-  inset 0 1px 0 #ffffff75!important;
-}
-
-.smkl-telegram-mode-btn:active{
-  transform:scale(.94)!important;
-}
-
-.smkl-telegram-mode-btn.is-active{
-  box-shadow:0 0 0 1px #59cfff88,0 0 22px #1698ee70,0 12px 20px -12px #1698ee88!important;
-}
-
-.smkl-telegram-mode-btn:disabled{
-  opacity:.38!important;
-  filter:saturate(.35)!important;
-  cursor:not-allowed!important;
-  animation:none!important;
-}
-
-@keyframes smklTelegramGradient{
-  0%{background-position:0% center;}
-  50%{background-position:100% center;}
-  100%{background-position:0% center;}
-}
-
-@keyframes smklTelegramPulse{
-  0%,100%{
-    box-shadow:0 14px 22px -12px #1698ee77,0 0 14px #1698ee44,inset 0 1px 0 #ffffff55;
-    transform:scale(1);
-  }
-  50%{
-    box-shadow:0 14px 27px -9px #1698eebb,0 0 30px #42baff88,inset 0 1px 0 #ffffff80;
-    transform:scale(1.055);
-  }
-}
-
-/*=============================================*/
-/* BOTÓN SPECIAL CODE · PESTAÑA EXTERNA         */
-/* AJUSTES PRINCIPALES: top / right / width      */
-/*=============================================*/
-.smkl-special-code-fab{ /* BOTÓN SPECIAL CODE */
-  position:absolute!important;
-  top:169px!important;       /* ⬆️⬇️ */
-  right:-46px!important;     /* ⬅️➡️ */
-  width:46px!important;      /* ↔️ */
-  min-width:46px!important;
-  height:42px!important;     /* ↕️ */
-  min-height:42px!important;
-  margin:0!important;
-  padding:0!important;
-  z-index:46!important;
-  display:grid!important;
-  place-items:center!important;
-  overflow:visible!important;
-  border:0!important;
-  border-radius:0 9px 9px 0!important;
-  background:linear-gradient(15deg,#6e7500,#93a300,#b8d100,#ddff00,#93a300,#6e7500)!important;
-  background-size:300%!important;
-  background-position:left center!important;
-  box-shadow:5px 7px 15px #00000055,0 0 7px #ddff002d,inset 1px 0 0 #ffffff38!important;
-  cursor:pointer!important;
-  transition:transform .20s ease,box-shadow .30s ease,background-position 1s ease!important;
-}
-
-.smkl-special-code-fab svg{ /* ICONO CORONA */
-  width:22px!important;      /* ↔️ ICONO */
-  height:16px!important;     /* ↕️ ICONO */
-  fill:#050505!important;
-  transform:translateX(0px) translateY(0px) scale(1)!important;
-  filter:none!important;
-}
-
-.smkl-special-code-fab:hover{
-  background-position:right center!important;
-  transform:translateX(2px)!important;
-}
-
-.smkl-special-code-fab:active{
-  transform:scale(.97)!important;
-}
-
-.smkl-special-code-fab.is-locked{
-  opacity:.38!important;
-  filter:saturate(.35)!important;
-  cursor:not-allowed!important;
-  animation:none!important;
-}
-
-.smkl-special-code-fab.is-ready{
-  opacity:1!important;
-  filter:none!important;
-  animation:smklSpecialReadyPulse 2.7s ease-in-out infinite!important;
-}
-
 .smkl-special-code-fab__tip{
-  right:calc(100% + 8px)!important;
+  position:absolute!important;
+  left:52px!important;      /* ➡️ distancia desde la corona */
+  top:50%!important;        /* ↕️ centro vertical */
+  transform:translateY(-50%)!important;
+  width:max-content!important;
+  white-space:nowrap!important;
+  padding:6px 10px!important;
+  border-radius:8px!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.12em!important;
+  color:#dfff49!important;
+  background:#071000e8!important;
+  border:1px solid #dfff0055!important;
+  box-shadow:
+  0 0 10px #dfff0028!important;
+  pointer-events:none!important;
+  opacity:1!important;
+  visibility:visible!important;
 }
-
-@keyframes smklSpecialReadyPulse{
-  0%,100%{
-    box-shadow:5px 7px 15px #00000055,0 0 6px #ddff0028,inset 1px 0 0 #ffffff38;
-    transform:scale(1);
-  }
-  50%{
-    box-shadow:5px 7px 15px #00000055,0 0 11px #ddff0040,inset 1px 0 0 #ffffff48;
-    transform:scale(1.025);
-  }
-}
-
 /*=============================================*/
 /* PANTALLA SUPERIOR · CRT                      */
 /*=============================================*/
@@ -651,7 +513,6 @@
   background:linear-gradient(180deg,#040e10f5,#02080afa)!important;
   box-shadow:0 0 0 1px #00d8c7,0 0 18px #00d8c72b,inset 0 0 18px #001f1c!important;
 }
-
 .smkl-modal__bubble--screen::before{
   content:""!important;
   position:absolute!important;
@@ -661,7 +522,6 @@
   z-index:1!important;
   animation:smklScreenScan 3.2s linear infinite!important;
 }
-
 .smkl-modal__bubble--screen::after{
   content:""!important;
   position:absolute!important;
@@ -675,73 +535,58 @@
   z-index:2!important;
   animation:smklScreenSweep 4.8s linear infinite!important;
 }
-
 .smkl-typing-viewport,
 .smkl-screen-userfx{
   position:relative!important;
   z-index:4!important;
 }
-
 @keyframes smklScreenScan{
   0%{background-position:0 0;}
   100%{background-position:0 12px;}
 }
-
 @keyframes smklScreenSweep{
   0%{top:-35%;}
   100%{top:120%;}
 }
-
 /*=============================================*/
 /* MOBILE · AJUSTES INDIVIDUALES                */
 /*=============================================*/
 @media(max-width:520px){
-
   .smkl-panel{
     padding:36px 12px 16px!important;
   }
-
   .smkl-panel::before{
     top:62%!important;
     font-size:2.65rem!important;
   }
-
   .smkl-robot__hand{
     width:46px!important;
     height:29px!important;
   }
-
   .smkl-robot__hand--left{
     left:-9px!important;
   }
-
   .smkl-robot__hand--right{
     right:-9px!important;
   }
-
   /* BASIC / PRO / VIP · MOBILE */
-  .smkl-plan-switcher{
-    gap:7px!important;
+  .smkl-plan-switcher{gap:7px!important;
   }
-
   .smkl-plan-pill{
     height:42px!important;
     min-height:42px!important;
     gap:5px!important;
     padding:0 5px!important;
   }
-
   .smkl-plan-pill__icon{
     width:18px!important;
     height:18px!important;
     flex-basis:18px!important;
   }
-
   .smkl-plan-pill__name{
     font-size:.56rem!important;
     letter-spacing:.07em!important;
   }
-
   /* TELEGRAM · MOBILE */
   .smkl-telegram-mode-btn{
     top:145px!important;      /* ⬆️⬇️ */
@@ -752,35 +597,45 @@
     min-height:54px!important;
     border-radius:16px!important;
   }
-
   .smkl-telegram-mode-btn::before{
     width:24px!important;     /* ↔️ ICONO */
     height:44px!important;    /* ↕️ ICONO */
-  }
-
-  /* SPECIAL CODE · MOBILE */
-  .smkl-special-code-fab{
-    top:169px!important;      /* ⬆️⬇️ */
-    right:-46px!important;    /* ⬅️➡️ */
-    width:46px!important;
-    min-width:46px!important;
-    height:42px!important;
-    min-height:42px!important;
-    border-radius:0 9px 9px 0!important;
-  }
-
-  .smkl-special-code-fab svg{
-    width:22px!important;
-    height:16px!important;
-  }
-
-  .smkl-plan-access-field{
-    min-height:50px!important;
-    padding:0 14px!important;
-  }
-
-  .smkl-plan-access-field input{
-    height:48px!important;
-    font-size:.84rem!important;
-  }
+  }}
+  /*=============================================*/
+/* PLANES · ESTADO NORMAL                       */
+/*=============================================*/
+.smkl-plan-pill{
+  opacity:.5!important;
+  border:2px solid #168cff!important;
+  box-shadow:none!important;
+  transition:
+  opacity .22s ease,
+  border-color .22s ease,
+  box-shadow .22s ease,
+  transform .18s ease!important;
+}
+/*=============================================*/
+/* PLAN SELECCIONADO                            */
+/*=============================================*/
+.smkl-plan-pill.is-active{
+  opacity:1!important;
+  border:2px solid #63ffd0!important;
+  box-shadow:
+  0 0 0 1px #63ffd055,
+  0 0 14px #63ffd055,
+  0 7px 18px #00000050!important;
+  transform:translateY(-1px)!important;
+}
+/*=============================================*/
+/* PLANES NO SELECCIONADOS                      */
+/*=============================================*/
+.smkl-plan-pill:not(.is-active){
+  opacity:.5!important;
+}
+.smkl-plan-pill.is-active::before{
+  inset:2px!important;
+  border-radius:8px!important;
+}
+.smkl-plan-pill:not(.is-active)::before{
+  opacity:.85!important;
 }
