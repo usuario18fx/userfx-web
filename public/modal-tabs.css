@@ -3,14 +3,16 @@
 .smkl-telegram-mode-btn,
 .smkl-special-code-fab{
   position:absolute!important;
-  right:-54px!important;
-  width:54px!important;
-  min-width:54px!important;
-  height:46px!important;
-  min-height:46px!important;
+  right:-50px!important;
+  width:50px!important;
+  min-width:50px!important;
+  height:42px!important;
+  min-height:42px!important;
   margin:0!important;
   padding:0!important;
-  border-radius:0 10px 10px 0!important;
+  border:0!important;
+  border-left:1px solid rgba(255,255,255,.12)!important;
+  border-radius:0 9px 9px 0!important;
   transform:none!important;
   overflow:visible!important;
   display:grid!important;
@@ -18,30 +20,35 @@
   z-index:46!important;
 }
 
+/*
+ * Las pestañas empiezan DEBAJO de la mano derecha.
+ * Así quedan unidas al lateral del modal sin montarse
+ * sobre la mano del robot ni entre ellas.
+ */
 .smkl-telegram-mode-btn{
-  top:128px!important;
+  top:205px!important;
   background:linear-gradient(90deg,#0b426d,#1698ee,#43b6ff,#126fa8)!important;
   background-size:220%!important;
-  box-shadow:5px 8px 18px #00000055,0 0 12px #1698ee44,inset 1px 0 0 #ffffff38!important;
+  box-shadow:5px 7px 15px #00000055,0 0 9px #1698ee38,inset 1px 0 0 #ffffff38!important;
 }
 
 .smkl-special-code-fab{
-  top:180px!important;
+  top:251px!important;
   background:linear-gradient(90deg,#6e7500,#b8d100,#ddff00,#93a300)!important;
   background-size:220%!important;
-  box-shadow:5px 8px 18px #00000055,0 0 10px #ddff0036,inset 1px 0 0 #ffffff38!important;
+  box-shadow:5px 7px 15px #00000055,0 0 7px #ddff002d,inset 1px 0 0 #ffffff38!important;
 }
 
 .smkl-telegram-mode-btn::before{
-  width:36px!important;
-  height:36px!important;
+  width:31px!important;
+  height:31px!important;
   background:url("/assets/iconos/telegram.png") center/contain no-repeat!important;
-  filter:drop-shadow(0 0 4px #42baff44)!important;
+  filter:drop-shadow(0 0 3px #42baff38)!important;
 }
 
 .smkl-special-code-fab svg{
-  width:25px!important;
-  height:18px!important;
+  width:22px!important;
+  height:16px!important;
   fill:#050505!important;
   filter:none!important;
 }
@@ -58,15 +65,15 @@
 }
 
 .smkl-special-code-fab.is-ready{
-  animation:userfxTabCrownPulse 2.7s ease-in-out infinite!important;
+  animation:userfxTabCrownPulse 3s ease-in-out infinite!important;
 }
 
 @keyframes userfxTabCrownPulse{
   0%,100%{
-    box-shadow:5px 8px 18px #00000055,0 0 8px #ddff0030,inset 1px 0 0 #ffffff38;
+    box-shadow:5px 7px 15px #00000055,0 0 6px #ddff0028,inset 1px 0 0 #ffffff38;
   }
   50%{
-    box-shadow:5px 8px 18px #00000055,0 0 14px #ddff004d,inset 1px 0 0 #ffffff50;
+    box-shadow:5px 7px 15px #00000055,0 0 11px #ddff0040,inset 1px 0 0 #ffffff48;
   }
 }
 
@@ -78,31 +85,31 @@
   .smkl-telegram-mode-btn,
   .smkl-special-code-fab{
     position:absolute!important;
-    right:-46px!important;
-    width:46px!important;
-    min-width:46px!important;
-    height:42px!important;
-    min-height:42px!important;
-    border-radius:0 9px 9px 0!important;
+    right:-42px!important;
+    width:42px!important;
+    min-width:42px!important;
+    height:38px!important;
+    min-height:38px!important;
+    border-radius:0 8px 8px 0!important;
     transform:none!important;
   }
 
   .smkl-telegram-mode-btn{
-    top:122px!important;
+    top:202px!important;
   }
 
   .smkl-special-code-fab{
-    top:169px!important;
+    top:244px!important;
   }
 
   .smkl-telegram-mode-btn::before{
-    width:31px!important;
-    height:31px!important;
+    width:28px!important;
+    height:28px!important;
   }
 
   .smkl-special-code-fab svg{
-    width:22px!important;
-    height:16px!important;
+    width:20px!important;
+    height:15px!important;
   }
 
   .smkl-telegram-mode-btn:hover,
