@@ -1,11 +1,46 @@
 import { useEffect, useMemo, useState } from "react";
 import "./PrivateRoom.css";
 
-const FILES = Array.from({ length: 12 }, (_, index) => ({
-  id: index + 1,
-  src: `/assets/album/PRVW/PRVW-${String((index % 3) + 1).padStart(2, "0")}.jpg`,
-  title: `PRIVATE FILE ${String(index + 1).padStart(2, "0")}`,
-}));
+const privatePhoto = (pathname) =>
+  `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+
+const PRIVATE_PATHS = {
+  basic: [
+    "userfx-album/BSIC/BSIC-01.jpg",
+    "userfx-album/BSIC/BSIC-02.jpg",
+    "userfx-album/BSIC/BSIC-03.jpg",
+    "userfx-album/BSIC/BSIC-04.jpg",
+    "userfx-album/BSIC/BSIC-05.jpg",
+  ],
+  pro: [
+    "userfx-album/PRX0/PRX0-01.jpg",
+    "userfx-album/PRX0/PRX0-02.jpg",
+    "userfx-album/PRX0/PRX0-03.jpg",
+  ],
+  vip: [
+    "userfx-album/VIPX/VIPX-01.jpg",
+    "userfx-album/VIPX/VIPX-02.jpg",
+    "userfx-album/VIPX/VIPX-03.jpg",
+    "userfx-album/VIPX/VIPX-04.jpg",
+  ],
+};
+
+function buildPrivateFiles(planId, accessMode) {
+  const paths =
+    accessMode === "telegram_identity" || planId === "vip"
+      ? [...PRIVATE_PATHS.basic, ...PRIVATE_PATHS.pro, ...PRIVATE_PATHS.vip]
+      : planId === "pro"
+        ? [...PRIVATE_PATHS.basic, ...PRIVATE_PATHS.pro]
+        : planId === "basic"
+          ? PRIVATE_PATHS.basic
+          : [];
+
+  return paths.map((pathname, index) => ({
+    id: index + 1,
+    src: privatePhoto(pathname),
+    title: `PRIVATE FILE ${String(index + 1).padStart(2, "0")}`,
+  }));
+}
 
 const SIDE_ACTIONS = [
   ["Chat", "Open private chat"],
@@ -80,6 +115,7 @@ function UpgradeButton() {
 
 export default function PrivateRoom() {
   const [selected, setSelected] = useState(0);
+  const [files, setFiles] = useState([]);
   const [likes, setLikes] = useState(() => {
     try { return JSON.parse(localStorage.getItem("userfx_private_likes") || "{}"); }
     catch { return {}; }
@@ -88,25 +124,48 @@ export default function PrivateRoom() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/access-session", { credentials: "same-origin", cache: "no-store" })
+
+    fetch("/api/access-session", {
+      credentials: "same-origin",
+      cache: "no-store",
+    })
       .then((response) => response.json())
       .then((data) => {
         if (cancelled) return;
+
         if (!data?.authenticated) {
           window.location.hash = "#/";
           return;
         }
+
+        const privateFiles = buildPrivateFiles(data.planId, data.accessMode);
+
+        if (!privateFiles.length) {
+          window.location.hash = "#/";
+          return;
+        }
+
+        setFiles(privateFiles);
+        setSelected(0);
         setSessionReady(true);
       })
-      .catch(() => { if (!cancelled) window.location.hash = "#/"; });
-    return () => { cancelled = true; };
+      .catch(() => {
+        if (!cancelled) window.location.hash = "#/";
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
   useEffect(() => {
     localStorage.setItem("userfx_private_likes", JSON.stringify(likes));
   }, [likes]);
-  const selectedFile = FILES[selected];
+
+  const selectedFile = files[selected] || null;
   const totalLikes = useMemo(() => Object.values(likes).filter(Boolean).length, [likes]);
-  if (!sessionReady) {
+
+  if (!sessionReady || !selectedFile) {
    return <main className="pvr-loading">
             CHECKING PRIVATE ACCESS…
           </main>;
@@ -135,7 +194,7 @@ export default function PrivateRoom() {
            YOUR CALL.
           </em></h1>
           <p>
-           The videocall stage is the first thing inside. Start here, then move through the private files below. 
+           The videocall stage is the first thing inside. Start here, then move through the private files below.
           </p>
           <div className="pvr-call-actions">
           <button className="pvr-get-in" type="button">GET IN</button>
@@ -172,9 +231,9 @@ export default function PrivateRoom() {
           </div>
           <div className="pvr-workspace">
           <div className="pvr-carousel" role="list">
-            {FILES.map((file, index) => (
+            {files.map((file, index) => (
           <button type="button" role="listitem" key={file.id} className={`pvr-photo-card${selected === index ? " is-selected" : ""}`} onClick={() => setSelected(index)}>
-          <img src={file.src} alt={file.title} />
+          <img src={file.src} alt={file.title} loading={index === 0 ? "eager" : "lazy"} />
           <span>{file.title}</span>
           </button>
             ))}
