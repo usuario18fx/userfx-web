@@ -52,11 +52,6 @@ const ICONS = {
   rosa1: "/assets/iconos/rosa1.png",
   laurel: "/assets/iconos/laurel.png",
 };
-const FOOTER_GIFS = {
-  help: "/assets/gif/help.gif?v=original-transparent-1",
-  vault: "/assets/gif/acceso.gif?v=original-transparent-1",
-  pay: "/assets/gif/pay.gif?v=original-transparent-1",
-};
 const TICKER_ITEMS = [
   "| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
   "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
@@ -693,29 +688,18 @@ export default function VaultHome() {
             </div>
             <div>
               <div className="vx-footActions">
-                <nav className="vx-footGifActions" aria-label="Vault quick actions">
-                  <a
-                    href="https://t.me/User18Fx"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="vx-footGifButton is-help"
-                    aria-label="Open Telegram help chat">
-                    <img src={FOOTER_GIFS.help} alt="Help" draggable={false} />
+                <nav className="vx-links" aria-label="Vault quick actions">
+                  <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
+                    <Scramble text="@USER18FX" hover />
                   </a>
-                  <button
-                    type="button"
-                    className="vx-footGifButton"
-                    onClick={() => setCodeModal(true)}
-                    aria-label="Open vault access modal">
-                    <img src={FOOTER_GIFS.vault} alt="Vault access" draggable={false} />
+                  <button type="button" onClick={() => setCodeModal(true)}>
+                    <Scramble text="SPECIAL CODE" hover />
                   </button>
                   <a
                     href="https://t.me/User18Fx_bot?start=getcode"
                     target="_blank"
-                    rel="noreferrer"
-                    className="vx-footGifButton"
-                    aria-label="Get an access code">
-                    <img src={FOOTER_GIFS.pay} alt="Get code" draggable={false} />
+                    rel="noreferrer">
+                    <Scramble text="GET CODE" hover />
                   </a>
                 </nav>
                 <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
