@@ -15,7 +15,8 @@ export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
       onClick={onOpen}
       disabled={disabled}
       aria-haspopup="dialog"
-      aria-controls="fx-access-modal">
+      aria-controls="fx-access-modal"
+    >
       <span className="smkl-access-button__smoke" />
       <span className="smkl-access-button__rose" aria-hidden="true">
         <img
@@ -32,8 +33,14 @@ export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
         />
       </span>
       <span className="smkl-access-button__status" aria-hidden="true" />
-      <span className="smkl-access-button__seam smkl-access-button__seam--l" aria-hidden="true" />
-      <span className="smkl-access-button__seam smkl-access-button__seam--r" aria-hidden="true" />
+      <span
+        className="smkl-access-button__seam smkl-access-button__seam--l"
+        aria-hidden="true"
+      />
+      <span
+        className="smkl-access-button__seam smkl-access-button__seam--r"
+        aria-hidden="true"
+      />
       <span className="smkl-access-button__content">
         <span className="smkl-access-button__title">GET ACCESS</span>
         <span className="smkl-access-button__brand">
