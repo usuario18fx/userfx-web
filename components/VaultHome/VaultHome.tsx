@@ -53,9 +53,9 @@ const ICONS = {
   laurel: "/assets/iconos/laurel.png",
 };
 const FOOTER_GIFS = {
-  help: "/assets/gif/help.gif?v=blue-silver-2",
-  vault: "/assets/gif/acceso.gif?v=blue-silver-2",
-  pay: "/assets/gif/pay.gif?v=blue-silver-2",
+  help: "/assets/gif/help.gif?v=original-restored-1",
+  vault: "/assets/gif/acceso.gif?v=original-restored-1",
+  pay: "/assets/gif/pay.gif?v=original-restored-1",
 };
 const TICKER_ITEMS = [
   "| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
