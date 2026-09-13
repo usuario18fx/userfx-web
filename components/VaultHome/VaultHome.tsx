@@ -444,9 +444,10 @@ export default function VaultHome() {
           </h1>
           <p className="vx-p vx-pNormal">
             There are images that were never meant to be seen..{" "}
-          <strong>USER🜲 FX —ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ—
-          </strong> Is a reserved place. access is not public.
-            You’ll need a ᴄᴏᴅᴇ
+            <strong>USER🜲 FX</strong>
+            <br />
+            <strong className="vx-privateVaultLine">—ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ—</strong>{" "}
+            Is a reserved place. access is not public. You’ll need a ᴄᴏᴅᴇ
           </p>
           <div className="vx-dossier">
           <div className="vx-dossierHead">
