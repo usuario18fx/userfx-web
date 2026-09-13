@@ -324,6 +324,13 @@ video{
     top:53%; /*⬆️*/
   }
 }
+@media (max-width: 700px) {
+  .vx-titleCrown{
+    transform-origin:50% 60%;
+    animation:vxCrownFloatMobile 7.5s ease-in-out infinite;
+    will-change:transform;
+  }
+}
 /* ═════════  INTRO PARAGRAPH ═════════════════════ */
 .vx-p{
   display:block;
