@@ -2493,3 +2493,35 @@
   color:#63ffd0 !important;
   opacity:.4 !important;
 }
+
+
+/* ═══ FIX · PANTALLA SUPERIOR LINEADA ═══ */
+.smkl-modal__bubble--screen{
+  min-height:58px !important; /* ↕️ */
+  padding:6px 18px !important; /* ↔️↕️ */
+  overflow:hidden !important;
+  border:1px solid #08d8c8 !important;
+  border-radius:18px !important;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #071416 0,
+      #071416 4px,
+      #0cb8ad38 5px,
+      #02090b 6px
+    ) !important;
+  box-shadow:
+    inset 0 0 0 1px #075c5980,
+    inset 0 0 20px #000000d9,
+    0 0 12px #08d8c82b !important;
+}
+
+.smkl-modal__bubble--screen::before{
+  opacity:.38 !important;
+}
+
+.smkl-modal__bubble--screen .smkl-typing-text{
+  justify-content:flex-start !important;
+  color:#d8eeee !important;
+  text-shadow:0 0 5px #89ffff66 !important;
+}
