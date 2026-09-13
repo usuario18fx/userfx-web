@@ -42,15 +42,15 @@
 
 .smkl-modal__stage {
   position: relative;
-  width: min(630px, calc(100vw - 48px));
-  padding-top: 118px;
+  width: min(500px, calc(100vw - 48px));
+  padding-top: 96px;
   filter: drop-shadow(0 32px 72px rgba(0, 0, 0, 0.8));
 }
 
 .smkl-modal__stage::before {
   content: "";
   position: absolute;
-  inset: 90px -16px -16px;
+  inset: 72px -12px -12px;
   z-index: -1;
   border: 1px solid rgba(85, 185, 255, 0.13);
   border-radius: 24px;
@@ -101,8 +101,8 @@
   position: absolute;
   top: 12px;
   left: 50%;
-  width: min(445px, calc(100% - 150px));
-  height: 60px;
+  width: min(355px, calc(100% - 120px));
+  height: 48px;
   overflow: hidden;
   border: 2px solid #22d7cc;
   border-radius: 22px;
@@ -140,7 +140,7 @@
   height: 100%;
   padding-left: 100%;
   color: #d7edf2;
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   white-space: nowrap;
@@ -150,17 +150,17 @@
 
 .smkl-robot {
   position: absolute;
-  top: 77px;
+  top: 62px;
   left: 50%;
   z-index: 8;
-  width: 142px;
-  height: 116px;
+  width: 112px;
+  height: 92px;
   transform: translateX(-50%);
 }
 
 .smkl-robot__head {
   position: absolute;
-  inset: 0 10px;
+  inset: 0 8px;
   border: 1px solid rgba(74, 151, 220, 0.45);
   border-radius: 46% 46% 42% 42%;
   background: linear-gradient(145deg, #183e6b, #07111e 55%, #03070c);
@@ -182,7 +182,7 @@
 
 .smkl-robot__face {
   position: absolute;
-  inset: 26px 25px 17px;
+  inset: 20px 19px 14px;
   border-radius: 38%;
   background: radial-gradient(circle at 50% 38%, #11282f, #020609 70%);
   box-shadow: inset 0 0 18px #000;
@@ -191,13 +191,13 @@
 .smkl-robot__eyes {
   display: flex;
   justify-content: center;
-  gap: 18px;
-  padding-top: 23px;
+  gap: 14px;
+  padding-top: 17px;
 }
 
 .smkl-robot__eye {
-  width: 18px;
-  height: 36px;
+  width: 14px;
+  height: 28px;
   border-radius: 14px;
   background: #50f8e7;
   box-shadow: 0 0 15px #35f7df;
@@ -207,7 +207,7 @@
 
 .smkl-robot__mouth {
   position: absolute;
-  bottom: 12px;
+  bottom: 9px;
   left: 50%;
   width: 18px;
   height: 2px;
@@ -240,10 +240,10 @@
 
 .smkl-robot__ear {
   position: absolute;
-  top: 42px;
+  top: 32px;
   z-index: -1;
-  width: 20px;
-  height: 46px;
+  width: 16px;
+  height: 36px;
   border: 1px solid rgba(54, 124, 200, 0.42);
   background: linear-gradient(#12325b, #050b14);
 }
@@ -260,8 +260,8 @@
 
 .smkl-panel {
   position: relative;
-  min-height: 430px;
-  padding: 76px clamp(24px, 6vw, 56px) 38px;
+  min-height: 340px;
+  padding: 60px clamp(20px, 5vw, 38px) 28px;
   overflow: visible;
   border: 1px solid rgba(42, 119, 177, 0.48);
   border-radius: 22px;
@@ -299,7 +299,7 @@
   margin: 0;
   text-align: center;
   font-family: "Cinzel", Georgia, serif;
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-size: clamp(1.05rem, 3vw, 1.4rem);
   letter-spacing: 0.24em;
   text-indent: 0.24em;
 }
@@ -327,13 +327,13 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 32px 0 26px;
+  gap: 9px;
+  margin: 23px 0 18px;
 }
 
 .smkl-plan-pill {
   display: flex;
-  min-height: 58px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   gap: 9px;
@@ -355,8 +355,8 @@
 }
 
 .smkl-plan-pill__icon {
-  width: 34px;
-  height: 34px;
+  width: 27px;
+  height: 27px;
   object-fit: contain;
   filter: brightness(0.78) saturate(0.88);
 }
@@ -371,9 +371,9 @@
 .smkl-form {
   position: relative;
   display: grid;
-  gap: 18px;
-  width: min(430px, 100%);
-  margin: 28px auto 0;
+  gap: 14px;
+  width: min(350px, 100%);
+  margin: 20px auto 0;
   text-align: center;
 }
 
@@ -381,7 +381,7 @@
 .smkl-plan-access-field,
 .smkl-identity-combined {
   position: relative;
-  min-height: 78px;
+  min-height: 62px;
   border: 1px solid rgba(40, 139, 223, 0.72);
   border-radius: 14px;
   background: linear-gradient(
@@ -403,14 +403,14 @@
 
 .smkl-form input {
   width: 100%;
-  min-height: 76px;
+  min-height: 60px;
   padding: 0 24px;
   border: 0;
   outline: 0;
   color: var(--fx-cyan);
   background: transparent;
   font:
-    700 1.15rem/1 "JetBrains Mono",
+    700 0.95rem/1 "JetBrains Mono",
     ui-monospace,
     monospace;
   letter-spacing: 0.2em;
@@ -457,7 +457,7 @@
 
 .smkl-form__submit {
   position: relative;
-  min-height: 58px;
+  min-height: 48px;
   padding: 0 26px;
   overflow: hidden;
   border: 1px solid #2585e0;
@@ -511,16 +511,16 @@
 .smkl-special-code-fab {
   position: absolute;
   z-index: 18;
-  right: -70px;
-  width: 58px;
-  height: 66px;
+  right: -56px;
+  width: 48px;
+  height: 54px;
   border: 1px solid rgba(77, 166, 229, 0.46);
   border-radius: 0 14px 14px 0;
   cursor: pointer;
 }
 
 .smkl-telegram-mode-btn {
-  top: 195px;
+  top: 156px;
   background: #087bce url("/assets/iconos/telegram.png") center / 31px no-repeat;
   box-shadow: 0 0 22px rgba(22, 140, 255, 0.24);
 }
@@ -530,7 +530,7 @@
 }
 
 .smkl-special-code-fab {
-  top: 264px;
+  top: 213px;
   display: grid;
   place-items: center;
   align-content: center;
@@ -661,11 +661,11 @@
 
   .smkl-modal__stage {
     width: min(100%, 500px);
-    padding-top: 108px;
+    padding-top: 90px;
   }
 
   .smkl-modal__stage::before {
-    inset: 82px 0 -10px;
+    inset: 68px 0 -8px;
   }
 
   .smkl-modal__close {
@@ -676,18 +676,18 @@
   .smkl-modal__bubble {
     top: 8px;
     width: calc(100% - 70px);
-    height: 58px;
+    height: 46px;
   }
 
   .smkl-robot {
-    top: 70px;
-    width: 128px;
-    height: 108px;
+    top: 57px;
+    width: 104px;
+    height: 86px;
   }
 
   .smkl-panel {
-    min-height: 420px;
-    padding: 74px 18px 28px;
+    min-height: 340px;
+    padding: 56px 18px 24px;
     border-radius: 18px;
   }
 
@@ -695,8 +695,8 @@
   .smkl-special-code-fab {
     position: fixed;
     right: max(12px, env(safe-area-inset-right));
-    width: 52px;
-    height: 52px;
+    width: 46px;
+    height: 46px;
     border-radius: 13px;
   }
 
@@ -731,7 +731,7 @@
 
 @media (max-width: 420px) {
   .smkl-modal__stage {
-    padding-top: 104px;
+    padding-top: 88px;
   }
 
   .smkl-panel {
