@@ -52,6 +52,11 @@ const ICONS = {
   rosa1: "/assets/iconos/rosa1.png",
   laurel: "/assets/iconos/laurel.png",
 };
+const FOOTER_GIFS = {
+  help: "/assets/gif/help.gif?v=blue-silver-2",
+  vault: "/assets/gif/acceso.gif?v=blue-silver-2",
+  pay: "/assets/gif/pay.gif?v=blue-silver-2",
+};
 const TICKER_ITEMS = [
   "| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
   "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026",
@@ -299,10 +304,6 @@ export default function VaultHome() {
       setVerifyError("ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..");
       return;
     }
-    const FOOTER_GIFS = { help: "/assets/gif/help.gif",
-                          vault: "/assets/gif/acceso.gif",
-                          pay: "/assets/gif/pay.gif",
-    };
     const normalizedPrefix = prefix
       .trim()
       .toUpperCase()
@@ -692,17 +693,31 @@ export default function VaultHome() {
             </div>
             <div>
               <div className="vx-footActions">
-                <div className="vx-links">
-                  <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
-                    <Scramble text="@USER18FX" hover />
+                <nav className="vx-footGifActions" aria-label="Vault quick actions">
+                  <a
+                    href="https://t.me/User18Fx"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="vx-footGifButton is-help"
+                    aria-label="Open Telegram help chat">
+                    <img src={FOOTER_GIFS.help} alt="Help" draggable={false} />
                   </a>
-                  <a href="#top">
-                    <Scramble text="VAULT" hover />
+                  <button
+                    type="button"
+                    className="vx-footGifButton"
+                    onClick={() => setCodeModal(true)}
+                    aria-label="Open vault access modal">
+                    <img src={FOOTER_GIFS.vault} alt="Vault access" draggable={false} />
+                  </button>
+                  <a
+                    href="https://t.me/User18Fx_bot?start=getcode"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="vx-footGifButton"
+                    aria-label="Get an access code">
+                    <img src={FOOTER_GIFS.pay} alt="Get code" draggable={false} />
                   </a>
-                  <a href="/admin" className="vx-digitalArchive">
-                    <Scramble text="DIGITAL ARCHIVE" hover />
-                  </a>
-                </div>
+                </nav>
                 <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
               </div>
             </div>
@@ -804,20 +819,6 @@ export default function VaultHome() {
              {verifyError && <p className="vx-modalError">{verifyError}</p>}
             </form>
             <p className="vx-modalFooter">
-            <nav className="vx-footActions" aria-label="Vault quick actions">
-            <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer" className="vx-footGifButton is-help" aria-label="Open Telegram help chat">
-            <img src="/assets/gif/help.gif" alt="Help" draggable={false}/>
-            <span></span>
-            </a>
-            <button type="button" className="vx-footGifButton" onClick={() => setCodeModal(true)} aria-label="Open vault access modal">
-            <img src="/assets/gif/acceso.gif" alt="Vault access" draggable={false}/>
-            <span></span>
-            </button>
-            <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer" className="vx-footGifButton" aria-label="Get an access code">
-            <img src="/assets/gif/pay.gif" alt="Get code" draggable={false}/>
-            <span></span>
-            </a>
-            </nav>
               Don&apos;t have a code? Use GET MY CODE or contact @User18Fx_bot.
             </p>
             </div>

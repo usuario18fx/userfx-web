@@ -2032,17 +2032,11 @@ video{
     line-height:0.84 !important;
     color:#b64b5d !important;
     transform:translateX(16px) translateY(-16px) !important; /* ↗️ */
-  }
-}
-
-/*=============================================*/
-/* USER FX · MERGED · MOBILE POLISH → VaultHome.css */
-/*=============================================*/
+  }}
 /* ═══════════════════════════════════════
    USER FX · MOBILE POLISH
    Ajustes visuales exclusivos para celular
-   ═══════════════════════════════════════ */
-
+  ═══════════════════════════════════════ */
 @media (max-width: 520px) {
   /* ───────── DEBAJO DEL LOGO ───────── */
   .vx-kicker{
@@ -2055,21 +2049,14 @@ video{
     letter-spacing:0.2em !important;
     line-height:1.25 !important;
   }
-
-  .vx-kicker i{
-    width:20px !important; /* ↔️ */
+  .vx-kicker i{width:20px !important; /* ↔️ */
     flex-basis:20px !important;
   }
-
   /* ───────── TÍTULO ACCESS / RESTRICTED ───────── */
-  .vx-title{
-    padding-top:14px !important; /* ↔️↕️ */
+  .vx-title{padding-top:14px !important; /* ↔️↕️ */
   }
-
-  .vx-access{
-    margin-bottom:18px !important; /* ↔️↕️ */
+  .vx-access{margin-bottom:18px !important; /* ↔️↕️ */
   }
-
   .vx-rest{
     margin-top:-2px !important; /* ↔️↕️ */
     color:#b94459 !important;
@@ -2082,7 +2069,6 @@ video{
     transform:translateX(26px) translateY(-2px) !important; /* ↗️ */
     text-transform:uppercase;
   }
-
   /* ───────── CORONA DEL TÍTULO ───────── */
   .vx-titleCrown{
     width:126px !important; /* ↔️ */
@@ -2093,21 +2079,15 @@ video{
     animation:vxCrownFloatMobile 7.5s ease-in-out infinite !important;
     will-change:transform;
   }
-
   /* ───────── PUERTAS MÁS CORTAS ───────── */
-  .vhd-root{
-    margin-bottom:48px !important; /* ↔️↕️ */
+  .vhd-root{margin-bottom:48px !important; /* ↔️↕️ */
   }
-
   .vhd-doors{
     height:285px !important; /* ↕️ */
     min-height:285px !important; /* ↕️ */
   }
-
-  .vhd-door{
-    position:relative;
+  .vhd-door{position:relative;
   }
-
   /* señal visual de que las puertas son tocables */
   .vhd-door-inner::after{
     content:"TAP TO OPEN";
@@ -2125,12 +2105,10 @@ video{
     opacity:0.35;
     animation:vhdTapCueMobile 2.6s ease-in-out infinite;
   }
-
   .vhd-door-inner i{
     position:relative;
     animation:vhdHandleHintMobile 2.6s ease-in-out infinite;
   }
-
   /* ───────── BOTÓN GET ACCESS ───────── */
   .vx-lock .vx-getCodeBtn{
     position:relative !important;
@@ -2148,7 +2126,6 @@ video{
     color:#f2f5f8 !important;
     box-shadow:0 0 18px #2f8ed044 !important;
   }
-
   .vx-lock .vx-getCodeBtn::before{
     content:"";
     position:absolute;
@@ -2161,7 +2138,6 @@ video{
     transform:skewX(-18deg); /* ↗️ */
     animation:vxGetAccessShineMobile 3.4s ease-in-out infinite;
   }
-
   .vx-lock .vx-getCodeBtn::after{
     content:"";
     position:absolute;
@@ -2170,110 +2146,73 @@ video{
     pointer-events:none;
     border:1px solid #78d5ff18;
   }
-
   /* ───────── WHAT'S INSIDE · FONDO MÁS ARRIBA ───────── */
-  .vx-insideZone{
-    padding-top:54px !important; /* ↔️↕️ */
-    background-position:50% 32% !important;
+  .vx-insideZone{padding-top:54px !important; /* ↔️↕️ */background-position:50% 32% !important;
   }
-
-  .vx-insideBlock{
-    margin-top:34px !important; /* ↔️↕️ */
-  }
-}
-
+  .vx-insideBlock{margin-top:34px !important; /* ↔️↕️ */
+  }}
 @keyframes vxCrownFloatMobile {
   0%,
-  100%{
-    transform:translate(-50%, -50%) rotate(-1.2deg) translateY(0); /* ↗️ */
+  100%{transform:translate(-50%, -50%) rotate(-1.2deg) translateY(0); /* ↗️ */
   }
-  25%{
-    transform:translate(-50%, -50%) rotate(0.8deg) translateY(-2px); /* ↗️ */
+  25%{transform:translate(-50%, -50%) rotate(0.8deg) translateY(-2px); /* ↗️ */
   }
-  50%{
-    transform:translate(-50%, -50%) rotate(1.4deg) translateY(-1px); /* ↗️ */
+  50%{transform:translate(-50%, -50%) rotate(1.4deg) translateY(-1px); /* ↗️ */
   }
-  75%{
-    transform:translate(-50%, -50%) rotate(-0.6deg) translateY(1px); /* ↗️ */
-  }
-}
-
+  75%{transform:translate(-50%, -50%) rotate(-0.6deg) translateY(1px); /* ↗️ */
+  }}
 @keyframes vhdTapCueMobile {
   0%,
-  100%{
-    opacity:0.28;
-    transform:translateX(-50%) translateY(0); /* ↗️ */
+  100%{opacity:0.28; transform:translateX(-50%) translateY(0); /* ↗️ */
   }
-  50%{
-    opacity:0.72;
-    transform:translateX(-50%) translateY(-3px); /* ↗️ */
-  }
-}
-
+  50%{opacity:0.72; transform:translateX(-50%) translateY(-3px); /* ↗️ */
+  }}
 @keyframes vhdHandleHintMobile {
   0%,
-  100%{
-    opacity:0.55;
-    transform:scaleX(0.88); /* ↗️ */
+  100%{opacity:0.55; transform:scaleX(0.88); /* ↗️ */
   }
-  50%{
-    opacity:1;
-    transform:scaleX(1.08); /* ↗️ */
-  }
-}
-
+  50%{opacity:1; transform:scaleX(1.08); /* ↗️ */
+  }}
 @keyframes vxGetAccessShineMobile {
   0%,
-  58%{
-    left:-40%; /* ⬅️➡️ */
-    opacity:0;
+  58%{opacity:0; left:-40%; /* ⬅️➡️ */
   }
-  66%{
-    opacity:0.75;
+  66%{opacity:0.75;
   }
-  82%{
-    left:118%; /* ⬅️➡️ */
-    opacity:0.35;
+  82%{left:118%;/*⬅️*/opacity:0.35;
   }
   83%,
-  100%{
-    left:118%; /* ⬅️➡️ */
-    opacity:0;
-  }
-}
-
+  100%{left:118%; /*⬅️*/ opacity:0;
+  }}
 @media (prefers-reduced-motion: reduce) {
   .vx-titleCrown,
   .vhd-door-inner::after,
   .vhd-door-inner i,
   .vx-lock .vx-getCodeBtn::before{
     animation:none !important;
-  }
-}
+  }}
 /* ======================================================
    FOOTER · GIF ACTION BUTTONS
 ====================================================== */
-
-.vx-footActions {
+.vx-footGifActions {
   width: min(100%, 72rem);
-  margin: 0 auto 38px;
+  margin: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 150px));
-  justify-content: center;
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 118px));
+  justify-content: end;
+  gap: 14px;
 }
-
 .vx-footGifButton {
   position: relative;
   display: flex;
   min-width: 0;
-  padding: 10px 10px 12px;
+  padding: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  border: 1px solid rgba(224, 184, 90, 0.25);
-  background: rgba(7, 6, 10, 0.62);
+  gap: 0;
+  border: 0;
+  background: transparent;
   color: var(--dim);
   font-family: var(--mono);
   font-size: 9px;
@@ -2289,33 +2228,31 @@ video{
     background 0.25s ease,
     color 0.25s ease;
 }
-
 .vx-footGifButton img {
   display: block;
   width: 100%;
-  max-width: 112px;
-  aspect-ratio: 1;
+  max-width: 118px;
+  height: auto;
   object-fit: contain;
   pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(47, 140, 255, 0.18));
 }
-
 .vx-footGifButton:hover,
 .vx-footGifButton:focus-visible {
   transform: translateY(-4px);
-  border-color: var(--gold);
-  background: rgba(224, 184, 90, 0.08);
+  background: transparent;
   color: var(--goldhi);
+  filter: brightness(1.14);
   outline: none;
 }
-
 .vx-footGifButton.is-help::after {
   content: "OPEN";
   position: absolute;
   top: 8px;
   right: 8px;
   padding: 4px 5px;
-  border: 1px solid rgba(74, 185, 126, 0.48);
-  background: rgba(7, 6, 10, 0.82);
+  border: 1px solid #4ab97e7a;
+  background: #07060ad1;
   color: #69d59a;
   font-family: var(--mono);
   font-size: 7px;
@@ -2327,10 +2264,9 @@ video{
    MOBILE
 ====================================================== */
 @media (max-width: 700px) {
-  .vx-footActions {
+  .vx-footGifActions {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    margin-bottom: 30px;
   }
   .vx-footGifButton {
     padding: 7px 5px 10px;
@@ -2345,7 +2281,6 @@ video{
     right: 5px;
     font-size: 6px;
   }}
-
   .vx-kicker {
   display: flex;
   align-items: center;
@@ -2385,8 +2320,8 @@ video{
 }
 .vx-kickerBtn:hover {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: #ffffff4d;
+  background: #ffffff12;
   transform: translateY(-2px);
 }
 .vx-kickerBtn:focus-visible {
@@ -2400,5 +2335,4 @@ video{
   }
   .vx-kickerBtn {
     min-height: 34px; padding-inline: 7px;font-size: 0.7rem;
-  }
-}
+  }}
