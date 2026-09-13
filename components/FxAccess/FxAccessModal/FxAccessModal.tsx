@@ -935,13 +935,14 @@ export function FxAccessModal({
                     Telegram username
                   </label>
 
+                  <span className="smkl-username-at" aria-hidden="true">@</span>
                   <input
                     ref={primaryInputRef}
                     id={`${modalId}-username`}
                     type="text"
                     name="username"
-                    placeholder="@username"
-                    value={username}
+                    placeholder="username"
+                    value={username.replace(/^@/, "")}
                     onChange={(event) => {
                       setUsername(normalizeUsername(event.target.value));
 

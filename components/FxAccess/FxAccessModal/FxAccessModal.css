@@ -2471,3 +2471,25 @@
   box-shadow:0 0 8px #ff4d69, 0 0 18px #ff4d6988 !important;
   animation:none !important;
 }
+
+
+/* ═══ FIX · @ E ICONO VISIBLES ═══ */
+.smkl-form__icon--username,
+.smkl-form__icon--username svg,
+.smkl-username-at{
+  opacity:1 !important;
+}
+
+.smkl-username-at{
+  flex:0 0 auto;
+  color:#63ffd0 !important;
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+  font-size:1rem; /* ↗️ */
+  font-weight:700;
+  line-height:1;
+}
+
+.smkl-form__field--username input::placeholder{
+  color:#63ffd0 !important;
+  opacity:.4 !important;
+}
