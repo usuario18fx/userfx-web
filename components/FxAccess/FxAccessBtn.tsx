@@ -42,7 +42,7 @@ export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
         aria-hidden="true"
       />
       <span className="smkl-access-button__content">
-        <span className="smkl-access-button__title">GET ACCESS</span>
+        <span className="smkl-access-button__title">GET MY CODE</span>
         <span className="smkl-access-button__brand">
           <i />
           USER FX

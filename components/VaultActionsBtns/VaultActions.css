@@ -1,54 +1,36 @@
-/* ======   VAULT ACTIONS ================= */
-/* Contenedor del nuevo botón GET ACCESS */
+/* ====== VAULT ACTIONS · BOTÓN BAJO LAS PUERTAS ====== */
 .fx-access-launcher{
-  position:absolute;
-  left:135px !important; /* + → */
-  top:-10px; /* + ↑ */
+  position:relative;
+  left:auto !important; /* ⬅️➡️ */
+  top:auto !important; /* ⬆️⬇️ */
   z-index:20;
-  width:fit-content; /* ↔️ */
+  display:flex;
+  justify-content:center;
+  width:100%; /* ↔️ */
   max-width:100%; /* ↔️ */
-  margin:0 auto; /* ↔️↕️ */
+  margin:12px auto 0; /* ↔️↕️ */
+  transform:none !important; /* ↗️ */
 }
-/* ==========  BOTÓN =============================== */
+
 .fx-access-launcher .smkl-access-button{
-  width:min(470px, 100%); /* ↔️ */
+  width:min(250px, 78%); /* ↔️ */
+  min-height:46px; /* ↕️ */
   margin:0 auto; /* ↔️↕️ */
 }
-/* ===========  TABLET ===================== */
-@media (max-width: 900px) {
+
+@media (max-width:700px){
   .fx-access-launcher{
-    left:35px; /* ⬅️➡️ */
-    top:-55px; /* ⬆️⬇️ */
-  }
-}
-/* ============  MOBILE =================== */
-@media (max-width: 700px) {
-  .fx-access-launcher{
-    position:relative;
-    left:50%; /* ⬅️➡️ */
-    top:-30px; /* ⬆️⬇️ */
-    width:min(92vw, 470px); /* ↔️ */
-    height:auto; /* ↕️ */
-    margin:0; /* ↔️↕️ */
-    transform:translateX(-50%); /* ↗️ */
-    display:flex;
-    justify-content:center;
-  }
-  .fx-access-launcher .smkl-access-button{
     width:100%; /* ↔️ */
-    max-width:470px; /* ↔️ */
-    margin:0 auto; /* ↔️↕️ */
+    margin-top:10px; /* ⬆️⬇️ */
+  }
+
+  .fx-access-launcher .smkl-access-button{
+    width:min(230px, 72vw); /* ↔️ */
+    min-height:44px; /* ↕️ */
   }
 }
-/* =========   MOBILE PEQUEÑO =================== */
-@media (max-width: 430px) {
-  .fx-access-launcher{
-    width:calc(100vw - 22px); /* ↔️ */
-    top:-24px; /* ⬆️⬇️ */
-  }
-}
-/* =======   ACCESIBILIDAD =================== */
-@media (prefers-reduced-motion: reduce) {
+
+@media (prefers-reduced-motion:reduce){
   .fx-access-launcher,
   .fx-access-launcher *{
     animation:none !important;

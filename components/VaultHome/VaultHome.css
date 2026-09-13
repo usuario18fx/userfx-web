@@ -2412,3 +2412,13 @@ video {
     font-size: 0.7rem;
   }
 }
+
+
+/* ═══ FIX · RAISE SIN FONDO ═══ */
+.vx-lock.vx-lockRaise{
+  background:transparent !important;
+  background-image:none !important;
+  padding:0 !important; /* ↔️↕️ */
+  border-radius:0 !important;
+  box-shadow:none !important;
+}

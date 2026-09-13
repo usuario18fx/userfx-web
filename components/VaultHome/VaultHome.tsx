@@ -591,11 +591,6 @@ export default function VaultHome() {
                 inputRef={inlineCodeRef}
               />
             ) : null}
-            {!unlocked ? (
-              <div className="fx-access-launcher">
-                <FxAccessBtn onOpen={() => setFxAccessOpen(true)} />
-              </div>
-            ) : null}
           </aside>
         </div>
       </section>

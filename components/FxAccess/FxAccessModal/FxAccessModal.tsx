@@ -169,6 +169,9 @@ export function FxAccessModal({
 
   const busy = identityLoading || privateLoading || accessLoading;
 
+  const visualState =
+    mode === "plan" && accessError ? "rejected" : checkState;
+
   useEffect(() => {
     loadingRef.current = busy;
   }, [busy]);
@@ -735,7 +738,7 @@ export function FxAccessModal({
       <div className="smkl-modal__backdrop" />
       <div
         ref={stageRef}
-        className={`smkl-modal__stage is-${checkState}`}
+        className={`smkl-modal__stage is-${visualState}`}
         id={modalId}
         role="dialog"
         aria-modal="true"
@@ -764,7 +767,7 @@ export function FxAccessModal({
             </span>
           </div>
         </div>
-        <div className={`smkl-robot is-${checkState}`} aria-hidden="true">
+        <div className={`smkl-robot is-${visualState}`} aria-hidden="true">
           <div className="smkl-robot__ear smkl-robot__ear--left" />
           <div className="smkl-robot__ear smkl-robot__ear--right" />
           <div className="smkl-robot__head">
@@ -909,7 +912,9 @@ export function FxAccessModal({
                   className={
                     `smkl-form__submit ` +
                     `smkl-form__submit--verify` +
-                    `${busy ? " is-loading" : ""}`
+                    `${busy ? " is-loading" : ""}` +
+                    `${visualState === "approved" ? " is-approved" : ""}` +
+                    `${visualState === "rejected" ? " is-rejected" : ""}`
                   }
                   disabled={busy}
                 >

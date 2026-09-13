@@ -2383,3 +2383,91 @@
   opacity:1 !important;
   visibility:visible !important;
 }
+
+
+/* ═══ FIX FINAL · INPUTS Y ESTADOS ═══ */
+.smkl-modal__bubble--screen,
+.smkl-form__field--username,
+.smkl-plan-access-field,
+.smkl-identity-combined{
+  border:1px solid #117fc8 !important;
+  background:
+    linear-gradient(180deg, #101820f2, #050708fa),
+    repeating-linear-gradient(0deg, transparent 0 5px, #0ca9b30d 6px) !important;
+  box-shadow:
+    inset 0 1px 0 #ffffff0d,
+    inset 0 0 24px #00121acc,
+    0 8px 20px #0000004d !important;
+}
+
+.smkl-modal__bubble--screen{
+  border-color:#02d8c6 !important;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 5px, #11cfc51c 6px),
+    linear-gradient(180deg, #071719fa, #020708fc) !important;
+}
+
+.smkl-form__field--username input,
+.smkl-form__field--username input::placeholder{
+  opacity:1 !important;
+}
+
+.smkl-form__field--username input::placeholder{
+  color:#63ffd0 !important;
+}
+
+.smkl-form__submit--verify,
+.smkl-form__submit--telegram-check{
+  border:2px solid #168cff !important;
+  background:#03101d !important;
+  box-shadow:0 0 16px #168cff38 !important;
+  animation:none !important;
+}
+
+.smkl-form__submit--verify::before,
+.smkl-form__submit--telegram-check::before{
+  color:#8bc8ff !important;
+  background:#03101d !important;
+}
+
+.smkl-form__submit--verify.is-approved,
+.smkl-form__submit--telegram-check.is-approved{
+  border-color:#35e995 !important;
+  background:#03160f !important;
+  box-shadow:0 0 18px #35e99545 !important;
+}
+
+.smkl-form__submit--verify.is-approved::before,
+.smkl-form__submit--telegram-check.is-approved::before{
+  color:#77ffb4 !important;
+  background:#03160f !important;
+}
+
+.smkl-form__submit--verify.is-rejected,
+.smkl-form__submit--telegram-check.is-rejected{
+  border-color:#ff4d69 !important;
+  background:#1a0509 !important;
+  box-shadow:0 0 18px #ff4d6945 !important;
+}
+
+.smkl-form__submit--verify.is-rejected::before,
+.smkl-form__submit--telegram-check.is-rejected::before{
+  color:#ff8799 !important;
+  background:#1a0509 !important;
+}
+
+.smkl-robot.is-idle .smkl-robot__eye{
+  background:#168cff !important;
+  box-shadow:0 0 8px #168cff, 0 0 18px #168cff88 !important;
+}
+
+.smkl-robot.is-approved .smkl-robot__eye{
+  background:#35e995 !important;
+  box-shadow:0 0 8px #35e995, 0 0 18px #35e99588 !important;
+}
+
+.smkl-robot.is-rejected .smkl-robot__eye{
+  background:#ff4d69 !important;
+  box-shadow:0 0 8px #ff4d69, 0 0 18px #ff4d6988 !important;
+  animation:none !important;
+}

@@ -235,3 +235,30 @@
     transition: none;
   }
 }
+
+
+/* ====== FIX · GET MY CODE COMPACTO ====== */
+.fx-access-launcher .smkl-access-button{
+  grid-template-columns:42px 1fr 32px !important;
+  min-height:46px !important; /* ↕️ */
+  padding:3px 6px !important; /* ↔️↕️ */
+}
+.fx-access-launcher .smkl-access-button__rose{
+  width:38px !important; /* ↔️ */
+  height:38px !important; /* ↕️ */
+}
+.fx-access-launcher .smkl-access-button__rose img{
+  width:35px !important; /* ↔️ */
+  height:35px !important; /* ↕️ */
+}
+.fx-access-launcher .smkl-access-button__seam--l{left:47px !important;}
+.fx-access-launcher .smkl-access-button__seam--r{right:36px !important;}
+.fx-access-launcher .smkl-access-button__title{
+  font-size:.72rem !important; /* ↗️ */
+  letter-spacing:.17em !important;
+}
+.fx-access-launcher .smkl-access-button__brand{font-size:.44rem !important;}
+.fx-access-launcher .smkl-access-button__arrow{
+  width:28px !important; /* ↔️ */
+  height:34px !important; /* ↕️ */
+}
