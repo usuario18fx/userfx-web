@@ -349,6 +349,10 @@ video{
   font-weight:700;
   white-space:normal;
 }
+.vx-pNormal .vx-privateVaultLine{
+  color:#c9465d !important; /* 🎨 rojo */
+  font-weight:700;
+}
 
 /* ══════  DOSSIER ═════════════ */
 .vx-dossier{
@@ -828,6 +832,12 @@ video{
 .vx-insideRow .vx-lead{
   max-width:32rem; /* ↔️ */
   margin:0; /* ↔️↕️ */
+  color:var(--blue);
+  font-family:var(--display);
+  font-size:21px; /* ↗️ tamaño */
+  font-style:normal;
+  font-weight:350;
+  line-height:1.65;
 }
 .vx-lead strong{
   color:var(--rose);
@@ -1064,7 +1074,8 @@ video{
   box-shadow:none;
   backdrop-filter:none;
 }
-.vx-links a{
+.vx-links a,
+.vx-links button{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -1084,7 +1095,8 @@ video{
     text-shadow 0.25s ease,
     transform 0.25s ease;
 }
-.vx-links a:hover{
+.vx-links a:hover,
+.vx-links button:hover{
   color:#3fb9ff;
   text-shadow:0 0 30px #0090e3dc;
   transform:translateY(-2px); /* ↗️ */
@@ -1097,7 +1109,7 @@ video{
 .vx-links .vx-digitalArchive:hover{
   color:#3fffaf !important;
 }
-.vx-links a + a::before{
+.vx-links > * + *::before{
   content:"";
   width:1px; /* ↔️ */
   height:18px; /* ↕️ */
@@ -2189,90 +2201,7 @@ video{
   .vx-lock .vx-getCodeBtn::before{
     animation:none !important;
   }}
-/* ======================================================
-   FOOTER · GIF ACTION BUTTONS
-====================================================== */
-.vx-footGifActions{
-  display:grid;
-  grid-template-columns:repeat(3, 104px);
-  justify-content:end;
-  align-items:center;
-  gap:10px;
-  width:min(100%, 72rem); /* ↔️ */
-  margin:0; /* ↔️↕️ */
-}
-.vx-footGifButton{
-  position:relative;
-  appearance:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:104px; /* ↔️ */
-  height:104px; /* ↕️ */
-  min-width:0; /* ↔️ */
-  padding:0; /* ↔️↕️ */
-  overflow:visible;
-  border:0;
-  background:transparent;
-  color:var(--dim);
-  text-decoration:none;
-  cursor:pointer;
-  transition:
-    transform 0.25s ease,
-    filter 0.25s ease;
-}
-.vx-footGifButton img{
-  display:block;
-  width:104px; /* ↔️ */
-  height:104px; /* ↕️ */
-  object-fit:contain;
-  object-position:center;
-  pointer-events:none;
-  filter:none;
-}
-.vx-footGifButton:hover,
-.vx-footGifButton:focus-visible{
-  z-index:2;
-  transform:translateY(-3px) scale(1.035); /* ↗️ */
-  filter:brightness(1.08);
-  outline:none;
-}
-.vx-footGifButton:focus-visible{
-  outline:1px solid #8fc4ff;
-  outline-offset:4px;
-}
-.vx-footGifButton.is-help::after{
-  content:"OPEN";
-  position:absolute;
-  top:2px; /* ⬆️⬇️ */
-  right:2px; /* ⬅️➡️ */
-  padding:4px 5px; /* ↔️↕️ */
-  border:1px solid #4ab97e7a;
-  background:#07060ad1;
-  color:#69d59a;
-  font-family:var(--mono);
-  font-size:7px; /* ↗️ tamaño */
-  font-weight:700;
-  line-height:1;
-  letter-spacing:0.12em;
-}
-@media (max-width: 700px) {
-  .vx-footGifActions{
-    grid-template-columns:repeat(3, 82px);
-    justify-content:center;
-    gap:6px;
-  }
-  .vx-footGifButton,
-  .vx-footGifButton img{
-    width:82px; /* ↔️ */
-    height:82px; /* ↕️ */
-  }
-  .vx-footGifButton.is-help::after{
-    top:0; /* ⬆️⬇️ */
-    right:0; /* ⬅️➡️ */
-    font-size:6px; /* ↗️ tamaño */
-  }
-}
+
   .vx-kicker {
   display: flex;
   align-items: center;
