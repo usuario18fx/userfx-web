@@ -1057,14 +1057,12 @@ video{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:5px;
-  padding:10px; /* ↔️↕️ */
-  border:2px solid #ffffff14;
+  gap:0;
+  padding:0; /* ↔️↕️ */
+  border:0;
   background:transparent;
-  box-shadow:
-    inset 0 0 50px #0000008e,
-    0 12px 40px #0000007a;
-  backdrop-filter:blur(4px);
+  box-shadow:none;
+  backdrop-filter:none;
 }
 .vx-links a{
   display:inline-flex;
@@ -1108,14 +1106,14 @@ video{
 }
 .vx-footCode{
   width:100%; /* ↔️ */
-  margin-top:20px; /* ↔️↕️ */
-  padding-top:25px; /* ↔️↕️ */
-  border-top:1px solid #ffffff00;
-  color:#ffffff !important;
+  margin-top:6px; /* ↔️↕️ */
+  padding-top:0; /* ↔️↕️ */
+  border-top:0;
+  color:#d9e2ee !important;
   font-family:var(--mono);
   font-size:9px; /* ↗️ tamaño */
   font-weight:600;
-  line-height:1.6;
+  line-height:1.4;
   letter-spacing:0.16em;
   text-align:right;
   white-space:nowrap;
@@ -2194,93 +2192,90 @@ video{
 /* ======================================================
    FOOTER · GIF ACTION BUTTONS
 ====================================================== */
-.vx-footGifActions {
-  width: min(100%, 72rem);
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 118px));
-  justify-content: end;
-  gap: 14px;
+.vx-footGifActions{
+  display:grid;
+  grid-template-columns:repeat(3, 104px);
+  justify-content:end;
+  align-items:center;
+  gap:10px;
+  width:min(100%, 72rem); /* ↔️ */
+  margin:0; /* ↔️↕️ */
 }
-.vx-footGifButton {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  padding: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  border: 0;
-  background: transparent;
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.2em;
-  text-decoration: none;
-  appearance: none;
-  cursor: pointer;
+.vx-footGifButton{
+  position:relative;
+  appearance:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:104px; /* ↔️ */
+  height:104px; /* ↕️ */
+  min-width:0; /* ↔️ */
+  padding:0; /* ↔️↕️ */
+  overflow:visible;
+  border:0;
+  background:transparent;
+  color:var(--dim);
+  text-decoration:none;
+  cursor:pointer;
   transition:
     transform 0.25s ease,
-    border-color 0.25s ease,
-    background 0.25s ease,
-    color 0.25s ease;
+    filter 0.25s ease;
 }
-.vx-footGifButton img {
-  display: block;
-  width: 100%;
-  max-width: 118px;
-  height: auto;
-  object-fit: contain;
-  pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(47, 140, 255, 0.18));
+.vx-footGifButton img{
+  display:block;
+  width:104px; /* ↔️ */
+  height:104px; /* ↕️ */
+  object-fit:contain;
+  object-position:center;
+  pointer-events:none;
+  filter:
+    brightness(0.9)
+    saturate(0.86)
+    drop-shadow(0 0 7px #2f8cff24);
 }
 .vx-footGifButton:hover,
-.vx-footGifButton:focus-visible {
-  transform: translateY(-4px);
-  background: transparent;
-  color: var(--goldhi);
-  filter: brightness(1.14);
-  outline: none;
+.vx-footGifButton:focus-visible{
+  z-index:2;
+  transform:translateY(-3px) scale(1.035); /* ↗️ */
+  filter:brightness(1.08);
+  outline:none;
 }
-.vx-footGifButton.is-help::after {
-  content: "OPEN";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px 5px;
-  border: 1px solid #4ab97e7a;
-  background: #07060ad1;
-  color: #69d59a;
-  font-family: var(--mono);
-  font-size: 7px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.12em;
+.vx-footGifButton:focus-visible{
+  outline:1px solid #8fc4ff;
+  outline-offset:4px;
 }
-/* ======================================================
-   MOBILE
-====================================================== */
+.vx-footGifButton.is-help::after{
+  content:"OPEN";
+  position:absolute;
+  top:2px; /* ⬆️⬇️ */
+  right:2px; /* ⬅️➡️ */
+  padding:4px 5px; /* ↔️↕️ */
+  border:1px solid #4ab97e7a;
+  background:#07060ad1;
+  color:#69d59a;
+  font-family:var(--mono);
+  font-size:7px; /* ↗️ tamaño */
+  font-weight:700;
+  line-height:1;
+  letter-spacing:0.12em;
+}
 @media (max-width: 700px) {
-  .vx-footGifActions {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+  .vx-footGifActions{
+    grid-template-columns:repeat(3, 82px);
+    justify-content:center;
+    gap:6px;
   }
-  .vx-footGifButton {
-    padding: 7px 5px 10px;
-    font-size: 7px;
-    letter-spacing: 0.12em;
+  .vx-footGifButton,
+  .vx-footGifButton img{
+    width:82px; /* ↔️ */
+    height:82px; /* ↕️ */
   }
-  .vx-footGifButton img {
-    max-width: 92px;
+  .vx-footGifButton.is-help::after{
+    top:0; /* ⬆️⬇️ */
+    right:0; /* ⬅️➡️ */
+    font-size:6px; /* ↗️ tamaño */
   }
-  .vx-footGifButton.is-help::after {
-    top: 5px;
-    right: 5px;
-    font-size: 6px;
-  }}
+}
   .vx-kicker {
   display: flex;
   align-items: center;
