@@ -2228,10 +2228,7 @@ video{
   object-fit:contain;
   object-position:center;
   pointer-events:none;
-  filter:
-    brightness(0.9)
-    saturate(0.86)
-    drop-shadow(0 0 7px #2f8cff24);
+  filter:none;
 }
 .vx-footGifButton:hover,
 .vx-footGifButton:focus-visible{
