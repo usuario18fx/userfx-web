@@ -1,4 +1,4 @@
-import { Telegram } from "telegraf";
+import { Telegram, Telegraf } from "telegraf";
 
 export const config = {
   api: {
@@ -7,6 +7,7 @@ export const config = {
 };
 
 const PATCH_FLAG = Symbol.for("userfx.telegram.spcl.patch");
+const ACCESS_BY_ID_PATCH_FLAG = Symbol.for("userfx.telegram.access-by-id.patch");
 
 function visibleSpecialCode(value) {
   return String(value || "")
@@ -83,6 +84,71 @@ if (!globalThis[PATCH_FLAG]) {
   };
 
   globalThis[PATCH_FLAG] = true;
+}
+
+// Allows the existing TelegramFX /access command to accept a numeric
+// Telegram user ID without changing the username-based access engine.
+// Example: /access 123456789
+if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
+  const originalCommand = Telegraf.prototype.command;
+
+  Telegraf.prototype.command = function userFxCommand(command, ...handlers) {
+    const commandNames = (Array.isArray(command) ? command : [command]).map((value) =>
+      String(value || "")
+        .replace(/^\//, "")
+        .toLowerCase(),
+    );
+
+    if (!commandNames.includes("access")) {
+      return originalCommand.call(this, command, ...handlers);
+    }
+
+    const wrappedHandlers = handlers.map((handler) => {
+      if (typeof handler !== "function") return handler;
+
+      return async function accessByTelegramIdMiddleware(ctx, next) {
+        const text = String(ctx.message?.text || "").trim();
+        const parts = text.split(/\s+/);
+        const target = String(parts[1] || "").trim();
+
+        if (!/^\d{5,20}$/.test(target)) {
+          return handler(ctx, next);
+        }
+
+        const adminUserId = String(
+          process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || "",
+        );
+
+        if (String(ctx.from?.id || "") !== adminUserId) {
+          return handler(ctx, next);
+        }
+
+        try {
+          const chat = await ctx.telegram.getChat(target);
+          const username = String(chat?.username || "").trim();
+
+          if (!username) {
+            await ctx.reply(
+              `✘ ID ${target} encontrado, pero esa cuenta no tiene @username.\n\nEl acceso TelegramFX actual necesita un username para guardar los permisos.`,
+            );
+            return;
+          }
+
+          ctx.message.text = `${parts[0]} @${username}`;
+          return handler(ctx, next);
+        } catch (error) {
+          await ctx.reply(
+            `✘ No pude resolver el ID ${target}.\n\nPídele al usuario que abra el bot y presione START una vez, luego vuelve a usar /access ${target}.`,
+          );
+          return;
+        }
+      };
+    });
+
+    return originalCommand.call(this, command, ...wrappedHandlers);
+  };
+
+  globalThis[ACCESS_BY_ID_PATCH_FLAG] = true;
 }
 
 let corePromise;
