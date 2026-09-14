@@ -1037,3 +1037,24 @@
     min-height: 580px;
   }
 }
+
+
+/* ═════════ USER FX · DEVICE HEIGHT MATCHES INNER RED GUIDE ═════════ */
+.vd-device {
+  height: 760px !important;
+  min-height: 760px !important;
+}
+
+@media (max-width: 800px) {
+  .vd-device {
+    height: clamp(700px, 112vw, 780px) !important;
+    min-height: 700px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .vd-device {
+    height: min(760px, 195vw) !important;
+    min-height: 700px !important;
+  }
+}

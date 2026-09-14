@@ -2660,3 +2660,34 @@ video {
     padding: 7px 4px !important;
   }
 }
+
+
+/* ═════════ USER FX · LAUREL PROPORTION · FINAL ═════════ */
+.vx-lock {
+  max-width: 650px !important;
+}
+
+.vx-vaultLaurel {
+  z-index: 24 !important;
+  width: min(94%, 610px) !important;
+  height: clamp(110px, 12vw, 148px) !important;
+  margin: 0 auto 2px !important;
+  align-items: center !important;
+}
+
+.vx-vaultLaurel img {
+  filter: brightness(.84) contrast(1.16) drop-shadow(0 8px 10px #000c) !important;
+}
+
+@media (max-width: 700px) {
+  .vx-lock {
+    width: calc(100% - 26px) !important;
+    max-width: 650px !important;
+  }
+
+  .vx-vaultLaurel {
+    width: 96% !important;
+    height: clamp(94px, 24vw, 126px) !important;
+    margin-bottom: 0 !important;
+  }
+}
