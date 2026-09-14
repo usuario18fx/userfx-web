@@ -2479,3 +2479,88 @@ video {
     margin-bottom: 0 !important;
   }
 }
+
+
+/* ═════════ USER FX · SESSION FOOTER ACTIONS ═════════ */
+.vx-sessionLinks {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+.vx-sessionLinks button {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 92px;
+  min-height: 88px;
+  padding: 8px 12px;
+  touch-action: manipulation;
+}
+
+.vx-sessionLinks button img {
+  display: block;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  pointer-events: none;
+  transition:
+    filter 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.vx-sessionLinks button small {
+  position: absolute;
+  top: 7px;
+  right: 5px;
+  color: #c4a052;
+  font-family: var(--mono);
+  font-size: 6px;
+  letter-spacing: 0.12em;
+}
+
+.vx-sessionLinks.is-locked button {
+  color: #8b8990;
+  opacity: 0.62;
+}
+
+.vx-sessionLinks.is-locked button img {
+  filter: grayscale(1) brightness(0.58);
+}
+
+.vx-sessionLinks.is-active button {
+  color: #f4eee4;
+  border-color: #3d80c94d;
+}
+
+.vx-sessionLinks.is-active button img {
+  filter: brightness(1.06) drop-shadow(0 0 9px #168bd155);
+}
+
+.vx-sessionLinks.is-active button:hover img,
+.vx-sessionLinks.is-active button:focus-visible img {
+  transform: translateY(-3px) scale(1.07);
+}
+
+@media (max-width: 700px) {
+  .vx-sessionLinks {
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .vx-sessionLinks button {
+    min-width: 82px;
+    min-height: 78px;
+    padding: 6px 8px;
+    font-size: 8px;
+  }
+
+  .vx-sessionLinks button img {
+    width: 40px;
+    height: 40px;
+  }
+}
