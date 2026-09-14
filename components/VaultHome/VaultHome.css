@@ -2691,3 +2691,39 @@ video {
     margin-bottom: 0 !important;
   }
 }
+
+
+/* ═════════ USER FX · LAUREL GRIS SOBRE LAS PUERTAS ═════════ */
+.vx-lock {
+  position: relative;
+}
+
+.vx-vaultLaurel {
+  position: relative !important;
+  z-index: 26 !important;
+  width: min(108%, 700px) !important;
+  height: clamp(105px, 11vw, 145px) !important;
+  margin: 0 auto -34px !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+.vx-vaultLaurel img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  filter: grayscale(1) brightness(.78) contrast(.88) !important;
+  opacity: .92 !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
+@media (max-width: 700px) {
+  .vx-vaultLaurel {
+    width: 112% !important;
+    height: clamp(88px, 23vw, 122px) !important;
+    margin: 0 -6% -28px !important;
+  }
+}
