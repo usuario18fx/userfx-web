@@ -23,7 +23,7 @@
   position:relative;
   isolation:isolate;
   width:760px; /* ↔️ */
-  height:380px; /* ↕️ */
+  height:5200px; /* ↕️ */
   margin-inline:auto; /* ↔️↕️ */
   padding:8px; /* ↔️↕️ */
   overflow:hidden;
@@ -38,6 +38,11 @@
   box-shadow:
     0 22px 70px #c2020273,
     0 10px 26px #310101c7 !important;
+}
+.vd-device{
+  margin-left:auto !important; /* ↔️↕️ */
+  margin-right:auto !important; /* ↔️↕️ */
+  height: 360px !important; /* ↕️ DISPOSITIVO MÁS ALTO */
 }
 .vd-device::before{
   content:"";
@@ -161,7 +166,6 @@
     0 1px 4px #000000,
     0 0 8px #d6607947;
 }
-
 .vd-option::before{
   content:"";
   position:absolute;
@@ -585,7 +589,10 @@
     0 7px 20px #c9a84c52,
     inset 0 1px 0 #ffffff7a;
 }
-/* RESPONSIVE  */
+
+
+
+
 @media (prefers-reduced-motion: reduce) {
   .vd-device *,
   .vd-device *::before,
@@ -594,15 +601,7 @@
     animation-duration:0.01ms !important;
     animation-iteration-count:1 !important;
     transition-duration:0.01ms !important;
-  }
-}
-@media (max-width: 800px) {
-  .vd-device{
-    width:calc(100dvw - 24px); /* ↔️ */
-    max-width:760px; /* ↔️ */
-    height:clamp(300px, 50vw, 380px); /* ↕️ */
-  }
-}
+  }}
 @media (max-width: 560px) {
   .vd-device-damask-frame{
     top:-36px; /* ⬆️⬇️ */
@@ -686,15 +685,20 @@
     margin-top:2px; /* ↔️↕️ */
     font-size:6.5px; /* ↗️ tamaño */
     white-space:normal;
-  }
-}
+  }}
+@media (max-width: 560px) {
+  .vd-device {
+    height: min(540px, 138vw) !important; /* ↕️ */
+    min-height: 500px;
+  }}
 @media (max-width: 560px) {
   .vd-candado2-icon{
     width:25px; /* ↔️ */
     height:25px; /* ↕️ */
     flex-basis:25px;
-  }
-}
+  }}
+
+
 @media (max-width: 700px) {
   .vd-menu-options{
     gap:8px; /*↔️*/
@@ -706,8 +710,16 @@
     min-width:0; /* ↔️ */
     min-height:132px; /* ↕️ */
     padding:14px 5px; /* ↔️ */
+  }}
+@media (max-width: 800px) {
+    .vd-device {
+    height: clamp(480px, 74vw, 540px) !important; /* ↕️ */
   }
-}
+  .vd-device{
+    width:calc(100dvw - 24px); /* ↔️ */
+    max-width:760px; /* ↔️ */
+    height:clamp(300px, 50vw, 380px); /* ↕️ */
+  }}
 
 .vd-candado2-icon{
   display:block;
@@ -772,18 +784,6 @@
 .vd-option:hover::before{
   opacity:0.65 !important;
 }
-
-/*=============================================*/
-/* USER FX · MERGED · MOBILE → VaultDevice.css */
-/*=============================================*/
-/* Mobile polish for the plan detail screen */
-
-/* Keep the device truly centered inside the parent section. */
-.vd-device{
-  margin-left:auto !important; /* ↔️↕️ */
-  margin-right:auto !important; /* ↔️↕️ */
-}
-
 /* Selected plan detail header: plan on the left, expiry/access on the right. */
 .vd-detail-sheet .vd-sheet-header{
   position:relative;
@@ -853,7 +853,6 @@
     box-shadow 0.2s ease,
     color 0.2s ease;
 }
-
 .vd-detail-basic .vd-sheet-header::before{
   content:"EXPIRES · 7 DAYS";
 }
@@ -863,7 +862,6 @@
 .vd-detail-vip .vd-sheet-header::before{
   content:"EXPIRES · 90 DAYS";
 }
-
 /* Access badge shown as soon as a plan is selected. */
 .vd-detail-sheet .vd-sheet-header::after{
   position:absolute;
@@ -899,7 +897,6 @@
 .vd-detail-vip .vd-sheet-header::after{
   content:"∞ ACCESS";
 }
-
 /* Desktop hover: expiry becomes a slightly brighter information drawer. */
 @media (hover: hover) {
   .vd-detail-sheet .vd-sheet-header:hover::before{
@@ -918,27 +915,18 @@
   }
   .vd-detail-vip .vd-sheet-header:hover::before{
     content:"EXPIRES · 90 DAYS · ACTIVE KEY";
-  }
-}
-
+  }}
 /* Phone layout */
 @media (max-width: 560px) {
-  .vd-device{
-    width:min(calc(100vw - 28px), 760px) !important; /* ↔️ */
-    margin-inline:auto !important; /* ↔️↕️ */
-  }
-
   .vd-detail-sheet .vd-sheet-header{
     min-height:72px !important; /* ↕️ */
     padding:10px 126px 10px 13px !important; /* ↔️↕️ */
   }
-
   .vd-detail-sheet .vd-sheet-title-name{
     min-height:28px; /* ↕️ */
     padding:4px 9px; /* ↔️↕️ */
     font-size:18px !important; /* ↗️ tamaño */
   }
-
   .vd-detail-sheet .vd-sheet-header::before{
     top:9px; /* ⬆️⬇️ */
     right:11px; /* ⬅️➡️ */
@@ -948,33 +936,24 @@
     font-size:8px; /* ↗️ tamaño */
     letter-spacing:0.09em;
   }
-
   .vd-detail-sheet .vd-sheet-header::after{
     top:43px; /* ⬆️⬇️ */
     right:11px; /* ⬅️➡️ */
     min-width:105px; /* ↔️ */
     height:21px; /* ↕️ */
     font-size:8px; /* ↗️ tamaño */
-  }
-}
-
-
+  }}
 /* ═════════ USER FX · TALL DEVICE + RELIABLE TOUCH ═════════ */
-.vd-device {
-  height: 520px !important; /* ↕️ DISPOSITIVO MÁS ALTO */
-}
 
 .vd-screen,
 .vd-menuscreen,
 .vd-menu-options {
   pointer-events: auto;
 }
-
 .vd-menu-options {
   position: relative;
   z-index: 20;
 }
-
 .vd-option {
   appearance: none;
   position: relative;
@@ -986,75 +965,13 @@
   pointer-events: auto !important;
   -webkit-tap-highlight-color: transparent;
 }
-
 .vd-option:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 3px;
 }
-
 .vd-detail-sheet {
   pointer-events: none;
 }
-
 .vd-detail-sheet.vd-active {
   pointer-events: auto;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(480px, 74vw, 540px) !important; /* ↕️ */
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(540px, 138vw) !important; /* ↕️ */
-    min-height: 500px;
-  }
-
-  .vd-option {
-    min-height: 150px !important; /* ↕️ ÁREA TÁCTIL */
-  }
-}
-
-
-/* ═════════ USER FX · TALL DEVICE · FINAL SIZE ═════════ */
-.vd-device {
-  height: 610px !important;
-  min-height: 610px;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(560px, 94vw, 640px) !important;
-    min-height: 560px;
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(640px, 164vw) !important;
-    min-height: 580px;
-  }
-}
-
-
-/* ═════════ USER FX · DEVICE HEIGHT MATCHES INNER RED GUIDE ═════════ */
-.vd-device {
-  height: 760px !important;
-  min-height: 760px !important;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(700px, 112vw, 780px) !important;
-    min-height: 700px !important;
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(760px, 195vw) !important;
-    min-height: 700px !important;
-  }
 }
