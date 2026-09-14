@@ -2525,3 +2525,114 @@
   color:#d8eeee !important;
   text-shadow:0 0 5px #89ffff66 !important;
 }
+
+
+/*=============================================*/
+/* GUÍA SUPERIOR · TELEGRAM + SPECIAL          */
+/*=============================================*/
+.smkl-modal__stage .smkl-telegram-mode-btn{
+  top:22px !important; /* ⬆️ botón flotante superior */
+  right:-50px !important; /* ➡️ fuera del panel */
+  width:48px !important;
+  min-width:48px !important;
+  height:56px !important;
+  min-height:56px !important;
+  border-radius:0 14px 14px 0 !important;
+}
+
+.smkl-modal__stage .smkl-special-code-fab{
+  top:84px !important; /* ⬇️ debajo de Telegram */
+  right:-50px !important;
+  width:48px !important;
+  min-width:48px !important;
+  height:56px !important;
+  min-height:56px !important;
+  border-radius:0 14px 14px 0 !important;
+}
+
+.smkl-robot.is-guiding .smkl-robot__eyes{
+  transform:translateX(5px) translateY(-1px) !important; /* 👀 mira a Telegram */
+  transition:transform .28s ease !important;
+  animation:smklGuideEyes 2.2s ease-in-out infinite !important;
+}
+
+.smkl-robot.is-guiding .smkl-robot__eye{
+  animation:smklGuideBlink 3.4s ease-in-out infinite !important;
+  transform-origin:center !important;
+}
+
+.smkl-robot__hand--right.is-pointing{
+  z-index:50 !important;
+  transform-origin:left center !important;
+  animation:smklPointTelegram 1.65s ease-in-out infinite !important;
+  box-shadow:
+    0 0 0 1px #159cff88,
+    0 0 18px #159cff70,
+    inset 0 0 12px #168cff38 !important;
+}
+
+.smkl-robot__hand--right.is-pointing::after{
+  content:"" !important;
+  position:absolute !important;
+  right:-24px !important;
+  top:50% !important;
+  width:22px !important;
+  height:2px !important;
+  background:linear-gradient(90deg, #168cff, transparent) !important;
+  box-shadow:0 0 8px #168cff !important;
+  transform:translateY(-50%) !important;
+}
+
+.smkl-typing-text{
+  min-height:2.7em !important;
+  align-items:center !important;
+  line-height:1.35 !important;
+}
+
+@keyframes smklGuideEyes{
+  0%, 100%{ transform:translateX(3px) translateY(-1px); }
+  50%{ transform:translateX(7px) translateY(-2px); }
+}
+
+@keyframes smklGuideBlink{
+  0%, 43%, 49%, 100%{ transform:scaleY(1); }
+  46%{ transform:scaleY(.12); }
+}
+
+@keyframes smklPointTelegram{
+  0%, 100%{ transform:translateX(0) rotate(-2deg); }
+  50%{ transform:translateX(8px) rotate(-7deg); }
+}
+
+@media (max-width:520px){
+  .smkl-modal__stage .smkl-telegram-mode-btn{
+    top:18px !important;
+    right:-42px !important;
+    width:42px !important;
+    min-width:42px !important;
+    height:50px !important;
+    min-height:50px !important;
+  }
+
+  .smkl-modal__stage .smkl-special-code-fab{
+    top:73px !important;
+    right:-42px !important;
+    width:42px !important;
+    min-width:42px !important;
+    height:50px !important;
+    min-height:50px !important;
+  }
+
+  .smkl-typing-text{
+    font-size:.64rem !important;
+    letter-spacing:.05em !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .smkl-robot.is-guiding .smkl-robot__eyes,
+  .smkl-robot.is-guiding .smkl-robot__eye,
+  .smkl-robot__hand--right.is-pointing{
+    animation:none !important;
+  }
+}
