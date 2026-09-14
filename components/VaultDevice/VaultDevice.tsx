@@ -258,9 +258,12 @@ export default function VaultDevice() {
             <p>𝚂𝚎𝚕𝚎𝚌𝚝 𝚊 𝚙𝚕𝚊𝚗 𝚝𝚘 𝚜𝚎𝚎 𝚍𝚎𝚝𝚊𝚒𝚕𝚜</p>
           </div>
           <div className="vd-menu-options">
-            <div
+            <button
+              type="button"
               className={`vd-option vd-opt-basic ${selectedPlan === "basic" ? "vd-selected" : ""}`}
-              onClick={() => openSheet("basic")}>
+              onClick={() => openSheet("basic")}
+              aria-pressed={selectedPlan === "basic"}
+              aria-label="View BASIC plan details">
               <PlanDiamonds />
               <div className="vd-option-row">
                 <div className="vd-option-icon">
@@ -276,10 +279,13 @@ export default function VaultDevice() {
                 </div>
                 <div className="vd-option-arrow">›</div>
               </div>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={`vd-option vd-opt-pro ${selectedPlan === "pro" ? "vd-selected" : ""}`}
-              onClick={() => openSheet("pro")}>
+              onClick={() => openSheet("pro")}
+              aria-pressed={selectedPlan === "pro"}
+              aria-label="View PRO plan details">
               <PlanDiamonds />
               <div className="vd-option-row">
                 <div className="vd-option-icon">
@@ -295,10 +301,13 @@ export default function VaultDevice() {
                 </div>
                 <div className="vd-option-arrow">›</div>
               </div>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={`vd-option vd-opt-vip ${selectedPlan === "vip" ? "vd-selected" : ""}`}
-              onClick={() => openSheet("vip")}>
+              onClick={() => openSheet("vip")}
+              aria-pressed={selectedPlan === "vip"}
+              aria-label="View VIP plan details">
               <PlanDiamonds />
               <div className="vd-option-row">
                 <div className="vd-option-icon">
@@ -314,7 +323,7 @@ export default function VaultDevice() {
                 </div>
                 <div className="vd-option-arrow">›</div>
               </div>
-            </div>
+            </button>
           </div>
           <div className="vd-menu-bottom"></div>
         </div>
