@@ -8,11 +8,19 @@ export const config = {
 
 const PATCH_FLAG = Symbol.for("userfx.telegram.spcl.patch");
 const ACCESS_BY_ID_PATCH_FLAG = Symbol.for("userfx.telegram.access-by-id.patch");
+const SYNTHETIC_ID_PATCH_FLAG = Symbol.for("userfx.telegram.synthetic-id.patch");
+
+function syntheticUsernameForId(id) {
+  const value = String(id || "").trim();
+  return /^\d{5,20}$/.test(value) ? `id_${value}` : "";
+}
 
 function visibleSpecialCode(value) {
   return String(value || "")
     .replace(/TGMX-([A-HJ-NP-Z2-9]{4})/g, "SPCL-$1")
-    .replace(/\bTGMX\b/g, "SPCL");
+    .replace(/\bTGMX\b/g, "SPCL")
+    .replace(/@id_(\d{5,20})\b/g, "ID $1")
+    .replace(/\bid_(\d{5,20})\b/g, "ID $1");
 }
 
 function arrangeTelegramFxKeyboard(replyMarkup) {
@@ -86,8 +94,41 @@ if (!globalThis[PATCH_FLAG]) {
   globalThis[PATCH_FLAG] = true;
 }
 
-// Allows the existing TelegramFX /access command to accept a numeric
-// Telegram user ID without changing the username-based access engine.
+// Users without @username are mapped internally to id_<telegram_id>.
+// This keeps the existing username-based TelegramFX access engine intact.
+if (!globalThis[SYNTHETIC_ID_PATCH_FLAG]) {
+  const originalHandleUpdate = Telegraf.prototype.handleUpdate;
+
+  const ensureSyntheticUsername = (from) => {
+    if (!from || typeof from !== "object" || from.username) return;
+    const synthetic = syntheticUsernameForId(from.id);
+    if (synthetic) from.username = synthetic;
+  };
+
+  Telegraf.prototype.handleUpdate = function userFxHandleUpdate(update, ...rest) {
+    if (update && typeof update === "object") {
+      ensureSyntheticUsername(update.message?.from);
+      ensureSyntheticUsername(update.edited_message?.from);
+      ensureSyntheticUsername(update.channel_post?.from);
+      ensureSyntheticUsername(update.edited_channel_post?.from);
+      ensureSyntheticUsername(update.callback_query?.from);
+      ensureSyntheticUsername(update.inline_query?.from);
+      ensureSyntheticUsername(update.chosen_inline_result?.from);
+      ensureSyntheticUsername(update.shipping_query?.from);
+      ensureSyntheticUsername(update.pre_checkout_query?.from);
+      ensureSyntheticUsername(update.my_chat_member?.from);
+      ensureSyntheticUsername(update.chat_member?.from);
+      ensureSyntheticUsername(update.chat_join_request?.from);
+    }
+
+    return originalHandleUpdate.call(this, update, ...rest);
+  };
+
+  globalThis[SYNTHETIC_ID_PATCH_FLAG] = true;
+}
+
+// Allows the existing TelegramFX /access command to accept a numeric ID.
+// If the account has no @username, it falls back to id_<telegram_id>.
 // Example: /access 123456789
 if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
   const originalCommand = Telegraf.prototype.command;
@@ -126,15 +167,14 @@ if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
         try {
           const chat = await ctx.telegram.getChat(target);
           const username = String(chat?.username || "").trim();
+          const accessKey = username || syntheticUsernameForId(target);
 
-          if (!username) {
-            await ctx.reply(
-              `✘ ID ${target} encontrado, pero esa cuenta no tiene @username.\n\nEl acceso TelegramFX actual necesita un username para guardar los permisos.`,
-            );
+          if (!accessKey) {
+            await ctx.reply(`✘ No pude crear una llave de acceso para ID ${target}.`);
             return;
           }
 
-          ctx.message.text = `${parts[0]} @${username}`;
+          ctx.message.text = `${parts[0]} @${accessKey}`;
           return handler(ctx, next);
         } catch (error) {
           await ctx.reply(
