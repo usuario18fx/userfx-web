@@ -2422,3 +2422,60 @@ video {
   border-radius:0 !important;
   box-shadow:none !important;
 }
+
+
+/* ═════════ USER FX · MOBILE NAV + FOOTER FIX ═════════ */
+@media (max-width: 600px) {
+  /* Los tres accesos permanecen en un solo renglón. */
+  .vx-kicker {
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    min-height: 54px !important;
+    margin-top: 8px !important;
+    padding: 7px 4px !important;
+    gap: 2px !important;
+    overflow: visible !important;
+    white-space: nowrap;
+    font-size: clamp(7px, 2.35vw, 9px) !important;
+    letter-spacing: 0.1em !important;
+    line-height: 1 !important;
+  }
+
+  .vx-kicker > i {
+    width: 4px !important;
+    height: 4px !important;
+    flex: 0 0 4px !important;
+  }
+
+  .vx-kickerBtn {
+    min-width: 0;
+    min-height: 32px !important;
+    padding-inline: 4px !important;
+    font-size: inherit !important;
+    letter-spacing: inherit !important;
+    white-space: nowrap;
+  }
+
+  /* El wallpaper cubre hasta el final: elimina la franja/mancha negra. */
+  .vx-finalBackdrop {
+    background-image: url("/wallpaper1-1.png") !important;
+    background-position: center bottom !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-color: #08090b !important;
+  }
+
+  .vx-foot {
+    background: transparent !important;
+  }
+
+  /* Evita manchas laterales oscuras sobre la última cinta. */
+  .vx-ticker.is-rev::before,
+  .vx-ticker.is-rev::after {
+    background: linear-gradient(90deg, transparent, transparent) !important;
+  }
+
+  .vx-ticker.is-rev {
+    margin-bottom: 0 !important;
+  }
+}
