@@ -1016,3 +1016,24 @@
     min-height: 150px !important; /* ↕️ ÁREA TÁCTIL */
   }
 }
+
+
+/* ═════════ USER FX · TALL DEVICE · FINAL SIZE ═════════ */
+.vd-device {
+  height: 610px !important;
+  min-height: 610px;
+}
+
+@media (max-width: 800px) {
+  .vd-device {
+    height: clamp(560px, 94vw, 640px) !important;
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 560px) {
+  .vd-device {
+    height: min(640px, 164vw) !important;
+    min-height: 580px;
+  }
+}

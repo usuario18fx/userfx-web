@@ -2564,3 +2564,99 @@ video {
     height: 40px;
   }
 }
+
+
+/* ═════════ USER FX · VAULT LAUREL + SESSION FOOTER ═════════ */
+.vx-vaultLaurel {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  width: min(96%, 660px);
+  height: clamp(78px, 10vw, 126px);
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0 auto -18px;
+  pointer-events: none;
+}
+
+.vx-vaultLaurel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(.72) contrast(1.18) drop-shadow(0 10px 10px #000a);
+  user-select: none;
+}
+
+.vx-footGrid {
+  margin: 0 auto 24px !important;
+  padding: 22px 18px 0 !important;
+  transform: none !important;
+}
+
+.vx-footActions {
+  width: 100%;
+  align-items: center !important;
+}
+
+.vx-sessionLinks {
+  justify-content: center !important;
+  flex-wrap: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.vx-sessionLinks button {
+  border: 1px solid #ffffff18;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #121821cc, #070a0fee);
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
+.vx-sessionLinks.is-locked button {
+  opacity: 1 !important;
+  color: #a7a5aa;
+}
+
+.vx-sessionLinks.is-locked button img {
+  opacity: .78;
+  filter: grayscale(1) brightness(.92) contrast(1.08) !important;
+}
+
+.vx-sessionLinks.is-active button {
+  color: #f8f4ed;
+  border-color: #2e8bd073;
+  box-shadow: inset 0 1px 0 #ffffff14, 0 0 15px #087ccc20;
+}
+
+@media (max-width: 700px) {
+  .vx-vaultLaurel {
+    width: min(94%, 560px);
+    height: clamp(72px, 19vw, 104px);
+    margin-bottom: -12px;
+  }
+
+  .vx-footGrid {
+    display: block !important;
+    margin-bottom: 18px !important;
+    padding-inline: 8px !important;
+  }
+
+  .vx-footBrand {
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .vx-sessionLinks {
+    gap: 5px !important;
+  }
+
+  .vx-sessionLinks button {
+    flex: 1 1 0;
+    min-width: 0 !important;
+    max-width: 112px;
+    min-height: 82px !important;
+    padding: 7px 4px !important;
+  }
+}

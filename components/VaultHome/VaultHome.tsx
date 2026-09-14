@@ -51,6 +51,7 @@ const ICONS = {
   rosa: "/assets/iconos/rosa.png",
   rosa1: "/assets/iconos/rosa1.png",
   laurel: "/assets/iconos/laurel.png",
+  vaultLaurel: "/assets/iconos/vault-laurel.png",
   dossier: "/assets/iconos/icon.png",
   support: "/assets/iconos/support.png",
   chat: "/assets/iconos/chat.png",
@@ -581,6 +582,9 @@ export default function VaultHome() {
             </div>
           </div>
           <aside className="vx-lock vx-lockRaise">
+            <div className="vx-vaultLaurel" aria-hidden="true">
+              <img src={ICONS.vaultLaurel} alt="" draggable={false} />
+            </div>
             <VaultHeroDoors unlocked={unlocked} />
             {!unlocked ? (
               <VaultActions
