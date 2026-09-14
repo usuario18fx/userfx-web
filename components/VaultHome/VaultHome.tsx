@@ -52,6 +52,9 @@ const ICONS = {
   rosa1: "/assets/iconos/rosa1.png",
   laurel: "/assets/iconos/laurel.png",
   dossier: "/assets/iconos/icon.png",
+  support: "/assets/iconos/support.png",
+  chat: "/assets/iconos/chat.png",
+  tv: "/assets/iconos/tv.png",
 };
 const TICKER_ITEMS = [
   "| VIA TELEGRAM | CODED ACCESS | TELEGRAM ",
@@ -796,24 +799,67 @@ export default function VaultHome() {
             </div>
             <div>
               <div className="vx-footActions">
-                <nav className="vx-links" aria-label="Vault quick actions">
-                  <a
-                    href="https://t.me/User18Fx"
-                    target="_blank"
-                    rel="noreferrer"
+                <nav
+                  className={`vx-links vx-sessionLinks ${unlocked ? "is-active" : "is-locked"}`}
+                  aria-label="Vault session actions"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!unlocked) {
+                        setCodeModal(true);
+                        return;
+                      }
+                      window.open(
+                        "https://t.me/User18Fx_bot?start=support",
+                        "_blank",
+                        "noopener,noreferrer",
+                      );
+                    }}
+                    aria-label={unlocked ? "Open support" : "Support locked"}
                   >
-                    <Scramble text="@USER18FX" hover />
-                  </a>
-                  <button type="button" onClick={() => setFxAccessOpen(true)}>
-                    <Scramble text="SPECIAL CODE" hover />
+                    <img src={ICONS.support} alt="" aria-hidden="true" />
+                    <Scramble text="SUPPORT" hover />
+                    {!unlocked ? <small>LOCKED</small> : null}
                   </button>
-                  <a
-                    href="https://t.me/User18Fx_bot?start=getcode"
-                    target="_blank"
-                    rel="noreferrer"
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!unlocked) {
+                        setCodeModal(true);
+                        return;
+                      }
+                      window.open(
+                        "https://t.me/User18Fx",
+                        "_blank",
+                        "noopener,noreferrer",
+                      );
+                    }}
+                    aria-label={unlocked ? "Open private chat" : "Chat locked"}
                   >
-                    <Scramble text="GET CODE" hover />
-                  </a>
+                    <img src={ICONS.chat} alt="" aria-hidden="true" />
+                    <Scramble text="CHAT" hover />
+                    {!unlocked ? <small>LOCKED</small> : null}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!unlocked) {
+                        setCodeModal(true);
+                        return;
+                      }
+                      document
+                        .getElementById("unlocked-vault")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    aria-label={unlocked ? "Open vault videos" : "TV locked"}
+                  >
+                    <img src={ICONS.tv} alt="" aria-hidden="true" />
+                    <Scramble text="TV" hover />
+                    {!unlocked ? <small>LOCKED</small> : null}
+                  </button>
                 </nav>
                 <div className="vx-footCode">
                   | CODE | FX-011897-190122-CAHATO |
