@@ -167,6 +167,8 @@ export function FxAccessModal({
     "idle" | "approved" | "rejected"
   >("idle");
 
+  const [instructionIndex, setInstructionIndex] = useState(0);
+
   const busy = identityLoading || privateLoading || accessLoading;
 
   const visualState =
@@ -175,6 +177,26 @@ export function FxAccessModal({
   useEffect(() => {
     loadingRef.current = busy;
   }, [busy]);
+
+  useEffect(() => {
+    const shouldGuide =
+      open &&
+      mode === "telegram" &&
+      step === "username" &&
+      !telegramAuthorized;
+
+    setInstructionIndex(0);
+
+    if (!shouldGuide) return;
+
+    const timer = window.setInterval(() => {
+      setInstructionIndex((current) => (current + 1) % 3);
+    }, 4200);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [open, mode, step, telegramAuthorized]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -692,20 +714,25 @@ export function FxAccessModal({
   };
 
   /*
-   * Texto corto para evitar
-   * que se amontone en la
-   * pantalla superior.
+   * La pantalla superior guía al usuario
+   * durante todo el proceso de acceso.
    */
+  const usernameInstructions = [
+    "Tap Telegram to start your member access.",
+    "If you were selected, enter your @username to become a member.",
+    "We’ll verify your Telegram account, then unlock SPECIAL CODE.",
+  ];
+
   const bubbleText =
     mode === "plan"
-      ? `Pick ${selectedPlan}. Drop your private key.`
+      ? `Choose ${selectedPlan}, then enter your private access key.`
       : telegramAuthorized && step === "username"
-        ? `${username} authorized. Tap the crown for SPECIAL CODE.`
+        ? `${username} selected. Tap SPECIAL to continue.`
         : step === "username"
-          ? "Drop your Telegram @username."
+          ? usernameInstructions[instructionIndex]
           : step === "identity"
-            ? `${username} verified. Need SPCL? Tap the crown.`
-            : "Access cleared. You're good to get in.";
+            ? `${username} verified. Enter your SPECIAL CODE to continue.`
+            : "Access confirmed. Welcome to the private room.";
   const titleText =
     mode === "plan"
       ? "PRIVATE ACCESS"
@@ -767,7 +794,13 @@ export function FxAccessModal({
             </span>
           </div>
         </div>
-        <div className={`smkl-robot is-${visualState}`} aria-hidden="true">
+        <div
+          className={
+            `smkl-robot is-${visualState}` +
+            `${mode === "telegram" && step === "username" && !telegramAuthorized ? " is-guiding" : ""}`
+          }
+          aria-hidden="true"
+        >
           <div className="smkl-robot__ear smkl-robot__ear--left" />
           <div className="smkl-robot__ear smkl-robot__ear--right" />
           <div className="smkl-robot__head">
@@ -828,7 +861,12 @@ export function FxAccessModal({
             <i />
             <i />
           </div>
-          <div className="smkl-robot__hand smkl-robot__hand--right">
+          <div
+            className={
+              "smkl-robot__hand smkl-robot__hand--right" +
+              `${mode === "telegram" && step === "username" && !telegramAuthorized ? " is-pointing" : ""}`
+            }
+          >
             <i />
             <i />
             <i />
