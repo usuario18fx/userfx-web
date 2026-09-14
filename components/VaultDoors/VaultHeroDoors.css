@@ -528,3 +528,30 @@
     transform:translateX(calc(-50% + 18px)); /* ↗️ */
   }
 }
+
+
+/* ═════════ USER FX · REMOVE DOOR BARS ═════════ */
+.vhd-doors,
+.vhd-videoStage,
+.vhd-doors > :not(.vhd-door):not(.vhd-form) {
+  background-color: transparent !important;
+}
+
+.vhd-videoStage {
+  padding: 0 !important;
+}
+
+.vhd-doors .vhd-videoStage .vhd-doorVideo {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+@media (max-width: 700px) {
+  .vhd-doors {
+    background: transparent !important;
+  }
+}
