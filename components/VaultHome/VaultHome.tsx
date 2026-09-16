@@ -50,6 +50,7 @@ const ICONS = {
   rosa: "/assets/iconos/rosa.png",
   rosa1: "/assets/iconos/rosa1.png",
   laurel: "/assets/iconos/laurel.png",
+  vaultLaurel: "/assets/iconos/vault-laurel.png",
   dossier: "/assets/iconos/icon.png",
   dossierTwo: "/assets/iconos/icon2.png",
   chat: "/assets/iconos/chat.png",
@@ -439,9 +440,9 @@ export default function VaultHome() {
           </a>
           <i />
           </p>
-          <button type="button" className="vx-heroGetCode" onClick={() => setDm(true)}>
-            <Scramble text="GET MY CODE" hover />
-          </button>
+          <div className="vx-heroGetCode">
+            <FxAccessBtn onOpen={() => setDm(true)} />
+          </div>
           <h1 className="vx-title">
       <Scramble text="ACCESS" className="vx-access" delay={160} />
           <div className="vx-titleCrown">
@@ -513,7 +514,10 @@ export default function VaultHome() {
           </div>
           </div>
           <aside className="vx-lock vx-lockRaise">
-    <VaultHeroDoors unlocked={unlocked} />
+              <div className="vx-vaultLaurel" aria-hidden="true">
+            <img src={ICONS.vaultLaurel} alt="" draggable={false} />
+          </div>
+<VaultHeroDoors unlocked={unlocked} />
           </aside>
           </div>
           </section>
