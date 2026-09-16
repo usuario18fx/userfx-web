@@ -109,14 +109,14 @@
   padding: 15px 24px;
   overflow: visible;
   border: 1px solid var(--fx-cyan);
-  border-radius: 9px;
+  border-radius: 7px;
   background:
     radial-gradient(ellipse at 50% 20%, #167e7747, transparent 60%),
     repeating-linear-gradient(to bottom, #061416 0, #061416 5px, rgb(12 184 173 / 18%) 6px, #02090b 7px);
   box-shadow:
-    inset 0 0 0 1px rgb(7 92 89 / 50%),
-    inset 0 0 24px rgb(0 0 0 / 85%),
-    0 0 14px rgb(8 216 200 / 22%);
+    inset 0 0 0 1px #075c5980,
+    inset 0 0 24px #000000d9,
+    0 0 14px #08d8c838;
   transform: perspective(700px) rotateX(1deg);
   animation: smkl-screen-glow 2.8s ease-in-out infinite;
 
@@ -147,7 +147,7 @@
   width: 22px;
   height: 20px;
   border: 2px solid var(--fx-cyan);
-  border-radius: 50%;
+  border-radius: 8px;
   background: #061416;
   box-shadow:
     31px 17px 0 -6px #061416,
@@ -271,31 +271,31 @@
 }
 .smkl-robot__mouth {
   position: absolute;
-  bottom: 12px;
+  bottom: 2px;
   left: 50%;
   width: 12px;
   height: 2px;
   border-radius: 999px;
-  background: rgb(57 217 156 / 50%);
+  background: #39d99c80;
   transform: translateX(-50%);
 }
 .smkl-robot.is-idle .smkl-robot__eye {
   background: var(--fx-blue);
   box-shadow:
     0 0 8px var(--fx-blue),
-    0 0 18px rgb(22 140 255 / 53%);
+    0 0 18px #168cff87;
 }
 .smkl-robot.is-approved .smkl-robot__eye {
   background: var(--fx-green);
   box-shadow:
     0 0 8px var(--fx-green),
-    0 0 18px rgb(53 233 149 / 53%);
+    0 0 18px #35e99587;
 }
 .smkl-robot.is-rejected .smkl-robot__eye {
   background: var(--fx-red);
   box-shadow:
     0 0 8px var(--fx-red),
-    0 0 18px rgb(255 77 105 / 53%);
+    0 0 18px #ff4d6987;
   animation: none;
 }
 .smkl-robot.is-guiding .smkl-robot__eyes {
@@ -321,26 +321,23 @@
   justify-content: center;
   width: 50px;
   height: 31px;
-  gap: 3px;
+  gap: 11px;
   border: 1px solid #183f6b;
   border-radius: 10px;
   background: linear-gradient(180deg, #10233c 0%, #07111d 58%, #03070d 100%);
   box-shadow:
-    0 7px 14px rgb(0 0 0 / 40%),
-    inset 0 1px 0 rgb(74 143 211 / 18%);
+    0 7px 14px #00000066,
+    inset 0 1px 0 #4a8fd32e;
   pointer-events: none;
 }
 .smkl-robot__hand--left {
-  left: -6px;
-  transform: translateX(-50%);
+  left: -10px;
+  transform: translateX(-20%);
 }
 .smkl-robot__hand--right {
   transform-origin: left center !important;
   z-index: 35 !important;
-}
-.smkl-robot__hand--right.is-pointing {
-  animation: smklTelegramHandPoint 1.05s
-  ease-in-out infinite !important;
+   
 }
 .smkl-robot__hand i {
   display: block;
@@ -349,40 +346,40 @@
   border-radius: 5px;
   background: linear-gradient(180deg, #18385f 0%, #0b1b31 55%, #050b13 100%);
   box-shadow:
-    inset 0 1px 1px rgb(255 255 255 / 9%),
-    0 0 5px rgb(11 90 167 / 33%);
+    inset 0 1px 1px #ffffff17,
+    0 0 5px #0b5aa754;
 }
-
+.smkl-robot__hand--right.is-pointing {
+  animation: smklTelegramHandPoint 1.05s
+  ease-in-out infinite !important;
+}
 .smkl-robot__hand--right.is-pointing {
   z-index: 50;
   transform-origin: left center;
   animation: smkl-point-telegram 1.65s ease-in-out infinite;
   box-shadow:
-    0 0 0 1px rgb(21 156 255 / 53%),
-    0 0 18px rgb(21 156 255 / 44%),
-    inset 0 0 12px rgb(22 140 255 / 22%);
+    0 0 0 1px #159cff87,
+    0 0 18px #159cff70,
+    inset 0 0 12px #168cff38;
 }
-
 .smkl-robot__hand--right.is-pointing::after {
   content: "";
   position: absolute;
   top: 50%;
-  right: -34px;
+  right: -90px;
   width: 22px;
   height: 2px;
   background: linear-gradient(90deg, var(--fx-blue), transparent);
   box-shadow: 0 0 8px var(--fx-blue);
-  transform: translateY(-50%);
 }
 .smkl-robot__hand--right.is-special-pointing {
   animation: smkl-special-hand 1.5s ease-in-out infinite;
   box-shadow:
-    0 0 0 1px rgb(223 255 0 / 60%),
-    0 0 18px rgb(223 255 0 / 38%),
-    inset 0 0 12px rgb(223 255 0 / 15%);
+    0 0 0 1px #dfff0099,
+    0 0 18px #dfff0061,
+    inset 0 0 12px #dfff0026;
 }
 .smkl-robot__hand--right.is-special-pointing::after {
-  right: -34px;
   width: 32px;
   background: linear-gradient(90deg, var(--fx-yellow), transparent);
   box-shadow: 0 0 10px var(--fx-yellow);
@@ -399,11 +396,11 @@
   overflow: visible;
   border: 1px solid #245b84;
   background:
-    linear-gradient(180deg, rgb(5 10 14 / 72%), rgb(3 7 11 / 94%)),
+    linear-gradient(180deg, #050a0eb8, #03070bf0),
     url("wallFX.png") center 38% / cover no-repeat;
   box-shadow:
-    0 18px 38px rgb(0 0 0 / 45%),
-    inset 0 1px 0 rgb(255 255 255 / 5%);
+    0 18px 38px #00000073,
+    inset 0 1px 0 #ffffff0d;
   text-align: center;
   width: 365px !important;
   max-width: 365px !important;
@@ -413,10 +410,10 @@
 .smkl-panel::before {
   content: "USER FX";
   position: absolute;
-  top: 60%;
+  top: 50%;
   left: 52%;
   z-index: 0;
-  color: rgb(100 223 255 / 3%);
+  color: #64dfff08;
   font-family: var(--fx-font-display);
   font-size: 3.1rem;
   font-weight: 900;
@@ -466,15 +463,15 @@
   grid-template-columns: 1fr 14px 1fr;
   align-items: center;
   width: min(100%, 390px);
-  gap: 8px;
-  margin: 5px 0 8px;
+  gap: 2px;
+  margin: 1px 0 3px;
 }
 .smkl-panel__divider span {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(66 103 125 / 27%));
+  background: linear-gradient(90deg, transparent, #42677d45);
 }
 .smkl-panel__divider span:last-child {
-  background: linear-gradient(90deg, rgb(66 103 125 / 27%), transparent);
+  background: linear-gradient(90deg, #42677d71, transparent);
 }
 .smkl-panel__divider svg {
   width: 14px;
@@ -530,8 +527,8 @@
   position: relative;
   z-index: 2;
   display: block;
-  width: 19px;
-  height: 19px;
+  width: 23px;
+  height: 23px;
   flex: 0 0 20px;
   object-fit: contain;
 }
@@ -559,8 +556,8 @@
 }
 .smkl-plan-pill:hover:not(:disabled) {
   box-shadow:
-    0 0 0 1px rgb(119 255 221 / 40%),
-    0 0 16px rgb(119 255 221 / 24%),
+    0 0 0 1px rgba(231, 250, 245, 0.4),
+    0 0 16px rgba(240, 253, 250, 0.24),
     0 8px 18px rgb(0 0 0 / 33%);
   transform: translateY(-1px);
 }
@@ -632,7 +629,7 @@
   font-size: 15px !important;
 }
 .smkl-plan-access-field input::placeholder {
-  color: rgb(87 149 165 / 61%);
+  color: #066a839c;
 }
 .smkl-form__field--username {
   display: flex;
@@ -646,10 +643,10 @@
   height: 48px !important;
 }
 .smkl-form__field--username:focus-within {
-  border-color: rgb(74 255 176 / 45%);
+  border-color: #4affb073;
   box-shadow:
-    0 0 0 1px rgb(74 255 176 / 12%),
-    0 0 18px rgb(74 255 176 / 8%);
+    0 0 0 1px #4affb01f,
+    0 0 18px #4affb014;
 }
 .smkl-form__icon--username {
   display: grid;
@@ -690,9 +687,8 @@
   height: 46px !important;
   font-size: 14px !important;
 }
-
 .smkl-form__field--username input::placeholder {
-  color: rgb(99 255 208 / 40%);
+  color: #63ffd066;
 }
 .smkl-identity-combined {
   position: relative;
@@ -707,7 +703,7 @@
   border-color: var(--fx-cyan);
   border-radius: 12px;
   background:
-    linear-gradient(180deg, rgb(23 65 60 / 62%), rgb(2 6 5 / 98%)),
+    linear-gradient(180deg, #17413c9e, rgb(2 6 5 / 98%)),
     repeating-linear-gradient(0deg, transparent 0 5px, rgb(12 169 179 / 5%) 6px);
 }
 .smkl-identity-combined__user {
@@ -717,8 +713,8 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-shadow:
-    0 0 4px rgb(138 255 215 / 52%),
-    0 0 10px rgb(57 240 176 / 28%);
+    0 0 4px #8affd785,
+    0 0 10px #39f0b047;
   white-space: nowrap;
 }
 .smkl-identity-combined__separator {
@@ -776,7 +772,7 @@
 }
 .smkl-code-digits:focus-within .smkl-code-digit:not(.is-filled):first-of-type {
   border-color: var(--fx-cyan-soft);
-  box-shadow: 0 0 8px rgb(99 255 208 / 53%);
+  box-shadow: 0 0 8px #63ffd087;
 }
 .smkl-telegram-check-note {
   margin: 2px auto  5px !important;
@@ -791,10 +787,10 @@
   width: 100%;
   margin: 0;
   padding: 6px 10px;
-  border: 1px solid rgb(140 31 54 / 15%);
+  border: 1px solid #8c1f3626;
   border-radius: 10px;
-  background: rgb(140 31 54 / 8%);
-  color: rgb(240 106 138 / 90%);
+  background: #8c1f3614;
+  color: #f06a8ae6;
   font-size: 0.7rem;
   text-align: center;
 }
@@ -809,8 +805,8 @@
   border: 1px solid #255893;
   background: linear-gradient(180deg, rgb(37 88 147 / 98%), rgb(18 22 27 / 98%) 52%, rgb(10 11 14 / 99%));
   box-shadow:
-    0 8px 22px rgb(0 0 0 / 38%),
-    inset 0 1px 0 rgb(255 255 255 / 6%);
+    0 8px 22px #00000061,
+    inset 0 1px 0 #ffffff0f;
   color: var(--fx-green-soft);
   cursor: pointer;
   min-height: 43px;
@@ -1035,8 +1031,7 @@
       0 0 8px rgba(0, 190, 255, .26), 
       0 0 0 0 rgba(0, 205, 255, 0); 
   } 
-  50% { 
-    transform: scale(1.06); 
+  50% {transform: scale(1.06); 
     box-shadow: 
       0 0 18px rgba(0, 205, 255, .62), 
       0 0 0 5px rgba(0, 205, 255, .07); 
@@ -1238,7 +1233,7 @@
     min-height: 76px;
     margin-bottom: 28px;
     padding: 14px 18px;
-    border-radius: 28px;
+    border-radius: 8px;
   }
   .smkl-typing-text {
     font-size: 0.68rem;
@@ -1333,6 +1328,159 @@
       translate3d(22px, 1px, 0)
       rotate(-10deg);
   }}
+
+/* ───────────────────────────────────── 
+   SPECIAL CODE / CORONA 
+   ───────────────────────────────────── */ 
+
+.smkl-special-code-fab { 
+  position: relative !important; 
+
+  left: auto !important; 
+  right: auto !important; 
+  top: auto !important; 
+  bottom: auto !important; 
+
+  width: 52px !important; 
+  height: 52px !important; 
+
+  min-width: 52px !important; 
+  min-height: 52px !important; 
+
+  margin: 0 !important; 
+  padding: 0 !important; 
+
+  transform: none !important; 
+
+  border-radius: 8px !important; 
+
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+
+  z-index: 4 !important; 
+} 
+
+
+/* ───────────────────────────────────── 
+   MOBILE — BOTONES MAS JUNTOS 
+   ───────────────────────────────────── */ 
+
+@media (max-width: 600px) { 
+
+  .smkl-panel__bottom-actions { 
+    top: -64px !important; 
+
+    gap: 8px !important; 
+  } 
+
+  .smkl-telegram-action-wrap, 
+  .smkl-telegram-mode-btn, 
+  .smkl-special-code-fab { 
+    width: 44px !important; 
+    height: 44px !important; 
+
+    min-width: 44px !important; 
+    min-height: 44px !important; 
+  } 
+
+  .smkl-telegram-side-label { 
+    top: 51px !important; 
+
+    font-size: 6px !important; 
+  } 
+} 
+
+/* ───────────────────────────────────── 
+   MOBILE — BOTONES MAS JUNTOS 
+   ───────────────────────────────────── */ 
+@media (max-width: 600px) { 
+  .smkl-panel__bottom-actions { 
+    top: -64px !important; 
+    gap: 8px !important; 
+  } 
+  .smkl-telegram-action-wrap, 
+  .smkl-telegram-mode-btn, 
+  .smkl-special-code-fab { 
+    width: 44px !important; 
+    height: 44px !important; 
+    min-width: 44px !important; 
+    min-height: 44px !important; 
+  } 
+  .smkl-telegram-side-label { 
+    top: 51px !important; 
+    font-size: 6px !important; 
+  } } 
+  /* ========================================================= 
+   BOTONES FLOTANTES — ARRIBA DEL MODAL 
+   ========================================================= */ 
+.smkl-panel__bottom-actions { 
+  position: absolute !important; 
+  left: 50% !important; 
+  right: auto !important; 
+  top: 14px !important; 
+  bottom: auto !important; 
+  transform: 
+    translateX(250%) !important; 
+  display: flex !important; 
+  flex-direction: row !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+ gap: 12px !important; 
+  width: max-content !important; 
+  z-index: 50 !important; 
+} 
+/* ───────────────────────────────────── 
+   TELEGRAM 
+   ───────────────────────────────────── */ 
+.smkl-telegram-action-wrap { 
+  position: relative !important; 
+  width: 52px !important; 
+  height: 52px !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+} 
+.smkl-telegram-mode-btn { 
+  width: 52px !important; 
+  height: 52px !important; 
+  min-width: 52px !important; 
+  min-height: 52px !important; 
+  margin: 0 !important; 
+  padding: 0 !important; 
+  z-index: 5 !important; 
+} 
+/* ───────────────────────────────────── 
+   TEXTO TELEGRAM — A LA DERECHA 
+   ───────────────────────────────────── */ 
+.smkl-telegram-side-label { 
+  position: absolute !important; 
+  left: 60px !important; 
+  right: auto !important; 
+  top: 50% !important; 
+  transform: translateY(30%) translateX(1px)!important; 
+  min-width: max-content !important; 
+  white-space: nowrap !important; 
+  z-index: 6 !important; 
+} 
+/* ───────────────────────────────────── 
+   SPECIAL CODE / CORONA 
+   ───────────────────────────────────── */ 
+.smkl-special-code-fab { 
+  position:relative !important; 
+  left: auto !important; 
+  right: auto !important; 
+  top: 2% !important; 
+  bottom: 21% !important; 
+  width: 52px !important; 
+  height: 52px !important; 
+  min-width: 52px !important; 
+  min-height: 52px !important; 
+  margin: 0 !important; 
+  padding: 0 !important; 
+  transform: translateY(130px) translateX(145px)!important;
+  z-index: 4 !important; 
+} 
   /* ========================================================= 
    FONDO GRANDE — EXTREMOS MAS VISIBLES 
    ========================================================= */ 
@@ -1353,6 +1501,6 @@
 /* hace mas visibles las decoraciones de ambos extremos */ 
 .smkl-modal__backdrop { 
   filter: 
-    brightness(1.10) 
-    contrast(1.08) !important; 
+    brightness(1.99) 
+    contrast(1.0) !important; 
 } 
