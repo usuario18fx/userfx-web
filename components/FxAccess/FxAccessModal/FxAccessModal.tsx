@@ -152,6 +152,8 @@ export function FxAccessModal({
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [typedText, setTypedText] = useState("");
 
+  const [telegramCueReady, setTelegramCueReady] = useState(false);
+
   const busy = identityLoading || privateLoading || accessLoading;
   const visualState: CheckState =
     mode === "plan" && accessError ? "rejected" : checkState;
@@ -378,6 +380,7 @@ export function FxAccessModal({
   const switchToPlan = (plan: PlanKey) => {
     if (busy) return;
 
+    setTelegramCueReady(false);
     setMode("plan");
     setSelectedPlan(plan);
     setStep("username");
@@ -390,6 +393,8 @@ export function FxAccessModal({
 
   const switchToTelegram = () => {
     if (busy) return;
+
+    setTelegramCueReady(false);
 
     if (mode === "telegram") {
       switchToPlan(selectedPlan);
@@ -620,6 +625,22 @@ export function FxAccessModal({
     };
   }, [open, bubbleText]);
 
+  useEffect(() => {
+    setTelegramCueReady(false);
+
+    if (!open || mode !== "plan" || typedText !== bubbleText) {
+      return;
+    }
+
+    const cueTimer = window.setTimeout(() => {
+      setTelegramCueReady(true);
+    }, 250);
+
+    return () => {
+      window.clearTimeout(cueTimer);
+    };
+  }, [open, mode, typedText, bubbleText]);
+
   const titleText =
     mode === "plan"
       ? "PRIVATE ACCESS"
@@ -647,161 +668,114 @@ export function FxAccessModal({
           <span />
         </button>
 
-        <div className="smkl-modal__bubble smkl-modal__bubble--screen">
-          <div className="smkl-typing-viewport">
-            <span className="smkl-typing-text">
-              {typedText}
-            </span>
-          </div>
-        </div>
-        <div  className={["smkl-robot", `is-${visualState}`,  isUsernameGuidance ? "is-guiding" : "", isSpecialGuidance ? "is-special-guiding" : "",]
-            .filter(Boolean)
-            .join(" ")} aria-hidden="true">
-          <div className="smkl-robot__ear smkl-robot__ear--left" />
-          <div className="smkl-robot__ear smkl-robot__ear--right" />
-          <div className="smkl-robot__head">
-            <RoseIcon className="smkl-robot__head-rose" />
-            <div className="smkl-robot__face">
-              <div className="smkl-robot__eyes">
-                <span className="smkl-robot__eye" />
-                <span className="smkl-robot__eye" />
-              </div>
-              <span className="smkl-robot__mouth" />
+       <div className="smkl-modal__bubble smkl-modal__bubble--screen">
+  <div className="smkl-typing-viewport">
+    <span className="smkl-typing-text">
+      {typedText}
+    </span>
             </div>
-          </div>
-        </div>
-
-        <section className="smkl-panel">
-          <div className="smkl-robot__hand smkl-robot__hand--left">
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-
-          <div className={["smkl-robot__hand", "smkl-robot__hand--right",isUsernameGuidance || isSpecialGuidance ? "is-pointing" : "", isSpecialGuidance ? "is-special-pointing" : "",]
-              .filter(Boolean)
-              .join(" ")}>
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-
-          <RoseIcon className="smkl-panel__rose" />
-          <div className="smkl-modal__brand-line" />
-          <h2 id={`${modalId}-title`}>{titleText}</h2>
-          <div className="smkl-modal__brand-line" />
-
-          <div className="smkl-panel__divider" aria-hidden="true">
+            </div>
+            <div  className={["smkl-robot", `is-${visualState}`,  isUsernameGuidance ? "is-guiding" : "", isSpecialGuidance ? "is-special-guiding" : "",].filter(Boolean).join(" ")} aria-hidden="true">
+            <div className="smkl-robot__ear smkl-robot__ear--left" />
+            <div className="smkl-robot__ear smkl-robot__ear--right" />
+            <div className="smkl-robot__head">
+      <RoseIcon className="smkl-robot__head-rose" />
+            <div className="smkl-robot__face">
+            <div className="smkl-robot__eyes">
+            <span className="smkl-robot__eye" />
+            <span className="smkl-robot__eye" />
+            </div>
+            <span className="smkl-robot__mouth" />
+            </div>
+            </div>
+            </div>
+            <section className="smkl-panel">
+            <div className="smkl-robot__hand smkl-robot__hand--left">
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+            <div
+              className={[
+                "smkl-robot__hand",
+                "smkl-robot__hand--right",
+                telegramCueReady || isSpecialGuidance ? "is-pointing" : "",
+                isSpecialGuidance ? "is-special-pointing" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+      <RoseIcon className="smkl-panel__rose" />
+            <div className="smkl-modal__brand-line" />
+            <h2 id={`${modalId}-title`}>{titleText}</h2>
+            <div className="smkl-modal__brand-line" />
+            <div className="smkl-panel__divider" aria-hidden="true">
             <span />
-            <RoseIcon />
+      <RoseIcon />
             <span />
-          </div>
-
-          {mode === "plan" && (
+            </div>
+              {mode === "plan" && (
             <div className="smkl-plan-switcher">
               {PLAN_KEYS.map((plan) => (
-                <button key={plan} type="button" className={`smkl-plan-pill${selectedPlan === plan ? " is-active" : ""}`} onClick={() => switchToPlan(plan)} disabled={busy}>
-                  <img className="smkl-plan-pill__icon" src={PLAN_DISPLAY[plan].icon}  alt="" aria-hidden="true" draggable={false}/>
-                  <span className="smkl-plan-pill__name">
-                    {PLAN_DISPLAY[plan].name}
-                  </span>
-                </button>
+            <button key={plan} type="button" className={`smkl-plan-pill${selectedPlan === plan ? " is-active" : ""}`} onClick={() => switchToPlan(plan)} disabled={busy}>
+            <img className="smkl-plan-pill__icon" src={PLAN_DISPLAY[plan].icon}  alt="" aria-hidden="true" draggable={false}/>
+            <span className="smkl-plan-pill__name">
+              {PLAN_DISPLAY[plan].name}
+            </span>
+            </button>
               ))}
             </div>
-          )}
-
-          <form className="smkl-form" onSubmit={handleSubmit} noValidate>
-            {mode === "telegram" && (
-              <p className="smkl-step-label">{stepLabel}</p>
+              )}
+            <form className="smkl-form" onSubmit={handleSubmit} noValidate>
+              {mode === "telegram" && (
+            <p className="smkl-step-label">{stepLabel}</p>
+              )}
+              {mode === "plan" && (
+            <>
+            <div className="smkl-plan-access-field">
+            <input ref={inputRef} type="text"  name="access-code" placeholder={`${selectedPlan}-XXXX`}  value={accessCode} onChange={(event) => {  onAccessCodeChange(event.target.value.toUpperCase());}} autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false}  disabled={busy}  required/>
+            </div>
+              {accessError && (
+            <p className="smkl-form__error" role="alert">
+              {accessError}
+            </p>
+              )}
+            <button type="submit" className={["smkl-form__submit","smkl-form__submit--verify",busy ? "is-loading" : "",visualState === "approved" ? "is-approved" : "",visualState === "rejected" ? "is-rejected" : "",].filter(Boolean).join(" ")} disabled={busy}>
+            <span>
+             {busy ? "CHECKING..." : "VERIFY ACCESS"}
+            </span>
+            </button>              
+            </>
             )}
-
-            {mode === "plan" && (
-              <>
-                <div className="smkl-plan-access-field">
-                  <input ref={inputRef} type="text"  name="access-code" placeholder={`${selectedPlan}-XXXX`}  value={accessCode} onChange={(event) => {  onAccessCodeChange(event.target.value.toUpperCase());}} autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false}  disabled={busy}  required/>
-                </div>
-
-                {accessError && (
-                  <p className="smkl-form__error" role="alert">
-                    {accessError}
-                  </p>
-                )}
-
-                <button   type="submit"
-                  className={[
-                    "smkl-form__submit",
-                    "smkl-form__submit--verify",
-                    busy ? "is-loading" : "",
-                    visualState === "approved" ? "is-approved" : "",
-                    visualState === "rejected" ? "is-rejected" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  disabled={busy}
-                >
-                  <span>{busy ? "CHECKING..." : "VERIFY ACCESS"}</span>
-                </button>
-              </>
-            )}
-
             {mode === "telegram" && step === "username" && (
-              <>
-                <div className="smkl-form__field smkl-form__field--username">
-                  <span className="smkl-form__icon smkl-form__icon--username">
-                    <UserIcon />
-                  </span>
-
-                  <label className="smkl-sr-only"  htmlFor={`${modalId}-username`} >
-                    Telegram username
-                  </label>
-
-                  <span className="smkl-username-at" aria-hidden="true">
-                    @
-                  </span>
-
-                  <input
-                    ref={primaryInputRef}
-                    id={`${modalId}-username`}
-                    type="text"
-                    name="username"
-                    placeholder="username"
-                    value={username.replace(/^@/, "")}
-                    onChange={(event) => {
-                      setUsername(normalizeUsername(event.target.value));
-                      setTelegramAuthorized(false);
-                      setCheckState("idle");
-                      setError(null);
-                    }}
-                    autoComplete="username"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    disabled={busy}
-                    required
-                  />
-                </div>
-
-                <p className="smkl-telegram-check-note">
-                  SPECIAL CODE unlocks only after TelegramFX confirms this username.
-                </p>
-
-                <button
-                  type="submit"
-                  className={[
-                    "smkl-form__submit",
-                    "smkl-form__submit--telegram-check",
+            <>
+            <div className="smkl-form__field smkl-form__field--username">
+            <span className="smkl-form__icon smkl-form__icon--username">
+            <UserIcon />
+            </span>
+            <label className="smkl-sr-only"  htmlFor={`${modalId}-username`} >
+              Telegram username
+            </label>
+            <span className="smkl-username-at" aria-hidden="true">
+              @
+            </span>
+            <input ref={primaryInputRef} id={`${modalId}-username`}type="text"name="username" placeholder="username"value={username.replace(/^@/, "")} onChange={(event) =>{setUsername(normalizeUsername(event.target.value));setTelegramAuthorized(false);setCheckState("idle");setError(null); }} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} disabled={busy} required/>
+            </div>
+            <p className="smkl-telegram-check-note">
+             SPECIAL CODE unlocks only after TelegramFX confirms this username.
+            </p>
+            <button type="submit" className={["smkl-form__submit","smkl-form__submit--telegram-check",
                     busy ? "is-loading" : "",
                     checkState === "approved" ? "is-approved" : "",
-                    checkState === "rejected" ? "is-rejected" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  disabled={busy}
-                >
-                  <span>
-                    {busy
+                    checkState === "rejected" ? "is-rejected" : "",].filter(Boolean).join(" ")}disabled={busy}>
+            <span>
+              {busy
                       ? "CHECKING..."
                       : checkState === "approved"
                         ? "USER AUTHORIZED"
@@ -835,17 +809,11 @@ export function FxAccessModal({
                         /^(SPCL|TGMX)-?/i,
                         "",
                       );
-
                       return (
-                        <span
-                          key={index}
-                          className={`smkl-code-digit${
-                            codePart[index] ? " is-filled" : ""
-                          }`}
-                        />
+                        <span key={index} className={`smkl-code-digit${
+                            codePart[index] ? " is-filled" : "" }`}/>
                       );
-                    })}
-
+                      })}
                     <input
                       ref={primaryInputRef}
                       id={`${modalId}-identity-code`}
@@ -896,23 +864,31 @@ export function FxAccessModal({
 
           {step !== "access" && (
             <div className="smkl-panel__bottom-actions">
-              <button
-                type="button"
-                className={`smkl-telegram-mode-btn${
-                  mode === "telegram" ? " is-active" : ""
-                }`}
-                onClick={switchToTelegram}
-                aria-label={
-                  mode === "telegram"
-                    ? "Return to plan access"
-                    : "Telegram access"
-                }
-                disabled={busy}
-              >
-                <span className="smkl-panel__action-label">
-                  {mode === "telegram" ? "PLAN ACCESS" : "TELEGRAM ACCESS"}
+              <div className="smkl-telegram-action-wrap">
+                <button
+                  type="button"
+                  className={[
+                    "smkl-telegram-mode-btn",
+                    mode === "telegram" ? "is-active" : "",
+                    telegramCueReady ? "is-cue-active" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={switchToTelegram}
+                  aria-label={
+                    mode === "telegram"
+                      ? "Return to plan access"
+                      : "Telegram access"
+                  }
+                  disabled={busy}
+                />
+
+                <span className="smkl-telegram-side-label">
+                  {mode === "telegram"
+                    ? "PLAN ACCESS"
+                    : "TELEGRAM ACCESS"}
                 </span>
-              </button>
+              </div>
 
               {mode === "telegram" && (
                 <button
@@ -936,7 +912,8 @@ export function FxAccessModal({
                       ? "Open special code"
                       : "Verify username first"
                   }
-                  disabled={!telegramAuthorized || busy}>
+                  disabled={!telegramAuthorized || busy}
+                >
                   <span aria-hidden="true">♛</span>
                   <small>
                     {telegramAuthorized

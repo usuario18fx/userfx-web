@@ -22,29 +22,29 @@
   place-items: center;
   width: 100%;
   min-height: 100dvh;
-  padding: 24px 16px;
   overflow-x: hidden;
   overflow-y: auto;
   isolation: isolate;
   background:
-    radial-gradient(ellipse at 16% 40%, rgb(190 30 65 / 28%), transparent 52%),
-    radial-gradient(ellipse at 84% 60%, rgb(54 255 174 / 15%), transparent 48%),
-    linear-gradient(135deg, rgb(5 45 42 / 52%), rgb(0 0 0 / 55%) 48%, rgb(0 38 29 / 40%));
+    radial-gradient(ellipse at 16% 40%, #be1e4147, transparent 52%),
+    radial-gradient(ellipse at 84% 60%, #36ffae26, transparent 48%),
+    linear-gradient(135deg, #052d2a85, #0000008c 48%, #00261d66);
+  padding: 4px !important;
+  background-size: 175% auto;
+  background-position: center center !important;
 }
-
-.smkl-modal__backdrop {
+  .smkl-modal__backdrop {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 20% 30%, rgb(20 145 135 / 34%), transparent 44%),
-    radial-gradient(circle at 80% 72%, rgb(35 170 152 / 20%), transparent 45%),
+    radial-gradient(circle at 20% 30%, #14918757, transparent 44%),
+    radial-gradient(circle at 80% 72%, #23aa9833, transparent 45%),
     rgb(0 0 0 / 72%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
-
 .smkl-modal__stage {
   position: relative;
   z-index: 1;
@@ -52,15 +52,19 @@
   flex: 0 0 auto;
   flex-direction: column;
   align-items: stretch;
-  width: min(94vw, 420px);
   margin: 0 auto;
   isolation: isolate;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  transform: translateY(-42px) scale(.90);
+  transform-origin: center center;
+  background-size: 175% ;
 }
-
 .smkl-modal__close {
   position: absolute;
   top: 8px;
-  right: 12px;
+  right: 22px;
   z-index: 60;
   display: grid;
   place-items: center;
@@ -72,31 +76,25 @@
   background: rgb(14 30 42 / 88%);
   cursor: pointer;
 }
-
 .smkl-modal__close span {
   position: absolute;
   width: 12px;
   height: 1px;
   background: rgb(255 255 255 / 55%);
 }
-
 .smkl-modal__close span:first-child {
   transform: rotate(45deg);
 }
-
 .smkl-modal__close span:last-child {
   transform: rotate(-45deg);
 }
-
 .smkl-modal__close:hover:not(:disabled) {
   background: rgb(20 49 67 / 96%);
 }
-
 .smkl-modal__close:focus-visible {
   outline: 2px solid var(--fx-cyan);
   outline-offset: 3px;
 }
-
 .smkl-modal__bubble--screen {
   position: relative;
   z-index: 4;
@@ -105,15 +103,15 @@
   justify-content: center;
   box-sizing: border-box;
   width: calc(100% - 12px);
-  max-width: 110%;
-  min-height: 55px;
+  max-width: 100%;
+  min-height: 50px;
   margin: 10px auto 30px;
   padding: 15px 24px;
   overflow: visible;
   border: 1px solid var(--fx-cyan);
   border-radius: 9px;
   background:
-    radial-gradient(ellipse at 50% 20%, rgb(22 126 119 / 28%), transparent 60%),
+    radial-gradient(ellipse at 50% 20%, #167e7747, transparent 60%),
     repeating-linear-gradient(to bottom, #061416 0, #061416 5px, rgb(12 184 173 / 18%) 6px, #02090b 7px);
   box-shadow:
     inset 0 0 0 1px rgb(7 92 89 / 50%),
@@ -121,6 +119,13 @@
     0 0 14px rgb(8 216 200 / 22%);
   transform: perspective(700px) rotateX(1deg);
   animation: smkl-screen-glow 2.8s ease-in-out infinite;
+
+  width: 350px !important;
+  max-width: 350px !important;
+  min-height: 52px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 10px ;
+  border-radius: 9px;
 }
 .smkl-modal__bubble--screen::before {
   content: "";
@@ -133,7 +138,6 @@
   background: repeating-linear-gradient(to bottom, transparent 0, transparent 4px, rgb(70 255 225 / 16%) 5px, rgb(0 0 0 / 32%) 6px);
   animation: smkl-screen-scan 3.2s linear infinite;
 }
-
 .smkl-modal__bubble--screen::after {
   content: "";
   position: absolute;
@@ -159,8 +163,8 @@
   max-width: 100%;
   overflow: hidden;
   text-align: center;
+    min-height: 34px;
 }
-
 .smkl-typing-text {
   position: relative;
   z-index: 5;
@@ -169,10 +173,7 @@
   max-width: 100%;
   color: var(--fx-text);
   font-family: var(--fx-font-mono);
-  font-size: clamp(0.66rem, 1.7vw, 0.88rem);
   font-weight: 700;
-  line-height: 1.45;
-  letter-spacing: 0.045em;
   text-align: center;
   text-shadow:
     0 0 5px rgb(137 255 255 / 42%),
@@ -182,16 +183,21 @@
   animation:
     smkl-typing-reveal 3.4s steps(70, end) forwards,
     smkl-typing-glow 2.2s ease-in-out infinite;
+  font-size: 13px;
+  line-height: 1.28;
+  letter-spacing: 0.035em;
 }
-
 .smkl-robot {
   position: relative;
   z-index: 4;
   width: 110px;
   height: 86px;
   margin: 0 auto 4px;
+  transform: scale(0.78) !important;
+  transform-origin: center bottom !important;
+  margin-top: -12px !important;
+  margin-bottom: -20px !important;
 }
-
 .smkl-robot__ear {
   position: absolute;
   top: 28px;
@@ -200,17 +206,14 @@
   border: 1px solid rgb(36 67 147 / 24%);
   background: linear-gradient(155deg, rgb(37 88 147 / 98%), rgb(18 22 27 / 98%) 52%, rgb(10 11 14 / 99%));
 }
-
 .smkl-robot__ear--left {
   left: 0;
   border-radius: 8px 0 0 8px;
 }
-
 .smkl-robot__ear--right {
   right: 0;
   border-radius: 0 8px 8px 0;
 }
-
 .smkl-robot__head {
   position: absolute;
   inset: 0 8px;
@@ -222,7 +225,6 @@
     0 0 22px rgb(30 78 162 / 14%),
     inset 0 1px 0 rgb(11 19 51 / 8%);
 }
-
 .smkl-robot__head-rose {
   position: absolute;
   top: -16px;
@@ -234,7 +236,6 @@
   opacity: 0.45;
   transform: translateX(-50%);
 }
-
 .smkl-robot__face {
   position: absolute;
   inset: 14px 16px 12px;
@@ -246,7 +247,6 @@
   border-radius: 42%;
   background: rgb(3 5 8 / 82%);
 }
-
 .smkl-robot__eyes {
   display: flex;
   align-items: center;
@@ -255,7 +255,6 @@
   height: 100%;
   gap: 14px;
 }
-
 .smkl-robot__eye {
   display: block;
   width: 14px;
@@ -270,7 +269,6 @@
     smkl-eye-glow 2.4s ease-in-out infinite,
     smkl-eye-blink 6s infinite;
 }
-
 .smkl-robot__mouth {
   position: absolute;
   bottom: 12px;
@@ -281,21 +279,18 @@
   background: rgb(57 217 156 / 50%);
   transform: translateX(-50%);
 }
-
 .smkl-robot.is-idle .smkl-robot__eye {
   background: var(--fx-blue);
   box-shadow:
     0 0 8px var(--fx-blue),
     0 0 18px rgb(22 140 255 / 53%);
 }
-
 .smkl-robot.is-approved .smkl-robot__eye {
   background: var(--fx-green);
   box-shadow:
     0 0 8px var(--fx-green),
     0 0 18px rgb(53 233 149 / 53%);
 }
-
 .smkl-robot.is-rejected .smkl-robot__eye {
   background: var(--fx-red);
   box-shadow:
@@ -303,25 +298,20 @@
     0 0 18px rgb(255 77 105 / 53%);
   animation: none;
 }
-
 .smkl-robot.is-guiding .smkl-robot__eyes {
   animation: smkl-guide-eyes 2.2s ease-in-out infinite;
 }
-
 .smkl-robot.is-guiding .smkl-robot__eye {
   animation: smkl-guide-blink 3.4s ease-in-out infinite;
 }
-
 .smkl-robot.is-special-guiding .smkl-robot__eyes {
   animation: smkl-special-eyes 1.8s ease-in-out infinite;
 }
-
 .smkl-robot.is-special-guiding .smkl-robot__eye {
   animation:
     smkl-eye-glow 2.4s ease-in-out infinite,
     smkl-special-blink 4.5s ease-in-out infinite;
 }
-
 .smkl-robot__hand {
   position: absolute;
   top: -20px;
@@ -340,17 +330,18 @@
     inset 0 1px 0 rgb(74 143 211 / 18%);
   pointer-events: none;
 }
-
 .smkl-robot__hand--left {
   left: -6px;
   transform: translateX(-50%);
 }
-
 .smkl-robot__hand--right {
-  right: -6px;
-  transform: translateX(50px);
+  transform-origin: left center !important;
+  z-index: 35 !important;
 }
-
+.smkl-robot__hand--right.is-pointing {
+  animation: smklTelegramHandPoint 1.05s
+  ease-in-out infinite !important;
+}
 .smkl-robot__hand i {
   display: block;
   width: 6px;
@@ -383,7 +374,6 @@
   box-shadow: 0 0 8px var(--fx-blue);
   transform: translateY(-50%);
 }
-
 .smkl-robot__hand--right.is-special-pointing {
   animation: smkl-special-hand 1.5s ease-in-out infinite;
   box-shadow:
@@ -391,14 +381,12 @@
     0 0 18px rgb(223 255 0 / 38%),
     inset 0 0 12px rgb(223 255 0 / 15%);
 }
-
 .smkl-robot__hand--right.is-special-pointing::after {
   right: -34px;
   width: 32px;
   background: linear-gradient(90deg, var(--fx-yellow), transparent);
   box-shadow: 0 0 10px var(--fx-yellow);
 }
-
 .smkl-panel {
   position: relative;
   z-index: 3;
@@ -408,19 +396,20 @@
   width: 100%;
   min-height: 0;
   margin-top: -8px;
-  padding: 38px 14px 24px;
   overflow: visible;
   border: 1px solid #245b84;
-  border-radius: 14px;
   background:
     linear-gradient(180deg, rgb(5 10 14 / 72%), rgb(3 7 11 / 94%)),
-    url("/wallpaperGeneral.png") center 38% / cover no-repeat;
+    url("wallFX.png") center 38% / cover no-repeat;
   box-shadow:
     0 18px 38px rgb(0 0 0 / 45%),
     inset 0 1px 0 rgb(255 255 255 / 5%);
   text-align: center;
+  width: 365px !important;
+  max-width: 365px !important;
+  padding: 12px 12px 14px !important;
+  border-radius: 12px !important;
 }
-
 .smkl-panel::before {
   content: "USER FX";
   position: absolute;
@@ -436,12 +425,10 @@
   white-space: nowrap;
   transform: translate(-50%, -50%) rotate(-6deg);
 }
-
 .smkl-panel > * {
   position: relative;
   z-index: 2;
 }
-
 .smkl-panel__rose {
   position: absolute;
   top: -17px;
@@ -454,47 +441,41 @@
   pointer-events: none;
   transform: translateX(-50%);
 }
-
 .smkl-panel h2 {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: 0 auto;
   padding: 0;
   color: #fff;
   font-family: var(--fx-font-display);
-  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.28em;
   text-align: center;
   text-shadow: 0 2px 10px #000;
+  margin: 3px 0 6px !important;
+  font-size: 16px !important;
+  letter-spacing: 0.18em !important;
 }
-
 .smkl-modal__brand-line {
-  width: 50px;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgb(129 48 69 / 44%), transparent);
+  width: 38px;
 }
-
 .smkl-panel__divider {
   display: grid;
   grid-template-columns: 1fr 14px 1fr;
   align-items: center;
   width: min(100%, 390px);
-  margin: 6px auto 10px;
   gap: 8px;
+  margin: 5px 0 8px;
 }
-
 .smkl-panel__divider span {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgb(66 103 125 / 27%));
 }
-
 .smkl-panel__divider span:last-child {
   background: linear-gradient(90deg, rgb(66 103 125 / 27%), transparent);
 }
-
 .smkl-panel__divider svg {
   width: 14px;
   height: 14px;
@@ -502,26 +483,21 @@
   stroke: #5376a9;
   opacity: 0.4;
 }
-
 .smkl-plan-switcher {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
-  margin: 10px auto 12px;
-  gap: 10px;
-}
-
+  gap: 6px !important;
+  margin: 5px 0 8px !important;
+  }
 .smkl-plan-pill {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
-  min-height: 40px;
-  padding: 0;
   overflow: hidden;
-  border: 2px solid var(--fx-blue);
-  border-radius: 10px;
+  border: 2px solid var(--fx-blue);;
   background: linear-gradient(90deg, #005cc6, #016bc2, #1784ff, #0a61a8, #016bc2, #005cc6);
   background-size: 250%;
   color: #77d2ff;
@@ -538,8 +514,10 @@
     box-shadow 0.22s ease,
     transform 0.18s ease;
   animation: smkl-plan-gradient 4s linear infinite;
+  min-height: 38px;
+  padding: 5px 8px;
+  border-radius: 8px;
 }
-
 .smkl-plan-pill::before {
   content: "";
   position: absolute;
@@ -548,32 +526,28 @@
   border-radius: 8px;
   background: linear-gradient(180deg, #0a1115 0%, #050809 100%);
 }
-
 .smkl-plan-pill__icon {
   position: relative;
   z-index: 2;
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   flex: 0 0 20px;
   object-fit: contain;
 }
-
 .smkl-plan-pill__name {
   position: relative;
   z-index: 2;
   color: var(--fx-green-soft);
   font-family: var(--fx-font-display);
-  font-size: 0.75rem;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.11em;
   white-space: nowrap;
 }
-
 .smkl-plan-pill:not(.is-active) {
   opacity: 0.5;
 }
-
 .smkl-plan-pill.is-active {
   opacity: 1;
   border-color: var(--fx-cyan-soft);
@@ -583,7 +557,6 @@
     0 7px 18px rgb(0 0 0 / 31%);
   transform: translateY(-1px);
 }
-
 .smkl-plan-pill:hover:not(:disabled) {
   box-shadow:
     0 0 0 1px rgb(119 255 221 / 40%),
@@ -591,11 +564,9 @@
     0 8px 18px rgb(0 0 0 / 33%);
   transform: translateY(-1px);
 }
-
 .smkl-plan-pill:active:not(:disabled) {
   transform: scale(0.96);
 }
-
 .smkl-plan-pill:disabled {
   opacity: 0.28;
   filter: saturate(0.25);
@@ -603,27 +574,24 @@
   animation: none;
   transform: none;
 }
-
-.smkl-form {
+.mkl-form {
   position: relative;
   z-index: 3;
   display: grid;
   justify-items: center;
   width: 100%;
   margin: 0 auto;
-  gap: 11px;
+   gap: 7px !important;
 }
-
 .smkl-step-label {
   width: 100%;
-  margin: 0;
   color: rgb(255 255 255 / 60%);
   font-family: var(--fx-font-mono);
-  font-size: 0.78rem;
   letter-spacing: 0.14em;
   text-align: center;
+  margin: 3px 0 2px !important;
+  font-size: 10px !important;
 }
-
 .smkl-plan-access-field,
 .smkl-form__field--username,
 .smkl-identity-combined {
@@ -637,16 +605,14 @@
     inset 0 0 24px rgb(0 18 26 / 80%),
     0 8px 20px rgb(0 0 0 / 30%);
 }
-
 .smkl-plan-access-field {
   display: flex;
   align-items: center;
   width: 100%;
-  min-height: 54px;
+  min-height:48px;
   padding: 0 18px;
   border-radius: 12px;
 }
-
 .smkl-plan-access-field input {
   width: 100%;
   min-width: 0;
@@ -662,38 +628,36 @@
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  height: 48px !important;
+  font-size: 15px !important;
 }
-
 .smkl-plan-access-field input::placeholder {
   color: rgb(87 149 165 / 61%);
 }
-
 .smkl-form__field--username {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 52px;
   padding: 0 18px;
   gap: 10px;
   border-radius: 10px;
+  min-height: 48px !important;
+  height: 48px !important;
 }
-
 .smkl-form__field--username:focus-within {
   border-color: rgb(74 255 176 / 45%);
   box-shadow:
     0 0 0 1px rgb(74 255 176 / 12%),
     0 0 18px rgb(74 255 176 / 8%);
 }
-
 .smkl-form__icon--username {
   display: grid;
   place-items: center;
-  width: 20px;
   height: 28px;
   flex: 0 0 20px;
+  width: 19px !important;
 }
-
 .smkl-form__icon--username svg {
   width: 20px;
   height: 28px;
@@ -701,20 +665,17 @@
   stroke: var(--fx-blue-soft);
   stroke-width: 2;
 }
-
 .smkl-username-at {
   flex: 0 0 auto;
   color: var(--fx-cyan-soft);
   font-family: var(--fx-font-mono);
-  font-size: 1rem;
   font-weight: 700;
   line-height: 1;
+  font-size: 16px !important;
 }
-
 .smkl-form__field--username input {
   width: 190px;
   max-width: 70%;
-  height: 48px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -723,16 +684,16 @@
   color: var(--fx-cyan-soft);
   caret-color: var(--fx-cyan-soft);
   font-family: var(--fx-font-mono);
-  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-align: left;
+  height: 46px !important;
+  font-size: 14px !important;
 }
 
 .smkl-form__field--username input::placeholder {
   color: rgb(99 255 208 / 40%);
 }
-
 .smkl-identity-combined {
   position: relative;
   display: flex;
@@ -749,7 +710,6 @@
     linear-gradient(180deg, rgb(23 65 60 / 62%), rgb(2 6 5 / 98%)),
     repeating-linear-gradient(0deg, transparent 0 5px, rgb(12 169 179 / 5%) 6px);
 }
-
 .smkl-identity-combined__user {
   color: var(--fx-text);
   font-family: var(--fx-font-mono);
@@ -761,13 +721,11 @@
     0 0 10px rgb(57 240 176 / 28%);
   white-space: nowrap;
 }
-
 .smkl-identity-combined__separator {
   width: 1px;
   height: 22px;
   background: linear-gradient(180deg, transparent, rgb(99 255 208 / 40%), transparent);
 }
-
 .smkl-code-digits {
   position: relative;
   display: flex;
@@ -778,7 +736,6 @@
   gap: 9px;
   cursor: text;
 }
-
 .smkl-code-digit {
   display: block;
   width: 22px;
@@ -794,7 +751,6 @@
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
-
 .smkl-code-digit.is-filled {
   border-color: var(--fx-cyan-soft);
   background: var(--fx-cyan-soft);
@@ -803,7 +759,6 @@
     0 0 14px rgb(99 255 208 / 40%),
     inset 0 0 3px rgb(255 255 255 / 53%);
 }
-
 .smkl-code-real-input {
   position: absolute;
   inset: 0;
@@ -819,27 +774,19 @@
   opacity: 0.01;
   cursor: text;
 }
-
 .smkl-code-digits:focus-within .smkl-code-digit:not(.is-filled):first-of-type {
   border-color: var(--fx-cyan-soft);
   box-shadow: 0 0 8px rgb(99 255 208 / 53%);
 }
-
 .smkl-telegram-check-note {
-  width: 100%;
-  margin: 0;
-  color: var(--fx-muted);
-  font-family: var(--fx-font-mono);
-  font-size: 0.58rem;
-  line-height: 1.45;
-  letter-spacing: 0.05em;
-  text-align: center;
+  margin: 2px auto  5px !important;
+  max-width: 310px !important;
+  font-size: 8px !important;
+  line-height: 1.25 !important;
 }
-
 .smkl-telegram-check-note.is-ready {
   color: var(--fx-green-soft);
 }
-
 .smkl-form__error {
   width: 100%;
   margin: 0;
@@ -851,28 +798,27 @@
   font-size: 0.7rem;
   text-align: center;
 }
-
 .smkl-form__submit {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 55%;
-  height: 50px;
-  min-height: 40px;
   margin: 12px auto 0;
-  padding: 0 18px;
   overflow: hidden;
   border: 1px solid #255893;
-  border-radius: 8px;
   background: linear-gradient(180deg, rgb(37 88 147 / 98%), rgb(18 22 27 / 98%) 52%, rgb(10 11 14 / 99%));
   box-shadow:
     0 8px 22px rgb(0 0 0 / 38%),
     inset 0 1px 0 rgb(255 255 255 / 6%);
   color: var(--fx-green-soft);
   cursor: pointer;
+  min-height: 43px;
+  height: 43px;
+  padding: 6px 16px ;
+  font-size: 11px;
+  border-radius: 8px;
 }
-
 .smkl-form__submit span {
   position: relative;
   z-index: 2;
@@ -884,20 +830,16 @@
   text-indent: 0.3em;
   text-shadow: 0 0 10px rgb(93 255 193 / 28%);
 }
-
 .smkl-form__submit:hover:not(:disabled) {
   filter: brightness(1.15);
 }
-
 .smkl-form__submit:active:not(:disabled) {
   transform: scale(0.96);
 }
-
 .smkl-form__submit:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
-
 .smkl-form__submit--verify,
 .smkl-form__submit--telegram-check {
   width: 184px;
@@ -911,7 +853,6 @@
   background: var(--fx-bg-button);
   box-shadow: 0 0 16px rgb(22 140 255 / 22%);
 }
-
 .smkl-form__submit--verify::before,
 .smkl-form__submit--telegram-check::before {
   position: absolute;
@@ -928,47 +869,39 @@
   font-weight: 700;
   letter-spacing: 0.16em;
 }
-
 .smkl-form__submit--verify::before {
   content: "VERIFY ACCESS";
 }
-
 .smkl-form__submit--telegram-check::before {
   content: "CHECK USER";
 }
-
 .smkl-form__submit--verify span,
 .smkl-form__submit--telegram-check span {
   opacity: 0;
   pointer-events: none;
 }
-
 .smkl-form__submit--verify.is-approved,
 .smkl-form__submit--telegram-check.is-approved {
   border-color: var(--fx-green);
   background: #03160f;
   box-shadow: 0 0 18px rgb(53 233 149 / 27%);
 }
-
 .smkl-form__submit--verify.is-approved::before,
 .smkl-form__submit--telegram-check.is-approved::before {
   background: #03160f;
   color: var(--fx-green-soft);
 }
-
 .smkl-form__submit--verify.is-rejected,
 .smkl-form__submit--telegram-check.is-rejected {
   border-color: var(--fx-red);
   background: #1a0509;
   box-shadow: 0 0 18px rgb(255 77 105 / 27%);
 }
-
 .smkl-form__submit--verify.is-rejected::before,
 .smkl-form__submit--telegram-check.is-rejected::before {
   background: #1a0509;
   color: var(--fx-red-soft);
 }
-
 .smkl-form__submit--inline {
   width: 150px;
   min-width: 150px;
@@ -977,67 +910,175 @@
   margin-top: 6px;
   padding: 0;
 }
-
 .smkl-form__submit--get-in {
   width: 150px;
   min-width: 150px;
   min-height: 42px;
 }
-
-.smkl-panel__bottom-actions {
-  position: static;
-  width: 0;
-  height: 0;
+.smkl-form__submit--telegram-check,
+.smkl-form__submit--verify,
+.smkl-form__submit--inline,
+.smkl-form__submit--get-in {
+  width: 180px;
+  max-width: 180px;
+  margin: 3px auto 0;
 }
-.smkl-telegram-mode-btn,
-.smkl-special-code-fab {
+.smkl-panel__bottom-actions {
   position: absolute;
-  right: -42px;
-  top: -100px;
+  left: auto ;
+  right: -72px;
+  top: 50% ;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center ;
+  justify-content: center;
+  gap: 10px;
+  z-index: 40;
+}
+/* ───── TELEGRAM — BOTON ─────────────── */ 
+.smkl-telegram-mode-btn { 
+  position: relative !important; 
+  width: 48px !important; 
+  height: 48px !important; 
+  min-width: 48px !important; 
+  min-height: 48px !important; 
+  left: -13px;
+  bottom: 98px;
+  padding: 0 !important; 
+  margin: 0 10px 10px 0  !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+  overflow: hidden !important; 
+  border: 
+    1px solid 
+    rgba(74, 213, 255, .72) !important; 
+  border-radius: 8px !important; 
+  background: 
+    linear-gradient(
+      180deg, 
+      #21bfff 0%, 
+      #078bd4 48%, 
+      #0569af 100%) !important; 
+  box-shadow: 
+    0 0 12px rgba(0, 190, 255, .30), 
+    inset 0 0 8px rgba(255, 255, 255, .10) !important; 
+  z-index: 5 !important; 
+} 
+/* ─────── TELEGRAM — ICONO ────────────────── */ 
+.smkl-telegram-mode-btn::before { 
+  content: "" !important; 
+  position: absolute !important; 
+  left:50%; 
+  top: 50%; 
+  width: 25px !important; 
+  height: 25px !important; 
+  transform: translate(-50%, -50%) !important; 
+  display: block !important; 
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M21.9 4.6 18.7 19.7c-.2 1.1-.9 1.4-1.8.9l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.4-.1-.6-.6-.2L6.3 13.5l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 3.3c.9-.3 1.7.2 1.4 1.3Z'/%3E%3C/svg%3E") !important; 
+  background-position: center !important; 
+  background-repeat: no-repeat !important; 
+  background-size: contain !important; 
+  opacity: 1 !important;
+  visibility: visible !important; 
+  z-index: 10 !important; 
+} 
+.smkl-telegram-mode-btn::after { 
+  content: none !important; 
+  display: none !important; 
+} 
+/* ────────── TELEGRAM — TEXTO ──────────────────── */ 
+.smkl-telegram-side-label { 
+  position: absolute !important; 
+  left: 66px !important; 
+  right: auto !important; 
+  top: -120% !important; 
+  transform:  translateY(-90%) !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+  min-width: max-content !important; 
+  padding:  6px  10px !important; 
+  margin: 0 !important; 
+  border: 1px solid  #00c4ff8f !important; 
+  border-radius: 2!important; 
+  background: 
+    #04121e7c !important; 
+  color: 
+    #d4fbff !important; 
+  font-size: 8px !important; 
+  font-weight: 800 !important; 
+  line-height: 1 !important; 
+  letter-spacing: .11em !important; 
+  white-space: nowrap !important; 
+  pointer-events: none !important; 
+  box-shadow: 
+    0 0 10px 
+    rgba(0, 190, 255, .16) !important; 
+  z-index: 6 !important; 
+} 
+/* ───────  PULSO TELEGRAM ──────────────────── */ 
+.smkl-telegram-mode-btn.is-cue-active { 
+  animation: 
+    smklTelegramButtonPulse 
+    1.25s 
+    ease-in-out 
+    infinite !important; 
+} 
+@keyframes smklTelegramButtonPulse { 
+  0%, 
+  100% { 
+    transform: scale(1); 
+    box-shadow: 
+      0 0 8px rgba(0, 190, 255, .26), 
+      0 0 0 0 rgba(0, 205, 255, 0); 
+  } 
+  50% { 
+    transform: scale(1.06); 
+    box-shadow: 
+      0 0 18px rgba(0, 205, 255, .62), 
+      0 0 0 5px rgba(0, 205, 255, .07); 
+  } } 
+@keyframes smklTelegramButtonPulse {
+  0%,100% {transform: scale(1);
+    box-shadow: 0 0 8px
+      #00beff42,
+  0 0 0 0 #00cdff00;}
+  50% {transform: scale(1.06);
+    box-shadow: 0 0 18px  #00cdff9e,
+  0 0 0 5px #00cdff12;
+  }}
+.smkl-special-code-fab {
+  position:absolute;
+  right:-14%;
+  width: 49px ;
+  height: 49px;
+  margin: 0;
+  padding: 0 ;
+  transform: none;
+  border-radius: 7px;
   z-index: 45;
-  display: grid;
+  top: 195px;
+  background: linear-gradient(145deg,
+   #687300, #c5dc00 48%, #687300);
+  box-shadow:
+    5px 7px 15px rgb(0 0 0 / 38%),
+    0 0 14px rgb(221 255 0 / 28%),
+    inset 1px 0 0 rgb(255 255 255 / 28%);
+    display: grid;
   place-items: center;
-  width: 42px;
-  min-width: 42px;
-  height: 54px;
-  min-height: 54px;
   margin: 0;
   padding: 0;
   overflow: visible;
   border: 0;
-  border-radius: 0 4px 13px 0;
   cursor: pointer;
   transition:
     transform 0.22s ease,
     box-shadow 0.25s ease,
     filter 0.25s ease,
     opacity 0.25s ease;
-}
-
-.smkl-telegram-mode-btn {
-  top: 22px;
-  background: linear-gradient(145deg, #075185, #0085d4 48%, #075185);
-  box-shadow:
-    5px 7px 15px rgb(0 0 0 / 38%),
-    0 0 14px rgb(22 152 238 / 35%),
-    inset 1px 0 0 rgb(255 255 255 / 28%);
-}
-.smkl-special-code-fab {
-  top: 271px;
-  background: linear-gradient(145deg, #687300, #c5dc00 48%, #687300);
-  box-shadow:
-    5px 7px 15px rgb(0 0 0 / 38%),
-    0 0 14px rgb(221 255 0 / 28%),
-    inset 1px 0 0 rgb(255 255 255 / 28%);
-}
-.smkl-telegram-mode-btn::before {
-  content: "";
-  display: block;
-  width: 29px;
-  height: 29px;
-  background: url("/assets/iconos/telegram.png") center / contain no-repeat;
-  filter: drop-shadow(0 0 65px #004065);
-  transform: rotate(0deg);
 }
 .smkl-special-code-fab > span {
   display: block;
@@ -1046,85 +1087,32 @@
   line-height: 1;
   text-shadow: 0 0 6px rgb(255 255 255 / 30%);
 }
-
 .smkl-telegram-mode-btn:hover:not(:disabled),
 .smkl-special-code-fab:hover:not(:disabled) {
   filter: brightness(1.16);
   transform: translateX(4px);
 }
-
 .smkl-telegram-mode-btn:active:not(:disabled),
 .smkl-special-code-fab:active:not(:disabled) {
   transform: translateX(4px) scale(0.95);
 }
-
 .smkl-telegram-mode-btn:disabled,
 .smkl-special-code-fab:disabled {
   opacity: 0.34;
   filter: saturate(0.3);
   cursor: not-allowed;
 }
-
 .smkl-special-code-fab.is-locked {
   opacity: 0.3;
   filter: saturate(0.2);
 }
-
 .smkl-special-code-fab.is-ready {
   opacity: 1;
   filter: saturate(1);
 }
-
 .smkl-special-code-fab.is-awaiting-click {
   animation: smkl-special-awaiting-click 1.2s ease-in-out infinite;
 }
-
-.smkl-telegram-mode-btn.is-active {
-  box-shadow:
-    0 0 0 1px rgb(119 220 255 / 75%),
-    0 0 20px rgb(66 186 255 / 62%),
-    5px 7px 15px rgb(0 0 0 / 40%);
-}
-
-/* Labels use the existing classes and always open to the right. */
-.smkl-panel__action-label,
-.smkl-special-code-fab small {
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 10px);
-  z-index: 100;
-  display: block;
-  width: max-content;
-  height: auto;
-  margin: 0;
-  padding: 7px 10px;
-  overflow: visible;
-  border-radius: 8px;
-  font-family: var(--fx-font-mono);
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  pointer-events: none;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-50%) translateX(-5px);
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease,
-    visibility 0.18s ease;
-}
-
-.smkl-panel__action-label {
-  border: 1px solid rgb(66 186 255 / 65%);
-  background: rgb(3 19 34 / 96%);
-  color: #8fdcff;
-  box-shadow:
-    0 0 12px rgb(22 152 238 / 25%),
-    inset 0 1px 0 rgb(255 255 255 / 9%);
-}
-
 .smkl-special-code-fab small {
   border: 1px solid rgb(223 255 0 / 58%);
   background: rgb(14 19 0 / 96%);
@@ -1132,28 +1120,9 @@
   box-shadow:
     0 0 12px rgb(223 255 0 / 22%),
     inset 0 1px 0 rgb(255 255 255 / 9%);
-}
-
-.smkl-telegram-mode-btn:hover .smkl-panel__action-label,
-.smkl-telegram-mode-btn:focus-visible .smkl-panel__action-label,
-.smkl-special-code-fab:hover:not(:disabled) small,
-.smkl-special-code-fab:focus-visible small,
-.smkl-special-code-fab.is-awaiting-click small {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(-50%) translateX(0);
-}
-
-.smkl-special-code-fab:disabled small {
   opacity: 0;
   visibility: hidden;
 }
-
-.smkl-panel__action-label:empty,
-.smkl-special-code-fab small:empty {
-  display: none;
-}
-
 .smkl-sr-only {
   position: absolute;
   width: 1px;
@@ -1165,194 +1134,104 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
-
 .smkl-modal button:focus-visible,
 .smkl-modal input:focus-visible {
   outline: 2px solid var(--fx-cyan);
   outline-offset: 3px;
 }
-
 @keyframes smkl-screen-scan {
-  from {
-    background-position: 0 0;
+  from {background-position: 0 0;
   }
-
-  to {
-    background-position: 0 12px;
-  }
-}
-
+  to {background-position: 0 12px;
+  }}
 @keyframes smkl-screen-glow {
-  0%,
-  100% {
-    box-shadow:
+  0%, 100% {box-shadow:
       inset 0 0 0 1px rgb(7 92 89 / 50%),
       inset 0 0 24px rgb(0 0 0 / 85%),
       0 0 14px rgb(8 216 200 / 22%);
   }
-
-  50% {
-    box-shadow:
+  50% {box-shadow:
       inset 0 0 0 1px rgb(20 92 71 / 67%),
       inset 0 0 24px rgb(20 54 42 / 20%),
       0 0 24px rgb(57 240 176 / 18%);
-  }
-}
-
+  }}
 @keyframes smkl-typing-reveal {
-  from {
-    clip-path: inset(0 100% 0 0);
+  from {clip-path: inset(0 100% 0 0);
   }
-
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
+  to {clip-path: inset(0 0 0 0);
+  }}
 @keyframes smkl-typing-glow {
-  0%,
-  100% {
-    text-shadow: 0 0 6px rgb(130 255 228 / 22%);
+  0%, 100% {text-shadow: 0 0 6px rgb(130 255 228 / 22%);
   }
-
-  50% {
-    text-shadow: 0 0 12px rgb(130 255 228 / 44%);
-  }
-}
-
+  50% {text-shadow: 0 0 12px rgb(130 255 228 / 44%);
+  }}
 @keyframes smkl-eye-glow {
-  0%,
-  100% {
-    opacity: 0.92;
+  0%, 100% {opacity: 0.92;
     filter: brightness(1);
   }
-
-  50% {
-    opacity: 1;
+  50% {opacity: 1;
     filter: brightness(1.28);
-  }
-}
-
+  }}
 @keyframes smkl-eye-blink {
-  0%,
-  41%,
-  43%,
-  71%,
-  73%,
-  100% {
-    transform: scaleY(1);
+  0%, 41%, 43%, 71%, 73%, 100% {transform: scaleY(1);
   }
-
-  42%,
-  72% {
-    transform: scaleY(0.08);
-  }
-}
-
+  42%, 72% {transform: scaleY(0.08);
+  }}
 @keyframes smkl-guide-eyes {
-  0%,
-  100% {
-    transform: translateX(3px) translateY(-1px);
+  0%, 100% {transform: translateX(3px) translateY(-1px);
   }
-
-  50% {
-    transform: translateX(7px) translateY(-2px);
-  }
-}
-
+  50% {transform: translateX(7px) translateY(-2px);
+  }}
 @keyframes smkl-guide-blink {
-  0%,
-  43%,
-  49%,
-  100% {
-    transform: scaleY(1);
+  0%, 43%, 49%, 100% {transform: scaleY(1);
   }
-
-  46% {
-    transform: scaleY(0.12);
-  }
-}
-
+  46% {transform: scaleY(0.12);
+  }}
 @keyframes smkl-special-eyes {
-  0%,
-  100% {
-    transform: translateX(4px) translateY(-1px);
+  0%, 100% {transform: translateX(4px) translateY(-1px);
   }
-
-  50% {
-    transform: translateX(10px) translateY(-3px);
-  }
-}
-
+  50% {transform: translateX(10px) translateY(-3px);
+  }}
 @keyframes smkl-special-blink {
-  0%,
-  42%,
-  46%,
-  100% {
-    transform: scaleY(1);
+  0%, 42%, 46%, 100% {transform: scaleY(1);
   }
-
-  44% {
-    transform: scaleY(0.1);
-  }
-}
-
+  44% {transform: scaleY(0.1);
+  }}
 @keyframes smkl-point-telegram {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
+  0%, 100% {transform: translateX(0) rotate(0deg);
   }
-
-  50% {
-    transform: translateX(5px) rotate(-3deg);
-  }
-}
-
+  50% {transform: translateX(5px) rotate(-3deg);
+  }}
 @keyframes smkl-special-hand {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
+  0%, 100% {transform: translateX(0) rotate(0deg);
   }
-
-  50% {
-    transform: translateX(9px) rotate(-5deg);
-  }
-}
-
+  50% {transform: translateX(9px) rotate(-5deg);
+  }}
 @keyframes smkl-special-awaiting-click {
-  0%,
-  100% {
-    box-shadow:
+  0%, 100% {box-shadow:
       5px 7px 15px rgb(0 0 0 / 38%),
       0 0 12px rgb(221 255 0 / 25%),
       inset 1px 0 0 rgb(255 255 255 / 28%);
   }
-  50% {
-    box-shadow:
+  50% {box-shadow:
       5px 7px 15px rgb(0 0 0 / 38%),
       0 0 25px rgb(221 255 0 / 65%),
       inset 1px 0 0 rgb(255 255 255 / 42%);
   }}
 @keyframes smkl-plan-gradient {
-  0% {
-    background-position: 0% center;
+  0% {background-position: 0% center;
   }
-  50% {
-    background-position: 100% center;
+  50% {background-position: 100% center;
   }
-  100% {
-    background-position: 0% center;
+  100% {background-position: 0% center;
   }}
 @media (min-height: 760px) {
-  .smkl-modal {
-    place-items: center;
+  .smkl-modal {place-items: center;
   }}
 @media (max-width: 520px) {
-  .smkl-modal {
-    padding: 16px 12px 28px;
+  .smkl-modal {padding: 16px 12px 28px;
   }
-  .smkl-modal__stage {
-    width: min(94vw, 420px);
+  .smkl-modal__stage {width: min(94vw, 420px);
   }
   .smkl-modal__bubble--screen {
     width: calc(100% - 8px);
@@ -1365,39 +1244,28 @@
     font-size: 0.68rem;
     letter-spacing: 0.04em;
   }
-  .smkl-panel {
-    padding: 36px 12px 24px;
+  .smkl-panel {padding: 36px 12px 24px;
   }
-
-.smkl-panel::before {
+  .smkl-panel::before {
     top: 62%;
     font-size: 2.65rem;
   }
-
   .smkl-robot__hand {
     width: 46px;
     height: 29px;
   }
-
-  .smkl-robot__hand--left {
-    left: -9px;
+  .smkl-robot__hand--left {left: -9px;
   }
-
-  .smkl-robot__hand--right {
-    right: -9px;
+  .smkl-robot__hand--right {right: -9px;
   }
-
-  .smkl-plan-switcher {
-    gap: 7px;
+  .smkl-plan-switcher {gap: 7px;
   }
-
   .smkl-plan-pill {
     height: 42px;
     min-height: 42px;
     padding: 0 5px;
     gap: 5px;
   }
-
   .smkl-plan-pill__icon {
     width: 18px;
     height: 18px;
@@ -1406,15 +1274,6 @@
   .smkl-plan-pill__name {
     font-size: 0.56rem;
     letter-spacing: 0.07em;
-  }
-  .smkl-telegram-mode-btn,
-  .smkl-special-code-fab {
-    right: -36px;
-    width: 36px;
-    min-width: 36px;
-    height: 48px;
-    min-height: 48px;
-    border-radius: 0 12px 12px 0;
   }
   .smkl-telegram-mode-btn {top: 18px;
   }
@@ -1453,5 +1312,47 @@
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
   }}
-
-  
+@keyframes smklTelegramHandPoint {
+  0%, 100% {transform:
+      scale(.82)
+      translate3d(0, 0, 0)
+      rotate(0deg);
+  }
+  35% {transform:
+      scale(.82)
+      translate3d(22px, 1px, 0)
+      rotate(-10deg);
+  }
+  55% {transform:
+      scale(.82)
+      translate3d(30px, 0, 0)
+      rotate(-15deg);
+  }
+  72% {transform:
+      scale(.82)
+      translate3d(22px, 1px, 0)
+      rotate(-10deg);
+  }}
+  /* ========================================================= 
+   FONDO GRANDE — EXTREMOS MAS VISIBLES 
+   ========================================================= */ 
+.smkl-modal { 
+  background-position: center center !important; 
+  background-size: 100% 100% !important; 
+} 
+.smkl-modal__backdrop { 
+  background-position: center center !important; 
+  background-size: 100% 100% !important; 
+} 
+.smkl-modal::before, 
+.smkl-modal__backdrop::before { 
+  background-position: center center !important; 
+  background-size: 100% 100% !important; 
+  opacity: 1 !important; 
+} 
+/* hace mas visibles las decoraciones de ambos extremos */ 
+.smkl-modal__backdrop { 
+  filter: 
+    brightness(1.10) 
+    contrast(1.08) !important; 
+} 
