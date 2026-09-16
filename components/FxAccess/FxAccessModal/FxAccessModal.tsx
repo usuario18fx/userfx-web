@@ -167,7 +167,7 @@ export function FxAccessModal({
     "idle" | "approved" | "rejected"
   >("idle");
 
-  const [instructionIndex, setInstructionIndex] = useState(0);
+  const [typedText, setTypedText] = useState("");
 
   const busy = identityLoading || privateLoading || accessLoading;
 
@@ -177,26 +177,6 @@ export function FxAccessModal({
   useEffect(() => {
     loadingRef.current = busy;
   }, [busy]);
-
-  useEffect(() => {
-    const shouldGuide =
-      open &&
-      mode === "telegram" &&
-      step === "username" &&
-      !telegramAuthorized;
-
-    setInstructionIndex(0);
-
-    if (!shouldGuide) return;
-
-    const timer = window.setInterval(() => {
-      setInstructionIndex((current) => (current + 1) % 3);
-    }, 4200);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [open, mode, step, telegramAuthorized]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -714,25 +694,45 @@ export function FxAccessModal({
   };
 
   /*
-   * La pantalla superior guía al usuario
-   * durante todo el proceso de acceso.
+   * La pantalla superior muestra un solo mensaje
+   * y lo escribe letra por letra.
    */
-  const usernameInstructions = [
-    "Tap Telegram to start your member access.",
-    "If you were selected, enter your @username to become a member.",
-    "We’ll verify your Telegram account, then unlock SPECIAL CODE.",
-  ];
-
   const bubbleText =
     mode === "plan"
       ? `Choose ${selectedPlan}, then enter your private access key.`
       : telegramAuthorized && step === "username"
         ? `${username} selected. Tap SPECIAL to continue.`
         : step === "username"
-          ? usernameInstructions[instructionIndex]
+          ? "If you were selected, enter your @username to become a member."
           : step === "identity"
             ? `${username} verified. Enter your SPECIAL CODE to continue.`
             : "Access confirmed. Welcome to the private room.";
+
+  useEffect(() => {
+    if (!open) {
+      setTypedText("");
+
+      return;
+    }
+
+    let characterIndex = 0;
+
+    setTypedText("");
+
+    const typingTimer = window.setInterval(() => {
+      characterIndex += 1;
+
+      setTypedText(bubbleText.slice(0, characterIndex));
+
+      if (characterIndex >= bubbleText.length) {
+        window.clearInterval(typingTimer);
+      }
+    }, 48);
+
+    return () => {
+      window.clearInterval(typingTimer);
+    };
+  }, [open, bubbleText]);
   const titleText =
     mode === "plan"
       ? "PRIVATE ACCESS"
@@ -786,11 +786,8 @@ export function FxAccessModal({
         </button>
         <div className="smkl-modal__bubble smkl-modal__bubble--screen">
           <div className="smkl-typing-viewport">
-            <span
-              className="smkl-typing-text"
-              key={`${mode}-${step}-${selectedPlan}-${telegramAuthorized}`}
-            >
-              {bubbleText}
+            <span className="smkl-typing-text">
+              {typedText}
             </span>
           </div>
         </div>
