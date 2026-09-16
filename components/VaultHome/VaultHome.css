@@ -2421,8 +2421,8 @@ video{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  width:clamp(72px,9vw,112px)!important;
-  height:clamp(72px,9vw,112px)!important;
+  width:clamp(82px,10vw,124px)!important;
+  height:clamp(82px,10vw,124px)!important;
   min-width:0!important;
   min-height:0!important;
   padding:0!important;
@@ -2467,16 +2467,8 @@ video{
   }
   .vx-footerButtons a{
     flex:0 0 auto!important;
-    width:clamp(68px,23vw,98px)!important;
-    height:clamp(68px,23vw,98px)!important;
+    width:clamp(78px,25vw,108px)!important;
+    height:clamp(78px,25vw,108px)!important;
   }
 }
 
-
-/* ═════════ USER FX · CHAT ICON TRANSPARENCY FIX ═════════ */
-.vx-footerButtons a:nth-child(3) img{
-  width:78%!important;
-  height:78%!important;
-  mix-blend-mode:screen;
-  filter:contrast(1.12) brightness(1.04)!important;
-}
