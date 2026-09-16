@@ -2404,3 +2404,70 @@ video{
   .vx-footerButtons a{flex:1 1 0;min-width:0;min-height:44px;padding:7px 5px;gap:5px;font-size:8px;letter-spacing:.09em;}
   .vx-footerButtons img{width:21px;height:21px;}
 }
+
+
+/* ═════════ USER FX · ICON-ONLY FOOTER ACTIONS ═════════ */
+.vx-footerButtons{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(16px,3vw,34px);
+  width:100%;
+  margin:0 auto 18px;
+  padding:0;
+}
+.vx-footerButtons a{
+  appearance:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:clamp(72px,9vw,112px)!important;
+  height:clamp(72px,9vw,112px)!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:transparent!important;
+  text-decoration:none!important;
+  opacity:1!important;
+  overflow:visible!important;
+  pointer-events:auto!important;
+  cursor:pointer;
+}
+.vx-footerButtons a:hover{
+  border:0!important;
+  color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:translateY(-4px) scale(1.04);
+}
+.vx-footerButtons a:focus-visible{
+  outline:1px solid #48bfff;
+  outline-offset:5px;
+}
+.vx-footerButtons img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  filter:none!important;
+  opacity:1!important;
+  pointer-events:none;
+  user-select:none;
+}
+@media (max-width:700px){
+  .vx-footerButtons{
+    gap:clamp(12px,4vw,22px);
+    padding:0 18px;
+    margin-bottom:14px;
+  }
+  .vx-footerButtons a{
+    flex:0 0 auto!important;
+    width:clamp(68px,23vw,98px)!important;
+    height:clamp(68px,23vw,98px)!important;
+  }
+}
