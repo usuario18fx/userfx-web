@@ -2342,10 +2342,52 @@ video{
 }
 
 /* ═════════ USER FX · FINAL HERO / DOORS / FOOTER ACTIONS ═════════ */
-.vx-heroGetCode{appearance:none;display:flex;align-items:center;justify-content:center;width:min(290px,78vw);min-height:54px;margin:10px auto 28px;padding:10px 28px;border:1px solid #2d8fd0;border-radius:12px;color:#d9f4ff;background:linear-gradient(180deg,#123a5c 0%,#081d31 58%,#050d16 100%);box-shadow:inset 0 0 0 1px #7cdbff1c,0 0 22px #138fd13d;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:800;letter-spacing:.22em;text-indent:.22em;cursor:pointer;position:relative;z-index:12;}
-.vx-heroGetCode:hover{transform:translateY(-2px);border-color:#72d2ff;}
-.vx-heroGetCode:focus-visible{outline:2px solid #72d2ff;outline-offset:3px;}
 .vx .vx-dossierEmoji,.vx .vx-dossierEmojiTwo{display:none!important;}
 @media (max-width:700px){
-  .vx-heroGetCode{margin-top:8px;margin-bottom:24px;min-height:50px;font-size:11px;}
-        }
+          }
+
+
+/* ═════════ USER FX · HERO ACCESS BUTTON + LAUREL GRIS ═════════ */
+.vx-heroGetCode{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  margin:10px auto 28px;
+  position:relative;
+  z-index:12;
+}
+.vx-heroGetCode .smkl-access-button{
+  width:min(390px,86vw);
+}
+.vx-lock{position:relative;}
+.vx-vaultLaurel{
+  position:relative!important;
+  z-index:26!important;
+  display:flex!important;
+  width:min(108%,700px)!important;
+  height:clamp(105px,11vw,145px)!important;
+  margin:0 auto -34px!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  pointer-events:none!important;
+}
+.vx-vaultLaurel img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  filter:grayscale(1) brightness(.78) contrast(.88)!important;
+  opacity:.92!important;
+  transform:none!important;
+  user-select:none!important;
+}
+@media (max-width:700px){
+  .vx-heroGetCode{margin:8px auto 24px;}
+  .vx-heroGetCode .smkl-access-button{width:min(390px,86vw);}
+  .vx-vaultLaurel{
+    width:112%!important;
+    height:clamp(88px,23vw,122px)!important;
+    margin:0 -6% -28px!important;
+  }
+}
