@@ -53,6 +53,9 @@ const ICONS = {
   laurel: "/assets/iconos/laurel.png",
   dossier: "/assets/iconos/icon.png",
   dossierTwo: "/assets/iconos/icon2.png",
+  chat: "/assets/iconos/chat.png",
+  support: "/assets/iconos/support.png",
+  tv: "/assets/iconos/tv.png",
 };
 
 const TICKER_ITEMS = [
@@ -437,6 +440,9 @@ export default function VaultHome() {
           </a>
           <i />
           </p>
+          <button type="button" className="vx-heroGetCode" onClick={() => setDm(true)}>
+            <Scramble text="GET MY CODE" hover />
+          </button>
           <h1 className="vx-title">
       <Scramble text="ACCESS" className="vx-access" delay={160} />
           <div className="vx-titleCrown">
@@ -506,11 +512,9 @@ export default function VaultHome() {
           </div>
           </div>
           </div>
-          <img src={ICONS.dossier} alt="" className="vx-dossierEmoji" draggable={false} aria-hidden="true"/>
-          <img src={ICONS.dossier} alt="" className="vx-dossierEmoji" draggable={false} aria-hidden="true"/>
-          <img src={ICONS.dossier} alt="" className="vx-dossierEmojiTwo" draggable={false} aria-hidden="true"/>
           </div>
           <aside className="vx-lock vx-lockRaise">
+              <img src={ICONS.laurel} alt="" className="vx-doorLaurel" draggable={false} aria-hidden="true" />
     <VaultHeroDoors unlocked={unlocked} />
           {!unlocked ? (
     <VaultActions value={inlineCodeValue}
@@ -733,15 +737,18 @@ export default function VaultHome() {
               </div>
               <div>
               <div className="vx-footActions">
-              <nav className="vx-links" aria-label="Vault quick actions">
-              <a href="https://t.me/User18Fx" target="_blank" rel="noreferrer">
-        <Scramble text="@USER18FX" hover />
+              <nav className="vx-sessionLinks" aria-label="Vault quick actions">
+              <a href="https://t.me/User18Fx" target="_blank" rel="noopener noreferrer" aria-label="Open private chat">
+              <img src={ICONS.chat} alt="" aria-hidden="true" />
+        <Scramble text="CHAT" hover />
               </a>
-              <button type="button" onClick={() => setCodeModal(true)}>
-        <Scramble text="SPECIAL CODE" hover />
-              </button>
-              <a  href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">
-        <Scramble text="GET CODE" hover />
+              <a href="https://t.me/User18Fx_bot?start=support" target="_blank" rel="noopener noreferrer" aria-label="Open support">
+              <img src={ICONS.support} alt="" aria-hidden="true" />
+        <Scramble text="SUPPORT" hover />
+              </a>
+              <a href="https://t.me/User18Fx_bot?start=channel" target="_blank" rel="noopener noreferrer" aria-label="Open vault channel">
+              <img src={ICONS.tv} alt="" aria-hidden="true" />
+        <Scramble text="CHANNEL" hover />
               </a>
               </nav>
               <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
