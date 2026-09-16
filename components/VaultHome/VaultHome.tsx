@@ -5,8 +5,7 @@ import VisitorCounter from "../VisitorCounter";
 import VaultDevice from "../VaultDevice/VaultDevice";
 import Crown4D from "../Crown4D/Crown4D";
 import "./VaultHome.css";
-import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
-import VaultActions from "../VaultActionsBtns/VaultActions";
+import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
 
 import { FxAccessBtn as FxAccessBtn } from "../FxAccess/FxAccessBtn";
 import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
@@ -514,18 +513,7 @@ export default function VaultHome() {
           </div>
           </div>
           <aside className="vx-lock vx-lockRaise">
-              <img src={ICONS.laurel} alt="" className="vx-doorLaurel" draggable={false} aria-hidden="true" />
     <VaultHeroDoors unlocked={unlocked} />
-          {!unlocked ? (
-    <VaultActions value={inlineCodeValue}
-                onChange={handleInlineCodeChange}
-                onSubmit={handleVerify}
-                onGetCode={() => setDm(true)}
-                loading={verifyLoading}
-                error={verifyError}
-                placeholder={inlineCodeTemplate}
-              inputRef={inlineCodeRef} />
-          ) : null}
           </aside>
           </div>
           </section>
@@ -737,20 +725,6 @@ export default function VaultHome() {
               </div>
               <div>
               <div className="vx-footActions">
-              <nav className="vx-sessionLinks" aria-label="Vault quick actions">
-              <a href="https://t.me/User18Fx" target="_blank" rel="noopener noreferrer" aria-label="Open private chat">
-              <img src={ICONS.chat} alt="" aria-hidden="true" />
-        <Scramble text="CHAT" hover />
-              </a>
-              <a href="https://t.me/User18Fx_bot?start=support" target="_blank" rel="noopener noreferrer" aria-label="Open support">
-              <img src={ICONS.support} alt="" aria-hidden="true" />
-        <Scramble text="SUPPORT" hover />
-              </a>
-              <a href="https://t.me/User18Fx_bot?start=channel" target="_blank" rel="noopener noreferrer" aria-label="Open vault channel">
-              <img src={ICONS.tv} alt="" aria-hidden="true" />
-        <Scramble text="CHANNEL" hover />
-              </a>
-              </nav>
               <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
               </div>
               </div>
