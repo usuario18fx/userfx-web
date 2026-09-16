@@ -729,6 +729,20 @@ export default function VaultHome() {
               </div>
               <div>
               <div className="vx-footActions">
+                            <nav className="vx-footerButtons" aria-label="Contact and channel actions">
+              <a href="https://t.me/User18Fx_bot?start=support" target="_blank" rel="noopener noreferrer" aria-label="Open support">
+              <img src={ICONS.support} alt="" aria-hidden="true" />
+              <Scramble text="SUPPORT" hover />
+              </a>
+              <a href="https://t.me/User18Fx_bot?start=channel" target="_blank" rel="noopener noreferrer" aria-label="Open TV channel">
+              <img src={ICONS.tv} alt="" aria-hidden="true" />
+              <Scramble text="TV" hover />
+              </a>
+              <a href="https://t.me/User18Fx" target="_blank" rel="noopener noreferrer" aria-label="Open private chat">
+              <img src={ICONS.chat} alt="" aria-hidden="true" />
+              <Scramble text="CHAT" hover />
+              </a>
+              </nav>
               <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
               </div>
               </div>
