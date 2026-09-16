@@ -9,26 +9,19 @@ function normalizeTelegramUsername(value) {
   return { display: `@${raw}`, normalized: raw.toLowerCase() };
 }
 
-async function getTelegramFxAccess(usernameNormalized) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-  }
-
-  const params = new URLSearchParams({
-    username_normalized: `eq.${usernameNormalized}`,
-    select: "username,username_normalized,telegramfx_access,enabled",
-    limit: "1",
-  });
-
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`, {
-    method: "GET",
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Accept: "application/json",
+async function telegramFxLookup(params) {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
     },
-    cache: "no-store",
-  });
+  );
 
   if (!response.ok) {
     const detail = await response.text();
@@ -39,6 +32,38 @@ async function getTelegramFxAccess(usernameNormalized) {
 
   const rows = await response.json();
   return Array.isArray(rows) && rows.length ? rows[0] : null;
+}
+
+async function getTelegramFxAccess(username) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  const select = "username,username_normalized,telegramfx_access,enabled";
+
+  const normalizedParams = new URLSearchParams({
+    username_normalized: `eq.${username.normalized}`,
+    select,
+    limit: "1",
+  });
+
+  const normalizedRow = await telegramFxLookup(normalizedParams);
+  if (normalizedRow) return normalizedRow;
+
+  // Legacy/manual records may have only `username` populated.
+  // Keep the authorization flags mandatory; this only broadens lookup compatibility.
+  for (const candidate of [`@${username.normalized}`, username.normalized]) {
+    const legacyParams = new URLSearchParams({
+      username: `ilike.${candidate}`,
+      select,
+      limit: "1",
+    });
+
+    const legacyRow = await telegramFxLookup(legacyParams);
+    if (legacyRow) return legacyRow;
+  }
+
+  return null;
 }
 
 export default async function handler(req, res) {
@@ -59,13 +84,20 @@ export default async function handler(req, res) {
       });
     }
 
-    const row = await getTelegramFxAccess(username.normalized);
+    const row = await getTelegramFxAccess(username);
     const eligible = Boolean(row && row.enabled === true && row.telegramfx_access === true);
 
     return res.status(200).json({
       ok: true,
       eligible,
       username: username.display,
+      reason: !row
+        ? "not_registered"
+        : row.enabled !== true
+          ? "disabled"
+          : row.telegramfx_access !== true
+            ? "telegramfx_disabled"
+            : null,
     });
   } catch (error) {
     console.error("[api/telegram-eligibility]", error);
