@@ -198,7 +198,7 @@
   align-items:center;
   justify-content:center;
   width:100%; /* ↔️ */
-  height:100%; /* ↕️ */
+  height:80%; /* ↕️ */
   min-width:0; /* ↔️ */
   gap:14px;
   padding:20px; /* ↔️↕️ */
@@ -208,7 +208,7 @@
 .vhd-doors video{
   display:block;
   width:min(320px, 75%); /* ↔️ VIDEO */
-  height:min(380px, 110%); /* ↕️ VIDEO */
+  height:min(380px, 90%); /* ↕️ VIDEO */
   object-fit:cover;
   object-position:center;
   transform:none; /* ↗️ */
@@ -222,7 +222,7 @@
 .vhd-reveal video{
   display:block;
   width:min(360px, 90%); /* ↔️ */
-  height:min(360px, 82%); /* ↕️ */
+  height:min(330px, 70%); /* ↕️ */
   object-fit:cover;
   object-position:center bottom;
   transform:scale(1.1); /* ↗️ */
@@ -240,268 +240,187 @@
   text-align:center;
   text-transform:uppercase;
 }
-/* ═══════════ INPUT DE CÓDIGO INFERIOR ═══════════ */
-
-@keyframes vhdShake {
-  20%{
-    transform:translateX(calc(-50% - 6px)); /* ↗️ */
-  }
-  40%{
-    transform:translateX(calc(-50% + 5px)); /* ↗️ */
-  }
-  60%{
-    transform:translateX(calc(-50% - 3px)); /* ↗️ */
-  }
-  80%{
-    transform:translateX(calc(-50% + 2px)); /* ↗️ */
-  }
+/* ═════════ USER FX · DOORS + VIDEO · FINAL SCALE ═════════ */
+.vhd-root {
+  width: 100% !important;
+  max-width: 650px !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  margin: 0 auto 96px !important;
+  transform: none !important;
 }
-/* ===== SIN LUCES EXTERNAS EN VAULT HERO ===== */
-.vhd-root,
-.vhd-logoSide,
-.vhd-doors,
-.vhd-door,
-.vhd-form,
-.vhd-reveal,
-.vhd-reveal img,
-.vhd-reveal video{
-  box-shadow:none !important;
-  filter:none !important;
-}
-.vhd-logoGlow{
-  display:none !important;
-}
-.vhd-logo{
-  filter:none !important;
-  box-shadow:none !important;
-}
-.vhd-root::before,
-.vhd-root::after,
-.vhd-logoSide::before,
-.vhd-logoSide::after,
-.vhd-doors::before,
-.vhd-doors::after{
-  box-shadow:none !important;
-  filter:none !important;
-  background-image:none !important;
-}
-/* ═════════  VAULT HERO ·════════ */
-.vhd-root,
-.vhd-bg,
-.vhd-logoSide,
-.vhd-logo,
-.vhd-doors,
-.vhd-door,
-.vhd-door.left,
-.vhd-door.right,
-.vhd-door-inner,
-.vhd-door-inner span,
-.vhd-door-inner i,
-.vhd-reveal,
-.vhd-reveal img,
-.vhd-reveal video,
-.vhd-reveal figcaption{
-  box-shadow:none !important;
-  text-shadow:none !important;
-}
-/* quitar glow del video/logo */
-.vhd-logoGlow{
-  display:none !important;
-  opacity:0 !important;
-  box-shadow:none !important;
-  filter:none !important;
-}
-/* quitar filtros de luz */
-.vhd-logo,
-.vhd-reveal img,
-.vhd-reveal video{
-  filter:none !important;
-}
-/* texto de puertas sin glow al escribir */
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner span{
-  text-shadow:none !important;
-}
-/* línea central sin glow */
-.vhd-door-inner i,
-.vhd-root:is(.is-typing, :has(.vhd-input:focus)) .vhd-door-inner i{
-  box-shadow:none !important;
-}
-/* quitar cualquier glow generado por pseudo-elementos */
-.vhd-root::before,
-.vhd-root::after,
-.vhd-logoSide::before,
-.vhd-logoSide::after,
-.vhd-doors::before,
-.vhd-doors::after,
-.vhd-door::before,
-.vhd-door::after{
-  box-shadow:none !important;
-  filter:none !important;
+.vhd-doors {
+  left: 139px !important;
+  bottom: 75px !important;
+  width: 110% !important;
+  height: 335px !important;
+  min-height: 335px !important;
+  overflow: visible !important;
 }
 .vhd-videoStage,
-.vhd-damask,
-.vhd-door::before,
-.vhd-door::after,
-.vhd-door-inner{
-  pointer-events:none;
+.vhd-doors > :not(.vhd-door):not(.vhd-form) {
+  width: 87% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  background-color: transparent !important;
 }
-/* ═══════════  TABLET  ═══════════ */
+.vhd-doors .vhd-videoStage .vhd-doorVideo,
+.vhd-reveal img,
+.vhd-reveal video {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transform: none !important;
+}
+/* ═══════════ SHAKE INPUT ═══════════ */
+@keyframes vhdShake {
+  20% { transform: translateX(calc(-50% - 6px)); }
+  40% { transform: translateX(calc(-50% + 5px)); }
+  60% { transform: translateX(calc(-50% - 3px)); }
+  80% { transform: translateX(calc(-50% + 2px)); }
+}
+
+/* ═══════════ HOVER (solo dispositivos con hover real) ═══════════ */
+@media (hover: hover) {
+  .vhd-root:not(.is-open) .vhd-door:hover {
+    filter: brightness(1.12);
+  }
+}
+
+/* ═══════════ TABLET — ≤900px ═══════════ */
 @media (max-width: 900px) {
-  .vhd-root{
-    grid-template-columns:1fr;
-    width:100%; /* ↔️ */
-    height:auto; /* ↕️ */
-    min-height:0; /* ↕️ */
-    margin-bottom:100px; /* ↔️↕️ */
-    overflow:visible;
+  .vhd-root  { height: 330px !important; min-height: 330px !important; }
+  .vhd-doors { height: 320px !important; min-height: 320px !important; }
+}
+
+/* ═══════════ MÓVIL GRANDE — ≤700px ═══════════ */
+@media (max-width: 700px) {
+  .vhd-root {
+    width: 100% !important;
+    margin-top: 34px;
+    margin-bottom: 92px !important;
+    transform: translateX(calc(-50% + 18px));
   }
-  .vhd-logoSide{
-    min-height:380px; /* ↕️ */
-    height:auto; /* ↕️ */
-    padding:28px 20px; /* ↔️↕️ */
-    padding-top:calc(28px + var(--logo-drop)); /* ↔️↕️ */
+  .fx-access-launcher {
+    transform: translateX(calc(-50% + 18px));
   }
-  .vhd-logo{
-    width:min(420px, 92%); /* ↔️ */
-    max-height:330px; /* ↕️ */
-  }
-  .vhd-doors{
-    min-height:390px; /* ↕️ */
-    height:390px; /* ↕️ */
-    perspective:900px;
-  }
-  .vhd-form{bottom:-84px; /* ⬆️⬇️ */
-  }}
-/* ═══════════  CELULAR  ═══════════ */
+}
+
+/* ═══════════ MÓVIL — ≤520px ═══════════ */
 @media (max-width: 520px) {
-  .vhd-root{
-    display:flex;
-    flex-direction:column;
-    width:100%; /* ↔️ */
-    min-height:0; /* ↕️ */
-    height:auto; /* ↕️ */
-    margin-bottom:88px; /* ↔️↕️ */
-    overflow:visible;
-    perspective:none;
+  .vhd-root {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 300px !important;
+    min-height: 300px !important;
+    margin-bottom: 72px !important;
+    overflow: visible;
+    perspective: none;
   }
-  .vhd-logoSide{
-    /* VIDEO */
-    width:100%; /* ↔️ */
-    min-height:340px; /* ↕️ */
-    height:auto; /* ↕️ */
-    padding:20px 16px 38px; /* ↔️↕️ */
-    background:url("/wallpaperVideo.png") center bottom / cover no-repeat;
+
+  /* VIDEO */
+  .vhd-logoSide {
+    width: 100%;
+    min-height: 340px;
+    height: auto;
+    padding: 20px 16px 38px;
+    background: url("/wallpaperVideo.png") center bottom / cover no-repeat;
   }
-  .vhd-logoGlow{
-    width:280px; /* ↔️ */
-    height:280px; /* ↕️ */
+  .vhd-logoGlow { width: 280px; height: 280px; }
+  .vhd-logo {
+    width: min(280px, 88%);
+    max-width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    object-position: center;
+    transform: none;
   }
-  .vhd-logo{
-    width:min(280px, 88%); /* ↔️ */
-    max-width:100%; /* ↔️ */
-    max-height:280px; /* ↕️ */
-    object-fit:contain;
-    object-position:center;
-    transform:none; /* ↗️ */
+  .vhd-logoSub {
+    margin-top: 10px;
+    font-size: 7px;
+    letter-spacing: 0.16em;
   }
-  .vhd-logoSub{
-    margin-top:10px; /* ↔️↕️ */
-    font-size:7px; /* ↗️ tamaño */
-    letter-spacing:0.16em;
-  }
+
   /* PUERTAS */
-  .vhd-doors{
-    width:100%; /* ↔️ */
-    min-height:340px; /* ↕️ */
-    height:340px; /* ↕️ */
-    grid-template-columns:1fr 1fr;
-    overflow:visible;
-    box-shadow:none !important;
+  .vhd-doors {
+    width: 100%;
+    height: 290px !important;
+    min-height: 290px !important;
+    grid-template-columns: 1fr 1fr;
+    overflow: visible;
+    box-shadow: none !important;
   }
-  .vhd-door-inner{
-    width:90%; /* ↔️ */
+  .vhd-door-inner { width: 90%; }
+  .vhd-door-inner span {
+    font-size: 7px;
+    letter-spacing: 0.22em;
+    white-space: nowrap;
   }
-  .vhd-door-inner span{
-    font-size:7px; /* ↗️ tamaño */
-    letter-spacing:0.22em;
-    white-space:nowrap;
-  }
-  .vhd-root.is-typing .vhd-door-inner span{
-    letter-spacing:0.28em;
-  }
-  .vhd-door-inner i{
-    width:34px; /* ↔️ */
-  }
-  .vhd-doors > :not(.vhd-door):not(.vhd-form){
-    padding:18px 12px; /* ↔️↕️ */
-  }
+  .vhd-root.is-typing .vhd-door-inner span { letter-spacing: 0.28em; }
+  .vhd-door-inner i { width: 34px; }
+  .vhd-doors > :not(.vhd-door):not(.vhd-form) { padding: 18px 12px; }
   .vhd-reveal img,
-  .vhd-reveal video{
-    width:min(250px, 88%); /* ↔️ */
-    height:min(260px, 72%); /* ↕️ */
-    object-position:center bottom;
-    transform:scale(1.18); /* ↗️ */
-    transform-origin:center bottom; /* ↗️ */
+  .vhd-reveal video {
+    width: min(250px, 88%);
+    height: min(260px, 72%);
+    object-position: center bottom;
+    transform: scale(1.18);
+    transform-origin: center bottom;
   }
   /* INPUT INFERIOR */
-  .vhd-form{
-    left:50%; /* ⬅️➡️ */
-    right:auto; /* ⬅️➡️ */
-    bottom:-74px; /* ⬆️⬇️ */
-    width:calc(100% - 24px); /* ↔️ */
-    min-height:54px; /* ↕️ */
-    margin:0; /* ↔️↕️ */
-    padding:6px 6px 6px 10px; /* ↔️↕️ */
-    transform:translateX(-50%); /* ↗️ */
+  .vhd-form {
+    left: 50%;
+    right: auto;
+    bottom: -74px;
+    width: calc(100% - 24px);
+    min-height: 54px;
+    margin: 0;
+    padding: 6px 6px 6px 10px;
+    transform: translateX(-50%);
     background:
       linear-gradient(90deg, #06090a45, #06080a12, #06080a45),
       url("/wallpaperInput.png") center / 190px auto repeat-x;
-    box-shadow:none !important;
+    box-shadow: none !important;
   }
-  .vhd-input{
-    min-width:0; /* ↔️ */
-    height:42px; /* ↕️ */
-    padding:0 6px; /* ↔️↕️ */
-    font-size:10px; /* ↗️ tamaño */
-    letter-spacing:0.12em;
-  }}
-/* ⬆️ SUBIR HUD AMARILLO EN CELULAR */
-@media (max-width: 520px) {
-  .vx-ticker.is-rev{
-    position:relative;
-    top:-1px; /* ⬆️⬇️ */
-    margin-bottom:-52px; /* ↔️↕️ */
-    z-index:20;
-  }}
-/* ═══════════  ACCESIBILIDAD  ═══════════ */
+  .vhd-input {
+    min-width: 0;
+    height: 42px;
+    padding: 0 6px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  /* HUD amarillo */
+  .vx-ticker.is-rev {
+    position: relative;
+    top: -1px;
+    margin-bottom: -52px;
+    z-index: 20;
+  }
+}
+
+/* ═══════════ ACCESIBILIDAD ═══════════ */
 @media (prefers-reduced-motion: reduce) {
   .vhd-bg,
   .vhd-logo,
+  .vhd-logoGlow,
   .vhd-door-inner span,
   .vhd-door-inner i,
   .vhd-go,
-  .vhd-form{animation:none; transition:none !important;
+  .vhd-form {
+    animation: none !important;
+    transition: none !important;
   }
-  .vhd-logoGlow{animation:none !important;
-  }
-  .vhd-door{transition:opacity 0.3s ease !important;
+  .vhd-door {
+    transition: opacity 0.3s ease !important;
   }
   .vhd-root.is-open .vhd-door.left,
-  .vhd-root.is-open .vhd-door.right{opacity:0; transform:none; /*↗️*/
-  }}
-@media (hover: hover) {
-  .vhd-root:not(.is-open) .vhd-door:hover{filter:none !important;
-  }}
-/* móvil */
-@media (max-width: 700px) {
-  .vhd-root{
-    width:88%; /*↔️*/
-    margin-top:34px; /*⬆️*/
-    transform:translateX(calc(-50% + 18px)); /* ↗️ */
-   .fx-access-launcher{transform:translateX(calc(-50% + 18px)); /* ↗️ */
-  }}
-  .vhd-doors{height:500px; /* ↕️ altura móvil */
-  }}
-@media (hover: hover) {
-  .vhd-root:not(.is-open) .vhd-door:hover{filter:brightness(1.12);
-  }}
+  .vhd-root.is-open .vhd-door.right {
+    transform: none;
+    opacity: 0;
+  }
+}
