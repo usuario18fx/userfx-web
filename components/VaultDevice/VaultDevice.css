@@ -959,102 +959,13 @@
 }
 
 
-/* ═════════ USER FX · TALL DEVICE + RELIABLE TOUCH ═════════ */
-.vd-device {
-  height: 520px !important; /* ↕️ DISPOSITIVO MÁS ALTO */
-}
-
-.vd-screen,
-.vd-menuscreen,
-.vd-menu-options {
-  pointer-events: auto;
-}
-
-.vd-menu-options {
-  position: relative;
-  z-index: 20;
-}
-
-.vd-option {
-  appearance: none;
-  position: relative;
-  z-index: 21;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-  pointer-events: auto !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.vd-option:focus-visible {
-  outline: 2px solid #60a5fa;
-  outline-offset: 3px;
-}
-
-.vd-detail-sheet {
-  pointer-events: none;
-}
-
-.vd-detail-sheet.vd-active {
-  pointer-events: auto;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(480px, 74vw, 540px) !important; /* ↕️ */
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(540px, 138vw) !important; /* ↕️ */
-    min-height: 500px;
-  }
-
-  .vd-option {
-    min-height: 150px !important; /* ↕️ ÁREA TÁCTIL */
-  }
-}
-
-
-/* ═════════ USER FX · TALL DEVICE · FINAL SIZE ═════════ */
-.vd-device {
-  height: 610px !important;
-  min-height: 610px;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(560px, 94vw, 640px) !important;
-    min-height: 560px;
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(640px, 164vw) !important;
-    min-height: 580px;
-  }
-}
-
-
-/* ═════════ USER FX · DEVICE HEIGHT MATCHES INNER RED GUIDE ═════════ */
-.vd-device {
-  height: 760px !important;
-  min-height: 760px !important;
-}
-
-@media (max-width: 800px) {
-  .vd-device {
-    height: clamp(700px, 112vw, 780px) !important;
-    min-height: 700px !important;
-  }
-}
-
-@media (max-width: 560px) {
-  .vd-device {
-    height: min(760px, 195vw) !important;
-    min-height: 700px !important;
-  }
-}
+/* ═════════ USER FX · COMPACT DEVICE + RELIABLE TOUCH ═════════ */
+.vd-device{height:520px!important;min-height:520px!important;}
+.vd-screen,.vd-menuscreen,.vd-menu-options{pointer-events:auto;}
+.vd-menu-options{position:relative;z-index:20;}
+.vd-option{appearance:none;position:relative;z-index:21;color:inherit;font:inherit;cursor:pointer;touch-action:manipulation;pointer-events:auto!important;-webkit-tap-highlight-color:transparent;}
+.vd-option:focus-visible{outline:2px solid #60a5fa;outline-offset:3px;}
+.vd-detail-sheet{pointer-events:none;}
+.vd-detail-sheet.vd-active{pointer-events:auto;}
+@media (max-width:800px){.vd-device{height:clamp(470px,76vw,530px)!important;min-height:470px!important;}}
+@media (max-width:560px){.vd-device{height:min(520px,132vw)!important;min-height:470px!important;}.vd-option{min-height:126px!important;}}
