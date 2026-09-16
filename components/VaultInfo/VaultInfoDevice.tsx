@@ -1,572 +1,502 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactElement } from "react";
+import "./VaultInfoDevice.css";
 
-type MediaItem = {
+/* ─── Types ─── */
+type PlanId = "basic" | "pro" | "vip";
+type AccessMode = "telegram_identity" | string;
+
+interface PrivateFile {
   id: number;
-  title: string;
-  subtitle: string;
   src: string;
-  poster?: string;
+  title: string;
+}
+
+interface AccessSession {
+  authenticated: boolean;
+  planId?: PlanId;
+  accessMode?: AccessMode;
+}
+
+type LikesMap = Record<number, boolean>;
+
+type SideIconKey = "chat" | "call" | "user" | "note" | "flag";
+
+interface SideAction {
+  icon: SideIconKey;
+  label: string;
+  desc: string;
+}
+
+/* ─── Constants ─── */
+const LIKES_STORAGE_KEY = "userfx_private_likes";
+
+const privatePhoto = (pathname: string): string =>
+  `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+
+const buildPaths = (folder: string, count: number): string[] =>
+  Array.from(
+    { length: count },
+    (_, i) => `userfx-album/${folder}/${folder}-${String(i + 1).padStart(2, "0")}.jpg`
+  );
+
+const PRIVATE_PATHS: Record<PlanId, string[]> = {
+  basic: buildPaths("BSIC", 5),
+  pro: buildPaths("PRX0", 3),
+  vip: buildPaths("VIPX", 4),
 };
 
-const MEDIA: MediaItem[] = [
-  {
-    id: 1,
-    title: "LATEST UPDATE",
-    subtitle: "PRIVATE COLLECTION",
-    src: "/assets/videos/update01.mp4",
-    poster: "/assets/album/PRVW/PRVW-01.jpg",
-  },
-  {
-    id: 2,
-    title: "VAULT NEWS",
-    subtitle: "LATEST INFORMATION",
-    src: "/assets/videos/update04.mp4",
-    poster: "/assets/album/PRVW/PRVW-04.jpg",
-  },
-  {
-    id: 3,
-    title: "WHAT'S NEXT",
-    subtitle: "COMING SOON",
-    src: "/assets/videos/update05.mp4",
-    poster: "/assets/album/PRVW/PRVW-05.jpg",
-  },
+const PLAN_LABELS: Record<PlanId, string> = { basic: "BASIC", pro: "PRO", vip: "VIP" };
+
+const SIDE_ACTIONS: SideAction[] = [
+  { icon: "chat", label: "Chat", desc: "Open private chat" },
+  { icon: "call", label: "Videocall", desc: "Jump to the call stage" },
+  { icon: "user", label: "Profile", desc: "View active profile" },
+  { icon: "note", label: "Notes", desc: "Keep private notes" },
+  { icon: "flag", label: "Report", desc: "Flag for review" },
 ];
 
-const CSS = `
-:root {
-  --vault-gold: #d8ae55;
-  --vault-gold-light: #f1d58b;
-  --vault-gold-soft: rgba(216,174,85,.16);
-  --vault-cream: #f4efe5;
-  --vault-muted: rgba(244,239,229,.48);
-  --vault-black: #08090a;
-  --vault-panel: rgba(14,15,16,.86);
-  --vault-border: rgba(216,174,85,.26);
-  --vault-line: rgba(255,255,255,.1);
-  --vault-radius: 18px;
+const SIDE_ICONS: Record<SideIconKey, ReactElement> = {
+  chat: (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  call: (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  user: (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  note: (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  flag: (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ),
+};
+
+/* ─── Helpers ─── */
+function buildPrivateFiles(planId?: PlanId, accessMode?: AccessMode): PrivateFile[] {
+  const fullAccess = accessMode === "telegram_identity" || planId === "vip";
+  const paths: string[] = fullAccess
+    ? [...PRIVATE_PATHS.basic, ...PRIVATE_PATHS.pro, ...PRIVATE_PATHS.vip]
+    : planId === "pro"
+      ? [...PRIVATE_PATHS.basic, ...PRIVATE_PATHS.pro]
+      : planId === "basic"
+        ? PRIVATE_PATHS.basic
+        : [];
+
+  return paths.map((pathname, index) => ({
+    id: index + 1,
+    src: privatePhoto(pathname),
+    title: `PRIVATE FILE ${String(index + 1).padStart(2, "0")}`,
+  }));
 }
 
-.vinfo {
-  width: min(92vw, 510px);
-  margin: 42px auto;
-  padding: 18px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(230px, .75fr);
-  gap: 18px;
-  position: relative;
-  isolation: isolate;
-  box-sizing: border-box;
-
-  border: 1px solid rgba(216,174,85,.3);
-  border-radius: 24px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.045), transparent 34%),
-    linear-gradient(160deg, rgba(25,25,27,.94), rgba(5,6,7,.96));
-  box-shadow:
-    0 28px 80px rgba(0,0,0,.62),
-    inset 0 1px 0 rgba(255,255,255,.07);
+function loadLikes(): LikesMap {
+  try {
+    const raw = localStorage.getItem(LIKES_STORAGE_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? (parsed as LikesMap) : {};
+  } catch {
+    return {};
+  }
 }
 
-.vinfo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: .2;
-  background: url("/assets/damask.png") center / 480px repeat;
-  mix-blend-mode: screen;
-}
+const goHome = (): void => {
+  window.location.hash = "#/";
+};
 
-.vinfo::after {
-  content: "";
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(216,174,85,.6),
-    transparent
+/* ─── Sub-components ─── */
+function MessageButton(): ReactElement {
+  return (
+    <button className="pvr-btn-msg" type="button" aria-label="Open chat with User FX">
+      <div className="pvr-btn-msg__avatar-wrap">
+        <div className="pvr-btn-msg__status" />
+        <div className="pvr-btn-msg__avatar">
+          <svg className="pvr-btn-msg__img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12,12.5c-3.04,0-5.5,1.73-5.5,3.5s2.46,3.5,5.5,3.5,5.5-1.73,5.5-3.5-2.46-3.5-5.5-3.5Zm0-.5c1.66,0,3-1.34,3-3s-1.34-3-3-3-3,1.34-3,3,1.34,3,3,3Z" />
+          </svg>
+        </div>
+      </div>
+      <div className="pvr-btn-msg__body">
+        <div className="pvr-btn-msg__name">User FX</div>
+        <div className="pvr-btn-msg__label">
+          Message
+          <span className="pvr-btn-msg__badge">3</span>
+        </div>
+        <div className="pvr-btn-msg__handle">@User18Fx</div>
+      </div>
+    </button>
   );
 }
 
-.vinfo,
-.vinfo * {
-  box-sizing: border-box;
+interface HeartButtonProps {
+  checked: boolean;
+  onChange: () => void;
+  count: number;
 }
 
-/* ─────────── VIDEO ─────────── */
-
-.vinfo__screen {
-  position: relative;
-  min-width: 0;
-  overflow: hidden;
-  aspect-ratio: 16 / 16;
-  transform: scale(.1.4);
-
-  /* ↓ BAJA EL VIDEO DENTRO DEL DISPOSITIVO */
-  margin-top: 40px;
-  border: 1px solid rgba(216,174,85,.34);
-  border-radius: 16px;
-  background: #000;
-  box-shadow:
-    0 16px 36px rgba(0,0,0,.42),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+function HeartButton({ checked, onChange, count }: HeartButtonProps): ReactElement {
+  return (
+    <div className="pvr-heart">
+      <label className="pvr-heart__box" title="Like">
+        <input
+          type="checkbox"
+          className="pvr-heart__input"
+          checked={checked}
+          onChange={onChange}
+          aria-label="Like private file"
+        />
+        <svg viewBox="0 0 24 24" className="pvr-heart__outline" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z" />
+        </svg>
+        <svg viewBox="0 0 24 24" className="pvr-heart__filled" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z" />
+        </svg>
+        <svg className="pvr-heart__burst" width="100" height="100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon points="10,10 20,20" />
+          <polygon points="10,50 20,50" />
+          <polygon points="20,80 30,70" />
+          <polygon points="90,10 80,20" />
+          <polygon points="90,50 80,50" />
+          <polygon points="80,80 70,70" />
+        </svg>
+      </label>
+      <span className="pvr-heart__count">{count}</span>
+    </div>
+  );
 }
 
-.vinfo__screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,.55) 0%,
-      transparent 28%,
-      transparent 68%,
-      rgba(0,0,0,.38) 100%
-    );
-}
-.vinfo__screen video {
-  display: block !important;
-  width: 120% !important;
-  height: 120% !important;
-  max-width: none !important;
-  aspect-ratio: auto !important;
-  object-fit: contain !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: #000 !important;
+function UpgradeButton(): ReactElement {
+  return (
+    <button className="pvr-btn-upgrade" type="button" aria-label="Unlock Pro plan">
+      <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+      </svg>
+      Unlock Pro
+    </button>
+  );
 }
 
-/* ─────────── VIDEO OVERLAY ─────────── */
-
-.vinfo__overlay {
-  position: absolute;
-  top: 2px;
-  left: 18px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  pointer-events: none;
+interface NavArrowProps {
+  direction: "prev" | "next";
+  onClick: () => void;
+  disabled: boolean;
 }
 
-.vinfo__overlay small {
-  width: fit-content;
-  padding: 6px 9px;
-  border: 1px solid rgba(216,174,85,.45);
-  border-radius: 999px;
-  background: rgba(7,8,9,.62);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  color: var(--vault-gold-light);
-  font: 800 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .25em;
+function NavArrow({ direction, onClick, disabled }: NavArrowProps): ReactElement {
+  return (
+    <button
+      className={`pvr-nav-arrow pvr-nav-arrow--${direction}`}
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={direction === "prev" ? "Previous file" : "Next file"}
+    >
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path
+          d={direction === "prev" ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
 }
 
-.vinfo__overlay strong {
-  color: var(--vault-cream);
-  font: 800 clamp(15px, 2vw, 25px)/1.1 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .08em;
-  text-shadow: 0 3px 18px rgba(0,0,0,.9);
-}
+/* ─── Main ─── */
+export default function PrivateRoom(): ReactElement {
+  const [selected, setSelected] = useState<number>(0);
+  const [files, setFiles] = useState<PrivateFile[]>([]);
+  const [likes, setLikes] = useState<LikesMap>(loadLikes);
+  const [sessionReady, setSessionReady] = useState<boolean>(false);
+  const [sessionError, setSessionError] = useState<boolean>(false);
+  const [planId, setPlanId] = useState<PlanId | null>(null);
+  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+  const [enterAnim, setEnterAnim] = useState<boolean>(false);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
 
-/* ─────────── SIDE PANEL ─────────── */
-
-.vinfo__buttons {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 2px;
-}
-
-.vinfo__title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 42px;
-  padding: 0 14px;
-  margin-bottom: 3px;
-
-  border-bottom: 1px solid var(--vault-border);
-  color: var(--vault-gold-light);
-
-  font: 800 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-}
-
-.vinfo__title span {
-  color: var(--vault-muted);
-  font-size: 9px;
-  letter-spacing: .12em;
-}
-
-/* ─────────── ITEM BUTTON ─────────── */
-
-.vinfo__button {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-
-  position: relative;
-  display: grid !important;
-  grid-template-columns: 42px minmax(0, 1fr) 18px !important;
-  align-items: center !important;
-  gap: 12px !important;
-
-  width: 100%;
-  min-height: 72px;
-  padding: 10px 13px !important;
-  margin: 0 !important;
-
-  border: 1px solid var(--vault-line) !important;
-  border-radius: 14px !important;
-  background:
-    linear-gradient(
-      115deg,
-      rgba(255,255,255,.055),
-      rgba(255,255,255,.015)
-    ) !important;
-
-  color: var(--vault-cream) !important;
-  text-align: left !important;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important;
-
-  transition:
-    transform .22s ease,
-    border-color .22s ease,
-    background .22s ease,
-    box-shadow .22s ease;
-}
-
-.vinfo__button::before {
-  content: "";
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 0;
-  width: 2px;
-  border-radius: 99px;
-  background: transparent;
-  transition: background .22s ease;
-}
-
-.vinfo__button:hover {
-  transform: translateX(-4px);
-  border-color: rgba(216,174,85,.58) !important;
-  background:
-    linear-gradient(
-      115deg,
-      rgba(216,174,85,.13),
-      rgba(255,255,255,.025)
-    ) !important;
-}
-
-.vinfo__button.is-active {
-  border-color: var(--vault-gold) !important;
-  background:
-    linear-gradient(
-      115deg,
-      rgba(216,174,85,.2),
-      rgba(216,174,85,.04)
-    ) !important;
-  box-shadow:
-    inset 0 0 0 1px rgba(216,174,85,.15),
-    0 10px 24px rgba(0,0,0,.22) !important;
-}
-
-.vinfo__button.is-active::before {
-  background: var(--vault-gold-light);
-}
-
-/* ─────────── NUMBER ─────────── */
-
-.vinfo__num {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid rgba(216,174,85,.35);
-  border-radius: 11px;
-  background: rgba(216,174,85,.14);
-
-  color: var(--vault-gold-light);
-  font: 800 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .1em;
-}
-
-.vinfo__button.is-active .vinfo__num {
-  background: var(--vault-gold);
-  color: #16130c;
-}
-
-/* ─────────── TEXT ─────────── */
-
-.vinfo__copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.vinfo__copy strong {
-  overflow: hidden;
-  color: var(--vault-cream);
-  font: 800 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .06em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vinfo__copy small {
-  overflow: hidden;
-  color: var(--vault-muted);
-  font: 600 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .07em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vinfo__arrow {
-  color: var(--vault-gold-light);
-  font: 300 25px/1 Arial, sans-serif;
-  text-align: right;
-  opacity: .55;
-  transition:
-    opacity .22s ease,
-    transform .22s ease;
-}
-
-.vinfo__button:hover .vinfo__arrow,
-.vinfo__button.is-active .vinfo__arrow {
-  opacity: 1;
-  transform: translateX(3px);
-}
-
-/* ─────────── TABLET ─────────── */
-
-@media (max-width: 900px) {
-  .vinfo__screen {
-    margin-top: 18px;
-  }
-
-  .vinfo {
-    grid-template-columns: 1fr;
-    padding: 14px;
-    margin: 28px auto;
-  }
-
-  .vinfo__screen {
-    aspect-ratio: 16 / 9;
-  }
-
-  .vinfo__buttons {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
-  }
-
-  .vinfo__title {
-    grid-column: 1 / -1;
-  }
-
-  .vinfo__button {
-    min-height: 66px;
-  }
-}
-
-/* ─────────── MOBILE ─────────── */
-
-@media (max-width: 600px) {
-  .vinfo__screen {
-    margin-top: 0;
-  }
-
-  .vinfo {
-    width: calc(100% - 20px);
-    padding: 10px;
-    gap: 12px;
-    margin: 20px auto;
-    border-radius: 18px;
-  }
-
-  .vinfo::after {
-    top: 13px;
-    left: 13px;
-    right: 13px;
-  }
-
-  .vinfo__screen {
-    border-radius: 13px;
-    aspect-ratio: 16 / 10;
-  }
-
-  .vinfo__overlay {
-    top: 12px;
-    left: 12px;
-    gap: 5px;
-  }
-
-  .vinfo__overlay small {
-    padding: 5px 7px;
-    font-size: 7px;
-  }
-
-  .vinfo__overlay strong {
-    font-size: 14px;
-  }
-
-  .vinfo__buttons {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .vinfo__title {
-    min-height: 38px;
-    font-size: 9px;
-  }
-
-  .vinfo__button {
-    min-height: 62px;
-    grid-template-columns: 36px minmax(0, 1fr) 16px !important;
-    gap: 10px !important;
-    padding: 9px 11px !important;
-  }
-
-  .vinfo__num {
-    width: 34px;
-    height: 34px;
-  }
-
-  .vinfo__copy strong {
-    font-size: 10px;
-  }
-
-  .vinfo__copy small {
-    font-size: 8px;
-  }
-}
-
-/* ─────────── SMALL MOBILE ─────────── */
-
-@media (max-width: 380px) {
-  .vinfo {
-    width: calc(100% - 12px);
-    padding: 8px;
-  }
-
-  .vinfo__overlay strong {
-    font-size: 12px;
-  }
-
-  .vinfo__button {
-    min-height: 58px;
-  }
-
-  .vinfo__copy strong {
-    font-size: 9px;
-  }
-
-  .vinfo__copy small {
-    font-size: 7px;
-  }
-}
-
-/* ─────────── ACCESSIBILITY ─────────── */
-
-.vinfo__button:focus-visible {
-  outline: 2px solid var(--vault-gold-light);
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vinfo__button,
-  .vinfo__arrow,
-  .vinfo__button::before {
-    transition: none;
-  }
-}
-`;
-
-export default function VaultInfoDevice() {
-  const [selected, setSelected] = useState(0);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const current = MEDIA[selected];
-
+  /* Session check */
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    let cancelled = false;
+    const controller = new AbortController();
 
-    video.pause();
-    video.load();
-    video.currentTime = 0;
+    fetch("/api/access-session", {
+      credentials: "same-origin",
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json() as Promise<AccessSession>;
+      })
+      .then((data) => {
+        if (cancelled) return;
+        if (!data?.authenticated) {
+          goHome();
+          return;
+        }
+        const privateFiles = buildPrivateFiles(data.planId, data.accessMode);
+        if (!privateFiles.length) {
+          goHome();
+          return;
+        }
+        setFiles(privateFiles);
+        setPlanId(data.planId ?? "basic");
+        setSelected(0);
+        setSessionReady(true);
+        requestAnimationFrame(() => setEnterAnim(true));
+      })
+      .catch((err: unknown) => {
+        if (cancelled || (err instanceof DOMException && err.name === "AbortError")) return;
+        setSessionError(true);
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, []);
+
+  /* Persist likes */
+  useEffect(() => {
+    localStorage.setItem(LIKES_STORAGE_KEY, JSON.stringify(likes));
+  }, [likes]);
+
+  /* Reset preview fade on change */
+  useEffect(() => {
+    setImageLoaded(false);
   }, [selected]);
 
+  /* Scroll selected card into view */
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (!container || !files.length) return;
+    const card = container.children[selected] as HTMLElement | undefined;
+    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [selected, files.length]);
+
+  /* Handlers */
+  const handleSelect = useCallback((index: number) => setSelected(index), []);
+
+  const handlePrev = useCallback(() => {
+    setSelected((s) => Math.max(0, s - 1));
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setSelected((s) => Math.min(files.length - 1, s + 1));
+  }, [files.length]);
+
+  const toggleLike = useCallback(() => {
+    const id = files[selected]?.id;
+    if (!id) return;
+    setLikes((cur) => ({ ...cur, [id]: !cur[id] }));
+  }, [files, selected]);
+
+  /* Keyboard navigation */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === "ArrowLeft") handlePrev();
+      else if (e.key === "ArrowRight") handleNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handlePrev, handleNext]);
+
+  const selectedFile = files[selected] ?? null;
+  const totalLikes = useMemo(() => Object.values(likes).filter(Boolean).length, [likes]);
+  const planLabel = planId ? PLAN_LABELS[planId] : "BASIC";
+
+  /* States */
+  if (sessionError) {
+    return (
+      <main className="pvr-error">
+        <div className="pvr-error__inner">
+          <svg viewBox="0 0 24 24" width="48" height="48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.4" />
+            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            <circle cx="12" cy="16" r="0.8" fill="currentColor" />
+          </svg>
+          <h2>ACCESS DENIED</h2>
+          <p>Private session could not be established.</p>
+          <button className="pvr-error__retry" type="button" onClick={() => window.location.reload()}>
+            Retry
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (!sessionReady || !selectedFile) {
+    return (
+      <main className="pvr-loading">
+        <div className="pvr-loading__inner">
+          <div className="pvr-loading__ring" />
+          <span>VERIFYING PRIVATE ACCESS</span>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <>
-      <style>{CSS}</style>
+    <main className={`pvr-page${enterAnim ? " is-ready" : ""}`}>
+      <header className="pvr-topbar">
+        <button className="pvr-topbar__back" type="button" onClick={goHome} aria-label="Back to main">
+          <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          USER FX
+        </button>
+        <span className="pvr-topbar__title">PRIVATE ROOM · ID18</span>
+        <div className="pvr-topbar__right">
+          <span className="pvr-topbar__plan">{planLabel}</span>
+          <span className="pvr-topbar__dot" />
+          <span className="pvr-topbar__status">ONLINE</span>
+        </div>
+      </header>
 
-      <section className="vinfo" aria-label="USER FX media updates">
-        <div className="vinfo__screen">
-          <video
-            ref={videoRef}
-            key={current.id}
-            src={current.src}
-            poster={current.poster}
-            controls
-            playsInline
-            preload="metadata"
-          />
+      <section className="pvr-hero" aria-label="Private videocall stage">
+        <div className="pvr-hero__copy">
+          <span className="pvr-hero__kicker">PRIVATE VIDEOCALL</span>
+          <h1 className="pvr-hero__heading">
+            YOUR ROOM.
+            <br />
+            <em>YOUR CALL.</em>
+          </h1>
+          <p className="pvr-hero__desc">
+            The videocall stage is the first thing inside. Start here, then move through the private files below.
+          </p>
+          <div className="pvr-hero__actions">
+            <button className="pvr-btn-enter" type="button">
+              GET IN
+            </button>
+            <UpgradeButton />
+            <MessageButton />
+          </div>
+        </div>
+        <div className="pvr-hero__shell">
+          <div className="pvr-hero__screen">
+            <span className="pvr-hero__badge">READY</span>
+            <div className="pvr-hero__center">
+              <div className="pvr-hero__ring">
+                <span className="pvr-hero__ring-inner" />
+              </div>
+              <strong>VIDEOCALL STAGE</strong>
+              <small>PRIVATE SESSION READY</small>
+            </div>
+            <div className="pvr-hero__scanline" />
+          </div>
+        </div>
+      </section>
 
-          <div className="vinfo__overlay">
-            <small>USER 🜲 FX</small>
-            <strong>{current.title}</strong>
+      <section className="pvr-gallery" aria-label="Private file collection">
+        <div className="pvr-gallery__head">
+          <div className="pvr-gallery__head-left">
+            <span className="pvr-gallery__label">PRIVATE COLLECTION</span>
+            <h2 className="pvr-gallery__title">SELECT A FILE</h2>
+          </div>
+          <div className="pvr-gallery__head-right">
+            <span className="pvr-gallery__counter">
+              {selected + 1} / {files.length}
+            </span>
+            <HeartButton checked={Boolean(likes[selectedFile.id])} onChange={toggleLike} count={totalLikes} />
           </div>
         </div>
 
-        <aside className="vinfo__buttons">
-          <div className="vinfo__title">
-            LATEST UPDATES
-            <span>{String(MEDIA.length).padStart(2, "0")}</span>
+        <div className="pvr-gallery__body">
+          <div className="pvr-carousel-wrap">
+            <NavArrow direction="prev" onClick={handlePrev} disabled={selected === 0} />
+            <div className="pvr-carousel" ref={carouselRef} role="listbox" aria-label="Private files">
+              {files.map((file, index) => {
+                const isSelected = selected === index;
+                const isLiked = Boolean(likes[file.id]);
+                return (
+                  <button
+                    type="button"
+                    role="option"
+                    key={file.id}
+                    className={`pvr-card${isSelected ? " is-selected" : ""}${isLiked ? " is-liked" : ""}`}
+                    aria-selected={isSelected}
+                    onClick={() => handleSelect(index)}
+                  >
+                    <div className="pvr-card__img-wrap">
+                      <img src={file.src} alt={file.title} loading={index < 3 ? "eager" : "lazy"} />
+                      {isLiked && (
+                        <span className="pvr-card__heart" aria-hidden="true">
+                          ♥
+                        </span>
+                      )}
+                    </div>
+                    <span className="pvr-card__label">{file.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <NavArrow direction="next" onClick={handleNext} disabled={selected === files.length - 1} />
           </div>
 
-          {MEDIA.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`vinfo__button ${selected === index ? "is-active" : ""}`}
-              onClick={() => setSelected(index)}
-              aria-pressed={selected === index}
-            >
-              <span className="vinfo__num">
-                {String(index + 1).padStart(2, "0")}
-              </span>
+          <aside className="pvr-sidebar" aria-label="File details and actions">
+            <div className="pvr-preview">
+              <div className={`pvr-preview__img-wrap${imageLoaded ? " is-loaded" : ""}`}>
+                <img
+                  key={selectedFile.id}
+                  src={selectedFile.src}
+                  alt={selectedFile.title}
+                  onLoad={() => setImageLoaded(true)}
+                />
+              </div>
+              <div className="pvr-preview__meta">
+                <span className="pvr-preview__tag">SELECTED</span>
+                <strong className="pvr-preview__name">{selectedFile.title}</strong>
+              </div>
+            </div>
 
-              <span className="vinfo__copy">
-                <strong>{item.title}</strong>
-                <small>{item.subtitle}</small>
-              </span>
+            <nav className="pvr-actions" aria-label="File actions">
+              {SIDE_ACTIONS.map(({ icon, label, desc }) => (
+                <button type="button" key={label} className="pvr-actions__btn">
+                  <span className="pvr-actions__icon">{SIDE_ICONS[icon]}</span>
+                  <span className="pvr-actions__text">
+                    <strong>{label}</strong>
+                    <span>{desc}</span>
+                  </span>
+                </button>
+              ))}
+            </nav>
 
-              <span className="vinfo__arrow">›</span>
-            </button>
-          ))}
-        </aside>
+            <div className="pvr-perms" aria-label="Permission controls">
+              <button type="button" className="pvr-perm pvr-perm--wide">
+                TelegramFX
+              </button>
+              <div className="pvr-perms__row">
+                <button type="button" className="pvr-perm">Gallery</button>
+                <button type="button" className="pvr-perm">Chat</button>
+              </div>
+              <div className="pvr-perms__row">
+                <button type="button" className="pvr-perm">Priv</button>
+                <button type="button" className="pvr-perm">Group</button>
+                <button type="button" className="pvr-perm pvr-perm--revoke">
+                  REVOKE ALL
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
-    </>
+    </main>
   );
 }

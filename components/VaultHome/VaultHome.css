@@ -446,7 +446,7 @@ video {
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
-  transform: scale(1.5) translateY(-75px) translateX(75px);
+  transform: scale(1.5) translateY(-75px) translateX(82px);
 }
 .vx-doorLaurel img {
   width: 100%;

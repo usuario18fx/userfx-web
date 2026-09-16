@@ -1418,7 +1418,7 @@
   position: absolute !important; 
   left: 50% !important; 
   right: auto !important; 
-  top: 14px !important; 
+  top: 114px !important; 
   bottom: auto !important; 
   transform: 
     translateX(250%) !important; 
@@ -1470,7 +1470,7 @@
   position:relative !important; 
   left: auto !important; 
   right: auto !important; 
-  top: 2% !important; 
+  top: 4% !important; 
   bottom: 21% !important; 
   width: 52px !important; 
   height: 52px !important; 
@@ -1478,7 +1478,7 @@
   min-height: 52px !important; 
   margin: 0 !important; 
   padding: 0 !important; 
-  transform: translateY(130px) translateX(145px)!important;
+  transform: translateY(115px) translateX(145px)!important;
   z-index: 4 !important; 
 } 
   /* ========================================================= 
