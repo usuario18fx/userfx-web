@@ -2471,3 +2471,12 @@ video{
     height:clamp(68px,23vw,98px)!important;
   }
 }
+
+
+/* ═════════ USER FX · CHAT ICON TRANSPARENCY FIX ═════════ */
+.vx-footerButtons a:nth-child(3) img{
+  width:78%!important;
+  height:78%!important;
+  mix-blend-mode:screen;
+  filter:contrast(1.12) brightness(1.04)!important;
+}
