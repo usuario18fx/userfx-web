@@ -2391,3 +2391,16 @@ video{
     margin:0 -6% -28px!important;
   }
 }
+
+
+/* ═════════ USER FX · FOOTER BUTTONS: SUPPORT / TV / CHAT ═════════ */
+.vx-footerButtons{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1.4vw,18px);width:100%;margin:0 auto 18px;}
+.vx-footerButtons a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-width:132px;min-height:48px;padding:8px 16px;border:1px solid #276f9f;border-radius:10px;color:#cfeeff;background:linear-gradient(180deg,#102d47 0%,#071724 100%);box-shadow:inset 0 0 0 1px #7bdcff14,0 0 14px #087db333;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:800;letter-spacing:.15em;text-decoration:none;opacity:1!important;pointer-events:auto!important;cursor:pointer;transition:transform .18s ease,border-color .18s ease,color .18s ease;}
+.vx-footerButtons a:hover{transform:translateY(-2px);border-color:#6ccfff;color:#fff;}
+.vx-footerButtons a:focus-visible{outline:2px solid #6ccfff;outline-offset:3px;}
+.vx-footerButtons img{display:block;width:25px;height:25px;object-fit:contain;filter:grayscale(.72) brightness(.82) contrast(1.12);}
+@media (max-width:700px){
+  .vx-footerButtons{gap:7px;padding:0 14px;margin-bottom:14px;}
+  .vx-footerButtons a{flex:1 1 0;min-width:0;min-height:44px;padding:7px 5px;gap:5px;font-size:8px;letter-spacing:.09em;}
+  .vx-footerButtons img{width:21px;height:21px;}
+}
