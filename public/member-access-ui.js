@@ -1,6 +1,7 @@
 (() => {
   const MEMBER_MODE = "telegram_identity";
   const MEMBER_SECTION_ID = "member-private-section";
+  const MODAL_POLISH_STYLE_ID = "userfx-access-modal-polish";
 
   const MEDIA = {
     basic: [
@@ -29,6 +30,166 @@
   let syncQueued = false;
 
   const privateUrl = (pathname) => `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
+
+  function ensureAccessModalPolishStyles() {
+    if (document.getElementById(MODAL_POLISH_STYLE_ID)) return;
+
+    const style = document.createElement("style");
+    style.id = MODAL_POLISH_STYLE_ID;
+    style.textContent = `
+      /* USER FX · access modal polish */
+      .smkl-form__field--username,
+      .smkl-form__field--username input {
+        background: #07111d !important;
+      }
+
+      .smkl-form__field--username input {
+        color: #63ffd0 !important;
+        caret-color: #63ffd0 !important;
+        -webkit-text-fill-color: #63ffd0 !important;
+        box-shadow: inset 0 0 0 1000px #07111d !important;
+      }
+
+      .smkl-form__field--username input:-webkit-autofill,
+      .smkl-form__field--username input:-webkit-autofill:hover,
+      .smkl-form__field--username input:-webkit-autofill:focus,
+      .smkl-form__field--username input:-webkit-autofill:active {
+        -webkit-text-fill-color: #63ffd0 !important;
+        caret-color: #63ffd0 !important;
+        box-shadow: inset 0 0 0 1000px #07111d !important;
+        -webkit-box-shadow: inset 0 0 0 1000px #07111d !important;
+        transition: background-color 9999s ease-out 0s !important;
+      }
+
+      .smkl-panel__bottom-actions {
+        position: absolute !important;
+        left: auto !important;
+        right: 4px !important;
+        top: -62px !important;
+        bottom: auto !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        width: max-content !important;
+        z-index: 70 !important;
+      }
+
+      .smkl-telegram-action-wrap {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 48px !important;
+        height: 48px !important;
+        margin: 0 !important;
+      }
+
+      .smkl-telegram-mode-btn {
+        position: relative !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform-origin: center !important;
+      }
+
+      .smkl-special-code-fab {
+        position: relative !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        border-radius: 8px !important;
+      }
+
+      .smkl-special-code-fab small {
+        display: none !important;
+      }
+
+      .smkl-telegram-side-label {
+        position: absolute !important;
+        left: 56px !important;
+        right: auto !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        min-width: max-content !important;
+        padding: 5px 8px !important;
+        margin: 0 !important;
+        border: 1px solid #00c4ff8f !important;
+        border-radius: 6px !important;
+        background: #04121ef2 !important;
+        color: #d4fbff !important;
+        font-size: 7px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        letter-spacing: .10em !important;
+        white-space: nowrap !important;
+        pointer-events: none !important;
+        z-index: 90 !important;
+      }
+
+      .smkl-panel__bottom-actions:has(.smkl-special-code-fab)
+        .smkl-telegram-side-label {
+        left: 112px !important;
+      }
+
+      .smkl-telegram-mode-btn:hover:not(:disabled),
+      .smkl-special-code-fab:hover:not(:disabled) {
+        transform: translateY(-1px) scale(1.04) !important;
+      }
+
+      .smkl-telegram-mode-btn:active:not(:disabled),
+      .smkl-special-code-fab:active:not(:disabled) {
+        transform: scale(.95) !important;
+      }
+
+      @media (max-width: 600px) {
+        .smkl-panel__bottom-actions {
+          right: 6px !important;
+          top: -54px !important;
+          gap: 6px !important;
+        }
+
+        .smkl-telegram-action-wrap,
+        .smkl-telegram-mode-btn,
+        .smkl-special-code-fab {
+          width: 42px !important;
+          height: 42px !important;
+          min-width: 42px !important;
+          min-height: 42px !important;
+        }
+
+        .smkl-telegram-side-label {
+          left: 48px !important;
+          padding: 4px 7px !important;
+          font-size: 6px !important;
+        }
+
+        .smkl-panel__bottom-actions:has(.smkl-special-code-fab)
+          .smkl-telegram-side-label {
+          left: 96px !important;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
 
   function getPrivateMedia() {
     if (!authenticated) return [];
@@ -251,6 +412,7 @@
   }
 
   function applyUi() {
+    ensureAccessModalPolishStyles();
     updateHeaderBadge();
     hideLegacyAlbum();
     ensureDoorsState();
@@ -288,6 +450,8 @@
 
     queueSync();
   }
+
+  ensureAccessModalPolishStyles();
 
   const observer = new MutationObserver(queueSync);
   observer.observe(document.documentElement, { childList: true, subtree: true });
