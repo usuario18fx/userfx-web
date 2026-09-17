@@ -6,7 +6,7 @@ import VaultDevice from "../VaultDevice/VaultDevice";
 import Crown4D from "../Crown4D/Crown4D";
 import "./VaultHome.css";
 import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
-import VaultInfoDevice from "../VaultInfo/VaultInfoDevice";
+import VaultMediaDevice from "../VaultInfo/VaultInfoDevice";
 
 import { FxAccessBtn } from "../FxAccess/FxAccessBtn";
 import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
@@ -281,8 +281,11 @@ export default function VaultHome() {
   const [remainingAccesses, setRemainingAccesses] = useState<number | null>(null);
   const [unlimitedAccess, setUnlimitedAccess] = useState(false);
   const [fxAccessOpen, setFxAccessOpen] = useState(false);
+  const [memberAccess, setMemberAccess] = useState(false);
 
   const activePlanPrefix = activePlanId ? ACCESS_PLAN_PREFIX[activePlanId] : "";
+  const activeAccessPrefix = memberAccess ? "SPCL" : activePlanPrefix;
+  const activeAccessState = memberAccess ? "MEMBER" : "UNLOCKED";
 
   const unlockedPhotos =
     activePlanId === "vip"
@@ -303,15 +306,21 @@ export default function VaultHome() {
   const inlineCodeRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    fetch("/api/access-session", {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      credentials: "same-origin",
-      cache: "no-store",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data?.ok && data?.authenticated && isAccessPlanId(data.planId)) {
+    let cancelled = false;
+
+    const refreshAccessSession = async () => {
+      try {
+        const response = await fetch("/api/access-session", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (cancelled) return;
+
+        if (response.ok && data?.authenticated && isAccessPlanId(data.planId)) {
           sessionStorage.setItem("vault_plan", data.planId);
           setActivePlanId(data.planId);
           setRemainingAccesses(
@@ -320,10 +329,24 @@ export default function VaultHome() {
               : null,
           );
           setUnlimitedAccess(data.unlimitedAccess === true);
+          setMemberAccess(data.accessMode === "telegram_identity");
           setUnlocked(true);
+          return;
         }
-      })
-      .catch(() => {});
+
+        setMemberAccess(false);
+      } catch {
+        // Keep the current UI state if the session endpoint is temporarily unavailable.
+      }
+    };
+
+    void refreshAccessSession();
+
+    const handleWindowFocus = () => {
+      void refreshAccessSession();
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
 
     const codeFromTelegram = new URLSearchParams(window.location.search).get("code");
     const savedCode = localStorage.getItem(SAVED_CODE_KEY);
@@ -352,6 +375,11 @@ export default function VaultHome() {
         initData: (window as TelegramWindow).Telegram?.WebApp?.initData || "",
       }),
     }).catch(() => {});
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", handleWindowFocus);
+    };
   }, []);
 
   useEffect(() => {
@@ -408,6 +436,7 @@ export default function VaultHome() {
             : null,
         );
         setUnlimitedAccess(data.unlimitedAccess === true);
+        setMemberAccess(false);
 
         if (data.planId === "pro") {
           localStorage.setItem(SAVED_CODE_KEY, `${normalizedPrefix}-${normalizedSuffix}`);
@@ -447,31 +476,25 @@ export default function VaultHome() {
     setSuffix(compactCode.slice(4, 8));
     setVerifyError("");
   }
-
-  const inlineCodeValue =
-    prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : "";
-
+  const inlineCodeValue = prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : "";
   return (
     <div id="top" className="vx">
       <header className="vx-hud">
         <a href="#top" className="vx-brand">
           <img src={LOGO} alt="USER FX" />
           <span className="vx-live" />
-          <span>| PRIV⭑VAULT |</span>
+          <span>
+            | PRIV⭑VAULT |
+          </span>
         </a>
         <div className="vx-hudRight">
           <VisitorCounter />
           <time>{clock}</time>
-          <b
-            onClick={() => !unlocked && setCodeModal(true)}
-            className={unlocked ? "vx-unlockedBadge" : ""}
-            aria-live="polite"
-            aria-label={unlocked ? `${activePlanPrefix} unlocked` : "Vault locked"}
-          >
+          <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? "vx-unlockedBadge" : ""} aria-live="polite" aria-label={unlocked ? `${activeAccessPrefix} ${activeAccessState.toLowerCase()}` : "Vault locked"}>
             {unlocked ? (
               <>
-                <span className="vx-unlockedPrefix">{activePlanPrefix}</span>
-                <span className="vx-unlockedState">UNLOCKED</span>
+                <span className="vx-unlockedPrefix">{activeAccessPrefix}</span>
+                <span className="vx-unlockedState">{activeAccessState}</span>
               </>
             ) : (
               "🜲 LOCKED"
@@ -479,7 +502,6 @@ export default function VaultHome() {
           </b>
         </div>
       </header>
-
       <section className="vx-open">
         <div className="vx-bg">
           <img src={DAMASK} alt="" className="vx-damask" />
@@ -490,22 +512,25 @@ export default function VaultHome() {
         <div className="vx-grid">
           <div>
             {/* ═════════ LOGO + KICKER + GET MY CODE ═════════ */}
-            <div className="vx-heroIdentity">
+               <div className="vx-heroIdentity">
               <div className="vx-logoWrap">
                 <img src={LOGO} alt="𝐔𝐒𝐄𝐑🜲𝓕𝐗" draggable={false} />
               </div>
               <nav className="vx-kicker" aria-label="Quick links">
                 <i />
                 <button type="button" className="vx-kickerBtn" onClick={() => setCodeModal(true)}>
-                  <Scramble text="PRIV⭑VAULT" hover />
+       <Scramble text=
+       "PRIV⭑VAULT" hover />
                 </button>
                 <i />
                 <a className="vx-kickerBtn" href="https://t.me/User18Fx_bot" target="_blank" rel="noopener noreferrer">
-                  <Scramble text="TELEGRAM" hover />
+       <Scramble text=
+       "TELEGRAM" hover />
                 </a>
                 <i />
              <a className="vx-kickerBtn" href="https://x.com/User18fx" target="_blank" rel="noopener noreferrer">
-       <Scramble text="X (TWITTER)" hover />
+       <Scramble text=
+       "X (TWITTER)" hover />
              </a>
              <i />
              </nav>
@@ -533,7 +558,7 @@ export default function VaultHome() {
       <Scramble text="Is a reserved place. access is not public. You'll need a ᴄᴏᴅᴇ" delay={420} />
             </p>
             <div className="vx-dossierRow">
-      <VaultInfoDevice />
+      <VaultMediaDevice />
             </div>
             </div>       
             <aside className="vx-lock vx-lockRaise">
@@ -561,16 +586,21 @@ export default function VaultHome() {
               ALBUM</span>
               </h2>
               <p className="vx-privateAlbumDescription">
-                Your {activePlanPrefix} access key has been verified.{" "}
-                {unlimitedAccess
-                  ? "Unlimited entries available."
-                  : remainingAccesses === null
-                    ? "Welcome inside the private vault."
-                    : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+                {memberAccess ? (
+                  <>SPCL member access is active. Full private collection available.</>
+                ) : (
+                  <>
+                    Your {activePlanPrefix} access key has been verified.{" "}
+                    {unlimitedAccess
+                      ? "Unlimited entries available."
+                      : remainingAccesses === null
+                        ? "Welcome inside the private vault."
+                        : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+                  </>
+                )}
               </p>
               <div className="vx-privateAlbumLine" />
             </header>
-
             <div className="vx-privateAlbumGrid">
               {unlockedPhotos.map((src, index) => (
                 <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
@@ -584,7 +614,6 @@ export default function VaultHome() {
                 </figure>
               ))}
             </div>
-
             <footer className="vx-privateAlbumFooter">
               <span>
                 PERSONAL ACCESS</span>
@@ -606,38 +635,46 @@ export default function VaultHome() {
               THE VAULT</span>
           </h2>
         </Reveal>
-
         <div className="vx-protocolSteps">
           {STEPS.map((s, i) => (
             <Reveal  key={s.n} delay={i * 90}  className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
               <article className="vx-step">
-                {/* ✦ FONDO DE ESTRELLAS */}
+{/* ✦ FONDO DE ESTRELLAS */}
                 <div className="vx-stepStars" aria-hidden="true">
                   <div className="vx-stars vx-stars1" />
                   <div className="vx-stars vx-stars2" />
                   <div className="vx-stars vx-stars3" />
                 </div>
-                <b className="vx-stepNum">{s.n}</b>
+                <b className="vx-stepNum">
+                  {s.n}
+                </b>
                 <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
+                  <h3>
+                    {s.title}
+                    </h3>
+                  <p>
+                    {s.text}
+                  </p>
                 </div>
-                <small>{s.n} / 04</small>
+                <small>
+                  {s.n} / 04
+                </small>
               </article>
             </Reveal>
           ))}
         </div>
       </section>
-
       <section id="llaves" className="vx-sec vx-tint">
         <div className="vx-chooseZone">
           <Reveal>
             <p className="vx-goldk">
-              🜲 ACCESS CODE</p>
+              🜲 ACCESS CODE
+            </p>
             <h2>
               CHOOSE YOUR
               <span className="vx-codeTitle">
-                CODE</span>
+                CODE
+              </span>
             </h2>
             <div className="vx-deviceStage">
               <VaultDevice />
@@ -650,7 +687,8 @@ export default function VaultHome() {
           <Reveal>
             <div className="vx-insideBlock">
               <p className="vx-goldk">
-                🜲 INSIDE THE VAULT</p>
+                🜲 INSIDE THE VAULT
+              </p>
               <h2 className="vx-insideTitle">
                 <Scramble text="WHAT'S" />
                 <span>
@@ -719,65 +757,55 @@ export default function VaultHome() {
                       <i>{open ? "–" : "+"}</i>
                     </button>
                     {open ? <p>{f.a}</p> : null}
-                  </div>
-                </Reveal>
-              );
-            })}
           </div>
-        </section>
-        {/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
-
-        <footer className="vx-foot">
+    </Reveal>
+          );
+          })}
+          </div>
+          </section>
+{/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
+          <footer className="vx-foot">
           <div className="vx-footGrid">
-            <div>
-              <div className="vx-footBrand">
-                <img src={LOGO} alt="" />
-                <div>
-                  <p>
-                    USER
-                    <span>🜲</span>
-                    FX
-                  </p>
-                  <small>PRIVATE VAULT</small>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="vx-footActions">
-                <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
-                  <button
-                    type="button"
-                    onClick={() => openLink("https://t.me/User18Fx")}
-                    aria-label="Open private chat"
-                  >
-                    <img src={ICONS.chat} alt="" aria-hidden="true" />
-                    <Scramble text="CHAT" hover />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openLink("https://t.me/User18Fx_bot?start=support")}
-                    aria-label="Open support"
-                  >
-                    <img src={ICONS.support} alt="" aria-hidden="true" />
-                    <Scramble text="SUPPORT" hover />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      document.getElementById("unlocked-vault")?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      })
-                    }
-                    aria-label="Open vault videos"
-                  >
-                    <img src={ICONS.tv} alt="" aria-hidden="true" />
-                    <Scramble text="CHANNEL" hover />
-                  </button>
-                </nav>
-                <div className="vx-footCode">| CODE | FX-011897-190122-CAHATO |</div>
-              </div>
-            </div>
+          <div>
+          <div className="vx-footBrand">
+          <img src={LOGO} alt="" />
+          <div>
+          <p>
+            USER          
+          <span>
+            🜲
+          </span>
+            FX
+          </p>
+          <small>
+            PRIVATE VAULT
+          </small>
+          </div>
+          </div>
+          </div>
+          <div>
+          <div className="vx-footActions">
+          <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
+          <button type="button" onClick={() => openLink("https://t.me/User18Fx")} aria-label="Open private chat">
+          <img src={ICONS.chat} alt="" aria-hidden="true" />
+      <Scramble text=
+      "CHAT" hover />
+          </button>
+          <button type="button" onClick={() => openLink("https://t.me/User18Fx_bot?start=support")} aria-label="Open support">
+          <img src={ICONS.support} alt="" aria-hidden="true" />
+      <Scramble text=
+      "SUPPORT" hover />
+          </button>
+          <button type="button" onClick={() => document.getElementById("unlocked-vault")?.scrollIntoView({behavior: "smooth",block: "start",})}aria-label="Open vault videos">
+          <img src={ICONS.tv} alt="" aria-hidden="true" />
+      <Scramble text=
+      "CHANNEL" hover />
+          </button>
+          </nav>
+          <div className="vx-footCode">
+            | CODE | FX-011897-190122-CAHATO |</div>
+          </div>
+          </div>
           </div>
           <p className="vx-legal">
             | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is confidential and for
@@ -788,20 +816,18 @@ export default function VaultHome() {
           </p>
         </footer>
       </div>
-
       <Ticker items={TICKER_ITEMS} reverse />
 
-     <FxAccessModal
-  id="fx-access-modal"
-  open={fxAccessOpen}
-  onClose={() => setFxAccessOpen(false)}
-  accessCode={inlineCodeValue}
-  onAccessCodeChange={handleInlineCodeChange}
-  onAccessSubmit={handleVerify}
-  accessLoading={verifyLoading}
-  accessError={verifyError}
-  inputRef={inlineCodeRef}
-/>
+      <FxAccessModal
+        id="fx-access-modal"
+        open={fxAccessOpen}
+        onClose={() => setFxAccessOpen(false)}
+        accessCode={inlineCodeValue}
+        onAccessCodeChange={handleInlineCodeChange}
+        onAccessSubmit={handleVerify}
+        accessLoading={verifyLoading}
+        accessError={verifyError}
+        inputRef={inlineCodeRef} />
 
       {dm ? (
         <div className="vx-modal" onClick={() => setDm(false)}>

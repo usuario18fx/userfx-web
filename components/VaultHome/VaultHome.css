@@ -2398,63 +2398,103 @@ video {
   .vx-dossierIcon::after {animation: none;
   }}
 
-/* ══════════ VISIBILIDAD FINAL: BOTONES ══════════ */
-.vx-footGrid {
-  grid-template-columns: minmax(0, 1fr) minmax(420px, 520px);
-  align-items: end;
-  margin-bottom: 34px;
-  transform: none;
-}
-.vx-footActions {
-  position: relative;
-  z-index: 8;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  opacity: 1;
-  visibility: visible;
-}
+/* =========================================================
+   FOOTER · CHAT / SUPPORT / TV · SOLO ICONOS
+   ========================================================= */
+/* =========================================================
+   FOOTER · CHAT / SUPPORT / TV
+   SOLO ICONOS · MÁS SEPARADOS
+   ========================================================= */
 .vx-sessionLinks {
-  position: relative;
-  z-index: 9;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: 100%;
-  gap: 12px;
-  opacity: 1;
-  visibility: visible;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 42px !important;
+  width: auto !important;
+  overflow: visible !important;
+    transform: translateX(-50px);
 }
 .vx-sessionLinks button {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-  min-height: 88px;
-  padding: 10px 8px;
-  border: 1px solid #098cded2;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #0a2132f2, #04090df7);
-  box-shadow: inset 0 1px 0 #ffffff18, 0 0 18px #007dc44a;
-  opacity: 1;
-  visibility: visible;
-  overflow: hidden;
-  cursor: pointer;
+  appearance: none !important;
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+}
+.vx-sessionLinks button::before,
+.vx-sessionLinks button::after {
+  display: none !important;
+  content: none !important;
+}
+.vx-sessionLinks button span,
+.vx-sessionLinks button small {
+  display: none !important;
 }
 .vx-sessionLinks button img {
-  display: block;
-  width: 36px;
-  height: 36px;
-  opacity: 1;
-  visibility: visible;
-  object-fit: contain;
+  display: block !important;
+  width: 50px !important;
+  height: 50px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  object-fit: contain !important;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: scale(1.53) !important;
+  transform-origin: center !important;
+  transition: transform .22s ease !important;
 }
-.vx-sessionLinks button span {
-  display: inline-block;
-  color: #eef8ff;
-  opacity: 1;
-  visibility: visible;
+.vx-sessionLinks button:hover {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.vx-sessionLinks button:hover img {
+  transform: scale(1.57) translateY(-1px) !important;
+  filter: none !important;
+}
+.vx-sessionLinks button:focus,
+.vx-sessionLinks button:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+/* =========================================================
+   MOBILE
+   ========================================================= */
+@media (max-width: 700px) {
+  .vx-sessionLinks {
+    gap: 48px !important;
+  }
+  .vx-sessionLinks button {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+  }
+  .vx-sessionLinks button img {
+    width: 42px !important;
+    height: 42px !important;
+    transform: scale(1.7) !important;
+  }
+  .vx-sessionLinks button:hover img {
+    transform: scale(1.7) translateY(-1px) !important;
+  }
 }

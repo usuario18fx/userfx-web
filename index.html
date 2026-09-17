@@ -3,37 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>𝐔sᴇʀ Ŧҳ — ᴋᴇᴇᴘ ɪᴛ ʟɪᴛ</title>
+    <title>
+      𝐔sᴇʀ Ŧҳ — ᴋᴇᴇᴘ ɪᴛ ʟɪᴛ
+    </title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="/ui-responsive-fixes.css" />
-    <link rel="stylesheet" href="/member-access-ui.css" />
     <style>
       html,
       body,
       #root {
         min-height: 100%;
-        background:
-          linear-gradient(rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.58)),
+        background:linear-gradient(#0000005c, #00000094),
           url("/wallpaper1.png") center top / cover fixed no-repeat !important;
       }
-
       .vx,
-      .vx-open {
-        background:
-          linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.48)),
+      .vx-open { background:
+          linear-gradient(#00000038, #0000007a),
           url("/wallpaper1.png") center top / cover no-repeat !important;
       }
+     .smkl-access-button {margin-top: -64px !important;
+     }
 
-      .smkl-access-button {
-        margin-top: -64px !important;
-      }
-
-      .smkl-modal__backdrop {
-        background:
-          linear-gradient(rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.72)),
-          url("/wallpaper1.png") center / cover no-repeat !important;
-      }
-
+      .smkl-modal__backdrop {background: linear-gradient(rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.72)),url("/wallpaper1.png") center / cover no-repeat !important;
+    }
       .smkl-modal__stage {
         display: flex !important;
         flex-direction: column !important;
@@ -85,8 +77,8 @@
       /*=============================================*/
       .smkl-plan-pill.is-active {
         box-shadow:
-          0 0 0 2px #63ffd0 !important,
-          0 0 18px #63ffd05c !important,
+          0 0 0 2px #63ffd0,
+          0 0 18px #63ffd05c,
           0 7px 18px #00000050 !important;
       }
 
@@ -276,13 +268,13 @@
         }
       }
     </style>
-  </head>
-  <body>
-    <div id="root"></div>
+    </head>
+    <body>
+    <div id="root">
+    </div>
     <script type="module" src="/main.jsx"></script>
-    <script src="/special-code-fab.js"></script>
-    <script src="/member-access-ui.js"></script>
     <script>
+
       (() => {
         const PREFIXES = ["BSIC", "PRX0", "VIPX"];
         const VALID_CHAR = /^[A-HJ-NP-Z2-9]$/i;
