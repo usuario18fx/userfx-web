@@ -71,71 +71,44 @@ export default function VaultInfoDevice() {
           ref={videoRef}
           key={current.id}
           src={current.src}
-          poster={current.poster}
-          controls
-          playsInline
-          preload="metadata"
-        />
-
-        <div className="vinfo__overlay">
-          <small>USER 🜲 FX</small>
-
-          <strong>
-            {current.title}
-          </strong>
-        </div>
+          poster={current.poster} controls playsInline preload="metadata"/>
+      <div className="vinfo__overlay">
+      <small>
+        USER 🜲 FX
+      </small>
+      <strong>
+      {current.title}
+      </strong>
       </div>
-
+      </div>
       {/* ─────────────────────────────────────
           LATEST UPDATES
           ───────────────────────────────────── */}
-
       <aside className="vinfo__buttons">
-        <div className="vinfo__title">
-          LATEST UPDATES
-        </div>
-
         {MEDIA.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            className={[
-              "vinfo__button",
-              selected === index
+      <button key={item.id} type="button" className={["vinfo__button", selected === index
                 ? "is-active"
-                : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            onClick={() => setSelected(index)}
-            aria-pressed={selected === index}
-          >
-            <span className="vinfo__num">
-              {String(index + 1).padStart(
-                2,
-                "0",
-              )}
-            </span>
-
-            <span className="vinfo__copy">
-              <strong>
-                {item.title}
-              </strong>
-
-              <small>
-                {item.subtitle}
-              </small>
-            </span>
-
-            <span
-              className="vinfo__arrow"
-              aria-hidden="true"
-            >
-              ›
-            </span>
-          </button>
+                : "",].filter(Boolean).join(" ")} onClick={() => setSelected(index)} aria-pressed={selected === index}>
+      <span className="vinfo__num">
+        {String(index + 1).padStart( 2,"0",)}
+      </span>
+      <span className="vinfo__copy">
+      <strong>
+        {item.title}
+      </strong>
+      <small>
+       {item.subtitle}
+      </small>
+      </span>
+      <span className="vinfo__arrow" aria-hidden="true">
+        ›
+      </span>
+      </button>
         ))}
+      <div className="vinfo__title">
+         LATEST UPDATES
+      </div>
       </aside>
-    </section>
-  );
-}
+      </section>
+      );
+      }
