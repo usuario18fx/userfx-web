@@ -71,9 +71,9 @@
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid rgba(36,124,167,.25);
-  border-radius: 50%;
-  background: rgba(6,20,31,.90);
+  border: 1px solid #247ca740;
+  border-radius: 9px;
+  background: #06141fe6;
   cursor: pointer;
   box-shadow: 0 6px 14px rgba(0,0,0,.30);
 }
@@ -335,7 +335,7 @@
   height: 10px;
   margin: 0 5px;
   fill: transparent;
-  stroke: #5ba2c6;
+  stroke: #0271a8;
 }
 /* ─────────────────────────────────────
    HANDS
@@ -390,7 +390,7 @@
    MAIN CODE / TELEGRAM
    ───────────────────────────────────── */
 .smkl-panel__mode-switch {
-  width: 100%;
+  width: 60%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 96px;
   gap: 7px;
@@ -401,26 +401,26 @@
   padding: 0 10px;
   border: 1px solid #1c6e9a;
   border-radius: 5px;
-  background: linear-gradient(180deg, rgba(10,23,35,.96), rgba(3,8,14,.98));
-  color: #8bc8dc;
+  background: linear-gradient(180deg, #1c6e9a7e, rgba(11, 76, 156, 0.589));
+  color: #f9fcff;
   font-family: var(--fx-font-mono);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: .14em;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 5px 12px rgba(0,0,0,.22);
+  box-shadow: inset 0 1px 0 #0f68bb0a, 0 5px 12px #186bb938;
   transition: border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
 .smkl-main-mode:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: #2caedf;
+  border-color: #00439b;
 }
 .smkl-main-mode.is-active {
-  color: #7fffe1;
-  border-color: #12e8d3;
-  background: linear-gradient(180deg, rgba(5,39,42,.96), rgba(2,14,19,.98));
-  box-shadow: 0 0 0 1px rgba(18,232,211,.14), 0 0 13px rgba(18,232,211,.18), inset 0 1px 0 rgba(255,255,255,.06);
+  color:#f9fcff;
+  border-color: #00439b;
+  background: linear-gradient(180deg, #023f778e, #083870fa);
+  box-shadow: 0 0 0 1px #073caf24, 0 0 13px #125de852, inset 0 1px 0 #08517a28;
 }
 .smkl-main-mode:disabled {
   opacity: .45;
@@ -469,10 +469,10 @@
   letter-spacing: .13em;
 }
 .smkl-access-drawer__kicker {
-  color: #6f9baa;
+  color: #ebfaff;
 }
 .smkl-access-drawer__state {
-  color: #62ffe0;
+  color: #e3fff9;
 }
 /* ─────────────────────────────────────
    PLAN BUTTONS
@@ -579,24 +579,22 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
-/* ─────────────────────────────────────
-   CODE INPUT
-   ───────────────────────────────────── */
+/* ────── CODE INPUT──────────────── */
 .smkl-access-code-shell {
   position: relative;
-  width: 100%;
-  min-height: 43px;
+  width: 40%;
+  min-height: 40px;
   display: grid;
   grid-template-columns: 74px 1fr;
   align-items: center;
   overflow: hidden;
-  border: 1px solid #1678b7;
+  border: none;
   border-radius: 6px;
-  background: linear-gradient(180deg, rgba(5,17,27,.98), rgba(2,8,14,.98));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 0 12px rgba(0,122,205,.10);
+  background: linear-gradient(80deg, #00345ffa, #52699bfa);
+  box-shadow: inset 0 1px 0 #061f3b0a, 0 0 12px rgba(0,122,205,.10);
 }
 .smkl-access-code-shell:focus-within {
-  border-color: #62efd6;
+  border-color:none;
   box-shadow: 0 0 0 1px rgba(98,239,214,.14), 0 0 15px rgba(98,239,214,.14);
 }
 .smkl-access-code-shell__prefix {
@@ -630,28 +628,28 @@
   box-shadow: none;
 }
 .smkl-access-code-shell input::placeholder {
-  color: rgba(139,185,199,.40);
-  -webkit-text-fill-color: rgba(139,185,199,.40);
+  color: #8bb9c766;
+  -webkit-text-fill-color: #8bb9c766;
 }
 /* ─────────────────────────────────────
    USERNAME INPUT
    ───────────────────────────────────── */
 .smkl-form__field--username.smkl-username-shell {
-  width: 100%;
+  width: 50%;
   min-height: 43px;
   height: 43px;
   display: grid;
   grid-template-columns: 22px 15px 1fr;
   align-items: center;
   padding: 0 10px;
-  border: 1px solid #1678b7;
-  border-radius: 6px;
+  border: none7;
+  border-radius: 11px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(5,17,27,.98), rgba(2,8,14,.98));
+  background: linear-gradient(180deg, #061725fa, rgba(2,8,14,.98));
 }
 .smkl-username-shell:focus-within {
   border-color: #62efd6;
-  box-shadow: 0 0 0 1px rgba(98,239,214,.14), 0 0 15px rgba(98,239,214,.14);
+  box-shadow: 0 0 0 1px #62efd624, 0 0 15px #62efd624;
 }
 .smkl-form__icon--username {
   position: static;
@@ -873,9 +871,7 @@
     max-width: min(94vw, 340px);
     padding: 12px 10px 13px;
   }
-  .smkl-panel__rose {
-    right: 7px;
-  }
+
   .smkl-panel__mode-switch {
     grid-template-columns: minmax(0, 1fr) 82px;
     gap: 6px;

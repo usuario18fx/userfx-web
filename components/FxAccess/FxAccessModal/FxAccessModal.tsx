@@ -10,12 +10,12 @@ import { createPortal } from "react-dom";
 import "./FxAccessModal.css";
 
 /* =========================================================
-   USER FX · PRIVATE ACCESS
+   USER FX · PRIVATE ACCESS MODAL
    MENU → CODE / TELEGRAM
    ========================================================= */
 
-type AccessStep = "username" | "identity" | "access";
 type AccessMode = "menu" | "plan" | "telegram";
+type AccessStep = "username" | "identity" | "access";
 type PlanKey = "BSIC" | "PRX0" | "VIPX";
 type CheckState = "idle" | "approved" | "rejected";
 
@@ -53,10 +53,6 @@ const PLAN_DISPLAY: Record<PlanKey, { icon: string; name: string }> = {
 const PLAN_KEYS: PlanKey[] = ["BSIC", "PRX0", "VIPX"];
 const USERNAME_STORAGE_KEY = "userfx_telegram_username";
 const IDENTITY_RETURN_KEY = "userfx_identity_return";
-
-/* =========================================================
-   FOCUSABLE ELEMENTS
-   ========================================================= */
 
 const focusableSelector = [
   "a[href]",
@@ -99,7 +95,7 @@ function persistUsername(username: string) {
       `${USERNAME_STORAGE_KEY}=${encodeURIComponent(username)}; ` +
       "Path=/; SameSite=Lax; Max-Age=2592000";
   } catch {
-    // Storage may be unavailable.
+    // Storage unavailable.
   }
 }
 
@@ -182,7 +178,6 @@ export function FxAccessModal({
   inputRef,
 }: FxAccessModalProps) {
   const generatedId = useId();
-
   const modalId =
     id ??
     `fx-access-modal-${generatedId.replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -234,7 +229,7 @@ export function FxAccessModal({
     telegramAuthorized;
 
   /* =========================================================
-     CALLBACK REFERENCES
+     REFERENCES
      ========================================================= */
 
   useEffect(() => {
@@ -246,7 +241,7 @@ export function FxAccessModal({
   }, [busy]);
 
   /* =========================================================
-     OPEN MODAL · RESTORE TELEGRAM IDENTITY
+     OPEN · RESTORE TELEGRAM STATE
      ========================================================= */
 
   useEffect(() => {
@@ -288,13 +283,11 @@ export function FxAccessModal({
           window.history.replaceState(
             {},
             "",
-            `${window.location.pathname}${
-              query ? `?${query}` : ""
-            }${window.location.hash}`,
+            `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
           );
         }
       } catch {
-        // Continue with normal access.
+        // Keep normal access available.
       }
 
       try {
@@ -314,14 +307,12 @@ export function FxAccessModal({
         if (cancelled) return;
 
         /* ─────────────────────────────────────
-           TELEGRAM ALREADY VERIFIED
-           Keep menu visible.
-           Telegram opens directly to GET IN.
+           FULL IDENTITY ALREADY VERIFIED
            ───────────────────────────────────── */
 
         if (data?.verified) {
           const verifiedUsername = normalizeUsername(
-            data.username || "",
+            data.username || savedUsername,
           );
 
           if (verifiedUsername) {
@@ -407,7 +398,7 @@ export function FxAccessModal({
   }, [open, mode, step]);
 
   /* =========================================================
-     KEYBOARD · FOCUS TRAP · SCROLL LOCK
+     KEYBOARD · SCROLL LOCK
      ========================================================= */
 
   useEffect(() => {
@@ -510,7 +501,7 @@ export function FxAccessModal({
   }, [open]);
 
   /* =========================================================
-     CLOSE MODAL
+     CLOSE
      ========================================================= */
 
   const handleClose = () => {
@@ -536,9 +527,13 @@ export function FxAccessModal({
     setCheckState("idle");
     setError(null);
 
-    if (planChanged || !accessCode) {
+    if (planChanged) {
       onAccessCodeChange("");
     }
+
+    window.setTimeout(() => {
+      inputRef?.current?.focus();
+    }, 120);
   };
 
   /* =========================================================
@@ -551,10 +546,6 @@ export function FxAccessModal({
     setMode("telegram");
     setError(null);
 
-    /* ─────────────────────────────────────
-       ALREADY FULLY VERIFIED
-       ───────────────────────────────────── */
-
     if (
       telegramAuthorized &&
       step === "access"
@@ -562,10 +553,6 @@ export function FxAccessModal({
       setCheckState("approved");
       return;
     }
-
-    /* ─────────────────────────────────────
-       USER VERIFIED · SPECIAL CODE OPEN
-       ───────────────────────────────────── */
 
     if (
       telegramAuthorized &&
@@ -580,12 +567,7 @@ export function FxAccessModal({
       return;
     }
 
-    /* ─────────────────────────────────────
-       START WITH USERNAME
-       ───────────────────────────────────── */
-
     setStep("username");
-
     setCheckState(
       telegramAuthorized
         ? "approved"
@@ -607,7 +589,10 @@ export function FxAccessModal({
         normalizeUsername(username);
 
       const usernameBody =
-        normalizedUsername.replace(/^@/, "");
+        normalizedUsername.replace(
+          /^@/,
+          "",
+        );
 
       if (
         !/^[A-Za-z0-9_]{3,32}$/.test(
@@ -615,6 +600,7 @@ export function FxAccessModal({
         )
       ) {
         setCheckState("rejected");
+
         setError(
           "DROP YOUR TELEGRAM @USERNAME",
         );
@@ -658,8 +644,14 @@ export function FxAccessModal({
           );
         }
 
-        setUsername(normalizedUsername);
-        persistUsername(normalizedUsername);
+        setUsername(
+          normalizedUsername,
+        );
+
+        persistUsername(
+          normalizedUsername,
+        );
+
         setTelegramAuthorized(true);
         setCheckState("approved");
         setError(null);
@@ -679,7 +671,7 @@ export function FxAccessModal({
     };
 
   /* =========================================================
-     TELEGRAM · VERIFY SPECIAL CODE
+     TELEGRAM · SPECIAL CODE
      ========================================================= */
 
   const handleIdentitySubmit =
@@ -771,7 +763,7 @@ export function FxAccessModal({
             IDENTITY_RETURN_KEY,
           );
         } catch {
-          // No action required.
+          // Nothing else required.
         }
 
         setIdentityCode("");
@@ -883,7 +875,7 @@ export function FxAccessModal({
   };
 
   /* =========================================================
-     ROBOT SCREEN TEXT
+     TOP ROBOT SCREEN TEXT
      ========================================================= */
 
   const bubbleText =
@@ -898,8 +890,8 @@ export function FxAccessModal({
               telegramAuthorized
             ? `${username} AUTHORIZED · SPECIAL CODE IS READY.`
             : step === "identity"
-              ? `${username} VERIFIED · Enter your SPECIAL CODE.`
-              : "ACCESS CONFIRMED · OPEN YOUR PRIVATE ROOM.";
+              ? `${username} AUTHORIZED · ENTER YOUR SPECIAL CODE.`
+              : `${username} VERIFIED · PRIVATE ACCESS READY.`;
 
   /* =========================================================
      TYPEWRITER
@@ -934,7 +926,7 @@ export function FxAccessModal({
             typingTimer,
           );
         }
-      }, 48);
+      }, 38);
 
     return () => {
       window.clearInterval(
@@ -1013,8 +1005,8 @@ export function FxAccessModal({
 
       <div
         ref={stageRef}
-        className={`smkl-modal__stage is-${visualState}`}
         id={modalId}
+        className={`smkl-modal__stage is-${visualState}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${modalId}-title`}
@@ -1041,7 +1033,7 @@ export function FxAccessModal({
         </button>
 
         {/* ─────────────────────────────────────
-            ROBOT SCREEN
+            TOP SCREEN
             ───────────────────────────────────── */}
 
         <div className="smkl-modal__bubble smkl-modal__bubble--screen">
@@ -1071,7 +1063,10 @@ export function FxAccessModal({
             .join(" ")}
           aria-hidden="true"
         >
+          <div className="smkl-robot__antenna" />
+
           <div className="smkl-robot__ear smkl-robot__ear--left" />
+
           <div className="smkl-robot__ear smkl-robot__ear--right" />
 
           <div className="smkl-robot__head">
@@ -1161,14 +1156,10 @@ export function FxAccessModal({
           </div>
 
           {/* =========================================================
-              MAIN MENU · CODE / TELEGRAM
+              MAIN MENU
               ========================================================= */}
 
           <div className="smkl-panel__mode-switch">
-            {/* ─────────────────────────────────────
-                CODE
-                ───────────────────────────────────── */}
-
             <button
               type="button"
               className={[
@@ -1192,10 +1183,6 @@ export function FxAccessModal({
             >
               CODE
             </button>
-
-            {/* ─────────────────────────────────────
-                TELEGRAM
-                ───────────────────────────────────── */}
 
             <button
               type="button"
@@ -1231,10 +1218,6 @@ export function FxAccessModal({
 
           {mode === "plan" && (
             <div className="smkl-access-drawer smkl-access-drawer--code">
-              {/* ─────────────────────────────────────
-                  SELECT ACCESS
-                  ───────────────────────────────────── */}
-
               <div className="smkl-access-drawer__head">
                 <span className="smkl-access-drawer__kicker">
                   SELECT ACCESS
@@ -1306,7 +1289,7 @@ export function FxAccessModal({
               </div>
 
               {/* ─────────────────────────────────────
-                  CODE INPUT
+                  CODE FORM
                   ───────────────────────────────────── */}
 
               <form
@@ -1390,16 +1373,8 @@ export function FxAccessModal({
                   className={[
                     "smkl-form__submit",
                     "smkl-form__submit--verify",
-                    busy
+                    accessLoading
                       ? "is-loading"
-                      : "",
-                    visualState ===
-                    "approved"
-                      ? "is-approved"
-                      : "",
-                    visualState ===
-                    "rejected"
-                      ? "is-rejected"
                       : "",
                   ]
                     .filter(
@@ -1426,10 +1401,6 @@ export function FxAccessModal({
 
           {mode === "telegram" && (
             <div className="smkl-access-drawer smkl-access-drawer--telegram">
-              {/* ─────────────────────────────────────
-                  TELEGRAM ACCESS
-                  ───────────────────────────────────── */}
-
               <div className="smkl-access-drawer__head">
                 <span className="smkl-access-drawer__kicker">
                   TELEGRAM ACCESS
@@ -1444,16 +1415,12 @@ export function FxAccessModal({
                 </span>
               </div>
 
-              {/* =========================================================
+              {/* ─────────────────────────────────────
                   USERNAME / SPECIAL CODE
-                  ========================================================= */}
+                  ───────────────────────────────────── */}
 
               {step !== "access" && (
                 <div className="smkl-telegram-sub-switch">
-                  {/* ─────────────────────────────────────
-                      USERNAME
-                      ───────────────────────────────────── */}
-
                   <button
                     type="button"
                     className={[
@@ -1468,9 +1435,7 @@ export function FxAccessModal({
                       )
                       .join(" ")}
                     onClick={() => {
-                      if (busy) {
-                        return;
-                      }
+                      if (busy) return;
 
                       setStep(
                         "username",
@@ -1486,10 +1451,6 @@ export function FxAccessModal({
                   >
                     USERNAME
                   </button>
-
-                  {/* ─────────────────────────────────────
-                      SPECIAL CODE
-                      ───────────────────────────────────── */}
 
                   <button
                     type="button"
@@ -1563,7 +1524,7 @@ export function FxAccessModal({
                     Telegram username
                   </label>
 
-                  <div className="smkl-form__field smkl-form__field--username smkl-username-shell">
+                  <div className="smkl-username-shell">
                     <span className="smkl-form__icon smkl-form__icon--username">
                       <UserIcon />
                     </span>
@@ -1582,7 +1543,7 @@ export function FxAccessModal({
                       id={`${modalId}-username`}
                       type="text"
                       name="username"
-                      placeholder="username"
+                      placeholder="user18fx"
                       value={
                         username.replace(
                           /^@/,
@@ -1602,6 +1563,10 @@ export function FxAccessModal({
 
                         setTelegramAuthorized(
                           false,
+                        );
+
+                        setStep(
+                          "username",
                         );
 
                         setCheckState(
@@ -1628,7 +1593,6 @@ export function FxAccessModal({
                   {error && (
                     <p
                       className="smkl-form__error"
-                      id={`${modalId}-error`}
                       role="alert"
                     >
                       {error}
@@ -1732,10 +1696,6 @@ export function FxAccessModal({
                         setError(
                           null,
                         );
-
-                        setCheckState(
-                          "approved",
-                        );
                       }}
                       autoComplete="one-time-code"
                       autoCapitalize="characters"
@@ -1754,7 +1714,6 @@ export function FxAccessModal({
                   {error && (
                     <p
                       className="smkl-form__error"
-                      id={`${modalId}-error`}
                       role="alert"
                     >
                       {error}
@@ -1765,7 +1724,7 @@ export function FxAccessModal({
                     type="submit"
                     className={[
                       "smkl-form__submit",
-                      "smkl-form__submit--inline",
+                      "smkl-form__submit--special",
                       identityLoading
                         ? "is-loading"
                         : "",
@@ -1788,7 +1747,7 @@ export function FxAccessModal({
               )}
 
               {/* =========================================================
-                  TELEGRAM · GET IN
+                  TELEGRAM · PRIVATE ACCESS READY
                   ========================================================= */}
 
               {step === "access" && (
@@ -1814,7 +1773,6 @@ export function FxAccessModal({
                   {error && (
                     <p
                       className="smkl-form__error"
-                      id={`${modalId}-error`}
                       role="alert"
                     >
                       {error}

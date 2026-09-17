@@ -796,7 +796,7 @@ export default function VaultHome() {
       <Scramble text=
       "SUPPORT" hover />
           </button>
-          <button type="button" onClick={() => document.getElementById("unlocked-vault")?.scrollIntoView({behavior: "smooth",block: "start",})}aria-label="Open vault videos">
+          <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
           <img src={ICONS.tv} alt="" aria-hidden="true" />
       <Scramble text=
       "CHANNEL" hover />
