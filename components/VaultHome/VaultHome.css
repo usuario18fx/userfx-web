@@ -318,8 +318,8 @@ video {
 .vx-titleCrown {      /*Corona*/
   position: absolute;
   width: 150px; /*↗️*/
-  left:67%; /*➡️*/
-  top: 51%; /*⬇️*/
+  left:65%; /*➡️*/
+  top: 45%; /*⬇️*/
   z-index: 3;
   animation: vxCrownFloat 7.5s ease-in-out infinite;
 }

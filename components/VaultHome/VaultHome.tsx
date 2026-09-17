@@ -791,17 +791,17 @@ export default function VaultHome() {
 
       <Ticker items={TICKER_ITEMS} reverse />
 
-      <FxAccessModal
-        id="fx-access-modal"
-        open={fxAccessOpen}
-        onClose={() => setFxAccessOpen(false)}
-        accessCode={inlineCodeValue}
-        onAccessCodeChange={handleInlineCodeChange}
-        onAccessSubmit={handleVerify}
-        accessLoading={verifyLoading}
-        accessError={verifyError}
-        inputRef={inlineCodeRef}
-      />
+     <FxAccessModal
+  id="fx-access-modal"
+  open={fxAccessOpen}
+  onClose={() => setFxAccessOpen(false)}
+  accessCode={inlineCodeValue}
+  onAccessCodeChange={handleInlineCodeChange}
+  onAccessSubmit={handleVerify}
+  accessLoading={verifyLoading}
+  accessError={verifyError}
+  inputRef={inlineCodeRef}
+/>
 
       {dm ? (
         <div className="vx-modal" onClick={() => setDm(false)}>
