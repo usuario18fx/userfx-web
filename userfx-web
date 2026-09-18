@@ -1,0 +1,137 @@
+[33m8a86cde[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpublicar-userfx-0916[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to origin/main
+[33m8a86cde[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpublicar-userfx-0916[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: commit: fix: update modal and footer icons
+[33md947955[m HEAD@{2}: commit: fix: clean access modal flow
+[33m5e9bdb5[m HEAD@{3}: commit: fix: update modal and footer icons
+[33mc35cded[m HEAD@{4}: commit: fix: update access modal and dossier device
+[33m75624dc[m HEAD@{5}: pull origin main: Fast-forward
+[33m369a938[m HEAD@{6}: commit: fix: final USER FX interface adjustments
+[33m972ccdb[m HEAD@{7}: commit: fix: polish USER FX access modal
+[33m6595e8a[m HEAD@{8}: commit: fix: polish USER FX access modal
+[33m1d8b1a3[m HEAD@{9}: commit: feat: integrate USER FX media device and latest home updates
+[33ma313b42[m HEAD@{10}: checkout: moving from integrar-modal-correcto to publicar-userfx-0916
+[33m58080e0[m[33m ([m[1;32mintegrar-modal-correcto[m[33m, [m[1;32mbackup-userfx-0916[m[33m)[m HEAD@{11}: rebase (abort): returning to refs/heads/integrar-modal-correcto
+[33ma313b42[m HEAD@{12}: rebase (start): checkout origin/main
+[33m58080e0[m[33m ([m[1;32mintegrar-modal-correcto[m[33m, [m[1;32mbackup-userfx-0916[m[33m)[m HEAD@{13}: commit: feat: add responsive USER FX media device
+[33m8fc6cb1[m HEAD@{14}: pull --rebase origin main (finish): returning to refs/heads/integrar-modal-correcto
+[33m8fc6cb1[m HEAD@{15}: pull --rebase origin main (pick): style: agregar fondo exterior al modal
+[33m4cd9c6c[m HEAD@{16}: pull --rebase origin main (pick): fix: recuperar dispositivo del modal
+[33mda69bb9[m HEAD@{17}: pull --rebase origin main (pick): fix: recuperar modal correcto desde main
+[33mbe307a1[m HEAD@{18}: pull --rebase origin main (pick): backup: guardar cambios locales antes de sincronizar
+[33m2924c66[m HEAD@{19}: pull --rebase origin main (start): checkout 2924c6647b0f5da483ef77f0741426f12c945194
+[33m6ad376b[m HEAD@{20}: commit: style: agregar fondo exterior al modal
+[33m8ecd197[m HEAD@{21}: commit: fix: recuperar dispositivo del modal
+[33me3cceb1[m HEAD@{22}: commit: fix: recuperar modal correcto desde main
+[33ma9f4301[m[33m ([m[1;32mbackup-local-20260914[m[33m)[m HEAD@{23}: checkout: moving from backup-local-20260914 to integrar-modal-correcto
+[33ma9f4301[m[33m ([m[1;32mbackup-local-20260914[m[33m)[m HEAD@{24}: checkout: moving from backup-local-20260914 to backup-local-20260914
+[33ma9f4301[m[33m ([m[1;32mbackup-local-20260914[m[33m)[m HEAD@{25}: commit: fix: modal responsive centrado
+[33m50f5aa6[m[33m ([m[1;31morigin/backup-local-20260914[m[33m)[m HEAD@{26}: checkout: moving from main to backup-local-20260914
+[33mcf800f5[m[33m ([m[1;32mmain[m[33m)[m HEAD@{27}: rebase (finish): returning to refs/heads/main
+[33mcf800f5[m[33m ([m[1;32mmain[m[33m)[m HEAD@{28}: rebase (pick): feat: agregar decoraciones al dossier
+[33m2924c66[m HEAD@{29}: rebase (start): checkout origin/main
+[33me0fb1fd[m HEAD@{30}: reset: moving to e0fb1fd5ef9c94514801b8da9fa75f07ea435056
+[33me0fb1fd[m HEAD@{31}: checkout: moving from main to main
+[33me0fb1fd[m HEAD@{32}: rebase (abort): returning to refs/heads/main
+[33m50f5aa6[m[33m ([m[1;31morigin/backup-local-20260914[m[33m)[m HEAD@{33}: commit: backup: guardar cambios locales antes de sincronizar
+[33ma3f295b[m HEAD@{34}: pull --rebase origin main: Fast-forward
+[33m560e6de[m HEAD@{35}: pull --rebase origin main (start): checkout 560e6ded4a731852a27a9ed2fc3eed9fcd3a9bb0
+[33me0fb1fd[m HEAD@{36}: reset: moving to HEAD
+[33me0fb1fd[m HEAD@{37}: commit: feat: agregar decoraciones al dossier
+[33mc2b8fa7[m HEAD@{38}: pull origin main: Fast-forward
+[33mcd501cb[m HEAD@{39}: pull --rebase origin main: Fast-forward
+[33mf1a0f62[m HEAD@{40}: reset: moving to HEAD
+[33mf1a0f62[m HEAD@{41}: commit: style: GIF transparentes en azul
+[33m7d55a83[m HEAD@{42}: commit: feat: agregar botones GIF al footer
+[33m269326c[m HEAD@{43}: reset: moving to origin/main
+[33m05107ff[m[33m ([m[1;32mbackup-local[m[33m)[m HEAD@{44}: commit: refactor: clean and format access modal
+[33m26d7d62[m HEAD@{45}: pull origin main: Fast-forward
+[33mb67437b[m HEAD@{46}: checkout: moving from backup-local-20260912 to main
+[33m92bd97d[m[33m ([m[1;32mbackup-local-20260912[m[33m)[m HEAD@{47}: commit: backup: local changes before modal cleanup
+[33mb67437b[m HEAD@{48}: checkout: moving from main to backup-local-20260912
+[33mb67437b[m HEAD@{49}: pull origin main: Fast-forward
+[33m9debc30[m HEAD@{50}: reset: moving to origin/main
+[33m6c27b33[m HEAD@{51}: reset: moving to HEAD
+[33m6c27b33[m HEAD@{52}: pull --rebase origin main: Fast-forward
+[33m126e261[m HEAD@{53}: reset: moving to HEAD
+[33m126e261[m HEAD@{54}: pull --rebase origin main: Fast-forward
+[33m9f5d68f[m HEAD@{55}: reset: moving to HEAD
+[33m9f5d68f[m HEAD@{56}: pull --rebase origin main: Fast-forward
+[33m5eef816[m HEAD@{57}: reset: moving to HEAD
+[33m5eef816[m HEAD@{58}: pull --rebase origin main: Fast-forward
+[33mfa02754[m HEAD@{59}: commit: feat: finalize special code ready flow
+[33m3299592[m HEAD@{60}: pull --rebase origin main: Fast-forward
+[33m5f950fa[m HEAD@{61}: commit: feat: finalize access modal and vault plan interface
+[33mdc7c839[m HEAD@{62}: pull --rebase origin main: Fast-forward
+[33mce69a02[m HEAD@{63}: reset: moving to HEAD
+[33mce69a02[m HEAD@{64}: commit: feat: update vault interface and private room assets
+[33m94da940[m HEAD@{65}: commit: assets: add access plan icons
+[33md288763[m HEAD@{66}: commit: style: refine Telegram and access modal effects
+[33m7768558[m HEAD@{67}: commit: style: refine access modal buttons and robot hands
+[33m4ea3edd[m HEAD@{68}: pull --rebase origin main: Fast-forward
+[33mc79fe31[m HEAD@{69}: reset: moving to HEAD
+[33mc79fe31[m HEAD@{70}: pull --rebase origin main: Fast-forward
+[33m9ee3ab2[m HEAD@{71}: reset: moving to HEAD
+[33m9ee3ab2[m HEAD@{72}: pull --rebase origin main: Fast-forward
+[33mbdeb08b[m HEAD@{73}: reset: moving to HEAD
+[33mbdeb08b[m HEAD@{74}: pull --rebase origin main: Fast-forward
+[33m6e9f18e[m HEAD@{75}: reset: moving to HEAD
+[33m6e9f18e[m HEAD@{76}: reset: moving to HEAD
+[33m6e9f18e[m HEAD@{77}: pull --rebase origin main: Fast-forward
+[33m31ccdd0[m HEAD@{78}: reset: moving to HEAD
+[33m31ccdd0[m HEAD@{79}: pull --rebase origin main: Fast-forward
+[33m19b6a43[m HEAD@{80}: reset: moving to HEAD
+[33m19b6a43[m HEAD@{81}: reset: moving to HEAD
+[33m19b6a43[m HEAD@{82}: pull --rebase origin main: Fast-forward
+[33m69daf58[m HEAD@{83}: reset: moving to HEAD
+[33m69daf58[m HEAD@{84}: pull --rebase origin main: Fast-forward
+[33m82843f4[m HEAD@{85}: reset: moving to HEAD
+[33m82843f4[m HEAD@{86}: pull --rebase origin main: Fast-forward
+[33m121d7b9[m HEAD@{87}: reset: moving to HEAD
+[33m121d7b9[m HEAD@{88}: reset: moving to HEAD
+[33m121d7b9[m HEAD@{89}: pull --rebase origin main: Fast-forward
+[33mf12b0c6[m HEAD@{90}: reset: moving to HEAD
+[33mf12b0c6[m HEAD@{91}: pull --rebase origin main: Fast-forward
+[33m924aae4[m HEAD@{92}: reset: moving to HEAD
+[33m924aae4[m HEAD@{93}: reset: moving to HEAD
+[33m924aae4[m HEAD@{94}: pull --rebase origin main: Fast-forward
+[33me9aee65[m HEAD@{95}: reset: moving to HEAD
+[33me9aee65[m HEAD@{96}: reset: moving to origin/main
+[33m600dd7e[m HEAD@{97}: pull --rebase origin main (finish): returning to refs/heads/main
+[33m600dd7e[m HEAD@{98}: pull --rebase origin main (pick): style: update access button
+[33mece71db[m HEAD@{99}: pull --rebase origin main (pick): feat: update access modal and unlock icon
+[33m15f9225[m HEAD@{100}: pull --rebase origin main (start): checkout 15f92259ae9e6c2a193a6fffdff01f2b17aa870b
+[33mb8623ca[m HEAD@{101}: commit: style: update access button
+[33m860dd4b[m HEAD@{102}: commit: feat: update access modal and unlock icon
+[33m7838bf9[m HEAD@{103}: pull --ff-only origin main: Fast-forward
+[33m55a0e4e[m HEAD@{104}: commit: feat: finalize TGMX vault flow and bot styling
+[33m1be9bde[m HEAD@{105}: pull --ff-only origin main: Fast-forward
+[33m6e25704[m HEAD@{106}: reset: moving to HEAD
+[33m6e25704[m HEAD@{107}: pull --rebase origin main: Fast-forward
+[33mfb17f80[m HEAD@{108}: reset: moving to HEAD
+[33mfb17f80[m HEAD@{109}: commit: fix modal identity flow conflicts
+[33m390f8b9[m HEAD@{110}: rebase (finish): returning to refs/heads/main
+[33m390f8b9[m HEAD@{111}: commit: backup local before identity flow
+[33m30da57a[m HEAD@{112}: rebase (start): checkout origin/main
+[33m31a58b0[m HEAD@{113}: commit: backup local before identity flow
+[33m77af166[m HEAD@{114}: commit: feat: add animated stars to protocol steps
+[33maf32a52[m HEAD@{115}: pull --rebase origin main: Fast-forward
+[33mafd4ad4[m HEAD@{116}: reset: moving to HEAD
+[33mafd4ad4[m HEAD@{117}: commit: sync local updates with latest main
+[33m984b384[m HEAD@{118}: pull --rebase origin main: Fast-forward
+[33m30f042c[m HEAD@{119}: reset: moving to HEAD
+[33m30f042c[m HEAD@{120}: rebase (finish): returning to refs/heads/main
+[33m30f042c[m HEAD@{121}: rebase (continue): update modal robot typing animation
+[33m58d6a91[m HEAD@{122}: rebase (start): checkout origin/main
+[33md7e742b[m HEAD@{123}: commit: update modal robot typing animation
+[33m137c159[m HEAD@{124}: pull origin main: Fast-forward
+[33ma1bf24f[m HEAD@{125}: commit: integrate TGMX identity flow and preserve vault UI
+[33m6e3ae9e[m HEAD@{126}: pull origin main: Fast-forward
+[33mfac5a31[m HEAD@{127}: reset: moving to HEAD
+[33mfac5a31[m HEAD@{128}: commit: allow TelegramFX commands through text router
+[33m300e46d[m HEAD@{129}: commit: fix TelegramFX routing and preserve FxAccess components
+[33m3ebb777[m HEAD@{130}: pull origin main: Fast-forward
+[33m1435416[m HEAD@{131}: commit: integrate TelegramFX access admin into telegram bot
+[33m55638da[m HEAD@{132}: commit: integrate TelegramFX access admin into telegram bot
+[33ma899613[m HEAD@{133}: pull origin main: Fast-forward
+[33m9cc8d35[m HEAD@{134}: reset: moving to origin/main
+[33m082c111[m HEAD@{135}: reset: moving to origin/main
+[33maa992ea[m HEAD@{136}: clone: from https://github.com/usuario18fx/userfx-web.git

@@ -688,8 +688,7 @@
     margin-top:2px; /* ↔️↕️ */
     font-size:6.5px; /* ↗️ tamaño */
     white-space:normal;
-  }
-}
+  }}
 @media (max-width: 560px) {
   .vd-candado2-icon{
     width:25px; /* ↔️ */
@@ -710,7 +709,6 @@
     padding:14px 5px; /* ↔️ */
   }
 }
-
 .vd-candado2-icon{
   display:block;
   width:30px; /* ↔️ */
