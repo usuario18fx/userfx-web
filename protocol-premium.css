@@ -1,0 +1,143 @@
+/* ═══════════ USER FX · PROTOCOL · CLEAN SELECT STATE ═══════════ */
+
+.vx-protocolSteps {
+  position: relative;
+}
+
+.vx-protocolReveal {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.vx-step {
+  position: relative;
+  isolation: isolate;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0;
+  cursor: pointer;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.vx-stepStars {
+  display: none !important;
+}
+
+.vx-step::before,
+.vx-step::after {
+  box-shadow: none !important;
+}
+
+/* Número apagado hasta seleccionar el step */
+.vx-stepNum,
+.vx-protocolReveal.is-on .vx-stepNum {
+  opacity: 0.14 !important;
+  color: #c79d42 !important;
+  text-shadow: none !important;
+  filter: saturate(0.72) brightness(0.9);
+  transform: scale(1);
+  transform-origin: left center;
+  transition:
+    opacity 240ms ease,
+    color 240ms ease,
+    filter 240ms ease,
+    text-shadow 240ms ease,
+    transform 240ms ease !important;
+}
+
+/* Hover = sólo una previsualización suave */
+.vx-step:hover .vx-stepNum,
+.vx-step:focus-visible .vx-stepNum {
+  opacity: 0.34 !important;
+  color: #d2a94f !important;
+  filter: saturate(0.9) brightness(1);
+}
+
+/* Click / selección = número activo */
+.vx-step.is-selected .vx-stepNum {
+  opacity: 0.9 !important;
+  color: #d8ad4e !important;
+  filter: saturate(1) brightness(1.08);
+  text-shadow:
+    0 0 12px rgba(216, 173, 78, 0.18),
+    0 0 28px rgba(216, 173, 78, 0.08) !important;
+  transform: scale(1.045);
+}
+
+.vx-step h3,
+.vx-step p {
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    text-shadow 220ms ease;
+}
+
+.vx-step h3 {
+  opacity: 0.78;
+}
+
+.vx-step p {
+  opacity: 0.68;
+}
+
+.vx-step:hover h3,
+.vx-step:focus-visible h3,
+.vx-step.is-selected h3 {
+  opacity: 1;
+}
+
+.vx-step:hover p,
+.vx-step:focus-visible p {
+  opacity: 0.82;
+}
+
+.vx-step.is-selected p {
+  opacity: 0.94;
+}
+
+.vx-step.is-selected h3 {
+  color: #e0b85a !important;
+  text-shadow: 0 0 16px rgba(224, 184, 90, 0.1);
+}
+
+.vx-step:focus-visible {
+  outline: 1px solid rgba(224, 184, 90, 0.22);
+  outline-offset: 7px;
+}
+
+@media (hover: hover) {
+  .vx-step:hover {
+    transform: translateX(3px) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .vx-step {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .vx-stepNum,
+  .vx-protocolReveal.is-on .vx-stepNum {
+    opacity: 0.13 !important;
+  }
+
+  .vx-step.is-selected .vx-stepNum {
+    opacity: 0.88 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-step,
+  .vx-stepNum,
+  .vx-step h3,
+  .vx-step p {
+    transition: none !important;
+  }
+}
