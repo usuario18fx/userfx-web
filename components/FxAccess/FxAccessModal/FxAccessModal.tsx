@@ -1,171 +1,166 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type FormEvent,
-  type RefObject,
-} from "react";
+import {useEffect, useId, useRef, useState,
+  type ChangeEvent,type FormEvent,type RefObject,} from "react";
 import { createPortal } from "react-dom";
 import "./FxAccessModal.css";
 
-/* =========================================================
-   USER FX · PRIVATE ACCESS MODAL
-   MENU → CODE / TELEGRAM
-   ========================================================= */
-
-type AccessMode = "menu" | "plan" | "telegram";
-type AccessStep = "username" | "identity" | "access";
+type AccessMode = "menu" | "code" | "telegram";
+type TelegramStep = "username" | "special" | "access";
 type PlanKey = "BSIC" | "PRX0" | "VIPX";
-type CheckState = "idle" | "approved" | "rejected";
-
+type VisualState = "idle" | "approved" | "rejected";
 type FxAccessModalProps = {
   id?: string;
   open: boolean;
   onClose: () => void;
   accessCode: string;
   onAccessCodeChange: (value: string) => void;
-  onAccessSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onAccessSubmit: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
   accessLoading?: boolean;
   accessError?: string;
   inputRef?: RefObject<HTMLInputElement | null>;
 };
-
-/* =========================================================
-   PLANS
-   ========================================================= */
-
-const PLAN_DISPLAY: Record<PlanKey, { icon: string; name: string }> = {
-  BSIC: {
-    icon: "/assets/iconos/basic.png",
-    name: "BASIC",
-  },
-  PRX0: {
-    icon: "/assets/iconos/pro.png",
-    name: "PRO",
-  },
-  VIPX: {
-    icon: "/assets/iconos/vip.png",
-    name: "VIP",
-  },
+/* ─────   PLAN DATA ─────── */
+const PLAN_DISPLAY: Record<PlanKey,{name:string;icon:string}> = {
+  BSIC: {name:"BASIC",icon:"/assets/iconos/basic.png"},
+  PRX0: {name:"PRO",icon:"/assets/iconos/pro.png"},
+  VIPX: {name:"VIP",icon:"/assets/iconos/vip.png"},
 };
-
-const PLAN_KEYS: PlanKey[] = ["BSIC", "PRX0", "VIPX"];
+const PLAN_KEYS:PlanKey[] = ["BSIC","PRX0","VIPX"];
 const USERNAME_STORAGE_KEY = "userfx_telegram_username";
-const IDENTITY_RETURN_KEY = "userfx_identity_return";
-
-const focusableSelector = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function normalizeUsername(value: string) {
+/* ================= ICONOS ================= */
+const ACCESS_ICONS = {
+  lock: "/assets/iconos/candado.png",
+  telegram: "/assets//iconos/telegram.png",
+} as const;
+const CrownIcon = () => (
+  <svg width="22" height="18" viewBox="0 0 36 24" aria-hidden="true">
+    <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" fill="currentColor" />
+  </svg>
+);
+/* ================= DECORACIONES ================= */
+const Rose = ({size = 40}:{size?:number}) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <radialGradient id="rosePetal" cx="42%" cy="35%" r="80%">
+        <stop offset="0%" stopColor="#b34a5f" />
+        <stop offset="55%" stopColor="#7c1e30" />
+        <stop offset="100%" stopColor="#43060f" />
+      </radialGradient>
+    </defs>
+    <g stroke="#26030a" strokeWidth="1.4">
+      {[0,60,120,180,240,300].map((deg) => (
+        <path key={deg} d="M50 50 C 38 34, 40 16, 50 10 C 60 16, 62 34, 50 50 Z" fill="url(#rosePetal)" transform={`rotate(${deg} 50 50)`} />
+      ))}
+    </g>
+  <circle cx="50" cy="50" r="15" fill="#5c1120" stroke="#26030a" strokeWidth="1.4" />
+    <path d="M50 41 a9 9 0 1 1 -9 9 a6.5 6.5 0 1 0 6.5 -6.5 a4 4 0 1 1 -4 4" fill="none" stroke="#a13b4e" strokeWidth="2.2" strokeLinecap="round" />
+  </svg>
+);
+const CornerFlourish = ({className = ""}:{className?:string}) => (
+  <svg className={`sl-corner ${className}`} viewBox="0 0 80 80" aria-hidden="true">
+    <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M8 72 C8 36 36 8 72 8" />
+      <path d="M16 72 C16 43 43 16 72 16" opacity=".5" />
+      <path d="M12 46 q10 2 12 12" />
+      <path d="M46 12 q2 10 12 12" />
+    </g>
+    <circle cx="28" cy="52" r="3.4" fill="currentColor" />
+    <circle cx="52" cy="28" r="3.4" fill="currentColor" />
+  </svg>
+);
+/* ================= ROBOT ================= */
+function Robot({state}:{state:VisualState}) {
+  const eyeColor =
+    state === "rejected"
+      ? "#ff4165"
+      : state === "approved"
+        ? "#4dffab"
+        : "#159dff";
+  return (
+    <div className={`sl-robot is-${state}`} aria-hidden="true">
+      <svg className="sl-robot-svg" viewBox="0 0 240 168">
+        {/* ─────   ROBOT DEFS ─────── */}
+        <defs>
+          <linearGradient id="helmetGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#555b64" />
+            <stop offset="38%" stopColor="#292e35" />
+            <stop offset="72%" stopColor="#171b21" />
+            <stop offset="100%" stopColor="#0d1015" />
+          </linearGradient>
+          <linearGradient id="visorGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#10181c" />
+            <stop offset="55%" stopColor="#070c0f" />
+            <stop offset="100%" stopColor="#020507" />
+          </linearGradient>
+          <linearGradient id="robotMetal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#3a3f46" />
+            <stop offset="30%" stopColor="#4b515a" />
+            <stop offset="58%" stopColor="#383c41" />
+            <stop offset="78%" stopColor="#15191f" />
+            <stop offset="100%" stopColor="#3b3f44" />
+          </linearGradient>
+          <filter id="eyeGlow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+{/* ─────   HEADPHONES ─────── */}
+        <rect x="14" y="72" width="24" height="52" rx="12" fill="#20242a" stroke="#911d44"  strokeWidth="2" />
+        <rect x="202" y="72" width="24" height="52" rx="12" fill="#20242a" stroke="#911d44" strokeWidth="2" />
+        <circle cx="26" cy="98" r="5" fill="#460616" stroke="#911d44"  strokeWidth="1.5" />
+        <circle cx="214" cy="98" r="5" fill="#e22850" stroke="#911d44" strokeWidth="1.5" />
+{/* ─────   HELMET ─────── */}
+        <rect x="34" y="18" width="172" height="132" rx="58" fill="url(#helmetGrad)" stroke="#911d44"  strokeWidth="2.5" />
+        <rect x="88" y="6" width="64" height="20" rx="10" fill="#58001d" stroke="#911d44" strokeWidth="2" />
+{/* ─────   VISOR ─────── */}
+        <rect x="52" y="42" width="136" height="88" rx="38" fill="url(#visorGrad)" stroke="#661e36" strokeWidth="3" />
+{/* ─────   FACE ─────── */}
+        <g filter="url(#eyeGlow)">
+          <ellipse className="sl-eye" cx="95" cy="82" rx="11" ry="18" fill={eyeColor} />
+          <ellipse className="sl-eye" cx="145" cy="82" rx="11" ry="18" fill={eyeColor} />
+          <rect x="111" y="108" width="18" height="5" rx="2.5" fill={eyeColor} />
+        </g>
+      </svg>
+{/* ─────   HANDS ─────── */}
+      {(["sl-hand-left","sl-hand-right"] as const).map((cls) => (
+        <svg key={cls} className={`sl-hand ${cls}`} viewBox="0 0 96 60">
+{/* ─────   FINGERS ─────── */}
+          <g fill="url(#robotMetal)" stroke="#992350" strokeWidth="2">
+            <rect x="6" y="8" width="16" height="44" rx="8" />
+            <rect x="26" y="2" width="16" height="50" rx="8" />
+            <rect x="46" y="4" width="16" height="48" rx="8" />
+            <rect x="66" y="10" width="16" height="42" rx="8" />
+          </g>
+{/* ─────   HAND DETAILS ─────── */}
+          <g fill="#776b6c">
+            <rect x="9" y="24" width="10" height="6" rx="3" />
+            <rect x="29" y="22" width="10" height="6" rx="3" />
+            <rect x="49" y="24" width="10" height="6" rx="3" />
+            <rect x="69" y="28" width="10" height="6" rx="3" />
+          </g>
+        </svg>
+      ))}
+    </div>
+  );
+  }
+/* ================= HELPERS ================= */
+function normalizeUsername(value:string) {
   const clean = String(value || "")
     .trim()
-    .replace(/^@+/, "")
-    .replace(/[^A-Za-z0-9_]/g, "")
-    .slice(0, 32);
-
+    .replace(/^@+/,"")
+    .replace(/[^A-Za-z0-9_]/g,"")
+    .slice(0,32);
   return clean ? `@${clean}` : "";
 }
-
-function normalizeIdentityCode(value: string) {
-  const compact = String(value || "")
+function normalizeSuffix(value:string) {
+  return String(value || "")
     .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 8);
-
-  if (compact.length <= 4) return compact;
-
-  return `${compact.slice(0, 4)}-${compact.slice(4)}`;
+    .replace(/[^A-HJ-NP-Z2-9]/g,"")
+    .slice(0,4);
 }
-
-function persistUsername(username: string) {
-  try {
-    localStorage.setItem(USERNAME_STORAGE_KEY, username);
-    document.cookie =
-      `${USERNAME_STORAGE_KEY}=${encodeURIComponent(username)}; ` +
-      "Path=/; SameSite=Lax; Max-Age=2592000";
-  } catch {
-    // Storage unavailable.
-  }
-}
-
-/* =========================================================
-   ROSE ICON
-   ========================================================= */
-
-function RoseIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 64 64"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M32 8c6 4 10 10 10 17 0 8-5 14-10 17-5-3-10-9-10-17 0-7 4-13 10-17Z" />
-      <path
-        d="M22 20c-3 4-4 9-2 14M42 20c3 4 4 9 2 14"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M32 42v14M28 50c-3 2-5 4-6 7M36 50c3 2 5 4 6 7"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
-
-/* =========================================================
-   USER ICON
-   ========================================================= */
-
-function UserIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  );
-}
-
-/* =========================================================
-   TELEGRAM ICON
-   ========================================================= */
-
-function TelegramIcon() {
-  return (
-    <svg
-      className="smkl-telegram-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <circle cx="12" cy="12" r="11" fill="#229ED9" />
-      <path
-        d="M17.9 6.75 15.8 17.1c-.16.73-.57.91-1.16.57l-3.2-2.36-1.54 1.49c-.17.17-.31.31-.64.31l.23-3.26 5.94-5.37c.26-.23-.06-.36-.4-.13l-7.34 4.62-3.16-.99c-.69-.21-.7-.69.14-1.02l12.35-4.76c.57-.21 1.07.14.88.55Z"
-        fill="#fff"
-      />
-    </svg>
-  );
-}
-
-/* =========================================================
-   COMPONENT
-   ========================================================= */
-
+/* ================= MODAL ================= */
 export function FxAccessModal({
   id,
   open,
@@ -176,768 +171,389 @@ export function FxAccessModal({
   accessLoading = false,
   accessError = "",
   inputRef,
-}: FxAccessModalProps) {
-  const generatedId = useId();
-  const modalId =
-    id ??
-    `fx-access-modal-${generatedId.replace(/[^a-zA-Z0-9]/g, "")}`;
+}:FxAccessModalProps) {const generatedId = useId();
 
-  const stageRef = useRef<HTMLDivElement>(null);
-  const primaryInputRef = useRef<HTMLInputElement>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
-  const onCloseRef = useRef(onClose);
-  const loadingRef = useRef(false);
+  const modalId = id ??
+    `fx-access-modal-${generatedId.replace(/[^a-zA-Z0-9]/g,"")}`;
 
-  /* =========================================================
-     STATE
-     ========================================================= */
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const specialCodeRef = useRef<HTMLInputElement>(null);
 
-  const [mode, setMode] = useState<AccessMode>("menu");
-  const [selectedPlan, setSelectedPlan] = useState<PlanKey>("PRX0");
-  const [step, setStep] = useState<AccessStep>("username");
-  const [username, setUsername] = useState("");
-  const [identityCode, setIdentityCode] = useState("");
-  const [telegramAuthorized, setTelegramAuthorized] = useState(false);
-  const [identityLoading, setIdentityLoading] = useState(false);
-  const [privateLoading, setPrivateLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [checkState, setCheckState] = useState<CheckState>("idle");
-  const [typedText, setTypedText] = useState("");
-
-  /* =========================================================
-     STATUS
-     ========================================================= */
-
-  const busy =
-    identityLoading ||
-    privateLoading ||
-    accessLoading;
-
-  const visualState: CheckState =
-    mode === "plan" && accessError
-      ? "rejected"
-      : checkState;
-
-  const isUsernameGuidance =
-    mode === "telegram" &&
-    step === "username" &&
-    !telegramAuthorized;
-
-  const isSpecialGuidance =
-    mode === "telegram" &&
-    step === "username" &&
-    telegramAuthorized;
-
-  /* =========================================================
-     REFERENCES
-     ========================================================= */
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    loadingRef.current = busy;
-  }, [busy]);
-
-  /* =========================================================
-     OPEN · RESTORE TELEGRAM STATE
-     ========================================================= */
-
-  useEffect(() => {
-    if (!open) return;
-
-    let cancelled = false;
-
+  /* ─────   STATE ─────── */
+  const [mode,setMode] = useState<AccessMode>("menu");
+  const [selectedPlan,setSelectedPlan] = useState<PlanKey>("PRX0");
+  const [telegramStep,setTelegramStep] = useState<TelegramStep>("username");
+  const [username,setUsername] = useState("");
+  const [telegramAuthorized,setTelegramAuthorized] = useState(false);
+  const [specialCode,setSpecialCode] = useState("");
+  const [identityVerified,setIdentityVerified] = useState(false);
+  const [identityLoading,setIdentityLoading] = useState(false);
+  const [privateLoading,setPrivateLoading] = useState(false);
+  const [error,setError] = useState<string | null>(null);
+  const busy = accessLoading || identityLoading || privateLoading;
+  const screenError = mode === "code"
+      ? accessError || error
+      : error;
+  const visualState:VisualState = screenError
+        ? "rejected"
+        : telegramAuthorized || identityVerified
+          ? "approved"
+          : "idle";
+  /* ─────   CODE VALUES ─────── */
+  const accessSuffix = accessCode
+    .toUpperCase()
+    .replace(/^(BSIC|PRX0|VIPX)-?/i,"")
+    .replace(/[^A-HJ-NP-Z2-9]/g,"")
+    .slice(0,4);
+  const specialSuffix = specialCode
+    .toUpperCase()
+    .replace(/^SPCL-?/i,"")
+    .replace(/[^A-HJ-NP-Z2-9]/g,"")
+    .slice(0,4);
+  /* ─────   OPEN ─────── */
+    useEffect(() => { if (!open) return;
+  const detectedPlan = accessCode
+      .trim()
+      .toUpperCase()
+      .match(/^(BSIC|PRX0|VIPX)/)?.[1] as PlanKey | undefined;
+  if (detectedPlan) {setSelectedPlan(detectedPlan);
+    }
+  try {
+  const savedUsername = normalizeUsername(
+      localStorage.getItem(USERNAME_STORAGE_KEY) || "",
+      );
+    if (savedUsername) {setUsername(savedUsername);
+      }
+    } catch {
+      // Storage unavailable.
+    }
     setMode("menu");
-    setStep("username");
-    setIdentityCode("");
+    setTelegramStep("username");
     setTelegramAuthorized(false);
-    setCheckState("idle");
+    setIdentityVerified(false);
+    setSpecialCode("");
     setError(null);
-
-    const restoreIdentity = async () => {
-      let savedUsername = "";
-      let returnToIdentity = false;
-
-      try {
-        const params = new URLSearchParams(window.location.search);
-
-        returnToIdentity =
-          params.get("identity") === "1" ||
-          localStorage.getItem(IDENTITY_RETURN_KEY) === "1";
-
-        savedUsername = normalizeUsername(
-          localStorage.getItem(USERNAME_STORAGE_KEY) || "",
-        );
-
-        if (savedUsername) {
-          setUsername(savedUsername);
-        }
-
-        if (params.get("identity") === "1") {
-          params.delete("identity");
-
-          const query = params.toString();
-
-          window.history.replaceState(
-            {},
-            "",
-            `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
-          );
-        }
-      } catch {
-        // Keep normal access available.
-      }
-
-      try {
-        const response = await fetch("/api/identity", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "same-origin",
-          cache: "no-store",
-        });
-
-        const data = await response
-          .json()
-          .catch(() => ({}));
-
-        if (cancelled) return;
-
-        /* ─────────────────────────────────────
-           FULL IDENTITY ALREADY VERIFIED
-           ───────────────────────────────────── */
-
-        if (data?.verified) {
-          const verifiedUsername = normalizeUsername(
-            data.username || savedUsername,
-          );
-
-          if (verifiedUsername) {
-            setUsername(verifiedUsername);
-            persistUsername(verifiedUsername);
-          }
-
-          setTelegramAuthorized(true);
-          setStep("access");
-          setCheckState("idle");
-
-          return;
-        }
-
-        /* ─────────────────────────────────────
-           RETURN TO SPECIAL CODE
-           ───────────────────────────────────── */
-
-        if (!returnToIdentity || !savedUsername) {
-          return;
-        }
-
-        const eligibilityResponse = await fetch(
-          `/api/telegram-eligibility?username=${encodeURIComponent(
-            savedUsername,
-          )}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-            },
-            credentials: "same-origin",
-            cache: "no-store",
-          },
-        );
-
-        const eligibility = await eligibilityResponse
-          .json()
-          .catch(() => ({}));
-
-        if (
-          !cancelled &&
-          eligibilityResponse.ok &&
-          eligibility?.eligible
-        ) {
-          setMode("telegram");
-          setStep("identity");
-          setTelegramAuthorized(true);
-          setCheckState("approved");
-        }
-      } catch {
-        // Main menu remains available.
-      }
-    };
-
-    void restoreIdentity();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
-
-  /* =========================================================
-     TELEGRAM AUTO FOCUS
-     ========================================================= */
-
-  useEffect(() => {
-    if (
-      !open ||
-      mode !== "telegram" ||
-      step === "access"
-    ) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      primaryInputRef.current?.focus();
-    }, 120);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [open, mode, step]);
-
-  /* =========================================================
-     KEYBOARD · SCROLL LOCK
-     ========================================================= */
-
+  },[open]);
+  /* ─────   KEYBOARD ─────── */
   useEffect(() => {
     if (!open) return;
-
-    previouslyFocusedElementRef.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
-    const previousOverflow =
-      document.body.style.overflow;
-
-    const previousPaddingRight =
-      document.body.style.paddingRight;
-
-    const scrollbarWidth =
-      window.innerWidth -
-      document.documentElement.clientWidth;
-
-    document.body.style.overflow = "hidden";
-
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight =
-        `${scrollbarWidth}px`;
-    }
-
-    const handleKeyDown = (
-      event: KeyboardEvent,
-    ) => {
-      if (event.key === "Escape") {
-        if (!loadingRef.current) {
-          onCloseRef.current();
-        }
-
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const stage = stageRef.current;
-
-      if (!stage) return;
-
-      const focusableItems = Array.from(
-        stage.querySelectorAll<HTMLElement>(
-          focusableSelector,
-        ),
-      ).filter(
-        (element) =>
-          !element.hasAttribute("disabled") &&
-          element.getAttribute("aria-hidden") !== "true",
-      );
-
-      if (!focusableItems.length) return;
-
-      const firstItem = focusableItems[0];
-
-      const lastItem =
-        focusableItems[
-          focusableItems.length - 1
-        ];
-
-      if (
-        event.shiftKey &&
-        document.activeElement === firstItem
-      ) {
-        event.preventDefault();
-        lastItem.focus();
-      }
-
-      if (
-        !event.shiftKey &&
-        document.activeElement === lastItem
-      ) {
-        event.preventDefault();
-        firstItem.focus();
-      }
-    };
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown,
-    );
-
+    const handleKeyDown = (event:KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) {
+        onClose();
+      }};
+    window.addEventListener("keydown",handleKeyDown);
     return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown,
-      );
-
-      document.body.style.overflow =
-        previousOverflow;
-
-      document.body.style.paddingRight =
-        previousPaddingRight;
-
-      previouslyFocusedElementRef.current?.focus();
+      window.removeEventListener("keydown",handleKeyDown);
     };
-  }, [open]);
-
-  /* =========================================================
-     CLOSE
-     ========================================================= */
-
-  const handleClose = () => {
-    if (!busy) {
-      onCloseRef.current();
-    }
-  };
-
-  /* =========================================================
-     CODE PATH
-     ========================================================= */
-
-  const switchToPlan = (
-    plan: PlanKey,
-  ) => {
+  },[open,busy,onClose]);
+  /* ─────   LOCK PAGE SCROLL ─────── */
+  useEffect(() => {
+    if (!open) return;
+    const bodyOverflow =
+      document.body.style.overflow;
+    const htmlOverflow =
+      document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = bodyOverflow;
+      document.documentElement.style.overflow = htmlOverflow;
+    };
+  },[open]);
+  /* ─────   CODE MODE ─────── */
+  const openCodeMode = () => {
     if (busy) return;
-
-    const planChanged =
-      selectedPlan !== plan;
-
-    setMode("plan");
-    setSelectedPlan(plan);
-    setCheckState("idle");
+    setMode("code");
     setError(null);
-
-    if (planChanged) {
-      onAccessCodeChange("");
+    if (!accessCode) {
+      onAccessCodeChange(`${selectedPlan}-`);
     }
-
     window.setTimeout(() => {
       inputRef?.current?.focus();
-    }, 120);
+    },100);
   };
-
-  /* =========================================================
-     TELEGRAM PATH
-     ========================================================= */
-
-  const switchToTelegram = () => {
+  /* ─────   PLAN ─────── */
+  const selectPlan = (plan:PlanKey) => {
     if (busy) return;
-
-    setMode("telegram");
+    setSelectedPlan(plan);
     setError(null);
-
-    if (
-      telegramAuthorized &&
-      step === "access"
-    ) {
-      setCheckState("approved");
-      return;
-    }
-
-    if (
-      telegramAuthorized &&
-      step === "identity"
-    ) {
-      setCheckState("approved");
-
-      window.setTimeout(() => {
-        primaryInputRef.current?.focus();
-      }, 120);
-
-      return;
-    }
-
-    setStep("username");
-    setCheckState(
-      telegramAuthorized
-        ? "approved"
-        : "idle",
+    onAccessCodeChange(
+      `${plan}-${accessSuffix}`,
     );
-
     window.setTimeout(() => {
-      primaryInputRef.current?.focus();
-    }, 120);
+      inputRef?.current?.focus();
+    },80);
   };
-
-  /* =========================================================
-     TELEGRAM · CHECK USERNAME
-     ========================================================= */
-
-  const handleTelegramUsernameCheck =
-    async () => {
-      const normalizedUsername =
-        normalizeUsername(username);
-
-      const usernameBody =
-        normalizedUsername.replace(
-          /^@/,
-          "",
-        );
-
-      if (
-        !/^[A-Za-z0-9_]{3,32}$/.test(
-          usernameBody,
-        )
-      ) {
-        setCheckState("rejected");
-
-        setError(
-          "DROP YOUR TELEGRAM @USERNAME",
-        );
-
-        primaryInputRef.current?.focus();
-
-        return;
-      }
-
-      try {
-        setIdentityLoading(true);
-        setError(null);
-        setTelegramAuthorized(false);
-        setCheckState("idle");
-
-        const response = await fetch(
-          `/api/telegram-eligibility?username=${encodeURIComponent(
-            normalizedUsername,
-          )}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-            },
-            credentials: "same-origin",
-            cache: "no-store",
-          },
-        );
-
-        const data = await response
-          .json()
-          .catch(() => ({}));
-
-        if (
-          !response.ok ||
-          !data?.eligible
-        ) {
-          throw new Error(
-            data?.error ||
-              "USERNAME IS NOT ACTIVE IN TELEGRAMFX",
-          );
-        }
-
-        setUsername(
-          normalizedUsername,
-        );
-
-        persistUsername(
-          normalizedUsername,
-        );
-
-        setTelegramAuthorized(true);
-        setCheckState("approved");
-        setError(null);
-      } catch (submissionError) {
-        setTelegramAuthorized(false);
-        setCheckState("rejected");
-
-        setError(
-          submissionError instanceof Error &&
-            submissionError.message
-            ? submissionError.message
-            : "USERNAME IS NOT ACTIVE IN TELEGRAMFX",
-        );
-      } finally {
-        setIdentityLoading(false);
-      }
-    };
-
-  /* =========================================================
-     TELEGRAM · SPECIAL CODE
-     ========================================================= */
-
-  const handleIdentitySubmit =
-    async () => {
-      if (!telegramAuthorized) {
-        setError(
-          "VERIFY YOUR TELEGRAM USERNAME FIRST",
-        );
-
-        return;
-      }
-
-      const normalizedUsername =
-        normalizeUsername(username);
-
-      const normalizedCode =
-        normalizeIdentityCode(
-          identityCode,
-        );
-
-      if (
-        !/^(SPCL|TGMX)-[A-HJ-NP-Z2-9]{4}$/.test(
-          normalizedCode,
-        )
-      ) {
-        setError(
-          "DROP THE FULL SPECIAL CODE",
-        );
-
-        primaryInputRef.current?.focus();
-
-        return;
-      }
-
-      try {
-        setIdentityLoading(true);
-        setError(null);
-
-        const response = await fetch(
-          "/api/identity",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type":
-                "application/json",
-            },
-            credentials: "same-origin",
-            cache: "no-store",
-            body: JSON.stringify({
-              username:
-                normalizedUsername,
-              code:
-                normalizedCode,
-            }),
-          },
-        );
-
-        const data = await response
-          .json()
-          .catch(() => ({}));
-
-        if (
-          !response.ok ||
-          !data?.verified
-        ) {
-          throw new Error(
-            data?.error ||
-              "IDENTITY CHECK DIDN'T GO THROUGH",
-          );
-        }
-
-        const verifiedUsername =
-          normalizeUsername(
-            data.username ||
-              normalizedUsername,
-          );
-
-        setUsername(
-          verifiedUsername,
-        );
-
-        persistUsername(
-          verifiedUsername,
-        );
-
-        try {
-          localStorage.removeItem(
-            IDENTITY_RETURN_KEY,
-          );
-        } catch {
-          // Nothing else required.
-        }
-
-        setIdentityCode("");
-        setTelegramAuthorized(true);
-        setCheckState("approved");
-        setStep("access");
-      } catch (submissionError) {
-        setCheckState("rejected");
-
-        setError(
-          submissionError instanceof Error &&
-            submissionError.message
-            ? submissionError.message
-            : "IDENTITY CHECK DIDN'T GO THROUGH",
-        );
-      } finally {
-        setIdentityLoading(false);
-      }
-    };
-
-  /* =========================================================
-     TELEGRAM · PRIVATE ROOM
-     ========================================================= */
-
-  const handlePrivateAccess =
-    async () => {
-      try {
-        setPrivateLoading(true);
-        setError(null);
-
-        persistUsername(
-          normalizeUsername(username),
-        );
-
-        const response = await fetch(
-          "/api/access-session",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-            },
-            credentials: "same-origin",
-            cache: "no-store",
-          },
-        );
-
-        const data = await response
-          .json()
-          .catch(() => ({}));
-
-        if (
-          !response.ok ||
-          !data?.authenticated
-        ) {
-          throw new Error(
-            data?.error ||
-              "PRIVATE ACCESS DIDN'T GO THROUGH",
-          );
-        }
-
-        onCloseRef.current();
-
-        window.location.hash =
-          "#/private-room";
-      } catch (submissionError) {
-        setError(
-          submissionError instanceof Error &&
-            submissionError.message
-            ? submissionError.message
-            : "PRIVATE ACCESS DIDN'T GO THROUGH",
-        );
-      } finally {
-        setPrivateLoading(false);
-      }
-    };
-
-  /* =========================================================
-     FORM SUBMIT
-     ========================================================= */
-
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
+  /* ─────   ACCESS CODE INPUT ─────── */
+  const handleAccessCodeChange = (
+    event:ChangeEvent<HTMLInputElement>,
   ) => {
-    if (mode === "plan") {
-      onAccessSubmit(event);
+    const suffix = normalizeSuffix(event.target.value);
+    onAccessCodeChange(`${selectedPlan}-${suffix}`,
+    );
+    setError(null);
+  };
+  /* ─────   ACCESS CODE VERIFY ─────── */
+  const handleAccessSubmit = async (
+    event:FormEvent<HTMLFormElement>,
+  ) => {
+    if (busy) {
+      event.preventDefault();
+     return;
+    }
+    if (accessSuffix.length !== 4) {
+      event.preventDefault();
+      setError("DROP THE FULL ACCESS CODE");
+      inputRef?.current?.focus();
+      return;
+    }
+    setError(null);
+    await onAccessSubmit(event);
+  };
+  /* ─────   TELEGRAM MODE ─────── */
+  const openTelegramMode = () => {
+    if (busy) return;
+    setMode("telegram");
+    setTelegramStep("username");
+    setError(null);
+    window.setTimeout(() => {
+      usernameRef.current?.focus();
+    },100);
+  };
+  /* ─────   USERNAME ─────── */
+  const handleUsernameChange = (
+    event:ChangeEvent<HTMLInputElement>,
+  ) => {
+    setUsername( normalizeUsername(event.target.value),
+    );
+    setTelegramAuthorized(false);
+    setIdentityVerified(false);
+    setError(null);
+  };
+  /* ─────   CHECK USER ─────── */
+  const handleTelegramUsernameCheck = async (
+    event:FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    if (busy) return;
+    const normalizedUsername = normalizeUsername(username);
+    const usernameBody = normalizedUsername.replace(/^@/,"");
+    if (!/^[A-Za-z0-9_]{3,32}$/.test(usernameBody)) {
+      setTelegramAuthorized(false);
+      setError("DROP YOUR TELEGRAM @USERNAME");
+      usernameRef.current?.focus();
+      return;
+    }
+    try {
+      setIdentityLoading(true);
+      setTelegramAuthorized(false);
+      setError(null);
+
+      const response = await fetch(
+        `/api/telegram-eligibility?username=${encodeURIComponent(normalizedUsername)}`,
+        {
+          method:"GET",
+          headers:{
+            Accept:"application/json",
+          },
+          credentials:"same-origin",
+          cache:"no-store",
+      },);
+      const data =
+        await response.json().catch(() => ({}));
+      if (!response.ok || !data?.eligible) {
+        throw new Error(
+          data?.error ||
+          "USERNAME IS NOT ACTIVE IN TELEGRAMFX",
+        );
+      }
+      setUsername(normalizedUsername);
+      setTelegramAuthorized(true);
+      setError(null);
+      try {
+        localStorage.setItem(
+          USERNAME_STORAGE_KEY,
+          normalizedUsername,
+        );
+    } catch {
+        // Storage unavailable.
+      }} catch (submissionError) {
+      setTelegramAuthorized(false);
+      setError(
+        submissionError instanceof Error &&
+        submissionError.message
+          ? submissionError.message
+          : "USERNAME IS NOT ACTIVE IN TELEGRAMFX",
+      );} finally {
+      setIdentityLoading(false);
+    }};
+  /* ─────   OPEN SPECIAL CODE ─────── */
+  const openSpecialCode = () => {
+    if (!telegramAuthorized || busy) return;
+    setTelegramStep("special");
+    setSpecialCode("");
+    setError(null);
+    window.setTimeout(() => {specialCodeRef.current?.focus();
+    },100);
+  };
+  /* ─────   SPECIAL CODE INPUT ─────── */
+  const handleSpecialCodeChange = (
+    event:ChangeEvent<HTMLInputElement>,
+  ) => {
+    const suffix =
+    normalizeSuffix(event.target.value);
+    setSpecialCode(
+      suffix
+        ? `SPCL-${suffix}`
+        : "",
+    );
+    setError(null);
+  };
+  /* ─────   SPECIAL CODE VERIFY ─────── */
+  const handleSpecialCodeSubmit = async (
+    event:FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    if (busy) return;
+    if (!telegramAuthorized) {
+      setError(
+        "VERIFY YOUR TELEGRAM USERNAME FIRST",
+      );
+      return;
+    }
+    const normalizedUsername =
+      normalizeUsername(username);
+    const normalizedCode =
+      `SPCL-${specialSuffix}`;
+    if (!/^SPCL-[A-HJ-NP-Z2-9]{4}$/.test(normalizedCode)) {
+      setError(
+        "DROP THE FULL SPECIAL CODE",
+      );
+      specialCodeRef.current?.focus();
+
       return;
     }
 
-    event.preventDefault();
+    try {
+      setIdentityLoading(true);
+      setIdentityVerified(false);
+      setError(null);
 
+      const response =
+        await fetch("/api/identity",{
+          method:"POST",
+          headers:{
+            Accept:"application/json",
+            "Content-Type":"application/json",
+          },
+          credentials:"same-origin",
+          cache:"no-store",
+     body:JSON.stringify({
+            username:normalizedUsername,
+            code:normalizedCode,
+        }), });
+      const data =
+        await response.json().catch(() => ({}));
+      if (!response.ok || !data?.verified) {
+        throw new Error(
+          data?.error ||
+          "IDENTITY CHECK DIDN'T GO THROUGH",
+        );
+      }
+      const verifiedUsername =
+        normalizeUsername(
+          data.username ||
+          normalizedUsername,
+        );
+      setUsername(verifiedUsername);
+      setTelegramAuthorized(true);
+      setIdentityVerified(true);
+      setTelegramStep("access");
+      setError(null);
+      try {
+        localStorage.setItem(
+          USERNAME_STORAGE_KEY,
+          verifiedUsername,
+    );
+    sessionStorage.setItem(
+      "userfx_access_code", normalizedCode,
+    );
+    } catch {
+      // Storage unavailable.
+    }
+    } catch (submissionError) {
+      setIdentityVerified(false);
+      setError(
+        submissionError instanceof Error &&
+        submissionError.message
+          ? submissionError.message
+          : "IDENTITY CHECK DIDN'T GO THROUGH",
+    );
+    } finally {
+      setIdentityLoading(false);
+    }};
+  /* ─────   PRIVATE ROOM ─────── */
+  const handlePrivateAccess = async (
+    event:FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
     if (
-      busy ||
-      mode !== "telegram"
+      busy || !telegramAuthorized || !identityVerified
     ) {
       return;
     }
-
-    if (step === "username") {
-      await handleTelegramUsernameCheck();
-      return;
-    }
-
-    if (step === "identity") {
-      await handleIdentitySubmit();
-      return;
-    }
-
-    await handlePrivateAccess();
-  };
-
-  /* =========================================================
-     TOP ROBOT SCREEN TEXT
-     ========================================================= */
-
-  const bubbleText =
-    mode === "menu"
-      ? "CHOOSE YOUR ACCESS PATH · CODE OR TELEGRAM."
-      : mode === "plan"
-        ? `CODE ACCESS · Choose ${selectedPlan}, then enter your private key.`
-        : step === "username" &&
-            !telegramAuthorized
-          ? "TELEGRAM ACCESS · Enter your @username to continue."
-          : step === "username" &&
-              telegramAuthorized
-            ? `${username} AUTHORIZED · SPECIAL CODE IS READY.`
-            : step === "identity"
-              ? `${username} AUTHORIZED · ENTER YOUR SPECIAL CODE.`
-              : `${username} VERIFIED · PRIVATE ACCESS READY.`;
-
-  /* =========================================================
-     TYPEWRITER
-     ========================================================= */
-
-  useEffect(() => {
-    if (!open) {
-      setTypedText("");
-      return;
-    }
-
-    let characterIndex = 0;
-
-    setTypedText("");
-
-    const typingTimer =
-      window.setInterval(() => {
-        characterIndex += 1;
-
-        setTypedText(
-          bubbleText.slice(
-            0,
-            characterIndex,
-          ),
-        );
-
-        if (
-          characterIndex >=
-          bubbleText.length
-        ) {
-          window.clearInterval(
-            typingTimer,
-          );
-        }
-      }, 38);
-
-    return () => {
-      window.clearInterval(
-        typingTimer,
+    try {
+      setPrivateLoading(true);
+      setError(null);
+      const response =
+        await fetch("/api/access-session",{
+          method:"POST",
+          headers:{
+          Accept:"application/json",
+          },
+          credentials:"same-origin",
+          cache:"no-store",
+        });
+      const data =
+        await response.json().catch(() => ({}));
+      if (!response.ok || !data?.authenticated) {
+        throw new Error(
+          data?.error ||
+          "PRIVATE ACCESS DIDN'T GO THROUGH",
       );
-    };
-  }, [open, bubbleText]);
+      }
+      onClose();
+      window.location.hash =
+        "#/private-room";
+    } catch (submissionError) {
+      setError(
+        submissionError instanceof Error &&
+        submissionError.message
+          ? submissionError.message
+          : "PRIVATE ACCESS DIDN'T GO THROUGH",
+      );
+    } finally {
+      setPrivateLoading(false);
+    }};
+  /* ─────   SCREEN TEXT ─────── */
+  const screenMessage =
+    screenError
+      ? `ERROR · ${screenError.toUpperCase()}`
+      : mode === "menu"
+        ? "CHOOSE YOUR ACCESS PATH · CODE OR TELEGRAM."
+        : mode === "code"
+          ? `CODE ACCESS · ${selectedPlan} · ENTER YOUR PRIVATE KEY.`
+          : telegramStep === "username" &&
+              !telegramAuthorized
+            ? "TELEGRAM ACCESS · ENTER YOUR @USERNAME TO CONTINUE."
+            : telegramStep === "username" &&
+                telegramAuthorized
+              ? `${username} AUTHORIZED · SPECIAL CODE IS READY.`
+              : telegramStep === "special"
+                ? `${username} AUTHORIZED · ENTER YOUR SPECIAL CODE.`
+                : `${username} VERIFIED · PRIVATE ACCESS READY.`;
 
-  /* =========================================================
-     RENDER GUARD
-     ========================================================= */
+  /* ─────   GUARD ─────── */
 
   if (
     !open ||
@@ -946,869 +562,207 @@ export function FxAccessModal({
     return null;
   }
 
-  /* =========================================================
-     INPUT VALUES
-     ========================================================= */
-
-  const planCodeSuffix =
-    accessCode
-      .toUpperCase()
-      .replace(
-        /^(BSIC|PRX0|VIPX)-?/i,
-        "",
-      )
-      .replace(
-        /[^A-HJ-NP-Z2-9]/g,
-        "",
-      )
-      .slice(0, 4);
-
-  const identitySuffix =
-    identityCode
-      .toUpperCase()
-      .replace(
-        /^(SPCL|TGMX)-?/i,
-        "",
-      )
-      .replace(
-        /[^A-HJ-NP-Z2-9]/g,
-        "",
-      )
-      .slice(0, 4);
-
-  /* =========================================================
-     PORTAL
-     ========================================================= */
+  /* ================= UI ================= */
 
   return createPortal(
-    <div
-      className="smkl-modal"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (
-          event.target ===
-          event.currentTarget
-        ) {
-          handleClose();
-        }
-      }}
-    >
-      {/* ─────────────────────────────────────
-          BACKDROP
-          ───────────────────────────────────── */}
+    <div className={`sl-overlay is-${visualState}`} onMouseDown={(event) => {if (event.target === event.currentTarget && !busy) onClose();}}>
+      <div className="sl-smoke sl-smoke-a"></div>
+      <div className="sl-smoke sl-smoke-b"></div>
+      <div className="sl-arch"></div>
 
-      <div className="smkl-modal__backdrop" />
+      <div className="sl-scene" id={modalId}>
 
-      {/* ─────────────────────────────────────
-          STAGE
-          ───────────────────────────────────── */}
+        {/* ─────   HEADER ─────── */}
 
-      <div
-        ref={stageRef}
-        id={modalId}
-        className={`smkl-modal__stage is-${visualState}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`${modalId}-title`}
-        aria-busy={busy}
-        data-access-mode={mode}
-        data-access-step={step}
-        onMouseDown={(event) =>
-          event.stopPropagation()
-        }
-      >
-        {/* ─────────────────────────────────────
-            CLOSE
-            ───────────────────────────────────── */}
-
-        <button
-          type="button"
-          className="smkl-modal__close"
-          onClick={handleClose}
-          aria-label="Close access"
-          disabled={busy}
-        >
-          <span />
-          <span />
-        </button>
-
-        {/* ─────────────────────────────────────
-            TOP SCREEN
-            ───────────────────────────────────── */}
-
-        <div className="smkl-modal__bubble smkl-modal__bubble--screen">
-          <div className="smkl-typing-viewport">
-            <span className="smkl-typing-text">
-              {typedText}
-            </span>
+        <header className="sl-header">
+          <div className="sl-top-ornament">
+            <span className="sl-line"></span>
+            <Rose size={30} />
+            <span className="sl-line"></span>
           </div>
-        </div>
 
-        {/* ─────────────────────────────────────
-            ROBOT
-            ───────────────────────────────────── */}
+          <h1 className="sl-title">
+            USER FX
+          </h1>
 
-        <div
-          className={[
-            "smkl-robot",
-            `is-${visualState}`,
-            isUsernameGuidance
-              ? "is-guiding"
-              : "",
-            isSpecialGuidance
-              ? "is-special-guiding"
-              : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          aria-hidden="true"
-        >
-          <div className="smkl-robot__antenna" />
+          <div className="sl-header-rule"></div>
+        </header>
 
-          <div className="smkl-robot__ear smkl-robot__ear--left" />
+        {/* ─────   TOP SCREEN ─────── */}
 
-          <div className="smkl-robot__ear smkl-robot__ear--right" />
+        <p className={`sl-bubble ${screenError ? "is-error" : ""}`}>
+          {screenMessage}
+        </p>
 
-          <div className="smkl-robot__head">
-            <RoseIcon className="smkl-robot__head-rose" />
+        <div className="sl-stage">
 
-            <div className="smkl-robot__face">
-              <div className="smkl-robot__eyes">
-                <span className="smkl-robot__eye" />
-                <span className="smkl-robot__eye" />
-              </div>
+          {/* ─────   ROBOT ─────── */}
 
-              <span className="smkl-robot__mouth" />
+          <Robot state={visualState} />
+
+          {/* ========   PRIVATE ACCESS =========================== */}
+
+          <div className="sl-card">
+            <CornerFlourish className="sl-corner-tl" />
+            <CornerFlourish className="sl-corner-tr" />
+            <CornerFlourish className="sl-corner-bl" />
+            <CornerFlourish className="sl-corner-br" />
+
+            <div className="sl-card-rose">
+              <Rose size={54} />
             </div>
-          </div>
-        </div>
 
-        {/* =========================================================
-            PANEL
-            ========================================================= */}
+            <h2 className="sl-card-title">
+              PRIVATE ACCESS
+            </h2>
+            {/* ========   ACCESS BODY =========================== */}
+            <div className="sl-card-body">
 
-        <section className="smkl-panel">
-          {/* ─────────────────────────────────────
-              ROBOT HAND · LEFT
-              ───────────────────────────────────── */}
+              {/* ========   MENU =========================== */}
+              {mode === "menu" && (
+                <div className="sl-form">
 
-          <div
-            className={[
-              "smkl-robot__hand",
-              "smkl-robot__hand--left",
-              mode === "telegram"
-                ? "is-supporting"
-                : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            aria-hidden="true"
-          >
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-
-          {/* ─────────────────────────────────────
-              ROBOT HAND · RIGHT
-              ───────────────────────────────────── */}
-
-          <div
-            className={[
-              "smkl-robot__hand",
-              "smkl-robot__hand--right",
-              isSpecialGuidance
-                ? "is-pointing-special"
-                : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            aria-hidden="true"
-          >
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-
-          {/* =========================================================
-              PRIVATE ACCESS HEADER
-              ========================================================= */}
-
-          <RoseIcon className="smkl-panel__rose" />
-
-          <div className="smkl-modal__brand-line" />
-
-          <h2 id={`${modalId}-title`}>
-            PRIVATE ACCESS
-          </h2>
-
-          <div className="smkl-modal__brand-line" />
-
-          <div
-            className="smkl-panel__divider"
-            aria-hidden="true"
-          >
-            <span />
-            <RoseIcon />
-            <span />
-          </div>
-
-          {/* =========================================================
-              MAIN MENU
-              ========================================================= */}
-
-          <div className="smkl-panel__mode-switch">
-            <button
-              type="button"
-              className={[
-                "smkl-main-mode",
-                "smkl-main-mode--code",
-                mode === "plan"
-                  ? "is-active"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={() =>
-                switchToPlan(
-                  selectedPlan,
-                )
-              }
-              aria-pressed={
-                mode === "plan"
-              }
-              disabled={busy}
-            >
-              CODE
-            </button>
-
-            <button
-              type="button"
-              className={[
-                "smkl-main-mode",
-                "smkl-main-mode--telegram",
-                mode === "telegram"
-                  ? "is-active"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={
-                switchToTelegram
-              }
-              aria-label="Telegram access"
-              aria-pressed={
-                mode === "telegram"
-              }
-              disabled={busy}
-            >
-              <TelegramIcon />
-
-              <span>
-                TELEGRAM
-              </span>
-            </button>
-          </div>
-
-          {/* =========================================================
-              CODE PATH
-              ========================================================= */}
-
-          {mode === "plan" && (
-            <div className="smkl-access-drawer smkl-access-drawer--code">
-              <div className="smkl-access-drawer__head">
-                <span className="smkl-access-drawer__kicker">
-                  SELECT ACCESS
-                </span>
-
-                <span className="smkl-access-drawer__state">
-                  {selectedPlan}
-                </span>
-              </div>
-
-              {/* ─────────────────────────────────────
-                  BASIC / PRO / VIP
-                  ───────────────────────────────────── */}
-
-              <div className="smkl-plan-switcher smkl-plan-switcher--drawer">
-                {PLAN_KEYS.map(
-                  (plan) => (
-                    <button
-                      key={plan}
-                      type="button"
-                      className={[
-                        "smkl-plan-pill",
-                        selectedPlan ===
-                        plan
-                          ? "is-active"
-                          : "",
-                      ]
-                        .filter(
-                          Boolean,
-                        )
-                        .join(" ")}
-                      onClick={() =>
-                        switchToPlan(
-                          plan,
-                        )
-                      }
-                      disabled={
-                        busy
-                      }
-                      aria-pressed={
-                        selectedPlan ===
-                        plan
-                      }
-                    >
-                      <img
-                        className="smkl-plan-pill__icon"
-                        src={
-                          PLAN_DISPLAY[
-                            plan
-                          ].icon
-                        }
-                        alt=""
-                        aria-hidden="true"
-                        draggable={
-                          false
-                        }
-                      />
-
-                      <span className="smkl-plan-pill__name">
-                        {
-                          PLAN_DISPLAY[
-                            plan
-                          ].name
-                        }
-                      </span>
+                  {/* ─────   CODE ─────── */}
+                  <div className="sl-btn-wrap">
+                    <button type="button" className="sl-btn" onClick={openCodeMode} disabled={busy}>
+                      <img src={ACCESS_ICONS.lock} alt="" className="sl-menu-icon" draggable={false} />
+                      <span>CODE</span>
                     </button>
-                  ),
-                )}
-              </div>
+                  </div>
 
-              {/* ─────────────────────────────────────
-                  CODE FORM
-                  ───────────────────────────────────── */}
+                  {/* ─────   TELEGRAM ─────── */}
+                  <div className="sl-btn-wrap">
+                    <button type="button" className="sl-btn" onClick={openTelegramMode} disabled={busy}>
+                      <img src={ACCESS_ICONS.telegram} alt="" className="sl-menu-icon" draggable={false} />
+                      <span>TELEGRAM</span>
+                    </button>
+                  </div>
 
-              <form
-                className="smkl-form"
-                onSubmit={
-                  handleSubmit
-                }
-                noValidate
-              >
-                <label
-                  className="smkl-sr-only"
-                  htmlFor={`${modalId}-access-code`}
-                >
-                  Private access code
-                </label>
-
-                <div className="smkl-access-code-shell">
-                  <span className="smkl-access-code-shell__prefix">
-                    {
-                      selectedPlan
-                    }
-                  </span>
-
-                  <input
-                    ref={inputRef}
-                    id={`${modalId}-access-code`}
-                    type="text"
-                    name="access-code"
-                    placeholder="XXXX"
-                    value={
-                      planCodeSuffix
-                    }
-                    onChange={(
-                      event,
-                    ) => {
-                      const raw =
-                        event.target.value
-                          .toUpperCase()
-                          .replace(
-                            /[^A-HJ-NP-Z2-9]/g,
-                            "",
-                          )
-                          .slice(
-                            0,
-                            4,
-                          );
-
-                      onAccessCodeChange(
-                        raw
-                          ? `${selectedPlan}-${raw}`
-                          : `${selectedPlan}-`,
-                      );
-                    }}
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    autoCorrect="off"
-                    spellCheck={
-                      false
-                    }
-                    maxLength={4}
-                    disabled={
-                      busy
-                    }
-                    required
-                  />
-                </div>
-
-                {accessError && (
-                  <p
-                    className="smkl-form__error"
-                    role="alert"
-                  >
-                    {
-                      accessError
-                    }
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  className={[
-                    "smkl-form__submit",
-                    "smkl-form__submit--verify",
-                    accessLoading
-                      ? "is-loading"
-                      : "",
-                  ]
-                    .filter(
-                      Boolean,
-                    )
-                    .join(" ")}
-                  disabled={
-                    busy
-                  }
-                >
-                  <span>
-                    {accessLoading
-                      ? "CHECKING..."
-                      : "VERIFY ACCESS"}
-                  </span>
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* =========================================================
-              TELEGRAM PATH
-              ========================================================= */}
-
-          {mode === "telegram" && (
-            <div className="smkl-access-drawer smkl-access-drawer--telegram">
-              <div className="smkl-access-drawer__head">
-                <span className="smkl-access-drawer__kicker">
-                  TELEGRAM ACCESS
-                </span>
-
-                <span className="smkl-access-drawer__state">
-                  {step === "access"
-                    ? "READY"
-                    : telegramAuthorized
-                      ? "AUTHORIZED"
-                      : "CHECK USER"}
-                </span>
-              </div>
-
-              {/* ─────────────────────────────────────
-                  USERNAME / SPECIAL CODE
-                  ───────────────────────────────────── */}
-
-              {step !== "access" && (
-                <div className="smkl-telegram-sub-switch">
-                  <button
-                    type="button"
-                    className={[
-                      "smkl-telegram-submode",
-                      step ===
-                      "username"
-                        ? "is-active"
-                        : "",
-                    ]
-                      .filter(
-                        Boolean,
-                      )
-                      .join(" ")}
-                    onClick={() => {
-                      if (busy) return;
-
-                      setStep(
-                        "username",
-                      );
-
-                      setError(
-                        null,
-                      );
-                    }}
-                    disabled={
-                      busy
-                    }
-                  >
-                    USERNAME
-                  </button>
-
-                  <button
-                    type="button"
-                    className={[
-                      "smkl-telegram-submode",
-                      step ===
-                      "identity"
-                        ? "is-active"
-                        : "",
-                      telegramAuthorized
-                        ? "is-ready"
-                        : "",
-                    ]
-                      .filter(
-                        Boolean,
-                      )
-                      .join(" ")}
-                    onClick={() => {
-                      if (
-                        !telegramAuthorized ||
-                        busy
-                      ) {
-                        return;
-                      }
-
-                      setStep(
-                        "identity",
-                      );
-
-                      setError(
-                        null,
-                      );
-
-                      setCheckState(
-                        "approved",
-                      );
-
-                      window.setTimeout(
-                        () => {
-                          primaryInputRef.current?.focus();
-                        },
-                        120,
-                      );
-                    }}
-                    disabled={
-                      !telegramAuthorized ||
-                      busy
-                    }
-                  >
-                    SPECIAL CODE
-                  </button>
                 </div>
               )}
 
-              {/* =========================================================
-                  TELEGRAM · USERNAME
-                  ========================================================= */}
+              {/* ========   CODE =========================== */}
+              {mode === "code" && (
+                <form className="sl-form" onSubmit={handleAccessSubmit}>
 
-              {step === "username" && (
-                <form
-                  className="smkl-form"
-                  onSubmit={
-                    handleSubmit
-                  }
-                  noValidate
-                >
-                  <label
-                    className="smkl-sr-only"
-                    htmlFor={`${modalId}-username`}
-                  >
-                    Telegram username
+                  {/* ─────   PLANS ─────── */}
+                  <div className="sl-plan-grid">
+                    {PLAN_KEYS.map((plan) => (
+                      <button key={plan} type="button" className={`sl-plan ${selectedPlan === plan ? "is-active" : ""}`} onClick={() => selectPlan(plan)} disabled={busy}>
+                        <img src={PLAN_DISPLAY[plan].icon} alt="" aria-hidden="true" />
+                        <span>{PLAN_DISPLAY[plan].name}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* ─────   ACCESS CODE ─────── */}
+                  <label className="sl-field">
+                    <img src={ACCESS_ICONS.lock} alt="" className="sl-field-icon" draggable={false} />
+                    <span className="sl-code-prefix">{selectedPlan}</span>
+                    <input ref={inputRef} type="text" name="access-code" placeholder="XXXX" value={accessSuffix} onChange={handleAccessCodeChange} autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={4} disabled={busy} />
                   </label>
 
-                  <div className="smkl-username-shell">
-                    <span className="smkl-form__icon smkl-form__icon--username">
-                      <UserIcon />
-                    </span>
-
-                    <span
-                      className="smkl-username-at"
-                      aria-hidden="true"
-                    >
-                      @
-                    </span>
-
-                    <input
-                      ref={
-                        primaryInputRef
-                      }
-                      id={`${modalId}-username`}
-                      type="text"
-                      name="username"
-                      placeholder="user18fx"
-                      value={
-                        username.replace(
-                          /^@/,
-                          "",
-                        )
-                      }
-                      onChange={(
-                        event,
-                      ) => {
-                        setUsername(
-                          normalizeUsername(
-                            event
-                              .target
-                              .value,
-                          ),
-                        );
-
-                        setTelegramAuthorized(
-                          false,
-                        );
-
-                        setStep(
-                          "username",
-                        );
-
-                        setCheckState(
-                          "idle",
-                        );
-
-                        setError(
-                          null,
-                        );
-                      }}
-                      autoComplete="off"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      spellCheck={
-                        false
-                      }
-                      disabled={
-                        busy
-                      }
-                      required
-                    />
+                  {/* ─────   VERIFY ACCESS ─────── */}
+                  <div className="sl-btn-wrap">
+                    <button type="submit" className="sl-btn" disabled={busy}>
+                      {accessLoading ? "CHECKING..." : "VERIFY ACCESS"}
+                    </button>
                   </div>
 
-                  {error && (
-                    <p
-                      className="smkl-form__error"
-                      role="alert"
-                    >
-                      {error}
-                    </p>
-                  )}
+                  {/* ─────   BACK ─────── */}
+                  <button type="button" className="sl-back-btn" onClick={() => {setMode("menu");setError(null);}} disabled={busy}>BACK</button>
 
-                  <button
-                    type="submit"
-                    className={[
-                      "smkl-form__submit",
-                      "smkl-form__submit--telegram-check",
-                      identityLoading
-                        ? "is-loading"
-                        : "",
-                      checkState ===
-                      "approved"
-                        ? "is-approved"
-                        : "",
-                      checkState ===
-                      "rejected"
-                        ? "is-rejected"
-                        : "",
-                    ]
-                      .filter(
-                        Boolean,
-                      )
-                      .join(" ")}
-                    disabled={
-                      busy
-                    }
-                  >
-                    <span>
-                      {identityLoading
-                        ? "CHECKING..."
-                        : checkState === "approved"
-                          ? "USER AUTHORIZED"
-                          : checkState === "rejected"
-                            ? "USER REJECTED"
-                            : "CHECK USER"}
-                    </span>
-                  </button>
                 </form>
               )}
 
-              {/* =========================================================
-                  TELEGRAM · SPECIAL CODE
-                  ========================================================= */}
+              {/* ========   TELEGRAM · USERNAME =========================== */}
+              {mode === "telegram" && telegramStep === "username" && (
+                <form className="sl-form" onSubmit={handleTelegramUsernameCheck}>
 
-              {step === "identity" && (
-                <form
-                  className="smkl-form"
-                  onSubmit={
-                    handleSubmit
-                  }
-                  noValidate
-                >
-                  <label
-                    className="smkl-sr-only"
-                    htmlFor={`${modalId}-identity-code`}
-                  >
-                    Special identity code
+                  {/* ─────   USERNAME ─────── */}
+                  <label className="sl-field">
+                    <img src={ACCESS_ICONS.telegram} alt="" className="sl-field-icon" draggable={false} />
+                    <span className="sl-code-prefix">@</span>
+                    <input ref={usernameRef} type="text" name="username" placeholder="user18fx" value={username.replace(/^@/,"")} onChange={handleUsernameChange} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} disabled={busy} />
                   </label>
 
-                  <div className="smkl-access-code-shell smkl-access-code-shell--special">
-                    <span className="smkl-access-code-shell__prefix">
-                      SPCL
-                    </span>
+                  {/* ─────   TELEGRAM ACTIONS ─────── */}
+                  <div className="sl-action-grid">
+                    <button type="submit" className={`sl-btn ${telegramAuthorized ? "is-approved" : ""}`} disabled={busy}>
+                      <img src="/assets/iconos/ok.png" alt="" className="sl-check-icon" draggable={false} />
+                      {identityLoading ? "CHECKING..." : telegramAuthorized ? "USER AUTHORIZED" : "CHECK USER"}
+                    </button>
 
-                    <input
-                      ref={
-                        primaryInputRef
-                      }
-                      id={`${modalId}-identity-code`}
-                      type="text"
-                      name="identity-code"
-                      placeholder="XXXX"
-                      value={
-                        identitySuffix
-                      }
-                      onChange={(
-                        event,
-                      ) => {
-                        const raw =
-                          event.target.value
-                            .toUpperCase()
-                            .replace(
-                              /[^A-HJ-NP-Z2-9]/g,
-                              "",
-                            )
-                            .slice(
-                              0,
-                              4,
-                            );
-
-                        setIdentityCode(
-                          raw
-                            ? `SPCL-${raw}`
-                            : "",
-                        );
-
-                        setError(
-                          null,
-                        );
-                      }}
-                      autoComplete="one-time-code"
-                      autoCapitalize="characters"
-                      autoCorrect="off"
-                      spellCheck={
-                        false
-                      }
-                      maxLength={4}
-                      disabled={
-                        busy
-                      }
-                      required
-                    />
+                    <button type="button" className={`sl-btn sl-special-btn ${telegramAuthorized ? "is-ready" : ""}`} onClick={openSpecialCode} disabled={!telegramAuthorized || busy}>
+                      <CrownIcon />
+                      <span>SPECIAL CODE</span>
+                    </button>
                   </div>
 
-                  {error && (
-                    <p
-                      className="smkl-form__error"
-                      role="alert"
-                    >
-                      {error}
-                    </p>
-                  )}
+                  {/* ─────   BACK ─────── */}
+                  <button type="button" className="sl-back-btn" onClick={() => {setMode("menu");setError(null);}} disabled={busy}>BACK</button>
 
-                  <button
-                    type="submit"
-                    className={[
-                      "smkl-form__submit",
-                      "smkl-form__submit--special",
-                      identityLoading
-                        ? "is-loading"
-                        : "",
-                    ]
-                      .filter(
-                        Boolean,
-                      )
-                      .join(" ")}
-                    disabled={
-                      busy
-                    }
-                  >
-                    <span>
-                      {identityLoading
-                        ? "VERIFYING..."
-                        : "VERIFY SPECIAL CODE"}
-                    </span>
-                  </button>
                 </form>
               )}
 
-              {/* =========================================================
-                  TELEGRAM · PRIVATE ACCESS READY
-                  ========================================================= */}
+              {/* ========   SPECIAL CODE =========================== */}
+              {mode === "telegram" && telegramStep === "special" && (
+                <form className="sl-form" onSubmit={handleSpecialCodeSubmit}>
 
-              {step === "access" && (
-                <form
-                  className="smkl-form"
-                  onSubmit={
-                    handleSubmit
-                  }
-                  noValidate
-                >
-                  <div className="smkl-access-confirmed">
-                    <span className="smkl-access-confirmed__dot" />
+                  {/* ─────   AUTHORIZED USER ─────── */}
+                  <label className="sl-field">
+                    <img src={ACCESS_ICONS.telegram} alt="" className="sl-field-icon" draggable={false} />
+                    <input type="text" value={username} readOnly />
+                    <span className="sl-verified-mark">✓</span>
+                  </label>
 
-                    <strong>
-                      {username}
-                    </strong>
+                  {/* ─────   SPECIAL CODE ─────── */}
+                  <label className="sl-field">
+                    <CrownIcon />
+                    <span className="sl-code-prefix">SPCL</span>
+                    <input ref={specialCodeRef} type="text" name="special-code" placeholder="XXXX" value={specialSuffix} onChange={handleSpecialCodeChange} autoComplete="one-time-code" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={4} disabled={busy} />
+                  </label>
 
-                    <small>
-                      PRIVATE ACCESS READY
-                    </small>
+                  {/* ─────   VERIFY SPECIAL ─────── */}
+                  <div className="sl-btn-wrap">
+                    <button type="submit" className="sl-btn" disabled={busy}>
+                      {identityLoading ? "VERIFYING..." : "VERIFY SPECIAL CODE"}
+                    </button>
                   </div>
 
-                  {error && (
-                    <p
-                      className="smkl-form__error"
-                      role="alert"
-                    >
-                      {error}
-                    </p>
-                  )}
+                  {/* ─────   BACK ─────── */}
+                  <button type="button" className="sl-back-btn" onClick={() => {setTelegramStep("username");setError(null);}} disabled={busy}>BACK</button>
 
-                  <button
-                    type="submit"
-                    className={[
-                      "smkl-form__submit",
-                      "smkl-form__submit--get-in",
-                      privateLoading
-                        ? "is-loading"
-                        : "",
-                    ]
-                      .filter(
-                        Boolean,
-                      )
-                      .join(" ")}
-                    disabled={
-                      busy
-                    }
-                  >
-                    <span>
-                      {privateLoading
-                        ? "OPENING..."
-                        : "GET IN"}
-                    </span>
-                  </button>
                 </form>
               )}
+
+              {/* ========   ACCESS READY =========================== */}
+              {mode === "telegram" && telegramStep === "access" && (
+                <form className="sl-form" onSubmit={handlePrivateAccess}>
+
+                  {/* ─────   VERIFIED USER ─────── */}
+                  <div className="sl-access-ready">
+                    <img src={ACCESS_ICONS.telegram} alt="" className="sl-access-icon" draggable={false} />
+                    <strong>{username}</strong>
+                    <span>PRIVATE ACCESS READY</span>
+                  </div>
+
+                  {/* ─────   GET IN ─────── */}
+                  <div className="sl-btn-wrap">
+                    <button type="submit" className="sl-btn is-approved" disabled={busy || !identityVerified}>
+                      {privateLoading ? "OPENING..." : "GET IN"}
+                    </button>
+                  </div>
+
+                </form>
+              )}
+
             </div>
-          )}
-        </section>
+          </div>
+        </div>
       </div>
     </div>,
     document.body,
   );
 }
+export default FxAccessModal;

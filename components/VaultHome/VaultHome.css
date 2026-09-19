@@ -2397,13 +2397,8 @@ video {
   }
   .vx-dossierIcon::after {animation: none;
   }}
-
 /* =========================================================
    FOOTER · CHAT / SUPPORT / TV · SOLO ICONOS
-   ========================================================= */
-/* =========================================================
-   FOOTER · CHAT / SUPPORT / TV
-   SOLO ICONOS · MÁS SEPARADOS
    ========================================================= */
 .vx-sessionLinks {
   display: flex !important;
@@ -2496,5 +2491,125 @@ video {
   }
   .vx-sessionLinks button:hover img {
     transform: scale(1.7) translateY(-1px) !important;
-  }
+  }}
+  /* ═══════════ FINAL SECTION · FOOTER ═══════════ */
+.vx-finalBackdrop {
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18,18,19,.20),
+      rgba(7,7,8,.56) 54%,
+      rgba(3,3,4,.88) 100%),
+    url("/assets/damask.png")
+      center / 320px
+      repeat;
 }
+.vx-foot {
+  position:relative;
+  z-index:2;
+  background:transparent !important;
+}
+.vx-footActions {
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.vx-sessionLinks {
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:nowrap;
+  gap:18px;
+  margin:0 auto;
+  padding:0;
+}
+.vx-sessionLinks button {
+  appearance:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100px;
+  min-width:0;
+  padding:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+  color:var(--bone);
+  cursor:pointer;
+}
+.vx-sessionLinks button img {
+  display:block;
+  width:82px;
+  height:82px;
+  object-fit:contain;
+  margin:0 auto 3px;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  filter:none;
+}
+.vx-footCode {
+  width:100%;
+  margin:5px auto 0;
+  text-align:center;
+}
+/* ─────   MOBILE ─────── */
+@media (max-width: 520px) {
+  .vx-finalBackdrop {
+  background:
+  linear-gradient(180deg,
+  #14141524,#0808098c 48%,
+  #020203f0 100%),
+  url("/assets/damask.png")
+  center / 280pxrepeat;
+  }
+  .vx-foot {
+    padding:44px 18px 24px;
+  }
+  .vx-footGrid {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+    width:100%;
+  }
+  .vx-footBrand {
+    width:100%;
+    justify-content:center;
+  }
+  .vx-footActions {
+    width:100%;
+    align-items:center;
+    justify-content:center;
+  }
+  .vx-sessionLinks {
+    width:100%;
+    justify-content:center;
+    gap:10px;
+    margin:0 auto;
+  }
+  .vx-sessionLinks button {
+    flex:0 0 88px;
+    width:88px;
+  }
+  .vx-sessionLinks button img {
+    width:72px;
+    height:72px;
+  }
+  .vx-footCode {
+    margin-top:4px;
+    text-align:center;
+  }
+ .vx-legal {
+    width:100%;
+    max-width:100%;
+    margin:20px auto 0;
+  }}

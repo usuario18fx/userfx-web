@@ -1,17 +1,16 @@
 import crypto from "crypto";
 import Redis from "ioredis";
+import {
+  getTelegramFxAccess,
+  hasTelegramFxAccess,
+  normalizeTelegramUsername,
+} from "../lib/telegram/access.js";
 
 const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+const CODE_ENGINE_NAMESPACE =
+  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
 const IDENTITY_COOKIE = "userfx_identity_session";
-const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
-/*
- * SPCL membership is not presented as a paid-plan expiration.
- * Keep the browser/session durable while TelegramFX access remains enabled.
- */
 const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
 
 function getRedis() {
@@ -44,20 +43,16 @@ function parseCookies(header) {
     .split(";")
     .reduce((cookies, part) => {
       const separator = part.indexOf("=");
-
-      if (separator < 0) {
-        return cookies;
-      }
+      if (separator < 0) return cookies;
 
       const name = part.slice(0, separator).trim();
       const value = part.slice(separator + 1).trim();
+      if (!name) return cookies;
 
-      if (name) {
-        try {
-          cookies[name] = decodeURIComponent(value);
-        } catch {
-          cookies[name] = value;
-        }
+      try {
+        cookies[name] = decodeURIComponent(value);
+      } catch {
+        cookies[name] = value;
       }
 
       return cookies;
@@ -81,33 +76,33 @@ function serializeSessionCookie(req, token, maxAge) {
     `Max-Age=${Math.max(0, Math.floor(maxAge))}`,
   ];
 
-  if (isSecureRequest(req)) {
-    parts.push("Secure");
-  }
-
+  if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
 }
 
 function clearSessionCookie(req) {
-  const parts = [`${SESSION_COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
+  const parts = [
+    `${SESSION_COOKIE}=`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    "Max-Age=0",
+  ];
 
-  if (isSecureRequest(req)) {
-    parts.push("Secure");
-  }
-
+  if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
 }
 
 function getSessionToken(req) {
   const cookies = parseCookies(req.headers.cookie);
   const token = String(cookies[SESSION_COOKIE] || "");
-
   return /^[A-Za-z0-9_-]{40,64}$/.test(token) ? token : "";
 }
 
 async function readIdentitySession(redis, req) {
   const cookies = parseCookies(req.headers.cookie);
   const token = String(cookies[IDENTITY_COOKIE] || "");
+
   if (!token) return null;
 
   const key = `${CODE_ENGINE_NAMESPACE}:identity-session:${hashValue(token)}`;
@@ -116,6 +111,7 @@ async function readIdentitySession(redis, req) {
 
   try {
     const record = JSON.parse(raw);
+
     if (
       record?.purpose !== "telegram_identity_session" ||
       !record?.userId ||
@@ -123,43 +119,35 @@ async function readIdentitySession(redis, req) {
     ) {
       return null;
     }
-    if (record.expiresAt && Date.parse(record.expiresAt) <= Date.now()) {
+
+    const expiresAt = Date.parse(String(record.expiresAt || ""));
+
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+      await redis.del(key);
       return null;
     }
+
     return record;
   } catch {
+    await redis.del(key);
     return null;
   }
 }
 
-async function getTelegramFxAccess(usernameNormalized) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+async function validateTelegramAccess(value) {
+  const username = normalizeTelegramUsername(value);
+
+  if (!username) {
+    return { allowed: false, username: null, record: null };
   }
 
-  const params = new URLSearchParams({
-    username_normalized: `eq.${usernameNormalized}`,
-    select: "username,username_normalized,telegramfx_access,enabled",
-    limit: "1",
-  });
+  const record = await getTelegramFxAccess(username.normalized);
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`, {
-    method: "GET",
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Supabase access lookup failed (${response.status}): ${detail.slice(0, 300)}`);
-  }
-
-  const rows = await response.json();
-  return Array.isArray(rows) && rows.length ? rows[0] : null;
+  return {
+    allowed: hasTelegramFxAccess(record),
+    username,
+    record,
+  };
 }
 
 export default async function handler(req, res) {
@@ -167,6 +155,7 @@ export default async function handler(req, res) {
   res.setHeader("Vary", "Cookie");
 
   if (!["GET", "POST", "DELETE"].includes(req.method)) {
+    res.setHeader("Allow", "GET, POST, DELETE");
     return res.status(405).json({
       ok: false,
       error: "Method not allowed.",
@@ -187,18 +176,9 @@ export default async function handler(req, res) {
         });
       }
 
-      const usernameNormalized = String(identity.telegramUsername || "")
-        .trim()
-        .replace(/^@+/, "")
-        .toLowerCase();
+      const telegram = await validateTelegramAccess(identity.telegramUsername);
 
-      const telegramAccess = await getTelegramFxAccess(usernameNormalized);
-
-      if (
-        !telegramAccess ||
-        telegramAccess.enabled !== true ||
-        telegramAccess.telegramfx_access !== true
-      ) {
+      if (!telegram.allowed || !telegram.username) {
         return res.status(403).json({
           ok: false,
           authenticated: false,
@@ -209,27 +189,37 @@ export default async function handler(req, res) {
       const token = crypto.randomBytes(32).toString("base64url");
       const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${hashValue(token)}`;
       const createdAt = new Date().toISOString();
-      const expiresAt = new Date(Date.now() + IDENTITY_ACCESS_SECONDS * 1000).toISOString();
+      const expiresAt = new Date(
+        Date.now() + IDENTITY_ACCESS_SECONDS * 1000,
+      ).toISOString();
 
       const session = {
-        /* Internal media compatibility only. Never use this as the SPCL UI label. */
         planId: "vip",
         accessMode: "telegram_identity",
         accessLabel: "SPCL",
         memberAccess: true,
-        telegramUsername: usernameNormalized,
+        telegramUsername: telegram.username.normalized,
         telegramUserId: String(identity.userId),
         maxAccesses: null,
         usedAccesses: 0,
         remainingAccesses: null,
         unlimitedAccess: true,
+        telegramAccessCheckedAt: createdAt,
         createdAt,
         expiresAt,
       };
 
-      await redis.set(sessionKey, JSON.stringify(session), "EX", IDENTITY_ACCESS_SECONDS);
+      await redis.set(
+        sessionKey,
+        JSON.stringify(session),
+        "EX",
+        IDENTITY_ACCESS_SECONDS,
+      );
 
-      res.setHeader("Set-Cookie", serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS));
+      res.setHeader(
+        "Set-Cookie",
+        serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS),
+      );
 
       return res.status(200).json({
         ok: true,
@@ -289,7 +279,9 @@ export default async function handler(req, res) {
       });
     }
 
-    if (Date.parse(session.expiresAt) <= Date.now()) {
+    const expiresAt = Date.parse(String(session.expiresAt || ""));
+
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
       await redis.del(sessionKey);
       res.setHeader("Set-Cookie", clearSessionCookie(req));
       return res.status(200).json({
@@ -308,18 +300,9 @@ export default async function handler(req, res) {
     }
 
     if (session.accessMode === "telegram_identity") {
-      const telegramAccess = await getTelegramFxAccess(
-        String(session.telegramUsername || "")
-          .trim()
-          .replace(/^@+/, "")
-          .toLowerCase(),
-      );
+      const telegram = await validateTelegramAccess(session.telegramUsername);
 
-      if (
-        !telegramAccess ||
-        telegramAccess.enabled !== true ||
-        telegramAccess.telegramfx_access !== true
-      ) {
+      if (!telegram.allowed || !telegram.username) {
         await redis.del(sessionKey);
         res.setHeader("Set-Cookie", clearSessionCookie(req));
         return res.status(200).json({
@@ -327,21 +310,30 @@ export default async function handler(req, res) {
           authenticated: false,
         });
       }
+
+      session = {
+        ...session,
+        telegramUsername: telegram.username.normalized,
+        telegramAccessCheckedAt: new Date().toISOString(),
+      };
+
+      await redis.set(sessionKey, JSON.stringify(session), "KEEPTTL");
     }
+
+    const memberAccess = session.accessMode === "telegram_identity";
 
     return res.status(200).json({
       ok: true,
       authenticated: true,
       planId: session.planId,
       accessMode: session.accessMode,
-      accessLabel:
-        session.accessMode === "telegram_identity" ? "SPCL" : session.accessLabel || null,
-      memberAccess: session.accessMode === "telegram_identity",
+      accessLabel: memberAccess ? "SPCL" : session.accessLabel || null,
+      memberAccess,
       maxAccesses: session.maxAccesses,
       usedAccesses: session.usedAccesses,
       remainingAccesses: session.remainingAccesses,
       unlimitedAccess: session.unlimitedAccess,
-      expiresAt: session.accessMode === "telegram_identity" ? null : session.expiresAt,
+      expiresAt: memberAccess ? null : session.expiresAt,
     });
   } catch (error) {
     console.error("[api/access-session]", error);

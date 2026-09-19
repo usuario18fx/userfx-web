@@ -1,76 +1,19 @@
-const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
-function normalizeTelegramUsername(value) {
-  const raw = String(value || "")
-    .trim()
-    .replace(/^@+/, "");
-  if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
-  return { display: `@${raw}`, normalized: raw.toLowerCase() };
-}
-
-async function telegramFxLookup(params) {
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/telegramfx_access?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    },
-  );
-
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(
-      `Supabase eligibility lookup failed (${response.status}): ${detail.slice(0, 240)}`,
-    );
-  }
-
-  const rows = await response.json();
-  return Array.isArray(rows) && rows.length ? rows[0] : null;
-}
-
-async function getTelegramFxAccess(username) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-  }
-
-  const select = "username,username_normalized,telegramfx_access,enabled";
-
-  const normalizedParams = new URLSearchParams({
-    username_normalized: `eq.${username.normalized}`,
-    select,
-    limit: "1",
-  });
-
-  const normalizedRow = await telegramFxLookup(normalizedParams);
-  if (normalizedRow) return normalizedRow;
-
-  // Legacy/manual records may have only `username` populated.
-  // Keep the authorization flags mandatory; this only broadens lookup compatibility.
-  for (const candidate of [`@${username.normalized}`, username.normalized]) {
-    const legacyParams = new URLSearchParams({
-      username: `ilike.${candidate}`,
-      select,
-      limit: "1",
-    });
-
-    const legacyRow = await telegramFxLookup(legacyParams);
-    if (legacyRow) return legacyRow;
-  }
-
-  return null;
-}
+import {
+  getTelegramFxAccess,
+  hasTelegramFxAccess,
+  normalizeTelegramUsername,
+} from "../lib/telegram/access.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "GET") {
-    return res.status(405).json({ ok: false, eligible: false, error: "Method not allowed." });
+    res.setHeader("Allow", "GET");
+    return res.status(405).json({
+      ok: false,
+      eligible: false,
+      error: "Method not allowed.",
+    });
   }
 
   try {
@@ -84,20 +27,24 @@ export default async function handler(req, res) {
       });
     }
 
-    const row = await getTelegramFxAccess(username);
-    const eligible = Boolean(row && row.enabled === true && row.telegramfx_access === true);
+    const record = await getTelegramFxAccess(username.normalized);
+    const eligible = hasTelegramFxAccess(record);
+
+    let reason = null;
+
+    if (!record) {
+      reason = "not_registered";
+    } else if (record.enabled !== true) {
+      reason = "disabled";
+    } else if (record.telegramfx_access !== true) {
+      reason = "telegramfx_disabled";
+    }
 
     return res.status(200).json({
       ok: true,
       eligible,
       username: username.display,
-      reason: !row
-        ? "not_registered"
-        : row.enabled !== true
-          ? "disabled"
-          : row.telegramfx_access !== true
-            ? "telegramfx_disabled"
-            : null,
+      reason,
     });
   } catch (error) {
     console.error("[api/telegram-eligibility]", error);

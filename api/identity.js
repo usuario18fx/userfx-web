@@ -1,9 +1,10 @@
 import crypto from "crypto";
 import Redis from "ioredis";
+import { normalizeTelegramUsername } from "../lib/telegram/access.js";
 
 const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
-
+const CODE_ENGINE_NAMESPACE =
+  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const IDENTITY_COOKIE = "userfx_identity_session";
 const IDENTITY_CODE_PREFIX = "SPCL";
 const IDENTITY_CODE_TTL_SECONDS = 15 * 60;
@@ -12,7 +13,9 @@ const MAX_ATTEMPTS = 5;
 const WINDOW_SECONDS = 15 * 60;
 
 function getRedis() {
-  if (!REDIS_URL) throw new Error("Missing REDIS_URL");
+  if (!REDIS_URL) {
+    throw new Error("Missing REDIS_URL");
+  }
 
   if (!globalThis.__userfxRedis) {
     globalThis.__userfxRedis = new Redis(REDIS_URL, {
@@ -35,32 +38,42 @@ function hashValue(value) {
 }
 
 function getClientIp(req) {
-  return String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown")
+  return String(
+    req.headers["x-forwarded-for"] ||
+      req.socket?.remoteAddress ||
+      "unknown",
+  )
     .split(",")[0]
     .trim();
 }
 
 function parseCookies(req) {
   const header = String(req.headers.cookie || "");
-  const out = {};
+  const cookies = {};
+
   for (const part of header.split(";")) {
-    const idx = part.indexOf("=");
-    if (idx === -1) continue;
-    const key = part.slice(0, idx).trim();
-    const value = part.slice(idx + 1).trim();
+    const separator = part.indexOf("=");
+    if (separator < 0) continue;
+
+    const key = part.slice(0, separator).trim();
+    const value = part.slice(separator + 1).trim();
+    if (!key) continue;
+
     try {
-      out[key] = decodeURIComponent(value);
+      cookies[key] = decodeURIComponent(value);
     } catch {
-      out[key] = value;
+      cookies[key] = value;
     }
   }
-  return out;
+
+  return cookies;
 }
 
 function isSecureRequest(req) {
   const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
     .split(",")[0]
     .trim();
+
   return process.env.NODE_ENV === "production" || forwardedProto === "https";
 }
 
@@ -72,29 +85,30 @@ function serializeIdentityCookie(req, token, maxAge) {
     "SameSite=Lax",
     `Max-Age=${Math.max(0, Math.floor(maxAge))}`,
   ];
+
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
 }
 
 function clearIdentityCookie(req) {
-  const parts = [`${IDENTITY_COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
+  const parts = [
+    `${IDENTITY_COOKIE}=`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    "Max-Age=0",
+  ];
+
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
-}
-
-function normalizeTelegramUsername(value) {
-  const raw = String(value || "")
-    .trim()
-    .replace(/^@+/, "");
-  if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
-  return { display: `@${raw}`, normalized: raw.toLowerCase() };
 }
 
 function normalizeIdentityCode(value) {
   const raw = String(value || "")
     .trim()
     .toUpperCase();
-  const match = raw.match(/(?:SPCL|TGMX)-[A-HJ-NP-Z2-9]{4}/);
+
+  const match = raw.match(/^(?:SPCL|TGMX)-[A-HJ-NP-Z2-9]{4}$/);
   return match ? match[0] : null;
 }
 
@@ -102,7 +116,11 @@ function identityCodeKey(code) {
   const normalized = String(code || "")
     .trim()
     .toUpperCase();
-  const storedCode = normalized.startsWith("SPCL-") ? `TGMX-${normalized.slice(5)}` : normalized;
+
+  const storedCode = normalized.startsWith("SPCL-")
+    ? `TGMX-${normalized.slice(5)}`
+    : normalized;
+
   return `${CODE_ENGINE_NAMESPACE}:identity-code:${storedCode}`;
 }
 
@@ -122,7 +140,11 @@ async function isRateLimited(redis, ip) {
 async function recordFailedAttempt(redis, ip) {
   const key = identityRateKey(ip);
   const attempts = await redis.incr(key);
-  if (attempts === 1) await redis.expire(key, WINDOW_SECONDS);
+
+  if (attempts === 1) {
+    await redis.expire(key, WINDOW_SECONDS);
+  }
+
   return attempts;
 }
 
@@ -133,53 +155,105 @@ async function clearFailedAttempts(redis, ip) {
 async function readIdentitySession(redis, req) {
   const cookies = parseCookies(req);
   const token = String(cookies[IDENTITY_COOKIE] || "");
+
   if (!token) return null;
 
-  const raw = await redis.get(identitySessionKey(token));
+  const key = identitySessionKey(token);
+  const raw = await redis.get(key);
   if (!raw) return null;
 
+  let record;
+
   try {
-    const record = JSON.parse(raw);
-    if (!record?.userId || !record?.telegramUsername) return null;
-    return record;
+    record = JSON.parse(raw);
   } catch {
+    await redis.del(key);
     return null;
   }
+
+  if (
+    record?.purpose !== "telegram_identity_session" ||
+    !record?.userId ||
+    !record?.telegramUsername
+  ) {
+    await redis.del(key);
+    return null;
+  }
+
+  const expiresAt = Date.parse(String(record.expiresAt || ""));
+
+  if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+    await redis.del(key);
+    return null;
+  }
+
+  return record;
 }
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Vary", "Cookie");
+
+  if (!["GET", "POST", "DELETE"].includes(req.method)) {
+    res.setHeader("Allow", "GET, POST, DELETE");
+    return res.status(405).json({
+      ok: false,
+      error: "Method not allowed.",
+    });
+  }
 
   try {
     const redis = getRedis();
 
     if (req.method === "GET") {
       const session = await readIdentitySession(redis, req);
-      if (!session) return res.status(200).json({ ok: true, verified: false });
+
+      if (!session) {
+        res.setHeader("Set-Cookie", clearIdentityCookie(req));
+        return res.status(200).json({ ok: true, verified: false });
+      }
+
       return res.status(200).json({
         ok: true,
         verified: true,
         username: `@${session.telegramUsername}`,
-        expiresAt: session.expiresAt || null,
+        expiresAt: session.expiresAt,
       });
     }
 
     if (req.method === "DELETE") {
       const cookies = parseCookies(req);
       const token = String(cookies[IDENTITY_COOKIE] || "");
-      if (token) await redis.del(identitySessionKey(token));
+
+      if (token) {
+        await redis.del(identitySessionKey(token));
+      }
+
       res.setHeader("Set-Cookie", clearIdentityCookie(req));
-      return res.status(200).json({ ok: true });
+      return res.status(200).json({ ok: true, verified: false });
     }
 
-    if (req.method !== "POST") {
-      return res.status(405).json({ ok: false, error: "Method not allowed." });
+    let body;
+
+    try {
+      body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    } catch {
+      return res.status(400).json({
+        ok: false,
+        error: "INVALID REQUEST",
+      });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
     const username = normalizeTelegramUsername(body.username);
     const code = normalizeIdentityCode(body.code);
     const ip = getClientIp(req);
+
+    if (await isRateLimited(redis, ip)) {
+      return res.status(429).json({
+        ok: false,
+        error: "TOO MANY IDENTITY ATTEMPTS",
+      });
+    }
 
     if (!username || !code) {
       await recordFailedAttempt(redis, ip);
@@ -189,25 +263,30 @@ export default async function handler(req, res) {
       });
     }
 
-    if (await isRateLimited(redis, ip)) {
-      return res.status(429).json({ ok: false, error: "TOO MANY IDENTITY ATTEMPTS" });
-    }
-
     const key = identityCodeKey(code);
     const rawRecord = await redis.get(key);
 
     if (!rawRecord) {
       await recordFailedAttempt(redis, ip);
-      console.warn("[api/identity] code not found", { code, username: username.normalized });
-      return res.status(401).json({ ok: false, error: "IDENTITY VERIFICATION FAILED" });
+      console.warn("[api/identity] code not found", {
+        username: username.normalized,
+      });
+      return res.status(401).json({
+        ok: false,
+        error: "IDENTITY VERIFICATION FAILED",
+      });
     }
 
     let record;
+
     try {
       record = JSON.parse(rawRecord);
     } catch {
       await recordFailedAttempt(redis, ip);
-      return res.status(401).json({ ok: false, error: "IDENTITY VERIFICATION FAILED" });
+      return res.status(401).json({
+        ok: false,
+        error: "IDENTITY VERIFICATION FAILED",
+      });
     }
 
     const recordUsername = String(record.telegramUsername || "")
@@ -223,19 +302,23 @@ export default async function handler(req, res) {
     ) {
       await recordFailedAttempt(redis, ip);
       console.warn("[api/identity] record mismatch", {
-        code,
         requestedUsername: username.normalized,
         recordUsername,
         status: record?.status || null,
         purpose: record?.purpose || null,
       });
-      return res.status(401).json({ ok: false, error: "IDENTITY VERIFICATION FAILED" });
+      return res.status(401).json({
+        ok: false,
+        error: "IDENTITY VERIFICATION FAILED",
+      });
     }
 
     const token = crypto.randomBytes(32).toString("base64url");
     const sessionKey = identitySessionKey(token);
     const verifiedAt = new Date().toISOString();
-    const expiresAt = new Date(Date.now() + IDENTITY_SESSION_SECONDS * 1000).toISOString();
+    const expiresAt = new Date(
+      Date.now() + IDENTITY_SESSION_SECONDS * 1000,
+    ).toISOString();
 
     const consumedRecord = JSON.stringify({
       ...record,
@@ -247,7 +330,7 @@ export default async function handler(req, res) {
       purpose: "telegram_identity_session",
       userId: String(record.userId),
       telegramUsername: username.normalized,
-      identityCodeHash: hashValue(code).slice(0, 32),
+      identityCodeHash: hashValue(String(record.code || code)).slice(0, 32),
       verifiedAt,
       expiresAt,
     });
@@ -282,7 +365,10 @@ export default async function handler(req, res) {
     }
 
     await clearFailedAttempts(redis, ip);
-    res.setHeader("Set-Cookie", serializeIdentityCookie(req, token, IDENTITY_SESSION_SECONDS));
+    res.setHeader(
+      "Set-Cookie",
+      serializeIdentityCookie(req, token, IDENTITY_SESSION_SECONDS),
+    );
 
     return res.status(200).json({
       ok: true,
@@ -292,6 +378,9 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error("[api/identity]", error);
-    return res.status(500).json({ ok: false, error: "IDENTITY SERVER ERROR" });
+    return res.status(500).json({
+      ok: false,
+      error: "IDENTITY SERVER ERROR",
+    });
   }
 }

@@ -1,3 +1,4 @@
+import Redis from "ioredis";
 import { Telegram, Telegraf } from "telegraf";
 
 export const config = {
@@ -6,9 +7,19 @@ export const config = {
   },
 };
 
-const PATCH_FLAG = Symbol.for("userfx.telegram.spcl.patch");
-const ACCESS_BY_ID_PATCH_FLAG = Symbol.for("userfx.telegram.access-by-id.patch");
-const SYNTHETIC_ID_PATCH_FLAG = Symbol.for("userfx.telegram.synthetic-id.patch");
+if (!process.env.USERFX_SITE_URL) {
+  process.env.USERFX_SITE_URL = "https://user18fx.com";
+}
+
+const CODE_ENGINE_NAMESPACE =
+  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+
+const TELEGRAM_PATCH_FLAG = Symbol.for("userfx.telegram.spcl.patch");
+const COMMAND_PATCH_FLAG = Symbol.for("userfx.telegram.command.patch");
+const SYNTHETIC_ID_PATCH_FLAG = Symbol.for(
+  "userfx.telegram.synthetic-id.patch",
+);
+const REDIS_CODE_PATCH_FLAG = Symbol.for("userfx.telegram.code-redis.patch");
 
 function syntheticUsernameForId(id) {
   const value = String(id || "").trim();
@@ -68,14 +79,59 @@ function arrangeTelegramFxKeyboard(replyMarkup) {
 
   return {
     ...replyMarkup,
-    inline_keyboard: [[telegramfx], [gallery, chat], [priv, group], [save, revoke]],
+    inline_keyboard: [
+      [telegramfx],
+      [gallery, chat],
+      [priv, group],
+      [save, revoke],
+    ],
   };
 }
 
-if (!globalThis[PATCH_FLAG]) {
+/*
+ * Legacy core compatibility:
+ * older code-generation records used a decorative status literal and
+ * expected Redis' "OK" response in decorative small caps. Normalize the
+ * stored record while preserving the return value expected by that core.
+ */
+if (!globalThis[REDIS_CODE_PATCH_FLAG]) {
+  const originalSet = Redis.prototype.set;
+
+  Redis.prototype.set = async function userFxRedisSet(...args) {
+    const key = String(args[0] || "");
+    const isVaultCode = key.startsWith(`${CODE_ENGINE_NAMESPACE}:code:`);
+
+    if (isVaultCode && typeof args[1] === "string") {
+      args[1] = args[1].replace(
+        /"status":"ᴀᴄᴛɪᴠᴇ"/g,
+        '"status":"active"',
+      );
+    }
+
+    const result = await originalSet.apply(this, args);
+    const usesNx = args
+      .slice(2)
+      .some((value) => String(value).toUpperCase() === "NX");
+
+    if (isVaultCode && usesNx && result === "OK") {
+      return "ᴏᴋ";
+    }
+
+    return result;
+  };
+
+  globalThis[REDIS_CODE_PATCH_FLAG] = true;
+}
+
+if (!globalThis[TELEGRAM_PATCH_FLAG]) {
   const originalCallApi = Telegram.prototype.callApi;
 
-  Telegram.prototype.callApi = function userFxCallApi(method, payload = {}, ...rest) {
+  Telegram.prototype.callApi = function userFxCallApi(
+    method,
+    payload = {},
+    ...rest
+  ) {
+    let nextMethod = method;
     const nextPayload = { ...payload };
 
     for (const field of ["text", "caption", "title", "description"]) {
@@ -88,14 +144,22 @@ if (!globalThis[PATCH_FLAG]) {
       nextPayload.reply_markup = arrangeTelegramFxKeyboard(nextPayload.reply_markup);
     }
 
-    return originalCallApi.call(this, method, nextPayload, ...rest);
+    if (
+      method === "sendPhoto" &&
+      typeof nextPayload.photo === "string" &&
+      /\.mp4(?:\?|$)/i.test(nextPayload.photo)
+    ) {
+      nextMethod = "sendVideo";
+      nextPayload.video = nextPayload.photo;
+      delete nextPayload.photo;
+    }
+
+    return originalCallApi.call(this, nextMethod, nextPayload, ...rest);
   };
 
-  globalThis[PATCH_FLAG] = true;
+  globalThis[TELEGRAM_PATCH_FLAG] = true;
 }
 
-// Users without @username are mapped internally to id_<telegram_id>.
-// This keeps the existing username-based TelegramFX access engine intact.
 if (!globalThis[SYNTHETIC_ID_PATCH_FLAG]) {
   const originalHandleUpdate = Telegraf.prototype.handleUpdate;
 
@@ -127,21 +191,30 @@ if (!globalThis[SYNTHETIC_ID_PATCH_FLAG]) {
   globalThis[SYNTHETIC_ID_PATCH_FLAG] = true;
 }
 
-// Allows the existing TelegramFX /access command to accept a numeric ID.
-// If the account has no @username, it falls back to id_<telegram_id>.
-// Example: /access 123456789
-if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
+function normalizeCommandName(value) {
+  const command = String(value || "")
+    .replace(/^\//, "")
+    .toLowerCase();
+
+  if (command === "ɢᴇᴛᴄᴏᴅᴇ") return "getcode";
+  if (command === "ɪᴅᴇɴᴛɪᴛʏ") return "identity";
+  return command;
+}
+
+if (!globalThis[COMMAND_PATCH_FLAG]) {
   const originalCommand = Telegraf.prototype.command;
 
   Telegraf.prototype.command = function userFxCommand(command, ...handlers) {
-    const commandNames = (Array.isArray(command) ? command : [command]).map((value) =>
-      String(value || "")
-        .replace(/^\//, "")
-        .toLowerCase(),
-    );
+    const normalizedCommand = Array.isArray(command)
+      ? command.map(normalizeCommandName)
+      : normalizeCommandName(command);
+
+    const commandNames = Array.isArray(normalizedCommand)
+      ? normalizedCommand
+      : [normalizedCommand];
 
     if (!commandNames.includes("access")) {
-      return originalCommand.call(this, command, ...handlers);
+      return originalCommand.call(this, normalizedCommand, ...handlers);
     }
 
     const wrappedHandlers = handlers.map((handler) => {
@@ -176,7 +249,7 @@ if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
 
           ctx.message.text = `${parts[0]} @${accessKey}`;
           return handler(ctx, next);
-        } catch (error) {
+        } catch {
           await ctx.reply(
             `✘ No pude resolver el ID ${target}.\n\nPídele al usuario que abra el bot y presione START una vez, luego vuelve a usar /access ${target}.`,
           );
@@ -185,16 +258,19 @@ if (!globalThis[ACCESS_BY_ID_PATCH_FLAG]) {
       };
     });
 
-    return originalCommand.call(this, command, ...wrappedHandlers);
+    return originalCommand.call(this, normalizedCommand, ...wrappedHandlers);
   };
 
-  globalThis[ACCESS_BY_ID_PATCH_FLAG] = true;
+  globalThis[COMMAND_PATCH_FLAG] = true;
 }
 
 let corePromise;
 
 async function getCore() {
-  if (!corePromise) corePromise = import("./telegram-core.js");
+  if (!corePromise) {
+    corePromise = import("../lib/telegram/core.js");
+  }
+
   return corePromise;
 }
 
