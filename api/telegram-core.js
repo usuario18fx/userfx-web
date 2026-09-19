@@ -1,4 +1,4 @@
-﻿import { Telegraf, Markup } from "telegraf";
+import { Telegraf, Markup } from "telegraf";
 import Redis from "ioredis";
 import winston from "winston";
 import crypto from "crypto";
@@ -747,7 +747,7 @@ async function getTelegramFxAccess(usernameNormalized) {
     });
   }
   await telegramFxRequest("telegramfx_access_audit", {
-    method: "ᴘᴏꜱᴛ",
+    method: "POST",
     headers: { Prefer: "return=minimal" },
     body: JSON.stringify({
       username,
