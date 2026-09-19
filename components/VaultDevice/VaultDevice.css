@@ -163,7 +163,6 @@
     0 1px 4px #000000,
     0 0 8px #d6607947;
 }
-
 .vd-option::before{
   content:"";
   position:absolute;
@@ -694,8 +693,7 @@
     width:25px; /* ↔️ */
     height:25px; /* ↕️ */
     flex-basis:25px;
-  }
-}
+  }}
 @media (max-width: 700px) {
   .vd-menu-options{
     gap:8px; /*↔️*/
@@ -781,7 +779,6 @@
   padding:12px 150px 12px 18px !important; /* ↔️↕️ */
   overflow:visible !important;
 }
-
 .vd-detail-sheet .vd-sheet-title-area{
   width:auto !important; /* ↔️ */
   min-width:0; /* ↔️ */
@@ -810,8 +807,6 @@
   letter-spacing:-0.5px !important;
   transform:none !important; /* ↗️ */
 }
-
-/* Expiry box. */
 .vd-detail-sheet .vd-sheet-header::before{
   position:absolute;
   top:11px; /* ⬆️⬇️ */
@@ -841,7 +836,6 @@
     box-shadow 0.2s ease,
     color 0.2s ease;
 }
-
 .vd-detail-basic .vd-sheet-header::before{
   content:"EXPIRES · 7 DAYS";
 }
@@ -851,7 +845,6 @@
 .vd-detail-vip .vd-sheet-header::before{
   content:"EXPIRES · 90 DAYS";
 }
-
 /* Access badge shown as soon as a plan is selected. */
 .vd-detail-sheet .vd-sheet-header::after{
   position:absolute;
@@ -887,7 +880,6 @@
 .vd-detail-vip .vd-sheet-header::after{
   content:"∞ ACCESS";
 }
-
 /* Desktop hover: expiry becomes a slightly brighter information drawer. */
 @media (hover: hover) {
   .vd-detail-sheet .vd-sheet-header:hover::before{
@@ -906,27 +898,21 @@
   }
   .vd-detail-vip .vd-sheet-header:hover::before{
     content:"EXPIRES · 90 DAYS · ACTIVE KEY";
-  }
-}
-
-/* Phone layout */
-@media (max-width: 560px) {
+  }}
+@media (max-width: 560px) {/* Phone layout */
   .vd-device{
     width:min(calc(100vw - 28px), 760px) !important; /* ↔️ */
     margin-inline:auto !important; /* ↔️↕️ */
   }
-
   .vd-detail-sheet .vd-sheet-header{
     min-height:72px !important; /* ↕️ */
     padding:10px 126px 10px 13px !important; /* ↔️↕️ */
   }
-
   .vd-detail-sheet .vd-sheet-title-name{
     min-height:28px; /* ↕️ */
     padding:4px 9px; /* ↔️↕️ */
     font-size:18px !important; /* ↗️ tamaño */
   }
-
   .vd-detail-sheet .vd-sheet-header::before{
     top:9px; /* ⬆️⬇️ */
     right:11px; /* ⬅️➡️ */
@@ -936,7 +922,6 @@
     font-size:8px; /* ↗️ tamaño */
     letter-spacing:0.09em;
   }
-
   .vd-detail-sheet .vd-sheet-header::after{
     top:43px; /* ⬆️⬇️ */
     right:11px; /* ⬅️➡️ */
@@ -1001,12 +986,9 @@
   .vd-device {
     height: clamp(700px, 112vw, 780px) !important;
     min-height: 700px !important;
-  }
-}
-
+  }}
 @media (max-width: 560px) {
   .vd-device {
     height: min(760px, 195vw) !important;
     min-height: 700px !important;
-  }
-}
+  }}

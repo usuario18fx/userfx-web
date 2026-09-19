@@ -282,20 +282,11 @@
   60% { transform: translateX(calc(-50% - 3px)); }
   80% { transform: translateX(calc(-50% + 2px)); }
 }
-
 /* ═══════════ HOVER (solo dispositivos con hover real) ═══════════ */
 @media (hover: hover) {
   .vhd-root:not(.is-open) .vhd-door:hover {
     filter: brightness(1.12);
-  }
-}
-
-/* ═══════════ TABLET — ≤900px ═══════════ */
-@media (max-width: 900px) {
-  .vhd-root  { height: 330px !important; min-height: 330px !important; }
-  .vhd-doors { height: 320px !important; min-height: 320px !important; }
-}
-
+  }}
 /* ═══════════ MÓVIL GRANDE — ≤700px ═══════════ */
 @media (max-width: 700px) {
   .vhd-root {
@@ -303,27 +294,35 @@
     margin-top: 34px;
     margin-bottom: 92px !important;
     transform: translateX(calc(-50% + 18px));
-  }
-  .fx-access-launcher {
-    transform: translateX(calc(-50% + 18px));
-  }
+  }}
+/* ═══════════ TABLET — ≤900px ═══════════ */
+@media (max-width: 900px) {
+  .vhd-root  { height: 330px !important; min-height: 330px !important; }
+  .vhd-doors { height: 320px !important; min-height: 320px !important; }
 }
-
-/* ═══════════ MÓVIL — ≤520px ═══════════ */
-@media (max-width: 520px) {
-  .vhd-root {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 300px !important;
-    min-height: 300px !important;
-    margin-bottom: 72px !important;
-    overflow: visible;
-    perspective: none;
+/* ═══════════ ACCESIBILIDAD ═══════════ */
+@media (prefers-reduced-motion: reduce) {
+  .vhd-bg,
+  .vhd-logo,
+  .vhd-logoGlow,
+  .vhd-door-inner span,
+  .vhd-door-inner i,
+  .vhd-go,
+  .vhd-form {
+    animation: none !important;
+    transition: none !important;
   }
-
-  /* VIDEO */
-  .vhd-logoSide {
+  .vhd-door {
+    transition: opacity 0.3s ease !important;
+  }
+  .vhd-root.is-open .vhd-door.left,
+  .vhd-root.is-open .vhd-door.right {
+    transform: none;
+    opacity: 0;
+  }}
+/* ═══════════ MÓVIL — ≤52Opx ═══════════ */
+@media (max-width: 520px) {
+  .vhd-logoSide {  /* VIDEO */
     width: 100%;
     min-height: 340px;
     height: auto;
@@ -344,16 +343,6 @@
     font-size: 7px;
     letter-spacing: 0.16em;
   }
-
-  /* PUERTAS */
-  .vhd-doors {
-    width: 100%;
-    height: 290px !important;
-    min-height: 290px !important;
-    grid-template-columns: 1fr 1fr;
-    overflow: visible;
-    box-shadow: none !important;
-  }
   .vhd-door-inner { width: 90%; }
   .vhd-door-inner span {
     font-size: 7px;
@@ -371,7 +360,6 @@
     transform: scale(1.18);
     transform-origin: center bottom;
   }
-  /* INPUT INFERIOR */
   .vhd-form {
     left: 50%;
     right: auto;
@@ -393,34 +381,56 @@
     font-size: 10px;
     letter-spacing: 0.12em;
   }
-
-  /* HUD amarillo */
-  .vx-ticker.is-rev {
+  .vx-ticker.is-rev {  /* HUD amarillo */
     position: relative;
     top: -1px;
     margin-bottom: -52px;
     z-index: 20;
   }
-}
-
-/* ═══════════ ACCESIBILIDAD ═══════════ */
-@media (prefers-reduced-motion: reduce) {
-  .vhd-bg,
-  .vhd-logo,
-  .vhd-logoGlow,
-  .vhd-door-inner span,
-  .vhd-door-inner i,
-  .vhd-go,
-  .vhd-form {
-    animation: none !important;
-    transition: none !important;
+  .vx-lock.vx-lockRaise {
+    position:relative;
+    width:100%;
+    margin:28px auto 0 !important;
   }
-  .vhd-door {
-    transition: opacity 0.3s ease !important;
+  .vx-doorLaurel {
+    position:relative !important;
+    z-index:12;
+    display:flex;
+    width:min(108vw,620px) !important;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 12px !important;
+    left:50% !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    transform:translateX(-50%) !important;
+    pointer-events:none;
   }
-  .vhd-root.is-open .vhd-door.left,
-  .vhd-root.is-open .vhd-door.right {
-    transform: none;
-    opacity: 0;
+  .vx-doorLaurel img {
+    display:block;
+    width:100%;
+    height:auto;
+    margin:0 auto;
+    object-fit:contain;
   }
-}
+  .vhd-root {
+    width:100% !important;
+    max-width:100% !important;
+    height:300px !important;
+    min-height:300px !important;
+    margin:18px auto 78px !important;
+    transform:none !important;
+  }
+  .vhd-doors {
+    position:relative;
+    left:50% !important;
+    right:auto !important;
+    top:18px !important;
+    bottom:auto !important;
+    width:92% !important;
+    height:290px !important;
+    min-height:290px !important;
+    margin:0 !important;
+    transform:translateX(-50%) !important;
+  }}

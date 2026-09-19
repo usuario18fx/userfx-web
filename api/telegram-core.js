@@ -610,83 +610,71 @@ const TELEGRAMFX_FIELDS = [
   ["private_chat_access", "ᴄʜᴀᴛ", 4],
   ["private_call_access", "ᴘʀɪᴠ", 8],
   ["telegram_group_access", "ɢʀᴏᴜᴘ", 16],
-];
+  ];
 function normalizeTelegramFxUsername(value = "") {
   const raw = String(value || "")
     .trim()
     .replace(/^@+/, "");
   if (!/^[A-Za-z0-9_]{3,32}$/.test(raw)) return null;
   return { display: `@${raw}`, normalized: raw.toLowerCase() };
-}
+  }
 function telegramFxMask(record) {
   return TELEGRAMFX_FIELDS.reduce(
-    (mask, [field, , bit]) => (record?.[field] ? mask | bit : mask),
-    0,
-  );
-}
-
+    (mask, [field, , bit]) => (record?.[field] ? mask | bit : mask),0,
+  );}
 function telegramFxMaskToRecord(mask) {
   const out = {};
   for (const [field, , bit] of TELEGRAMFX_FIELDS) out[field] = Boolean(mask & bit);
   return out;
-}
+  }
 function telegramFxPanelText(username, mask, saved = true) {
   const rows = TELEGRAMFX_FIELDS.map(
-    ([, label, bit]) => `${label}: ${mask & bit ? "✔" : "✘"}`,
+  ([, label, bit]) => `${label}: ${mask & bit ? "✔" : "✘"}`,
   ).join("\n");
   return `🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ𝐅𝐗 ᴀᴄᴄᴇꜱꜱ</b>\n\n<b>${escapeHtml(username)}</b>\n\n${rows}\n\n${
-    saved ? "ꜱᴛᴀᴛᴇ ꜱᴀᴠᴇᴅ" : "ᴜɴꜱᴀᴠᴇᴅ ᴄʜᴀɴɢᴇꜱ"
+      saved ? "ꜱᴛᴀᴛᴇ ꜱᴀᴠᴇᴅ" : "ᴜɴꜱᴀᴠᴇᴅ ᴄʜᴀɴɢᴇꜱ"
   }`;
-}
-
+  }
 function telegramFxPanelKeyboard(usernameNormalized, mask) {
   const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) => [
-    Markup.button.callback(
+      Markup.button.callback(
       `${mask & bit ? "✔" : "✘"} ${label}`,
       `tfx_toggle_${usernameNormalized}_${mask ^ bit}`,
-    ),
-  ]);
+  ),]);
   rows.push([Markup.button.callback("💾sᴀᴠᴇ", `tfx_save_${usernameNormalized}_${mask}`)]);
   rows.push([Markup.button.callback("⛔ʀᴇᴠᴏᴋᴇ ᴀʟʟ", `tfx_revoke_${usernameNormalized}_0`)]);
   return Markup.inlineKeyboard(rows);
-}
-
-async function telegramFxRequest(pathname, options = {}) {
+    }
+  async function telegramFxRequest(pathname, options = {}) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY missing");
   }
-
-  const response = await fetch(`${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/${pathname}`, {
-    ...options,
-    headers: {
+  const response = await fetch(`${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/${pathname}`, {...options,
+      headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
       "Content-Type": "application/json",
       ...(options.headers || {}),
-    },
-  });
+    },});
 
   const text = await response.text();
   if (!response.ok) {
-    throw new Error(`Supabase ${response.status}: ${text.slice(0, 500)}`);
-  }
+  throw new Error(`Supabase ${response.status}: ${text.slice(0, 500)}`);
+    }
   if (!text) return null;
   try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
-}
-
+  return JSON.parse(text);
+    } catch {
+  return text;
+    }}
 async function getTelegramFxAccess(usernameNormalized) {
   const q = encodeURIComponent(usernameNormalized);
   const rows = await telegramFxRequest(
     `telegramfx_access?username_normalized=eq.${q}&select=*&limit=1`,
-  );
+    );
   return Array.isArray(rows) ? rows[0] || null : null;
-}
-
-async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
+    }
+  async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
   const current = await getTelegramFxAccess(usernameNormalized);
   const username = current?.username || `@${usernameNormalized}`;
   const permissions = telegramFxMaskToRecord(mask);
@@ -700,8 +688,7 @@ async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
         ? current.gallery_scope
         : "selected"
       : "none",
-  };
-
+    };
   if (current) {
     await telegramFxRequest(
       `telegramfx_access?username_normalized=eq.${encodeURIComponent(usernameNormalized)}`,
@@ -709,9 +696,8 @@ async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
         method: "PATCH",
         headers: { Prefer: "return=minimal" },
         body: JSON.stringify(payload),
-      },
-    );
-  } else {
+    },);
+    } else {
     await telegramFxRequest("telegramfx_access", {
       method: "POST",
       headers: { Prefer: "return=minimal" },
@@ -720,22 +706,19 @@ async function saveTelegramFxAccess(usernameNormalized, mask, admin) {
   }
 
   await telegramFxRequest("telegramfx_access_audit", {
-    method: "POST",
-    headers: { Prefer: "return=minimal" },
-    body: JSON.stringify({
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
       username,
       username_normalized: usernameNormalized,
       action: current ? "update" : "create",
       changes: permissions,
       admin_user_id: String(admin?.id || ""),
       admin_username: admin?.username ? `@${admin.username}` : null,
-    }),
-  });
-
+    }),});
   return { ...payload };
-}
-
-async function revokeTelegramFxAccess(usernameNormalized, admin) {
+    }
+ async function revokeTelegramFxAccess(usernameNormalized, admin) {
   const current = await getTelegramFxAccess(usernameNormalized);
   const username = current?.username || `@${usernameNormalized}`;
   const payload = {
@@ -755,8 +738,7 @@ async function revokeTelegramFxAccess(usernameNormalized, admin) {
         method: "PATCH",
         headers: { Prefer: "return=minimal" },
         body: JSON.stringify(payload),
-      },
-    );
+    },);
   } else {
     await telegramFxRequest("telegramfx_access", {
       method: "POST",
@@ -764,7 +746,6 @@ async function revokeTelegramFxAccess(usernameNormalized, admin) {
       body: JSON.stringify({ username, username_normalized: usernameNormalized, ...payload }),
     });
   }
-
   await telegramFxRequest("telegramfx_access_audit", {
     method: "ᴘᴏꜱᴛ",
     headers: { Prefer: "return=minimal" },
@@ -775,16 +756,14 @@ async function revokeTelegramFxAccess(usernameNormalized, admin) {
       changes: payload,
       admin_user_id: String(admin?.id || ""),
       admin_username: admin?.username ? `@${admin.username}` : null,
-    }),
-  });
-}
+    }),});
+    }
 
 async function listTelegramFxUsers(limit = 50) {
   return telegramFxRequest(
     `telegramfx_access?select=username,telegramfx_access,gallery_access,private_chat_access,private_call_access,telegram_group_access,enabled,updated_at&order=updated_at.desc&limit=${limit}`,
   );
 }
-
 function getCommandArg(ctx, index = 0) {
   const parts = String(ctx.message?.text || "")
     .trim()
@@ -842,13 +821,12 @@ async function checkRateLimit(userId, limit = 3, windowSeconds = 300) {
     const count = await client.incr(key);
     if (count === 1) {
       await client.expire(key, windowSeconds);
-    }
+  }
     return count <= limit;
   } catch (error) {
     logger.error("ʀᴀᴛᴇ ʟɪᴍɪᴛ ᴇʀʀᴏʀ", { message: error?.message });
     return true;
-  }
-}
+  }}
 //// CENTRAL CODE ENGINE //
 function randomCodePart(length = 4) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -1038,16 +1016,12 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
     const created = await client.set(key, JSON.stringify(record), "NX");
     if (created === "ᴏᴋ") {
       await client.sadd(getUserCodeIndexKey(String(userId)), code);
-      logger.info("ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ɢᴇɴᴇʀᴀᴛᴇᴅ", {
-        planId,
-        source,
-        userId,
-      });
+      logger.info("ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ɢᴇɴᴇʀᴀᴛᴇᴅ", {planId, source, userId,
+    });
       return record;
-    }
-  }
+    }}
   throw new Error("ᴜɴᴀʙʟᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ᴜɴɪǫᴜᴇ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ");
-}
+    }
 async function getAccessCode(code) {
   const normalized = String(code || "")
     .trim()
@@ -1083,61 +1057,56 @@ function getOpenVaultKeyboard(code = "") {
     : baseUrl;
   const isDirectHttps = /^https:\/\//i.test(url) && !/^https:\/\/t\.me\//i.test(url);
   return Markup.inlineKeyboard([
-    [
-      isDirectHttps
+    [isDirectHttps
         ? Markup.button.webApp(BTN_OPEN_VAULT, url)
         : Markup.button.url(BTN_OPEN_VAULT, url),
-    ],
-  ]);
-}
+    ],]);
+    }
 //// KEYBOARDS //
 function getMainKeyboard() {
   return Markup.keyboard([
     [BTN_VIDEOCALL, BTN_GET_CODE],
     [BTN_CHANNELS, BTN_REFRESH],
-  ]).resize();
-}
+    ]).resize();
+    }
 function getAccessKeyboard() {
   return Markup.keyboard([
     [BTN_BASIC, BTN_VIP],
     [BTN_PRO],
     [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)],
-  ]).resize();
-}
+    ]).resize();
+    }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([[BTN_PENDING_REQUEST], [BTN_CANCEL]]).resize();
-}
+    }
 function getApprovedVideocallKeyboard() {
   return Markup.keyboard([[BTN_ZOOM, BTN_TELEGRAM], [BTN_BACK_MENU]]).resize();
-}
+    }
 function getVideocallInlineKeyboard() {
   return {
     inline_keyboard: [
-      [
-        { text: BTN_ZOOM, url: ZOOM_URL },
-        { text: BTN_TELEGRAM, url: TELEGRAM_CALL_URL },
-      ],
-    ],
-  };
-}
+    [{ text: BTN_ZOOM, url: ZOOM_URL },
+     { text: BTN_TELEGRAM, url: TELEGRAM_CALL_URL },
+    ],],};
+    }
 function getStarsVipKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback(`| ✪ ${VIP_STARS_PRICE} |`, "pay_vip_stars")],
-  ]);
-}
+    ]);
+    }
 function getStarsBasicKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback(`| ✪ ${BASIC_STARS_PRICE} |`, "pay_basic_stars")],
-  ]);
-}
+    ]);
+    }
 function getStarsProKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback(`| ✪ ${PRO_STARS_PRICE} |`, "pay_pro_stars")],
-  ]);
-}
+    ]);
+    }
 function getChannelsKeyboard() {
   return Markup.keyboard([[BTN_SMOKELANDIA, BTN_USERFX_SITE], [BTN_BACK_MENU]]).resize();
-}
+    }
 //// ACCESS STATE //
 function tierRank(tier) {
   if (tier === TIER_VIP) return 3;
@@ -1222,32 +1191,27 @@ async function sendProPanel(ctx) {
 ⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
 ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
 ⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
-⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹`,
-      getStarsProKeyboard(),
-    );
-  } catch (error) {
-    logger.error("PRO PANEL ERROR", getTelegramError(error));
-  }
-}
+⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹`,getStarsProKeyboard(),
+  );
+  } catch (error) {logger.error("PRO PANEL ERROR", getTelegramError(error));
+  }}
 //// CHANNELS //
 async function sendChannelsPanel(ctx) {
   await sendMediaSafe(ctx, "video", ASSET_CHANNELS_VIDEO);
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
-    ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
-    getChannelsKeyboard(),
+    ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,getChannelsKeyboard(),
   );
-}
+  }
 //// REFRESH //
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasPro, hasBasic } = await getAccessState(String(ctx.from?.id || ""));
   const tier = hasVip ? "👑 ᴠɪᴘ" : hasPro ? "🔥 ᴘʀᴏ" : hasBasic ? "🌹 ʙᴀꜱɪᴄ" : "ɴᴏ ᴘʟᴀɴ";
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
-    ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
-    getMainKeyboard(),
+    ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,getMainKeyboard(),
   );
-}
+  }
 //// SEND GENERATED CODE //
 async function sendGeneratedCode(ctx, record) {
   const safeCode = escapeHtml(record.code);
@@ -1261,7 +1225,7 @@ async function sendGeneratedCode(ctx, record) {
     ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`,
     { parse_mode: "HTML", reply_markup: keyboard.reply_markup },
   );
-}
+  }
 //// VIDEOCALL FLOW //
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
@@ -1269,22 +1233,23 @@ async function openVideocallFlow(ctx) {
   try {
     const allowed = await checkRateLimit(userId, 3, 300);
     if (!allowed) {
-      await ctx.reply("⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɢᴀɪɴ.");
+      await ctx.reply(
+        "⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɢᴀɪɴ.");
       return;
-    }
+  }
     const currentRequest = await getVideoRequest(userId);
     if (
       currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO ||
       currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN ||
       currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT
-    ) {
+  ) {
       await ctx.reply(
         `⏳ ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
 ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`,
         getPendingPhotoKeyboard(),
       );
       return;
-    }
+  }
     const user = getUserMeta(ctx.from);
     const request = {
       userId,
@@ -1325,48 +1290,48 @@ async function sendPendingVideocallPanel(ctx) {
   try {
     const request = await getVideoRequest(userId);
     if (!request) {
-      await ctx.reply(
+        await ctx.reply(
         `⏳ɴᴏ ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
      ᴡʜᴇɴ ʏᴏᴜ ʀᴇǫᴜᴇꜱᴛ ᴀ ᴠɪᴅᴇᴏᴄᴀʟʟ, ɪᴛ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.`,
         getMainKeyboard(),
-      );
-      return;
+    );
+        return;
     }
     let message = "";
     let keyboard = getMainKeyboard();
-    switch (request.status) {
-      case REQUEST_STATUS.WAITING_PHOTO:
+        switch (request.status) {
+        case REQUEST_STATUS.WAITING_PHOTO:
         message = `ꜱᴛᴀᴛᴜꜱ: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ 📸
     ɪ ɴᴇᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`;
         keyboard = getPendingPhotoKeyboard();
         break;
-      case REQUEST_STATUS.AWAITING_ADMIN:
+        case REQUEST_STATUS.AWAITING_ADMIN:
         message = `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ʀᴇᴄᴇɪᴠᴇᴅ.
     ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴅᴍɪɴ ᴀᴘᴘʀᴏᴠᴀʟ.`;
         keyboard = getPendingPhotoKeyboard();
         break;
-      case REQUEST_STATUS.AWAITING_PAYMENT:
+        case REQUEST_STATUS.AWAITING_PAYMENT:
         message = `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
     ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;
         keyboard = getPendingPhotoKeyboard();
         break;
-      case REQUEST_STATUS.PAID:
+        case REQUEST_STATUS.PAID:
         message = `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;
         keyboard = getApprovedVideocallKeyboard();
         break;
-      case REQUEST_STATUS.APPROVED:
+        case REQUEST_STATUS.APPROVED:
         message = `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
     ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔
     ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
         keyboard = getApprovedVideocallKeyboard();
         break;
-      default:
+        default:
         await ctx.reply("⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
         return;
-    }
+  }
     await ctx.reply(message, keyboard);
     logger.info("PENDING VIDEOCALL PANEL", { userId, status: request.status });
   } catch (error) {
@@ -1374,16 +1339,15 @@ async function sendPendingVideocallPanel(ctx) {
       userId,
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
   }
-}
+  }
 //// APPROVED VIDEOCALL //
 async function sendApprovedVideocallFlow(userId) {
   const targetUserId = String(userId);
   try {
-    await bot.telegram.sendMessage(
-      targetUserId,
+  await bot.telegram.sendMessage(targetUserId,
       `✔ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
     ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`,
     );
@@ -1391,9 +1355,8 @@ async function sendApprovedVideocallFlow(userId) {
       targetUserId,
       `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
     ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`,
-      {
-        reply_markup: getVideocallInlineKeyboard(),
-      },
+      {reply_markup: getVideocallInlineKeyboard(),
+    },
     );
     logger.info("VIDEOCALL OPTIONS SENT", {
       userId: targetUserId,
@@ -1782,18 +1745,18 @@ async function handleMedia(ctx) {
   if (!pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO) {
     await ctx.reply("📸 ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ꜰʀᴏᴍ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
     return;
-  }
+    }
   if (!isAcceptableMedia(ctx)) {
     await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
     return;
-  }
+    }
   const user = getUserMeta(ctx.from);
   const updatedPending = {
     ...pending,
     status: REQUEST_STATUS.AWAITING_ADMIN,
     invalidTextCount: 0,
     photoReceivedAt: Date.now(),
-  };
+    };
   await setVideoRequest(userId, updatedPending);
   try {
     const adminKeyboard = Markup.inlineKeyboard([
@@ -1808,7 +1771,7 @@ async function handleMedia(ctx) {
     Username: ${escapeHtml(user.username)}
     ID: ${escapeHtml(user.id)}
     Chat ID: ${escapeHtml(userId)}`,
-      { parse_mode: "HTML" },
+    { parse_mode: "HTML" },
     );
     await bot.telegram.copyMessage(ADMIN_CHAT_ID, ctx.chat.id, ctx.message.message_id);
     await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "ᴄʜᴏᴏꜱᴇ ᴀɴ ᴀᴄᴛɪᴏɴ:", {
@@ -1818,15 +1781,13 @@ async function handleMedia(ctx) {
       `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
     ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`,
     );
-  } catch (error) {
+    } catch (error) {
     logger.error("MEDIA HANDLER ERROR", {
-      userId,
-      ...getTelegramError(error),
+      userId,...getTelegramError(error),
       stack: getErrorStack(error),
       adminChatId: ADMIN_CHAT_ID || null,
     });
-  }
-}
+    }}
 bot.on("photo", handleMedia);
 bot.on("video", handleMedia);
 bot.on("document", handleMedia);
@@ -1835,8 +1796,8 @@ bot.on("text", async (ctx, next) => {
   const text = String(ctx.message?.text || "").trim();
   const userId = String(ctx.from?.id || "");
   logger.info("USER TEXT RECEIVED", { userId, text });
-  if (!userId) {
-    return;
+    if (!userId) {
+      return;
   }
   try {
     if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text)) {
@@ -1845,28 +1806,27 @@ bot.on("text", async (ctx, next) => {
         .trim()
         .toLowerCase();
       logger.info("ᴜꜱᴇʀ ꜱᴛᴀʀᴛ ʀᴇᴄᴇɪᴠᴇᴅ", {
-        userId,
-        startPayload: startPayload || null,
+        userId,startPayload: startPayload || null,
       });
       // TGMX IDENTITY START (TEXT ROUTER)
-      if (startPayload === "identity") {
-        await sendIdentityCode(ctx);
-        return;
+    if (startPayload === "identity") {
+      await sendIdentityCode(ctx);
+      return;
       }
-      if (startPayload === "pay_basic") {
+    if (startPayload === "pay_basic") {
         logger.info("ꜱᴛᴀʀᴛ ʙᴀꜱɪᴄ ᴘᴀʏᴍᴇɴᴛ");
-        await sendBasicInvoice(ctx);
-        return;
+      await sendBasicInvoice(ctx);
+      return;
       }
-      if (startPayload === "pay_pro") {
+    if (startPayload === "pay_pro") {
         logger.info("ꜱᴛᴀʀᴛ ᴘʀᴏ ᴘᴀʏᴍᴇɴᴛ");
-        await sendProInvoice(ctx);
-        return;
+      await sendProInvoice(ctx);
+      return;
       }
-      if (startPayload === "pay_vip") {
+    if (startPayload === "pay_vip") {
         logger.info("ꜱᴛᴀʀᴛ ᴠɪᴘ ᴘᴀʏᴍᴇɴᴛ");
-        await sendVipInvoice(ctx);
-        return;
+      await sendVipInvoice(ctx);
+      return;
       }
       await sendMainPanel(ctx);
       return;
@@ -1931,22 +1891,21 @@ bot.on("text", async (ctx, next) => {
     if (text === BTN_ZOOM) {
       return await ctx.reply("📞ᴢᴏᴏᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
         reply_markup: { inline_keyboard: [[{ text: "📹 ᴜɴɪʀꜱᴇ ᴀ ᴢᴏᴏᴍ", url: ZOOM_URL }]] },
-      });
+    });
     }
     //// TELEGRAM CALL //
     if (text === BTN_TELEGRAM) {
       return await ctx.reply("💬ᴛᴇʟᴇɢʀᴀᴍ ᴠɪᴅᴇᴏᴄᴀʟʟ", {
         reply_markup: {
           inline_keyboard: [[{ text: "📹ɪɴɪᴄɪᴀʀ ᴠɪᴅᴇᴏᴄᴀʟʟ", url: TELEGRAM_CALL_URL }]],
-        },
-      });
+    },});
     }
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
       await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO);
       return await ctx.reply("​", {
         reply_markup: { inline_keyboard: [[{ text: "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }]] },
-      });
+    });
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
@@ -1995,7 +1954,7 @@ bot.command("clearvideo", async (ctx) => {
   if (!targetId) return;
   await deleteVideoRequest(targetId);
   await ctx.reply(`✔ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ᴄʟᴇᴀʀᴇᴅ ꜰᴏʀ ${targetId}.`);
-});
+  });
 
 bot.command("resetvc", async (ctx) => {
   if (!isAdmin(ctx)) {
@@ -2009,27 +1968,26 @@ bot.command("resetvc", async (ctx) => {
     if (!request) {
       await ctx.reply(`✔ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ ${targetId}.`);
       return;
-    }
+  }
     await deleteVideoRequest(targetId);
     await ctx.reply(
       `✔ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ ʀᴇꜱᴇᴛ ꜰᴏʀ ${targetId}.
                  ᴘʀᴇᴠɪᴏᴜꜱ ꜱᴛᴀᴛᴜꜱ:
       ${request.status || "unknown"}
                  ᴛʜᴇ ᴜꜱᴇʀ ᴄᴀɴ ɴᴏᴡ ʀᴇǫᴜᴇꜱᴛ ᴀ ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ.`,
-    );
+  );
     logger.info("VIDEOCALL REQUEST RESET", {
       userId: targetId,
       previousStatus: request.status || null,
-    });
+  });
   } catch (error) {
     logger.error("RESET VIDEOCALL ERROR", {
       userId: targetId,
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ ᴇʀʀᴏʀ ʀᴇꜱᴇᴛᴛɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.");
-  }
-});
+  }});
 //// REPORT //
 bot.command("report", async (ctx) => {
   if (!isAdmin(ctx)) {
@@ -2046,7 +2004,7 @@ bot.command("report", async (ctx) => {
     if (!keys.length) {
       await ctx.reply("📊 ɴᴏ ʙᴜᴛᴛᴏɴ ᴄʟɪᴄᴋꜱ ʀᴇᴄᴏʀᴅᴇᴅ ʏᴇᴛ.");
       return;
-    }
+  }
     const values = await client.mget(...keys);
     const clicks = values
       .filter(Boolean)
@@ -2055,8 +2013,7 @@ bot.command("report", async (ctx) => {
           return JSON.parse(value);
         } catch {
           return null;
-        }
-      })
+  }})
       .filter(Boolean)
       .sort((a, b) => new Date(b.clickedAt).getTime() - new Date(a.clickedAt).getTime());
     let report = "📊 ʙᴜᴛᴛᴏɴ ᴄʟɪᴄᴋ ʀᴇᴘᴏʀᴛ\n\n";
@@ -2067,31 +2024,29 @@ bot.command("report", async (ctx) => {
         `ID: <code>${escapeHtml(click.id)}</code>\n` +
         `Button: <b>${escapeHtml(click.button)}</b>\n` +
         `Date: ${escapeHtml(click.clickedAt)}\n\n`;
-    });
+  });
     const chunks = [];
     while (report.length > 0) {
       chunks.push(report.slice(0, 3900));
       report = report.slice(3900);
-    }
+  }
     for (const chunk of chunks) {
       await ctx.reply(chunk, { parse_mode: "HTML" });
-    }
+  }
   } catch (error) {
     logger.error("REPORT ERROR", {
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ ᴇʀʀᴏʀ ɢᴇɴᴇʀᴀᴛɪɴɢ ʀᴇᴘᴏʀᴛ.");
-  }
-});
+  }});
 //// ADMIN BOT / MY ID  //
 adminBot.command("myid", async (ctx) => {
   try {
     await ctx.reply(`chat_id: ${ctx.chat?.id} user_id: ${ctx.from?.id}`);
   } catch (error) {
     logger.error("ADMIN MYID ERROR", getTelegramError(error));
-  }
-});
+  }});
 //// ADMIN: APPROVE STARS //
 adminBot.action(/^approve_stars_(\d+)$/, async (ctx) => {
   const adminId = String(ctx.from?.id || "");
@@ -2133,10 +2088,9 @@ adminBot.action(/^approve_stars_(\d+)$/, async (ctx) => {
       await bot.telegram.sendMessage(
         requesterId,
         "✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ ɪɴᴠᴏɪᴄᴇ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ.",
-      );
+    );
     } catch {}
-  }
-});
+    }});
 //// ADMIN: APPROVE CALL //
 adminBot.action(/^approve_call_(\d+)$/, async (ctx) => {
   const adminId = String(ctx.from?.id || "");
@@ -2168,9 +2122,7 @@ adminBot.action(/^approve_call_(\d+)$/, async (ctx) => {
     const current = await getVideoRequest(requesterId);
     if (current) {
       await setVideoRequest(requesterId, { ...current, status: REQUEST_STATUS.AWAITING_ADMIN });
-    }
-  }
-});
+    }}});
 //// ADMIN: REJECT //
 adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
   const adminId = String(ctx.from?.id || "");
@@ -2186,8 +2138,7 @@ adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
   }
   try {
     await ctx.answerCbQuery("✘ ʀᴇᴊᴇᴄᴛᴇᴅ");
-    await ctx
-      .editMessageReplyMarkup({
+    await ctx.editMessageReplyMarkup({
         inline_keyboard: [],
       })
       .catch(() => {});
@@ -2195,14 +2146,11 @@ adminBot.action(/^reject_video_(\d+)$/, async (ctx) => {
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback("ʏᴇᴀ🔥, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.", `notify_me_${requesterId}`)],
     ]);
-    await bot.telegram.sendMessage(
-      requesterId,
+    await bot.telegram.sendMessage(requesterId,
       `⏳ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ᴡᴀꜱ ɴᴏᴛ ᴀᴘᴘʀᴏᴠᴇᴅ ᴀᴛ ᴛʜɪꜱ ᴛɪᴍᴇ.
           ᴡᴀɴᴛ ᴜꜱ ᴛᴏ ʟᴇᴛ ʏᴏᴜ ᴋɴᴏᴡ ᴡʜᴇɴ ꜱʟᴏᴛꜱ ᴏᴘᴇɴ ᴜᴘ ᴀɢᴀɪɴ?`,
-      {
-        reply_markup: keyboard.reply_markup,
-      },
-    );
+      {reply_markup: keyboard.reply_markup,
+      },);
   } catch (error) {
     logger.error("REJECT ERROR", { requesterId, ...getTelegramError(error) });
   }
@@ -2235,22 +2183,17 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
       requesterId,
       `📺 ɢᴏᴛ ɪᴛ!
           ꜱᴡɪɴɢ ʙʏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ꜱᴇᴇ ᴡʜᴀᴛ'ꜱ ɴᴇᴡ.`,
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "𝐔𝐬ᴇʀ 🜲∓ҳ", url: USER_GROUP_LINK }],
-            [{ text: "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
-          ],
-        },
-      },
-    );
-  } catch (error) {
-    logger.error("ɴᴏᴛɪꜰʏ ᴇʀʀᴏʀ", { requesterId, ...getTelegramError(error) });
-  }
-});
-// ======================================================
-// ADMIN: TELEGRAMFX ACCESS PANEL
-// ======================================================
+  { reply_markup: {
+    inline_keyboard: 
+           [[{ text: 
+            "𝐔𝐬ᴇʀ 🜲∓ҳ", url: USER_GROUP_LINK }],
+            [{ text: 
+            "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }],
+  ],},},);
+  } catch (error) {logger.error(
+      "ɴᴏᴛɪꜰʏ ᴇʀʀᴏʀ", { requesterId, ...getTelegramError(error) });
+  }});
+// =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
 bot.command("access", async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
   try {
@@ -2261,16 +2204,13 @@ bot.command("access", async (ctx) => {
     await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
       parse_mode: "HTML",
       reply_markup: telegramFxPanelKeyboard(parsed.normalized, mask).reply_markup,
-    });
+  });
   } catch (error) {
-    logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ᴀᴄᴄᴇꜱꜱ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-    });
+    logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ᴀᴄᴄᴇꜱꜱ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {...getTelegramError(error),
+    stack: getErrorStack(error),
+  });
     await ctx.reply("✘ ᴛʜᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴꜱ ᴘᴀɴᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴏᴘᴇɴᴇᴅ.");
-  }
-});
-
+  }});
 bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
   const username = String(ctx.match[1]).toLowerCase();
@@ -2280,10 +2220,9 @@ bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
     .editMessageText(telegramFxPanelText(`@${username}`, mask, false), {
       parse_mode: "HTML",
       reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
-    })
+  })
     .catch(() => {});
-});
-
+  });
 bot.action(/^tfx_save_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ");
   const username = String(ctx.match[1]).toLowerCase();
@@ -2292,21 +2231,18 @@ bot.action(/^tfx_save_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
     await saveTelegramFxAccess(username, mask, ctx.from);
     await ctx.answerCbQuery("✔ ꜱᴀᴠᴇ");
     await ctx
-      .editMessageText(telegramFxPanelText(`@${username}`, mask, true), {
+    .editMessageText(telegramFxPanelText(`@${username}`, mask, true), {
         parse_mode: "HTML",
         reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
-      })
-      .catch(() => {});
+  })
+    .catch(() => {});
   } catch (error) {
     logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ꜱᴀᴠᴇ ᴇʀʀᴏʀ", {
-      username,
-      ...getTelegramError(error),
+      username,...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ꜱᴀᴠɪɴɢ", { show_alert: true });
-  }
-});
-
+  }});
 bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
   const username = String(ctx.match[1]).toLowerCase();
@@ -2317,18 +2253,15 @@ bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
       .editMessageText(telegramFxPanelText(`@${username}`, 0, true), {
         parse_mode: "HTML",
         reply_markup: telegramFxPanelKeyboard(username, 0).reply_markup,
-      })
+  })
       .catch(() => {});
   } catch (error) {
     logger.error("TELEGRAMFX REVOKE ERROR", {
-      username,
-      ...getTelegramError(error),
+      username,...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ʀᴇᴠᴏᴋɪɴɢ", { show_alert: true });
-  }
-});
-
+  }});
 bot.command("find", async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
   try {
@@ -2339,15 +2272,14 @@ bot.command("find", async (ctx) => {
     const mask = telegramFxMask(record);
     await ctx.reply(telegramFxPanelText(record.username || parsed.display, mask, true), {
       parse_mode: "HTML",
-    });
+  });
   } catch (error) {
     logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ꜰɪɴᴅ ᴇʀʀᴏʀ", {
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ ᴛʜᴇ ᴜꜱᴇʀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ǫᴜᴇʀɪᴇᴅ.");
-  }
-});
+  }});
 
 bot.command("revoke", async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
@@ -2360,11 +2292,9 @@ bot.command("revoke", async (ctx) => {
     logger.error("Tᴛᴇʟᴇɢʀᴀᴍꜰx ʀᴇᴠᴏᴋᴇ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʀᴇᴠᴏᴋᴇᴅ.");
-  }
-});
-
+  }});
 bot.command("users", async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
   try {
@@ -2383,10 +2313,9 @@ bot.command("users", async (ctx) => {
     logger.error("TELEGRAMFX USERS ERROR", {
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.reply("✘ No se pudo cargar la lista.");
-  }
-});
+  }});
 //// ADMIN CODE LOOKUP //
 adminBot.command("code", async (ctx) => {
   if (!isAdmin(ctx)) {
@@ -2407,7 +2336,7 @@ adminBot.command("code", async (ctx) => {
   await ctx.reply(
     `✔ CODE FOUND\n\nCode: ${record.code}\nPlan: ${record.plan}\nPlan ID: ${record.planId}\nSource: ${record.source}\nUser ID: ${record.userId}\nStatus: ${record.status}\nUsed accesses: ${record.usedAccesses ?? 0}\nRemaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}\nCreated: ${record.createdAt}`,
   );
-});
+  });
 //// ERROR HANDLERS //
 bot.catch((error, ctx) => {
   logger.error("BOT ERROR", {
@@ -2415,8 +2344,7 @@ bot.catch((error, ctx) => {
     ...getTelegramError(error),
     stack: getErrorStack(error),
   });
-});
-
+  });
 adminBot.catch((error, ctx) => {
   logger.error("ADMIN BOT ERROR", {
     updateId: ctx?.update?.update_id ?? null,
@@ -2460,17 +2388,16 @@ async function getRequestBody(req) {
     }
     if (typeof req.body === "object") {
       return req.body;
-    }
-  }
+    }}
   return readRawBody(req);
-}
+    }
 function getQueryValue(req, key) {
   const value = req.query?.[key];
   if (Array.isArray(value)) {
     return String(value[0] || "");
-  }
-  return String(value || "");
-}
+   }
+    return String(value || "");
+   }
 // ========  TELEGRAM BODY PARSER =================
 function parseTelegramBody(rawBody) {
   if (rawBody === undefined || rawBody === null) {
@@ -2485,7 +2412,7 @@ function parseTelegramBody(rawBody) {
   if (!raw) {
     throw new Error("Request body is empty");
   }
-  return JSON.parse(raw);
+    return JSON.parse(raw);
 }
 //// WEBHOOK HANDLER //
 export default async function handler(req, res) {
@@ -2497,58 +2424,53 @@ export default async function handler(req, res) {
   });
   //// GET //
   if (req.method === "GET") {
-    return res.status(200).json({
-      ok: true,
-      service: "telegram-webhook",
-      status: "online",
+    return res.status(200).json({ok: true,service: "telegram-webhook",status: "online",
     });
-  }
+    }
   //// METHOD //
   if (req.method !== "POST") {
-    return res.status(405).json({
+  return res.status(405).json({
       ok: false,
       error: "method_not_allowed",
     });
-  }
+    }
   //// SECRET //
   const incomingSecret = String(req.headers["x-telegram-bot-api-secret-token"] || "").trim();
   const userSecret = String(WEBHOOK_SECRET || "").trim();
   const adminSecret = String(ADMIN_WEBHOOK_SECRET || "").trim();
   const requestedBot = getQueryValue(req, "bot").trim().toLowerCase();
-  let isAdminWebhookRoute =
+    let isAdminWebhookRoute =
     incomingSecret.length > 0 &&
     adminSecret.length > 0 &&
     secureCompare(incomingSecret, adminSecret);
-  let isUserWebhookRoute =
+    let isUserWebhookRoute =
     incomingSecret.length > 0 && userSecret.length > 0 && secureCompare(incomingSecret, userSecret);
-  if (isAdminWebhookRoute && isUserWebhookRoute) {
+    if (isAdminWebhookRoute && isUserWebhookRoute) {
     if (requestedBot === "admin") {
       isUserWebhookRoute = false;
     } else {
       isAdminWebhookRoute = false;
-    }
-  }
+    }}
   logger.info("TELEGRAM WEBHOOK SECRET CHECK", {
     incomingSecretPresent: Boolean(incomingSecret),
     isUser: isUserWebhookRoute,
     isAdmin: isAdminWebhookRoute,
     requestedBot: requestedBot || null,
-  });
-  if (!isAdminWebhookRoute && !isUserWebhookRoute) {
-    logger.warn("TELEGRAM WEBHOOK UNAUTHORIZED");
-    return res.status(401).json({
-      ok: false,
-      error: "unauthorized",
     });
-  }
-  //// BODY //
+  if (!isAdminWebhookRoute && !isUserWebhookRoute) {
+    logger.warn(
+      "TELEGRAM WEBHOOK UNAUTHORIZED");
+    return res.status(401).json({ok: false, error: "unauthorized",
+    });
+    }
+//// BODY //
   let rawBody;
   try {
     rawBody = await getRequestBody(req);
     logger.info("TELEGRAM RAW BODY", {
       length: typeof rawBody === "string" ? rawBody.length : null,
     });
-  } catch (error) {
+    } catch (error) {
     logger.error("BODY READ ERROR", {
       message: error?.message || null,
       stack: getErrorStack(error),
@@ -2559,12 +2481,12 @@ export default async function handler(req, res) {
       error: status === 413 ? "payload_too_large" : "body_read_error",
       message: error?.message || "Unable to read request body",
     });
-  }
+    }
   //// JSON //
-  let update;
-  try {
+    let update;
+    try {
     update = parseTelegramBody(rawBody);
-  } catch (error) {
+    } catch (error) {
     logger.error("BODY JSON PARSE ERROR", {
       message: error?.message || null,
     });
@@ -2573,11 +2495,11 @@ export default async function handler(req, res) {
       error: "invalid_json",
       message: error?.message || "Invalid JSON",
     });
-  }
+    }
   //// UPDATE VALIDATION //
   if (!update || typeof update !== "object" || Array.isArray(update)) {
     return res.status(400).json({ ok: false, error: "invalid_update" });
-  }
+    }
   logger.info("TELEGRAM UPDATE RECEIVED", {
     bot: isAdminWebhookRoute ? "admin" : "user",
     updateId: update.update_id ?? null,
@@ -2586,24 +2508,14 @@ export default async function handler(req, res) {
     messageText: update.message?.text?.slice(0, 100) || null,
     messageType:
       Object.keys(update.message || {}).find((k) =>
-        [
-          "text",
-          "photo",
-          "video",
-          "document",
-          "sticker",
-          "animation",
-          "voice",
-          "video_note",
-          "location",
-          "contact",
-          "poll",
-        ].includes(k),
-      ) || "other",
+    ["text","photo","video","document","sticker","animation",
+     "voice","video_note","location","contact","poll",
+    ].includes(k),
+    ) || "other",
     hasCallback: Boolean(update.callback_query),
     hasPhoto: Boolean(update.message?.photo),
     hasPayment: Boolean(update.message?.successful_payment),
-  });
+    });
   //// DISPATCH //
   try {
     if (isAdminWebhookRoute) {
@@ -2615,7 +2527,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, bot: "ᴜꜱᴇʀ" });
     }
     return res.status(401).json({ ok: false, error: "ɪɴᴠᴀʟɪᴅ_ᴡᴇʙʜᴏᴏᴋ_ʀᴏᴜᴛᴇ" });
-  } catch (error) {
+    } catch (error) {
     logger.error("ʙᴏᴛ ʜᴀɴᴅʟᴇ ᴜᴘᴅᴀᴛᴇ ᴇʀʀᴏʀ", {
       name: error?.name ?? null,
       message: error?.message ?? null,
@@ -2629,6 +2541,5 @@ export default async function handler(req, res) {
         error: "ᴛᴇʟᴇɢʀᴀᴍ_ʜᴀɴᴅʟᴇʀ_ᴇʀʀᴏʀ",
         message: error?.message ?? "unknown_error",
         description: error?.response?.description ?? null,
-      });
-  }
-}
+    });
+    }}
