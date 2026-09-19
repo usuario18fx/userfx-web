@@ -1,10 +1,8 @@
 .vhd-root *,
 .vhd-root *::before,
-.vhd-root *::after{
-  box-sizing:border-box;
+.vhd-root *::after{ box-sizing:border-box;
 }
-::selection{
-  background:#d8d45733;
+::selection{background:#d8d45733;
 }
 /* ═══════════ PANEL COMPLETO DE PUERTAS ═══════════ */
 .vhd-root{
@@ -131,8 +129,7 @@
   content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(90deg, #ffffff08, transparent 18%, transparent 82%, #ffffff06),
+  background:linear-gradient(90deg, #ffffff08, transparent 18%, transparent 82%, #ffffff06),
     url("/assets/damask.png") center / 420px repeat;
   opacity:0.3; /* 🎨 RELIEVE */
   pointer-events:none;
