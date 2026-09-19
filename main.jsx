@@ -4,6 +4,8 @@ import App from "./app.jsx";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./global.css";
 import "./restricted-type.css";
+import "./protocol-premium.css";
+import "./protocol-selection.js";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
