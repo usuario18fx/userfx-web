@@ -1,0 +1,9 @@
+/* ═══════════ USER FX · RESTRICTED TYPE ═══════════ */
+.vx-rest {
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.035em !important;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
