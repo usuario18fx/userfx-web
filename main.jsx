@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./app.jsx";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./global.css";
+import "./restricted-type.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
