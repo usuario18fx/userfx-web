@@ -6,8 +6,9 @@ import {
 } from "react";
 import {createPortal} from "react-dom";
 import "./PrivateRoomLiveLobby.css";
+import "./PrivateRoomGroupUpdate.css";
 
-type LobbySection = "live" | "scheduled" | "members";
+type LobbySection = "live" | "group" | "scheduled" | "members";
 
 function openProfileEditor() {
   const launcher = document.querySelector<HTMLButtonElement>(".pvr-account-launcher");
@@ -75,11 +76,13 @@ export default function PrivateRoomLiveLobby():ReactElement | null {
   const handleSection = useCallback((next:LobbySection) => {
     setSection(next);
     const selector =
-      next === "scheduled"
-        ? ".pvr-live-upcoming"
-        : next === "members"
-          ? ".pvr-live-members"
-          : ".pvr-live-feature";
+      next === "group"
+        ? ".pvr-live-group"
+        : next === "scheduled"
+          ? ".pvr-live-upcoming"
+          : next === "members"
+            ? ".pvr-live-members"
+            : ".pvr-live-feature";
 
     document.querySelector(selector)?.scrollIntoView({
       behavior:"smooth",
@@ -103,6 +106,19 @@ export default function PrivateRoomLiveLobby():ReactElement | null {
           NETWORK READY
         </div>
       </header>
+
+      {cameraLive && (
+        <div className="pvr-live-oncam">
+          <div className="pvr-live-oncam-copy">
+            <span className="pvr-live-oncam-icon">CAM</span>
+            <div>
+              <strong>You are on camera</strong>
+              <small>Your active camera is visible to the network according to the privacy mode you selected.</small>
+            </div>
+          </div>
+          <button type="button" onClick={openProfileCamera}>MANAGE CAMERA</button>
+        </div>
+      )}
 
       {/* ─────   LIVE + MY CAMERA ─────── */}
       <div className="pvr-live-grid">
@@ -132,7 +148,7 @@ export default function PrivateRoomLiveLobby():ReactElement | null {
         <aside className={`pvr-live-self ${cameraLive ? "is-live" : ""}`} aria-label="Your camera">
           <div className="pvr-live-self-head">
             <span>YOUR CAMERA</span>
-            <small>{cameraLive ? "● LIVE" : "○ OFFLINE"}</small>
+            <small>{cameraLive ? "● ON CAM" : "○ OFFLINE"}</small>
           </div>
 
           <div className="pvr-live-self-avatar">
@@ -186,6 +202,60 @@ export default function PrivateRoomLiveLobby():ReactElement | null {
         </div>
       </section>
 
+      {/* ========   GROUP SALON =========================== */}
+      <section className="pvr-live-group" aria-label="Group salon">
+        <div className="pvr-live-section-head">
+          <div>
+            <span>PRIVATE SALON</span>
+            <strong>GROUP OF FIVE</strong>
+          </div>
+          <small>1 / 5 SEATS</small>
+        </div>
+
+        <div className="pvr-group-layout">
+          <div className="pvr-group-stage">
+            <div className="pvr-group-grid">
+              <div className={`pvr-group-seat is-host ${cameraLive ? "is-oncam" : ""}`}>
+                <span className="pvr-group-avatar">FX</span>
+                <strong>YOU · HOST</strong>
+                <small>{cameraLive ? "ON CAM" : "OFF CAM"}</small>
+              </div>
+
+              {[1,2,3,4].map((seat) => (
+                <div className="pvr-group-seat" key={seat}>
+                  <span className="pvr-group-avatar">+</span>
+                  <strong>OPEN SEAT</strong>
+                  <small>INVITE MEMBER</small>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <aside className="pvr-group-builder">
+            <span>GROUP SESSION</span>
+            <strong>Build your salon</strong>
+            <p>Invite up to four members. The room becomes available when the group circle is complete.</p>
+
+            <div className="pvr-group-progress-head">
+              <span>TEAM PROGRESS</span>
+              <strong>1 / 5</strong>
+            </div>
+            <div className="pvr-group-progress"><span></span></div>
+
+            <div className="pvr-group-actions">
+              <button type="button" className="pvr-group-invite" onClick={() => handleSection("members")}>
+                INVITE MEMBERS
+              </button>
+              <button type="button" className="pvr-group-camera" onClick={openProfileCamera}>
+                {cameraLive ? "MANAGE CAMERA" : "GO ON CAM"}
+              </button>
+            </div>
+
+            <div className="pvr-group-waiting">WAITING FOR 4 MEMBERS</div>
+          </aside>
+        </div>
+      </section>
+
       {/* ─────   UPCOMING ─────── */}
       <section className="pvr-live-upcoming" aria-label="Upcoming rooms">
         <div className="pvr-live-section-head">
@@ -217,33 +287,12 @@ export default function PrivateRoomLiveLobby():ReactElement | null {
 
       {/* ─────   LIVE NAV ─────── */}
       <nav className="pvr-live-nav" aria-label="Video network navigation">
-        <button
-          type="button"
-          className={section === "live" ? "is-active" : ""}
-          onClick={() => handleSection("live")}
-        >
-          LIVE
-        </button>
-        <button
-          type="button"
-          className={section === "scheduled" ? "is-active" : ""}
-          onClick={() => handleSection("scheduled")}
-        >
-          SCHEDULED
-        </button>
-        <button
-          type="button"
-          className={section === "members" ? "is-active" : ""}
-          onClick={() => handleSection("members")}
-        >
-          MEMBERS
-        </button>
-        <button type="button" disabled>
-          CHAT · SOON
-        </button>
-        <button type="button" onClick={openProfileEditor}>
-          PROFILE
-        </button>
+        <button type="button" className={section === "live" ? "is-active" : ""} onClick={() => handleSection("live")}>LIVE</button>
+        <button type="button" className={section === "group" ? "is-active" : ""} onClick={() => handleSection("group")}>GROUP</button>
+        <button type="button" className={section === "scheduled" ? "is-active" : ""} onClick={() => handleSection("scheduled")}>SCHEDULED</button>
+        <button type="button" className={section === "members" ? "is-active" : ""} onClick={() => handleSection("members")}>MEMBERS</button>
+        <button type="button" disabled>CHAT · SOON</button>
+        <button type="button" onClick={openProfileEditor}>PROFILE</button>
       </nav>
     </div>,
     target,
