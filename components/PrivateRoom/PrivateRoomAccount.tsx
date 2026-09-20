@@ -36,6 +36,15 @@ type AccountResponse = {
   error?: string;
 };
 
+type ProfileViewProps = {
+  account: AccountData;
+  profile: AccountProfile;
+  accessLabel: string;
+  onClose: () => void;
+  onEdit: () => void;
+  onGoOnline: () => void;
+};
+
 const DEV_PROFILE_KEY = "userfx_dev_account_profile";
 
 const EMPTY_PROFILE:AccountProfile = {
@@ -59,6 +68,10 @@ function getInitials(account:AccountData) {
   return clean.slice(0,2).toUpperCase() || "FX";
 }
 
+function getProfileName(account:AccountData,profile:AccountProfile) {
+  return profile.displayName || account.telegramUsername || "USER FX MEMBER";
+}
+
 function getDevProfile():AccountProfile {
   try {
     const stored = JSON.parse(localStorage.getItem(DEV_PROFILE_KEY) || "{}");
@@ -80,10 +93,136 @@ function createDevAccount():AccountData {
   };
 }
 
+/* ========   MEMBER PROFILE VIEW =========================== */
+function ProfileView({
+  account,
+  profile,
+  accessLabel,
+  onClose,
+  onEdit,
+  onGoOnline,
+}:ProfileViewProps) {
+  const onlineVisible = profile.onlineVisibility !== "hidden";
+  const profileName = getProfileName(account,profile);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="pvr-profile-view-backdrop"
+        onClick={onClose}
+        aria-label="Close member profile"
+      ></button>
+
+      <section className="pvr-profile-view" aria-label="USER FX member profile">
+        {/* ─────   PROFILE HEADER ─────── */}
+        <header className="pvr-profile-view-head">
+          <div>
+            <span>USER FX · MEMBER PROFILE</span>
+            <strong>{accessLabel} ACCESS</strong>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close profile">
+            ✕
+          </button>
+        </header>
+
+        {/* ─────   PROFILE HERO ─────── */}
+        <div className="pvr-profile-hero">
+          <div className="pvr-profile-avatar">
+            {getInitials({...account,profile})}
+            <span className={onlineVisible ? "is-online" : "is-hidden"}></span>
+          </div>
+
+          <div className="pvr-profile-copy">
+            <div className="pvr-profile-status-row">
+              <span className={`pvr-profile-status ${onlineVisible ? "is-online" : "is-hidden"}`}>
+                {onlineVisible ? "● ONLINE" : "○ STATUS HIDDEN"}
+              </span>
+              <span>{profile.visibility.toUpperCase()}</span>
+            </div>
+
+            <h1>{profileName}</h1>
+            <p className="pvr-profile-username">
+              {account.telegramUsername || "PRIVATE MEMBER"}
+            </p>
+            <p className="pvr-profile-bio">
+              {profile.bio || "No bio yet."}
+            </p>
+          </div>
+        </div>
+
+        {/* ─────   PROFILE META ─────── */}
+        <div className="pvr-profile-meta">
+          <div>
+            <span>ACCESS</span>
+            <strong>{accessLabel}</strong>
+          </div>
+          <div>
+            <span>PROFILE</span>
+            <strong>{profile.visibility.toUpperCase()}</strong>
+          </div>
+          <div>
+            <span>MEDIA</span>
+            <strong>{profile.mediaVisibility.toUpperCase()}</strong>
+          </div>
+          <div>
+            <span>STATUS</span>
+            <strong>{profile.onlineVisibility.toUpperCase()}</strong>
+          </div>
+        </div>
+
+        {/* ─────   CAMERA STATUS ─────── */}
+        <div className="pvr-profile-camera">
+          <div className="pvr-profile-camera-screen">
+            <span>CAMERA</span>
+            <strong>OFFLINE</strong>
+            <small>PRIVATE VIDEO PROFILE</small>
+          </div>
+
+          <button type="button" onClick={onGoOnline}>
+            GO ONLINE
+          </button>
+        </div>
+
+        {/* ─────   MEDIA ─────── */}
+        <section className="pvr-profile-media" aria-label="Member media">
+          <div className="pvr-profile-media-head">
+            <div>
+              <span>PRIVATE MEDIA</span>
+              <strong>PROFILE COLLECTION</strong>
+            </div>
+            <small>{profile.mediaVisibility.toUpperCase()}</small>
+          </div>
+
+          <div className="pvr-profile-media-tabs">
+            <button type="button" className="is-active">PHOTOS <span>0</span></button>
+            <button type="button">VIDEOS <span>0</span></button>
+            <button type="button">ALBUMS <span>0</span></button>
+          </div>
+
+          <div className="pvr-profile-media-empty">
+            <span>NO MEDIA POSTED YET</span>
+            <small>Photos, videos and albums will appear here.</small>
+          </div>
+        </section>
+
+        {/* ─────   PROFILE ACTIONS ─────── */}
+        <footer className="pvr-profile-actions">
+          <button type="button" className="pvr-profile-edit" onClick={onEdit}>
+            EDIT PROFILE
+          </button>
+          <span>ID · {account.accountId.slice(-10).toUpperCase()}</span>
+        </footer>
+      </section>
+    </>
+  );
+}
+
 export default function PrivateRoomAccount() {
   const [account,setAccount] = useState<AccountData | null>(null);
   const [profile,setProfile] = useState<AccountProfile>(EMPTY_PROFILE);
   const [open,setOpen] = useState(false);
+  const [profileViewOpen,setProfileViewOpen] = useState(false);
   const [loading,setLoading] = useState(true);
   const [saving,setSaving] = useState(false);
   const [message,setMessage] = useState("");
@@ -128,6 +267,40 @@ export default function PrivateRoomAccount() {
 
     return () => {cancelled = true;};
   },[loadDevAccount]);
+
+  /* ─────   PRIVATE ROOM · PROFILE ACTION ─────── */
+  useEffect(() => {
+    const handleProfileAction = (event:MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const button = target?.closest(".pvr-side-actions button") as HTMLButtonElement | null;
+      if (!button) return;
+
+      const label = button.querySelector("strong")?.textContent?.trim().toUpperCase();
+      if (label !== "PROFILE") return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false);
+      setProfileViewOpen(true);
+    };
+
+    document.addEventListener("click",handleProfileAction,true);
+    return () => document.removeEventListener("click",handleProfileAction,true);
+  },[]);
+
+  /* ─────   ESCAPE PROFILE ─────── */
+  useEffect(() => {
+    if (!profileViewOpen && !open) return;
+
+    const handleEscape = (event:KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setProfileViewOpen(false);
+      setOpen(false);
+    };
+
+    window.addEventListener("keydown",handleEscape);
+    return () => window.removeEventListener("keydown",handleEscape);
+  },[open,profileViewOpen]);
 
   /* ─────   PROFILE INPUT ─────── */
   const handleTextChange = useCallback((event:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -189,6 +362,28 @@ export default function PrivateRoomAccount() {
     }
   },[account,profile,saving]);
 
+  const handleOpenProfile = useCallback(() => {
+    setOpen(false);
+    setMessage("");
+    setProfileViewOpen(true);
+  },[]);
+
+  const handleEditProfile = useCallback(() => {
+    setProfileViewOpen(false);
+    setMessage("");
+    setOpen(true);
+  },[]);
+
+  const handleGoOnline = useCallback(() => {
+    setProfileViewOpen(false);
+    window.setTimeout(() => {
+      document.getElementById("videocall-stage")?.scrollIntoView({
+        behavior:"smooth",
+        block:"start",
+      });
+    },60);
+  },[]);
+
   const accessLabel = account ? getAccessLabel(account) : "";
 
   return (
@@ -201,12 +396,12 @@ export default function PrivateRoomAccount() {
           <button
             type="button"
             className={`pvr-account-launcher ${open ? "is-open" : ""}`}
-            onClick={() => {setOpen((current) => !current);setMessage("");}}
+            onClick={() => {setOpen((current) => !current);setMessage("");setProfileViewOpen(false);}}
             aria-expanded={open}
             aria-controls="pvr-account-panel"
           >
             <span className="pvr-account-avatar">
-              {getInitials(account)}
+              {getInitials({...account,profile})}
             </span>
             <span className="pvr-account-launcher-copy">
               <small>{accessLabel}</small>
@@ -233,14 +428,18 @@ export default function PrivateRoomAccount() {
 
             <div className="pvr-account-identity">
               <div className="pvr-account-avatar pvr-account-avatar--large">
-                {getInitials(account)}
+                {getInitials({...account,profile})}
               </div>
               <div>
                 <span className="pvr-account-access">{accessLabel} ACCESS</span>
-                <strong>{profile.displayName || account.telegramUsername || "USER FX MEMBER"}</strong>
+                <strong>{getProfileName(account,profile)}</strong>
                 <small>ID · {account.accountId.slice(-10).toUpperCase()}</small>
               </div>
             </div>
+
+            <button className="pvr-account-view" type="button" onClick={handleOpenProfile}>
+              VIEW PROFILE
+            </button>
 
             <form className="pvr-account-form" onSubmit={handleSave}>
               <label>
@@ -317,6 +516,17 @@ export default function PrivateRoomAccount() {
               onClick={() => setOpen(false)}
               aria-label="Close profile"
             ></button>
+          )}
+
+          {profileViewOpen && (
+            <ProfileView
+              account={account}
+              profile={profile}
+              accessLabel={accessLabel}
+              onClose={() => setProfileViewOpen(false)}
+              onEdit={handleEditProfile}
+              onGoOnline={handleGoOnline}
+            />
           )}
         </>
       )}
