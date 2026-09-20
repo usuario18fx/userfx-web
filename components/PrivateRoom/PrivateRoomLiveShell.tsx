@@ -7,6 +7,7 @@ import PrivateRoomWelcomeTour from "./PrivateRoomWelcomeTour";
 import "./PrivateRoomLuxury.css";
 import "./PrivateRoomLatestUpdate.css";
 import "./PrivateRoomLayoutGuard.css";
+import "./PrivateRoomCameraOverlay.css";
 
 export default function PrivateRoomLiveShell() {
   return (
