@@ -7,15 +7,17 @@ type FxAccessBtnProps = {
   disabled?: boolean;
 };
 
-export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
+export function FxAccessBtn({ disabled = false }: FxAccessBtnProps) {
+  const openPrivateRoom = () => {
+    window.location.hash = "#/private-room";
+  };
+
   return (
     <button
       type="button"
       className="smkl-access-button"
-      onClick={onOpen}
+      onClick={openPrivateRoom}
       disabled={disabled}
-      aria-haspopup="dialog"
-      aria-controls="fx-access-modal"
     >
       <span className="smkl-access-button__smoke" />
       <span className="smkl-access-button__rose" aria-hidden="true">
