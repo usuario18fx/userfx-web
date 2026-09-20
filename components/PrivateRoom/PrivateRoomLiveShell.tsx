@@ -5,9 +5,7 @@ import PrivateRoomLiveLobby from "./PrivateRoomLiveLobby";
 import PrivateRoomMyCamDock from "./PrivateRoomMyCamDock";
 import PrivateRoomWelcomeTour from "./PrivateRoomWelcomeTour";
 import "./PrivateRoomLuxury.css";
-import "./PrivateRoomLatestUpdate.css";
-import "./PrivateRoomLayoutGuard.css";
-import "./PrivateRoomCameraOverlay.css";
+import "./PrivateRoomUnified.css";
 
 export default function PrivateRoomLiveShell() {
   return (
