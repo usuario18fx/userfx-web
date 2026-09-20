@@ -1,0 +1,100 @@
+/* ═══════════ USER FX · ROBOT STATUS BUBBLE ═══════════ */
+
+.sl-bubble {
+  position: relative !important;
+  width: min(760px, calc(100vw - 28px)) !important;
+  max-width: none !important;
+  min-height: 88px !important;
+  margin: 10px 0 18px !important;
+  padding: 42px 72px 12px !important;
+  overflow: hidden !important;
+  border: 1.5px solid #00b9aa !important;
+  border-radius: 22px !important;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(24, 224, 208, 0.16) 0,
+      rgba(24, 224, 208, 0.16) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    linear-gradient(180deg, rgba(3, 20, 24, 0.97), rgba(2, 8, 11, 0.98)) !important;
+  color: rgba(176, 218, 219, 0.84) !important;
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  font-size: 0.58rem !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.08em !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 7px rgba(50, 213, 205, 0.28) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 221, 0.05) inset,
+    0 0 18px rgba(0, 200, 182, 0.10),
+    inset 0 0 26px rgba(0, 178, 163, 0.06) !important;
+}
+
+/* USER FX label inside the screen */
+.sl-bubble::before {
+  content: "USER♛FX" !important;
+  position: absolute !important;
+  left: 26px !important;
+  top: 25px !important;
+  color: rgba(226, 232, 235, 0.88) !important;
+  font-family: "Cinzel", Georgia, serif !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.28em !important;
+  text-shadow:
+    0 0 7px rgba(149, 232, 230, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* remove old speech-tail */
+.sl-bubble::after {
+  content: none !important;
+  display: none !important;
+}
+
+.sl-bubble.is-error {
+  border-color: #a62e49 !important;
+  color: #dc7185 !important;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(196, 54, 84, 0.14) 0,
+      rgba(196, 54, 84, 0.14) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    linear-gradient(180deg, rgba(25, 6, 11, 0.98), rgba(9, 3, 6, 0.98)) !important;
+  text-shadow: 0 0 8px rgba(255, 65, 101, 0.28) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 65, 101, 0.04) inset,
+    0 0 18px rgba(255, 65, 101, 0.10),
+    inset 0 0 26px rgba(255, 65, 101, 0.05) !important;
+}
+
+.sl-bubble.is-error::before {
+  color: rgba(232, 200, 208, 0.88) !important;
+}
+
+@media (max-width: 600px) {
+  .sl-bubble {
+    width: min(610px, calc(100vw - 18px)) !important;
+    min-height: 76px !important;
+    margin: 8px 0 16px !important;
+    padding: 37px 44px 10px !important;
+    border-radius: 18px !important;
+    font-size: 0.5rem !important;
+    letter-spacing: 0.055em !important;
+  }
+
+  .sl-bubble::before {
+    left: 20px !important;
+    top: 21px !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.22em !important;
+  }
+}
