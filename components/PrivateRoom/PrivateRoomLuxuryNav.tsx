@@ -5,7 +5,7 @@ import {
   type ReactElement,
 } from "react";
 
-type ClubTab = "salon" | "live" | "members" | "gallery" | "messages" | "profile";
+type ClubTab = "salon" | "live" | "group" | "members" | "gallery" | "messages" | "profile";
 
 function clickButton(selector:string) {
   document.querySelector<HTMLButtonElement>(selector)?.click();
@@ -77,6 +77,11 @@ export default function PrivateRoomLuxuryNav():ReactElement {
     openProfileCamera();
   },[]);
 
+  const goGroup = useCallback(() => {
+    setActive("group");
+    scrollToSelector(".pvr-live-group");
+  },[]);
+
   const goMembers = useCallback(() => {
     setActive("members");
     scrollToSelector(".pvr-live-members");
@@ -113,6 +118,7 @@ export default function PrivateRoomLuxuryNav():ReactElement {
         <nav className="pvr-club-tabs" aria-label="Private club navigation">
           <button type="button" className={active === "salon" ? "is-active" : ""} onClick={goSalon}>SALON</button>
           <button type="button" className={active === "live" ? "is-active" : ""} onClick={goLive}>LIVE CAM</button>
+          <button type="button" className={active === "group" ? "is-active" : ""} onClick={goGroup}>GROUP</button>
           <button type="button" className={active === "members" ? "is-active" : ""} onClick={goMembers}>MEMBERS</button>
           <button type="button" className={active === "gallery" ? "is-active" : ""} onClick={goGallery}>GALLERY</button>
           <button type="button" className={active === "messages" ? "is-active" : ""} onClick={goMessages}>MESSAGES</button>
@@ -133,9 +139,10 @@ export default function PrivateRoomLuxuryNav():ReactElement {
       <nav className="pvr-club-mobile-tabs" aria-label="Private club mobile navigation">
         <button type="button" className={active === "salon" ? "is-active" : ""} onClick={goSalon}>SALON</button>
         <button type="button" className={active === "live" ? "is-active" : ""} onClick={goLive}>LIVE</button>
+        <button type="button" className={active === "group" ? "is-active" : ""} onClick={goGroup}>GROUP</button>
         <button type="button" className={active === "members" ? "is-active" : ""} onClick={goMembers}>MEMBERS</button>
         <button type="button" className={active === "gallery" ? "is-active" : ""} onClick={goGallery}>GALLERY</button>
-        <button type="button" className={active === "profile" ? "is-active" : ""} onClick={goProfile}>PROFILE</button>
+        <button type="button" className={active === "messages" ? "is-active" : ""} onClick={goMessages}>CHAT</button>
       </nav>
     </header>
   );
