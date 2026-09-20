@@ -1,15 +1,18 @@
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
   type ChangeEvent,
   type FormEvent,
 } from "react";
 import PrivateRoom from "./PrivateRoom";
 import "./PrivateRoomAccount.css";
+import "./PrivateRoomCamera.css";
 
 type ProfileVisibility = "private" | "members" | "public";
 type OnlineVisibility = "hidden" | "members" | "public";
+type CameraVisibility = "private" | "public";
 
 type AccountProfile = {
   displayName: string;
@@ -40,9 +43,28 @@ type ProfileViewProps = {
   account: AccountData;
   profile: AccountProfile;
   accessLabel: string;
+  cameraLive: boolean;
+  cameraVisibility: CameraVisibility;
   onClose: () => void;
   onEdit: () => void;
   onGoOnline: () => void;
+};
+
+type CameraStudioProps = {
+  stream: MediaStream | null;
+  visibility: CameraVisibility;
+  live: boolean;
+  requesting: boolean;
+  cameraEnabled: boolean;
+  micEnabled: boolean;
+  error: string;
+  onClose: () => void;
+  onRetry: () => void;
+  onVisibilityChange: (visibility:CameraVisibility) => void;
+  onToggleCamera: () => void;
+  onToggleMic: () => void;
+  onStart: () => void;
+  onStop: () => void;
 };
 
 const DEV_PROFILE_KEY = "userfx_dev_account_profile";
@@ -98,11 +120,14 @@ function ProfileView({
   account,
   profile,
   accessLabel,
+  cameraLive,
+  cameraVisibility,
   onClose,
   onEdit,
   onGoOnline,
 }:ProfileViewProps) {
-  const onlineVisible = profile.onlineVisibility !== "hidden";
+  const statusHidden = profile.onlineVisibility === "hidden";
+  const visibleOnline = cameraLive && !statusHidden;
   const profileName = getProfileName(account,profile);
 
   return (
@@ -130,13 +155,17 @@ function ProfileView({
         <div className="pvr-profile-hero">
           <div className="pvr-profile-avatar">
             {getInitials({...account,profile})}
-            <span className={onlineVisible ? "is-online" : "is-hidden"}></span>
+            <span className={visibleOnline ? "is-online" : "is-hidden"}></span>
           </div>
 
           <div className="pvr-profile-copy">
             <div className="pvr-profile-status-row">
-              <span className={`pvr-profile-status ${onlineVisible ? "is-online" : "is-hidden"}`}>
-                {onlineVisible ? "● ONLINE" : "○ STATUS HIDDEN"}
+              <span className={`pvr-profile-status ${visibleOnline ? "is-online" : "is-hidden"}`}>
+                {statusHidden
+                  ? "○ STATUS HIDDEN"
+                  : cameraLive
+                    ? "● ONLINE"
+                    : "○ OFFLINE"}
               </span>
               <span>{profile.visibility.toUpperCase()}</span>
             </div>
@@ -175,12 +204,16 @@ function ProfileView({
         <div className="pvr-profile-camera">
           <div className="pvr-profile-camera-screen">
             <span>CAMERA</span>
-            <strong>OFFLINE</strong>
-            <small>PRIVATE VIDEO PROFILE</small>
+            <strong>{cameraLive ? "LIVE" : "OFFLINE"}</strong>
+            <small>
+              {cameraLive
+                ? `${cameraVisibility.toUpperCase()} PROFILE CAM`
+                : "PRIVATE VIDEO PROFILE"}
+            </small>
           </div>
 
           <button type="button" onClick={onGoOnline}>
-            GO ONLINE
+            {cameraLive ? "MANAGE CAM" : "GO ONLINE"}
           </button>
         </div>
 
@@ -218,14 +251,191 @@ function ProfileView({
   );
 }
 
+/* ========   CAMERA STUDIO =========================== */
+function CameraStudio({
+  stream,
+  visibility,
+  live,
+  requesting,
+  cameraEnabled,
+  micEnabled,
+  error,
+  onClose,
+  onRetry,
+  onVisibilityChange,
+  onToggleCamera,
+  onToggleMic,
+  onStart,
+  onStop,
+}:CameraStudioProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream;
+
+    if (stream) {
+      void videoRef.current.play().catch(() => {});
+    }
+  },[stream]);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="pvr-camera-backdrop"
+        onClick={onClose}
+        aria-label="Close camera studio"
+      ></button>
+
+      <section className="pvr-camera-studio" aria-label="USER FX camera studio">
+        {/* ─────   CAMERA HEADER ─────── */}
+        <header className="pvr-camera-head">
+          <div>
+            <span>USER FX · CAMERA STUDIO</span>
+            <strong>{live ? "CAM ACTIVE" : requesting ? "CONNECTING..." : "PREVIEW"}</strong>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close camera studio">
+            ✕
+          </button>
+        </header>
+
+        {/* ─────   CAMERA PREVIEW ─────── */}
+        <div className={`pvr-camera-preview ${cameraEnabled ? "" : "is-camera-off"}`}>
+          <video ref={videoRef} autoPlay muted playsInline></video>
+
+          <div className="pvr-camera-badges">
+            <span className={live ? "is-live" : ""}>
+              {live ? "● CAM ACTIVE" : "● PREVIEW"}
+            </span>
+            <span>{visibility.toUpperCase()}</span>
+            <span className={micEnabled ? "" : "is-muted"}>
+              {micEnabled ? "MIC ON" : "MIC OFF"}
+            </span>
+          </div>
+
+          {requesting && (
+            <div className="pvr-camera-placeholder">
+              <strong>CONNECTING CAMERA</strong>
+              <span>ALLOW CAMERA + MICROPHONE ACCESS</span>
+            </div>
+          )}
+
+          {!requesting && error && (
+            <div className="pvr-camera-placeholder is-error">
+              <strong>CAMERA NOT AVAILABLE</strong>
+              <span>{error}</span>
+            </div>
+          )}
+
+          {!requesting && !error && !stream && (
+            <div className="pvr-camera-placeholder">
+              <strong>CAMERA OFFLINE</strong>
+              <span>CONNECT YOUR CAMERA TO CONTINUE</span>
+            </div>
+          )}
+
+          {!requesting && !error && stream && !cameraEnabled && (
+            <div className="pvr-camera-placeholder">
+              <strong>CAMERA PAUSED</strong>
+              <span>TURN CAMERA ON TO RESTORE VIDEO</span>
+            </div>
+          )}
+        </div>
+
+        <div className="pvr-camera-layout">
+          {/* ─────   CAMERA SETTINGS ─────── */}
+          <div className="pvr-camera-settings">
+            <span>WHO CAN SEE YOUR CAM</span>
+
+            <div className="pvr-camera-visibility">
+              <button
+                type="button"
+                className={visibility === "private" ? "is-active" : ""}
+                onClick={() => onVisibilityChange("private")}
+              >
+                PRIVATE
+              </button>
+              <button
+                type="button"
+                className={visibility === "public" ? "is-active" : ""}
+                onClick={() => onVisibilityChange("public")}
+              >
+                PUBLIC
+              </button>
+            </div>
+
+            <div className="pvr-camera-device-controls">
+              <button
+                type="button"
+                className={cameraEnabled ? "" : "is-off"}
+                onClick={onToggleCamera}
+                disabled={!stream}
+              >
+                CAMERA {cameraEnabled ? "ON" : "OFF"}
+              </button>
+              <button
+                type="button"
+                className={micEnabled ? "" : "is-off"}
+                onClick={onToggleMic}
+                disabled={!stream}
+              >
+                MIC {micEnabled ? "ON" : "OFF"}
+              </button>
+            </div>
+          </div>
+
+          {/* ─────   CAMERA ACTION ─────── */}
+          <div className="pvr-camera-actions">
+            <span>PROFILE CAMERA</span>
+
+            {error ? (
+              <button type="button" className="pvr-camera-start" onClick={onRetry}>
+                TRY AGAIN
+              </button>
+            ) : live ? (
+              <button type="button" className="pvr-camera-end" onClick={onStop}>
+                END CAM
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="pvr-camera-start"
+                onClick={onStart}
+                disabled={!stream || !cameraEnabled || requesting}
+              >
+                START CAM
+              </button>
+            )}
+          </div>
+        </div>
+
+        <footer className="pvr-camera-foot">
+          <strong>{visibility.toUpperCase()} MODE</strong>
+          <span>CAMERA + MICROPHONE ARE CONTROLLED FROM THIS SESSION.</span>
+        </footer>
+      </section>
+    </>
+  );
+}
+
 export default function PrivateRoomAccount() {
   const [account,setAccount] = useState<AccountData | null>(null);
   const [profile,setProfile] = useState<AccountProfile>(EMPTY_PROFILE);
   const [open,setOpen] = useState(false);
   const [profileViewOpen,setProfileViewOpen] = useState(false);
+  const [cameraOpen,setCameraOpen] = useState(false);
+  const [cameraStream,setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraVisibility,setCameraVisibility] = useState<CameraVisibility>("private");
+  const [cameraLive,setCameraLive] = useState(false);
+  const [cameraRequesting,setCameraRequesting] = useState(false);
+  const [cameraEnabled,setCameraEnabled] = useState(false);
+  const [micEnabled,setMicEnabled] = useState(false);
+  const [cameraError,setCameraError] = useState("");
   const [loading,setLoading] = useState(true);
   const [saving,setSaving] = useState(false);
   const [message,setMessage] = useState("");
+  const streamRef = useRef<MediaStream | null>(null);
 
   /* ─────   LOCAL DEV ACCOUNT ─────── */
   const loadDevAccount = useCallback(() => {
@@ -268,6 +478,93 @@ export default function PrivateRoomAccount() {
     return () => {cancelled = true;};
   },[loadDevAccount]);
 
+  /* ─────   STOP CAMERA STREAM ─────── */
+  const stopCameraStream = useCallback(() => {
+    const current = streamRef.current;
+
+    if (current) {
+      current.getTracks().forEach((track) => track.stop());
+    }
+
+    streamRef.current = null;
+    setCameraStream(null);
+    setCameraLive(false);
+    setCameraEnabled(false);
+    setMicEnabled(false);
+  },[]);
+
+  /* ─────   REQUEST CAMERA + MICROPHONE ─────── */
+  const requestCamera = useCallback(async () => {
+    setOpen(false);
+    setProfileViewOpen(false);
+    setCameraOpen(true);
+    setCameraError("");
+    setCameraRequesting(true);
+    setCameraLive(false);
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraRequesting(false);
+      setCameraError("CAMERA API IS NOT AVAILABLE IN THIS BROWSER");
+      return;
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      setCameraStream(null);
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video:{
+          facingMode:"user",
+          width:{ideal:1280},
+          height:{ideal:720},
+        },
+        audio:true,
+      });
+
+      streamRef.current = stream;
+      setCameraStream(stream);
+      setCameraEnabled(stream.getVideoTracks().some((track) => track.enabled));
+      setMicEnabled(stream.getAudioTracks().some((track) => track.enabled));
+
+      stream.getTracks().forEach((track) => {
+        track.addEventListener("ended",() => {
+          if (track.kind === "video") {
+            setCameraEnabled(false);
+            setCameraLive(false);
+          }
+          if (track.kind === "audio") {
+            setMicEnabled(false);
+          }
+        },{once:true});
+      });
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : "";
+
+      setCameraError(
+        name === "NotAllowedError"
+          ? "CAMERA OR MICROPHONE PERMISSION WAS DENIED"
+          : name === "NotFoundError"
+            ? "NO CAMERA OR MICROPHONE WAS FOUND"
+            : name === "NotReadableError"
+              ? "CAMERA IS ALREADY IN USE BY ANOTHER APP"
+              : "COULD NOT START CAMERA + MICROPHONE",
+      );
+    } finally {
+      setCameraRequesting(false);
+    }
+  },[]);
+
+  /* ─────   CAMERA CLEANUP ─────── */
+  useEffect(() => {
+    return () => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    };
+  },[]);
+
   /* ─────   PRIVATE ROOM · PROFILE ACTION ─────── */
   useEffect(() => {
     const handleProfileAction = (event:MouseEvent) => {
@@ -281,6 +578,7 @@ export default function PrivateRoomAccount() {
       event.preventDefault();
       event.stopPropagation();
       setOpen(false);
+      setCameraOpen(false);
       setProfileViewOpen(true);
     };
 
@@ -288,19 +586,17 @@ export default function PrivateRoomAccount() {
     return () => document.removeEventListener("click",handleProfileAction,true);
   },[]);
 
-  /* ─────   ESCAPE PROFILE ─────── */
+  /* ─────   LOCK PAGE BEHIND PANELS ─────── */
   useEffect(() => {
-    if (!profileViewOpen && !open) return;
+    if (!open && !profileViewOpen && !cameraOpen) return;
 
-    const handleEscape = (event:KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setProfileViewOpen(false);
-      setOpen(false);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previous;
     };
-
-    window.addEventListener("keydown",handleEscape);
-    return () => window.removeEventListener("keydown",handleEscape);
-  },[open,profileViewOpen]);
+  },[cameraOpen,open,profileViewOpen]);
 
   /* ─────   PROFILE INPUT ─────── */
   const handleTextChange = useCallback((event:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -364,25 +660,76 @@ export default function PrivateRoomAccount() {
 
   const handleOpenProfile = useCallback(() => {
     setOpen(false);
+    setCameraOpen(false);
     setMessage("");
     setProfileViewOpen(true);
   },[]);
 
   const handleEditProfile = useCallback(() => {
     setProfileViewOpen(false);
+    setCameraOpen(false);
     setMessage("");
     setOpen(true);
   },[]);
 
   const handleGoOnline = useCallback(() => {
-    setProfileViewOpen(false);
-    window.setTimeout(() => {
-      document.getElementById("videocall-stage")?.scrollIntoView({
-        behavior:"smooth",
-        block:"start",
-      });
-    },60);
+    void requestCamera();
+  },[requestCamera]);
+
+  const handleCloseCamera = useCallback(() => {
+    stopCameraStream();
+    setCameraError("");
+    setCameraRequesting(false);
+    setCameraOpen(false);
+    setProfileViewOpen(true);
+  },[stopCameraStream]);
+
+  const handleToggleCamera = useCallback(() => {
+    const stream = streamRef.current;
+    if (!stream) return;
+
+    const next = !cameraEnabled;
+    stream.getVideoTracks().forEach((track) => {track.enabled = next;});
+    setCameraEnabled(next);
+  },[cameraEnabled]);
+
+  const handleToggleMic = useCallback(() => {
+    const stream = streamRef.current;
+    if (!stream) return;
+
+    const next = !micEnabled;
+    stream.getAudioTracks().forEach((track) => {track.enabled = next;});
+    setMicEnabled(next);
+  },[micEnabled]);
+
+  const handleStartCam = useCallback(() => {
+    if (!cameraStream || !cameraEnabled) return;
+    setCameraLive(true);
+  },[cameraEnabled,cameraStream]);
+
+  const handleStopCam = useCallback(() => {
+    setCameraLive(false);
   },[]);
+
+  /* ─────   ESCAPE PANELS ─────── */
+  useEffect(() => {
+    if (!profileViewOpen && !open && !cameraOpen) return;
+
+    const handleEscape = (event:KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+
+      if (cameraOpen) {
+        handleCloseCamera();
+        return;
+      }
+
+      setProfileViewOpen(false);
+      setOpen(false);
+    };
+
+    window.addEventListener("keydown",handleEscape);
+    return () => window.removeEventListener("keydown",handleEscape);
+  },[cameraOpen,handleCloseCamera,open,profileViewOpen]);
 
   const accessLabel = account ? getAccessLabel(account) : "";
 
@@ -396,7 +743,11 @@ export default function PrivateRoomAccount() {
           <button
             type="button"
             className={`pvr-account-launcher ${open ? "is-open" : ""}`}
-            onClick={() => {setOpen((current) => !current);setMessage("");setProfileViewOpen(false);}}
+            onClick={() => {
+              setOpen((current) => !current);
+              setMessage("");
+              setProfileViewOpen(false);
+            }}
             aria-expanded={open}
             aria-controls="pvr-account-panel"
           >
@@ -407,7 +758,7 @@ export default function PrivateRoomAccount() {
               <small>{accessLabel}</small>
               <strong>PROFILE</strong>
             </span>
-            <span className="pvr-account-online" aria-hidden="true"></span>
+            <span className={`pvr-account-online ${cameraLive ? "" : "is-offline"}`} aria-hidden="true"></span>
           </button>
 
           {/* ========   ACCOUNT PROFILE =========================== */}
@@ -523,9 +874,30 @@ export default function PrivateRoomAccount() {
               account={account}
               profile={profile}
               accessLabel={accessLabel}
+              cameraLive={cameraLive}
+              cameraVisibility={cameraVisibility}
               onClose={() => setProfileViewOpen(false)}
               onEdit={handleEditProfile}
               onGoOnline={handleGoOnline}
+            />
+          )}
+
+          {cameraOpen && (
+            <CameraStudio
+              stream={cameraStream}
+              visibility={cameraVisibility}
+              live={cameraLive}
+              requesting={cameraRequesting}
+              cameraEnabled={cameraEnabled}
+              micEnabled={micEnabled}
+              error={cameraError}
+              onClose={handleCloseCamera}
+              onRetry={requestCamera}
+              onVisibilityChange={setCameraVisibility}
+              onToggleCamera={handleToggleCamera}
+              onToggleMic={handleToggleMic}
+              onStart={handleStartCam}
+              onStop={handleStopCam}
             />
           )}
         </>
