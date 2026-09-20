@@ -226,6 +226,7 @@
 }
 
 .pvr-direct-shortcut {
+  width:100%;
   min-height:58px;
   display:grid;
   grid-template-columns:44px 1fr;
@@ -238,12 +239,16 @@
     radial-gradient(circle at 14% 50%,rgba(64,164,214,.10),transparent 36%),
     linear-gradient(180deg,#12100e,#0c0a08);
   color:#f3ece0;
+  font:inherit;
+  text-align:left;
   text-decoration:none;
+  cursor:pointer;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
   transition:transform .16s ease,border-color .16s ease,background .16s ease;
 }
 
-.pvr-direct-shortcut:hover {
+.pvr-direct-shortcut:hover,
+.pvr-direct-shortcut.is-active {
   transform:translateY(-1px);
   border-color:rgba(196,165,116,.48);
 }
@@ -283,12 +288,178 @@
     linear-gradient(180deg,#17130f,#0d0a08);
 }
 
+.pvr-direct-shortcut--special:not(.is-ready) {
+  opacity:.52;
+}
+
+.pvr-direct-shortcut--special.is-ready {
+  border-color:rgba(196,165,116,.44);
+  box-shadow:0 0 20px rgba(196,165,116,.06),inset 0 1px 0 rgba(255,255,255,.03);
+}
+
 .pvr-direct-shortcut--special img {
   filter:saturate(.55) brightness(.86);
 }
 
 .pvr-direct-shortcut--special strong {
   color:#c4a574;
+}
+
+/* ═══════════ TELEGRAM IDENTITY PANEL ═══════════ */
+.pvr-direct-telegram-panel {
+  width:min(500px,100%);
+  margin:10px auto 0;
+  padding:13px;
+  border:1px solid rgba(78,171,208,.20);
+  border-radius:3px;
+  background:
+    radial-gradient(circle at 10% 20%,rgba(46,159,203,.07),transparent 34%),
+    linear-gradient(180deg,#100f0d,#0b0908);
+}
+
+.pvr-direct-telegram-panel > header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:9px;
+}
+
+.pvr-direct-telegram-panel > header span {
+  color:#5f9db7;
+  font-size:5px;
+  font-weight:700;
+  letter-spacing:.17em;
+}
+
+.pvr-direct-telegram-panel > header strong {
+  color:#a59b8e;
+  font-size:6px;
+  letter-spacing:.13em;
+}
+
+.pvr-direct-username {
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) 106px;
+  align-items:center;
+  min-height:46px;
+  border:1px solid rgba(196,165,116,.18);
+  background:#0b0908;
+}
+
+.pvr-direct-username > span {
+  display:grid;
+  place-items:center;
+  height:100%;
+  border-right:1px solid rgba(196,165,116,.12);
+  color:#c4a574;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:13px;
+  font-weight:800;
+}
+
+.pvr-direct-username input {
+  width:100%;
+  min-width:0;
+  height:44px;
+  padding:0 10px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#ede5d8;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:11px;
+}
+
+.pvr-direct-username input::placeholder {
+  color:#625c53;
+}
+
+.pvr-direct-username button,
+.pvr-direct-special-form > button {
+  height:34px;
+  margin-right:6px;
+  border:1px solid rgba(196,165,116,.24);
+  background:#17130f;
+  color:#c4a574;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+
+.pvr-direct-username.is-verified {
+  border-color:rgba(74,207,148,.38);
+  box-shadow:inset 0 0 16px rgba(74,207,148,.035);
+}
+
+.pvr-direct-username.is-verified button {
+  border-color:rgba(74,207,148,.30);
+  color:#75dba8;
+}
+
+.pvr-direct-special-form {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 152px;
+  gap:8px;
+  margin-top:9px;
+}
+
+.pvr-direct-special-input {
+  display:grid;
+  grid-template-columns:52px 18px minmax(0,1fr);
+  align-items:center;
+  min-height:42px;
+  border:1px solid rgba(196,165,116,.24);
+  background:#0b0908;
+}
+
+.pvr-direct-special-input > span,
+.pvr-direct-special-input > i {
+  color:#c4a574;
+  font-size:7px;
+  font-style:normal;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-align:center;
+}
+
+.pvr-direct-special-input input {
+  width:100%;
+  min-width:0;
+  height:40px;
+  padding:0 8px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#f3ece0;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.pvr-direct-special-form > button {
+  height:42px;
+  margin:0;
+}
+
+.pvr-direct-special-form button:disabled,
+.pvr-direct-username button:disabled,
+.pvr-direct-username input:disabled,
+.pvr-direct-special-input input:disabled {
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.pvr-direct-telegram-error {
+  margin:9px 0 0;
+  color:#d4a0a8;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.10em;
+  text-align:center;
 }
 
 .pvr-direct-foot {
@@ -376,5 +547,25 @@
 
   .pvr-direct-shortcut strong {
     font-size:6.5px;
+  }
+
+  .pvr-direct-telegram-panel {
+    padding:10px;
+  }
+
+  .pvr-direct-username {
+    grid-template-columns:25px minmax(0,1fr) 88px;
+  }
+
+  .pvr-direct-username button {
+    font-size:5px;
+  }
+
+  .pvr-direct-special-form {
+    grid-template-columns:1fr;
+  }
+
+  .pvr-direct-special-form > button {
+    width:100%;
   }
 }
