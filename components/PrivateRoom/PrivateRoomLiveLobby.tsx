@@ -6,7 +6,6 @@ import {
 } from "react";
 import {createPortal} from "react-dom";
 import "./PrivateRoomLiveLobby.css";
-import "./PrivateRoomGroupUpdate.css";
 
 type LobbySection = "live" | "group" | "scheduled" | "members";
 
