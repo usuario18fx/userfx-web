@@ -210,7 +210,9 @@ export default function PrivateRoomMyCamDock():ReactElement | null {
 
   /* ========   DRAGGABLE MY CAM =========================== */
   const handleDragStart = useCallback((event:ReactPointerEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement | null)?.closest("button")) return;
+    const target = event.target as HTMLElement | null;
+    const nestedButton = target?.closest("button");
+    if (nestedButton && nestedButton !== event.currentTarget) return;
 
     const node = dockRef.current;
     if (!node) return;
