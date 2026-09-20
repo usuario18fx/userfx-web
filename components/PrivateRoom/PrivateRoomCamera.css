@@ -1,0 +1,302 @@
+/* ═══════════ USER FX · CAMERA STUDIO ═══════════ */
+
+.pvr-camera-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 12200;
+  border: 0;
+  background: rgba(1,3,4,.86);
+  backdrop-filter: blur(10px);
+}
+
+.pvr-camera-studio {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 12220;
+  width: min(900px,calc(100vw - 30px));
+  max-height: calc(100dvh - 30px);
+  padding: 16px;
+  overflow-y: auto;
+  transform: translate(-50%,-50%);
+  border: 1px solid rgba(77,255,171,.22);
+  border-radius: 22px;
+  background:
+    radial-gradient(90% 48% at 86% 0%,rgba(21,102,82,.16),transparent 70%),
+    radial-gradient(65% 48% at 0% 100%,rgba(97,24,46,.12),transparent 74%),
+    linear-gradient(180deg,#080c0e 0%,#060709 100%);
+  color: #e8e5e6;
+  box-shadow:
+    0 34px 100px rgba(0,0,0,.78),
+    inset 0 0 0 1px rgba(255,255,255,.015);
+}
+
+.pvr-camera-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 2px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+}
+
+.pvr-camera-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pvr-camera-head span {
+  color: #74787d;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+
+.pvr-camera-head strong {
+  color: #4dffab;
+  font-family: "Cinzel",serif;
+  font-size: 9px;
+  letter-spacing: .18em;
+}
+
+.pvr-camera-head > button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 50%;
+  background: #0d0e10;
+  color: #8b8e91;
+  cursor: pointer;
+}
+
+.pvr-camera-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(48,129,137,.25);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(27,112,101,.12),transparent 30%),
+    linear-gradient(180deg,#061015,#03070a);
+  box-shadow: inset 0 0 34px rgba(0,0,0,.42);
+}
+
+.pvr-camera-preview video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #030608;
+}
+
+.pvr-camera-preview.is-camera-off video {
+  opacity: .12;
+}
+
+.pvr-camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.pvr-camera-placeholder strong {
+  color: #bfc6c7;
+  font-family: "Cinzel",serif;
+  font-size: 15px;
+  letter-spacing: .12em;
+}
+
+.pvr-camera-placeholder span {
+  color: #5f686b;
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+
+.pvr-camera-placeholder.is-error strong {
+  color: #ff7189;
+}
+
+.pvr-camera-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.pvr-camera-badges span {
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  background: rgba(3,7,9,.76);
+  color: #aeb4b6;
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  backdrop-filter: blur(8px);
+}
+
+.pvr-camera-badges .is-live {
+  border-color: rgba(77,255,171,.30);
+  color: #4dffab;
+  box-shadow: 0 0 16px rgba(77,255,171,.08);
+}
+
+.pvr-camera-badges .is-muted {
+  color: #ff8194;
+}
+
+.pvr-camera-layout {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 250px;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pvr-camera-settings,
+.pvr-camera-actions {
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 14px;
+  background: rgba(255,255,255,.014);
+}
+
+.pvr-camera-settings > span,
+.pvr-camera-actions > span {
+  display: block;
+  margin-bottom: 10px;
+  color: #686e72;
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.pvr-camera-visibility {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+}
+
+.pvr-camera-visibility button,
+.pvr-camera-device-controls button {
+  min-height: 40px;
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 10px;
+  background: #0a0d0f;
+  color: #777d81;
+  font-family: "Cinzel",serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.pvr-camera-visibility button.is-active {
+  border-color: rgba(77,255,171,.28);
+  background: rgba(77,255,171,.045);
+  color: #53efb4;
+}
+
+.pvr-camera-device-controls {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pvr-camera-device-controls button.is-off {
+  border-color: rgba(185,65,91,.22);
+  color: #bd6d7e;
+}
+
+.pvr-camera-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.pvr-camera-start,
+.pvr-camera-end {
+  flex: 1;
+  min-height: 76px;
+  border-radius: 12px;
+  font-family: "Cinzel",serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  cursor: pointer;
+}
+
+.pvr-camera-start {
+  border: 1px solid rgba(77,255,171,.34);
+  background:
+    radial-gradient(120% 170% at 50% 0%,rgba(58,164,119,.26),transparent 60%),
+    linear-gradient(180deg,#123427,#081a14);
+  color: #5cffba;
+}
+
+.pvr-camera-start:disabled {
+  opacity: .38;
+  cursor: not-allowed;
+}
+
+.pvr-camera-end {
+  border: 1px solid rgba(212,76,100,.30);
+  background: linear-gradient(180deg,#301117,#17090d);
+  color: #ff8095;
+}
+
+.pvr-camera-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 3px 1px;
+  color: #53595d;
+  font-size: 6px;
+  letter-spacing: .11em;
+}
+
+.pvr-camera-foot strong {
+  color: #737a7e;
+  font-weight: 700;
+}
+
+/* ─────   MOBILE ─────── */
+@media (max-width:700px) {
+  .pvr-camera-studio {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 12px;
+    border-radius: 17px;
+  }
+
+  .pvr-camera-preview {
+    aspect-ratio: 4 / 5;
+  }
+
+  .pvr-camera-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pvr-camera-start,
+  .pvr-camera-end {
+    min-height: 48px;
+  }
+
+  .pvr-camera-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
