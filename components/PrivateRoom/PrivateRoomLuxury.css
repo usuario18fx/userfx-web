@@ -1,0 +1,1039 @@
+/* ═══════════ USER FX · PRIVATE CLUB LUXURY THEME ═══════════ */
+
+:root {
+  --pvr-ink:#0a0908;
+  --pvr-ink-soft:#12100e;
+  --pvr-panel:#161310;
+  --pvr-elevated:#1c1814;
+  --pvr-ivory:#f3ece0;
+  --pvr-ivory-muted:#cfc5b4;
+  --pvr-ivory-dim:#9a9082;
+  --pvr-champagne:#c4a574;
+  --pvr-champagne-soft:#d4bc94;
+  --pvr-champagne-deep:#8f7348;
+  --pvr-burgundy:#7a2e3a;
+  --pvr-burgundy-soft:#a34d5c;
+  --pvr-line:rgba(196,165,116,.18);
+  --pvr-line-soft:rgba(243,236,224,.08);
+  --pvr-display:"Cinzel",Georgia,"Times New Roman",serif;
+  --pvr-body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+html,
+body {
+  background:var(--pvr-ink);
+}
+
+/* ═══════════ CLUB NAV ═══════════ */
+.pvr-club-nav {
+  position:sticky;
+  top:0;
+  z-index:13000;
+  width:100%;
+  border-bottom:1px solid rgba(196,165,116,.12);
+  background:rgba(10,9,8,.94);
+  color:var(--pvr-ivory);
+  backdrop-filter:blur(18px);
+  box-shadow:0 12px 30px rgba(0,0,0,.16);
+}
+
+.pvr-club-nav-inner {
+  width:min(1440px,100%);
+  min-height:72px;
+  margin:0 auto;
+  padding:0 20px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:24px;
+}
+
+.pvr-club-brand {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  border:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+  text-align:left;
+}
+
+.pvr-club-brand-mark {
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.62);
+  background:
+    linear-gradient(180deg,rgba(212,188,148,.09),rgba(143,115,72,.04)),
+    #0e0c0a;
+  color:var(--pvr-champagne-soft);
+  font-family:var(--pvr-display);
+  font-size:14px;
+  letter-spacing:.10em;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.015);
+}
+
+.pvr-club-brand-copy {
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.pvr-club-brand-copy strong {
+  color:var(--pvr-ivory);
+  font-family:var(--pvr-display);
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:.10em;
+}
+
+.pvr-club-brand-copy strong i {
+  color:var(--pvr-champagne);
+  font-style:normal;
+}
+
+.pvr-club-brand-copy small {
+  color:var(--pvr-ivory-dim);
+  font-size:8px;
+  font-weight:600;
+  letter-spacing:.24em;
+}
+
+.pvr-club-tabs {
+  justify-self:center;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:4px;
+  border:1px solid rgba(196,165,116,.11);
+  background:rgba(14,12,10,.78);
+}
+
+.pvr-club-tabs button,
+.pvr-club-mobile-tabs button {
+  min-height:34px;
+  padding:0 14px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--pvr-ivory-dim);
+  font:600 9px var(--pvr-body);
+  letter-spacing:.16em;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.pvr-club-tabs button:hover,
+.pvr-club-tabs button.is-active,
+.pvr-club-mobile-tabs button.is-active {
+  border-color:rgba(196,165,116,.30);
+  background:var(--pvr-elevated);
+  color:var(--pvr-champagne-soft);
+}
+
+.pvr-club-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.pvr-club-code,
+.pvr-club-profile,
+.pvr-club-membership {
+  min-height:38px;
+  border-radius:2px;
+  cursor:pointer;
+}
+
+.pvr-club-code {
+  min-width:130px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  padding:5px 10px;
+  border:1px solid rgba(196,165,116,.22);
+  background:var(--pvr-elevated);
+}
+
+.pvr-club-code span {
+  color:#756d62;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.18em;
+}
+
+.pvr-club-code strong {
+  margin-top:3px;
+  color:var(--pvr-champagne-soft);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:8px;
+  letter-spacing:.08em;
+}
+
+.pvr-club-profile {
+  padding:0 12px;
+  border:1px solid rgba(196,165,116,.18);
+  background:#11100e;
+  color:var(--pvr-ivory-muted);
+  font:600 8px var(--pvr-body);
+  letter-spacing:.16em;
+}
+
+.pvr-club-membership {
+  padding:0 16px;
+  border:1px solid var(--pvr-champagne);
+  background:linear-gradient(180deg,#d4bc94,#b8955f);
+  color:#1a150f;
+  font:700 8px var(--pvr-body);
+  letter-spacing:.15em;
+}
+
+.pvr-club-mobile-tabs {
+  display:none;
+}
+
+/* ═══════════ PRIVATE ROOM BASE ═══════════ */
+.pvr-page {
+  min-height:100vh !important;
+  padding:0 20px 72px !important;
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(196,165,116,.07),transparent 42%),
+    radial-gradient(ellipse at 88% 8%,rgba(122,46,58,.08),transparent 36%),
+    linear-gradient(180deg,#0c0b0a 0%,#0a0908 100%) !important;
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-body) !important;
+}
+
+.pvr-topbar {
+  display:none !important;
+}
+
+#videocall-stage.pvr-call-stage {
+  width:min(1440px,100%) !important;
+  margin:34px auto 32px !important;
+}
+
+/* ═══════════ LIVE SALON ═══════════ */
+.pvr-live-home {
+  width:100% !important;
+  padding:28px !important;
+  border:1px solid var(--pvr-line) !important;
+  border-radius:4px !important;
+  background:
+    radial-gradient(90% 52% at 86% 0%,rgba(196,165,116,.065),transparent 68%),
+    radial-gradient(62% 50% at 0% 100%,rgba(122,46,58,.075),transparent 72%),
+    linear-gradient(180deg,#15120f 0%,#0d0b09 100%) !important;
+  box-shadow:0 28px 70px rgba(0,0,0,.42),inset 0 1px 0 rgba(243,236,224,.025) !important;
+}
+
+.pvr-live-home-head {
+  padding-bottom:20px !important;
+  border-bottom:1px solid var(--pvr-line-soft) !important;
+}
+
+.pvr-live-home-head > div:first-child > span {
+  color:var(--pvr-champagne) !important;
+  font-size:8px !important;
+  font-weight:600 !important;
+  letter-spacing:.24em !important;
+}
+
+.pvr-live-home-head h1 {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:clamp(38px,5.4vw,72px) !important;
+  font-weight:500 !important;
+  letter-spacing:.02em !important;
+}
+
+.pvr-live-network-status {
+  border:1px solid rgba(196,165,116,.22) !important;
+  border-radius:2px !important;
+  background:rgba(196,165,116,.04) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-live-network-status > span {
+  background:var(--pvr-champagne) !important;
+  box-shadow:0 0 10px rgba(196,165,116,.42) !important;
+}
+
+.pvr-live-grid {
+  grid-template-columns:minmax(0,1fr) 300px !important;
+  gap:18px !important;
+  margin-top:20px !important;
+}
+
+.pvr-live-feature,
+.pvr-live-self,
+.pvr-live-members,
+.pvr-live-upcoming {
+  border:1px solid var(--pvr-line-soft) !important;
+  border-radius:3px !important;
+  background:rgba(255,255,255,.012) !important;
+}
+
+.pvr-live-feature,
+.pvr-live-members,
+.pvr-live-upcoming {
+  padding:16px !important;
+}
+
+.pvr-live-section-head span,
+.pvr-live-self-head span {
+  color:var(--pvr-ivory-dim) !important;
+  font-size:7px !important;
+  letter-spacing:.20em !important;
+}
+
+.pvr-live-section-head strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:13px !important;
+  font-weight:500 !important;
+  letter-spacing:.12em !important;
+}
+
+.pvr-live-section-head small,
+.pvr-live-self-head small {
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-live-feature-screen {
+  min-height:360px !important;
+  margin-top:14px !important;
+  border:1px solid rgba(196,165,116,.13) !important;
+  border-radius:2px !important;
+  background:
+    radial-gradient(ellipse at 50% 42%,rgba(196,165,116,.075),transparent 42%),
+    linear-gradient(180deg,#12100e,#080706) !important;
+}
+
+.pvr-live-signal-ring {
+  width:96px !important;
+  height:96px !important;
+  border-color:rgba(196,165,116,.32) !important;
+  box-shadow:0 0 0 8px rgba(196,165,116,.035) !important;
+}
+
+.pvr-live-signal-ring::before,
+.pvr-live-signal-ring::after {
+  border-color:rgba(196,165,116,.10) !important;
+}
+
+.pvr-live-signal-ring > span {
+  background:radial-gradient(circle at 40% 35%,#d4bc94 0%,#8f7348 48%,#1a150f 74%) !important;
+  box-shadow:0 4px 16px rgba(0,0,0,.42) !important;
+  animation:none !important;
+}
+
+.pvr-live-feature-screen > strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:18px !important;
+  font-weight:500 !important;
+}
+
+.pvr-live-feature-screen > p {
+  color:var(--pvr-ivory-dim) !important;
+  font-size:11px !important;
+}
+
+.pvr-live-signal-meta span {
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  color:#776f64 !important;
+}
+
+.pvr-live-self {
+  background:
+    radial-gradient(circle at 50% 22%,rgba(196,165,116,.07),transparent 36%),
+    linear-gradient(180deg,#15120f,#100e0c) !important;
+}
+
+.pvr-live-self.is-live {
+  border-color:rgba(196,165,116,.35) !important;
+  box-shadow:inset 0 0 30px rgba(196,165,116,.025) !important;
+}
+
+.pvr-live-self-avatar {
+  width:102px !important;
+  height:102px !important;
+  border-color:rgba(196,165,116,.38) !important;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(212,188,148,.18),transparent 42%),
+    #100e0c !important;
+  color:var(--pvr-champagne-soft) !important;
+  font-family:var(--pvr-display) !important;
+  box-shadow:inset 0 0 24px rgba(196,165,116,.04) !important;
+}
+
+.pvr-live-self-avatar > span {
+  border-color:#100e0c !important;
+  background:#625b51 !important;
+}
+
+.pvr-live-self-avatar > span.is-live {
+  background:#8aa078 !important;
+  box-shadow:0 0 10px rgba(138,160,120,.45) !important;
+}
+
+.pvr-live-self > strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+}
+
+.pvr-live-self > p {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-live-go-online,
+.pvr-live-profile-link {
+  border-radius:2px !important;
+  font-family:var(--pvr-body) !important;
+  font-weight:700 !important;
+}
+
+.pvr-live-go-online {
+  border-color:var(--pvr-champagne) !important;
+  background:linear-gradient(180deg,#d4bc94,#b8955f) !important;
+  color:#1a150f !important;
+}
+
+.pvr-live-profile-link {
+  border-color:var(--pvr-line) !important;
+  background:#100e0c !important;
+  color:var(--pvr-ivory-muted) !important;
+}
+
+.pvr-live-member-empty {
+  min-height:118px !important;
+  border:1px solid var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  background:#0e0c0a !important;
+}
+
+.pvr-live-member-dot {
+  border-radius:50% !important;
+  background:#6c645b !important;
+}
+
+.pvr-live-member-empty strong {
+  color:var(--pvr-ivory-muted) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:10px !important;
+  font-weight:500 !important;
+}
+
+.pvr-live-member-empty small {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-live-event {
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  background:
+    linear-gradient(90deg,rgba(122,46,58,.10),transparent 42%),
+    #0e0c0a !important;
+}
+
+.pvr-live-event-date {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-live-event-date span,
+.pvr-live-event-date small,
+.pvr-live-event-copy span,
+.pvr-live-event-copy small {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-live-event-date strong,
+.pvr-live-event-copy strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-weight:500 !important;
+}
+
+.pvr-live-event > button {
+  border-color:var(--pvr-line) !important;
+  border-radius:2px !important;
+  background:#15120f !important;
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-live-nav {
+  gap:5px !important;
+  padding-top:4px;
+}
+
+.pvr-live-nav button {
+  min-height:38px !important;
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  background:#0e0c0a !important;
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-live-nav button.is-active {
+  border-color:rgba(196,165,116,.34) !important;
+  background:var(--pvr-elevated) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+/* ═══════════ PRIVATE GALLERY ═══════════ */
+.pvr-gallery-section {
+  width:min(1440px,100%) !important;
+  margin:42px auto 0 !important;
+  padding-top:30px !important;
+  border-top:1px solid var(--pvr-line-soft) !important;
+}
+
+.pvr-section-head span {
+  color:var(--pvr-ivory-dim) !important;
+  font-size:10px !important;
+  letter-spacing:.23em !important;
+}
+
+.pvr-section-head h2 {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-size:30px !important;
+  font-weight:500 !important;
+  letter-spacing:.10em !important;
+}
+
+.pvr-workspace {
+  grid-template-columns:minmax(0,1fr) 330px !important;
+  gap:24px !important;
+}
+
+.pvr-carousel {
+  gap:16px !important;
+  padding:6px 6px 22px !important;
+}
+
+.pvr-photo-card {
+  border:1px solid rgba(196,165,116,.14) !important;
+  border-radius:3px !important;
+  background:#100e0c !important;
+}
+
+.pvr-photo-card.is-selected {
+  border-color:rgba(196,165,116,.55) !important;
+  box-shadow:0 18px 36px rgba(0,0,0,.45),0 0 0 1px rgba(196,165,116,.18) !important;
+}
+
+.pvr-photo-card img {
+  filter:saturate(.86) contrast(1.03) brightness(.96) !important;
+}
+
+.pvr-photo-card > span {
+  border-top:1px solid var(--pvr-line-soft) !important;
+  background:#0e0c0a !important;
+  color:var(--pvr-ivory-muted) !important;
+}
+
+.pvr-side-menu {
+  border:1px solid var(--pvr-line) !important;
+  border-radius:4px !important;
+  background:linear-gradient(180deg,#161310,#100e0c) !important;
+  box-shadow:0 18px 40px rgba(0,0,0,.4) !important;
+}
+
+.pvr-selected-preview {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-preview-frame {
+  border-color:var(--pvr-line) !important;
+  border-radius:3px !important;
+}
+
+.pvr-selected-preview span {
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-selected-preview strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+}
+
+.pvr-side-actions button {
+  border:1px solid var(--pvr-line-soft) !important;
+  border-radius:3px !important;
+  background:#0e0c0a !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-side-actions button:hover:not(:disabled) {
+  border-color:rgba(196,165,116,.36) !important;
+  background:#14110e !important;
+}
+
+.pvr-side-actions button strong {
+  font-family:var(--pvr-display) !important;
+  font-weight:500 !important;
+}
+
+.pvr-side-actions button span {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-permission {
+  border-color:rgba(196,165,116,.28) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#1f1a14,#12100e) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-permission--revoke {
+  border-color:rgba(163,77,92,.42) !important;
+  background:linear-gradient(180deg,#2a1518,#120c0d) !important;
+  color:#d4a0a8 !important;
+}
+
+.buttonupgrade {
+  border:1px solid rgba(196,165,116,.45) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#2a231a,#1a150f) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.button-message {
+  border-radius:2px !important;
+  border-color:rgba(196,165,116,.20) !important;
+  background:#ebe4d6 !important;
+}
+
+/* ═══════════ PROFILE + ACCOUNT ═══════════ */
+.pvr-account-launcher {
+  display:none !important;
+}
+
+.pvr-account-backdrop,
+.pvr-profile-view-backdrop,
+.pvr-camera-backdrop {
+  background:rgba(7,6,5,.80) !important;
+  backdrop-filter:blur(9px) !important;
+}
+
+.pvr-account-panel {
+  border-left:1px solid rgba(196,165,116,.25) !important;
+  background:
+    radial-gradient(80% 32% at 50% 0%,rgba(196,165,116,.08),transparent 72%),
+    linear-gradient(180deg,#12100e,#0a0908) !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-account-head {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-account-head span,
+.pvr-account-form label > span {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-account-head strong,
+.pvr-account-identity strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-weight:500 !important;
+}
+
+.pvr-account-head button {
+  border-color:var(--pvr-line) !important;
+  border-radius:2px !important;
+  background:#15120f !important;
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-account-avatar,
+.pvr-profile-avatar {
+  border-color:rgba(196,165,116,.38) !important;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(212,188,148,.18),transparent 42%),
+    #100e0c !important;
+  color:var(--pvr-champagne-soft) !important;
+  box-shadow:inset 0 0 24px rgba(196,165,116,.04) !important;
+}
+
+.pvr-account-identity {
+  border-color:var(--pvr-line) !important;
+  border-radius:3px !important;
+  background:rgba(196,165,116,.025) !important;
+}
+
+.pvr-account-access {
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-account-view,
+.pvr-account-save {
+  border-color:rgba(196,165,116,.34) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#2a231a,#1a150f) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-account-form input,
+.pvr-account-form textarea,
+.pvr-account-form select {
+  border-color:rgba(196,165,116,.20) !important;
+  border-radius:2px !important;
+  background:#0e0c0a !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-profile-view {
+  border:1px solid rgba(196,165,116,.24) !important;
+  border-radius:4px !important;
+  background:
+    radial-gradient(85% 42% at 80% 0%,rgba(196,165,116,.07),transparent 70%),
+    radial-gradient(70% 44% at 0% 100%,rgba(122,46,58,.08),transparent 74%),
+    linear-gradient(180deg,#12100e,#090807) !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-profile-view-head,
+.pvr-profile-meta > div,
+.pvr-profile-media {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-profile-view-head span,
+.pvr-profile-username,
+.pvr-profile-bio,
+.pvr-profile-meta span,
+.pvr-profile-media-head span,
+.pvr-profile-media-head small,
+.pvr-profile-actions > span {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-profile-view-head strong,
+.pvr-profile-copy h1,
+.pvr-profile-meta strong,
+.pvr-profile-media-head strong {
+  color:var(--pvr-ivory) !important;
+  font-family:var(--pvr-display) !important;
+  font-weight:500 !important;
+}
+
+.pvr-profile-status-row .pvr-profile-status.is-online {
+  border-color:rgba(196,165,116,.22) !important;
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-profile-camera-screen {
+  border-color:rgba(196,165,116,.18) !important;
+  border-radius:3px !important;
+  background:
+    radial-gradient(circle at 82% 50%,rgba(196,165,116,.07),transparent 34%),
+    linear-gradient(180deg,#15120f,#0a0908) !important;
+}
+
+.pvr-profile-camera-screen span {
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-profile-camera > button {
+  border-color:var(--pvr-champagne) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#d4bc94,#b8955f) !important;
+  color:#1a150f !important;
+}
+
+.pvr-profile-media-tabs button {
+  border-radius:2px !important;
+}
+
+.pvr-profile-media-tabs button.is-active {
+  border-color:rgba(196,165,116,.28) !important;
+  background:rgba(196,165,116,.05) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-profile-edit {
+  border-color:var(--pvr-line) !important;
+  border-radius:2px !important;
+  background:#15120f !important;
+  color:var(--pvr-ivory-muted) !important;
+}
+
+/* ═══════════ CAMERA STUDIO ═══════════ */
+.pvr-camera-studio {
+  border:1px solid rgba(196,165,116,.24) !important;
+  border-radius:4px !important;
+  background:
+    radial-gradient(90% 48% at 86% 0%,rgba(196,165,116,.07),transparent 70%),
+    radial-gradient(65% 48% at 0% 100%,rgba(122,46,58,.08),transparent 74%),
+    linear-gradient(180deg,#12100e,#080706) !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-camera-head {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-camera-head span,
+.pvr-camera-settings > span,
+.pvr-camera-actions > span,
+.pvr-camera-foot {
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-camera-head strong,
+.pvr-camera-foot strong {
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-camera-head > button {
+  border-color:var(--pvr-line) !important;
+  border-radius:2px !important;
+  background:#15120f !important;
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-camera-preview {
+  border-color:rgba(196,165,116,.18) !important;
+  border-radius:3px !important;
+  background:linear-gradient(180deg,#12100e,#080706) !important;
+}
+
+.pvr-camera-badges span {
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  background:rgba(10,9,8,.78) !important;
+  color:var(--pvr-ivory-muted) !important;
+}
+
+.pvr-camera-badges .is-live {
+  border-color:rgba(196,165,116,.34) !important;
+  color:var(--pvr-champagne-soft) !important;
+  box-shadow:none !important;
+}
+
+.pvr-camera-settings,
+.pvr-camera-actions {
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:3px !important;
+  background:rgba(255,255,255,.012) !important;
+}
+
+.pvr-camera-visibility button,
+.pvr-camera-device-controls button {
+  border-color:var(--pvr-line-soft) !important;
+  border-radius:2px !important;
+  background:#0e0c0a !important;
+  color:var(--pvr-ivory-dim) !important;
+}
+
+.pvr-camera-visibility button.is-active {
+  border-color:rgba(196,165,116,.34) !important;
+  background:var(--pvr-elevated) !important;
+  color:var(--pvr-champagne-soft) !important;
+}
+
+.pvr-camera-start {
+  border-color:var(--pvr-champagne) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#d4bc94,#b8955f) !important;
+  color:#1a150f !important;
+}
+
+.pvr-camera-end {
+  border-color:rgba(163,77,92,.42) !important;
+  border-radius:2px !important;
+  background:linear-gradient(180deg,#2a1518,#120c0d) !important;
+  color:#d4a0a8 !important;
+}
+
+/* ═══════════ SECURITY + NOTES ═══════════ */
+.pvr-security-banner {
+  border-color:rgba(163,77,92,.42) !important;
+  border-radius:3px !important;
+  background:linear-gradient(180deg,rgba(42,21,24,.97),rgba(22,12,14,.97)) !important;
+  color:#e8d0d4 !important;
+}
+
+.pvr-notes {
+  border-color:var(--pvr-line) !important;
+  background:#100e0c !important;
+  color:var(--pvr-ivory) !important;
+}
+
+.pvr-notes-head {
+  border-color:var(--pvr-line-soft) !important;
+}
+
+.pvr-notes-head span {
+  color:var(--pvr-champagne) !important;
+}
+
+.pvr-notes-input {
+  border-color:var(--pvr-line-soft) !important;
+  background:#0a0908 !important;
+  color:var(--pvr-ivory) !important;
+}
+
+/* ═══════════ SCROLLBARS ═══════════ */
+.pvr-page ::-webkit-scrollbar,
+.pvr-account-panel::-webkit-scrollbar,
+.pvr-profile-view::-webkit-scrollbar,
+.pvr-camera-studio::-webkit-scrollbar {
+  width:5px;
+  height:5px;
+}
+
+.pvr-page ::-webkit-scrollbar-thumb,
+.pvr-account-panel::-webkit-scrollbar-thumb,
+.pvr-profile-view::-webkit-scrollbar-thumb,
+.pvr-camera-studio::-webkit-scrollbar-thumb {
+  background:rgba(196,165,116,.28);
+  border-radius:999px;
+}
+
+/* ═══════════ TABLET ═══════════ */
+@media (max-width:1120px) {
+  .pvr-club-nav-inner {
+    grid-template-columns:auto 1fr;
+  }
+
+  .pvr-club-tabs {
+    display:none;
+  }
+
+  .pvr-club-actions {
+    justify-self:end;
+  }
+
+  .pvr-live-grid,
+  .pvr-workspace {
+    grid-template-columns:1fr !important;
+  }
+
+  .pvr-side-menu {
+    position:static !important;
+  }
+}
+
+/* ═══════════ MOBILE ═══════════ */
+@media (max-width:720px) {
+  .pvr-club-nav-inner {
+    min-height:60px;
+    padding:0 12px;
+    gap:10px;
+  }
+
+  .pvr-club-brand-mark {
+    width:34px;
+    height:34px;
+    font-size:12px;
+  }
+
+  .pvr-club-brand-copy strong {
+    font-size:14px;
+  }
+
+  .pvr-club-brand-copy small {
+    font-size:6px;
+  }
+
+  .pvr-club-actions {
+    gap:5px;
+  }
+
+  .pvr-club-code,
+  .pvr-club-profile {
+    display:none;
+  }
+
+  .pvr-club-membership {
+    min-height:34px;
+    padding:0 10px;
+    font-size:7px;
+  }
+
+  .pvr-club-mobile-tabs {
+    display:flex;
+    gap:3px;
+    overflow-x:auto;
+    padding:7px 10px 8px;
+    border-top:1px solid rgba(196,165,116,.08);
+  }
+
+  .pvr-club-mobile-tabs button {
+    flex:0 0 auto;
+    min-height:30px;
+    padding:0 10px;
+    font-size:7px;
+  }
+
+  .pvr-page {
+    padding:0 12px 56px !important;
+  }
+
+  #videocall-stage.pvr-call-stage {
+    margin-top:18px !important;
+  }
+
+  .pvr-live-home {
+    padding:16px 12px !important;
+  }
+
+  .pvr-live-home-head {
+    align-items:flex-start !important;
+    flex-direction:column !important;
+  }
+
+  .pvr-live-home-head h1 {
+    font-size:42px !important;
+  }
+
+  .pvr-live-feature-screen {
+    min-height:280px !important;
+  }
+
+  .pvr-live-grid {
+    grid-template-columns:1fr !important;
+  }
+
+  .pvr-live-members-grid {
+    grid-template-columns:1fr !important;
+  }
+
+  .pvr-live-event {
+    grid-template-columns:70px 1fr !important;
+  }
+
+  .pvr-live-event > button {
+    grid-column:1 / -1;
+  }
+
+  .pvr-live-nav {
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+
+  .pvr-gallery-section {
+    margin-top:30px !important;
+  }
+
+  .pvr-section-head h2 {
+    font-size:24px !important;
+  }
+
+  .pvr-carousel {
+    grid-auto-columns:84% !important;
+  }
+
+  .pvr-profile-view,
+  .pvr-camera-studio {
+    border-radius:3px !important;
+  }
+}
