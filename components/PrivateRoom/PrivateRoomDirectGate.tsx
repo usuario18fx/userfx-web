@@ -200,6 +200,37 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
           </small>
         </form>
 
+        {/* ========   TELEGRAM + SPECIAL CODE =========================== */}
+        <div className="pvr-direct-shortcuts">
+          <a
+            className="pvr-direct-shortcut"
+            href="https://t.me/User18Fx_bot?start=getcode"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open Telegram bot"
+          >
+            <img src="/assets/iconos/telegram.png" alt="" aria-hidden="true"/>
+            <span>
+              <small>OPEN BOT</small>
+              <strong>TELEGRAM</strong>
+            </span>
+          </a>
+
+          <a
+            className="pvr-direct-shortcut pvr-direct-shortcut--special"
+            href="https://t.me/User18Fx_bot?start=identity"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Get special code"
+          >
+            <img src="/assets/iconos/corona.png" alt="" aria-hidden="true"/>
+            <span>
+              <small>MEMBER IDENTITY</small>
+              <strong>SPECIAL CODE</strong>
+            </span>
+          </a>
+        </div>
+
         <footer className="pvr-direct-foot">
           <button type="button" onClick={() => {window.location.hash = "#/";}}>← BACK</button>
           <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">GET A CODE</a>
