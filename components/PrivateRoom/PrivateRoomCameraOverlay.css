@@ -1,0 +1,128 @@
+/* ═══════════ USER FX · CAMERA OVERLAY CONTROLS ═══════════ */
+
+.pvr-camera-studio{
+  width:760px !important;
+  max-width:calc(100vw - 30px) !important;
+  max-height:82vh !important;
+}
+
+.pvr-camera-preview{
+  aspect-ratio:16 / 7 !important;
+}
+
+.pvr-camera-layout{
+  position:relative !important;
+  grid-template-columns:minmax(0,1fr) 250px !important;
+  gap:12px !important;
+  margin-top:12px !important;
+}
+
+/* ═══════════ CONTROLS INSIDE VIDEO ═══════════ */
+.pvr-camera-settings{
+  position:absolute !important;
+  left:50% !important;
+  top:-58px !important;
+  z-index:30 !important;
+  width:auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  padding:6px !important;
+  transform:translateX(-50%) !important;
+  border:1px solid rgba(196,165,116,.20) !important;
+  border-radius:999px !important;
+  background:rgba(7,7,6,.74) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.38) !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+.pvr-camera-settings > span{
+  display:none !important;
+}
+
+.pvr-camera-visibility,
+.pvr-camera-device-controls{
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  margin:0 !important;
+}
+
+.pvr-camera-visibility button,
+.pvr-camera-device-controls button{
+  position:relative !important;
+  width:40px !important;
+  min-width:40px !important;
+  height:40px !important;
+  min-height:40px !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:0 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:50% !important;
+  background:rgba(8,9,9,.86) !important;
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  overflow:hidden !important;
+}
+
+.pvr-camera-visibility button::before,
+.pvr-camera-device-controls button::before{
+  display:block !important;
+  color:#f2e7d2 !important;
+  font-family:"Segoe UI Emoji","Apple Color Emoji",sans-serif !important;
+  font-size:18px !important;
+  line-height:1 !important;
+}
+
+.pvr-camera-visibility button:nth-child(1)::before{
+  content:"🔒";
+}
+
+.pvr-camera-visibility button:nth-child(2)::before{
+  content:"🌐";
+}
+
+.pvr-camera-device-controls button:nth-child(1)::before{
+  content:"📹";
+}
+
+.pvr-camera-device-controls button:nth-child(2)::before{
+  content:"🎙️";
+}
+
+.pvr-camera-visibility button.is-active,
+.pvr-camera-device-controls button:not(.is-off){
+  border-color:rgba(196,165,116,.62) !important;
+  background:rgba(30,24,17,.92) !important;
+  box-shadow:0 0 0 1px rgba(196,165,116,.10),0 4px 18px rgba(0,0,0,.38) !important;
+}
+
+.pvr-camera-device-controls button.is-off{
+  opacity:.42 !important;
+  filter:grayscale(.7) !important;
+}
+
+@media(max-width:700px){
+  .pvr-camera-studio{
+    width:calc(100vw - 16px) !important;
+    max-height:calc(100dvh - 16px) !important;
+  }
+
+  .pvr-camera-preview{
+    aspect-ratio:4 / 5 !important;
+  }
+
+  .pvr-camera-layout{
+    grid-template-columns:1fr !important;
+  }
+
+  .pvr-camera-settings{
+    top:-56px !important;
+  }
+
+  .pvr-camera-actions{
+    grid-column:1 !important;
+  }
+}
