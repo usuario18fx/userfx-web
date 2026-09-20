@@ -17,6 +17,7 @@ body.pvr-camera-docked .pvr-camera-studio {
   color:var(--pvr-ivory,#f3ece0);
   box-shadow:0 24px 70px rgba(0,0,0,.62);
   backdrop-filter:blur(16px);
+  will-change:left,top;
 }
 
 .pvr-mycam-dock.is-left,
@@ -35,6 +36,7 @@ body.pvr-camera-docked .pvr-camera-studio {
   border-radius:3px;
 }
 
+/* ═══════════ DRAG HANDLE ═══════════ */
 .pvr-mycam-head {
   min-height:38px;
   display:flex;
@@ -44,12 +46,27 @@ body.pvr-camera-docked .pvr-camera-studio {
   padding:7px 9px 7px 11px;
   border-bottom:1px solid rgba(196,165,116,.14);
   background:#0e0c0a;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+}
+
+.pvr-mycam-dock.is-dragging,
+.pvr-mycam-dock.is-dragging .pvr-mycam-head,
+.pvr-mycam-mini.is-dragging {
+  cursor:grabbing;
+  user-select:none;
+}
+
+.pvr-mycam-dock.is-dragging {
+  box-shadow:0 30px 90px rgba(0,0,0,.76),0 0 0 1px rgba(196,165,116,.18);
 }
 
 .pvr-mycam-head > div:first-child {
   display:flex;
   align-items:center;
   gap:7px;
+  min-width:0;
 }
 
 .pvr-mycam-live-dot,
@@ -63,16 +80,20 @@ body.pvr-camera-docked .pvr-camera-studio {
 }
 
 .pvr-mycam-head strong {
+  overflow:hidden;
   color:var(--pvr-champagne-soft,#d4bc94);
   font-size:7px;
   font-weight:700;
-  letter-spacing:.19em;
+  letter-spacing:.16em;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 .pvr-mycam-head-actions {
   display:flex;
   align-items:center;
   gap:2px;
+  cursor:default;
 }
 
 .pvr-mycam-head-actions button {
@@ -83,6 +104,7 @@ body.pvr-camera-docked .pvr-camera-studio {
   color:#8d8478;
   font-size:10px;
   cursor:pointer;
+  touch-action:manipulation;
 }
 
 .pvr-mycam-head-actions button:hover {
@@ -187,6 +209,7 @@ body.pvr-camera-docked .pvr-camera-studio {
   color:#d4a0a8;
 }
 
+/* ═══════════ MINIMIZED · ALSO DRAGGABLE ═══════════ */
 .pvr-mycam-mini {
   min-width:190px;
   display:flex;
@@ -194,7 +217,9 @@ body.pvr-camera-docked .pvr-camera-studio {
   gap:9px;
   padding:8px 11px;
   border-radius:3px;
-  cursor:pointer;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
 }
 
 .pvr-mycam-mini > span:last-child {
