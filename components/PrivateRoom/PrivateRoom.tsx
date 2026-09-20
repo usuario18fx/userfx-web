@@ -648,26 +648,11 @@ export default function PrivateRoom(): ReactElement {
   /* ── Loading / error ── */
   if (sessionError) return <ErrorScreen onBack={handleBack} />;
   if (!sessionReady || !selectedFile) return <LoadingScreen />;
-
-  /* ═══════════════════════════════════════════════════════
-     RENDER
-     ═══════════════════════════════════════════════════════ */
-
+  /* ════════  RENDER ═════════════════════════════════════════ */
   return (
-    <main
-      className={`pvr-page${contentHidden ? " is-obscured" : ""}`}
-      data-access={accessType}
-      data-device={deviceId}
-    >
-▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-      {/* ── Security Banner ── */}
-      <SecurityBanner
-        visible={securityBanner.visible}
-        event={securityBanner.event}
-        onDismiss={() => setSecurityBanner({ visible: false, event: null })}
-      />
-▟▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
+    <main className={`pvr-page${contentHidden ? " is-obscured" : ""}`} data-access={accessType}data-device={deviceId}>
+   {/* ── Security Banner ── */}
+      <SecurityBanner  visible={securityBanner.visible} event={securityBanner.event} onDismiss={() => setSecurityBanner({ visible: false, event: null })}/>
       {/* ── Top Bar ── */}
       <header className="pvr-topbar">
         <button className="pvr-back" type="button" onClick={handleBack}>← USER FX</button>
@@ -690,116 +675,78 @@ export default function PrivateRoom(): ReactElement {
           </div>
         </div>
         <div className="pvr-video-shell">
-          <div className="pvr-video-screen">
-            <span className="pvr-video-status">READY</span>
-            <div className="pvr-video-center">
-              <div className="pvr-camera-ring"><span aria-hidden="true" /></div>
-              <strong>VIDEOCALL STAGE</strong>
-              <small>PRIVATE SESSION READY</small>
-            </div>
-          </div>
-        </div>
-      </section>
-
+                <div className="pvr-video-screen">
+                <span className="pvr-video-status">
+                 READY</span>
+                <div className="pvr-video-center">
+                <div className="pvr-camera-ring">
+                <span aria-hidden="true" /></div>
+                <strong>
+                  VIDEOCALL STAGE</strong>
+                <small>
+                  PRIVATE SESSION READY</small>
+                </div>
+                </div>
+                </div>
+                </section>
       {/* ── Gallery ── */}
-      <section className="pvr-gallery-section" aria-labelledby="gallery-heading">
-        <div className="pvr-section-head">
-          <div>
-            <span>PRIVATE COLLECTION</span>
-            <h2 id="gallery-heading">SELECT A FILE</h2>
-          </div>
-          <HeartButton
-            checked={Boolean(likes[selectedFile.id])}
-            onChange={handleToggleLike}
-            count={totalLikes}
-            disabled={!canUse("gallery")}
-          />
-        </div>
-
-        <div className="pvr-workspace">
-          <div className="pvr-carousel" role="list" aria-label="Private files gallery">
-            {files.map((file, index) => (
-              <button
-                type="button"
-                role="listitem"
-                key={file.id}
-                className={`pvr-photo-card${selected === index ? " is-selected" : ""}`}
-                onClick={() => handleSelectFile(index)}
-                disabled={!canUse("gallery")}
-                aria-current={selected === index ? "true" : undefined}
-                aria-label={file.title}
-              >
-                <img
-                  src={file.src}
-                  alt={file.title}
-                  loading={index === 0 || index === selected ? "eager" : "lazy"}
-                  draggable={false}
-                  onContextMenu={(e) => e.preventDefault()}
-                />
-▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-                {/* Marca de agua forense sobre cada card */}
+                <section className="pvr-gallery-section" aria-labelledby="gallery-heading">
+                <div className="pvr-section-head">
+                <div>
+                <span>
+                  PRIVATE COLLECTION</span>
+                <h2 id="gallery-heading">
+                  SELECT A FILE</h2>
+                </div>
+                <HeartButton checked={Boolean(likes[selectedFile.id])} onChange={handleToggleLike} count={totalLikes} disabled={!canUse("gallery")}/>
+                </div>
+                <div className="pvr-workspace">
+                <div className="pvr-carousel" role="list" aria-label="Private files gallery">
+                 {files.map((file, index) => (
+                <button type="button" role="listitem" key={file.id} className={`pvr-photo-card${selected === index ? " is-selected" : ""}`} onClick={() => handleSelectFile(index)} disabled={!canUse("gallery")} aria-current={selected === index ? "true" : undefined} aria-label={file.title}>
+                <img src={file.src} alt={file.title} loading={index === 0 || index === selected ? "eager" : "lazy"} draggable={false} onContextMenu={(e) => e.preventDefault()} />
+{/* Marca de agua forense sobre cada card */}
                 <WatermarkOverlay code={sessionInfo.accessCode} deviceId={deviceId} fileId={file.id} />
-▟▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
                 <span>{file.title}</span>
-              </button>
+                </button>
             ))}
-          </div>
-
-          <aside className="pvr-side-menu" aria-label="File actions and permissions">
-            <div className="pvr-selected-preview">
-▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-              <div className="pvr-preview-frame">
+                </div>
+                <aside className="pvr-side-menu" aria-label="File actions and permissions">
+                <div className="pvr-selected-preview">
+                <div className="pvr-preview-frame">
                 <img src={selectedFile.src} alt={`Preview of ${selectedFile.title}`} draggable={false} onContextMenu={(e) => e.preventDefault()} />
                 <WatermarkOverlay code={sessionInfo.accessCode} deviceId={deviceId} fileId={selectedFile.id} />
-              </div>
-▟▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-              <div>
-                <span>SELECTED</span>
+                </div>
+                <div>
+                <span>
+                  SELECTED</span>
                 <strong>{selectedFile.title}</strong>
-              </div>
-            </div>
-
-            <nav className="pvr-side-actions" aria-label="Quick actions">
+                </div>
+                </div>
+                <nav className="pvr-side-actions" aria-label="Quick actions">
               {SIDE_ACTIONS.map((action) => (
-                <button key={action.key} type="button"
-                  onClick={() => handleSideAction(action.key)}
-                  disabled={!canUse(action.key as keyof AccessRules)}>
-                  <strong>{action.label}</strong>
-                  <span>{action.description}</span>
+                <button key={action.key} type="button" onClick={() => handleSideAction(action.key)} disabled={!canUse(action.key as keyof AccessRules)}>
+                <strong>{action.label}</strong>
+                <span>{action.description}</span>
                 </button>
               ))}
-            </nav>
-
-            <div className="pvr-permission-panel" aria-label="Access permissions">
-              <button type="button" className="pvr-permission pvr-permission--wide"
-                onClick={() => handlePermission("telegramfx")}
-                disabled={!canUse("telegramfx")}>TelegramFX</button>
-              <div className="pvr-permission-row">
-                <button type="button" className="pvr-permission"
-                  onClick={() => handlePermission("gallery")} disabled={!canUse("gallery")}>Gallery</button>
-                <button type="button" className="pvr-permission"
-                  onClick={() => handlePermission("chat")} disabled={!canUse("chat")}>Chat</button>
-              </div>
-              <div className="pvr-permission-row">
-                <button type="button" className="pvr-permission"
-                  onClick={() => handlePermission("priv")} disabled={!canUse("priv")}>Priv</button>
-                <button type="button" className="pvr-permission"
-                  onClick={() => handlePermission("group")} disabled={!canUse("group")}>Group</button>
-              </div>
-              <button type="button" className="pvr-permission pvr-permission--revoke"
-                onClick={handleRevoke} disabled={!canUse("revoke")}>REVOKE ALL</button>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <NotesDrawer
-        open={notesOpen}
-        title={selectedFile.title}
-        value={noteDraft}
-        onChange={setNoteDraft}
-        onClose={handleCloseNotes}
-      />
-    </main>
-  );
-}
+                </nav> 
+                <div className="pvr-permission-panel" aria-label="Access permissions">
+                <button type="button" className="pvr-permission pvr-permission--wide" onClick={() => handlePermission("telegramfx")} disabled={!canUse("telegramfx")}>TelegramFX</button>
+                <div className="pvr-permission-row">
+                <button type="button" className="pvr-permission" onClick={() => handlePermission("gallery")} disabled={!canUse("gallery")}>Gallery</button>
+                <button type="button" className="pvr-permission" onClick={() => handlePermission("chat")} disabled={!canUse("chat")}>Chat</button>
+                </div>
+                <div className="pvr-permission-row">
+                <button type="button" className="pvr-permission" onClick={() => handlePermission("priv")} disabled={!canUse("priv")}>Priv</button>
+                <button type="button" className="pvr-permission" onClick={() => handlePermission("group")} disabled={!canUse("group")}>Group</button>
+                </div>
+                <button type="button" className="pvr-permission pvr-permission--revoke" onClick={handleRevoke} disabled={!canUse("revoke")}>REVOKE ALL</button>
+                </div>
+                </aside>
+                </div>
+                </section>
+                <NotesDrawer open={notesOpen} title={selectedFile.title} value={noteDraft} onChange={setNoteDraft} onClose={handleCloseNotes}/>
+                </main>
+                );
+                }

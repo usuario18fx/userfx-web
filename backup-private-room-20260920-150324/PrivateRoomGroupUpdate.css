@@ -1,0 +1,331 @@
+/* ═══════════ USER FX · PRIVATE ROOM UPDATE V2 ═══════════ */
+
+/* ─────   ON CAM BROWSING ─────── */
+.pvr-live-oncam {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:18px 0 0;
+  padding:13px 14px;
+  border:1px solid rgba(196,165,116,.30);
+  border-radius:3px;
+  background:
+    linear-gradient(90deg,rgba(196,165,116,.07),rgba(196,165,116,.018)),
+    #12100e;
+  box-shadow:inset 0 1px 0 rgba(243,236,224,.025);
+}
+
+.pvr-live-oncam-copy {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+
+.pvr-live-oncam-icon {
+  position:relative;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.45);
+  background:#1c1814;
+  color:#d4bc94;
+  font:700 10px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.11em;
+}
+
+.pvr-live-oncam-icon::after {
+  content:"";
+  position:absolute;
+  right:-4px;
+  bottom:-4px;
+  width:9px;
+  height:9px;
+  border:2px solid #12100e;
+  border-radius:50%;
+  background:#c4a574;
+  box-shadow:0 0 10px rgba(196,165,116,.55);
+  animation:pvrGroupPulse 1.65s ease-in-out infinite;
+}
+
+.pvr-live-oncam-copy > div:last-child {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.pvr-live-oncam-copy strong {
+  color:#f3ece0;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.05em;
+}
+
+.pvr-live-oncam-copy small {
+  color:#9a9082;
+  font-size:8px;
+  line-height:1.45;
+  letter-spacing:.08em;
+}
+
+.pvr-live-oncam > button {
+  min-height:36px;
+  padding:0 14px;
+  flex:0 0 auto;
+  border:1px solid rgba(196,165,116,.38);
+  border-radius:2px;
+  background:#1c1814;
+  color:#d4bc94;
+  font:700 7px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.16em;
+  cursor:pointer;
+}
+
+/* ═══════════ GROUP SALON ═══════════ */
+.pvr-live-group {
+  margin-top:14px;
+  padding:14px;
+  border:1px solid rgba(196,165,116,.18);
+  border-radius:3px;
+  background:
+    radial-gradient(75% 100% at 0% 100%,rgba(122,46,58,.075),transparent 70%),
+    linear-gradient(180deg,#14110e,#0d0b09);
+}
+
+.pvr-group-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 260px;
+  gap:14px;
+  margin-top:13px;
+}
+
+.pvr-group-stage,
+.pvr-group-builder {
+  border:1px solid rgba(196,165,116,.13);
+  border-radius:3px;
+  background:#0e0c0a;
+}
+
+.pvr-group-stage {
+  padding:12px;
+}
+
+.pvr-group-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.pvr-group-seat {
+  position:relative;
+  min-height:126px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  overflow:hidden;
+  border:1px dashed rgba(196,165,116,.18);
+  border-radius:2px;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(196,165,116,.045),transparent 42%),
+    #0b0a08;
+  color:#756d62;
+  text-align:center;
+}
+
+.pvr-group-seat.is-host {
+  border-style:solid;
+  border-color:rgba(196,165,116,.36);
+  background:
+    radial-gradient(circle at 50% 32%,rgba(196,165,116,.10),transparent 46%),
+    #12100e;
+}
+
+.pvr-group-seat.is-host.is-oncam {
+  box-shadow:inset 0 0 34px rgba(196,165,116,.045);
+}
+
+.pvr-group-avatar {
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.30);
+  border-radius:50%;
+  background:#17130f;
+  color:#d4bc94;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:12px;
+  letter-spacing:.08em;
+}
+
+.pvr-group-seat > strong {
+  color:#cfc5b4;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.08em;
+}
+
+.pvr-group-seat > small {
+  color:#756d62;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+
+.pvr-group-seat.is-host > small {
+  color:#c4a574;
+}
+
+.pvr-group-builder {
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+}
+
+.pvr-group-builder > span {
+  color:#9a9082;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.18em;
+}
+
+.pvr-group-builder > strong {
+  margin-top:5px;
+  color:#f3ece0;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:17px;
+  font-weight:500;
+  letter-spacing:.06em;
+}
+
+.pvr-group-builder > p {
+  margin:9px 0 14px;
+  color:#83796b;
+  font-size:8px;
+  line-height:1.55;
+}
+
+.pvr-group-progress-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#9a9082;
+  font-size:7px;
+  letter-spacing:.14em;
+}
+
+.pvr-group-progress-head strong {
+  color:#d4bc94;
+  font-size:8px;
+}
+
+.pvr-group-progress {
+  height:3px;
+  margin-top:8px;
+  overflow:hidden;
+  background:#090806;
+}
+
+.pvr-group-progress > span {
+  display:block;
+  width:20%;
+  height:100%;
+  background:linear-gradient(90deg,#d4bc94,#8f7348);
+}
+
+.pvr-group-actions {
+  display:grid;
+  gap:8px;
+  margin-top:auto;
+  padding-top:16px;
+}
+
+.pvr-group-actions button {
+  min-height:39px;
+  border-radius:2px;
+  font:700 7px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.15em;
+  cursor:pointer;
+}
+
+.pvr-group-invite {
+  border:1px solid rgba(196,165,116,.34);
+  background:#1c1814;
+  color:#d4bc94;
+}
+
+.pvr-group-camera {
+  border:1px solid #c4a574;
+  background:linear-gradient(180deg,#d4bc94,#b8955f);
+  color:#1a150f;
+}
+
+.pvr-group-waiting {
+  min-height:39px;
+  display:grid;
+  place-items:center;
+  margin-top:8px;
+  border:1px solid rgba(196,165,116,.11);
+  color:#6f665b;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.16em;
+}
+
+/* ─────   UPDATED NAV WIDTH ─────── */
+.pvr-live-nav {
+  grid-template-columns:repeat(6,1fr) !important;
+}
+
+.pvr-club-tabs button {
+  padding-left:11px !important;
+  padding-right:11px !important;
+}
+
+@keyframes pvrGroupPulse {
+  0%,100% {opacity:.58;transform:scale(.9);}
+  50% {opacity:1;transform:scale(1.12);}
+}
+
+/* ─────   TABLET ─────── */
+@media(max-width:980px) {
+  .pvr-group-layout {
+    grid-template-columns:1fr;
+  }
+
+  .pvr-group-builder {
+    min-height:220px;
+  }
+}
+
+/* ─────   MOBILE ─────── */
+@media(max-width:650px) {
+  .pvr-live-oncam {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .pvr-live-oncam > button {
+    width:100%;
+  }
+
+  .pvr-group-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .pvr-group-seat {
+    min-height:112px;
+  }
+
+  .pvr-live-nav {
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}

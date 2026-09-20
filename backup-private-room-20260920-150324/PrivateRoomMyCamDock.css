@@ -1,0 +1,524 @@
+/* ═══════════ USER FX · MY CAM DEFAULT VIEW ═══════════ */
+body.pvr-camera-docked .pvr-camera-backdrop,
+body.pvr-camera-docked .pvr-camera-studio {
+  opacity:0 !important;
+  pointer-events:none !important;
+  visibility:hidden !important;
+}
+.pvr-mycam-dock,
+.pvr-mycam-mini {
+  position:fixed;
+  bottom:20px;
+  z-index:13250;
+  border:1px solid rgba(196,165,116,.34);
+  background:rgba(18,16,14,.97);
+  color:var(--pvr-ivory,#f3ece0);
+  box-shadow:0 24px 70px rgba(0,0,0,.62);
+  backdrop-filter:blur(16px);
+  will-change:left,top;
+}
+.pvr-mycam-dock.is-left,
+.pvr-mycam-mini.is-left {
+  left:18px;
+}
+.pvr-mycam-dock.is-right,
+.pvr-mycam-mini.is-right {
+  right:18px;
+}
+.pvr-mycam-dock {
+  width:370px !important;
+  overflow:hidden;
+  border-radius:3px;
+}
+/* ═══════════ DRAG HANDLE ═══════════ */
+.pvr-mycam-head {
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 9px 7px 11px;
+  border-bottom:1px solid rgba(196,165,116,.14);
+  background:#0e0c0a;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+}
+.pvr-mycam-dock.is-dragging,
+.pvr-mycam-dock.is-dragging .pvr-mycam-head,
+.pvr-mycam-mini.is-dragging {
+  cursor:grabbing;
+  user-select:none;
+}
+.pvr-mycam-dock.is-dragging {
+  box-shadow:0 30px 90px rgba(0,0,0,.76),0 0 0 1px rgba(196,165,116,.18);
+}
+.pvr-mycam-head > div:first-child {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+}
+.pvr-mycam-live-dot,
+.pvr-mycam-mini-dot {
+  width:7px;
+  height:7px;
+  flex:0 0 7px;
+  border-radius:50%;
+  background:#7fb069;
+  box-shadow:0 0 10px rgba(127,176,105,.45);
+}
+.pvr-mycam-head strong {
+  overflow:hidden;
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pvr-mycam-head-actions {
+  display:flex;
+  align-items:center;
+  gap:2px;
+  cursor:default;
+}
+.pvr-mycam-head-actions button {
+  width:20px;
+  height:18px;
+  border:0;
+  background:transparent;
+  color:#8d8478;
+  font-size:10px;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.pvr-mycam-head-actions button:hover {
+  color:var(--pvr-ivory,#f3ece0);
+}
+.pvr-mycam-preview {
+  position:relative;
+  width:100%;
+  aspect-ratio:4 / 3;
+  display:block;
+  overflow:hidden;
+  padding:0;
+  border:0;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(196,165,116,.09),transparent 35%),
+    linear-gradient(180deg,#161310,#090807);
+  cursor:pointer;
+}
+.pvr-mycam-preview video {
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  transform:scaleX(-1);
+}
+.pvr-mycam-placeholder {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:42px;
+  letter-spacing:.08em;
+}
+.pvr-mycam-preview-meta {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:20px 9px 8px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
+}
+.pvr-mycam-preview-meta strong {
+  overflow:hidden;
+  color:#f3ece0;
+  font-size:9px;
+  font-weight:600;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pvr-mycam-preview-meta small {
+  padding:3px 5px;
+  border:1px solid rgba(196,165,116,.28);
+  background:rgba(15,13,11,.70);
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.14em;
+}
+/* ═══════════ MY CAM · CONTROLS ═══════════ */
+.pvr-mycam-controls {
+  display:grid;
+  grid-template-columns:1fr 40px 40px 40px;
+  align-items:center;
+  gap:7px;
+  padding:9px;
+  border-top:1px solid rgba(196,165,116,.12);
+ background:#0e0c0a;
+}
+/* ─────   PRIVATE / PUBLIC SWITCH ─────── */
+.pvr-privacy-switch {
+  height:38px;
+  display:grid;
+  grid-template-columns:1fr 58px 1fr;
+  align-items:center;
+  gap:5px;
+  padding:0 7px;
+  border:1px solid rgba(196,165,116,.20);
+  border-radius:999px;
+  background:#17130f;
+  color:#756d62;
+  cursor:pointer;
+}
+.pvr-privacy-label {
+  font-size:5px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.pvr-privacy-label--private {
+  text-align:right;
+}
+.pvr-privacy-label--public {
+ text-align:left;
+}
+/* ─────   TRACK ─────── */
+.pvr-privacy-track {
+  position:relative;
+  width:58px;
+  height:26px;
+  display:block;
+  border:1px solid rgba(196,165,116,.20);
+  border-radius:999px;
+  background:#080706;
+  box-shadow:inset 0 0 10px rgba(0,0,0,.65);
+}
+/* ─────   LOCK ─────── */
+.pvr-privacy-lock {
+  position:absolute;
+  top:2px;
+  left:3px;
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.45);
+  border-radius:50%;
+  background:#19140f;
+  transition:
+    left .22s ease,
+    border-color .22s ease,
+    background .22s ease,
+    box-shadow .22s ease;
+}
+.pvr-privacy-lock img {
+  width:18px;
+  height:18px;
+  display:block;
+  object-fit:contain;
+ pointer-events:none;
+}
+/* ─────   PRIVATE ─────── */
+.pvr-privacy-switch.is-private
+.pvr-privacy-label--private {
+  color:#d4bc94;
+}
+.pvr-privacy-switch.is-private
+.pvr-privacy-lock {
+  left:3px;
+}
+/* ─────   PUBLIC ─────── */
+.pvr-privacy-switch.is-public
+.pvr-privacy-label--public {
+  color:#4dffab;
+}
+.pvr-privacy-switch.is-public
+.pvr-privacy-lock {
+  left:33px;
+  border-color:rgba(77,255,171,.48);
+  background:#0c1d17;
+  box-shadow:0 0 12px rgba(77,255,171,.18);
+}
+/* ─────   ICON BUTTONS ─────── */
+.pvr-mycam-iconBtn {
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid rgba(196,165,116,.18);
+  border-radius:50%;
+  background:#17130f;
+  cursor:pointer;
+}
+.pvr-mycam-iconBtn img {
+  width:26px;
+  height:26px;
+  display:block;
+  object-fit:contain;
+  pointer-events:none;
+}
+.pvr-mycam-iconBtn:hover {
+  border-color:rgba(196,165,116,.48);
+  background:#201a14;
+}
+.pvr-mycam-iconBtn.is-end {
+  border-color:rgba(163,77,92,.38);
+  background:#211014;
+  color:#e6a2ad;
+}
+.pvr-mycam-iconBtn.is-end span {
+  margin-top:-2px;
+  font-size:25px;
+  font-weight:300;
+  line-height:1;
+}
+/* ─────   MOBILE ─────── */
+@media(max-width:650px) {
+  .pvr-mycam-dock {
+    width:280px;
+    bottom:12px;
+  }
+  .pvr-mycam-controls {
+    grid-template-columns:1fr 36px 36px 36px;
+  }
+  .pvr-mycam-iconBtn {
+    width:36px;
+    height:36px;
+  }
+  .pvr-mycam-iconBtn img {
+    width:23px;
+    height:23px;
+  }}
+/* ═══════════ MINIMIZED · ALSO DRAGGABLE ═══════════ */
+.pvr-mycam-mini {
+  min-width:210px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:8px 11px;
+  border-radius:3px;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+}
+.pvr-mycam-mini > span:last-child {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+}
+.pvr-mycam-mini strong {
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:7px;
+  letter-spacing:.18em;
+}
+.pvr-mycam-mini small {
+  color:#81786d;
+  font-size:6px;
+  letter-spacing:.11em;
+}
+/* ═══════════ PRIVATE / PUBLIC SWITCH ═══════════ */
+.pvr-privacy-switch {
+  width:220px;
+  height:44px;
+  display:grid;
+  grid-template-columns:1fr 76px 1fr;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  border:1px solid rgba(196,165,116,.22);
+  border-radius:999px;
+  background:
+    linear-gradient(180deg,#17130f,#0b0908);
+  color:#756d62;
+  cursor:pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 8px 22px rgba(0,0,0,.34);
+}
+/* ─────   LABELS ─────── */
+.pvr-privacy-label {
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.16em;
+  transition:.22s ease;
+}
+.pvr-privacy-label--private {
+  text-align:right;
+}
+.pvr-privacy-label--public {
+  text-align:left;
+}
+/* ─────   TRACK ─────── */
+.pvr-privacy-track {
+  position:relative;
+  width:76px;
+  height:30px;
+  display:block;
+  border:1px solid rgba(196,165,116,.20);
+  border-radius:999px;
+  background:#080706;
+  box-shadow:
+    inset 0 0 12px rgba(0,0,0,.65);
+}
+/* ─────   LOCK ─────── */
+.pvr-privacy-lock {
+  position:absolute;
+  top:3px;
+  left:4px;
+  width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.50);
+  border-radius:50%;
+  background:#19140f;
+  transition:
+    left .24s ease,
+    background .24s ease,
+    box-shadow .24s ease;
+}
+.pvr-privacy-lock img {
+  width:18px;
+  height:18px;
+  display:block;
+  object-fit:contain;
+  pointer-events:none;
+}
+/* ─────   PRIVATE ACTIVE ─────── */
+.pvr-privacy-switch.is-private
+.pvr-privacy-label--private {
+  color:#d4bc94;
+}
+.pvr-privacy-switch.is-private
+.pvr-privacy-lock {
+  left:4px;
+  box-shadow:
+    0 0 12px rgba(196,165,116,.20);
+}
+/* ─────   PUBLIC ACTIVE ─────── */
+.pvr-privacy-switch.is-public
+.pvr-privacy-label--public {
+  color:#4dffab;
+}
+.pvr-privacy-switch.is-public
+.pvr-privacy-lock {
+  left:46px;
+  border-color:rgba(77,255,171,.48);
+  background:#0c1d17;
+  box-shadow:
+    0 0 14px rgba(77,255,171,.20);
+}
+
+.button-with-icon {
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #db8b00;
+  font-family: "Istok Web", sans-serif;
+  letter-spacing: 1px;
+  padding: 0 12px;
+  text-align: center;
+  width: 120px;
+  height: 40px;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: normal;
+  border-radius: 3px;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  transform: translateY(0px);
+  position: relative;
+  box-shadow:
+    inset 0 30px 30px -15px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 1px 20px rgba(0, 0, 0, 0),
+    0 3px 0 #db8b00,
+    0 3px 2px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.1);
+  background: #965f00;
+  color: white;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  transition: 150ms all ease-in-out;
+}
+.button-with-icon .icon {
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  transition: all 0.5s ease-in-out;
+}
+.button-with-icon:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 16px 2px -15px rgba(0, 0, 0, 0),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 #996204,
+    0 0 0 2px rgba(255, 255, 255, 0.5),
+    0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 rgba(0, 0, 0, 0);
+}
+.button-with-icon:hover .text {transform: translateX(80px);
+}
+.button-with-icon:hover .icon {transform: translate(23px);
+}
+.text {transition: all 0.5s ease-in-out;
+}
+/* ═══════════ ENTER CAMERA BUTTON ═══════════ */
+
+.button-with-icon {
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:10px;
+
+}
+
+
+.button-with-icon .icon {
+
+  width:22px;
+
+  height:22px;
+
+  transition:.20s ease;
+
+}
+
+
+.button-with-icon .text {
+
+  color:inherit;
+
+  font-family:"Cinzel",serif;
+
+  font-size:8px;
+
+  font-weight:700;
+
+  letter-spacing:.18em;
+
+}
+
+
+.button-with-icon:hover .icon {
+
+  transform:translateX(3px);
+
+}
