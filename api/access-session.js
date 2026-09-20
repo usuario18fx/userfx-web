@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import Redis from "ioredis";
+import { ensureAccount } from "../lib/account.js";
 import {
   getTelegramFxAccess,
   hasTelegramFxAccess,
@@ -150,6 +151,37 @@ async function validateTelegramAccess(value) {
   };
 }
 
+async function attachPersistentAccount(redis, sessionKey, session) {
+  if (session?.accountId) {
+    return session;
+  }
+
+  const account = await ensureAccount(redis, CODE_ENGINE_NAMESPACE, {
+    userId: session?.telegramUserId || session?.userId || null,
+    telegramUsername: session?.telegramUsername || null,
+    codeHash: session?.codeHash || null,
+    planId: session?.planId || "basic",
+    accessMode: session?.accessMode || "code",
+  });
+
+  const nextSession = {
+    ...session,
+    accountId: account.accountId,
+    telegramUserId:
+      session?.telegramUserId || session?.userId || account.telegramUserId || null,
+  };
+
+  if (sessionKey) {
+    await redis.set(
+      sessionKey,
+      JSON.stringify(nextSession),
+      "KEEPTTL",
+    );
+  }
+
+  return nextSession;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
@@ -186,6 +218,13 @@ export default async function handler(req, res) {
         });
       }
 
+      const account = await ensureAccount(redis, CODE_ENGINE_NAMESPACE, {
+        userId: identity.userId,
+        telegramUsername: telegram.username.normalized,
+        planId: "vip",
+        accessMode: "telegram_identity",
+      });
+
       const token = crypto.randomBytes(32).toString("base64url");
       const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${hashValue(token)}`;
       const createdAt = new Date().toISOString();
@@ -194,6 +233,7 @@ export default async function handler(req, res) {
       ).toISOString();
 
       const session = {
+        accountId: account.accountId,
         planId: "vip",
         accessMode: "telegram_identity",
         accessLabel: "SPCL",
@@ -224,6 +264,8 @@ export default async function handler(req, res) {
       return res.status(200).json({
         ok: true,
         authenticated: true,
+        accountId: session.accountId,
+        telegramUsername: session.telegramUsername,
         planId: session.planId,
         accessMode: session.accessMode,
         accessLabel: session.accessLabel,
@@ -320,11 +362,15 @@ export default async function handler(req, res) {
       await redis.set(sessionKey, JSON.stringify(session), "KEEPTTL");
     }
 
+    session = await attachPersistentAccount(redis, sessionKey, session);
+
     const memberAccess = session.accessMode === "telegram_identity";
 
     return res.status(200).json({
       ok: true,
       authenticated: true,
+      accountId: session.accountId,
+      telegramUsername: session.telegramUsername || null,
       planId: session.planId,
       accessMode: session.accessMode,
       accessLabel: memberAccess ? "SPCL" : session.accessLabel || null,
