@@ -1,3 +1,4 @@
+import "./PrivateRoomDevSession";
 import PrivateRoomDirectGate from "./PrivateRoomDirectGate";
 import PrivateRoomLuxuryNav from "./PrivateRoomLuxuryNav";
 import PrivateRoomAccount from "./PrivateRoomAccount";
