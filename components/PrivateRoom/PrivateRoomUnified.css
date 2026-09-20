@@ -1,0 +1,468 @@
+/* ═══════════ USER FX · PRIVATE ROOM UNIFIED UPDATES ═══════════ */
+
+/* ═══════════ ON CAM + GROUP SALON ═══════════ */
+.pvr-live-oncam {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:18px 0 0;
+  padding:13px 14px;
+  border:1px solid rgba(196,165,116,.30);
+  border-radius:3px;
+  background:linear-gradient(90deg,rgba(196,165,116,.07),rgba(196,165,116,.018)),#12100e;
+  box-shadow:inset 0 1px 0 rgba(243,236,224,.025);
+}
+
+.pvr-live-oncam-copy {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+
+.pvr-live-oncam-icon {
+  position:relative;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.45);
+  background:#1c1814;
+  color:#d4bc94;
+  font:700 10px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.11em;
+}
+
+.pvr-live-oncam-icon::after {
+  content:"";
+  position:absolute;
+  right:-4px;
+  bottom:-4px;
+  width:9px;
+  height:9px;
+  border:2px solid #12100e;
+  border-radius:50%;
+  background:#c4a574;
+  box-shadow:0 0 10px rgba(196,165,116,.55);
+  animation:pvrGroupPulse 1.65s ease-in-out infinite;
+}
+
+.pvr-live-oncam-copy > div:last-child {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.pvr-live-oncam-copy strong {
+  color:#f3ece0;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.05em;
+}
+
+.pvr-live-oncam-copy small {
+  color:#9a9082;
+  font-size:8px;
+  line-height:1.45;
+  letter-spacing:.08em;
+}
+
+.pvr-live-oncam > button {
+  min-height:36px;
+  padding:0 14px;
+  flex:0 0 auto;
+  border:1px solid rgba(196,165,116,.38);
+  border-radius:2px;
+  background:#1c1814;
+  color:#d4bc94;
+  font:700 7px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.16em;
+  cursor:pointer;
+}
+
+.pvr-live-group {
+  margin-top:14px;
+  padding:14px;
+  border:1px solid rgba(196,165,116,.18);
+  border-radius:3px;
+  background:radial-gradient(75% 100% at 0% 100%,rgba(122,46,58,.075),transparent 70%),linear-gradient(180deg,#14110e,#0d0b09);
+}
+
+.pvr-group-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 260px;
+  gap:14px;
+  margin-top:13px;
+}
+
+.pvr-group-stage,
+.pvr-group-builder {
+  border:1px solid rgba(196,165,116,.13);
+  border-radius:3px;
+  background:#0e0c0a;
+}
+
+.pvr-group-stage {padding:12px;}
+
+.pvr-group-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.pvr-group-seat {
+  position:relative;
+  min-height:126px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  overflow:hidden;
+  border:1px dashed rgba(196,165,116,.18);
+  border-radius:2px;
+  background:radial-gradient(circle at 50% 35%,rgba(196,165,116,.045),transparent 42%),#0b0a08;
+  color:#756d62;
+  text-align:center;
+}
+
+.pvr-group-seat.is-host {
+  border-style:solid;
+  border-color:rgba(196,165,116,.36);
+  background:radial-gradient(circle at 50% 32%,rgba(196,165,116,.10),transparent 46%),#12100e;
+}
+
+.pvr-group-seat.is-host.is-oncam {box-shadow:inset 0 0 34px rgba(196,165,116,.045);}
+
+.pvr-group-avatar {
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(196,165,116,.30);
+  border-radius:50%;
+  background:#17130f;
+  color:#d4bc94;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:12px;
+  letter-spacing:.08em;
+}
+
+.pvr-group-seat > strong {
+  color:#cfc5b4;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.08em;
+}
+
+.pvr-group-seat > small {
+  color:#756d62;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+
+.pvr-group-seat.is-host > small {color:#c4a574;}
+
+.pvr-group-builder {
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+}
+
+.pvr-group-builder > span {
+  color:#9a9082;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.20em;
+}
+
+.pvr-group-builder > strong {
+  margin-top:5px;
+  color:#f3ece0;
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:17px;
+  font-weight:500;
+  letter-spacing:.06em;
+}
+
+.pvr-group-builder > p {
+  margin:9px 0 14px;
+  color:#83796b;
+  font-size:8px;
+  line-height:1.55;
+}
+
+.pvr-group-progress-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#9a9082;
+  font-size:7px;
+  letter-spacing:.14em;
+}
+
+.pvr-group-progress-head strong {color:#d4bc94;font-size:8px;}
+.pvr-group-progress {height:3px;margin-top:8px;overflow:hidden;background:#090806;}
+.pvr-group-progress > span {display:block;width:20%;height:100%;background:linear-gradient(90deg,#d4bc94,#8f7348);}
+.pvr-group-actions {display:grid;gap:8px;margin-top:auto;padding-top:16px;}
+
+.pvr-group-actions button {
+  min-height:39px;
+  border-radius:2px;
+  font:700 7px var(--pvr-body,Inter,sans-serif);
+  letter-spacing:.15em;
+  cursor:pointer;
+}
+
+.pvr-group-invite {border:1px solid rgba(196,165,116,.34);background:#1c1814;color:#d4bc94;}
+.pvr-group-camera {border:1px solid #c4a574;background:linear-gradient(180deg,#d4bc94,#b8955f);color:#1a150f;}
+
+.pvr-group-waiting {
+  min-height:39px;
+  display:grid;
+  place-items:center;
+  margin-top:8px;
+  border:1px solid rgba(196,165,116,.11);
+  color:#6f665b;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.16em;
+}
+
+.pvr-live-nav {grid-template-columns:repeat(6,1fr) !important;}
+.pvr-club-tabs button {padding-left:11px !important;padding-right:11px !important;}
+
+@keyframes pvrGroupPulse {
+  0%,100% {opacity:.58;transform:scale(.9);}
+  50% {opacity:1;transform:scale(1.12);}
+}
+
+/* ═══════════ NAV + ONCAM STATUS ═══════════ */
+.pvr-club-cam {
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:0 10px;
+  border:1px solid rgba(243,236,224,.10);
+  border-radius:2px;
+  background:#11100e;
+  color:#857d72;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.14em;
+  cursor:pointer;
+}
+
+.pvr-club-cam > span {width:7px;height:7px;border-radius:50%;background:#5a544c;}
+.pvr-club-cam.is-live {border-color:rgba(127,176,105,.38);background:rgba(127,176,105,.08);color:#b8d4b0;}
+.pvr-club-cam.is-live > span {background:#7fb069;box-shadow:0 0 9px rgba(127,176,105,.44);}
+.pvr-club-mobile-oncam {border-color:rgba(127,176,105,.38) !important;background:rgba(127,176,105,.08) !important;color:#b8d4b0 !important;}
+.pvr-live-group .pvr-live-section-head > div > span {color:var(--pvr-champagne,#c4a574) !important;}
+
+/* ═══════════ LAYOUT GUARD ═══════════ */
+.pvr-club-nav {display:block !important;visibility:visible !important;opacity:1 !important;}
+
+#videocall-stage.pvr-call-stage {
+  display:block !important;
+  min-height:0 !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+
+#videocall-stage > .pvr-call-copy,
+#videocall-stage > .pvr-video-shell {display:none !important;}
+
+#videocall-stage > .pvr-live-home {
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  min-height:0 !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  transform:none !important;
+}
+
+.pvr-live-home,
+.pvr-live-home *,
+.pvr-gallery-section,
+.pvr-gallery-section * {box-sizing:border-box;}
+
+.pvr-section-head .pvr-heart-wrap {
+  position:relative !important;
+  width:auto !important;
+  height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  flex:0 0 auto !important;
+  overflow:visible !important;
+}
+
+.pvr-section-head .heart-container {
+  position:relative !important;
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+  min-height:44px !important;
+  max-width:44px !important;
+  max-height:44px !important;
+  overflow:hidden !important;
+}
+
+.pvr-section-head .heart-container .svg-container {position:absolute !important;inset:0 !important;width:44px !important;height:44px !important;}
+.pvr-section-head .heart-container .svg-outline,
+.pvr-section-head .heart-container .svg-filled {position:absolute !important;inset:6px !important;width:32px !important;height:32px !important;max-width:32px !important;max-height:32px !important;}
+.pvr-section-head .heart-container .svg-celebrate {position:absolute !important;inset:-28px !important;width:100px !important;height:100px !important;max-width:100px !important;max-height:100px !important;pointer-events:none !important;}
+
+.pvr-gallery-section {position:relative !important;overflow:visible !important;}
+.pvr-section-head {position:relative !important;z-index:2 !important;}
+.pvr-workspace {position:relative !important;align-items:start !important;}
+.pvr-carousel,.pvr-photo-card,.pvr-selected-preview,.pvr-preview-frame {min-width:0 !important;max-width:100% !important;}
+.pvr-photo-card {position:relative !important;}
+.pvr-photo-card.is-selected {transform:translateY(-4px) !important;}
+.pvr-photo-card img {display:block !important;width:100% !important;height:300px !important;max-width:100% !important;object-fit:cover !important;}
+.pvr-selected-preview img,.pvr-preview-frame img {display:block !important;max-width:100% !important;object-fit:cover !important;}
+.pvr-mycam-dock,.pvr-mycam-mini {isolation:isolate;}
+.pvr-mycam-preview video {display:block !important;width:100% !important;height:100% !important;object-fit:cover !important;}
+
+/* ═══════════ CAMERA OVERLAY + PNG CONTROLS ═══════════ */
+.pvr-camera-studio {
+  width:760px !important;
+  max-width:calc(100vw - 30px) !important;
+  max-height:82vh !important;
+}
+
+.pvr-camera-preview {aspect-ratio:16 / 7 !important;}
+
+.pvr-camera-layout {
+  position:relative !important;
+  grid-template-columns:minmax(0,1fr) 250px !important;
+  gap:12px !important;
+  margin-top:12px !important;
+}
+
+.pvr-camera-settings {
+  position:absolute !important;
+  left:50% !important;
+  top:-58px !important;
+  z-index:30 !important;
+  width:auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  padding:6px !important;
+  transform:translateX(-50%) !important;
+  border:1px solid rgba(196,165,116,.20) !important;
+  border-radius:999px !important;
+  background:rgba(7,7,6,.74) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.38) !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+.pvr-camera-settings > span {display:none !important;}
+
+.pvr-camera-visibility,
+.pvr-camera-device-controls {
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  margin:0 !important;
+}
+
+.pvr-camera-visibility button,
+.pvr-camera-device-controls button {
+  position:relative !important;
+  width:40px !important;
+  min-width:40px !important;
+  height:40px !important;
+  min-height:40px !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:0 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:50% !important;
+  background:rgba(8,9,9,.86) !important;
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  overflow:hidden !important;
+}
+
+.pvr-camera-visibility button::before,
+.pvr-camera-device-controls button::before {
+  content:"" !important;
+  width:29px !important;
+  height:29px !important;
+  display:block !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  background-size:contain !important;
+  pointer-events:none !important;
+}
+
+.pvr-camera-visibility button:nth-child(1)::before {background-image:url("/assets/iconos/priv.png") !important;}
+.pvr-camera-visibility button:nth-child(2)::before {background-image:url("/assets/iconos/pub.png") !important;}
+.pvr-camera-device-controls button:nth-child(1)::before {background-image:url("/assets/iconos/rec.png") !important;}
+.pvr-camera-device-controls button:nth-child(2)::before {background-image:url("/assets/iconos/mic.png") !important;}
+
+.pvr-camera-visibility button.is-active,
+.pvr-camera-device-controls button:not(.is-off) {
+  border-color:rgba(196,165,116,.62) !important;
+  background:rgba(30,24,17,.92) !important;
+  box-shadow:0 0 0 1px rgba(196,165,116,.10),0 4px 18px rgba(0,0,0,.38) !important;
+}
+
+.pvr-camera-device-controls button.is-off {opacity:.42 !important;filter:grayscale(.7) !important;}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:1320px) {
+  .pvr-club-code {display:none;}
+  .pvr-club-tabs button {padding:0 10px;}
+}
+
+@media(max-width:1120px) {
+  .pvr-workspace {grid-template-columns:1fr !important;}
+  .pvr-side-menu {position:relative !important;top:auto !important;}
+}
+
+@media(max-width:1100px) {
+  .pvr-club-cam,
+  .pvr-club-profile {display:none;}
+}
+
+@media(max-width:980px) {
+  .pvr-group-layout {grid-template-columns:1fr;}
+  .pvr-group-builder {min-height:220px;}
+}
+
+@media(max-width:700px) {
+  .pvr-camera-studio {width:calc(100vw - 16px) !important;max-height:calc(100dvh - 16px) !important;}
+  .pvr-camera-preview {aspect-ratio:4 / 5 !important;}
+  .pvr-camera-layout {grid-template-columns:1fr !important;}
+  .pvr-camera-settings {top:-56px !important;}
+  .pvr-camera-actions {grid-column:1 !important;}
+}
+
+@media(max-width:650px) {
+  .pvr-live-oncam {align-items:flex-start;flex-direction:column;}
+  .pvr-live-oncam > button {width:100%;}
+  .pvr-group-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .pvr-group-seat {min-height:112px;}
+  .pvr-live-nav {grid-template-columns:repeat(3,1fr) !important;}
+
+  .pvr-page {padding-left:10px !important;padding-right:10px !important;}
+  #videocall-stage.pvr-call-stage {margin-top:14px !important;}
+  .pvr-live-home {width:100% !important;overflow:hidden !important;}
+  .pvr-section-head .pvr-heart-wrap {height:38px !important;}
+  .pvr-section-head .heart-container {width:38px !important;height:38px !important;min-width:38px !important;min-height:38px !important;max-width:38px !important;max-height:38px !important;}
+  .pvr-section-head .heart-container .svg-container {width:38px !important;height:38px !important;}
+  .pvr-section-head .heart-container .svg-outline,
+  .pvr-section-head .heart-container .svg-filled {inset:5px !important;width:28px !important;height:28px !important;}
+}
