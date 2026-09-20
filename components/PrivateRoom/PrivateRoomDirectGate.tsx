@@ -8,6 +8,7 @@ import "./PrivateRoomDirectGate.css";
 
 const ACCESS_CODE_KEY = "userfx_access_code";
 const STORAGE_KEY = "vault_unlocked";
+const USERNAME_STORAGE_KEY = "userfx_telegram_username";
 const MAX_ATTEMPTS = 5;
 
 type DirectGateProps = {
@@ -15,8 +16,10 @@ type DirectGateProps = {
 };
 
 type SessionResponse = {
+  ok?: boolean;
   authenticated?: boolean;
   planId?: "basic" | "pro" | "vip";
+  error?: string;
 };
 
 type VerifyResponse = {
@@ -24,6 +27,39 @@ type VerifyResponse = {
   planId?: "basic" | "pro" | "vip";
   error?: string;
 };
+
+type TelegramEligibilityResponse = {
+  ok?: boolean;
+  eligible?: boolean;
+  username?: string;
+  error?: string;
+};
+
+type IdentityResponse = {
+  ok?: boolean;
+  verified?: boolean;
+  username?: string;
+  error?: string;
+};
+
+function normalizeTelegramUsername(value:string) {
+  const clean = String(value || "")
+    .trim()
+    .replace(/^@+/,"")
+    .replace(/[^A-Za-z0-9_]/g,"")
+    .slice(0,32);
+
+  return clean ? `@${clean}` : "";
+}
+
+function normalizeSpecialSuffix(value:string) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/^SPCL-?/i,"")
+    .replace(/[^A-HJ-NP-Z2-9]/g,"")
+    .slice(0,4);
+}
 
 export default function PrivateRoomDirectGate({children}:DirectGateProps) {
   const [checking,setChecking] = useState(true);
@@ -34,11 +70,31 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
   const [error,setError] = useState("");
   const [attempts,setAttempts] = useState(0);
 
+  const [telegramOpen,setTelegramOpen] = useState(false);
+  const [telegramUsername,setTelegramUsername] = useState("");
+  const [telegramVerified,setTelegramVerified] = useState(false);
+  const [telegramLoading,setTelegramLoading] = useState(false);
+  const [telegramError,setTelegramError] = useState("");
+  const [specialCode,setSpecialCode] = useState("");
+  const [specialLoading,setSpecialLoading] = useState(false);
+
   /* ─────   LOCAL DEV ACCESS ─────── */
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     setAuthenticated(true);
     setChecking(false);
+  },[]);
+
+  /* ─────   SAVED TELEGRAM USERNAME ─────── */
+  useEffect(() => {
+    try {
+      const saved = normalizeTelegramUsername(
+        localStorage.getItem(USERNAME_STORAGE_KEY) || "",
+      );
+      if (saved) setTelegramUsername(saved);
+    } catch {
+      // Storage unavailable.
+    }
   },[]);
 
   /* ─────   EXISTING ACCESS SESSION ─────── */
@@ -131,6 +187,127 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
     }
   }
 
+  /* ─────   TELEGRAM USERNAME CHECK ─────── */
+  async function handleTelegramSubmit(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (telegramLoading || specialLoading) return;
+
+    const normalizedUsername = normalizeTelegramUsername(telegramUsername);
+
+    if (!normalizedUsername) {
+      setTelegramError("ENTER A VALID TELEGRAM USERNAME");
+      setTelegramVerified(false);
+      return;
+    }
+
+    try {
+      setTelegramLoading(true);
+      setTelegramError("");
+      setTelegramVerified(false);
+      setSpecialCode("");
+
+      const response = await fetch(
+        `/api/telegram-eligibility?username=${encodeURIComponent(normalizedUsername)}`,
+        {
+          method:"GET",
+          headers:{Accept:"application/json"},
+          credentials:"same-origin",
+          cache:"no-store",
+        },
+      );
+
+      const data:TelegramEligibilityResponse = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data?.eligible) {
+        throw new Error(data?.error || "USERNAME IS NOT ACTIVE IN TELEGRAMFX");
+      }
+
+      const verifiedUsername = normalizeTelegramUsername(data.username || normalizedUsername);
+      setTelegramUsername(verifiedUsername);
+      setTelegramVerified(true);
+
+      try {
+        localStorage.setItem(USERNAME_STORAGE_KEY,verifiedUsername);
+      } catch {
+        // Storage unavailable.
+      }
+    } catch (telegramCheckError) {
+      setTelegramError(
+        telegramCheckError instanceof Error && telegramCheckError.message
+          ? telegramCheckError.message
+          : "TELEGRAMFX CHECK FAILED",
+      );
+    } finally {
+      setTelegramLoading(false);
+    }
+  }
+
+  /* ─────   SPECIAL CODE VERIFY ─────── */
+  async function handleSpecialSubmit(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!telegramVerified || specialLoading || telegramLoading) return;
+
+    const normalizedUsername = normalizeTelegramUsername(telegramUsername);
+    const specialSuffix = normalizeSpecialSuffix(specialCode);
+
+    if (!normalizedUsername || specialSuffix.length !== 4) {
+      setTelegramError("ENTER YOUR COMPLETE SPCL CODE");
+      return;
+    }
+
+    try {
+      setSpecialLoading(true);
+      setTelegramError("");
+
+      const identityResponse = await fetch("/api/identity",{
+        method:"POST",
+        headers:{
+          Accept:"application/json",
+          "Content-Type":"application/json",
+        },
+        credentials:"same-origin",
+        cache:"no-store",
+        body:JSON.stringify({
+          username:normalizedUsername,
+          code:`SPCL-${specialSuffix}`,
+        }),
+      });
+
+      const identityData:IdentityResponse = await identityResponse.json().catch(() => ({}));
+
+      if (!identityResponse.ok || !identityData?.verified) {
+        throw new Error(identityData?.error || "IDENTITY VERIFICATION FAILED");
+      }
+
+      const sessionResponse = await fetch("/api/access-session",{
+        method:"POST",
+        headers:{Accept:"application/json"},
+        credentials:"same-origin",
+        cache:"no-store",
+      });
+
+      const sessionData:SessionResponse = await sessionResponse.json().catch(() => ({}));
+
+      if (!sessionResponse.ok || !sessionData?.authenticated) {
+        throw new Error(sessionData?.error || "PRIVATE SESSION COULD NOT BE CREATED");
+      }
+
+      sessionStorage.setItem(STORAGE_KEY,"true");
+      sessionStorage.setItem("vault_plan","vip");
+      sessionStorage.setItem(ACCESS_CODE_KEY,`SPCL-${specialSuffix}`);
+      setAuthenticated(true);
+    } catch (specialError) {
+      setSpecialCode("");
+      setTelegramError(
+        specialError instanceof Error && specialError.message
+          ? specialError.message
+          : "SPECIAL CODE VERIFICATION FAILED",
+      );
+    } finally {
+      setSpecialLoading(false);
+    }
+  }
+
   if (checking) {
     return (
       <main className="pvr-direct-checking">
@@ -202,34 +379,110 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
 
         {/* ========   TELEGRAM + SPECIAL CODE =========================== */}
         <div className="pvr-direct-shortcuts">
-          <a
-            className="pvr-direct-shortcut"
-            href="https://t.me/User18Fx_bot?start=getcode"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open Telegram bot"
+          <button
+            type="button"
+            className={`pvr-direct-shortcut ${telegramOpen ? "is-active" : ""}`}
+            onClick={() => {
+              setTelegramOpen((current) => !current);
+              setTelegramError("");
+            }}
+            aria-expanded={telegramOpen}
+            aria-controls="pvr-direct-telegram-panel"
           >
             <img src="/assets/iconos/telegram.png" alt="" aria-hidden="true"/>
             <span>
-              <small>OPEN BOT</small>
+              <small>VERIFY USERNAME</small>
               <strong>TELEGRAM</strong>
             </span>
-          </a>
+          </button>
 
-          <a
-            className="pvr-direct-shortcut pvr-direct-shortcut--special"
-            href="https://t.me/User18Fx_bot?start=identity"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            className={`pvr-direct-shortcut pvr-direct-shortcut--special ${telegramVerified ? "is-ready" : ""}`}
+            onClick={() => {
+              if (!telegramVerified) {
+                setTelegramOpen(true);
+                setTelegramError("VERIFY YOUR TELEGRAM USERNAME FIRST");
+                return;
+              }
+              window.open("https://t.me/User18Fx_bot?start=identity","_blank","noopener,noreferrer");
+            }}
             aria-label="Get special code"
           >
             <img src="/assets/iconos/corona.png" alt="" aria-hidden="true"/>
             <span>
-              <small>MEMBER IDENTITY</small>
+              <small>{telegramVerified ? "GET SPCL CODE" : "VERIFY FIRST"}</small>
               <strong>SPECIAL CODE</strong>
             </span>
-          </a>
+          </button>
         </div>
+
+        {telegramOpen && (
+          <section id="pvr-direct-telegram-panel" className="pvr-direct-telegram-panel">
+            <header>
+              <span>TELEGRAM IDENTITY</span>
+              <strong>{telegramVerified ? "USERNAME VERIFIED" : "ENTER YOUR USERNAME"}</strong>
+            </header>
+
+            <form className="pvr-direct-telegram-form" onSubmit={handleTelegramSubmit}>
+              <div className={`pvr-direct-username ${telegramVerified ? "is-verified" : ""}`}>
+                <span>@</span>
+                <input
+                  type="text"
+                  value={telegramUsername.replace(/^@/,"")}
+                  onChange={(event) => {
+                    setTelegramUsername(event.target.value);
+                    setTelegramVerified(false);
+                    setSpecialCode("");
+                    setTelegramError("");
+                  }}
+                  placeholder="username"
+                  maxLength={32}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  autoComplete="off"
+                  spellCheck={false}
+                  disabled={telegramLoading || specialLoading}
+                  aria-label="Telegram username"
+                />
+                <button type="submit" disabled={telegramLoading || specialLoading}>
+                  {telegramLoading ? "CHECKING…" : telegramVerified ? "VERIFIED" : "CHECK USER"}
+                </button>
+              </div>
+            </form>
+
+            {telegramVerified && (
+              <form className="pvr-direct-special-form" onSubmit={handleSpecialSubmit}>
+                <div className="pvr-direct-special-input">
+                  <span>SPCL</span>
+                  <i>—</i>
+                  <input
+                    type="text"
+                    value={specialCode}
+                    onChange={(event) => {
+                      setSpecialCode(normalizeSpecialSuffix(event.target.value));
+                      setTelegramError("");
+                    }}
+                    placeholder="CODE"
+                    maxLength={4}
+                    autoCapitalize="characters"
+                    autoComplete="off"
+                    disabled={specialLoading}
+                    aria-label="Special access code"
+                  />
+                </div>
+
+                <button type="submit" disabled={specialLoading || specialCode.length !== 4}>
+                  {specialLoading ? "VERIFYING…" : "ENTER WITH SPECIAL CODE"}
+                </button>
+              </form>
+            )}
+
+            {telegramError && (
+              <p className="pvr-direct-telegram-error" role="alert">{telegramError}</p>
+            )}
+          </section>
+        )}
 
         <footer className="pvr-direct-foot">
           <button type="button" onClick={() => {window.location.hash = "#/";}}>← BACK</button>
