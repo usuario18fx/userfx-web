@@ -2,7 +2,7 @@
 
 .pvr-account-launcher {
   position: fixed;
-  top: 22px;
+  top: 76px;
   right: 22px;
   z-index: 12020;
   min-width: 128px;
@@ -324,7 +324,7 @@
 /* ─────   MOBILE ─────── */
 @media (max-width:600px) {
   .pvr-account-launcher {
-    top: 12px;
+    top: 64px;
     right: 10px;
     min-width: 105px;
     min-height: 38px;
