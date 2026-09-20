@@ -1,0 +1,244 @@
+/* ═══════════ USER FX · MY CAM DEFAULT VIEW ═══════════ */
+
+body.pvr-camera-docked .pvr-camera-backdrop,
+body.pvr-camera-docked .pvr-camera-studio {
+  opacity:0 !important;
+  pointer-events:none !important;
+  visibility:hidden !important;
+}
+
+.pvr-mycam-dock,
+.pvr-mycam-mini {
+  position:fixed;
+  bottom:20px;
+  z-index:13250;
+  border:1px solid rgba(196,165,116,.34);
+  background:rgba(18,16,14,.97);
+  color:var(--pvr-ivory,#f3ece0);
+  box-shadow:0 24px 70px rgba(0,0,0,.62);
+  backdrop-filter:blur(16px);
+}
+
+.pvr-mycam-dock.is-left,
+.pvr-mycam-mini.is-left {
+  left:18px;
+}
+
+.pvr-mycam-dock.is-right,
+.pvr-mycam-mini.is-right {
+  right:18px;
+}
+
+.pvr-mycam-dock {
+  width:250px;
+  overflow:hidden;
+  border-radius:3px;
+}
+
+.pvr-mycam-head {
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 9px 7px 11px;
+  border-bottom:1px solid rgba(196,165,116,.14);
+  background:#0e0c0a;
+}
+
+.pvr-mycam-head > div:first-child {
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.pvr-mycam-live-dot,
+.pvr-mycam-mini-dot {
+  width:7px;
+  height:7px;
+  flex:0 0 7px;
+  border-radius:50%;
+  background:#7fb069;
+  box-shadow:0 0 10px rgba(127,176,105,.45);
+}
+
+.pvr-mycam-head strong {
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.19em;
+}
+
+.pvr-mycam-head-actions {
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+
+.pvr-mycam-head-actions button {
+  width:24px;
+  height:24px;
+  border:0;
+  background:transparent;
+  color:#8d8478;
+  font-size:10px;
+  cursor:pointer;
+}
+
+.pvr-mycam-head-actions button:hover {
+  color:var(--pvr-ivory,#f3ece0);
+}
+
+.pvr-mycam-preview {
+  position:relative;
+  width:100%;
+  aspect-ratio:4 / 3;
+  display:block;
+  overflow:hidden;
+  padding:0;
+  border:0;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(196,165,116,.09),transparent 35%),
+    linear-gradient(180deg,#161310,#090807);
+  cursor:pointer;
+}
+
+.pvr-mycam-preview video {
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  transform:scaleX(-1);
+}
+
+.pvr-mycam-placeholder {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-family:var(--pvr-display,"Cinzel",serif);
+  font-size:42px;
+  letter-spacing:.08em;
+}
+
+.pvr-mycam-preview-meta {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:20px 9px 8px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
+}
+
+.pvr-mycam-preview-meta strong {
+  overflow:hidden;
+  color:#f3ece0;
+  font-size:9px;
+  font-weight:600;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.pvr-mycam-preview-meta small {
+  padding:3px 5px;
+  border:1px solid rgba(196,165,116,.28);
+  background:rgba(15,13,11,.70);
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.14em;
+}
+
+.pvr-mycam-controls {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  padding:7px;
+  border-top:1px solid rgba(196,165,116,.12);
+  background:#0e0c0a;
+}
+
+.pvr-mycam-controls button {
+  min-height:30px;
+  padding:0 4px;
+  border:1px solid rgba(196,165,116,.18);
+  border-radius:2px;
+  background:#17130f;
+  color:#b8ad9d;
+  font-size:6px;
+  font-weight:700;
+  letter-spacing:.10em;
+  cursor:pointer;
+}
+
+.pvr-mycam-controls button:hover {
+  border-color:rgba(196,165,116,.42);
+  color:var(--pvr-champagne-soft,#d4bc94);
+}
+
+.pvr-mycam-controls button.is-end {
+  border-color:rgba(163,77,92,.32);
+  background:#211014;
+  color:#d4a0a8;
+}
+
+.pvr-mycam-mini {
+  min-width:190px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:8px 11px;
+  border-radius:3px;
+  cursor:pointer;
+}
+
+.pvr-mycam-mini > span:last-child {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+}
+
+.pvr-mycam-mini strong {
+  color:var(--pvr-champagne-soft,#d4bc94);
+  font-size:7px;
+  letter-spacing:.18em;
+}
+
+.pvr-mycam-mini small {
+  color:#81786d;
+  font-size:6px;
+  letter-spacing:.11em;
+}
+
+/* ─────   MOBILE ─────── */
+@media(max-width:650px) {
+  .pvr-mycam-dock {
+    width:190px;
+    bottom:12px;
+  }
+
+  .pvr-mycam-dock.is-left,
+  .pvr-mycam-mini.is-left {
+    left:10px;
+  }
+
+  .pvr-mycam-dock.is-right,
+  .pvr-mycam-mini.is-right {
+    right:10px;
+  }
+
+  .pvr-mycam-mini {
+    min-width:160px;
+    bottom:12px;
+  }
+
+  .pvr-mycam-controls {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
