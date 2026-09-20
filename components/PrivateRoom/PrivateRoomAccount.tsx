@@ -36,6 +36,8 @@ type AccountResponse = {
   error?: string;
 };
 
+const DEV_PROFILE_KEY = "userfx_dev_account_profile";
+
 const EMPTY_PROFILE:AccountProfile = {
   displayName:"",
   bio:"",
@@ -57,6 +59,27 @@ function getInitials(account:AccountData) {
   return clean.slice(0,2).toUpperCase() || "FX";
 }
 
+function getDevProfile():AccountProfile {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DEV_PROFILE_KEY) || "{}");
+    return {...EMPTY_PROFILE,...stored};
+  } catch {
+    return EMPTY_PROFILE;
+  }
+}
+
+function createDevAccount():AccountData {
+  return {
+    accountId:"usr_DEV_USER18FX",
+    telegramUsername:"@User18Fx",
+    planId:"vip",
+    accessMode:"telegram_identity",
+    accessLabel:"SPCL",
+    memberAccess:true,
+    profile:getDevProfile(),
+  };
+}
+
 export default function PrivateRoomAccount() {
   const [account,setAccount] = useState<AccountData | null>(null);
   const [profile,setProfile] = useState<AccountProfile>(EMPTY_PROFILE);
@@ -64,6 +87,15 @@ export default function PrivateRoomAccount() {
   const [loading,setLoading] = useState(true);
   const [saving,setSaving] = useState(false);
   const [message,setMessage] = useState("");
+
+  /* ─────   LOCAL DEV ACCOUNT ─────── */
+  const loadDevAccount = useCallback(() => {
+    if (!import.meta.env.DEV) return false;
+    const devAccount = createDevAccount();
+    setAccount(devAccount);
+    setProfile(devAccount.profile);
+    return true;
+  },[]);
 
   /* ─────   LOAD ACCOUNT ─────── */
   useEffect(() => {
@@ -80,17 +112,22 @@ export default function PrivateRoomAccount() {
       )
       .then(({response,data}) => {
         if (cancelled) return;
-        if (!response.ok || !data?.authenticated || !data.account) return;
+        if (!response.ok || !data?.authenticated || !data.account) {
+          loadDevAccount();
+          return;
+        }
         setAccount(data.account);
         setProfile({...EMPTY_PROFILE,...data.account.profile});
       })
-      .catch(() => {})
+      .catch(() => {
+        if (!cancelled) loadDevAccount();
+      })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
     return () => {cancelled = true;};
-  },[]);
+  },[loadDevAccount]);
 
   /* ─────   PROFILE INPUT ─────── */
   const handleTextChange = useCallback((event:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -113,6 +150,13 @@ export default function PrivateRoomAccount() {
     try {
       setSaving(true);
       setMessage("");
+
+      if (import.meta.env.DEV && account?.accountId === "usr_DEV_USER18FX") {
+        localStorage.setItem(DEV_PROFILE_KEY,JSON.stringify(profile));
+        setAccount((current) => current ? {...current,profile} : current);
+        setMessage("PROFILE SAVED");
+        return;
+      }
 
       const response = await fetch("/api/account",{
         method:"PATCH",
@@ -143,7 +187,7 @@ export default function PrivateRoomAccount() {
     } finally {
       setSaving(false);
     }
-  },[profile,saving]);
+  },[account,profile,saving]);
 
   const accessLabel = account ? getAccessLabel(account) : "";
 
