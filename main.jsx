@@ -6,6 +6,7 @@ import "./global.css";
 import "./restricted-type.css";
 import "./protocol-premium.css";
 import "./protocol-selection.js";
+import "./robot-bubble.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
