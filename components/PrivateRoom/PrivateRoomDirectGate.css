@@ -14,6 +14,17 @@
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 
+.pvr-direct-gate {
+  --pvr-direct-scale:.9;
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+
 .pvr-direct-checking {
   align-content:center;
   gap:8px;
@@ -34,6 +45,9 @@
 }
 
 .pvr-direct-card {
+  position:absolute;
+  top:50%;
+  left:50%;
   width:min(760px,100%);
   padding:28px;
   border:1px solid rgba(196,165,116,.25);
@@ -42,6 +56,8 @@
     radial-gradient(60% 50% at 0% 100%,rgba(122,46,58,.08),transparent 72%),
     linear-gradient(180deg,#15120f,#0d0b09);
   box-shadow:0 32px 90px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.025);
+  transform:translate(-50%,-50%) scale(var(--pvr-direct-scale));
+  transform-origin:center;
 }
 
 .pvr-direct-head {
@@ -574,8 +590,6 @@
 .pvr-direct-card {
   width:min(680px,100%);
   padding:24px;
-  transform:scale(.9);
-  transform-origin:center;
 }
 
 .pvr-direct-shortcuts {
@@ -676,7 +690,6 @@
   .pvr-direct-card {
     width:min(620px,100%);
     padding:18px 13px;
-    transform:scale(.9);
   }
 
   .pvr-direct-shortcuts {

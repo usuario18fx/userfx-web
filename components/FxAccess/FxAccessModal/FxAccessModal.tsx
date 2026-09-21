@@ -29,7 +29,7 @@ const USERNAME_STORAGE_KEY = "userfx_telegram_username";
 /* ================= ICONOS ================= */
 const ACCESS_ICONS = {
   lock: "/assets/iconos/candado.png",
-  telegram: "/assets//iconos/telegram.png",
+  telegram: "/assets/iconos/telegram.png",
 } as const;
 const CrownIcon = () => (
   <svg width="22" height="18" viewBox="0 0 36 24" aria-hidden="true">
@@ -632,7 +632,7 @@ export function FxAccessModal({
 
                   {/* ─────   TELEGRAM ─────── */}
                   <div className="sl-btn-wrap">
-                    <button type="button" className="sl-btn" onClick={openTelegramMode} disabled={busy}>
+                    <button type="button" className="sl-btn sl-upgrade-btn sl-telegram-btn" onClick={openTelegramMode} disabled={busy}>
                       <img src={ACCESS_ICONS.telegram} alt="" className="sl-menu-icon" draggable={false} />
                       <span>TELEGRAM</span>
                     </button>
@@ -688,12 +688,12 @@ export function FxAccessModal({
 
                   {/* ─────   TELEGRAM ACTIONS ─────── */}
                   <div className="sl-action-grid">
-                    <button type="submit" className={`sl-btn ${telegramAuthorized ? "is-approved" : ""}`} disabled={busy}>
+                    <button type="submit" className={`sl-btn sl-upgrade-btn sl-telegram-btn ${telegramAuthorized ? "is-approved" : ""}`} disabled={busy}>
                       <img src="/assets/iconos/ok.png" alt="" className="sl-check-icon" draggable={false} />
                       {identityLoading ? "CHECKING..." : telegramAuthorized ? "USER AUTHORIZED" : "CHECK USER"}
                     </button>
 
-                    <button type="button" className={`sl-btn sl-special-btn ${telegramAuthorized ? "is-ready" : ""}`} onClick={openSpecialCode} disabled={!telegramAuthorized || busy}>
+                    <button type="button" className={`sl-btn sl-upgrade-btn sl-special-btn ${telegramAuthorized ? "is-ready" : ""}`} onClick={openSpecialCode} disabled={!telegramAuthorized || busy}>
                       <CrownIcon />
                       <span>SPECIAL CODE</span>
                     </button>

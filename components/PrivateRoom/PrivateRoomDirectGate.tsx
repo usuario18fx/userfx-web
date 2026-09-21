@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
@@ -62,6 +63,8 @@ function normalizeSpecialSuffix(value:string) {
 }
 
 export default function PrivateRoomDirectGate({children}:DirectGateProps) {
+  const gateRef = useRef<HTMLElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const [checking,setChecking] = useState(true);
   const [authenticated,setAuthenticated] = useState(false);
   const [prefix,setPrefix] = useState("");
@@ -133,6 +136,53 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
 
     return () => {cancelled = true;};
   },[]);
+
+  /* ─────   FIT FULL GATE INSIDE VIEWPORT ─────── */
+  useEffect(() => {
+    if (checking || authenticated) return;
+
+    const gate = gateRef.current;
+    const card = cardRef.current;
+    if (!gate || !card) return;
+
+    const fitGate = () => {
+      const gateStyles = window.getComputedStyle(gate);
+      const horizontalPadding =
+        Number.parseFloat(gateStyles.paddingLeft) +
+        Number.parseFloat(gateStyles.paddingRight);
+      const verticalPadding =
+        Number.parseFloat(gateStyles.paddingTop) +
+        Number.parseFloat(gateStyles.paddingBottom);
+      const availableWidth = Math.max(1,gate.clientWidth - horizontalPadding);
+      const availableHeight = Math.max(1,gate.clientHeight - verticalPadding);
+      const cardWidth = Math.max(1,card.offsetWidth);
+      const cardHeight = Math.max(1,card.scrollHeight);
+      const scale = Math.min(.9,availableWidth / cardWidth,availableHeight / cardHeight);
+
+      gate.style.setProperty("--pvr-direct-scale",String(Math.max(.25,scale)));
+    };
+
+    const animationFrame = window.requestAnimationFrame(fitGate);
+    const resizeObserver = new ResizeObserver(fitGate);
+    resizeObserver.observe(gate);
+    resizeObserver.observe(card);
+    window.addEventListener("resize",fitGate);
+    window.visualViewport?.addEventListener("resize",fitGate);
+
+    const bodyOverflow = document.body.style.overflow;
+    const htmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize",fitGate);
+      window.visualViewport?.removeEventListener("resize",fitGate);
+      document.body.style.overflow = bodyOverflow;
+      document.documentElement.style.overflow = htmlOverflow;
+    };
+  },[checking,authenticated]);
 
   /* ─────   VERIFY CODE ─────── */
   async function handleSubmit(event:FormEvent<HTMLFormElement>) {
@@ -320,8 +370,8 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
   if (authenticated) return <>{children}</>;
 
   return (
-    <main className="pvr-direct-gate">
-      <section className="pvr-direct-card">
+    <main ref={gateRef} className="pvr-direct-gate">
+      <section ref={cardRef} className="pvr-direct-card">
         {/* ========   DIRECT PRIVATE ROOM ACCESS =========================== */}
         <header className="pvr-direct-head">
           <span>USER FX · PRIVATE CLUB</span>

@@ -80,7 +80,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(-49px) scale(.75);/* ↗️ sube todo un poco */
+  transform: translateY(-49px) scale(.9);
   transform-origin: center center;
 }
 /* ─────   HEADER ─────── */
@@ -481,6 +481,90 @@ background: radial-gradient(0 0 14px #fc103c52, #b631319a);
   letter-spacing: .055em;
   text-indent: 0;
 }
+/* ─────   TELEGRAM + SPECIAL · UPGRADE BUTTONS ─────── */
+.sl-upgrade-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: 1.2em 1rem;
+  border: 0;
+  border-radius: 11px;
+  clip-path: none;
+  font-weight: 700;
+  text-indent: 0;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  background-position: left center;
+  transition:
+    background-position .3s ease,
+    background-size .3s ease,
+    color .3s ease,
+    transform .15s ease,
+    box-shadow .25s ease;
+}
+.sl-upgrade-btn:hover:not(:disabled) {
+  background-size: 320% 100%;
+  background-position: right center;
+  filter: none;
+}
+.sl-upgrade-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(.98);
+}
+.sl-upgrade-btn svg {
+  width: 23px;
+  height: auto;
+  flex: 0 0 23px;
+  transition: fill .3s ease, color .3s ease, transform .3s ease;
+}
+/* ─────   TELEGRAM · BLUE ─────── */
+.sl-telegram-btn {
+  color: #fff;
+  background-image: linear-gradient(
+    15deg,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f
+  );
+  text-shadow: 2px 2px 3px rgba(0,74,128,.35);
+  box-shadow:
+    0 30px 10px -20px rgba(32,169,239,.28),
+    0 0 16px rgba(32,169,239,.22),
+    inset 0 1px 0 rgba(255,255,255,.42);
+}
+.sl-telegram-btn span {
+  color: inherit;
+}
+.sl-telegram-btn .sl-menu-icon,
+.sl-telegram-btn .sl-check-icon {
+  filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,47,83,.5));
+}
+.sl-btn.sl-telegram-btn.is-approved {
+  color: #05110c;
+  background-image: linear-gradient(
+    15deg,
+    #88ffd0,
+    #4dffab,
+    #2ac984,
+    #16875a,
+    #88ffd0,
+    #4dffab,
+    #2ac984,
+    #16875a
+  );
+  text-shadow: 1px 1px 2px rgba(255,255,255,.28);
+  box-shadow:
+    0 30px 10px -20px rgba(77,255,171,.25),
+    0 0 16px rgba(77,255,171,.22),
+    inset 0 1px 0 rgba(255,255,255,.48);
+}
 /* ─────   CHECK USER ─────── */
 .sl-check-icon {
   width: 15px;
@@ -504,27 +588,38 @@ background: radial-gradient(0 0 14px #fc103c52, #b631319a);
 /* ─────   SPECIAL CODE ─────── */
 .sl-special-btn {
   position: relative;
-  color: #111;
-  background: linear-gradient( 15deg,
-   #ddff00,#b8d100,#93a300,
-   #6e7500,#ddff00,#b8d100,
-   #93a300,#6e7500);
-  background-size: 300% 100%;
+  color: #000;
+  background-image: linear-gradient(
+    15deg,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500
+  );
   text-shadow: none;
+  box-shadow:
+    0 30px 10px -20px rgba(221,255,0,.28),
+    0 0 16px rgba(221,255,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.38);
 }
 .sl-special-btn svg {
-  width: 20px;
-  height: 17px;
-  flex: 0 0 20px;
+  width: 23px;
+  height: auto;
+  flex: 0 0 23px;
   color: #000;
+  fill: #000;
 }
 .sl-special-btn span {
   color: #000;
 }
 .sl-special-btn.is-ready:hover {
-  background-size: 340% 100%;
+  background-size: 320% 100%;
   background-position: right center;
-  filter: brightness(1.10);
+  filter: none;
 }
 .sl-special-btn:disabled {
   opacity: 1;
@@ -704,7 +799,7 @@ background: radial-gradient(0 0 14px #fc103c52, #b631319a);
   }
   .sl-arch {top:18px; width:min(540px,94vw);
   }
-  .sl-scene {width:min(94vw,360px); margin:0 auto; transform:translateY(-10px);
+  .sl-scene {width:min(94vw,360px); margin:0 auto; transform:translateY(-10px) scale(.9); transform-origin:center;
   }
   .sl-header {margin-top:0;
   }
@@ -732,7 +827,7 @@ background: radial-gradient(0 0 14px #fc103c52, #b631319a);
   }
   .sl-hand-right {right:2px;
   }
-sl-card {width:100%; padding:40px 14px 16px; border-radius:17px;
+  .sl-card {width:100%; padding:40px 14px 16px; border-radius:17px;
   }
   .sl-card-rose {top:-19px;
   }
@@ -767,6 +862,10 @@ sl-card {width:100%; padding:40px 14px 16px; border-radius:17px;
   .sl-action-grid {gap:5px;
   }
   .sl-action-grid .sl-btn {min-height:35px; padding:6px 4px; font-size:5.6px; letter-spacing:.03em;
+  }
+  .sl-action-grid .sl-upgrade-btn {padding:1.2em .65rem;
+  }
+  .sl-upgrade-btn {border-radius:9px;
   }
   .sl-check-icon {width:12px; height:12px; flex-basis:12px;
   }
