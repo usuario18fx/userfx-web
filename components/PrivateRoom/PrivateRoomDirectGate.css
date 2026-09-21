@@ -569,3 +569,132 @@
     width:100%;
   }
 }
+
+/* ═══════════ COMPACT MODAL · TELEGRAM + SPECIAL CODE ═══════════ */
+.pvr-direct-card {
+  width:min(680px,100%);
+  padding:24px;
+  transform:scale(.9);
+  transform-origin:center;
+}
+
+.pvr-direct-shortcuts {
+  width:fit-content;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:16px auto 0;
+}
+
+.pvr-direct-shortcut {
+  width:58px;
+  min-width:58px;
+  height:50px;
+  min-height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  padding:1.2em 1rem;
+  border:0;
+  border-radius:11px;
+  cursor:pointer;
+  background:linear-gradient(
+    15deg,
+    #2aabee,
+    #229ed9,
+    #168ac2,
+    #0d6fa0,
+    #2aabee,
+    #229ed9,
+    #168ac2,
+    #0d6fa0
+  ) no-repeat;
+  background-size:300%;
+  background-position:left center;
+  box-shadow:0 30px 10px -20px rgba(42,171,238,.24);
+  transition:background .3s ease,color .3s ease,transform .16s ease;
+}
+
+.pvr-direct-shortcut:hover,
+.pvr-direct-shortcut.is-active {
+  background-size:320%;
+  background-position:right center;
+  transform:translateY(-1px);
+}
+
+.pvr-direct-shortcut span {
+  display:none;
+}
+
+.pvr-direct-shortcut img {
+  width:23px;
+  height:23px;
+  display:block;
+  object-fit:contain;
+  filter:brightness(0) invert(1);
+  transition:.3s ease;
+}
+
+.pvr-direct-shortcut:hover img {
+  transform:scale(1.06);
+}
+
+.pvr-direct-shortcut--special {
+  background:linear-gradient(
+    15deg,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500
+  ) no-repeat;
+  background-size:300%;
+  background-position:left center;
+  box-shadow:0 30px 10px -20px rgba(221,255,0,.20);
+}
+
+.pvr-direct-shortcut--special:hover,
+.pvr-direct-shortcut--special.is-ready {
+  background-size:320%;
+  background-position:right center;
+}
+
+.pvr-direct-shortcut--special:not(.is-ready) {
+  opacity:.58;
+}
+
+.pvr-direct-shortcut--special img {
+  filter:brightness(0) saturate(100%);
+}
+
+@media(max-width:650px) {
+  .pvr-direct-card {
+    width:min(620px,100%);
+    padding:18px 13px;
+    transform:scale(.9);
+  }
+
+  .pvr-direct-shortcuts {
+    display:flex;
+    grid-template-columns:none;
+    gap:10px;
+  }
+
+  .pvr-direct-shortcut {
+    width:54px;
+    min-width:54px;
+    height:46px;
+    min-height:46px;
+    padding:1em .85rem;
+  }
+
+  .pvr-direct-shortcut img {
+    width:21px;
+    height:21px;
+  }
+}
