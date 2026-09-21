@@ -84,7 +84,11 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
   /* ─────   LOCAL DEV ACCESS ─────── */
   useEffect(() => {
     if (!import.meta.env.DEV) return;
-    setAuthenticated(true);
+
+    const previewGate =
+      new URLSearchParams(window.location.search).get("preview") === "gate";
+
+    setAuthenticated(!previewGate);
     setChecking(false);
   },[]);
 
