@@ -157,7 +157,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
       const availableHeight = Math.max(1,gate.clientHeight - verticalPadding);
       const cardWidth = Math.max(1,card.offsetWidth);
       const cardHeight = Math.max(1,card.scrollHeight);
-      const scale = Math.min(.9,availableWidth / cardWidth,availableHeight / cardHeight);
+      const scale = Math.min(.82,availableWidth / cardWidth,availableHeight / cardHeight);
 
       gate.style.setProperty("--pvr-direct-scale",String(Math.max(.25,scale)));
     };
