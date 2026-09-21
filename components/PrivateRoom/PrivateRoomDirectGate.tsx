@@ -415,7 +415,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
           </div>
 
           <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
-            {loading ? "VERIFYING…" : "ENTER PRIVATE ROOM"}
+            {loading ? "VERIFYING…" : "ENTER WITH ACCESS CODE"}
           </button>
 
           {error && <p className="pvr-direct-error" role="alert">{error}</p>}
@@ -428,6 +428,12 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
         </form>
 
         {/* ========   TELEGRAM + SPECIAL CODE =========================== */}
+        <div className="pvr-direct-method-label" aria-hidden="true">
+          <span></span>
+          <strong>ALTERNATIVE ACCESS</strong>
+          <span></span>
+        </div>
+
         <div className="pvr-direct-shortcuts">
           <button
             type="button"
@@ -441,8 +447,8 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
           >
             <img src="/assets/iconos/telegram.png" alt="" aria-hidden="true"/>
             <span>
-              <small>VERIFY USERNAME</small>
-              <strong>TELEGRAM</strong>
+              <small>STEP 01 · VERIFY</small>
+              <strong>TELEGRAM USER</strong>
             </span>
           </button>
 
@@ -461,7 +467,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
           >
             <img src="/assets/iconos/corona.png" alt="" aria-hidden="true"/>
             <span>
-              <small>{telegramVerified ? "GET SPCL CODE" : "VERIFY FIRST"}</small>
+              <small>{telegramVerified ? "STEP 02 · GET CODE" : "STEP 02 · LOCKED"}</small>
               <strong>SPECIAL CODE</strong>
             </span>
           </button>
@@ -470,7 +476,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
         {telegramOpen && (
           <section id="pvr-direct-telegram-panel" className="pvr-direct-telegram-panel">
             <header>
-              <span>TELEGRAM IDENTITY</span>
+              <span>STEP 01 · TELEGRAM IDENTITY</span>
               <strong>{telegramVerified ? "USERNAME VERIFIED" : "ENTER YOUR USERNAME"}</strong>
             </header>
 
@@ -496,7 +502,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
                   aria-label="Telegram username"
                 />
                 <button type="submit" disabled={telegramLoading || specialLoading}>
-                  {telegramLoading ? "CHECKING…" : telegramVerified ? "VERIFIED" : "CHECK USER"}
+                  {telegramLoading ? "CHECKING…" : telegramVerified ? "VERIFIED" : "VERIFY USER"}
                 </button>
               </div>
             </form>
@@ -523,7 +529,7 @@ export default function PrivateRoomDirectGate({children}:DirectGateProps) {
                 </div>
 
                 <button type="submit" disabled={specialLoading || specialCode.length !== 4}>
-                  {specialLoading ? "VERIFYING…" : "ENTER WITH SPECIAL CODE"}
+                  {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
                 </button>
               </form>
             )}
