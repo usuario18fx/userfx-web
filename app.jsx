@@ -38,8 +38,12 @@ export default function App() {
           if (cancelled) return;
           cleanHandoffParam();
           if (!response.ok || !data?.authenticated) return;
-          sessionStorage.setItem("vault_unlocked", "true");
-          if (data?.planId) sessionStorage.setItem("vault_plan", data.planId);
+          try {
+            sessionStorage.setItem("vault_unlocked", "true");
+            if (data?.planId) sessionStorage.setItem("vault_plan", data.planId);
+          } catch {
+            // Mobile WebViews can block client storage. The server session remains authoritative.
+          }
           window.location.hash = "#/private-room";
         })
         .catch(() => {
@@ -72,7 +76,11 @@ export default function App() {
 
         if (sessionResponse.ok && session?.authenticated && session?.expiresAt) {
           const syncKey = `userfx_browser_handoff:${session.expiresAt}`;
-          if (sessionStorage.getItem(syncKey) === "1") return;
+          try {
+            if (sessionStorage.getItem(syncKey) === "1") return;
+          } catch {
+            // Storage unavailable.
+          }
 
           const handoffResponse = await fetch("/api/handoff", {
             method: "POST",
@@ -83,7 +91,11 @@ export default function App() {
           const handoff = await handoffResponse.json().catch(() => ({}));
 
           if (handoffResponse.ok && handoff?.url) {
-            sessionStorage.setItem(syncKey, "1");
+            try {
+              sessionStorage.setItem(syncKey, "1");
+            } catch {
+              // Storage unavailable.
+            }
             if (typeof telegram.openLink === "function") {
               telegram.openLink(handoff.url);
             } else {
