@@ -1,954 +1,168 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700&family=Inter:wght@400;500&display=swap");
+@import "./FxAccessModal.base.css";
 
-/* ─────   MODAL · NO SCROLL ─────── */
-.sl-overlay {
-  --green: #4dffab;
-  --green-soft: #35d695;
-  --bone: #e8e2e6;
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  width: 100vw;
-  height: 100dvh;
-  min-height: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  overscroll-behavior: none;
-  padding: 0;
-  font-family: "Inter",system-ui,sans-serif;
-  color: var(--bone);
-  background:
-    radial-gradient(55% 40% at 50% 0%,#7c1e3038,transparent 70%),
-    radial-gradient(38% 32% at 10% 62%,#a13b4e24,transparent 70%),
-    radial-gradient(38% 32% at 90% 62%,#a13b4e24,transparent 70%),
-    radial-gradient(70% 42% at 50% 110%,#4dffab1a,transparent 70%),
-    #060309;
-    position: fixed;
-  inset: 0;
-  z-index: 99999;
-  min-height: 100dvh;
-  height: 100dvh;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  padding: 20px 16px;
-}
+/* ===== USER FX · MODAL OVERRIDES · 2026-09-21 ===== */
 
-/* ─────   SMOKE ─────── */
-.sl-smoke {
-  position: absolute;
-  width: 55vmax;
-  height: 55vmax;
-  border-radius: 50%;
-  filter: blur(70px);
-  pointer-events: none;
-}
-.sl-smoke-a {
-  left: -18vmax;
-  top: 15%;
-  background: radial-gradient(circle,#96283c47,transparent 60%);
-  animation: slDrift 26s ease-in-out infinite alternate;
-}
-.sl-smoke-b {
-  right: -18vmax;
-  bottom: -15%;
-  background: radial-gradient(circle,#781a2c40,transparent 60%);
-  animation: slDrift 34s ease-in-out infinite alternate-reverse;
-}
-/* ─────   ARCH ─────── */
-.sl-arch {
-  position: absolute;
-  top: 26px;                 /* ↗️ sube el círculo */
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(650px, 84vw);   /* ↘️ un poco más pequeño */
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 2px solid #96465a47;
-  box-shadow:
-    0 0 0 22px #12090fb8,
-    0 0 0 25px #96465a24,
-    inset 0 0 120px #000000e6;
-  pointer-events: none;
-}
-/* ─────   SCENE ─────── */
-.sl-scene {
- position: relative;
-  z-index: 1;
-  width: min(460px,100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: translateY(-49px) scale(.9);
-  transform-origin: center center;
-}
-/* ─────   HEADER ─────── */
-.sl-header {
-  text-align: center;
-}
-.sl-top-ornament {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 6px;
-}
-.sl-line {
-  width: min(110px,22vw);
-  height: 1px;
-  background: linear-gradient(90deg,transparent,#8a4b5e,transparent);
-}
+/* Logo del modal: sustituye el texto USER FX por wallFX.png */
 .sl-title {
-  margin: 4px 0 6px;
-  font-family: "Cinzel Decorative","Cinzel",serif;
-  font-size: clamp(1.7rem,7vw,2.6rem);
-  font-weight: 700;
-  letter-spacing: .16em;
-  background: linear-gradient(180deg,#f4ece6 0%,#cfe4d6 28%,#5fce9d 52%,#2c6b50 62%,#d7ecdf 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 14px #4dffab38);
+  width: min(250px, 72vw);
+  height: 76px;
+  margin: 0 auto 8px;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -9999px;
+  overflow: hidden;
+  background: url("/wallFX.png") center / contain no-repeat;
+  filter: drop-shadow(0 0 16px rgba(77,255,171,.18));
 }
-.sl-header-rule {
-  width: 80%;
-  height: 1px;
-  margin: 0 auto;
-  background: linear-gradient(90deg,transparent,#8a4b5ecc,transparent);
+
+/* Más separación y visibilidad general */
+.sl-form {
+  gap: 14px;
+  overflow: visible;
 }
-/* ─────   TOP SCREEN ─────── */
-.sl-bubble {
-  position: relative;
-  max-width: 390px;
-  margin: 18px 0 23px;
-  padding: 10px 18px;
-  border: 1.5px solid var(--green-soft);
-  border-radius: 13px;
-  background: #09100de6;
-  color: #eef7f2;
-  font-size: .82rem;
-  line-height: 1.35;
-  text-align: center;
-  box-shadow:
-    0 0 22px #35d6952e,
-    inset 0 0 14px #35d69512;
-    position: relative;
-  margin: 12px 0 22px;
-  padding: 11px 22px;
-  font-size: 0.92rem;
-  color: #eef7f2;
-  background: #09100de6;
-  border: 1.5px solid var(--green-soft);
-  border-radius: 13px;
-  box-shadow:
-    0 0 22px #35d6952e,
-    inset 0 0 14px #35d69512;
+
+.sl-plan-grid {
+  gap: 12px;
+  overflow: visible;
 }
-.sl-bubble::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -8.5px;
-  width: 14px;
-  height: 14px;
-  border-right: 1.5px solid var(--green-soft);
-  border-bottom: 1.5px solid var(--green-soft);
-  background: inherit;
-  transform: translateX(-50%) rotate(45deg);
+
+.sl-action-grid {
+  gap: 12px;
+  overflow: visible;
 }
-.sl-bubble.is-error {
-  color: #ff6b84;
-  border-color: #ff4165;
-  background: #19060beb;
-  text-shadow: 0 0 8px #ff416573;
-  box-shadow:
-    0 0 22px #ff416533,
-    inset 0 0 14px #ff416512;
-}
-.sl-bubble.is-error::after {
-  border-right-color: #ff4165;
-  border-bottom-color: #ff4165;
-}
-/* ─────   STAGE ─────── */
-.sl-stage {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-/* ─────   ROBOT ─────── */
-.sl-robot {
+
+.sl-btn-wrap,
+.sl-btn,
+.sl-plan,
+.sl-back-btn {
   position: relative;
   z-index: 2;
-  margin-bottom: -22px;
-  animation: slFloat 5s ease-in-out infinite;
+  visibility: visible;
 }
-.sl-robot-svg {
-  width: min(210px,52vw);
-  display: block;
-  filter: drop-shadow(0 10px 22px #000000a6);
-}
-.sl-eye {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: slBlink 4.6s infinite;
-}
-.sl-hand {
-  position: absolute;
-  bottom: 22px;
-  z-index: 5;
-  width: 70px;
-  background: radial-gradient(0 0 14px #fc103c52, #b631319a); 
-}
-.sl-hand-left {
-  left: -2px;
-background: radial-gradient(0 0 14px #fc103c52, #b631319a); 
-}
-.sl-hand-right {
-  right: -2px;
-  transform: scaleX(-1);
-}
-.sl-robot.is-rejected {
-  filter: radial-gradient(0 0 14px #fc103c52, #b631319a);
-}
-.sl-robot.is-approved {
-  filter: radial-gradient(0 0 14px #4dffac46);
-}
-/* ─────   CARD ─────── */
-.sl-card {
-  position: relative;
-  z-index: 1;
-  width: min(410px, 95%);   /* ↗️ modal un poco más grande */
-  padding: 56px 28px 26px;
-  border-radius: 24px;
-  background: linear-gradient(180deg, #171117 0%, #0f0b10 55%, #130c10 100%);
-  border: 1px solid #56222e;
-  box-shadow:
-    0 0 0 5px #0a070b,
-    0 0 0 6.5px #6e4a56,
-    0 0 0 8px #1f1017,
-    0 34px 70px #000000d9,
-    inset 0 0 46px #000000a6;
-}
-.sl-overlay.is-rejected .sl-card {
-  border-color: #a6324b;
-  box-shadow:
-    0 0 0 5px #0a070b,
-    0 0 0 6.5px #8c3048,
-    0 0 0 8px #1f1017,
-    0 30px 65px rgba(0,0,0,.85),
-    0 0 30px rgba(255,65,101,.15),
-    inset 0 0 46px rgba(0,0,0,.65);
-}
-.sl-overlay.is-approved .sl-card {
-  border-color: #285f4b;
-}
-/* ─────   CORNERS ─────── */
-.sl-corner {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  color: #7a3040;
-  pointer-events: none;
-}
-.sl-corner-tl {
-  top: 12px;
-  left: 12px;
-}
-.sl-corner-tr {
-  top: 12px;
-  right: 12px;
-  transform: scaleX(-1);
-}
-.sl-corner-bl {
-  bottom: 12px;
-  left: 12px;
-  transform: scaleY(-1);
-}
-.sl-corner-br {
-  right: 12px;
-  bottom: 12px;
-  transform: scale(-1);
-}
-/* ─────   CARD ROSE ─────── */
-.sl-card-rose {
-  position: absolute;
-  top: -27px;
-  left: 50%;
-  z-index: 6;
-  transform: translateX(-50%);
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.70));
-}
-/* ─────   TITLE ─────── */
-.sl-card-title {
-  margin: 0 0 20px;
-  font-family: "Cinzel",serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: .30em;
-  text-indent: .30em;
-  text-align: center;
-  background: linear-gradient(180deg,#efe6ea,#8f7b84);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-/* ─────   FORM ─────── */
-.sl-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-/* ─────   FIELD ─────── */
-.sl-field {
-  width: 100%;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 0 13px;
-  border: 1px solid #542530;
-  border-radius: 11px;
-  background: linear-gradient(180deg,#150e13,#0c080c);
-  color: var(--green-soft);
-  box-shadow: inset 0 2px 10px rgba(0,0,0,.55);
-  transition:
-    border-color .25s ease,
-    box-shadow .25s ease;
-}
-.sl-field:focus-within {
-  border-color: var(--green-soft);
-  box-shadow:
-    inset 0 2px 10px rgba(0,0,0,.55),
-    0 0 0 1px rgba(53,214,149,.35),
-    0 0 18px rgba(53,214,149,.16);
-}
-.sl-field svg {
-  flex: none;
-}
-.sl-field input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--bone);
-  font-family: inherit;
-  font-size: .88rem;
-}
-.sl-field input::placeholder {
-  color: #8d7e88;
-}
-.sl-field input[readonly] {
-  cursor: default;
-  color: #c7bbc2;
-}
-/* ─────   CODE PREFIX ─────── */
-.sl-code-prefix {
-  flex: 0 0 auto;
-  min-width: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--green);
-  font-family: "Cinzel",serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-shadow: 0 0 8px #4dffab47;
-}
-/* ─────   PLAN BUTTONS ─────── */
-.sl-plan-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 7px;
-}
+
+.sl-btn,
 .sl-plan {
-  appearance: none;
-  min-width: 0;
-  min-height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 5px 7px;
-  border: 1px solid #542530;
-  border-radius: 9px;
-  background: linear-gradient(180deg,#150e13,#0c080c);
-  color: #9d8b95;
-  font-family: "Cinzel",serif;
-  font-size: 7px;
-  font-weight: 700;
-  letter-spacing: .07em;
-  cursor: pointer;
-  box-shadow: inset 0 2px 10px #0000008c;
-  transition:
-    border-color .25s ease,
-    color .25s ease,
-    box-shadow .25s ease,
-    transform .15s ease;
-}
-.sl-plan img {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 16px;
-  object-fit: contain;
-}
-.sl-plan:hover:not(:disabled) {
-  border-color: #8a4b5e;
-  color: #d8cdd3;
-}
-.sl-plan.is-active {
-  color: var(--green);
-  border-color: var(--green-soft);
-  box-shadow:
-    inset 0 2px 10px #0000008c,
-    0 0 0 1px #35d69533,
-    0 0 15px #35d69526;
-}
-.sl-plan:active:not(:disabled) {
-  transform: translateY(1px);
-}
-/* ─────   BUTTON WRAP ─────── */
-.sl-btn-wrap {
-  width: 100%;
-  margin-top: 3px;
-  padding: 2px;
-  background: linear-gradient(180deg,#a3526a,#4c1522 60%,#8a3a50);
-  clip-path: polygon(
-    13px 0,calc(100% - 13px) 0,100% 13px,100% calc(100% - 13px),
-    calc(100% - 13px) 100%,13px 100%, 0 calc(100% - 13px),0 13px);
-  filter: drop-shadow(0 0 14px #4dffab1a);
-}
-/* ─────   MAIN BUTTON ─────── */
-.sl-btn {
-  appearance: none;
-  width: 100%;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 11px 10px;
-  border: 0;
-  cursor: pointer;
-  font-family: "Cinzel",serif;
-  font-size: .82rem;
-  font-weight: 700;
-  letter-spacing: .26em;
-  text-indent: .26em;
-  color: var(--green);
-  background:
-    radial-gradient(120% 160% at 50% 0%,#7c1e308c,transparent 60%),
-    linear-gradient(180deg,#57101f,#3a0a15);
-  clip-path: polygon(
-    13px 0,calc(100% - 13px) 0,
-    100% 13px,100% calc(100% - 13px),
-    calc(100% - 13px) 100%,
-    13px 100%,0 calc(100% - 13px), 0 13px);
-  text-shadow: 0 0 12px #4dffabbf;
-  box-shadow: inset 0 0 26px #00000099;
-  transition:
-    filter .25s ease,
-    transform .15s ease;
-}
-.sl-btn svg {
-  flex: 0 0 auto;
-}
-.sl-btn:hover:not(:disabled) {
-  filter: brightness(1.20);
-}
-.sl-btn:active:not(:disabled) {
-  transform: translateY(1px);
-}
-/* ─────   TELEGRAM ACTIONS ─────── */
-.sl-action-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-}
-.sl-action-grid .sl-btn {
-  min-height: 42px;
-  padding: 8px 6px;
-  gap: 5px;
-  font-size: 7px;
-  letter-spacing: .055em;
-  text-indent: 0;
-}
-/* ─────   TELEGRAM + SPECIAL · UPGRADE BUTTONS ─────── */
-.sl-upgrade-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  padding: 1.2em 1rem;
-  border: 0;
-  border-radius: 11px;
-  clip-path: none;
-  font-weight: 700;
-  text-indent: 0;
-  cursor: pointer;
-  background-repeat: no-repeat;
-  background-size: 300% 100%;
-  background-position: left center;
-  transition:
-    background-position .3s ease,
-    background-size .3s ease,
-    color .3s ease,
-    transform .15s ease,
-    box-shadow .25s ease;
-}
-.sl-upgrade-btn:hover:not(:disabled) {
-  background-size: 320% 100%;
-  background-position: right center;
-  filter: none;
-}
-.sl-upgrade-btn:active:not(:disabled) {
-  transform: translateY(1px) scale(.98);
-}
-.sl-upgrade-btn svg {
-  width: 23px;
-  height: auto;
-  flex: 0 0 23px;
-  transition: fill .3s ease, color .3s ease, transform .3s ease;
-}
-/* ─────   TELEGRAM · BLUE ─────── */
-.sl-telegram-btn {
-  color: #fff;
-  background-image: linear-gradient(
-    15deg,
-    #67d9ff,
-    #20a9ef,
-    #087ec5,
-    #04558f,
-    #67d9ff,
-    #20a9ef,
-    #087ec5,
-    #04558f
-  );
-  text-shadow: 2px 2px 3px rgba(0,74,128,.35);
-  box-shadow:
-    0 30px 10px -20px rgba(32,169,239,.28),
-    0 0 16px rgba(32,169,239,.22),
-    inset 0 1px 0 rgba(255,255,255,.42);
-}
-.sl-telegram-btn span {
-  color: inherit;
-}
-.sl-telegram-btn .sl-menu-icon,
-.sl-telegram-btn .sl-check-icon {
-  filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,47,83,.5));
-}
-.sl-btn.sl-telegram-btn.is-approved {
-  color: #05110c;
-  background-image: linear-gradient(
-    15deg,
-    #88ffd0,
-    #4dffab,
-    #2ac984,
-    #16875a,
-    #88ffd0,
-    #4dffab,
-    #2ac984,
-    #16875a
-  );
-  text-shadow: 1px 1px 2px rgba(255,255,255,.28);
-  box-shadow:
-    0 30px 10px -20px rgba(77,255,171,.25),
-    0 0 16px rgba(77,255,171,.22),
-    inset 0 1px 0 rgba(255,255,255,.48);
-}
-/* ─────   CHECK USER ─────── */
-.sl-check-icon {
-  width: 15px;
-  height: 15px;
-  display: block;
-  flex: 0 0 15px;
-  object-fit: contain;
-  pointer-events: none;
-}
-.sl-btn.is-approved .sl-check-icon {
-  filter: drop-shadow(0 0 6px #4dffab80);
-}
-/* ─────   APPROVED ─────── */
-.sl-btn.is-approved {
-  color: #4dffab;
-  background:
-    radial-gradient(120% 160% at 50% 0%,#2778535c,transparent 60%),
-    linear-gradient(180deg,#163c2d,#092018);
-  text-shadow: 0 0 12px #4dffaba6;
-}
-/* ─────   SPECIAL CODE ─────── */
-.sl-special-btn {
-  position: relative;
-  color: #000;
-  background-image: linear-gradient(
-    15deg,
-    #ddff00,
-    #b8d100,
-    #93a300,
-    #6e7500,
-    #ddff00,
-    #b8d100,
-    #93a300,
-    #6e7500
-  );
-  text-shadow: none;
-  box-shadow:
-    0 30px 10px -20px rgba(221,255,0,.28),
-    0 0 16px rgba(221,255,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.38);
-}
-.sl-special-btn svg {
-  width: 23px;
-  height: auto;
-  flex: 0 0 23px;
-  color: #000;
-  fill: #000;
-}
-.sl-special-btn span {
-  color: #000;
-}
-.sl-special-btn.is-ready:hover {
-  background-size: 320% 100%;
-  background-position: right center;
-  filter: none;
-}
-.sl-special-btn:disabled {
   opacity: 1;
-  filter: none;
-  cursor: not-allowed;
 }
-/* ─────   VERIFIED ─────── */
-.sl-verified-mark {
-  flex: 0 0 auto;
-  color: var(--green);
-  font-size: 17px;
-  font-weight: 700;
-  text-shadow: 0 0 8px #4dffab8c;
+
+.sl-plan {
+  min-height: 46px;
 }
-/* ─────   ACCESS READY ─────── */
-.sl-access-ready {
-  min-height: 78px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 11px;
-  border: 1px solid rgba(53,214,149,.35);
-  border-radius: 11px;
-  background:
-    radial-gradient(circle at center,#35d69514,transparent 70%),
-    linear-gradient(180deg,#150e13,#0c080c);
-  box-shadow:
-    inset 0 2px 10px #0000008c,
-    0 0 18px #35d69514;
+
+.sl-btn-wrap + .sl-btn-wrap {
+  margin-top: 4px;
 }
-.sl-access-ready svg {
-  width: 22px;
-  height: 22px;
+
+/* ===== CLASES INDIVIDUALES PARA FONDOS =====
+   Puedes cambiar únicamente background / background-image en cada clase. */
+
+/* CODE */
+.sl-bg-code,
+.sl-form > .sl-btn-wrap:first-child .sl-btn:not(.sl-telegram-btn) {
+  --fx-btn-bg: linear-gradient(180deg,#57101f,#3a0a15);
 }
-.sl-access-ready strong {
-  color: var(--green);
-  font-family: "Cinzel",serif;
-  font-size: 10px;
-  letter-spacing: .08em;
+
+/* TELEGRAM */
+.sl-bg-telegram,
+.sl-form > .sl-btn-wrap .sl-telegram-btn {
+  --fx-btn-bg: linear-gradient(135deg,#20a9ef,#04558f);
 }
-.sl-access-ready span {
-  color: #a999a2;
-  font-size: 8px;
-  font-weight: 500;
-  letter-spacing: .14em;
+
+/* BASIC */
+.sl-bg-bsic,
+.sl-plan-grid .sl-plan:nth-child(1) {
+  --fx-btn-bg: linear-gradient(180deg,#171117,#0d090d);
 }
-/* ─────   BACK ─────── */
+
+/* PRO */
+.sl-bg-pro,
+.sl-plan-grid .sl-plan:nth-child(2) {
+  --fx-btn-bg: linear-gradient(180deg,#201521,#100a12);
+}
+
+/* VIP */
+.sl-bg-vip,
+.sl-plan-grid .sl-plan:nth-child(3) {
+  --fx-btn-bg: linear-gradient(180deg,#24141c,#10090d);
+}
+
+/* VERIFY ACCESS */
+.sl-bg-verify-access,
+form.sl-form > .sl-btn-wrap .sl-btn[type="submit"] {
+  --fx-btn-bg: linear-gradient(180deg,#57101f,#3a0a15);
+}
+
+/* CHECK USER */
+.sl-bg-check-user,
+.sl-action-grid .sl-telegram-btn {
+  --fx-btn-bg: linear-gradient(135deg,#20a9ef,#04558f);
+}
+
+/* SPECIAL CODE */
+.sl-bg-special-code,
+.sl-action-grid .sl-special-btn {
+  --fx-btn-bg: linear-gradient(135deg,#ddff00,#6e7500);
+}
+
+/* BACK */
+.sl-bg-back,
 .sl-back-btn {
-  appearance: none;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 4px 10px;
-  border: 0;
-  background: transparent;
-  color: #776871;
-  font-family: "Cinzel",serif;
-  font-size: 7px;
-  font-weight: 700;
-  letter-spacing: .18em;
-  cursor: pointer;
+  --fx-btn-bg: transparent;
 }
-.sl-back-btn:hover:not(:disabled) {
-  color: var(--green-soft);
-  text-shadow: 0 0 8px #4dffab4d;
+
+/* GET IN */
+.sl-bg-get-in,
+.sl-access-ready + .sl-btn-wrap .sl-btn {
+  --fx-btn-bg: linear-gradient(180deg,#163c2d,#092018);
 }
-/* ─────   DISABLED ─────── */
-.sl-btn:disabled,
-.sl-plan:disabled,
-.sl-back-btn:disabled {
-  cursor: not-allowed;
+
+/* Permite usar las clases anteriores directamente en cualquier botón */
+.sl-bg-code,
+.sl-bg-telegram,
+.sl-bg-bsic,
+.sl-bg-pro,
+.sl-bg-vip,
+.sl-bg-verify-access,
+.sl-bg-check-user,
+.sl-bg-special-code,
+.sl-bg-get-in {
+  background: var(--fx-btn-bg) !important;
 }
-.sl-btn:disabled:not(.sl-special-btn),
-.sl-plan:disabled {
-  opacity: .62;
+
+/* Mantiene fondos existentes mientras deja las clases listas para personalizar */
+.sl-plan-grid .sl-plan:nth-child(1),
+.sl-plan-grid .sl-plan:nth-child(2),
+.sl-plan-grid .sl-plan:nth-child(3) {
+  background: var(--fx-btn-bg);
 }
-/* ─────   ANIMATIONS ─────── */
-@keyframes slDrift {
-  from { transform: translate3d(0,0,0) scale(1); }
-  to { transform: translate3d(6vmax,-5vmax,0) scale(1.13); }
+
+/* Botones claramente separados dentro del modal */
+.sl-card-body .sl-btn-wrap {
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
-@keyframes slFloat {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+.sl-card-body .sl-plan-grid {
+  margin-bottom: 3px;
 }
-@keyframes slBlink {
-  0%,46%,50%,100% { transform: scaleY(1); }
-  48% { transform: scaleY(.12); }
-}
-/* ─────   MOBILE ─────── */
+
 @media (max-width: 520px) {
-  .sl-overlay {padding: 7px 7px 12px; place-items:start center;
+  .sl-title {
+    width: min(210px, 68vw);
+    height: 58px;
+    margin-bottom: 4px;
+  }
+
+  .sl-form {
+    gap: 9px;
+  }
+
+  .sl-plan-grid,
+  .sl-action-grid {
+    gap: 8px;
+  }
+
+  .sl-plan {
+    min-height: 36px;
   }
-  .sl-scene {width:min(93vw,320px); margin:0 auto;
-  }
-  .sl-arch {top:45px; width:500px;
-  }
-  .sl-top-ornament {gap:6px; margin-bottom:0;
-  }
-  .sl-top-ornament svg {width:18px; height:18px;
-  }
-  .sl-line {width:70px;
-  }
-  .sl-title {margin:0; font-size:1.18rem; letter-spacing:.10em;
-  }
-  .sl-header-rule {width:60%;
-  }
-  .sl-bubble {max-width:270px; margin:6px 0 9px; padding:5px 10px; border-radius:9px; font-size:.61rem; line-height:1.2;
-  }
-  .sl-bubble::after {width:9px; height:9px; bottom:-6px;
-  }
-  .sl-robot {margin-bottom:-22px;
-  }
-  .sl-robot-svg {width:118px;
-  }
-  .sl-hand {width:38px; bottom:19px;
-  }
-  .sl-hand-left {left:8px;
-  }
- .sl-hand-right {right:8px;
-  }
- .sl-card {padding:34px 12px 12px; border-radius:14px;
-  }
-  .sl-card-rose {top:-17px;
-  }
-  .sl-card-rose svg {width:33px; height:33px;
-  }
-  .sl-corner {width:27px; height:27px;
-  }
-  .sl-card-title {margin-bottom:9px; font-size:.72rem; letter-spacing:.17em; text-indent:.17em;
-  }
-  .sl-form {gap:6px;
-  }
-  .sl-field {height:34px; gap:5px; padding:0 8px; border-radius:7px;
-  }
-  .sl-field svg {width:13px; height:13px;
-  }
-  .sl-field input {font-size:.70rem;
-  }
-  .sl-code-prefix {min-width:28px; font-size:6px;
-  }
-  .sl-plan-grid {gap:4px;
-  }
-  .sl-plan {min-height:29px; padding:3px; gap:3px; border-radius:6px; font-size:5px;
-  }
-  .sl-plan img {width:11px; height:11px; flex-basis:11px;
-  }
-  .sl-btn-wrap {margin-top:1px;
-  }
-  .sl-btn {min-height:33px; padding:7px 6px; font-size:.60rem; letter-spacing:.15em; text-indent:.15em;
-  }
-  .sl-btn svg {width:14px; height:14px;
-  }
-  .sl-action-grid {gap:4px;
-  }
-  .sl-action-grid .sl-btn {min-height:32px; padding:5px 3px; font-size:5.2px; letter-spacing:.025em;
-  }
-  .sl-check-icon {width:11px; height:11px; flex-basis:11px;
-  }
-  .sl-special-btn svg {width:14px; height:12px;
-  }
-  .sl-access-ready {min-height:54px; padding:6px; gap:3px;
-  }
-  .sl-access-ready svg {width:17px; height:17px;
-  }
-  .sl-access-ready strong {font-size:7px;
-  }
-  .sl-access-ready span {font-size:6px;
-  }
-  .sl-back-btn {padding:2px 7px; font-size:5px;
-  }}
-  
-/* ─────   MOBILE ─────── */
-@media (max-width: 520px) {
-  .sl-overlay {height:100dvh; min-height:100dvh; padding:8px 8px 12px; place-items:center; overflow:hidden;
-  }
-  .sl-arch {top:18px; width:min(540px,94vw);
-  }
-  .sl-scene {width:min(94vw,360px); margin:0 auto; transform:translateY(-10px) scale(.9); transform-origin:center;
-  }
-  .sl-header {margin-top:0;
-  }
-  .sl-top-ornament {gap:7px; margin-bottom:1px;
-  }
-  .sl-top-ornament svg {width:20px; height:20px;
-  }
-  .sl-line {width:76px;
-  }
-  .sl-title {margin:0 0 2px; font-size:1.32rem; letter-spacing:.11em;
-  }
-  .sl-header-rule {width:64%;
-  }
-  .sl-bubble {max-width:292px; margin:8px 0 12px; padding:7px 12px; font-size:.70rem; line-height:1.2; text-align:center;
-  }
-  .sl-bubble::after {width:10px; height:10px; bottom:-6px;
-  }
-  .sl-robot {margin-bottom:-18px;
-  }
-  .sl-robot-svg {width:140px;
-  }
-  .sl-hand {width:44px; bottom:20px;
-  }
-  .sl-hand-left {left:2px;
-  }
-  .sl-hand-right {right:2px;
-  }
-  .sl-card {width:100%; padding:40px 14px 16px; border-radius:17px;
-  }
-  .sl-card-rose {top:-19px;
-  }
-  .sl-card-rose svg {width:38px; height:38px;
-  }
-  .sl-corner {width:32px; height:32px;
-  }
-  .sl-card-title {margin-bottom:12px; font-size:.88rem; letter-spacing:.20em; text-indent:.20em;
-  }
-  .sl-form {gap:8px;
-  }
-  .sl-field {height:38px; padding:0 10px; gap:6px; border-radius:8px;
-  }
-  .sl-field svg {width:15px; height:15px;
-  }
-  .sl-field input {font-size:.78rem;
-  }
-  .sl-code-prefix {min-width:32px; font-size:7px;
-  }
-  .sl-plan-grid {gap:5px;
-  }
-  .sl-plan {min-height:32px; padding:4px; gap:3px; border-radius:7px; font-size:5.5px;
-  }
-  .sl-plan img {width:12px; height:12px; flex-basis:12px;
-  }
-  .sl-btn-wrap {margin-top:2px;
-  }
-  .sl-btn {min-height:36px; padding:8px 7px; font-size:.68rem; letter-spacing:.17em; text-indent:.17em;
-  }
-  .sl-btn svg {width:15px; height:15px;
-  }
-  .sl-action-grid {gap:5px;
-  }
-  .sl-action-grid .sl-btn {min-height:35px; padding:6px 4px; font-size:5.6px; letter-spacing:.03em;
-  }
-  .sl-action-grid .sl-upgrade-btn {padding:1.2em .65rem;
-  }
-  .sl-upgrade-btn {border-radius:9px;
-  }
-  .sl-check-icon {width:12px; height:12px; flex-basis:12px;
-  }
-  .sl-special-btn svg {width:15px; height:13px;
-  }
-  .sl-access-ready {min-height:60px; padding:7px; gap:3px;
-  }
-  .sl-access-ready svg {width:18px; height:18px;
-  }
-  .sl-access-ready strong {font-size:8px;
-  }
-  .sl-access-ready span {font-size:6px;
-  }
-  .sl-back-btn {padding:2px 8px; font-size:5.5px;
-  }}
-/* ─────   ARCH · WALLFX ─────── */
-.sl-arch {
-  position:absolute;
-  top:45px;
-  left:50%;
-  width:500px;
-  aspect-ratio:1;
-  border:2px solid #96465a47;
-  border-radius:3%;
-  overflow:hidden;
-  transform:translateX(-50%) scale(.99);
-  background:
-    linear-gradient(#3f082347,#30011160),
-    url("wallFX.png") center / cover no-repeat;
-  box-shadow:
-    0 0 0 22px #2c050fb8,
-    0 0 0 25px #96465a24,
-    inset 0 0 80px #610c2fb8;
-  pointer-events:none;
 }
-/* ─────   MOBILE ─────── */
-@media (max-width: 520px) {
-  .sl-arch {top:12px; width:min(500px,92vw); background-position:center center;
-  }}
-  /* ========   USER FX · ACCESS PANEL FIX =========================== */
-/* ─────   ACCESS BODY ─────── */
-.sl-card-body {
-  width:100%;
-  height:178px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-sizing:border-box;
-}
-.sl-card-body > .sl-form {
-  width:100%;
-}
-/* ─────   MENU ICONS ─────── */
-.sl-menu-icon {
-  width:18px;
-  height:18px;
-  flex:0 0 18px;
-  object-fit:contain;
-  pointer-events:none;
-}
-/* ─────   FIELD ICONS ─────── */
-.sl-field-icon {
-  width:18px;
-  height:18px;
-  flex:0 0 18px;
-  object-fit:contain;
-  pointer-events:none;
-}
-/* ─────   ACCESS ICON ─────── */
-.sl-access-icon {
-  width:22px;
-  height:22px;
-  flex:0 0 22px;
-  object-fit:contain;
-  pointer-events:none;
-}
-/* ─────   MOBILE ─────── */
-@media (max-width: 520px) {
-  .sl-card-body {height:145px;
-  }
-  .sl-menu-icon {width:15px; height:15px; flex-basis:15px;
-  }
-  .sl-field-icon {width:14px; height:14px; flex-basis:14px;
-  }
-  .sl-access-icon {width:18px; height:18px; flex-basis:18px;
-  }}
