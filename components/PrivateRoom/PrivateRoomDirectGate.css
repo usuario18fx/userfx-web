@@ -62,14 +62,15 @@
   left: 50%;
   width: min(500px, 100%);
   padding: 20px;
-  border: 1px solid #c4a57440;
+  border: 1px solid rgba(221, 178, 105, 0.52);
   background:
-    radial-gradient(90% 52% at 86% 0%, #c4a57412, transparent 68%),
-    radial-gradient(60% 50% at 0% 100%, #7a2e3a14, transparent 72%),
-    linear-gradient(180deg, #15120f, #0d0b09);
+    radial-gradient(85% 62% at 92% 2%, rgba(35, 126, 178, 0.18), transparent 66%),
+    radial-gradient(72% 60% at 0% 100%, rgba(128, 35, 62, 0.2), transparent 70%),
+    linear-gradient(180deg, #1b1510 0%, #120e0b 48%, #0b0a0a 100%);
   box-shadow:
     0 32px 90px #00000080,
-    inset 0 1px 0 #ffffff06;
+    0 0 32px rgba(196, 165, 116, 0.08),
+    inset 0 1px 0 rgba(255, 233, 195, 0.09);
   transform: translate(-50%, -50%) scale(var(--pvr-direct-scale));
   transform-origin: center;
 }
@@ -755,9 +756,7 @@
   padding: 7px;
   border: 1px solid rgba(196, 165, 116, 0.3);
   border-radius: 5px;
-  background:
-    linear-gradient(rgba(10, 8, 7, 0.72), rgba(10, 8, 7, 0.72)),
-    url("/wallpaper.png") center / 150% auto no-repeat;
+  background: linear-gradient(180deg, #15110e, #0d0b09);
 }
 
 .pvr-direct-plan-emoji {
@@ -812,14 +811,17 @@
 
 .pvr-direct-plan.is-basic {
   border-color: #6aeb00;
+  background: linear-gradient(180deg, rgba(52, 104, 15, 0.24), #0d0b09 78%);
 }
 
 .pvr-direct-plan.is-pro {
   border-color: #f85d1b;
+  background: linear-gradient(180deg, rgba(145, 58, 21, 0.24), #0d0b09 78%);
 }
 
 .pvr-direct-plan.is-vip {
   border-color: #c800ff;
+  background: linear-gradient(180deg, rgba(100, 22, 132, 0.25), #0d0b09 78%);
 }
 /* ═══════════ FOOTER ═══════════ */
 .pvr-direct-foot {
@@ -935,16 +937,16 @@
 .pvr-direct-wallfx-wrap {
   position: absolute;
   z-index: 0;
-  top: 47%;
+  top: 48%;
   left: 50%;
-  width: min(390px, 92vw);
-  height: 180px;
-  overflow: visible;
+  width: min(230px, 68vw);
+  height: 112px;
+  overflow: hidden;
   border: 0;
   outline: 0;
   background: transparent;
   box-shadow: none;
-  opacity: 0.42;
+  opacity: 0.48;
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
@@ -954,9 +956,11 @@
   width: 100%;
   height: 100%;
   border: 0;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: 50% 54%;
   box-shadow: none;
-  filter: contrast(1.16) brightness(0.74);
+  filter: contrast(1.2) brightness(0.82);
+  transform: scale(1.08);
 }
 
 .pvr-direct-copy h1,
@@ -967,9 +971,9 @@
 
 @media (max-width: 650px) {
   .pvr-direct-wallfx-wrap {
-    top: 48%;
-    width: 105%;
-    height: 150px;
-    opacity: 0.36;
+    top: 47%;
+    width: min(205px, 68vw);
+    height: 102px;
+    opacity: 0.44;
   }
 }
