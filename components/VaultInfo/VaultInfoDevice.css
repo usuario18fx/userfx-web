@@ -321,3 +321,120 @@
     font-size:5px;
   }
 }
+
+/* ═══════════ MOBILE · HERO / VIDEO / DOORS CENTER FIX ═══════════ */
+@media(max-width:520px){
+  .vx-heroIdentity{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 auto!important;
+    align-items:center!important;
+    transform:none!important;
+  }
+
+  .vx-heroIdentity .vx-logoWrap{
+    width:100%!important;
+    margin:0 auto!important;
+    justify-content:center!important;
+  }
+
+  .vx-heroIdentity .vx-logoWrap img{
+    width:min(94vw,460px)!important;
+    max-width:none!important;
+    margin:0 auto!important;
+    object-position:center!important;
+  }
+
+  .vx-heroAccessBtn{
+    position:relative!important;
+    width:100%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    margin:16px auto 0!important;
+  }
+
+  .vx-heroAccessBtn .smkl-access-button{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    margin:0 auto!important;
+    transform:scale(1.18)!important;
+    transform-origin:center center!important;
+  }
+
+  .vx-dossierRow{
+    width:100%!important;
+    max-width:100%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    margin:16px auto 6px!important;
+    padding:0 8px!important;
+  }
+
+  .vx-dossierRow .vinfo{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    width:min(94vw,364px)!important;
+    max-width:calc(100vw - 16px)!important;
+    margin:0 auto!important;
+    transform:none!important;
+  }
+
+  .vx-lock.vx-lockRaise{
+    width:calc(100% - 16px)!important;
+    max-width:650px!important;
+    margin:30px auto 0!important;
+    padding:20px 8px 16px!important;
+    overflow:visible!important;
+    border-radius:18px!important;
+    background:
+      linear-gradient(180deg,#0203052e 0%,#02030558 55%,#0203058c 100%),
+      url("/wallpaperGeneral.png") center 28% / cover no-repeat!important;
+  }
+
+  .vx-doorLaurel{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    display:flex!important;
+    width:min(100%,620px)!important;
+    align-items:center!important;
+    justify-content:center!important;
+    margin:0 auto 8px!important;
+    transform:none!important;
+  }
+
+  .vx-doorLaurel img{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    margin:0 auto!important;
+    object-position:center!important;
+  }
+
+  .vhd-root{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    width:100%!important;
+    max-width:650px!important;
+    margin:12px auto 68px!important;
+    transform:none!important;
+  }
+
+  .vhd-doors{
+    left:50%!important;
+    right:auto!important;
+    width:92%!important;
+    margin:0!important;
+    transform:translateX(-50%)!important;
+  }
+}
