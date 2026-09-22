@@ -7,16 +7,12 @@ type FxAccessBtnProps = {
   disabled?: boolean;
 };
 
-export function FxAccessBtn({ disabled = false }: FxAccessBtnProps) {
-  const openPrivateRoom = () => {
-    window.location.hash = "#/private-room";
-  };
-
+export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
   return (
     <button
       type="button"
       className="smkl-access-button"
-      onClick={openPrivateRoom}
+      onClick={onOpen}
       disabled={disabled}
     >
       <span className="smkl-access-button__smoke" />
