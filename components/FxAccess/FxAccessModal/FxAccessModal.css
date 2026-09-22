@@ -218,3 +218,123 @@ form.sl-form > .sl-btn-wrap .sl-btn[type="submit"] {
     min-height: 38px !important;
   }
 }
+
+/* ═══════════ TELEGRAM + SPECIAL CODE · UPGRADE STYLE ═══════════ */
+
+.sl-card-body .sl-btn-wrap:has(.sl-upgrade-btn) {
+  display:flex;
+  justify-content:center;
+  padding:0;
+  background:transparent;
+  clip-path:none;
+  filter:none;
+}
+
+.sl-card-body .sl-upgrade-btn {
+  width:fit-content !important;
+  min-width:138px;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  padding:1.2em 1rem !important;
+  gap:.4rem !important;
+  border:0 !important;
+  border-radius:11px !important;
+  clip-path:none !important;
+  cursor:pointer;
+  font-weight:700;
+  text-indent:0 !important;
+  background-repeat:no-repeat !important;
+  background-size:300% !important;
+  background-position:left center !important;
+  transition:
+    background .3s ease,
+    background-position .3s ease,
+    background-size .3s ease,
+    color .3s ease,
+    transform .15s ease !important;
+}
+
+.sl-card-body .sl-upgrade-btn:hover:not(:disabled) {
+  background-size:320% !important;
+  background-position:right center !important;
+}
+
+.sl-card-body .sl-upgrade-btn svg {
+  width:23px;
+  height:auto;
+  flex:0 0 23px;
+  transition:.3s ease;
+}
+
+/* ─────   SPECIAL CODE · LIME ─────── */
+.sl-card-body .sl-special-btn {
+  color:#000 !important;
+  text-shadow:2px 2px 3px rgba(221,255,0,.30) !important;
+  background:linear-gradient(
+    15deg,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500
+  ) no-repeat !important;
+  background-size:300% !important;
+  background-position:left center !important;
+  box-shadow:0 30px 10px -20px rgba(221,255,0,.20) !important;
+}
+
+.sl-card-body .sl-special-btn span,
+.sl-card-body .sl-special-btn svg,
+.sl-card-body .sl-special-btn svg path {
+  color:#000 !important;
+  fill:#000 !important;
+}
+
+/* ─────   TELEGRAM · BLUE ─────── */
+.sl-card-body .sl-telegram-btn {
+  color:#fff !important;
+  text-shadow:2px 2px 3px rgba(32,169,239,.30) !important;
+  background:linear-gradient(
+    15deg,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f
+  ) no-repeat !important;
+  background-size:300% !important;
+  background-position:left center !important;
+  box-shadow:0 30px 10px -20px rgba(32,169,239,.24) !important;
+}
+
+.sl-card-body .sl-telegram-btn span {
+  color:#fff !important;
+}
+
+.sl-card-body .sl-telegram-btn .sl-menu-icon,
+.sl-card-body .sl-telegram-btn .sl-check-icon {
+  filter:brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,47,83,.50)) !important;
+}
+
+.sl-action-grid {
+  justify-items:center;
+}
+
+@media(max-width:520px) {
+  .sl-card-body .sl-upgrade-btn {
+    min-width:118px;
+    padding:1em .75rem !important;
+  }
+
+  .sl-card-body .sl-upgrade-btn svg {
+    width:19px;
+    flex-basis:19px;
+  }
+}
