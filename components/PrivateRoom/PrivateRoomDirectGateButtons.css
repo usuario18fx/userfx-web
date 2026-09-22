@@ -1,0 +1,152 @@
+/* ═══════════ USER FX · TELEGRAM + SPECIAL CODE BUTTONS ═══════════ */
+
+.pvr-direct-shortcuts .pvr-direct-shortcut {
+  width:100%;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.4rem;
+  padding:1.2em 1rem;
+  border:0;
+  border-radius:11px;
+  cursor:pointer;
+  font-weight:700;
+  text-align:left;
+  background-repeat:no-repeat;
+  background-size:300%;
+  background-position:left center;
+  transition:
+    background .3s ease,
+    color .3s ease,
+    transform .16s ease,
+    box-shadow .25s ease;
+}
+
+/* ─────   TELEGRAM · BLUE ─────── */
+.pvr-direct-shortcuts .pvr-direct-shortcut:not(.pvr-direct-shortcut--special) {
+  color:#fff;
+  background-image:linear-gradient(
+    15deg,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f,
+    #67d9ff,
+    #20a9ef,
+    #087ec5,
+    #04558f
+  );
+  text-shadow:2px 2px 3px rgba(0,74,128,.35);
+  box-shadow:
+    0 30px 10px -20px rgba(32,169,239,.28),
+    0 0 16px rgba(32,169,239,.20);
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut:not(.pvr-direct-shortcut--special) img {
+  width:23px;
+  height:23px;
+  flex:0 0 23px;
+  filter:brightness(0) invert(1);
+  transition:.3s ease;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut:not(.pvr-direct-shortcut--special) small,
+.pvr-direct-shortcuts .pvr-direct-shortcut:not(.pvr-direct-shortcut--special) strong {
+  color:#fff;
+}
+
+/* ─────   SPECIAL CODE · LIME ─────── */
+.pvr-direct-shortcuts .pvr-direct-shortcut--special {
+  color:#000;
+  background-image:linear-gradient(
+    15deg,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500,
+    #ddff00,
+    #b8d100,
+    #93a300,
+    #6e7500
+  );
+  text-shadow:2px 2px 3px rgba(221,255,0,.30);
+  box-shadow:0 30px 10px -20px rgba(221,255,0,.20);
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut--special img {
+  width:23px;
+  height:23px;
+  flex:0 0 23px;
+  filter:brightness(0) saturate(100%);
+  transition:.3s ease;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut--special small,
+.pvr-direct-shortcuts .pvr-direct-shortcut--special strong {
+  color:#000;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut:hover,
+.pvr-direct-shortcuts .pvr-direct-shortcut.is-active,
+.pvr-direct-shortcuts .pvr-direct-shortcut--special.is-ready {
+  background-size:320%;
+  background-position:right center;
+  transform:translateY(-1px);
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut:hover img {
+  transform:scale(1.06);
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut--special:not(.is-ready) {
+  opacity:.68;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut span {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut small {
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.08em;
+  white-space:nowrap;
+}
+
+.pvr-direct-shortcuts .pvr-direct-shortcut strong {
+  font-family:"Cinzel",Georgia,serif;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  white-space:nowrap;
+}
+
+/* ─────   MOBILE ─────── */
+@media(max-width:650px) {
+  .pvr-direct-shortcuts .pvr-direct-shortcut {
+    min-height:46px;
+    padding:1em .72rem;
+    border-radius:9px;
+    gap:.32rem;
+  }
+
+  .pvr-direct-shortcuts .pvr-direct-shortcut img,
+  .pvr-direct-shortcuts .pvr-direct-shortcut:not(.pvr-direct-shortcut--special) img,
+  .pvr-direct-shortcuts .pvr-direct-shortcut--special img {
+    width:20px;
+    height:20px;
+    flex-basis:20px;
+  }
+
+  .pvr-direct-shortcuts .pvr-direct-shortcut small {
+    font-size:5px;
+  }
+
+  .pvr-direct-shortcuts .pvr-direct-shortcut strong {
+    font-size:6.6px;
+  }
+}
