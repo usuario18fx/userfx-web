@@ -174,11 +174,19 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
         if (cancelled) return;
 
         if (response.ok && data?.authenticated) {
-          sessionStorage.setItem(STORAGE_KEY, "true");
-          if (data.planId) sessionStorage.setItem("vault_plan", data.planId);
+          try {
+            sessionStorage.setItem(STORAGE_KEY, "true");
+            if (data.planId) sessionStorage.setItem("vault_plan", data.planId);
+          } catch {
+            // Mobile WebViews can block client storage. The server session remains authoritative.
+          }
           setAuthenticated(true);
         } else {
-          sessionStorage.removeItem(STORAGE_KEY);
+          try {
+            sessionStorage.removeItem(STORAGE_KEY);
+          } catch {
+            // Storage unavailable.
+          }
           setAuthenticated(false);
         }
       })
@@ -304,10 +312,18 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
       }
 
       const fullCode = `${normalizedPrefix}-${normalizedSuffix}`;
-      sessionStorage.setItem(STORAGE_KEY, "true");
-      sessionStorage.setItem(ACCESS_CODE_KEY, fullCode);
-      localStorage.setItem("vault_saved_code", fullCode);
-      if (data.planId) sessionStorage.setItem("vault_plan", data.planId);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, "true");
+        sessionStorage.setItem(ACCESS_CODE_KEY, fullCode);
+        if (data.planId) sessionStorage.setItem("vault_plan", data.planId);
+      } catch {
+        // Mobile WebViews can block client storage. Continue with the verified server session.
+      }
+      try {
+        localStorage.setItem("vault_saved_code", fullCode);
+      } catch {
+        // Storage unavailable.
+      }
       setAuthenticated(true);
     } catch {
       setError("CONNECTION ERROR · TRY AGAIN");
@@ -421,9 +437,13 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
         throw new Error(sessionData?.error || "PRIVATE SESSION COULD NOT BE CREATED");
       }
 
-      sessionStorage.setItem(STORAGE_KEY, "true");
-      sessionStorage.setItem("vault_plan", "vip");
-      sessionStorage.setItem(ACCESS_CODE_KEY, `SPCL-${specialSuffix}`);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, "true");
+        sessionStorage.setItem("vault_plan", "vip");
+        sessionStorage.setItem(ACCESS_CODE_KEY, `SPCL-${specialSuffix}`);
+      } catch {
+        // Mobile WebViews can block client storage. Continue with the verified server session.
+      }
       setAuthenticated(true);
     } catch (specialError) {
       setSpecialCode("");
