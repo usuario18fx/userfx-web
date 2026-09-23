@@ -15,6 +15,13 @@
   filter: drop-shadow(0 0 16px rgba(77,255,171,.18));
 }
 
+/* USERNAME + CODE · wallpaper.png solamente dentro de inputs */
+.sl-form .sl-field {
+  background:
+    linear-gradient(rgba(8, 5, 8, .58), rgba(8, 5, 8, .72)),
+    url("/wallpaper.png") center / cover no-repeat !important;
+}
+
 /* Más separación y visibilidad general */
 .sl-form {
   gap: 14px;
