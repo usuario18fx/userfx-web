@@ -99,6 +99,78 @@
 .userfx-spcl-photo img{display:block;width:100%;height:auto;max-height:72vh;object-fit:contain;user-select:none;-webkit-user-drag:none}
 .userfx-spcl-photo figcaption{position:absolute;left:10px;bottom:10px;padding:5px 7px;background:rgba(0,0,0,.58);color:#fff;font:800 9px/1 Arial,sans-serif;letter-spacing:.12em}
 body.userfx-spcl-open{overflow:hidden}
+
+.userfx-native-gallery-hidden{display:none!important}
+.userfx-spcl-inline{
+  margin:0 24px 32px;
+  padding:18px;
+  border:1px solid rgba(185,160,111,.26);
+  background:linear-gradient(180deg,rgba(18,17,14,.96),rgba(7,8,10,.98));
+}
+.userfx-spcl-inline-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+.userfx-spcl-inline-head span,.userfx-spcl-inline-head small{
+  display:block;
+  color:#9d9789;
+  font:700 10px/1.3 Arial,sans-serif;
+  letter-spacing:.18em;
+}
+.userfx-spcl-inline-head h2{
+  margin:4px 0;
+  color:#e8e1d3;
+  font:500 30px/1 Georgia,serif;
+  letter-spacing:.12em;
+}
+.userfx-spcl-inline-open{
+  min-height:36px;
+  padding:0 14px;
+  border:1px solid rgba(185,160,111,.35);
+  background:#18140e;
+  color:#d9c49a;
+  font:800 10px/1 Arial,sans-serif;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+.userfx-spcl-inline-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.userfx-spcl-inline-photo{
+  position:relative;
+  min-height:320px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid rgba(185,160,111,.28);
+  background:#090909;
+  cursor:pointer;
+}
+.userfx-spcl-inline-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:320px;
+  max-height:620px;
+  object-fit:cover;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.userfx-spcl-inline-photo span{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  padding:5px 8px;
+  background:rgba(0,0,0,.62);
+  color:#d9c49a;
+  font:800 9px/1 Arial,sans-serif;
+  letter-spacing:.12em;
+}
+
 @media(max-width:700px){
   .userfx-friend-card{grid-template-columns:52px 1fr;gap:10px;padding:12px}
   .userfx-friend-avatar{width:48px;height:48px;font-size:15px}
@@ -106,4 +178,10 @@ body.userfx-spcl-open{overflow:hidden}
   .userfx-friend-actions button,.userfx-friend-actions a{flex:1}
   .userfx-spcl-modal{padding:8px}
   .userfx-spcl-grid{grid-template-columns:1fr}
+  .userfx-spcl-inline{margin:0 12px 24px;padding:12px}
+  .userfx-spcl-inline-head{align-items:flex-start;flex-direction:column}
+  .userfx-spcl-inline-head h2{font-size:24px}
+  .userfx-spcl-inline-grid{grid-template-columns:1fr}
+  .userfx-spcl-inline-photo,.userfx-spcl-inline-photo img{min-height:260px}
+  .userfx-spcl-inline-open{width:100%}
 }
