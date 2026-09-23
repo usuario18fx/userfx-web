@@ -632,9 +632,8 @@ export function FxAccessModal({
 
                   {/* ─────   TELEGRAM ─────── */}
                   <div className="sl-btn-wrap">
-                    <button type="button" className="sl-btn sl-upgrade-btn sl-telegram-btn" onClick={openTelegramMode} disabled={busy}>
+                    <button type="button" className="sl-btn sl-upgrade-btn sl-telegram-btn" style={{minWidth:0,width:"fit-content"}} onClick={openTelegramMode} disabled={busy} aria-label="Telegram">
                       <img src={ACCESS_ICONS.telegram} alt="" className="sl-menu-icon" draggable={false} />
-                      <span>TELEGRAM</span>
                     </button>
                   </div>
 
@@ -693,9 +692,8 @@ export function FxAccessModal({
                       {identityLoading ? "CHECKING..." : telegramAuthorized ? "USER AUTHORIZED" : "CHECK USER"}
                     </button>
 
-                    <button type="button" className={`sl-btn sl-upgrade-btn sl-special-btn ${telegramAuthorized ? "is-ready" : ""}`} onClick={openSpecialCode} disabled={!telegramAuthorized || busy}>
+                    <button type="button" className={`sl-btn sl-upgrade-btn sl-special-btn ${telegramAuthorized ? "is-ready" : ""}`} style={{minWidth:0,width:"fit-content"}} onClick={openSpecialCode} disabled={!telegramAuthorized || busy} aria-label="Special code">
                       <CrownIcon />
-                      <span>SPECIAL CODE</span>
                     </button>
                   </div>
 
