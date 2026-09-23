@@ -345,3 +345,146 @@ form.sl-form > .sl-btn-wrap .sl-btn[type="submit"] {
     flex-basis:19px;
   }
 }
+
+/* ═══════════ TELEGRAM · FLY EFFECT ═══════════ */
+/* Solo el botón TELEGRAM del menú principal; CHECK USER no se modifica. */
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn {
+  overflow:hidden !important;
+  transition:
+    background .3s ease,
+    background-position .3s ease,
+    background-size .3s ease,
+    color .3s ease,
+    transform .2s ease !important;
+}
+
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn .sl-menu-icon {
+  display:block;
+  transform-origin:center center;
+  transition:transform .3s ease-in-out;
+}
+
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn > span {
+  display:block;
+  margin-left:.15em;
+  transition:
+    transform .3s ease-in-out,
+    opacity .3s ease-in-out;
+}
+
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn:hover:not(:disabled) .sl-menu-icon {
+  animation:slTelegramFly .6s ease-in-out infinite alternate;
+}
+
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn:hover:not(:disabled) > span {
+  transform:translateX(5em);
+  opacity:0;
+}
+
+.sl-card-body div.sl-form > .sl-btn-wrap .sl-telegram-btn:active:not(:disabled) {
+  transform:scale(.95) !important;
+}
+
+@keyframes slTelegramFly {
+  from {
+    transform:translate(1.15em,.10em) rotate(45deg) scale(1.10);
+  }
+  to {
+    transform:translate(1.15em,-.10em) rotate(45deg) scale(1.10);
+  }
+}
+
+/* ═══════════ ACCESS READY · ENTER INSIDE SCREEN ═══════════ */
+.sl-form:has(.sl-access-ready) {
+  position:relative;
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready {
+  position:relative;
+  min-height:72px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:9px;
+  row-gap:2px;
+  align-items:center;
+  justify-content:stretch;
+  padding:10px 98px 10px 12px;
+  text-align:left;
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready .sl-access-icon {
+  grid-column:1;
+  grid-row:1 / span 2;
+  width:28px;
+  height:28px;
+  align-self:center;
+  justify-self:center;
+  object-fit:contain;
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready strong {
+  grid-column:2;
+  grid-row:1;
+  align-self:end;
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready > span {
+  grid-column:2;
+  grid-row:2;
+  align-self:start;
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready + .sl-btn-wrap {
+  position:absolute;
+  top:50%;
+  right:10px;
+  z-index:5;
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  clip-path:none !important;
+  filter:none !important;
+  transform:translateY(-50%);
+}
+
+.sl-form:has(.sl-access-ready) .sl-access-ready + .sl-btn-wrap .sl-btn {
+  width:auto !important;
+  min-width:76px;
+  min-height:34px;
+  padding:0 12px !important;
+  border:1px solid rgba(77,255,171,.36) !important;
+  border-radius:9px !important;
+  clip-path:none !important;
+  background:linear-gradient(180deg,#163c2d,#092018) !important;
+  color:#78ffc0 !important;
+  font-size:8px;
+  letter-spacing:.12em;
+  box-shadow:0 0 14px rgba(77,255,171,.10) !important;
+}
+
+@media(max-width:520px) {
+  .sl-form:has(.sl-access-ready) .sl-access-ready {
+    min-height:60px;
+    grid-template-columns:28px minmax(0,1fr);
+    column-gap:7px;
+    padding:8px 82px 8px 9px;
+  }
+
+  .sl-form:has(.sl-access-ready) .sl-access-ready .sl-access-icon {
+    width:22px;
+    height:22px;
+  }
+
+  .sl-form:has(.sl-access-ready) .sl-access-ready + .sl-btn-wrap {
+    right:7px;
+  }
+
+  .sl-form:has(.sl-access-ready) .sl-access-ready + .sl-btn-wrap .sl-btn {
+    min-width:66px;
+    min-height:30px;
+    padding:0 9px !important;
+    font-size:7px;
+  }
+}
