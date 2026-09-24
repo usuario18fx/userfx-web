@@ -9,7 +9,7 @@ type FxAccessBtnProps = {
 
 export function FxAccessBtn({ disabled = false }: FxAccessBtnProps) {
   const openPrivateRoomAccess = () => {
-    window.location.hash = "#/private-room";
+    window.location.hash = "#/private-room-access";
   };
 
   return (
