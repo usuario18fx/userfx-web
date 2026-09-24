@@ -210,39 +210,53 @@
   letter-spacing: 0.19em;
 }
 
+/* ═══════════ TELEGRAM IDENTITY · SINGLE SOURCE ═══════════ */
+
 .pvr-direct-username {
+  position: relative;
   display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) 94px;
+  grid-template-columns: 34px minmax(0, 1fr) 94px;
   align-items: center;
   min-height: 40px;
   border: 1px solid rgba(42, 171, 238, 0.34);
-  background: #0b0908;
-}
-
-.pvr-direct-username > span {
-  display: grid;
-  place-items: center;
-  height: 100%;
-  border-right: 1px solid rgba(42, 171, 238, 0.67);
-  color: #68c5f2;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 13px;
-  font-weight: 800;
-  background:
-    linear-gradient(#44afe11b),
-    url("/wallpaper2.png") center / 180% auto no-repeat !important;
-}
-
-.pvr-direct-username input {
-  width: 100%;
-  min-width: 0;
-  height: 38px;
-  padding: 0 10px;
-  border: 0;
-  outline: 0;
   background:
     linear-gradient(rgba(5, 9, 12, 0.7), rgba(5, 9, 12, 0.7)),
     url("/wallpaper.png") center / 180% auto no-repeat;
+}
+
+.pvr-direct-username > span {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-right: 1px solid rgba(42, 171, 238, 0.67);
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-size: 0;
+  opacity: 1;
+}
+
+.pvr-direct-username > span::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: url("/assets/iconos/telegram.png") center / contain no-repeat;
+  opacity: 1;
+}
+
+.pvr-direct-username input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 0 10px 0 28px;
+  border: 0;
+  outline: 0;
+  background: transparent;
   color: #fff7e9;
   -webkit-text-fill-color: #fff7e9;
   caret-color: #d4bc94;
@@ -255,6 +269,23 @@
   color: #85b1c6;
   opacity: 1;
   -webkit-text-fill-color: #85b1c6;
+}
+
+.pvr-direct-username::after {
+  content: "@";
+  position: absolute;
+  z-index: 4;
+  left: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2aabee;
+  -webkit-text-fill-color: #2aabee;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 1;
+  pointer-events: none;
 }
 
 .pvr-direct-username button {
@@ -764,9 +795,14 @@
   height: 24px;
   display: grid;
   place-items: center;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   font-size: 17px;
   line-height: 1;
-  filter: drop-shadow(0 0 7px currentColor);
+  filter: none;
+  text-shadow: none;
+  color: initial;
+  -webkit-text-fill-color: initial;
+  opacity: 1;
 }
 
 .pvr-direct-plan > span {
@@ -823,7 +859,9 @@
   border-color: #c800ff;
   background: linear-gradient(180deg, rgba(100, 22, 132, 0.25), #0d0b09 78%);
 }
+
 /* ═══════════ FOOTER ═══════════ */
+
 .pvr-direct-foot {
   width: min(460px, 100%);
   display: flex;
@@ -834,6 +872,7 @@
   padding-top: 8px;
   border-top: 1px solid #f3ece038;
 }
+
 .pvr-direct-foot button,
 .pvr-direct-foot a {
   border: 0;
@@ -846,88 +885,120 @@
   cursor: pointer;
   opacity: 1;
 }
+
 /* ═══════════ AUTOFILL ═══════════ */
+
 .pvr-direct-inputs input:-webkit-autofill,
 .pvr-direct-username input:-webkit-autofill,
 .pvr-direct-special-input input:-webkit-autofill {
   -webkit-text-fill-color: #fff7e9;
   box-shadow: 0 0 0 1000px #0d0b09 inset;
 }
+
 /* ═══════════ MOBILE ═══════════ */
+
 @media (max-width: 650px) {
   .pvr-direct-gate {
     padding: 12px;
   }
+
   .pvr-direct-card {
     width: min(530px, 100%);
     padding: 11px 10px;
   }
+
   .pvr-direct-head {
     grid-template-columns: 1fr auto;
   }
+
   .pvr-direct-head small {
     grid-column: 2;
     grid-row: 1 / span 2;
     justify-self: auto;
   }
+
   .pvr-direct-mark {
     width: 42px;
     height: 42px;
     margin: 7px auto 6px;
   }
+
   .pvr-direct-copy h1 {
     font-size: 27px;
   }
+
   .pvr-direct-telegram-panel {
     padding: 10px;
   }
+
   .pvr-direct-username {
-    grid-template-columns: 25px minmax(0, 1fr) 88px;
+    grid-template-columns: 32px minmax(0, 1fr) 86px;
   }
+
+  .pvr-direct-username::after {
+    left: 41px;
+  }
+
+  .pvr-direct-username > span::before {
+    width: 17px;
+    height: 17px;
+  }
+
   .pvr-direct-username button {
     font-size: 5px;
   }
+
   .pvr-direct-special-step {
     grid-template-columns: 112px minmax(0, 1fr);
   }
+
   .pvr-direct-special-step .pvr-direct-special-form {
     grid-template-columns: minmax(0, 1fr) 88px;
   }
+
   .pvr-direct-inputs {
     grid-template-columns: 1fr;
     gap: 7px;
   }
+
   .pvr-direct-inputs > span {
     display: none;
   }
+
   .pvr-direct-prefix,
   .pvr-direct-inputs input {
     height: 40px;
     font-size: 12px;
   }
+
   .pvr-direct-prefix-menu button {
     min-height: 38px;
     font-size: 12px;
   }
+
   .pvr-direct-plan {
     grid-template-columns: 20px minmax(0, 1fr) 43px;
     gap: 3px 5px;
     padding: 5px;
   }
+
   .pvr-direct-plan-emoji {
     width: 20px;
     height: 20px;
     font-size: 14px;
   }
+
   .pvr-direct-plan strong {
     font-size: 7px;
   }
+
   .pvr-direct-plan small {
     font-size: 4.5px;
   }
 }
 
 /* ═══════════ WALLFX BACKDROP ═══════════ */
+
 .pvr-direct-copy {
   position: relative;
   isolation: isolate;
