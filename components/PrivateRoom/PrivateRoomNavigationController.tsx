@@ -26,6 +26,12 @@ const MOBILE_LABELS:Record<NavRole,string> = {
 const ORDER:NavRole[] = ["home","live","stage","gallery","members","messages"];
 const ORIGINAL_ORDER:NavRole[] = ["home","live","stage","members","gallery","messages"];
 
+function setActiveRole(role:NavRole) {
+  document.querySelectorAll<HTMLButtonElement>("[data-userfx-nav-role]").forEach((button) => {
+    button.classList.toggle("is-active",button.dataset.userfxNavRole === role);
+  });
+}
+
 function assignRoles(nav:HTMLElement) {
   const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"))
     .filter((button) => !button.classList.contains("pvr-club-mobile-oncam"));
@@ -81,25 +87,85 @@ function configureNav(nav:HTMLElement,mobile:boolean) {
     home.addEventListener("click",openHome,true);
     home.dataset.userfxHomeBound = "1";
   }
+
+  const messages = byRole.get("messages");
+  if (messages && messages.dataset.userfxMessagesBound !== "1") {
+    const openMessages = (event:Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      setActiveRole("messages");
+      document.querySelector(".pvr-live-messages")?.scrollIntoView({
+        behavior:"smooth",
+        block:"start",
+      });
+    };
+
+    messages.addEventListener("click",openMessages,true);
+    messages.dataset.userfxMessagesBound = "1";
+  }
+}
+
+function styleContactButton(button:HTMLButtonElement) {
+  button.style.appearance = "none";
+  button.style.width = "100%";
+  button.style.textAlign = "left";
+  button.style.font = "inherit";
+  button.style.cursor = "pointer";
+}
+
+function buildUser18FxContact(extraClass:string) {
+  const contact = document.createElement("button");
+  contact.type = "button";
+  contact.className = `pvr-live-member-empty ${extraClass}`;
+  contact.setAttribute("aria-label","Open @User18Fx contact");
+  contact.innerHTML = [
+    '<span class="pvr-live-member-dot is-online"></span>',
+    '<strong>@USER18FX</strong>',
+    '<small>DEFAULT FRIEND · PRIVATE CONTACT</small>',
+  ].join("");
+  styleContactButton(contact);
+  contact.addEventListener("click",() => window.open(USER18FX_URL,"_blank","noopener,noreferrer"));
+  return contact;
 }
 
 function configureDefaultFriend() {
   const grid = document.querySelector<HTMLElement>(".pvr-live-members-grid");
   if (!grid || grid.querySelector("[data-userfx-default-friend='1']")) return;
 
-  const friend = document.createElement("button");
-  friend.type = "button";
-  friend.className = "pvr-live-member-empty pvr-live-default-friend";
+  const friend = buildUser18FxContact("pvr-live-default-friend");
   friend.dataset.userfxDefaultFriend = "1";
-  friend.setAttribute("aria-label","Open @User18Fx contact");
-  friend.innerHTML = [
-    '<span class="pvr-live-member-dot is-online"></span>',
-    '<strong>@USER18FX</strong>',
-    '<small>DEFAULT FRIEND · PRIVATE CONTACT</small>',
-  ].join("");
-  friend.addEventListener("click",() => window.open(USER18FX_URL,"_blank","noopener,noreferrer"));
-
   grid.prepend(friend);
+}
+
+function configureMessagesSection() {
+  if (document.querySelector(".pvr-live-messages")) return;
+
+  const members = document.querySelector<HTMLElement>(".pvr-live-members");
+  if (!members?.parentElement) return;
+
+  const section = document.createElement("section");
+  section.className = "pvr-live-members pvr-live-messages";
+  section.setAttribute("aria-label","Private messages");
+  section.innerHTML = [
+    '<div class="pvr-live-section-head">',
+      '<div>',
+        '<span>PRIVATE CONTACTS</span>',
+        '<strong>MESSAGES</strong>',
+      '</div>',
+      '<small>1 CONTACT</small>',
+    '</div>',
+    '<div class="pvr-live-members-grid pvr-live-messages-grid"></div>',
+  ].join("");
+
+  members.insertAdjacentElement("afterend",section);
+
+  const grid = section.querySelector<HTMLElement>(".pvr-live-messages-grid");
+  if (!grid) return;
+
+  const contact = buildUser18FxContact("pvr-live-message-contact");
+  contact.querySelector("small")!.textContent = "FRIEND · OPEN PRIVATE MESSAGE";
+  grid.appendChild(contact);
 }
 
 function configureAlbum() {
@@ -134,6 +200,7 @@ function applyPrivateRoomNavigation() {
   if (mobile) configureNav(mobile,true);
 
   configureDefaultFriend();
+  configureMessagesSection();
   configureAlbum();
   configureStage();
 }
