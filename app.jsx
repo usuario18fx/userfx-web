@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VaultHome from "./components/VaultHome/VaultHome";
 import PrivateRoomLiveShell from "./components/PrivateRoom/PrivateRoomLiveShell";
+import PrivateRoomNavigationController from "./components/PrivateRoom/PrivateRoomNavigationController";
 
 function getRoute() {
   return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
@@ -120,7 +121,12 @@ export default function App() {
   }, []);
 
   if (route === "#/private-room" || route === "#/private-room-access") {
-    return <PrivateRoomLiveShell />;
+    return (
+      <>
+        <PrivateRoomLiveShell />
+        <PrivateRoomNavigationController />
+      </>
+    );
   }
 
   return <VaultHome />;
