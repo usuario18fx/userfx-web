@@ -119,7 +119,7 @@ export default function App() {
     };
   }, []);
 
-  if (route === "#/private-room") {
+  if (route === "#/private-room" || route === "#/private-room-access") {
     return <PrivateRoomLiveShell />;
   }
 
