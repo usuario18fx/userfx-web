@@ -24,6 +24,7 @@ const MOBILE_LABELS:Record<NavRole,string> = {
 };
 
 const ORDER:NavRole[] = ["home","live","stage","gallery","members","messages"];
+const ORIGINAL_ORDER:NavRole[] = ["home","live","stage","members","gallery","messages"];
 
 function assignRoles(nav:HTMLElement) {
   const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"))
@@ -31,11 +32,9 @@ function assignRoles(nav:HTMLElement) {
 
   if (buttons.length < 6) return;
 
-  const originalRoles:NavRole[] = ["home","live","stage","members","gallery","messages"];
-
   buttons.slice(0,6).forEach((button,index) => {
     if (!button.dataset.userfxNavRole) {
-      button.dataset.userfxNavRole = originalRoles[index];
+      button.dataset.userfxNavRole = ORIGINAL_ORDER[index];
     }
   });
 }
@@ -55,16 +54,27 @@ function configureNav(nav:HTMLElement,mobile:boolean) {
   ORDER.forEach((role) => {
     const button = byRole.get(role);
     if (!button) return;
-    button.textContent = labels[role];
-    nav.appendChild(button);
+    if (button.textContent !== labels[role]) button.textContent = labels[role];
   });
+
+  const orderedButtons = ORDER.map((role) => byRole.get(role)).filter(Boolean) as HTMLButtonElement[];
+  const currentButtons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"))
+    .filter((button) => !button.classList.contains("pvr-club-mobile-oncam"));
+
+  const orderMatches =
+    orderedButtons.length === currentButtons.length &&
+    orderedButtons.every((button,index) => button === currentButtons[index]);
+
+  if (!orderMatches) {
+    orderedButtons.forEach((button) => nav.appendChild(button));
+  }
 
   const home = byRole.get("home");
   if (home && home.dataset.userfxHomeBound !== "1") {
     const openHome = (event:Event) => {
       event.preventDefault();
       event.stopPropagation();
-      if ("stopImmediatePropagation" in event) event.stopImmediatePropagation();
+      event.stopImmediatePropagation();
       window.location.assign(HOME_URL);
     };
 
@@ -97,10 +107,12 @@ function configureAlbum() {
   if (!gallery) return;
 
   const heading = gallery.querySelector<HTMLElement>("#gallery-heading");
-  if (heading) heading.textContent = "MY ALBUM";
+  if (heading && heading.textContent !== "MY ALBUM") heading.textContent = "MY ALBUM";
 
   const kicker = gallery.querySelector<HTMLElement>(".pvr-section-head > div > span");
-  if (kicker) kicker.textContent = "USER18FX · PRIVATE GALLERY";
+  if (kicker && kicker.textContent !== "USER18FX · PRIVATE GALLERY") {
+    kicker.textContent = "USER18FX · PRIVATE GALLERY";
+  }
 }
 
 function configureStage() {
@@ -110,8 +122,8 @@ function configureStage() {
   const kicker = stage.querySelector<HTMLElement>(".pvr-live-section-head > div > span");
   const title = stage.querySelector<HTMLElement>(".pvr-live-section-head > div > strong");
 
-  if (kicker) kicker.textContent = "STAGE";
-  if (title) title.textContent = "PRIVATE GROUP · 5";
+  if (kicker && kicker.textContent !== "STAGE") kicker.textContent = "STAGE";
+  if (title && title.textContent !== "PRIVATE GROUP · 5") title.textContent = "PRIVATE GROUP · 5";
 }
 
 function applyPrivateRoomNavigation() {
