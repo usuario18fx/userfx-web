@@ -12,17 +12,12 @@ const files = {
   deviceTsx: path.join(ROOT, "components", "VaultDevice", "VaultDevice.tsx"),
   deviceCss: path.join(ROOT, "components", "VaultDevice", "VaultDevice.css"),
   deviceMobile: path.join(ROOT, "components", "VaultDevice", "VaultDevice.mobile.css"),
-  modalTsx: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModal.tsx"),
-  modalCss: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModal.css"),
-  modalV2: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessModalV2.css"),
-  modalTabs: path.join(ROOT, "components", "FxAccess", "FxAccessModal", "FxAccessTabs.css"),
-  modalVisibility: path.join(
-    ROOT,
-    "components",
-    "FxAccess",
-    "FxAccessModal",
-    "FxAccessModalVisibility.css",
-  ),
+  privateRoomLiveShell: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomLiveShell.tsx"),
+  privateRoomLuxury: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomLuxury.css"),
+  privateRoomUnified: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomUnified.css"),
+  directGateCss: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomDirectGate.css"),
+  directGateButtons: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomDirectGateButtons.css"),
+  legacyAccessModal: path.join(ROOT, "components", "FxAccess", "FxAccessModal"),
 };
 
 function exists(file) {
@@ -38,7 +33,7 @@ function write(file, content) {
 }
 
 function appendCss(target, source, title) {
-  if (!exists(source)) return false;
+  if (!exists(target) || !exists(source)) return false;
 
   const targetContent = read(target);
   const sourceContent = read(source);
@@ -109,21 +104,21 @@ function walk(dir, result = []) {
   return result;
 }
 
-console.log("USER FX · 1/4 · Unifying CSS...");
+console.log("USER FX · 1/4 · Unifying component CSS...");
 appendCss(files.vaultCss, files.vaultMobile, "MOBILE POLISH → VaultHome.css");
 appendCss(files.deviceCss, files.deviceMobile, "MOBILE → VaultDevice.css");
-appendCss(files.modalCss, files.modalV2, "MODAL V2 → FxAccessModal.css");
-appendCss(files.modalCss, files.modalTabs, "ACCESS TABS → FxAccessModal.css");
-
-if (exists(files.modalVisibility)) {
-  fs.rmSync(files.modalVisibility);
-  console.log("Removed unused FxAccessModalVisibility.css");
-}
+appendCss(files.privateRoomLuxury, files.privateRoomUnified, "UNIFIED UPDATES → PrivateRoomLuxury.css");
+appendCss(files.directGateCss, files.directGateButtons, "IDENTITY → PrivateRoomDirectGate.css");
 
 removeImport(files.app, "./components/VaultHome/mobile-polish.css");
 removeImport(files.deviceTsx, "./VaultDevice.mobile.css");
-removeImport(files.main, "./components/FxAccess/FxAccessModal/FxAccessTabs.css");
-removeImport(files.modalTsx, "./FxAccessModalV2.css");
+removeImport(files.privateRoomLiveShell, "./PrivateRoomUnified.css");
+removeImport(files.privateRoomLiveShell, "./PrivateRoomDirectGateButtons.css");
+
+if (exists(files.legacyAccessModal)) {
+  fs.rmSync(files.legacyAccessModal, { recursive: true, force: true });
+  console.log("Removed legacy FxAccessModal robot implementation");
+}
 
 console.log("USER FX · 2/4 · Running Prettier across project code...");
 execFileSync(
@@ -155,10 +150,10 @@ console.log("USER FX · 4/4 · Done.");
 console.log("Unified:");
 console.log("  mobile-polish.css → components/VaultHome/VaultHome.css");
 console.log("  VaultDevice.mobile.css → components/VaultDevice/VaultDevice.css");
-console.log("  FxAccessModalV2.css → components/FxAccess/FxAccessModal/FxAccessModal.css");
-console.log("  FxAccessTabs.css → components/FxAccess/FxAccessModal/FxAccessModal.css");
+console.log("  PrivateRoomUnified.css → components/PrivateRoom/PrivateRoomLuxury.css");
+console.log("  PrivateRoomDirectGateButtons.css → components/PrivateRoom/PrivateRoomDirectGate.css");
 console.log("Removed stale:");
-console.log("  FxAccessModalVisibility.css");
+console.log("  components/FxAccess/FxAccessModal/");
 console.log("Formatted:");
 console.log("  TS / TSX / JS / JSX / CSS / HTML across the project");
 console.log("Next: npm run build");
