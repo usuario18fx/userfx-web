@@ -3,23 +3,27 @@ import "./FxAccessBtn.css";
 const ROSA = "/assets/iconos/rosa.png";
 
 type FxAccessBtnProps = {
-  onOpen: () => void;
+  onOpen?: () => void;
   disabled?: boolean;
 };
 
-export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
+export function FxAccessBtn({ disabled = false }: FxAccessBtnProps) {
+  const openPrivateRoomAccess = () => {
+    window.location.hash = "#/private-room";
+  };
+
   return (
     <button
       type="button"
       className="smkl-access-button"
-      onClick={onOpen}
+      onClick={openPrivateRoomAccess}
       disabled={disabled}
     >
       <span className="smkl-access-button__smoke" />
       <span className="smkl-access-button__rose" aria-hidden="true">
         <img
           className="smkl-access-button__rose-normal"
-          src="/assets/iconos/rosa.png"
+          src={ROSA}
           alt=""
           draggable={false}
         />
