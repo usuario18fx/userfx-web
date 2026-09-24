@@ -125,6 +125,13 @@
   white-space:nowrap;
 }
 
+/* ─────   TELEGRAM USERNAME · UNIFIED BACKGROUND ─────── */
+.pvr-direct-username > span {
+  background:
+    linear-gradient(rgba(5,9,12,.7),rgba(5,9,12,.7)),
+    url("/wallpaper.png") center / 180% auto no-repeat !important;
+}
+
 /* ─────   MOBILE ─────── */
 @media(max-width:650px) {
   .pvr-direct-shortcuts .pvr-direct-shortcut {
