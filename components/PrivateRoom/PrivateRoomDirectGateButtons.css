@@ -126,7 +126,45 @@
 }
 
 /* ─────   TELEGRAM USERNAME · UNIFIED BACKGROUND ─────── */
+.pvr-direct-username {
+  position:relative;
+}
+
 .pvr-direct-username > span {
+  position:relative;
+  color:transparent !important;
+  font-size:0 !important;
+  background:
+    linear-gradient(rgba(5,9,12,.7),rgba(5,9,12,.7)),
+    url("/wallpaper.png") center / 180% auto no-repeat !important;
+}
+
+.pvr-direct-username > span::before {
+  content:"✈️";
+  display:block;
+  font-size:14px;
+  line-height:1;
+  opacity:1;
+}
+
+.pvr-direct-username::after {
+  content:"@";
+  position:absolute;
+  left:37px;
+  top:50%;
+  z-index:5;
+  transform:translateY(-50%);
+  color:#fff7e9;
+  opacity:1;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:13px;
+  font-weight:800;
+  line-height:1;
+  pointer-events:none;
+}
+
+.pvr-direct-username input {
+  padding-left:27px !important;
   background:
     linear-gradient(rgba(5,9,12,.7),rgba(5,9,12,.7)),
     url("/wallpaper.png") center / 180% auto no-repeat !important;
