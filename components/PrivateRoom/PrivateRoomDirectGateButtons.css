@@ -149,13 +149,11 @@
 }
 
 .pvr-direct-username > span::before {
-  content:"✈️";
+  content:"";
   display:block;
-  color:initial;
-  -webkit-text-fill-color:initial;
-  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
-  font-size:15px;
-  line-height:1;
+  width:18px;
+  height:18px;
+  background:url("/assets/iconos/telegram.png") center / contain no-repeat;
   opacity:1;
 }
 
@@ -234,6 +232,7 @@
   }
 
   .pvr-direct-username > span::before {
-    font-size:14px;
+    width:17px;
+    height:17px;
   }
 }
