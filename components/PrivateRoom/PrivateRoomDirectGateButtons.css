@@ -125,49 +125,79 @@
   white-space:nowrap;
 }
 
-/* ─────   TELEGRAM USERNAME · UNIFIED BACKGROUND ─────── */
+/* ─────   TELEGRAM USERNAME · ONE CONTINUOUS BACKGROUND ─────── */
 .pvr-direct-username {
   position:relative;
+  grid-template-columns:34px minmax(0,1fr) 94px !important;
+  background:
+    linear-gradient(rgba(5,9,12,.70),rgba(5,9,12,.70)),
+    url("/wallpaper.png") center / 180% auto no-repeat !important;
 }
 
 .pvr-direct-username > span {
   position:relative;
+  z-index:2;
+  height:100%;
+  display:grid !important;
+  place-items:center;
+  border-right:1px solid rgba(42,171,238,.67);
+  background:transparent !important;
   color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
   font-size:0 !important;
-  background:
-    linear-gradient(rgba(5,9,12,.7),rgba(5,9,12,.7)),
-    url("/wallpaper.png") center / 180% auto no-repeat !important;
+  opacity:1 !important;
 }
 
 .pvr-direct-username > span::before {
   content:"✈️";
   display:block;
-  font-size:14px;
+  color:initial;
+  -webkit-text-fill-color:initial;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+  font-size:15px;
   line-height:1;
   opacity:1;
+}
+
+.pvr-direct-username input {
+  position:relative;
+  z-index:1;
+  padding-left:28px !important;
+  background:transparent !important;
 }
 
 .pvr-direct-username::after {
   content:"@";
   position:absolute;
-  left:37px;
+  z-index:4;
+  left:44px;
   top:50%;
-  z-index:5;
   transform:translateY(-50%);
-  color:#fff7e9;
-  opacity:1;
+  color:#2aabee;
+  -webkit-text-fill-color:#2aabee;
   font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
   font-size:13px;
-  font-weight:800;
+  font-weight:900;
   line-height:1;
+  opacity:1;
   pointer-events:none;
 }
 
-.pvr-direct-username input {
-  padding-left:27px !important;
-  background:
-    linear-gradient(rgba(5,9,12,.7),rgba(5,9,12,.7)),
-    url("/wallpaper.png") center / 180% auto no-repeat !important;
+/* ─────   ACCESS PLAN EMOJIS · ORIGINAL NATIVE EMOJIS ─────── */
+.pvr-direct-plan-emoji {
+  width:24px !important;
+  height:24px !important;
+  display:grid !important;
+  place-items:center !important;
+  flex:none !important;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif !important;
+  font-size:17px !important;
+  line-height:1 !important;
+  filter:none !important;
+  text-shadow:none !important;
+  color:initial !important;
+  -webkit-text-fill-color:initial !important;
+  opacity:1 !important;
 }
 
 /* ─────   MOBILE ─────── */
@@ -193,5 +223,17 @@
 
   .pvr-direct-shortcuts .pvr-direct-shortcut strong {
     font-size:6.6px;
+  }
+
+  .pvr-direct-username {
+    grid-template-columns:32px minmax(0,1fr) 86px !important;
+  }
+
+  .pvr-direct-username::after {
+    left:41px;
+  }
+
+  .pvr-direct-username > span::before {
+    font-size:14px;
   }
 }
