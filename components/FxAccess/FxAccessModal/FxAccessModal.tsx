@@ -1,7 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import PrivateRoomDirectGate from "../../PrivateRoom/PrivateRoomDirectGate";
 
-/* ═══════════ USER FX · ACCESS MODAL BRIDGE ═══════════ */
+/* ═══════════ USER FX · ACCESS MODAL PORTAL ═══════════ */
 
 type FxAccessModalProps = {
   id?: string;
@@ -17,66 +18,21 @@ type FxAccessModalProps = {
 
 function PrivateRoomRedirect({ onClose }: { onClose: () => void }) {
   useEffect(() => {
-    onClose();
     window.location.hash = "#/private-room";
+    onClose();
   }, [onClose]);
 
   return null;
 }
 
 export function FxAccessModal({ open, onClose }: FxAccessModalProps) {
-  const [ready, setReady] = useState(false);
-  const previousUrlRef = useRef("");
+  if (!open || typeof document === "undefined") return null;
 
-  /* ───── KEEP VAULT HOME MOUNTED WHILE ACCESS MODAL IS OPEN ───── */
-  useLayoutEffect(() => {
-    if (!open) {
-      setReady(false);
-      return;
-    }
-
-    previousUrlRef.current =
-      `${window.location.pathname}${window.location.search}${window.location.hash || "#/"}`;
-
-    window.history.replaceState(
-      {},
-      "",
-      `${window.location.pathname}${window.location.search}#/private-room-access`,
-    );
-
-    setReady(true);
-
-    return () => {
-      if (window.location.hash === "#/private-room-access") {
-        window.history.replaceState(
-          {},
-          "",
-          previousUrlRef.current || `${window.location.pathname}${window.location.search}#/`,
-        );
-      }
-    };
-  }, [open]);
-
-  /* ───── DIRECT GATE BACK BUTTON CLOSES THIS MODAL ───── */
-  useEffect(() => {
-    if (!open) return;
-
-    const handleHashChange = () => {
-      if (window.location.hash === "#/" || window.location.hash === "") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, [open, onClose]);
-
-  if (!open || !ready) return null;
-
-  return (
-    <PrivateRoomDirectGate>
+  return createPortal(
+    <PrivateRoomDirectGate forceOpen onRequestClose={onClose}>
       <PrivateRoomRedirect onClose={onClose} />
-    </PrivateRoomDirectGate>
+    </PrivateRoomDirectGate>,
+    document.body,
   );
 }
 
