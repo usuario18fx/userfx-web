@@ -475,11 +475,11 @@ export default function VaultHome() {
             <div className="vx-doorLaurel" aria-hidden="true">
             <img src={ICONS.doorLaurel} alt="" draggable={false} />
             </div>
-      <VaultHeroDoors unlocked={unlocked} />
+      <VaultHeroDoors/>
             </aside>
             </div>
             </section>
-      <Ticker items={TICKER_ITEMS} />
+      <Ticker items={TICKER_ITEMS}/>
             {unlocked ? (
             <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
             <div className="vx-privateAlbumInner">
