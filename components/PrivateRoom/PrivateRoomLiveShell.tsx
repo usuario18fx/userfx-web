@@ -14,7 +14,7 @@ import "./PrivateRoomMyCamDock.css";
 import "./PrivateRoomWelcomeTour.css";
 import "./PrivateRoomLuxury.css";
 import "./PrivateRoomUnified.css";
-import "./PrivateRoomDirectGateButtons.css";
+
 
 /* ═══════════ USER FX · LOCAL PRIVATE ROOM SESSION ═══════════ */
 
