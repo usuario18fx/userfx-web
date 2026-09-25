@@ -9,6 +9,7 @@ import "./protocol-selection.js";
 import "./private-room-friend.js";
 import "./robot-bubble.css";
 import "./private-room-plans-height-fix.css";
+import "./private-room-mobile-black-screen-fix.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
