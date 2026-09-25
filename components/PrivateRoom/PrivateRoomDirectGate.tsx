@@ -90,7 +90,7 @@ function normalizeSpecialSuffix(value: string) {
 }
 export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   const forceGate = typeof window !== "undefined" && window.location.hash === "#/private-room-access";
-const [checking, setChecking] = useState(true);
+const [checking, setChecking] = useState(!forceGate);
 const [authenticated, setAuthenticated] = useState(false);
 const [prefix, setPrefix] = useState("BSIC");
 const [suffix, setSuffix] = useState("");
