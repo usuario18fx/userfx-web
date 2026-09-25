@@ -1146,3 +1146,38 @@ display: block;
     0 0 0 1px #e6af50,
     inset 0 0 18px #e6af5018;
 }
+
+/* ═══════════ MOBILE · MODAL VISIBILITY FIX ═══════════ */
+@media (max-width: 650px) {
+  .pvr-direct-gate {
+    --pvr-direct-scale: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100dvh;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pvr-direct-card {
+    position: relative;
+    top: auto;
+    left: auto;
+    flex: 0 0 auto;
+    width: min(430px, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
+    height: 420px;
+    margin: auto 0;
+    padding: 11px 10px;
+    transform: none;
+    transform-origin: center;
+  }
+
+  .pvr-direct-telegram-panel.is-primary {
+    width: min(300px, calc(100% - 12px));
+    max-width: 100%;
+  }
+}
