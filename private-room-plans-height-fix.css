@@ -1,0 +1,115 @@
+/* ═══════════ PRIVATE ROOM · PLAN PANEL HEIGHT + IMAGE ICONS ═══════════ */
+
+/* Match the GET MY CODE panel height to the I HAVE A CODE block. */
+.pvr-direct-plans.pvr-direct-secondary-panel,
+.pvr-direct-secondary-stage .pvr-direct-plans.pvr-direct-secondary-panel {
+  height: 82px !important;
+  min-height: 82px !important;
+  max-height: 82px !important;
+  padding: 6px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+/* Each access plan fills the complete available height. */
+.pvr-direct-plans .pvr-direct-plan {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: 26px minmax(0, 1fr) 44px !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 5px 6px !important;
+}
+
+/* Replace the Unicode emoji visually with the existing USER FX image assets. */
+.pvr-direct-plans .pvr-direct-plan-emoji {
+  width: 26px !important;
+  height: 26px !important;
+  display: block !important;
+  place-items: initial !important;
+  flex: 0 0 26px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+  background-color: transparent !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  filter: none !important;
+}
+
+.pvr-direct-plan.is-basic .pvr-direct-plan-emoji {
+  background-image: url("/assets/iconos/basic.png") !important;
+}
+
+.pvr-direct-plan.is-pro .pvr-direct-plan-emoji {
+  background-image: url("/assets/iconos/fuego.png") !important;
+}
+
+.pvr-direct-plan.is-vip .pvr-direct-plan-emoji {
+  background-image: url("/assets/iconos/corona.png") !important;
+}
+
+/* Keep plan name / prefix vertically compact and centered. */
+.pvr-direct-plans .pvr-direct-plan > span:not(.pvr-direct-plan-emoji) {
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px !important;
+}
+
+.pvr-direct-plans .pvr-direct-plan strong {
+  font-size: 8px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.pvr-direct-plans .pvr-direct-plan small {
+  font-size: 4.5px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* PAY buttons: same visual rhythm and vertical center across all three plans. */
+.pvr-direct-plans .pvr-direct-plan > button {
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 27px !important;
+  min-height: 27px !important;
+  margin: 0 !important;
+  padding: 0 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 6px !important;
+  line-height: 1 !important;
+}
+
+@media (max-width: 650px) {
+  .pvr-direct-plans .pvr-direct-plan {
+    grid-template-columns: 22px minmax(0, 1fr) 40px !important;
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+
+  .pvr-direct-plans .pvr-direct-plan-emoji {
+    width: 22px !important;
+    height: 22px !important;
+    flex-basis: 22px !important;
+  }
+
+  .pvr-direct-plans .pvr-direct-plan > button {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+  }
+}
