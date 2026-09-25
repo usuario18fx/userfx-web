@@ -174,12 +174,6 @@ const returningIdentityRef = useRef(false);
     }
 
     setSecondaryMode("none");
-
-    if (returningIdentityRef.current) {
-      setVerifiedStage("actions");
-      return;
-    }
-
     setVerifiedStage("granted");
   }, [telegramVerified]);
   /* ─────   RETURN FROM TELEGRAM · SPECIAL CODE ─────── */
@@ -543,8 +537,10 @@ const returningIdentityRef = useRef(false);
   if (checking) {
     return (
          <main className="pvr-direct-checking">
-         <span>USER FX</span>
-         <strong>CHECKING PRIVATE ACCESS…</strong>
+         <span>
+          USER FX</span>
+         <strong>
+          CHECKING PRIVATE ACCESS…</strong>
          </main>
   );
   }
@@ -559,9 +555,15 @@ const returningIdentityRef = useRef(false);
         <div className="direct-icon4" aria-hidden="true" />
 {/* ========   DIRECT PRIVATE ROOM ACCESS =========================== */}
         <header className="pvr-direct-head">
-        <span>USER FX · PRIVATE CLUB</span>
-        <strong>PRIVATE ROOM</strong>
-        <small>CODED ACCESS</small>
+        <span>
+          USER FX · PRIVATE CLUB
+        </span>
+        <strong>
+          PRIVATE ROOM
+        </strong>
+        <small>
+          CODED ACCESS
+        </small>
         </header>
         <div className="pvr-direct-copy">
         <div className="pvr-direct-fondo-wrap" aria-hidden="true">
@@ -639,24 +641,60 @@ const returningIdentityRef = useRef(false);
           </button>
           </div>
           </section>
-                ) : verifiedStage === "granted" ? (
-          <section className="pvr-direct-granted" aria-live="polite">
-{/* ========   VERIFIED NOTIFICATION =========================== */}
+           ) : verifiedStage === "granted" ? (
+          <section className={`pvr-direct-granted ${returningIdentityRef.current ? "is-code-entry" : ""}`} aria-live="polite">
           <div className="pvr-direct-granted-check">
-           ✓
+          <img src="/assets/iconos/ok.png" alt="" aria-hidden="true" />
           </div>
           <strong>
-           ACCESS GRANTED
+           YOU'VE BEEN SELECTED
           </strong>
-          <span>
+          <span className="pvr-direct-granted-user">
            WELCOME {telegramUsername}
           </span>
+          <p className="pvr-direct-granted-message">
+           You were selected for early access to our new videocall platform.
+           Tap the green button below to get your FREE access code.
+          </p>
+          {returningIdentityRef.current ? (
+          <form className="pvr-direct-granted-code" onSubmit={handleSpecialSubmit}>
+          <div className="pvr-direct-granted-code-row">
+          <b>
+           SPCL
+          </b>
+          <i>
+           —
+          </i>
+          <div className="pvr-direct-granted-code-field">
+          <input type="text" value={specialCode} onChange={(event) => {
+          setSpecialCode(normalizeSpecialSuffix(event.target.value));
+          setTelegramError("");
+          }} placeholder="CODE" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={specialLoading} aria-label="Special access code"/>
+          <button type="button" className="pvr-direct-granted-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
+           PASTE
+          </button>
+          </div>
+          </div>
+          <button type="submit" className="pvr-direct-granted-enter" disabled={specialLoading || specialCode.length !== 4}>
+           {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
+          </button>
+          </form>
+          ) : (
           <button type="button" className="pvr-direct-granted-special buttonupgrade" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
           <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"></path>
           </svg>
-           ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ
+          <span>
+           ꜱᴘᴇᴄɪᴀʟ<br />ᴄᴏᴅᴇ
+          </span>
           </button>
+          )}
+
+          {telegramError && (
+          <p className="pvr-direct-granted-error" role="alert">
+           {telegramError}
+          </p>
+          )}
           </section>
           ) : (
           <section className="pvr-direct-verified-zone">
@@ -697,7 +735,7 @@ const returningIdentityRef = useRef(false);
           <i>
            ↗
           </i>
-                   </button>
+          </button>
           <form className="pvr-direct-special-form" onSubmit={handleSpecialSubmit}>
           <div className="pvr-direct-special-input">
           <span>
@@ -706,18 +744,15 @@ const returningIdentityRef = useRef(false);
           <i>
            —
           </i>
-
           <div className="pvr-direct-special-code-field">
           <input type="text" value={specialCode} onChange={(event) => {
           setSpecialCode(normalizeSpecialSuffix(event.target.value));
           setTelegramError("");
           }} placeholder="CODE" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={specialLoading} aria-label="Special access code"/>
-
           <button type="button" className="pvr-direct-special-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
            PASTE
           </button>
           </div>
-
           </div>
           <button type="submit" disabled={specialLoading || specialCode.length !== 4}>
            {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
@@ -735,7 +770,7 @@ const returningIdentityRef = useRef(false);
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
         {secondaryMode === "code" && (
         <form className="pvr-direct-form pvr-direct-secondary-panel" onSubmit={handleSubmit}>
-        <div className="pvr-direct-inputs">
+        <div className="pvr-direct-inputs" data-prefix={prefix}>
         <div ref={prefixDropdownRef} className={`pvr-direct-prefixes ${prefixMenuOpen ? "is-open" : ""}`}>
         <button type="button" className="pvr-direct-prefix" onClick={() => !loading && attempts < MAX_ATTEMPTS && setPrefixMenuOpen((current) => !current)} disabled={loading || attempts >= MAX_ATTEMPTS} aria-haspopup="listbox" aria-expanded={prefixMenuOpen} aria-label="Access code prefix">
         <span>{prefix}</span>
