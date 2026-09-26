@@ -75,8 +75,16 @@ export default function App() {
         });
         const session = await sessionResponse.json().catch(() => ({}));
 
-        if (sessionResponse.ok && session?.authenticated && session?.expiresAt) {
-          const syncKey = `userfx_browser_handoff:${session.expiresAt}`;
+        if (sessionResponse.ok && session?.authenticated) {
+          const sessionIdentity =
+            session?.expiresAt ||
+            session?.telegramUsername ||
+            session?.accountId ||
+            session?.accessLabel ||
+            session?.planId ||
+            "active";
+          const syncKey = `userfx_browser_handoff:${sessionIdentity}`;
+
           try {
             if (sessionStorage.getItem(syncKey) === "1") return;
           } catch {
@@ -97,6 +105,7 @@ export default function App() {
             } catch {
               // Storage unavailable.
             }
+
             if (typeof telegram.openLink === "function") {
               telegram.openLink(handoff.url);
             } else {
