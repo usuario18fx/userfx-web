@@ -198,6 +198,82 @@
   transform: translateX(3px);
 }
 
+/* ═══════════ ACTIVE ACCESS STATES ═══════════ */
+
+.smkl-access-button.is-access-active {
+  cursor: pointer;
+}
+
+.smkl-access-button.is-spcl {
+  border-color: #168cff8c;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.55),
+    0 0 18px #168cff1f,
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.smkl-access-button.is-spcl .smkl-access-button__status {
+  background: #159cff;
+  box-shadow:
+    0 0 6px #159cff,
+    0 0 12px #159cff;
+}
+
+.smkl-access-button.is-spcl .smkl-access-button__brand,
+.smkl-access-button.is-spcl .smkl-access-button__arrow {
+  color: #67bfff;
+}
+
+.smkl-access-button.is-paid {
+  border-color: #49d38a73;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.55),
+    0 0 18px #47efa41c,
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.smkl-access-button.is-paid .smkl-access-button__status {
+  background: #47efa4;
+  box-shadow:
+    0 0 6px #47efa4,
+    0 0 12px #47efa4;
+}
+
+.smkl-access-button.is-paid .smkl-access-button__brand,
+.smkl-access-button.is-paid .smkl-access-button__arrow {
+  color: #79ddb0;
+}
+
+/* HUD ACCESS BADGE · SPCL BLUE */
+html[data-userfx-access-tone="spcl"] .vx-unlockedBadge {
+  border-color: #159cff8f !important;
+  color: #159cff !important;
+  box-shadow: 0 0 12px #159cff1f;
+}
+
+html[data-userfx-access-tone="spcl"] .vx-unlockedPrefix {
+  color: #86ccff !important;
+}
+
+html[data-userfx-access-tone="spcl"] .vx-unlockedState {
+  color: #159cff !important;
+}
+
+/* HUD ACCESS BADGE · PAID GREEN */
+html[data-userfx-access-tone="paid"] .vx-unlockedBadge {
+  border-color: #4ab97e91 !important;
+  color: #4ab97e !important;
+  box-shadow: 0 0 12px #47efa416;
+}
+
+html[data-userfx-access-tone="paid"] .vx-unlockedPrefix {
+  color: #8be9b5 !important;
+}
+
+html[data-userfx-access-tone="paid"] .vx-unlockedState {
+  color: #4ab97e !important;
+}
+
 @media (max-width: 560px) {
   .fx-access-launcher {
     margin-top: 10px;
@@ -235,7 +311,6 @@
     transition: none;
   }
 }
-
 
 /* ====== FIX · GET MY CODE COMPACTO ====== */
 .fx-access-launcher .smkl-access-button{
