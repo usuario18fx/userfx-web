@@ -1,0 +1,640 @@
+/* ═══════════ USER FX · PRIVATE ROOM NAV / CAMERA FIXES ═══════════ */
+
+/* ───── TOP NAV ───── */
+
+.pvr-club-tabs button[data-userfx-nav-role="hidden"],
+.pvr-club-mobile-tabs button[data-userfx-nav-role="hidden"] {
+  display:none !important;
+}
+
+.pvr-club-tabs,
+.pvr-club-mobile-tabs {
+  gap:6px;
+}
+
+.pvr-club-tabs button,
+.pvr-club-mobile-tabs button {
+  letter-spacing:.12em;
+}
+
+/* ───── SHARED SECTION STYLE ───── */
+
+.pvr-userfx-section {
+  position:relative;
+  margin:18px 0;
+  padding:18px;
+  border:1px solid rgba(197,159,92,.20);
+  background:
+    linear-gradient(180deg,rgba(28,22,15,.72),rgba(7,7,7,.88)),
+    radial-gradient(circle at 15% 0%,rgba(184,145,80,.10),transparent 42%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 18px 50px rgba(0,0,0,.24);
+}
+
+.pvr-userfx-section::after {
+  content:"";
+  position:absolute;
+  inset:7px;
+  border:1px solid rgba(197,159,92,.05);
+  pointer-events:none;
+}
+
+.pvr-userfx-section-head {
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(197,159,92,.14);
+}
+
+.pvr-userfx-section-head > div {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.pvr-userfx-section-head span {
+  color:#9a835d;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.22em;
+}
+
+.pvr-userfx-section-head strong {
+  color:#eee5d7;
+  font-family:"Cinzel",Georgia,serif;
+  font-size:18px;
+  letter-spacing:.08em;
+}
+
+.pvr-userfx-section-head small {
+  color:#6e665c;
+  font-size:6px;
+  letter-spacing:.18em;
+}
+
+.pvr-userfx-section-copy {
+  position:relative;
+  z-index:1;
+  max-width:680px;
+  margin:12px 0 0;
+  color:#837a70;
+  font-size:9px;
+  line-height:1.6;
+  letter-spacing:.04em;
+}
+
+/* ───── MYROOM ───── */
+
+.pvr-myroom-grid {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:12px;
+  margin-top:14px;
+}
+
+.pvr-myroom-profile,
+.pvr-myroom-composer {
+  min-height:120px;
+  padding:14px;
+  border:1px solid rgba(197,159,92,.14);
+  background:rgba(3,3,3,.46);
+}
+
+.pvr-myroom-profile {
+  display:grid;
+  grid-template-columns:52px 1fr auto;
+  align-items:center;
+  gap:12px;
+}
+
+.pvr-myroom-avatar {
+  position:relative;
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(197,159,92,.35);
+  border-radius:50%;
+  color:#d8bf91;
+  font-family:"Cinzel",serif;
+  font-size:17px;
+  background:radial-gradient(circle,#211a12,#080706 70%);
+}
+
+.pvr-myroom-avatar span {
+  position:absolute;
+  right:2px;
+  bottom:3px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#7dff9c;
+  box-shadow:0 0 8px rgba(125,255,156,.55);
+}
+
+.pvr-myroom-profile-copy,
+.pvr-myroom-composer {
+  display:flex;
+  flex-direction:column;
+}
+
+.pvr-myroom-profile-copy {
+  gap:4px;
+}
+
+.pvr-myroom-profile-copy span,
+.pvr-myroom-composer > span {
+  color:#8f7650;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.18em;
+}
+
+.pvr-myroom-profile-copy strong,
+.pvr-myroom-composer > strong {
+  color:#eee5d7;
+  font-family:"Cinzel",serif;
+  font-size:12px;
+  letter-spacing:.06em;
+}
+
+.pvr-myroom-profile-copy small,
+.pvr-myroom-composer > small {
+  margin-top:4px;
+  color:#756d64;
+  font-size:7px;
+  line-height:1.45;
+}
+
+.pvr-myroom-profile-action,
+.pvr-myroom-camera-action {
+  min-height:34px;
+  padding:0 12px;
+  border:1px solid rgba(197,159,92,.28);
+  background:linear-gradient(180deg,#1b160f,#0b0907);
+  color:#cdb181;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.14em;
+  cursor:pointer;
+}
+
+.pvr-myroom-composer {
+  justify-content:center;
+  gap:4px;
+}
+
+.pvr-myroom-camera-action {
+  width:150px;
+  margin-top:12px;
+}
+
+/* ───── STAGE CONTACT CAMS ───── */
+
+.pvr-stage-contact-cams {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.pvr-stage-contact-card {
+  min-height:112px;
+  padding:12px;
+  display:grid;
+  grid-template-columns:74px 1fr;
+  grid-template-rows:auto auto;
+  align-items:center;
+  gap:3px 12px;
+  border:1px solid rgba(197,159,92,.15);
+  background:rgba(5,5,5,.66);
+  color:#d9d0c4;
+  text-align:left;
+  cursor:pointer;
+}
+
+.pvr-stage-contact-card.is-empty {
+  cursor:default;
+  opacity:.72;
+}
+
+.pvr-stage-contact-preview {
+  grid-row:1 / 3;
+  width:74px;
+  height:74px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(197,159,92,.22);
+  background:
+    radial-gradient(circle at 50% 45%,rgba(197,159,92,.12),transparent 55%),
+    #080706;
+  color:#b69a6a;
+  font-family:"Cinzel",serif;
+  font-size:16px;
+}
+
+.pvr-stage-contact-card strong {
+  font-size:9px;
+  letter-spacing:.08em;
+}
+
+.pvr-stage-contact-card small {
+  color:#746b61;
+  font-size:6px;
+  letter-spacing:.09em;
+}
+
+/* ───── BUZON ───── */
+
+.pvr-buzon-grid {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);
+  gap:10px;
+  margin-top:14px;
+}
+
+.pvr-buzon-contact,
+.pvr-buzon-friends {
+  min-height:92px;
+  border:1px solid rgba(197,159,92,.15);
+  background:rgba(4,4,4,.68);
+}
+
+.pvr-buzon-contact {
+  display:grid;
+  grid-template-columns:12px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:14px;
+  color:#ddd4c8;
+  text-align:left;
+  cursor:pointer;
+}
+
+.pvr-buzon-status {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#7dff9c;
+  box-shadow:0 0 8px rgba(125,255,156,.45);
+}
+
+.pvr-buzon-copy {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.pvr-buzon-copy strong {
+  font-size:9px;
+  letter-spacing:.08em;
+}
+
+.pvr-buzon-copy small {
+  color:#766e65;
+  font-size:6px;
+  letter-spacing:.10em;
+}
+
+.pvr-buzon-contact i {
+  color:#aa8f61;
+  font-size:6px;
+  font-style:normal;
+  letter-spacing:.12em;
+}
+
+.pvr-buzon-friends {
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+}
+
+.pvr-buzon-friends span {
+  color:#8f7650;
+  font-size:6px;
+  letter-spacing:.16em;
+}
+
+.pvr-buzon-friends strong {
+  color:#e9dfd1;
+  font-size:10px;
+}
+
+.pvr-buzon-friends small {
+  color:#716961;
+  font-size:7px;
+  line-height:1.45;
+}
+
+/* ───── GALLERY · USER FX GLASS CARDS ───── */
+
+.pvr-userfx-gallery {
+  position:relative;
+}
+
+.pvr-userfx-gallery .pvr-gallery-grid,
+.pvr-userfx-gallery [class*="gallery-grid"] {
+  gap:12px !important;
+}
+
+.pvr-userfx-gallery [class*="gallery-card"],
+.pvr-userfx-gallery figure {
+  border:1px solid rgba(197,159,92,.14) !important;
+  background:
+    linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01) 42%,transparent),
+    rgba(2,2,2,.72) !important;
+  box-shadow:
+    0 18px 32px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+/* ═══════════ CAMERA STUDIO · NO SCROLL + DEFAULT MODE ═══════════ */
+
+.pvr-camera-backdrop {
+  overflow:hidden !important;
+}
+
+.pvr-camera-studio {
+  width:min(900px,calc(100vw - 24px)) !important;
+  height:min(680px,calc(100dvh - 24px)) !important;
+  max-height:none !important;
+  display:grid !important;
+  grid-template-rows:auto minmax(0,1fr) auto auto auto !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  padding:14px !important;
+}
+
+.pvr-camera-preview {
+  min-height:0 !important;
+  height:100% !important;
+  aspect-ratio:auto !important;
+  margin-top:12px !important;
+}
+
+.pvr-camera-layout {
+  grid-template-columns:minmax(0,1fr) 190px !important;
+  gap:8px !important;
+  margin-top:8px !important;
+}
+
+.pvr-camera-settings,
+.pvr-camera-actions {
+  padding:9px !important;
+}
+
+.pvr-camera-device-controls {
+  display:none !important;
+}
+
+.pvr-camera-start,
+.pvr-camera-end {
+  min-height:42px !important;
+}
+
+.pvr-camera-foot {
+  padding:8px 3px 0 !important;
+}
+
+.pvr-camera-guide {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:30px;
+  padding:6px 9px;
+  margin-top:7px;
+  border:1px solid rgba(197,159,92,.12);
+  background:rgba(5,5,5,.74);
+  color:#777067;
+  font-size:6px;
+  letter-spacing:.08em;
+}
+
+.pvr-camera-guide button {
+  min-height:22px;
+  padding:0 8px;
+  border:1px solid rgba(197,159,92,.22);
+  background:#100d09;
+  color:#bca073;
+  font-size:5px;
+  font-weight:900;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+
+/* ───── CAMERA PLAY / PAUSE / MUTE BLOCK ───── */
+
+.pvr-camera-media-controls {
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:12px;
+  display:flex;
+  align-items:stretch;
+  overflow:visible;
+  transform:translateX(-50%);
+  border:3px solid #090909;
+  border-radius:10px;
+  background:#1d1d1d;
+  box-shadow:0 8px 18px rgba(0,0,0,.46);
+}
+
+.pvr-camera-media-controls button {
+  position:relative;
+  width:58px;
+  height:38px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-top:1px solid #4e4d4d;
+  border-right:1px solid #111;
+  background:linear-gradient(to bottom,#333333,#242323);
+  color:#090909;
+  cursor:pointer;
+  box-shadow:0 9px 4px 1px rgba(0,0,0,.18);
+  transition:
+    background .12s linear,
+    box-shadow .12s linear,
+    transform .12s ease;
+}
+
+.pvr-camera-media-controls button:first-child {
+  border-radius:6px 0 0 6px;
+}
+
+.pvr-camera-media-controls button:last-child {
+  border-right:0;
+  border-radius:0 6px 6px 0;
+}
+
+.pvr-camera-media-controls button span {
+  font-size:14px;
+  font-weight:900;
+  line-height:1;
+  text-shadow:
+    -1px -1px 1px rgba(224,224,224,.10),
+    0 2px 3px rgba(0,0,0,.30);
+}
+
+.pvr-camera-media-controls button[data-camera-action="pause"] span {
+  font-size:19px;
+  letter-spacing:-4px;
+  transform:translateX(-1px);
+}
+
+.pvr-camera-media-controls button.is-active {
+  border-top-color:transparent;
+  background:#1d1d1d;
+  color:#cae2fd;
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,.52),
+    0 0 0 1px rgba(0,0,0,.40);
+  transform:translateY(1px);
+}
+
+.pvr-camera-media-controls button.is-active span {
+  text-shadow:
+    0 0 5px #cae2fd,
+    0 0 12px #cae2fd,
+    0 0 16px rgba(93,167,255,.48);
+}
+
+/* ───── TOAST ───── */
+
+.pvr-userfx-toast {
+  position:fixed;
+  z-index:13000;
+  left:50%;
+  bottom:24px;
+  max-width:min(420px,calc(100vw - 32px));
+  padding:9px 12px;
+  border:1px solid rgba(197,159,92,.26);
+  background:rgba(8,7,6,.94);
+  color:#cbb389;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-align:center;
+  opacity:0;
+  transform:translate(-50%,8px);
+  pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease;
+}
+
+.pvr-userfx-toast.is-visible {
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ───── MOBILE ───── */
+
+@media (max-width:700px) {
+  .pvr-myroom-grid,
+  .pvr-stage-contact-cams,
+  .pvr-buzon-grid {
+    grid-template-columns:1fr;
+  }
+
+  .pvr-myroom-profile {
+    grid-template-columns:46px 1fr;
+  }
+
+  .pvr-myroom-profile-action {
+    grid-column:1 / -1;
+  }
+
+  .pvr-camera-studio {
+    width:calc(100vw - 12px) !important;
+    height:calc(100dvh - 12px) !important;
+    padding:9px !important;
+    border-radius:14px !important;
+    grid-template-rows:auto minmax(0,1fr) auto auto auto !important;
+  }
+
+  .pvr-camera-head {
+    padding-bottom:7px !important;
+  }
+
+  .pvr-camera-preview {
+    margin-top:7px !important;
+  }
+
+  .pvr-camera-layout {
+    grid-template-columns:1fr 112px !important;
+  }
+
+  .pvr-camera-visibility {
+    gap:5px !important;
+  }
+
+  .pvr-camera-visibility button {
+    min-height:31px !important;
+  }
+
+  .pvr-camera-settings > span,
+  .pvr-camera-actions > span {
+    margin-bottom:5px !important;
+  }
+
+  .pvr-camera-guide {
+    min-height:26px;
+    padding:5px 7px;
+  }
+
+  .pvr-camera-guide span {
+    max-width:68%;
+  }
+
+  .pvr-camera-media-controls {
+    bottom:8px;
+  }
+
+  .pvr-camera-media-controls button {
+    width:48px;
+    height:34px;
+  }
+
+  .pvr-camera-foot {
+    font-size:5px !important;
+  }
+}
+
+@media (max-height:560px) {
+  .pvr-camera-studio {
+    height:calc(100dvh - 8px) !important;
+    padding:7px !important;
+  }
+
+  .pvr-camera-head {
+    padding-bottom:5px !important;
+  }
+
+  .pvr-camera-layout {
+    margin-top:5px !important;
+  }
+
+  .pvr-camera-guide {
+    margin-top:4px;
+  }
+
+  .pvr-camera-foot {
+    display:none !important;
+  }
+}
