@@ -13,6 +13,16 @@ function cleanHandoffParam() {
   window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
 }
 
+function hasVerifiedSpecialCode() {
+  try {
+    return /^SPCL-[A-HJ-NP-Z2-9]{4}$/i.test(
+      sessionStorage.getItem("userfx_access_code") || "",
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function App() {
   const [route, setRoute] = useState(getRoute);
 
@@ -39,12 +49,13 @@ export default function App() {
           if (cancelled) return;
           cleanHandoffParam();
           if (!response.ok || !data?.authenticated) return;
+
           try {
             sessionStorage.setItem("vault_unlocked", "true");
             if (data?.planId) sessionStorage.setItem("vault_plan", data.planId);
           } catch {
-            // Mobile WebViews can block client storage. The server session remains authoritative.
           }
+
           window.location.hash = "#/private-room";
         })
         .catch(() => {
@@ -66,6 +77,14 @@ export default function App() {
       if (cancelled) return;
       attempts += 1;
 
+      if (!hasVerifiedSpecialCode()) {
+        if (!cancelled && attempts < 60) {
+          timer = window.setTimeout(syncToBrowser, 1500);
+        }
+
+        return;
+      }
+
       try {
         const sessionResponse = await fetch("/api/access-session", {
           method: "GET",
@@ -82,13 +101,12 @@ export default function App() {
             session?.accountId ||
             session?.accessLabel ||
             session?.planId ||
-            "active";
+            "spcl-active";
           const syncKey = `userfx_browser_handoff:${sessionIdentity}`;
 
           try {
             if (sessionStorage.getItem(syncKey) === "1") return;
           } catch {
-            // Storage unavailable.
           }
 
           const handoffResponse = await fetch("/api/handoff", {
@@ -103,7 +121,6 @@ export default function App() {
             try {
               sessionStorage.setItem(syncKey, "1");
             } catch {
-              // Storage unavailable.
             }
 
             if (typeof telegram.openLink === "function") {
@@ -111,10 +128,12 @@ export default function App() {
             } else {
               window.open(handoff.url, "_blank", "noopener,noreferrer");
             }
+
             return;
           }
         }
-      } catch {}
+      } catch {
+      }
 
       if (!cancelled && attempts < 60) {
         timer = window.setTimeout(syncToBrowser, 1500);
