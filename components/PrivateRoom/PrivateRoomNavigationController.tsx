@@ -16,7 +16,6 @@ const LABELS:Record<NavRole,string> = {
 };
 
 const ORIGINAL_ROLES = ["home","myroom","stage","hidden","gallery","mailbox"] as const;
-const ORDER:NavRole[] = ["home","myroom","stage","gallery","mailbox"];
 
 function setActiveRole(role:NavRole) {
   document.querySelectorAll<HTMLButtonElement>("[data-userfx-nav-role]").forEach((button) => {
@@ -78,6 +77,8 @@ function showToast(message:string) {
 }
 
 function assignNavRoles(nav:HTMLElement) {
+  if (nav.dataset.userfxNavConfigured === "1") return;
+
   const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"))
     .filter((button) => !button.classList.contains("pvr-club-mobile-oncam"));
 
@@ -85,6 +86,8 @@ function assignNavRoles(nav:HTMLElement) {
 
   buttons.slice(0,6).forEach((button,index) => {
     const role = ORIGINAL_ROLES[index];
+
+    button.classList.remove("is-active");
 
     if (role === "hidden") {
       button.dataset.userfxNavRole = "hidden";
@@ -99,23 +102,26 @@ function assignNavRoles(nav:HTMLElement) {
     button.textContent = LABELS[role];
   });
 
-  const byRole = new Map<NavRole,HTMLButtonElement>();
+  const myRoomButton = buttons.find((button) => button.dataset.userfxNavRole === "myroom");
+  myRoomButton?.classList.add("is-active");
 
-  buttons.forEach((button) => {
-    const role = button.dataset.userfxNavRole as NavRole | "hidden" | undefined;
-    if (role && role !== "hidden") byRole.set(role,button);
-  });
-
-  ORDER.forEach((role) => {
-    const button = byRole.get(role);
-    if (button) nav.appendChild(button);
-  });
+  nav.dataset.userfxNavConfigured = "1";
 }
 
-function bindNavAction(button:HTMLButtonElement,role:NavRole) {
-  if (button.dataset.userfxNavigationBound === "1") return;
+function configureNav(nav:HTMLElement) {
+  assignNavRoles(nav);
 
-  const handleClick = (event:Event) => {
+  if (nav.dataset.userfxNavigationBound === "1") return;
+
+  nav.addEventListener("click",(event) => {
+    const element = event.target as HTMLElement | null;
+    const button = element?.closest<HTMLButtonElement>("button[data-userfx-nav-role]");
+
+    if (!button || !nav.contains(button)) return;
+
+    const role = button.dataset.userfxNavRole as NavRole | "hidden" | undefined;
+    if (!role || role === "hidden") return;
+
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -128,7 +134,7 @@ function bindNavAction(button:HTMLButtonElement,role:NavRole) {
     }
 
     if (role === "myroom") {
-      scrollToSelector(".pvr-myroom-section");
+      scrollToSelector(".pvr-live-home");
       return;
     }
 
@@ -142,21 +148,12 @@ function bindNavAction(button:HTMLButtonElement,role:NavRole) {
       return;
     }
 
-    scrollToSelector(".pvr-buzon-section");
-  };
+    if (role === "mailbox") {
+      scrollToSelector(".pvr-buzon-section");
+    }
+  },true);
 
-  button.addEventListener("click",handleClick,true);
-  button.dataset.userfxNavigationBound = "1";
-}
-
-function configureNav(nav:HTMLElement) {
-  assignNavRoles(nav);
-
-  nav.querySelectorAll<HTMLButtonElement>(":scope > button[data-userfx-nav-role]").forEach((button) => {
-    const role = button.dataset.userfxNavRole as NavRole | "hidden" | undefined;
-    if (!role || role === "hidden") return;
-    bindNavAction(button,role);
-  });
+  nav.dataset.userfxNavigationBound = "1";
 }
 
 function makeSectionHeader(kicker:string,title:string,meta:string) {
@@ -488,7 +485,11 @@ export default function PrivateRoomNavigationController() {
   useEffect(() => {
     let frame = window.requestAnimationFrame(applyPrivateRoomNavigation);
 
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver((mutations) => {
+      const hasStructuralChange = mutations.some((mutation) => mutation.type === "childList" && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0));
+
+      if (!hasStructuralChange) return;
+
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(applyPrivateRoomNavigation);
     });
@@ -496,8 +497,6 @@ export default function PrivateRoomNavigationController() {
     observer.observe(document.body,{
       childList:true,
       subtree:true,
-      attributes:true,
-      attributeFilter:["class"],
     });
 
     window.addEventListener("resize",applyPrivateRoomNavigation);
