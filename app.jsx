@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VaultHome from "./components/VaultHome/VaultHome";
 import PrivateRoomLiveShell from "./components/PrivateRoom/PrivateRoomLiveShell";
+import PrivateRoomMyRoom from "./components/PrivateRoom/PrivateRoomMyRoom";
 import PrivateRoomNavigationController from "./components/PrivateRoom/PrivateRoomNavigationController";
 
 function getRoute() {
@@ -15,9 +16,7 @@ function cleanHandoffParam() {
 
 function hasVerifiedSpecialCode() {
   try {
-    return /^SPCL-[A-HJ-NP-Z2-9]{4}$/i.test(
-      sessionStorage.getItem("userfx_access_code") || "",
-    );
+    return /^SPCL-[A-HJ-NP-Z2-9]{4}$/i.test(sessionStorage.getItem("userfx_access_code") || "");
   } catch {
     return false;
   }
@@ -95,13 +94,7 @@ export default function App() {
         const session = await sessionResponse.json().catch(() => ({}));
 
         if (sessionResponse.ok && session?.authenticated) {
-          const sessionIdentity =
-            session?.expiresAt ||
-            session?.telegramUsername ||
-            session?.accountId ||
-            session?.accessLabel ||
-            session?.planId ||
-            "spcl-active";
+          const sessionIdentity = session?.expiresAt || session?.telegramUsername || session?.accountId || session?.accessLabel || session?.planId || "spcl-active";
           const syncKey = `userfx_browser_handoff:${sessionIdentity}`;
 
           try {
@@ -152,6 +145,7 @@ export default function App() {
     return (
       <>
         <PrivateRoomLiveShell />
+        <PrivateRoomMyRoom />
         <PrivateRoomNavigationController />
       </>
     );
