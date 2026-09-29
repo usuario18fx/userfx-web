@@ -21,7 +21,8 @@ function hasVerifiedSpecialCode() {
     return /^SPCL-[A-HJ-NP-Z2-9]{4}$/i.test(sessionStorage.getItem("userfx_access_code") || "");
   } catch {
     return false;
-  }}
+  }
+}
 function PrivateRoomRoute({route}) {
   if (route === "#/private-room/stage") return <PrivateRoomStage />;
   if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
@@ -107,7 +108,8 @@ export default function App() {
             if (typeof telegram.openLink === "function") telegram.openLink(handoff.url);
             else window.open(handoff.url,"_blank","noopener,noreferrer");
             return;
-          }}
+          }
+        }
       } catch {
       }
       if (!cancelled && attempts < 60) timer = window.setTimeout(syncToBrowser,1500);
@@ -117,8 +119,17 @@ export default function App() {
       cancelled = true;
       if (timer) window.clearTimeout(timer);
     };
-    },[]);
-  if (route === "#/private-room-access" || route.startsWith("#/private-room")) {
+  },[]);
+
+  if (route === "#/private-room-access") {
+    return (
+      <>
+        <PrivateRoomLiveShell />
+      </>
+    );
+  }
+
+  if (route.startsWith("#/private-room")) {
     return (
       <>
         <PrivateRoomTopNav />
@@ -127,6 +138,7 @@ export default function App() {
         <PrivateRoomCameraEnhancer />
       </>
     );
-    }
+  }
+
   return <VaultHome />;
-    }
+}
