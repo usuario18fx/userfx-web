@@ -1,7 +1,8 @@
 /* ═══════════ USER FX · CAMERA STUDIO ═══════════ */
 body:has(.pvr-myroom-shell) .pvr-account-panel,body:has(.pvr-myroom-shell) .pvr-account-backdrop,body:has(.pvr-myroom-shell) .pvr-profile-view,body:has(.pvr-myroom-shell) .pvr-profile-view-backdrop{display:none!important}
+body:has(.pvr-camera-studio){overflow:hidden!important}
 .pvr-camera-backdrop{position:fixed;inset:0;z-index:12200;border:0;background:rgba(1,3,4,.88);backdrop-filter:blur(10px)}
-.pvr-camera-studio{position:fixed;top:50%;left:50%;z-index:12220;width:min(980px,calc(100vw - 30px));max-height:calc(100dvh - 30px);padding:14px;overflow-y:auto;transform:translate(-50%,-50%);border:1px solid #9a7d4a40;border-radius:18px;background:linear-gradient(180deg,#080908,#050606);color:#e8e5e0;box-shadow:0 34px 100px #000000c7,inset 0 0 0 1px #ffffff05}
+.pvr-camera-studio{position:fixed;top:50%;left:50%;z-index:12220;width:min(980px,calc(100vw - 30px));max-height:calc(100dvh - 30px);padding:14px;overflow:hidden;transform:translate(-50%,-50%);border:1px solid #9a7d4a40;border-radius:18px;background:linear-gradient(180deg,#080908,#050606);color:#e8e5e0;box-shadow:0 34px 100px #000000c7,inset 0 0 0 1px #ffffff05}
 .pvr-camera-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 2px 12px;border-bottom:1px solid #ffffff0d}
 .pvr-camera-head>div{display:flex;flex-direction:column;gap:4px}
 .pvr-camera-head span{color:#746d63;font-size:7px;font-weight:700;letter-spacing:.2em}
