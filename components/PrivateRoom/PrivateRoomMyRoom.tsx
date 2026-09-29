@@ -156,7 +156,15 @@ export default function PrivateRoomMyRoom() {
   }
 
   function openCameraStudio() {
-    document.querySelector<HTMLButtonElement>(".pvr-account-launcher")?.click();
+    const launcher = document.querySelector<HTMLButtonElement>(".pvr-account-launcher");
+    if (!launcher) return;
+    if (!launcher.classList.contains("is-open")) launcher.click();
+    window.setTimeout(() => {
+      document.querySelector<HTMLButtonElement>(".pvr-account-view")?.click();
+      window.setTimeout(() => {
+        document.querySelector<HTMLButtonElement>(".pvr-profile-camera > button")?.click();
+      },0);
+    },0);
   }
 
   if (!target) return null;
