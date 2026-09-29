@@ -138,14 +138,6 @@ body {
   gap:8px;
 }
 
-.pvr-club-code,
-.pvr-club-profile,
-.pvr-club-membership {
-  min-height:38px;
-  border-radius:2px;
-  cursor:pointer;
-}
-
 .pvr-club-code {
   min-width:130px;
   display:flex;
@@ -614,14 +606,12 @@ body {
 .pvr-account-launcher {
   display:none !important;
 }
-
 .pvr-account-backdrop,
 .pvr-profile-view-backdrop,
 .pvr-camera-backdrop {
   background:rgba(7,6,5,.80) !important;
   backdrop-filter:blur(9px) !important;
 }
-
 .pvr-account-panel {
   border-left:1px solid rgba(196,165,116,.25) !important;
   background:
@@ -629,30 +619,25 @@ body {
     linear-gradient(180deg,#12100e,#0a0908) !important;
   color:var(--pvr-ivory) !important;
 }
-
 .pvr-account-head {
   border-color:var(--pvr-line-soft) !important;
 }
-
 .pvr-account-head span,
 .pvr-account-form label > span {
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-account-head strong,
 .pvr-account-identity strong {
   color:var(--pvr-ivory) !important;
   font-family:var(--pvr-display) !important;
   font-weight:500 !important;
 }
-
 .pvr-account-head button {
   border-color:var(--pvr-line) !important;
   border-radius:2px !important;
   background:#15120f !important;
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-account-avatar,
 .pvr-profile-avatar {
   border-color:rgba(196,165,116,.38) !important;
@@ -662,17 +647,14 @@ body {
   color:var(--pvr-champagne-soft) !important;
   box-shadow:inset 0 0 24px rgba(196,165,116,.04) !important;
 }
-
 .pvr-account-identity {
   border-color:var(--pvr-line) !important;
   border-radius:3px !important;
   background:rgba(196,165,116,.025) !important;
 }
-
 .pvr-account-access {
   color:var(--pvr-champagne) !important;
 }
-
 .pvr-account-view,
 .pvr-account-save {
   border-color:rgba(196,165,116,.34) !important;
@@ -680,7 +662,6 @@ body {
   background:linear-gradient(180deg,#2a231a,#1a150f) !important;
   color:var(--pvr-champagne-soft) !important;
 }
-
 .pvr-account-form input,
 .pvr-account-form textarea,
 .pvr-account-form select {
@@ -689,7 +670,6 @@ body {
   background:#0e0c0a !important;
   color:var(--pvr-ivory) !important;
 }
-
 .pvr-profile-view {
   border:1px solid rgba(196,165,116,.24) !important;
   border-radius:4px !important;
@@ -699,13 +679,11 @@ body {
     linear-gradient(180deg,#12100e,#090807) !important;
   color:var(--pvr-ivory) !important;
 }
-
 .pvr-profile-view-head,
 .pvr-profile-meta > div,
 .pvr-profile-media {
   border-color:var(--pvr-line-soft) !important;
 }
-
 .pvr-profile-view-head span,
 .pvr-profile-username,
 .pvr-profile-bio,
@@ -715,7 +693,6 @@ body {
 .pvr-profile-actions > span {
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-profile-view-head strong,
 .pvr-profile-copy h1,
 .pvr-profile-meta strong,
@@ -724,12 +701,10 @@ body {
   font-family:var(--pvr-display) !important;
   font-weight:500 !important;
 }
-
 .pvr-profile-status-row .pvr-profile-status.is-online {
   border-color:rgba(196,165,116,.22) !important;
   color:var(--pvr-champagne) !important;
 }
-
 .pvr-profile-camera-screen {
   border-color:rgba(196,165,116,.18) !important;
   border-radius:3px !important;
@@ -737,35 +712,29 @@ body {
     radial-gradient(circle at 82% 50%,rgba(196,165,116,.07),transparent 34%),
     linear-gradient(180deg,#15120f,#0a0908) !important;
 }
-
 .pvr-profile-camera-screen span {
   color:var(--pvr-champagne) !important;
 }
-
 .pvr-profile-camera > button {
   border-color:var(--pvr-champagne) !important;
   border-radius:2px !important;
   background:linear-gradient(180deg,#d4bc94,#b8955f) !important;
   color:#1a150f !important;
 }
-
 .pvr-profile-media-tabs button {
   border-radius:2px !important;
 }
-
 .pvr-profile-media-tabs button.is-active {
   border-color:rgba(196,165,116,.28) !important;
   background:rgba(196,165,116,.05) !important;
   color:var(--pvr-champagne-soft) !important;
 }
-
 .pvr-profile-edit {
   border-color:var(--pvr-line) !important;
   border-radius:2px !important;
   background:#15120f !important;
   color:var(--pvr-ivory-muted) !important;
 }
-
 /* ═══════════ CAMERA STUDIO ═══════════ */
 .pvr-camera-studio {
   border:1px solid rgba(196,165,116,.24) !important;
@@ -776,56 +745,47 @@ body {
     linear-gradient(180deg,#12100e,#080706) !important;
   color:var(--pvr-ivory) !important;
 }
-
 .pvr-camera-head {
   border-color:var(--pvr-line-soft) !important;
 }
-
 .pvr-camera-head span,
 .pvr-camera-settings > span,
 .pvr-camera-actions > span,
 .pvr-camera-foot {
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-camera-head strong,
 .pvr-camera-foot strong {
   color:var(--pvr-champagne-soft) !important;
 }
-
 .pvr-camera-head > button {
   border-color:var(--pvr-line) !important;
   border-radius:2px !important;
   background:#15120f !important;
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-camera-preview {
   border-color:rgba(196,165,116,.18) !important;
   border-radius:3px !important;
   background:linear-gradient(180deg,#12100e,#080706) !important;
 }
-
 .pvr-camera-badges span {
   border-color:var(--pvr-line-soft) !important;
   border-radius:2px !important;
   background:rgba(10,9,8,.78) !important;
   color:var(--pvr-ivory-muted) !important;
 }
-
 .pvr-camera-badges .is-live {
   border-color:rgba(196,165,116,.34) !important;
   color:var(--pvr-champagne-soft) !important;
   box-shadow:none !important;
 }
-
 .pvr-camera-settings,
 .pvr-camera-actions {
   border-color:var(--pvr-line-soft) !important;
   border-radius:3px !important;
   background:rgba(255,255,255,.012) !important;
 }
-
 .pvr-camera-visibility button,
 .pvr-camera-device-controls button {
   border-color:var(--pvr-line-soft) !important;
@@ -833,27 +793,23 @@ body {
   background:#0e0c0a !important;
   color:var(--pvr-ivory-dim) !important;
 }
-
 .pvr-camera-visibility button.is-active {
   border-color:rgba(196,165,116,.34) !important;
   background:var(--pvr-elevated) !important;
   color:var(--pvr-champagne-soft) !important;
 }
-
 .pvr-camera-start {
   border-color:var(--pvr-champagne) !important;
   border-radius:2px !important;
   background:linear-gradient(180deg,#d4bc94,#b8955f) !important;
   color:#1a150f !important;
 }
-
 .pvr-camera-end {
   border-color:rgba(163,77,92,.42) !important;
   border-radius:2px !important;
   background:linear-gradient(180deg,#2a1518,#120c0d) !important;
   color:#d4a0a8 !important;
 }
-
 /* ═══════════ SECURITY + NOTES ═══════════ */
 .pvr-security-banner {
   border-color:rgba(163,77,92,.42) !important;
@@ -861,27 +817,22 @@ body {
   background:linear-gradient(180deg,rgba(42,21,24,.97),rgba(22,12,14,.97)) !important;
   color:#e8d0d4 !important;
 }
-
 .pvr-notes {
   border-color:var(--pvr-line) !important;
   background:#100e0c !important;
   color:var(--pvr-ivory) !important;
 }
-
 .pvr-notes-head {
   border-color:var(--pvr-line-soft) !important;
 }
-
 .pvr-notes-head span {
   color:var(--pvr-champagne) !important;
 }
-
 .pvr-notes-input {
   border-color:var(--pvr-line-soft) !important;
   background:#0a0908 !important;
   color:var(--pvr-ivory) !important;
 }
-
 /* ═══════════ SCROLLBARS ═══════════ */
 .pvr-page ::-webkit-scrollbar,
 .pvr-account-panel::-webkit-scrollbar,
@@ -890,7 +841,6 @@ body {
   width:5px;
   height:5px;
 }
-
 .pvr-page ::-webkit-scrollbar-thumb,
 .pvr-account-panel::-webkit-scrollbar-thumb,
 .pvr-profile-view::-webkit-scrollbar-thumb,
@@ -898,31 +848,24 @@ body {
   background:rgba(196,165,116,.28);
   border-radius:999px;
 }
-
 /* ═══════════ TABLET ═══════════ */
 @media (max-width:1120px) {
   .pvr-club-nav-inner {
     grid-template-columns:auto 1fr;
   }
-
   .pvr-club-tabs {
     display:none;
   }
-
   .pvr-club-actions {
     justify-self:end;
   }
-
   .pvr-live-grid,
   .pvr-workspace {
     grid-template-columns:1fr !important;
   }
-
   .pvr-side-menu {
     position:static !important;
-  }
-}
-
+  }}
 /* ═══════════ MOBILE ═══════════ */
 @media (max-width:720px) {
   .pvr-club-nav-inner {
@@ -930,36 +873,29 @@ body {
     padding:0 12px;
     gap:10px;
   }
-
   .pvr-club-brand-mark {
     width:34px;
     height:34px;
     font-size:12px;
   }
-
   .pvr-club-brand-copy strong {
     font-size:14px;
   }
-
   .pvr-club-brand-copy small {
     font-size:6px;
   }
-
   .pvr-club-actions {
     gap:5px;
   }
-
   .pvr-club-code,
   .pvr-club-profile {
     display:none;
   }
-
   .pvr-club-membership {
     min-height:34px;
     padding:0 10px;
     font-size:7px;
   }
-
   .pvr-club-mobile-tabs {
     display:flex;
     gap:3px;
@@ -967,73 +903,56 @@ body {
     padding:7px 10px 8px;
     border-top:1px solid rgba(196,165,116,.08);
   }
-
   .pvr-club-mobile-tabs button {
     flex:0 0 auto;
     min-height:30px;
     padding:0 10px;
     font-size:7px;
   }
-
   .pvr-page {
     padding:0 12px 56px !important;
   }
-
   #videocall-stage.pvr-call-stage {
     margin-top:18px !important;
   }
-
   .pvr-live-home {
     padding:16px 12px !important;
   }
-
   .pvr-live-home-head {
     align-items:flex-start !important;
     flex-direction:column !important;
   }
-
   .pvr-live-home-head h1 {
     font-size:42px !important;
   }
-
   .pvr-live-feature-screen {
     min-height:280px !important;
   }
-
   .pvr-live-grid {
     grid-template-columns:1fr !important;
   }
-
   .pvr-live-members-grid {
     grid-template-columns:1fr !important;
   }
-
   .pvr-live-event {
     grid-template-columns:70px 1fr !important;
   }
-
   .pvr-live-event > button {
     grid-column:1 / -1;
   }
-
   .pvr-live-nav {
     grid-template-columns:repeat(3,1fr) !important;
   }
-
   .pvr-gallery-section {
     margin-top:30px !important;
   }
-
   .pvr-section-head h2 {
     font-size:24px !important;
   }
-
   .pvr-carousel {
     grid-auto-columns:84% !important;
   }
-
   .pvr-profile-view,
   .pvr-camera-studio {
     border-radius:3px !important;
-  }
-}
+  }}

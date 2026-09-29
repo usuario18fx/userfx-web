@@ -262,9 +262,9 @@
 }
 
 .pvr-club-cam > span {width:7px;height:7px;border-radius:50%;background:#5a544c;}
-.pvr-club-cam.is-live {border-color:rgba(127,176,105,.38);background:rgba(127,176,105,.08);color:#b8d4b0;}
-.pvr-club-cam.is-live > span {background:#7fb069;box-shadow:0 0 9px rgba(127,176,105,.44);}
-.pvr-club-mobile-oncam {border-color:rgba(127,176,105,.38) !important;background:rgba(127,176,105,.08) !important;color:#b8d4b0 !important;}
+.pvr-club-cam.is-live {border-color:#67fc3efb;background:#3aa10a25;color:#f6fff4;}
+.pvr-club-cam.is-live > span {background:#49c90dea;}
+.pvr-club-mobile-oncam {border-color:#67fc3e9f!important;background:#4ebb1c0e !important;color:#67fc3efb !important;}
 .pvr-live-group .pvr-live-section-head > div > span {color:var(--pvr-champagne,#c4a574) !important;}
 
 /* ═══════════ LAYOUT GUARD ═══════════ */

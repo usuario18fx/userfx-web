@@ -43,6 +43,10 @@ function clearLocalAccessState() {
   }
 }
 
+function isExternalNavItem(item: (typeof NAV_ITEMS)[number]): item is Extract<(typeof NAV_ITEMS)[number], { external: true }> {
+  return "external" in item && item.external;
+}
+
 async function logout() {
   try {
     await fetch("/api/access-session",{
@@ -84,7 +88,7 @@ export default function PrivateRoomTopNav() {
 
   function navigate(item:(typeof NAV_ITEMS)[number]) {
     if (item.label === "GALLERY" && cameraLive) return;
-    if (item.external) {
+    if (isExternalNavItem(item)) {
       window.location.assign(item.route);
       return;
     }
@@ -110,8 +114,9 @@ export default function PrivateRoomTopNav() {
         <nav className="pvr-club-tabs" aria-label="Private Room navigation">
           {NAV_ITEMS.map((item) => {
             const galleryLocked = item.label === "GALLERY" && cameraLive;
+            const isExternal = isExternalNavItem(item);
             return (
-              <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
+              <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
                 {item.label}
               </button>
             );
@@ -130,6 +135,7 @@ export default function PrivateRoomTopNav() {
             <span />
             {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
+
           <button type="button" className="pvr-club-reward" onClick={openRewards}>
             <span className="pvr-reward-icon-container">
               <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
@@ -149,23 +155,20 @@ export default function PrivateRoomTopNav() {
               Rewards
             </span>
           </button>
+
           <button type="button" className="pvr-club-profile" onClick={openProfile}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
-            <span>
-              ᴘʀᴏꜰɪʟᴇ
-            </span>
           </button>
+
           <button type="button" className="pvr-club-membership" onClick={openMembership}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
-            <span>
-              ᴍᴇᴍʙᴇʀꜱʜɪᴘ
-            </span>
           </button>
+          
           <button type="button" className="pvr-club-logout" onClick={logout}>
             LOG OUT
           </button>
@@ -179,8 +182,9 @@ export default function PrivateRoomTopNav() {
         )}
         {NAV_ITEMS.map((item) => {
           const galleryLocked = item.label === "GALLERY" && cameraLive;
+          const isExternal = isExternalNavItem(item);
           return (
-            <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked}>
+            <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked}>
               {item.label}
             </button>
           );

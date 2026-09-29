@@ -1,30 +1,208 @@
 /* ═══════════ USER FX · PRIVATE ROOM TOP NAV ═══════════ */
-.pvr-club-nav:not(.pvr-club-nav--unified){display:none!important}
-.pvr-club-nav--unified{z-index:14000}
-.pvr-club-nav--unified .pvr-club-tabs{gap:6px}
-.pvr-club-nav--unified .pvr-club-tabs button,.pvr-club-nav--unified .pvr-club-mobile-tabs button{letter-spacing:.12em}
-.pvr-club-nav--unified .pvr-club-tabs button.is-camera-locked,.pvr-club-nav--unified .pvr-club-mobile-tabs button.is-camera-locked{cursor:not-allowed;opacity:.38;filter:grayscale(1)}
-.pvr-club-nav--unified .pvr-club-reward{width:120px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;border:none;border-radius:8px;background:#101218;cursor:pointer;transition:all .3s ease}
-.pvr-club-nav--unified .pvr-reward-icon-container{width:40px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
-.pvr-club-nav--unified .pvr-reward-icon-container svg{width:40%;position:relative;z-index:3}
-.pvr-club-nav--unified .pvr-reward-box-top{transition:all .3s ease}
-.pvr-club-nav--unified .pvr-reward-text{width:70px;height:100%;display:flex;align-items:center;justify-content:flex-start;color:#6a8ef6;font-size:13px;font-weight:600;letter-spacing:0}
-.pvr-club-nav--unified .pvr-reward-coin{width:25%;height:25%;position:absolute;z-index:1;margin-top:4px;border:2px solid #ffe956;border-radius:50%;background:#e4d61a;transition:all .3s ease}
-.pvr-club-nav--unified .pvr-club-reward:hover{background:#202531}
-.pvr-club-nav--unified .pvr-club-reward:hover .pvr-reward-box-top{transform:translateY(-5px)}
-.pvr-club-nav--unified .pvr-club-reward:hover .pvr-reward-coin{transform:translateY(-5px);transition-delay:.2s}
-.pvr-club-nav--unified .pvr-club-profile,.pvr-club-nav--unified .pvr-club-membership{width:110px;height:40px;display:flex;align-items:center;justify-content:center;padding:0 10px;cursor:pointer;gap:.4rem;font-weight:700;border:none;border-radius:8px;transition:background .3s ease,color .3s ease}
-.pvr-club-nav--unified .pvr-club-profile{text-shadow:1px 1px 1px #0066b9;background:linear-gradient(15deg,#00b9b9,#00b3b9,#0066b9,#005e94f8,#00b9b9,#0066b9,#00b3b9,#005e94f8) no-repeat;background-size:300%;background-position:left center;box-shadow:0 3px 1px 0 #008cff;color:#000}
-.pvr-club-nav--unified .pvr-club-profile:hover{background-size:370%;background-position:right center;color:#001b55}
-.pvr-club-nav--unified .pvr-club-profile svg{width:26px;height:26px;flex:0 0 26px;fill:#000;transition:.3s ease}
-.pvr-club-nav--unified .pvr-club-profile:hover svg{fill:#001b55}
-.pvr-club-nav--unified .pvr-club-profile span{white-space:nowrap;color:inherit;font-size:7px;letter-spacing:.08em}
-.pvr-club-nav--unified .pvr-club-membership{text-shadow:2px 2px 3px #ff88004d;background:linear-gradient(15deg,#ffc014,#ffa600,#ff7b00,#754200,#ffc014,#ffa600,#ff7b00,#ffa705) no-repeat;background-size:300%;background-position:left center;box-shadow:0 3px 1px 0 #ff7b00;color:#000}
-.pvr-club-nav--unified .pvr-club-membership:hover{background-size:320%;background-position:right center;color:#000}
-.pvr-club-nav--unified .pvr-club-membership svg{width:26px;height:26px;flex:0 0 26px;fill:#000;transition:.3s ease}
-.pvr-club-nav--unified .pvr-club-membership:hover svg{fill:#000}
-.pvr-club-nav--unified .pvr-club-membership span{white-space:nowrap;color:#000;font-size:7px;letter-spacing:.08em}
-.pvr-club-nav--unified .pvr-club-logout{min-height:34px;padding:0 12px;border:1px solid #8e4f4f55;border-radius:7px;background:#160c0d;color:#c98a8a;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer;transition:border-color .16s ease,background .16s ease,color .16s ease}
-.pvr-club-nav--unified .pvr-club-logout:hover{border-color:#b96a6a88;background:#211011;color:#e0a0a0}
-@media(max-width:1100px){.pvr-club-nav--unified .pvr-club-reward{width:98px}.pvr-club-nav--unified .pvr-reward-icon-container{width:34px}.pvr-club-nav--unified .pvr-reward-text{width:58px;font-size:11px}}
-@media(max-width:900px){.pvr-club-nav--unified .pvr-club-reward{display:none}.pvr-club-nav--unified .pvr-club-profile,.pvr-club-nav--unified .pvr-club-membership{width:102px;height:36px;padding:0 8px}.pvr-club-nav--unified .pvr-club-profile svg,.pvr-club-nav--unified .pvr-club-membership svg{width:22px;height:22px;flex-basis:22px}.pvr-club-nav--unified .pvr-club-profile span,.pvr-club-nav--unified .pvr-club-membership span{font-size:6px}.pvr-club-nav--unified .pvr-club-logout{min-height:32px;padding:0 10px;font-size:6px}}
+.pvr-club-nav:not(.pvr-club-nav--unified) {
+  display: none !important;
+}
+.pvr-club-nav--unified {
+  z-index: 14000;
+}
+.pvr-club-nav--unified .pvr-club-tabs {
+  gap: 6px;
+}
+.pvr-club-nav--unified .pvr-club-tabs button,
+.pvr-club-nav--unified .pvr-club-mobile-tabs button {
+  letter-spacing: 0.12em;
+}
+.pvr-club-nav--unified .pvr-club-tabs button.is-camera-locked,
+.pvr-club-nav--unified .pvr-club-mobile-tabs button.is-camera-locked {
+  cursor: not-allowed;
+  opacity: 0.38;
+  filter: grayscale(1);
+}
+.pvr-club-nav--unified .pvr-club-reward {
+  width: 120px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: #101218;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-reward-icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.pvr-club-nav--unified .pvr-reward-icon-container svg {
+  width: 40%;
+  position: relative;
+  z-index: 3;
+}
+.pvr-club-nav--unified .pvr-reward-box-top {
+  transition: all 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-reward-text {
+  width: 70px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #6a8ef6;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.pvr-club-nav--unified .pvr-reward-coin {
+  width: 25%;
+  height: 25%;
+  position: absolute;
+  z-index: 1;
+  margin-top: 4px;
+  border: 2px solid #ffe956;
+  border-radius: 50%;
+  background: #e4d61a;
+  transition: all 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-club-reward:hover {
+  background: #202531;
+}
+.pvr-club-nav--unified .pvr-club-reward:hover .pvr-reward-box-top {
+  transform: translateY(-5px);
+}
+.pvr-club-nav--unified .pvr-club-reward:hover .pvr-reward-coin {
+  transform: translateY(-5px);
+  transition-delay: 0.2s;
+}
+.pvr-club-nav--unified .pvr-club-profile,
+.pvr-club-nav--unified .pvr-club-membership {
+  width: 34px;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  cursor: pointer;
+  gap: 0.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-club-profile {
+  text-shadow: 1px 1px 1px #0066b9;
+  background: linear-gradient(15deg,
+#00b9b9,#00b3b9,#0066b9,
+#005e94f8,#00b9b9,#0066b9,
+#00b3b9,#005e94f8)no-repeat;
+  background-size: 450%;
+  background-position: left center;
+  box-shadow: 0 3px 1px 0 #008cff;
+  color: #000;
+}
+.pvr-club-nav--unified .pvr-club-profile:hover {
+  background-size: 450%;
+  background-position: right center;
+  color: #001b55;
+}
+.pvr-club-nav--unified .pvr-club-profile svg {
+  width: 45px;
+  height: 45px;
+  flex: 0 0 26px;
+  fill: #000;
+  transition: 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-club-profile:hover svg {
+  fill: #001b55;
+}
+.pvr-club-nav--unified .pvr-club-membership {
+  text-shadow: 2px 2px 3px #ff88004d;
+  background: linear-gradient(15deg,
+      #ffc014,#ffa600,#ff7b00,
+      #754200,#ffc014,#ffa600,
+      #ff7b00,#ffa705)no-repeat;
+  background-size: 350%;
+  background-position: left center;
+  box-shadow: 0 3px 1px 0 #ff7b00;
+  color: #000;
+}
+.pvr-club-nav--unified .pvr-club-membership:hover {
+  background-size: 350%;
+  background-position: right center;
+  color: #000;
+}
+.pvr-club-nav--unified .pvr-club-membership svg {
+  width: 20px;
+  height: 26px;
+  flex: 0 0 26px;
+  fill: #000;
+  transition: 0.3s ease;
+}
+.pvr-club-nav--unified .pvr-club-membership:hover svg {
+  fill: #000;
+}
+.pvr-club-nav--unified .pvr-club-logout {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #8e4f4f55;
+  border-radius: 7px;
+  background: #160c0d;
+  color: #c98a8a;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease;
+}
+.pvr-club-nav--unified .pvr-club-logout:hover {
+  border-color: #b96a6a88;
+  background: #211011;
+  color: #e0a0a0;
+}
+@media (max-width: 1100px) {
+  .pvr-club-nav--unified .pvr-club-reward {
+    width: 98px;
+  }
+  .pvr-club-nav--unified .pvr-reward-icon-container {
+    width: 36px;
+  }
+  .pvr-club-nav--unified .pvr-reward-text {
+    width: 58px;
+    font-size: 11px;
+  }}
+@media (max-width: 900px) {
+  .pvr-club-nav--unified .pvr-club-reward {
+    display: none;
+  }
+  .pvr-club-nav--unified .pvr-club-profile,
+  .pvr-club-nav--unified .pvr-club-membership {
+    width: 36px;
+    height: 29px;
+    padding: 0 8px;
+  }
+  .pvr-club-nav--unified .pvr-club-profile svg,
+  .pvr-club-nav--unified .pvr-club-membership svg {
+    width: 22px;
+    height: 22px;
+    flex-basis: 22px;
+  }
+  .pvr-club-nav--unified .pvr-club-profile span,
+  .pvr-club-nav--unified .pvr-club-membership span {
+    font-size: 6px;
+  }
+  .pvr-club-nav--unified .pvr-club-logout {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 6px;
+  }}
