@@ -12,7 +12,7 @@ body.pvr-camera-docked .pvr-camera-studio {
   position:fixed;
   bottom:20px;
   z-index:13250;
-  border:1px solid rgba(196,165,116,.34);
+  border:.5px solid rgba(196,165,116,.34);
   background:rgba(18,16,14,.97);
   color:var(--pvr-ivory,#f3ece0);
   box-shadow:0 24px 70px rgba(0,0,0,.62);
@@ -123,6 +123,24 @@ body.pvr-camera-docked .pvr-camera-studio {
     radial-gradient(circle at 50% 42%,rgba(196,165,116,.09),transparent 35%),
     linear-gradient(180deg,#161310,#090807);
   cursor:pointer;
+}
+
+.pvr-mycam-preview::after {
+  content:"ONLINE";
+  position:absolute;
+  top:9px;
+  right:9px;
+  z-index:3;
+  padding:3px 6px;
+  border:.5px solid rgba(127,176,105,.55);
+  border-radius:999px;
+  background:rgba(5,8,6,.58);
+  color:#8fd77d;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.14em;
+  box-shadow:0 0 10px rgba(127,176,105,.18);
+  pointer-events:none;
 }
 
 .pvr-mycam-preview video {
