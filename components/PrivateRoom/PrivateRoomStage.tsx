@@ -3,10 +3,12 @@ import { createPortal } from "react-dom";
 import "./PrivateRoomRoutePage.css";
 
 const STAGE_MEMBERS = [
-  {name:"@User18Fx",status:"HOST · OFFLINE",initials:"FX"},
-  {name:"@GreenGrower",status:"MEMBER · OFFLINE",initials:"GG"},
-  {name:"@Dalyva",status:"MEMBER · OFFLINE",initials:"DA"},
-];
+  {name:"@User18Fx",role:"HOST",initials:"FX",fixed:true},
+  {name:"@YOU",role:"YOU",initials:"ME",fixed:true},
+  {name:"@GreenGrower",role:"MEMBER",initials:"GG",fixed:false},
+  {name:"@Dalyva",role:"MEMBER",initials:"DA",fixed:false},
+  {name:"@420Fresh",role:"MEMBER",initials:"42",fixed:false},
+] as const;
 
 function cameraIsLive() {
   const indicator = document.querySelector<HTMLElement>(".pvr-account-online");
@@ -50,69 +52,67 @@ export default function PrivateRoomStage() {
           MYROOM
         </button>
       </header>
-      <section className="pvr-stage-route-hero">
-        <div>
-          <span>
-            PUBLIC CAMERAS
-          </span>
-          <strong>
-            LIVE STAGE
-          </strong>
-          <p>
-            Public member cameras will appear here when they go live.
-          </p>
-        </div>
-        <button type="button" onClick={openCamera}>
-          {cameraLive ? "MANAGE MY CAMERA" : "OPEN MY CAMERA"}
-        </button>
-      </section>
-      <div className="pvr-stage-route-layout">
-        <div className="pvr-stage-route-grid">
-          {STAGE_MEMBERS.map((member) => (
-            <article key={member.name} className="pvr-stage-route-card">
-              <div className="pvr-stage-route-preview">
-                <span>
+
+      <section className="pvr-stage-scene" aria-label="Private meeting stage">
+        <header className="pvr-stage-scene-head">
+          <div>
+            <span>
+              PRIVATE STAGE
+            </span>
+            <strong>
+              ROOMFX LIVE
+            </strong>
+          </div>
+          <div className="pvr-stage-scene-status">
+            <span className={cameraLive ? "is-live" : ""}></span>
+            {cameraLive ? "YOU ARE ON CAM" : "CAM READY"}
+          </div>
+        </header>
+
+        <div className="pvr-stage-scene-grid">
+          {STAGE_MEMBERS.map((member,index) => (
+            <article key={member.name} className={`pvr-stage-camera-card ${member.fixed ? "is-fixed" : ""} ${index === 0 ? "is-host" : ""} ${index === 1 ? "is-self" : ""}`}>
+              <div className="pvr-stage-camera-screen">
+                <span className="pvr-stage-camera-initials">
                   {member.initials}
                 </span>
+                <div className="pvr-stage-camera-watermark">
+                  <strong>
+                    {member.name}
+                  </strong>
+                  <small>
+                    {member.role}
+                  </small>
+                </div>
+                {member.fixed && (
+                  <span className="pvr-stage-camera-fixed">
+                    FIXED CAM
+                  </span>
+                )}
+                {index === 1 && cameraLive && (
+                  <span className="pvr-stage-camera-live">
+                    ONLINE
+                  </span>
+                )}
               </div>
-              <footer>
-                <strong>
-                  {member.name}
-                </strong>
-                <span>
-                  {member.status}
-                </span>
-              </footer>
             </article>
           ))}
         </div>
-        <aside className={`pvr-stage-oncam-base ${cameraLive ? "is-live" : ""}`} aria-label="My camera base">
-          <header>
-            <span>
-              MY CAMERA
-            </span>
+
+        <footer className="pvr-stage-scene-footer">
+          <div>
             <strong>
-              {cameraLive ? "ONCAM" : "OFFCAM"}
+              2 FIXED CAMS
             </strong>
-          </header>
-          <div className="pvr-stage-oncam-preview">
             <span>
-              FX
+              HOST + YOUR CAMERA
             </span>
-          </div>
-          <div className="pvr-stage-oncam-meta">
-            <strong>
-              @User18Fx
-            </strong>
-            <small>
-              {cameraLive ? "CAMERA ACTIVE" : "READY TO GO LIVE"}
-            </small>
           </div>
           <button type="button" onClick={openCamera}>
-            {cameraLive ? "MANAGE CAMERA" : "OPEN CAMERA"}
+            {cameraLive ? "MANAGE MY CAMERA" : "OPEN MY CAMERA"}
           </button>
-        </aside>
-      </div>
+        </footer>
+      </section>
     </section>,
     target,
   );
