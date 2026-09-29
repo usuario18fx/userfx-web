@@ -1,0 +1,44 @@
+/* ═══════════ USER FX · PRIVATE ROOM ROUTES ═══════════ */
+.pvr-live-home:has(>.pvr-route-page)>:not(.pvr-route-page){display:none!important}
+.pvr-live-home:has(>.pvr-route-page){padding-top:0!important}
+.pvr-route-page{width:min(1400px,calc(100% - 28px));margin:0 auto 36px;color:#eee8df;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.pvr-route-page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 2px 14px;border-bottom:1px solid #ffffff10}
+.pvr-route-page-head>div{display:flex;flex-direction:column;gap:3px}
+.pvr-route-page-head span{color:#857b6d;font-size:6px;font-weight:800;letter-spacing:.16em}
+.pvr-route-page-head h1{margin:0;color:#e8dfd1;font-family:"Cinzel",Georgia,serif;font-size:26px;font-weight:500;letter-spacing:.06em}
+.pvr-route-page-head>button{min-height:34px;padding:0 13px;border:1px solid #b8934d40;border-radius:7px;background:#11100d;color:#d8bd82;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.pvr-stage-route-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:14px;padding:18px;border:1px solid #ffffff10;border-radius:10px;background:#090b0ddb}
+.pvr-stage-route-hero>div{display:flex;flex-direction:column;gap:5px}
+.pvr-stage-route-hero span{color:#857b6d;font-size:6px;font-weight:800;letter-spacing:.12em}
+.pvr-stage-route-hero strong{color:#dfc17f;font-family:"Cinzel",Georgia,serif;font-size:18px;letter-spacing:.06em}
+.pvr-stage-route-hero p{margin:0;max-width:540px;color:#8a8278;font-size:8px;line-height:1.5}
+.pvr-stage-route-hero>button{min-height:36px;padding:0 14px;border:1px solid #b9955052;border-radius:7px;background:#15130f;color:#dfc17f;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.pvr-stage-route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.pvr-stage-route-card{overflow:hidden;border:1px solid #ffffff10;border-radius:10px;background:#090b0d}
+.pvr-stage-route-preview{aspect-ratio:16/10;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#c49b4818,transparent 34%),#050607}
+.pvr-stage-route-preview span{display:grid;place-items:center;width:74px;height:74px;border:1px solid #b9955047;border-radius:50%;color:#d9ba76;font-family:"Cinzel",Georgia,serif;font-size:18px}
+.pvr-stage-route-card footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #ffffff0d}
+.pvr-stage-route-card footer strong{color:#ddd6cc;font-size:8px}
+.pvr-stage-route-card footer span{color:#756e65;font-size:6px}
+.pvr-buzon-layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px;margin-top:14px}
+.pvr-buzon-contacts,.pvr-buzon-chat{min-height:560px;border:1px solid #ffffff10;border-radius:10px;background:#090b0ddb}
+.pvr-buzon-contacts{padding:10px}
+.pvr-buzon-contacts>header{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 10px;border-bottom:1px solid #ffffff0d}
+.pvr-buzon-contacts>header strong{color:#d9d1c6;font-size:8px;letter-spacing:.08em}
+.pvr-buzon-contacts>header span{display:grid;place-items:center;min-width:24px;height:20px;border-radius:10px;background:#282217;color:#d6b66f;font-size:7px}
+.pvr-buzon-contact-card{width:100%;display:grid;grid-template-columns:38px 1fr;gap:9px;margin-top:8px;padding:9px;border:1px solid transparent;border-radius:8px;background:#0b0d10;color:#dcd4ca;text-align:left;cursor:pointer}
+.pvr-buzon-contact-card:hover{border-color:#b9955036;background:#12110f}
+.pvr-buzon-contact-avatar{grid-row:1/3;display:grid;place-items:center;width:36px;height:36px;border:1px solid #b9955040;border-radius:50%;color:#d4b36e;font-size:7px}
+.pvr-buzon-contact-card>span:nth-child(2){display:flex;flex-direction:column;gap:2px;min-width:0}
+.pvr-buzon-contact-card strong{font-size:8px}
+.pvr-buzon-contact-card small{overflow:hidden;color:#777067;font-size:6px;text-overflow:ellipsis;white-space:nowrap}
+.pvr-buzon-contact-card i{grid-column:2;color:#746d64;font-size:5.5px;font-style:normal;letter-spacing:.06em}
+.pvr-buzon-chat{display:grid;grid-template-rows:1fr auto;padding:12px}
+.pvr-buzon-chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.pvr-buzon-chat-empty span{color:#6f685f;font-size:6px;letter-spacing:.12em}
+.pvr-buzon-chat-empty strong{color:#d8bd82;font-family:"Cinzel",Georgia,serif;font-size:16px;letter-spacing:.06em}
+.pvr-buzon-chat-empty p{max-width:340px;margin:0;color:#766f66;font-size:8px;line-height:1.5}
+.pvr-buzon-compose{display:grid;grid-template-columns:1fr auto;gap:8px;padding-top:10px;border-top:1px solid #ffffff0d}
+.pvr-buzon-compose input{height:38px;padding:0 11px;border:1px solid #ffffff12;border-radius:7px;outline:0;background:#07090b;color:#eee8df;font-size:8px}
+.pvr-buzon-compose button{min-width:84px;border:1px solid #b9955047;border-radius:7px;background:#15130f;color:#dfc17f;font-size:7px;font-weight:900;cursor:pointer}
+@media(max-width:760px){.pvr-route-page{width:calc(100% - 14px)}.pvr-stage-route-hero{align-items:flex-start;flex-direction:column}.pvr-stage-route-grid{grid-template-columns:1fr}.pvr-buzon-layout{grid-template-columns:1fr}.pvr-buzon-contacts,.pvr-buzon-chat{min-height:0}.pvr-buzon-chat{min-height:420px}}
