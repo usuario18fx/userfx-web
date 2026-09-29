@@ -1,0 +1,9 @@
+/* ═══════════ USER FX · CAMERA ENHANCER ═══════════ */
+.pvr-camera-media-controls{position:absolute;z-index:7;left:50%;bottom:12px;display:flex;align-items:stretch;overflow:visible;transform:translateX(-50%);border:3px solid #090909;border-radius:10px;background:#1d1d1d;box-shadow:0 8px 18px rgba(0,0,0,.46)}
+.pvr-camera-media-controls button{position:relative;width:58px;height:38px;padding:0;display:grid;place-items:center;border:0;border-top:1px solid #4e4d4d;border-right:1px solid #111;background:linear-gradient(to bottom,#333333,#242323);color:#090909;cursor:pointer;box-shadow:0 9px 4px 1px rgba(0,0,0,.18);transition:background .12s linear,box-shadow .12s linear,transform .12s ease}
+.pvr-camera-media-controls button:first-child{border-radius:6px 0 0 6px}
+.pvr-camera-media-controls button:last-child{border-right:0;border-radius:0 6px 6px 0}
+.pvr-camera-media-controls button span{font-size:14px;font-weight:900;line-height:1;text-shadow:-1px -1px 1px rgba(224,224,224,.10),0 2px 3px rgba(0,0,0,.30)}
+.pvr-camera-media-controls button[data-camera-action="pause"] span{font-size:19px;letter-spacing:-4px;transform:translateX(-1px)}
+.pvr-camera-media-controls button.is-active{border-top-color:transparent;background:#1d1d1d;color:#cae2fd;box-shadow:inset 0 2px 5px rgba(0,0,0,.52),0 0 0 1px rgba(0,0,0,.40);transform:translateY(1px)}
+.pvr-camera-media-controls button.is-active span{text-shadow:0 0 5px #cae2fd,0 0 12px #cae2fd,0 0 16px rgba(93,167,255,.48)}
