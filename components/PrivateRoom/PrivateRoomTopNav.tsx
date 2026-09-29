@@ -132,7 +132,12 @@ export default function PrivateRoomTopNav() {
             {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
           <button type="button" className="pvr-club-profile" onClick={openProfile}>
-            PROFILE
+            <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+            </svg>
+            <span>
+              ᴘʀᴏꜰɪʟᴇ
+            </span>
           </button>
           <button type="button" className="pvr-club-membership" onClick={openMembership}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
