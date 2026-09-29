@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import "./PrivateRoomGallery.css";
 
@@ -36,6 +36,7 @@ const MULTIMEDIA_ITEMS:MultimediaItem[] = [
   {id:"3",title:"Cover Art",owner:"DesignStudio",duration:"N/A",expiresIn:"5d",type:"image"},
   {id:"4",title:"BTS Episode",owner:"ContentHouse",duration:"8:45",expiresIn:"1d",type:"video",isFavorite:true,videoSrc:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"},
   {id:"5",title:"Podcast Ep. 42",owner:"AlbumLab",duration:"42:00",expiresIn:"3d",type:"album"},
+  {id:"6",title:"Shared Album Preview",owner:"User18Fx",duration:"0:15",expiresIn:"7d",type:"album",videoSrc:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"},
 ];
 
 const NOVEDADES:Novedad[] = [
@@ -66,6 +67,7 @@ export default function PrivateRoomGallery() {
   const [expandedOwners,setExpandedOwners] = useState<Set<string>>(new Set(["ProdHouse"]));
   const [showProjection,setShowProjection] = useState(false);
   const [projectingItem,setProjectingItem] = useState<MultimediaItem | null>(null);
+  const [galleryPlayerItem,setGalleryPlayerItem] = useState<MultimediaItem | null>(null);
   const [showUploadModal,setShowUploadModal] = useState(false);
   const [uploadError,setUploadError] = useState("");
   const [projPos,setProjPos] = useState(() => ({x:Math.max(12,window.innerWidth - 370),y:90}));
@@ -100,6 +102,17 @@ export default function PrivateRoomGallery() {
   function castToProjection(item:MultimediaItem) {
     setProjectingItem(item);
     setShowProjection(true);
+  }
+
+  function openGalleryPlayer(item:MultimediaItem) {
+    if (!item.videoSrc) return;
+    setGalleryPlayerItem(item);
+  }
+
+  function handleCardKeyDown(event:KeyboardEvent<HTMLElement>,item:MultimediaItem) {
+    if (!item.videoSrc || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    openGalleryPlayer(item);
   }
 
   function handleFileSelected(file:File) {
@@ -140,7 +153,7 @@ export default function PrivateRoomGallery() {
 
   function renderCard(item:MultimediaItem,style?:CSSProperties) {
     return (
-      <article key={item.id} className="mml-glass" data-text={item.title} style={style}>
+      <article key={item.id} className={`mml-glass${item.videoSrc ? " is-playable" : ""}`} data-text={item.title} style={style} role={item.videoSrc ? "button" : undefined} tabIndex={item.videoSrc ? 0 : undefined} onClick={() => openGalleryPlayer(item)} onKeyDown={(event) => handleCardKeyDown(event,item)}>
         <div className="mml-glass-glow" />
         <div className="mml-glass-shine" />
         {item.duration !== "N/A" && (
@@ -153,6 +166,11 @@ export default function PrivateRoomGallery() {
             {typeIcon(item.type)}
           </span>
         </div>
+        {item.videoSrc && (
+          <span className="mml-gallery-play-hint">
+            PLAY
+          </span>
+        )}
         {item.type === "video" && item.isFavorite && (
           <button type="button" className="mml-glass-castBtn" onClick={(event) => { event.stopPropagation(); castToProjection(item); }} aria-label={`Play ${item.title} in projection`}>
             ◉
@@ -186,20 +204,32 @@ export default function PrivateRoomGallery() {
               ALL
             </button>
             <button type="button" role="tab" aria-selected={activeTab === "videos"} className={`mml-sectionBtn${activeTab === "videos" ? " is-active" : ""}`} onClick={() => setActiveTab("videos")}>
-              VIDEOS <span className="mml-sectionBadge">{MULTIMEDIA_ITEMS.filter((item) => item.type === "video").length}</span>
+              VIDEOS
+              <span className="mml-sectionBadge">
+                {MULTIMEDIA_ITEMS.filter((item) => item.type === "video").length}
+              </span>
             </button>
             <button type="button" role="tab" aria-selected={activeTab === "album"} className={`mml-sectionBtn${activeTab === "album" ? " is-active" : ""}`} onClick={() => setActiveTab("album")}>
-              ALBUM <span className="mml-sectionBadge">{MULTIMEDIA_ITEMS.filter((item) => item.type === "album").length}</span>
+              ALBUM
+              <span className="mml-sectionBadge">
+                {MULTIMEDIA_ITEMS.filter((item) => item.type === "album").length}
+              </span>
             </button>
             <button type="button" role="tab" aria-selected={activeTab === "images"} className={`mml-sectionBtn${activeTab === "images" ? " is-active" : ""}`} onClick={() => setActiveTab("images")}>
-              IMAGES <span className="mml-sectionBadge">{MULTIMEDIA_ITEMS.filter((item) => item.type === "image").length}</span>
+              IMAGES
+              <span className="mml-sectionBadge">
+                {MULTIMEDIA_ITEMS.filter((item) => item.type === "image").length}
+              </span>
             </button>
             <button type="button" className="mml-sectionBtn mml-sectionBtn--addOnly" onClick={() => { setUploadError(""); setShowUploadModal(true); }} aria-label="Add content">
               +
             </button>
           </div>
           <button type="button" className={`mml-projectionToggle${showProjection ? " is-active" : ""}`} onClick={() => setShowProjection((current) => !current)} aria-expanded={showProjection}>
-            PROJECTION <span className="mml-sectionBadge">{favoriteVideos.length}</span>
+            PROJECTION
+            <span className="mml-sectionBadge">
+              {favoriteVideos.length}
+            </span>
           </button>
         </div>
         <section className="mml-section">
@@ -207,7 +237,7 @@ export default function PrivateRoomGallery() {
             FEATURED MULTIMEDIA
           </div>
           <div className="mml-sectionDesc">
-            TRENDING CONTENT · {filteredItems.length} ITEMS
+            TRENDING CONTENT · {filteredItems.length} ITEMS · VIDEOS OPEN IN GALLERY VIEW MODE
           </div>
           <div className="mml-fanContainer">
             {filteredItems.map((item) => renderCard(item))}
@@ -286,6 +316,39 @@ export default function PrivateRoomGallery() {
           </div>
         </section>
       </div>
+      {galleryPlayerItem?.videoSrc && (
+        <div className="mml-gallery-player-layer" role="dialog" aria-modal="true" aria-label={`Playing ${galleryPlayerItem.title}`} onClick={() => setGalleryPlayerItem(null)}>
+          <section className="mml-gallery-player" onClick={(event) => event.stopPropagation()}>
+            <header>
+              <div>
+                <span>
+                  GALLERY VIEW MODE
+                </span>
+                <strong>
+                  {galleryPlayerItem.title}
+                </strong>
+                <small>
+                  @{galleryPlayerItem.owner} · {galleryPlayerItem.type.toUpperCase()}
+                </small>
+              </div>
+              <button type="button" onClick={() => setGalleryPlayerItem(null)} aria-label="Close Gallery player">
+                ×
+              </button>
+            </header>
+            <div className="mml-gallery-player-stage">
+              <video key={galleryPlayerItem.id} src={galleryPlayerItem.videoSrc} controls autoPlay playsInline className="mml-gallery-player-video" />
+            </div>
+            <footer>
+              <span>
+                PRIVATE GALLERY PLAYBACK
+              </span>
+              <small>
+                Playback stays inside Gallery.
+              </small>
+            </footer>
+          </section>
+        </div>
+      )}
       {showProjection && (
         <aside className="mml-projectionPanel" style={{left:projPos.x,top:projPos.y}} role="dialog" aria-label="Favorite video projection">
           <div className="mml-projectionPanel-header" onMouseDown={onDragStart}>
