@@ -104,8 +104,17 @@ export default function PrivateRoomTopNav() {
         </button>
         <nav className="pvr-club-tabs" aria-label="Private Room navigation">
           {NAV_ITEMS.map((item) => (
-            <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
-              {item.label}
+            <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${item.external ? " pvr-club-home" : ""}`.trim()} onClick={() => navigate(item)}>
+              {item.external ? (
+                <>
+                  <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+                  </svg>
+                  <span>
+                    INICIO
+                  </span>
+                </>
+              ) : item.label}
             </button>
           ))}
         </nav>
@@ -145,8 +154,17 @@ export default function PrivateRoomTopNav() {
           </button>
         )}
         {NAV_ITEMS.map((item) => (
-          <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
-            {item.label}
+          <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${item.external ? " pvr-club-home" : ""}`.trim()} onClick={() => navigate(item)}>
+            {item.external ? (
+              <>
+                <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+                </svg>
+                <span>
+                  INICIO
+                </span>
+              </>
+            ) : item.label}
           </button>
         ))}
       </nav>
