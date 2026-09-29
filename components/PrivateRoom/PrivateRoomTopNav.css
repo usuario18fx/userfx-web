@@ -1,0 +1,8 @@
+/* ═══════════ USER FX · PRIVATE ROOM TOP NAV ═══════════ */
+.pvr-club-nav:not(.pvr-club-nav--unified){display:none!important}
+.pvr-club-nav--unified{z-index:14000}
+.pvr-club-nav--unified .pvr-club-tabs{gap:6px}
+.pvr-club-nav--unified .pvr-club-tabs button,.pvr-club-nav--unified .pvr-club-mobile-tabs button{letter-spacing:.12em}
+.pvr-club-nav--unified .pvr-club-logout{min-height:34px;padding:0 12px;border:1px solid #8e4f4f55;border-radius:7px;background:#160c0d;color:#c98a8a;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer;transition:border-color .16s ease,background .16s ease,color .16s ease}
+.pvr-club-nav--unified .pvr-club-logout:hover{border-color:#b96a6a88;background:#211011;color:#e0a0a0}
+@media(max-width:900px){.pvr-club-nav--unified .pvr-club-logout{min-height:32px;padding:0 10px;font-size:6px}}
