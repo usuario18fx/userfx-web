@@ -6,6 +6,7 @@ import PrivateRoomStage from "./components/PrivateRoom/PrivateRoomStage";
 import PrivateRoomGallery from "./components/PrivateRoom/PrivateRoomGallery";
 import PrivateRoomBuzon from "./components/PrivateRoom/PrivateRoomBuzon";
 import PrivateRoomNavigationController from "./components/PrivateRoom/PrivateRoomNavigationController";
+import PrivateRoomLogout from "./components/PrivateRoom/PrivateRoomLogout";
 
 function getRoute() {
   return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
@@ -148,6 +149,7 @@ export default function App() {
         <PrivateRoomLiveShell />
         <PrivateRoomRoute route={route} />
         <PrivateRoomNavigationController />
+        <PrivateRoomLogout />
       </>
     );
   }
