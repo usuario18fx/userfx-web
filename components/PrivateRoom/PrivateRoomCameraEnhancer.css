@@ -40,4 +40,15 @@
 .pvr-myroom-channel-panel.is-ready .pvr-myroom-channel-progress span{background:linear-gradient(90deg,#4d8b52,#82d587)}
 .pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting{border-color:#79d37566;background:linear-gradient(180deg,#17331a,#102313);color:#9de699;cursor:pointer;box-shadow:0 0 14px rgba(121,211,117,.08)}
 .pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting:hover{border-color:#8ee28a;color:#c5f4c2}
-@media(max-width:700px){.pvr-camera-media-controls{bottom:8px}.pvr-camera-media-controls button{width:46px;height:36px}.pvr-camera-device-menu{right:8px;bottom:54px;width:calc(100% - 16px)}.pvr-camera-studio.is-live-camera{border-width:3px!important}}
+.pvr-onlive-save-notice{position:fixed;inset:0;z-index:16000;display:grid;place-items:center;padding:18px;background:#020304b8;backdrop-filter:blur(10px)}
+.pvr-onlive-save-card{width:min(420px,calc(100vw - 28px));padding:18px;border:1px solid #d7bd8866;border-radius:12px;background:radial-gradient(circle at 50% 0,#26313a55,transparent 42%),linear-gradient(180deg,#0d1217,#080a0d);box-shadow:0 28px 70px #000000bb,0 0 26px #ffffff0a;color:#eae6df}
+.pvr-onlive-save-card>span{display:block;color:#8fa6bd;font-size:6px;font-weight:900;letter-spacing:.16em}
+.pvr-onlive-save-card>strong{display:block;margin-top:7px;color:#f2eee7;font-family:"Cinzel",Georgia,serif;font-size:21px;letter-spacing:.06em}
+.pvr-onlive-save-card>p{margin:9px 0 0;color:#8f8a82;font-size:8px;line-height:1.55}
+.pvr-onlive-save-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding:9px 10px;border:1px solid #ffffff10;border-radius:8px;background:#07090c}
+.pvr-onlive-save-meta span{color:#b9c8d6;font-size:7px;font-weight:800;letter-spacing:.11em}
+.pvr-onlive-save-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:12px}
+.pvr-onlive-save-actions button{min-height:38px;border:1px solid #ffffff16;border-radius:8px;background:#111419;color:#938e86;font-size:7px;font-weight:900;letter-spacing:.09em;cursor:pointer}
+.pvr-onlive-save-actions button:last-child{border-color:#d1b57966;background:linear-gradient(180deg,#d3b16f,#a77e3f);color:#17120b;box-shadow:0 3px 0 #705027}
+.pvr-onlive-save-actions button:hover{filter:brightness(1.08)}
+@media(max-width:700px){.pvr-camera-media-controls{bottom:8px}.pvr-camera-media-controls button{width:46px;height:36px}.pvr-camera-device-menu{right:8px;bottom:54px;width:calc(100% - 16px)}.pvr-camera-studio.is-live-camera{border-width:3px!important}.pvr-onlive-save-card{padding:15px}.pvr-onlive-save-card>strong{font-size:18px}}
