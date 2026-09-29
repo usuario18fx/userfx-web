@@ -22,6 +22,7 @@ type OnlineMember = {
 };
 
 const POSTS_KEY = "userfx_myroom_posts";
+const PROFILE_IMAGE_KEY = "userfx_myroom_profile_image";
 const ONLINE_MEMBERS:OnlineMember[] = [
   {name:"User18Fx",role:"HOST",initials:"FX"},
   {name:"GreenGrower",role:"MEMBER",initials:"GG"},
@@ -35,6 +36,14 @@ function getUsername() {
     return localStorage.getItem("userfx_telegram_username") || "@User18Fx";
   } catch {
     return "@User18Fx";
+  }
+}
+
+function getProfileImage() {
+  try {
+    return localStorage.getItem(PROFILE_IMAGE_KEY) || "";
+  } catch {
+    return "";
   }
 }
 
@@ -64,7 +73,10 @@ export default function PrivateRoomMyRoom() {
   const [commentOpen,setCommentOpen] = useState<string | null>(null);
   const [commentText,setCommentText] = useState("");
   const [search,setSearch] = useState("");
+  const [profileImage,setProfileImage] = useState(getProfileImage);
+  const [onCamOpen,setOnCamOpen] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
+  const profileFileRef = useRef<HTMLInputElement>(null);
   const username = useMemo(getUsername,[]);
 
   useEffect(() => {
@@ -90,6 +102,22 @@ export default function PrivateRoomMyRoom() {
     reader.onload = () => {
       setMediaUrl(String(reader.result || ""));
       setMediaKind(kind);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  }
+
+  function handleProfileImage(event:ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const nextImage = String(reader.result || "");
+      setProfileImage(nextImage);
+      try {
+        localStorage.setItem(PROFILE_IMAGE_KEY,nextImage);
+      } catch {
+      }
     };
     reader.readAsDataURL(file);
     event.target.value = "";
@@ -127,6 +155,10 @@ export default function PrivateRoomMyRoom() {
     setCommentText("");
   }
 
+  function openCameraStudio() {
+    document.querySelector<HTMLButtonElement>(".pvr-account-launcher")?.click();
+  }
+
   if (!target) return null;
 
   return createPortal(
@@ -145,6 +177,27 @@ export default function PrivateRoomMyRoom() {
             </small>
           </div>
         </div>
+        <section className="pvr-myroom-profile-card" aria-label="Profile photo">
+          <button type="button" className="pvr-myroom-profile-photo" onClick={() => profileFileRef.current?.click()} aria-label="Change profile photo">
+            {profileImage ? (
+              <img src={profileImage} alt={`${username} profile`} />
+            ) : (
+              <span>
+                FX
+              </span>
+            )}
+          </button>
+          <input ref={profileFileRef} type="file" accept="image/*" onChange={handleProfileImage} hidden />
+          <strong>
+            {username}
+          </strong>
+          <span>
+            ● ONLINE
+          </span>
+          <button type="button" className="pvr-myroom-change-photo" onClick={() => profileFileRef.current?.click()}>
+            PROFILE PHOTO
+          </button>
+        </section>
         <nav className="pvr-myroom-menu" aria-label="MyRoom navigation">
           <button type="button" className="is-active">
             MYROOM
@@ -159,19 +212,6 @@ export default function PrivateRoomMyRoom() {
             BUZON
           </button>
         </nav>
-        <div className="pvr-myroom-profile-mini">
-          <div className="pvr-myroom-avatar">
-            FX
-          </div>
-          <div>
-            <strong>
-              {username}
-            </strong>
-            <span>
-              ONLINE
-            </span>
-          </div>
-        </div>
       </aside>
       <main className="pvr-myroom-main">
         <header className="pvr-myroom-topbar">
@@ -185,7 +225,7 @@ export default function PrivateRoomMyRoom() {
           </div>
           <label className="pvr-myroom-search">
             <span>
-             ⌕
+              ⌕
             </span>
             <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search in RoomFX..." />
           </label>
@@ -193,7 +233,13 @@ export default function PrivateRoomMyRoom() {
         <form className="pvr-myroom-composer" onSubmit={handlePost}>
           <div className="pvr-myroom-composer-row">
             <div className="pvr-myroom-avatar">
-              FX
+              {profileImage ? (
+                <img src={profileImage} alt="" />
+              ) : (
+                <span>
+                  FX
+                </span>
+              )}
             </div>
             <textarea value={text} onChange={(event) => setText(event.target.value)} placeholder="What's happening inside your room?" rows={2} />
           </div>
@@ -230,7 +276,13 @@ export default function PrivateRoomMyRoom() {
             <article className="pvr-myroom-post pvr-myroom-demo-post">
               <header>
                 <div className="pvr-myroom-avatar">
-                  FX
+                  {profileImage ? (
+                    <img src={profileImage} alt="" />
+                  ) : (
+                    <span>
+                      FX
+                    </span>
+                  )}
                 </div>
                 <div>
                   <strong>
@@ -266,7 +318,13 @@ export default function PrivateRoomMyRoom() {
             <article key={post.id} className="pvr-myroom-post">
               <header>
                 <div className="pvr-myroom-avatar">
-                  FX
+                  {profileImage ? (
+                    <img src={profileImage} alt="" />
+                  ) : (
+                    <span>
+                      FX
+                    </span>
+                  )}
                 </div>
                 <div>
                   <strong>
@@ -332,6 +390,34 @@ export default function PrivateRoomMyRoom() {
         </section>
       </main>
       <aside className="pvr-myroom-right">
+        <section className={`pvr-myroom-panel pvr-myroom-oncam ${onCamOpen ? "is-open" : ""}`}>
+          <button type="button" className="pvr-myroom-oncam-toggle" onClick={() => setOnCamOpen((current) => !current)} aria-expanded={onCamOpen}>
+            <span>
+              ONCAM
+            </span>
+            <strong>
+              {onCamOpen ? "−" : "+"}
+            </strong>
+          </button>
+          {onCamOpen && (
+            <div className="pvr-myroom-oncam-body">
+              <div className="pvr-myroom-oncam-screen">
+                <span>
+                  YOUR CAMERA
+                </span>
+                <strong>
+                  OFFLINE
+                </strong>
+                <small>
+                  CAMERA PREVIEW
+                </small>
+              </div>
+              <button type="button" className="pvr-myroom-oncam-open" onClick={openCameraStudio}>
+                OPEN CAMERA
+              </button>
+            </div>
+          )}
+        </section>
         <section className="pvr-myroom-panel">
           <header>
             <strong>
@@ -345,7 +431,9 @@ export default function PrivateRoomMyRoom() {
             {ONLINE_MEMBERS.map((member) => (
               <div key={member.name} className="pvr-myroom-online-user">
                 <div className="pvr-myroom-avatar">
-                  {member.initials}
+                  <span>
+                    {member.initials}
+                  </span>
                 </div>
                 <div>
                   <strong>
