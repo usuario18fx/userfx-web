@@ -1,7 +1,7 @@
 /* ═══════════ USER FX · MYROOM · BASIC ROOMFX ═══════════ */
 .pvr-live-home:has(>.pvr-myroom-shell)>:not(.pvr-myroom-shell){display:none!important}
 .pvr-live-home:has(>.pvr-myroom-shell){padding-top:0!important}
-.pvr-myroom-shell{width:min(1440px,calc(100% - 28px));margin:0 auto 34px;display:grid;grid-template-columns:190px minmax(0,1fr) 250px;gap:14px;color:#f3eee6;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.pvr-myroom-shell{width:min(1440px,calc(100% - 28px));margin:0 auto 34px;display:grid;grid-template-columns:210px minmax(0,1fr) 280px;gap:14px;color:#f3eee6;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 .pvr-myroom-left,.pvr-myroom-right,.pvr-myroom-main{min-width:0}
 .pvr-myroom-left{position:sticky;top:14px;align-self:start;min-height:620px;padding:14px;border:1px solid #ffffff12;border-radius:10px;background:#090b0edb}
 .pvr-myroom-brand{display:flex;align-items:center;gap:10px;padding:4px 2px 16px;border-bottom:1px solid #ffffff0d}
@@ -9,13 +9,16 @@
 .pvr-myroom-brand>div{display:flex;flex-direction:column;gap:2px}
 .pvr-myroom-brand strong{color:#f2eadc;font-size:11px;letter-spacing:.08em}
 .pvr-myroom-brand small{color:#7c756c;font-size:6px;letter-spacing:.11em}
+.pvr-myroom-profile-card{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;padding:14px 10px;border:1px solid #ffffff0d;border-radius:9px;background:#0b0d10}
+.pvr-myroom-profile-photo{width:118px;height:118px;padding:0;overflow:hidden;border:1px solid #c19a54;border-radius:50%;background:#15181c;color:#e3c57f;font-family:"Cinzel",Georgia,serif;font-size:28px;font-weight:700;cursor:pointer}
+.pvr-myroom-profile-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.pvr-myroom-profile-card>strong{margin-top:4px;color:#eee7dd;font-size:10px}
+.pvr-myroom-profile-card>span{color:#69cf72;font-size:6px;letter-spacing:.09em}
+.pvr-myroom-change-photo{min-height:28px;margin-top:4px;padding:0 10px;border:1px solid #ffffff14;border-radius:6px;background:#111419;color:#aaa299;font-size:6px;font-weight:800;letter-spacing:.08em;cursor:pointer}
+.pvr-myroom-change-photo:hover{border-color:#b9955040;color:#dfc17f}
 .pvr-myroom-menu{display:grid;gap:5px;margin-top:14px}
 .pvr-myroom-menu button{min-height:38px;padding:0 12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#9f978b;font-size:8px;font-weight:800;letter-spacing:.08em;text-align:left;cursor:pointer}
 .pvr-myroom-menu button:hover,.pvr-myroom-menu button.is-active{border-color:#c39c554f;background:#c39c550f;color:#dfc17f}
-.pvr-myroom-profile-mini{position:absolute;right:14px;bottom:14px;left:14px;display:flex;align-items:center;gap:9px;padding-top:12px;border-top:1px solid #ffffff0d}
-.pvr-myroom-profile-mini>div:last-child{display:flex;flex-direction:column;gap:2px}
-.pvr-myroom-profile-mini strong{color:#e9e1d6;font-size:8px}
-.pvr-myroom-profile-mini span{color:#73cb78;font-size:6px;letter-spacing:.08em}
 .pvr-myroom-main{display:grid;gap:12px}
 .pvr-myroom-topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:64px;padding:0 4px 10px;border-bottom:1px solid #ffffff0d}
 .pvr-myroom-topbar>div{display:flex;flex-direction:column;gap:2px}
@@ -28,7 +31,8 @@
 .pvr-myroom-composer,.pvr-myroom-post,.pvr-myroom-panel{border:1px solid #ffffff12;border-radius:10px;background:#0a0c0fe8;box-shadow:0 14px 32px #00000024}
 .pvr-myroom-composer{padding:14px}
 .pvr-myroom-composer-row{display:grid;grid-template-columns:42px 1fr;align-items:start;gap:10px}
-.pvr-myroom-avatar{position:relative;display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:1px solid #c09a55;border-radius:50%;background:#17191d;color:#e3c57f;font-family:"Cinzel",Georgia,serif;font-size:9px;font-weight:700}
+.pvr-myroom-avatar{position:relative;display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;overflow:hidden;border:1px solid #c09a55;border-radius:50%;background:#17191d;color:#e3c57f;font-family:"Cinzel",Georgia,serif;font-size:9px;font-weight:700}
+.pvr-myroom-avatar img{display:block;width:100%;height:100%;object-fit:cover}
 .pvr-myroom-composer textarea{width:100%;min-height:74px;padding:11px 12px;resize:vertical;border:1px solid #ffffff10;border-radius:8px;outline:0;background:#080a0c;color:#eee8df;font-family:inherit;font-size:11px;line-height:1.45}
 .pvr-myroom-composer textarea:focus{border-color:#b8945147}
 .pvr-myroom-composer textarea::placeholder,.pvr-myroom-comment-form input::placeholder{color:#706960}
@@ -63,6 +67,17 @@
 .pvr-myroom-panel>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid #ffffff0d}
 .pvr-myroom-panel>header strong{color:#e7e0d6;font-size:8px;letter-spacing:.08em}
 .pvr-myroom-panel>header span{display:grid;place-items:center;min-width:25px;height:20px;padding:0 6px;border-radius:10px;background:#262117;color:#d3b56f;font-size:7px}
+.pvr-myroom-oncam{padding:0;overflow:hidden}
+.pvr-myroom-oncam-toggle{width:100%;min-height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border:0;background:#0c0f13;color:#dfd7ca;cursor:pointer}
+.pvr-myroom-oncam-toggle span{font-size:8px;font-weight:900;letter-spacing:.1em}
+.pvr-myroom-oncam-toggle strong{color:#d9b86f;font-size:18px;font-weight:400}
+.pvr-myroom-oncam-body{display:grid;gap:9px;padding:0 12px 12px}
+.pvr-myroom-oncam-screen{min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid #ffffff0d;border-radius:8px;background:#050607;color:#736d64;text-align:center}
+.pvr-myroom-oncam-screen span{font-size:6px;letter-spacing:.12em}
+.pvr-myroom-oncam-screen strong{color:#b8afa3;font-size:12px;letter-spacing:.08em}
+.pvr-myroom-oncam-screen small{font-size:5.5px;letter-spacing:.1em}
+.pvr-myroom-oncam-open{min-height:34px;border:1px solid #c49d5747;border-radius:7px;background:#15130f;color:#dfc17f;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.pvr-myroom-oncam-open:hover{border-color:#c49d57;background:#1b1711}
 .pvr-myroom-online-list{display:grid;gap:9px;padding-top:10px}
 .pvr-myroom-online-user{display:grid;grid-template-columns:34px 1fr 8px;align-items:center;gap:8px}
 .pvr-myroom-online-user .pvr-myroom-avatar{width:32px;height:32px;flex-basis:32px;font-size:7px}
@@ -73,5 +88,5 @@
 .pvr-myroom-live-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;gap:4px;text-align:center}
 .pvr-myroom-live-empty strong{color:#9f978b;font-size:8px}
 .pvr-myroom-live-empty span{max-width:180px;color:#676159;font-size:6px;line-height:1.45}
-@media(max-width:1100px){.pvr-myroom-shell{grid-template-columns:170px minmax(0,1fr)}.pvr-myroom-right{display:none}}
-@media(max-width:760px){.pvr-myroom-shell{width:calc(100% - 14px);margin:0 auto 22px;display:block}.pvr-myroom-left{position:relative;top:auto;min-height:0;margin-bottom:10px;padding:10px}.pvr-myroom-brand{padding-bottom:10px}.pvr-myroom-menu{grid-template-columns:repeat(4,1fr);margin-top:9px}.pvr-myroom-menu button{min-height:34px;padding:0 4px;text-align:center;font-size:6px}.pvr-myroom-profile-mini{display:none}.pvr-myroom-topbar{min-height:58px}.pvr-myroom-search{width:46%}.pvr-myroom-composer{padding:11px}.pvr-myroom-composer-actions{grid-template-columns:repeat(3,1fr)}.pvr-myroom-composer-actions .pvr-myroom-post-button{grid-column:1/-1;justify-self:stretch}.pvr-myroom-post{padding:11px}}
+@media(max-width:1100px){.pvr-myroom-shell{grid-template-columns:190px minmax(0,1fr)}.pvr-myroom-right{position:relative;top:auto;grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}.pvr-myroom-oncam-screen{min-height:120px}}
+@media(max-width:760px){.pvr-myroom-shell{width:calc(100% - 14px);margin:0 auto 22px;display:block}.pvr-myroom-left{position:relative;top:auto;min-height:0;margin-bottom:10px;padding:10px}.pvr-myroom-profile-card{display:grid;grid-template-columns:72px 1fr auto;align-items:center;text-align:left}.pvr-myroom-profile-photo{grid-row:1/4;width:72px;height:72px}.pvr-myroom-profile-card>strong,.pvr-myroom-profile-card>span{justify-self:start}.pvr-myroom-change-photo{grid-column:2/4;justify-self:start}.pvr-myroom-menu{grid-template-columns:repeat(4,1fr);margin-top:9px}.pvr-myroom-menu button{min-height:34px;padding:0 4px;text-align:center;font-size:6px}.pvr-myroom-topbar{min-height:58px}.pvr-myroom-search{width:46%}.pvr-myroom-composer{padding:11px}.pvr-myroom-composer-actions{grid-template-columns:repeat(3,1fr)}.pvr-myroom-composer-actions .pvr-myroom-post-button{grid-column:1/-1;justify-self:stretch}.pvr-myroom-post{padding:11px}.pvr-myroom-right{display:grid;grid-template-columns:1fr;margin-top:12px}}
