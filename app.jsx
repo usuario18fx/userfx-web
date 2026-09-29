@@ -5,8 +5,8 @@ import PrivateRoomMyRoom from "./components/PrivateRoom/PrivateRoomMyRoom";
 import PrivateRoomStage from "./components/PrivateRoom/PrivateRoomStage";
 import PrivateRoomGallery from "./components/PrivateRoom/PrivateRoomGallery";
 import PrivateRoomBuzon from "./components/PrivateRoom/PrivateRoomBuzon";
-import PrivateRoomNavigationController from "./components/PrivateRoom/PrivateRoomNavigationController";
-import PrivateRoomLogout from "./components/PrivateRoom/PrivateRoomLogout";
+import PrivateRoomTopNav from "./components/PrivateRoom/PrivateRoomTopNav";
+import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PrivateRoomCameraEnhancer";
 
 function getRoute() {
   return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
@@ -15,7 +15,7 @@ function getRoute() {
 function cleanHandoffParam() {
   const url = new URL(window.location.href);
   url.searchParams.delete("handoff");
-  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  window.history.replaceState({},"",`${url.pathname}${url.search}${url.hash}`);
 }
 
 function hasVerifiedSpecialCode() {
@@ -26,7 +26,7 @@ function hasVerifiedSpecialCode() {
   }
 }
 
-function PrivateRoomRoute({ route }) {
+function PrivateRoomRoute({route}) {
   if (route === "#/private-room/stage") return <PrivateRoomStage />;
   if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
   if (route === "#/private-room/buzon") return <PrivateRoomBuzon />;
@@ -146,10 +146,10 @@ export default function App() {
   if (route === "#/private-room-access" || route.startsWith("#/private-room")) {
     return (
       <>
+        <PrivateRoomTopNav />
         <PrivateRoomLiveShell />
         <PrivateRoomRoute route={route} />
-        <PrivateRoomNavigationController />
-        <PrivateRoomLogout />
+        <PrivateRoomCameraEnhancer />
       </>
     );
   }
