@@ -2,34 +2,34 @@
 body:has(.pvr-myroom-shell) .pvr-account-panel,body:has(.pvr-myroom-shell) .pvr-account-backdrop,body:has(.pvr-myroom-shell) .pvr-profile-view,body:has(.pvr-myroom-shell) .pvr-profile-view-backdrop{display:none!important}
 body:has(.pvr-camera-studio){overflow:hidden!important}
 .pvr-camera-backdrop{position:fixed;inset:0;z-index:12200;border:0;background:rgba(1,3,4,.88);backdrop-filter:blur(10px)}
-.pvr-camera-studio{position:fixed;top:50%;left:50%;z-index:12220;width:min(980px,calc(100vw - 30px));max-height:calc(100dvh - 30px);padding:14px;overflow:hidden;transform:translate(-50%,-50%);border:1px solid #9a7d4a40;border-radius:18px;background:linear-gradient(180deg,#080908,#050606);color:#e8e5e0;box-shadow:0 34px 100px #000000c7,inset 0 0 0 1px #ffffff05}
-.pvr-camera-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 2px 12px;border-bottom:1px solid #ffffff0d}
-.pvr-camera-head>div{display:flex;flex-direction:column;gap:4px}
-.pvr-camera-head span{color:#746d63;font-size:7px;font-weight:700;letter-spacing:.2em}
-.pvr-camera-head strong{color:#d7b56f;font-family:"Cinzel",serif;font-size:9px;letter-spacing:.16em}
-.pvr-camera-head>button{width:32px;height:32px;border:1px solid #ffffff12;border-radius:50%;background:#0a0b0b;color:#999187;cursor:pointer}
-.pvr-camera-preview{position:relative;width:100%;aspect-ratio:16 / 9;margin-top:12px;overflow:hidden;border:1px solid #8d73452b;border-radius:12px;background:#050607;box-shadow:inset 0 0 24px #0000005c}
+.pvr-camera-studio{position:fixed;top:50%;left:50%;z-index:12220;width:min(820px,calc(100vw - 24px));max-height:calc(100dvh - 20px);padding:8px;overflow:hidden;transform:translate(-50%,-50%);border:1px solid #9a7d4a40;border-radius:14px;background:linear-gradient(180deg,#080908,#050606);color:#e8e5e0;box-shadow:0 28px 80px #000000bd,inset 0 0 0 1px #ffffff05}
+.pvr-camera-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:0;padding:0 2px 4px;border-bottom:1px solid #ffffff0d}
+.pvr-camera-head>div{display:flex;flex-direction:column;gap:1px}
+.pvr-camera-head span{color:#746d63;font-size:6px;font-weight:700;line-height:1;letter-spacing:.18em}
+.pvr-camera-head strong{color:#d7b56f;font-family:"Cinzel",serif;font-size:8px;line-height:1;letter-spacing:.14em}
+.pvr-camera-head>button{width:26px;height:26px;border:1px solid #ffffff12;border-radius:50%;background:#0a0b0b;color:#999187;cursor:pointer}
+.pvr-camera-preview{position:relative;width:100%;aspect-ratio:16 / 7;margin-top:4px;overflow:hidden;border:1px solid #8d73452b;border-radius:10px;background:#050607;box-shadow:inset 0 0 20px #00000052}
 .pvr-camera-preview video{display:block;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:brightness(1.2) contrast(.98) saturate(1.02);background:#030404;transition:filter .2s ease,opacity .2s ease}
 .pvr-camera-preview.is-camera-off video{opacity:.12;filter:brightness(.5) grayscale(.3)}
-.pvr-camera-placeholder{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:7px;padding:20px;text-align:center;pointer-events:none}
-.pvr-camera-placeholder strong{color:#c8c0b3;font-family:"Cinzel",serif;font-size:14px;letter-spacing:.1em}
-.pvr-camera-placeholder span{color:#655f57;font-size:7px;letter-spacing:.1em}
+.pvr-camera-placeholder{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:6px;padding:14px;text-align:center;pointer-events:none}
+.pvr-camera-placeholder strong{color:#c8c0b3;font-family:"Cinzel",serif;font-size:12px;letter-spacing:.09em}
+.pvr-camera-placeholder span{color:#655f57;font-size:6px;letter-spacing:.09em}
 .pvr-camera-placeholder.is-error strong{color:#c97676}
 .pvr-camera-badges{display:none}
-.pvr-camera-layout{display:flex;align-items:center;justify-content:center;gap:6px;width:min(720px,92%);margin:12px auto 0;padding:5px;overflow:hidden;border:1px solid #6d5a383d;border-radius:12px;background:#050606;box-shadow:0 8px 22px #00000075,inset 0 1px 0 #ffffff08}
-.pvr-camera-settings{display:flex;align-items:center;gap:6px;width:100%}
+.pvr-camera-layout{display:flex;align-items:center;justify-content:center;gap:4px;width:min(560px,84%);margin:6px auto 0;padding:3px;overflow:hidden;border:1px solid #6d5a383d;border-radius:10px;background:#050606;box-shadow:0 6px 18px #00000066,inset 0 1px 0 #ffffff08}
+.pvr-camera-settings{display:flex;align-items:center;gap:4px;width:100%}
 .pvr-camera-settings>span{display:none}
 .pvr-camera-actions{display:none!important}
-.pvr-camera-visibility{display:grid;grid-template-columns:repeat(2,1fr);flex:0 0 184px;height:38px;padding:3px;border:1px solid #ffffff12;border-radius:999px;background:#080909;box-shadow:inset 0 0 0 1px #00000066}
-.pvr-camera-visibility button{min-width:0;border:0;border-radius:999px;background:transparent;color:#756f67;font-family:"Cinzel",serif;font-size:7px;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:background .16s ease,color .16s ease,box-shadow .16s ease}
+.pvr-camera-visibility{display:grid;grid-template-columns:repeat(2,1fr);flex:0 0 150px;height:32px;padding:2px;border:1px solid #ffffff12;border-radius:999px;background:#080909;box-shadow:inset 0 0 0 1px #00000066}
+.pvr-camera-visibility button{min-width:0;border:0;border-radius:999px;background:transparent;color:#756f67;font-family:"Cinzel",serif;font-size:6px;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:background .16s ease,color .16s ease,box-shadow .16s ease}
 .pvr-camera-visibility button.is-active{background:#b08b4b;color:#100d09;box-shadow:0 2px 8px #00000066,inset 0 1px 0 #f0d49a80}
-.pvr-camera-device-controls{display:flex;align-items:center;flex:1;min-width:0;height:38px;overflow:hidden;border:1px solid #ffffff10;border-radius:9px;background:#080909}
-.pvr-camera-device-controls button{flex:1;min-width:0;height:100%;padding:0 12px;border:0;border-right:1px solid #ffffff0d;background:transparent;color:#918a80;font-family:"Cinzel",serif;font-size:7px;font-weight:700;letter-spacing:.09em;cursor:pointer;transition:background .16s ease,color .16s ease}
+.pvr-camera-device-controls{display:flex;align-items:center;flex:1;min-width:0;height:32px;overflow:hidden;border:1px solid #ffffff10;border-radius:8px;background:#080909}
+.pvr-camera-device-controls button{flex:1;min-width:0;height:100%;padding:0 8px;border:0;border-right:1px solid #ffffff0d;background:transparent;color:#918a80;font-family:"Cinzel",serif;font-size:6px;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:background .16s ease,color .16s ease}
 .pvr-camera-device-controls button:last-child{border-right:0}
 .pvr-camera-device-controls button:hover{background:#12110f;color:#d8bc7b}
 .pvr-camera-device-controls button:not(.is-off){color:#b9b1a4}
 .pvr-camera-device-controls button.is-off{color:#8b6267;background:#100a0b}
 .pvr-camera-start,.pvr-camera-end{display:none!important}
-.pvr-camera-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 0;color:#57514a;font-size:6px;letter-spacing:.1em}
+.pvr-camera-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 2px 0;color:#57514a;font-size:5px;line-height:1;letter-spacing:.09em}
 .pvr-camera-foot strong{color:#8e806b;font-weight:700}
-@media(max-width:700px){.pvr-camera-studio{width:calc(100vw - 14px);max-height:calc(100dvh - 14px);padding:10px;border-radius:14px}.pvr-camera-preview{aspect-ratio:4 / 5}.pvr-camera-layout{width:100%;padding:5px}.pvr-camera-settings{display:grid;grid-template-columns:1fr}.pvr-camera-visibility{width:100%;flex-basis:auto}.pvr-camera-device-controls{width:100%}.pvr-camera-foot{align-items:flex-start;flex-direction:column}}
+@media(max-width:700px){.pvr-camera-studio{width:calc(100vw - 10px);max-height:calc(100dvh - 10px);padding:6px;border-radius:12px}.pvr-camera-preview{aspect-ratio:4 / 3;margin-top:3px}.pvr-camera-layout{width:96%;margin-top:5px;padding:3px}.pvr-camera-settings{display:grid;grid-template-columns:1fr}.pvr-camera-visibility{width:100%;flex-basis:auto}.pvr-camera-device-controls{width:100%}.pvr-camera-foot{align-items:flex-start;flex-direction:column;gap:3px}}
