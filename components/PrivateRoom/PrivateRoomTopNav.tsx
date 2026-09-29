@@ -104,7 +104,7 @@ export default function PrivateRoomTopNav() {
           </span>
           <span className="pvr-club-brand-copy">
             <strong>
-              USER <i>FX</i>
+              MY ROOM
             </strong>
             <small>
               PRIVATE CLUB
@@ -135,7 +135,6 @@ export default function PrivateRoomTopNav() {
             <span />
             {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
-
           <button type="button" className="pvr-club-reward" onClick={openRewards}>
             <span className="pvr-reward-icon-container">
               <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
@@ -155,20 +154,17 @@ export default function PrivateRoomTopNav() {
               Rewards
             </span>
           </button>
-
           <button type="button" className="pvr-club-profile" onClick={openProfile}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
           </button>
-
           <button type="button" className="pvr-club-membership" onClick={openMembership}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
           </button>
-          
           <button type="button" className="pvr-club-logout" onClick={logout}>
             LOG OUT
           </button>
