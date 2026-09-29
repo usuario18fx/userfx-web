@@ -63,9 +63,13 @@ export default function PrivateRoomStage() {
               ROOMFX LIVE
             </strong>
           </div>
-          <div className="pvr-stage-scene-status">
-            <span className={cameraLive ? "is-live" : ""}></span>
-            {cameraLive ? "YOU ARE ON CAM" : "CAM READY"}
+          <div className={`pvr-stage-lumen ${cameraLive ? "is-live" : ""}`} role="status" aria-label={cameraLive ? "On camera" : "Camera ready"}>
+            <div className="pvr-stage-lumen-panel">
+              <span className="pvr-stage-lumen-dot"></span>
+              <span className="pvr-stage-lumen-label">
+                {cameraLive ? "ONCAM" : "READY"}
+              </span>
+            </div>
           </div>
         </header>
 
@@ -90,9 +94,12 @@ export default function PrivateRoomStage() {
                   </span>
                 )}
                 {index === 1 && cameraLive && (
-                  <span className="pvr-stage-camera-live">
-                    ONLINE
-                  </span>
+                  <div className="pvr-stage-camera-live-lumen" role="status" aria-label="User camera online">
+                    <span className="pvr-stage-camera-live-dot"></span>
+                    <span>
+                      ONLINE
+                    </span>
+                  </div>
                 )}
               </div>
             </article>
