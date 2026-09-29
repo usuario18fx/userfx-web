@@ -3,6 +3,11 @@
 .pvr-club-nav--unified{z-index:14000}
 .pvr-club-nav--unified .pvr-club-tabs{gap:6px}
 .pvr-club-nav--unified .pvr-club-tabs button,.pvr-club-nav--unified .pvr-club-mobile-tabs button{letter-spacing:.12em}
+.pvr-club-nav--unified .pvr-club-home{width:fit-content;display:flex;align-items:center;justify-content:center;padding:1.2em 1rem;cursor:pointer;gap:.4rem;font-weight:700;border-radius:11px;text-shadow:2px 2px 3px #0066b9;background:linear-gradient(15deg,#00b9b9,#00b3b9,#0066b9,#005e94f8,#00b9b9,#0066b9,#00b3b9,#005e94f8) no-repeat;background-size:300%;color:#000;border:none;background-position:left center;box-shadow:0 3px 1px 0 #008cff;transition:background .3s ease,color .3s ease}
+.pvr-club-nav--unified .pvr-club-home:hover{background-size:370%;background-position:right center;color:#001b55}
+.pvr-club-nav--unified .pvr-club-home svg{width:23px;flex:0 0 23px;fill:#001b55;transition:.3s ease}
+.pvr-club-nav--unified .pvr-club-home:hover svg{fill:#001b55}
+.pvr-club-nav--unified .pvr-club-home span{white-space:nowrap;color:inherit;font-size:7px;letter-spacing:.08em}
 .pvr-club-nav--unified .pvr-club-membership{width:fit-content;display:flex;align-items:center;justify-content:center;padding:1.2em 1rem;cursor:pointer;gap:.4rem;font-weight:700;border-radius:11px;text-shadow:2px 2px 3px #ff88004d;background:linear-gradient(15deg,#ffc014,#ffa600,#ff7b00,#754200,#ffc014,#ffa600,#ff7b00,#ffa705) no-repeat;background-size:300%;color:#000;border:none;background-position:left center;box-shadow:0 30px 10px -20px #ff7b00;transition:background .3s ease,color .3s ease}
 .pvr-club-nav--unified .pvr-club-membership:hover{background-size:320%;background-position:right center;color:#000}
 .pvr-club-nav--unified .pvr-club-membership svg{width:23px;flex:0 0 23px;fill:#000;transition:.3s ease}
@@ -10,4 +15,4 @@
 .pvr-club-nav--unified .pvr-club-membership span{white-space:nowrap;color:#000;font-size:7px;letter-spacing:.08em}
 .pvr-club-nav--unified .pvr-club-logout{min-height:34px;padding:0 12px;border:1px solid #8e4f4f55;border-radius:7px;background:#160c0d;color:#c98a8a;font-size:7px;font-weight:900;letter-spacing:.08em;cursor:pointer;transition:border-color .16s ease,background .16s ease,color .16s ease}
 .pvr-club-nav--unified .pvr-club-logout:hover{border-color:#b96a6a88;background:#211011;color:#e0a0a0}
-@media(max-width:900px){.pvr-club-nav--unified .pvr-club-membership{padding:.95em .8rem}.pvr-club-nav--unified .pvr-club-membership svg{width:19px;flex-basis:19px}.pvr-club-nav--unified .pvr-club-membership span{font-size:6px}.pvr-club-nav--unified .pvr-club-logout{min-height:32px;padding:0 10px;font-size:6px}}
+@media(max-width:900px){.pvr-club-nav--unified .pvr-club-home,.pvr-club-nav--unified .pvr-club-membership{padding:.95em .8rem}.pvr-club-nav--unified .pvr-club-home svg,.pvr-club-nav--unified .pvr-club-membership svg{width:19px;flex-basis:19px}.pvr-club-nav--unified .pvr-club-home span,.pvr-club-nav--unified .pvr-club-membership span{font-size:6px}.pvr-club-nav--unified .pvr-club-logout{min-height:32px;padding:0 10px;font-size:6px}}
