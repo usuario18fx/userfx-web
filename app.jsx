@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import VaultHome from "./components/VaultHome/VaultHome";
+import FxCombinationLock from "./components/FxAccess/FxCombinationLock";
 import PrivateRoomLiveShell from "./components/PrivateRoom/PrivateRoomLiveShell";
 import PrivateRoomMyRoom from "./components/PrivateRoom/PrivateRoomMyRoom";
 import PrivateRoomStage from "./components/PrivateRoom/PrivateRoomStage";
@@ -148,6 +149,7 @@ export default function App() {
       <>
         <PrivateRoomTopNav />
         <PrivateRoomLiveShell />
+        {route === "#/private-room-access" && <FxCombinationLock />}
         <PrivateRoomRoute route={route} />
         <PrivateRoomCameraEnhancer />
       </>
