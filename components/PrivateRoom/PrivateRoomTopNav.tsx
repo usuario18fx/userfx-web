@@ -62,10 +62,31 @@ async function logout() {
   window.location.assign(HOME_URL);
 }
 
+async function openInBrowser() {
+  try {
+    const response = await fetch("/api/handoff",{
+      method:"POST",
+      headers:{Accept:"application/json"},
+      credentials:"same-origin",
+      cache:"no-store",
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.url) return;
+    const telegram = window.Telegram?.WebApp;
+    if (typeof telegram?.openLink === "function") {
+      telegram.openLink(data.url);
+      return;
+    }
+    window.open(data.url,"_blank","noopener,noreferrer");
+  } catch {
+  }
+}
+
 export default function PrivateRoomTopNav() {
   const [route,setRoute] = useState(() => window.location.hash || "#/private-room");
   const [accessCode,setAccessCode] = useState("PRIVATE ACCESS");
   const [cameraLive,setCameraLive] = useState(false);
+  const [insideTelegram,setInsideTelegram] = useState(false);
 
   const readLiveState = useCallback(() => {
     const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
@@ -77,6 +98,10 @@ export default function PrivateRoomTopNav() {
     const handleHashChange = () => setRoute(window.location.hash || "#/private-room");
     window.addEventListener("hashchange",handleHashChange);
     return () => window.removeEventListener("hashchange",handleHashChange);
+  },[]);
+
+  useEffect(() => {
+    setInsideTelegram(Boolean(window.Telegram?.WebApp?.initData));
   },[]);
 
   useEffect(() => {
@@ -165,12 +190,22 @@ export default function PrivateRoomTopNav() {
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
           </button>
+          {insideTelegram && (
+            <button type="button" className="pvr-open-browser" onClick={openInBrowser}>
+              OPEN IN BROWSER
+            </button>
+          )}
           <button type="button" className="pvr-club-logout" onClick={logout}>
             LOG OUT
           </button>
         </div>
       </div>
       <nav className="pvr-club-mobile-tabs" aria-label="Private Room mobile navigation">
+        {insideTelegram && (
+          <button type="button" className="pvr-open-browser pvr-open-browser--mobile" onClick={openInBrowser}>
+            OPEN IN BROWSER
+          </button>
+        )}
         {cameraLive && (
           <button type="button" className="pvr-club-mobile-oncam" onClick={openCamera}>
             ● ONCAM
