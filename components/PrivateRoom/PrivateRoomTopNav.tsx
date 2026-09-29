@@ -29,6 +29,10 @@ function openMembership() {
   document.querySelector<HTMLButtonElement>(".buttonupgrade")?.click();
 }
 
+function openRewards() {
+  window.dispatchEvent(new CustomEvent("userfx:open-rewards"));
+}
+
 function clearLocalAccessState() {
   try {
     ["vault_unlocked","vault_plan","userfx_access_code","memberAccess"].forEach((key) => sessionStorage.removeItem(key));
@@ -104,17 +108,8 @@ export default function PrivateRoomTopNav() {
         </button>
         <nav className="pvr-club-tabs" aria-label="Private Room navigation">
           {NAV_ITEMS.map((item) => (
-            <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${item.external ? " pvr-club-home" : ""}`.trim()} onClick={() => navigate(item)}>
-              {item.external ? (
-                <>
-                  <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
-                  </svg>
-                  <span>
-                    INICIO
-                  </span>
-                </>
-              ) : item.label}
+            <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
+              {item.label}
             </button>
           ))}
         </nav>
@@ -130,6 +125,25 @@ export default function PrivateRoomTopNav() {
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={openCamera}>
             <span />
             {cameraLive ? "ONCAM" : "OFFCAM"}
+          </button>
+          <button type="button" className="pvr-club-reward" onClick={openRewards}>
+            <span className="pvr-reward-icon-container">
+              <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
+                <path strokeLinecap="round" strokeWidth="4" stroke="#6A8EF6" d="M2 18L58 18" />
+                <circle strokeWidth="5" stroke="#6A8EF6" fill="#101218" r="7" cy="9.5" cx="20.5" />
+                <circle strokeWidth="5" stroke="#6A8EF6" fill="#101218" r="7" cy="9.5" cx="38.5" />
+              </svg>
+              <svg className="pvr-reward-box-body" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 58 44" aria-hidden="true">
+                <rect strokeWidth="4" stroke="#6A8EF6" fill="#101218" rx="3" x="2" y="2" width="54" height="40" />
+                <line strokeWidth="6" stroke="#6A8EF6" y2="29" x2="58" y1="29" x1="0" />
+                <path strokeLinecap="round" strokeWidth="5" stroke="#6A8EF6" d="M45.0005 20L36 3" />
+                <path strokeLinecap="round" strokeWidth="5" stroke="#6A8EF6" d="M21 3L13.0002 19.9992" />
+              </svg>
+              <span className="pvr-reward-coin" />
+            </span>
+            <span className="pvr-reward-text">
+              Rewards
+            </span>
           </button>
           <button type="button" className="pvr-club-profile" onClick={openProfile}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -159,17 +173,8 @@ export default function PrivateRoomTopNav() {
           </button>
         )}
         {NAV_ITEMS.map((item) => (
-          <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${item.external ? " pvr-club-home" : ""}`.trim()} onClick={() => navigate(item)}>
-            {item.external ? (
-              <>
-                <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
-                </svg>
-                <span>
-                  INICIO
-                </span>
-              </>
-            ) : item.label}
+          <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
+            {item.label}
           </button>
         ))}
       </nav>
