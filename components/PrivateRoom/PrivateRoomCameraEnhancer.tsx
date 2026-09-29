@@ -2,9 +2,17 @@ import { useEffect } from "react";
 import "./PrivateRoomCameraEnhancer.css";
 
 const DEFAULT_CAMERA_KEY = "userfx_default_camera_id";
+const MAX_ONLIVE_MS = 45 * 60 * 1000;
 let activeStream:MediaStream | null = null;
 let cameraLive = false;
 let flashEnabled = false;
+let mediaRecorder:MediaRecorder | null = null;
+let recordingChunks:BlobPart[] = [];
+let recordingStartedAt = 0;
+let recordingStopTimer = 0;
+let recordingSessionEnded = false;
+let pendingRecording:Blob | null = null;
+let pendingRecordingDuration = 0;
 
 function getStudioStream(studio:HTMLElement) {
   const video = studio.querySelector<HTMLVideoElement>(".pvr-camera-preview video");
@@ -28,6 +36,119 @@ function storeCameraId(deviceId:string) {
     if (deviceId) localStorage.setItem(DEFAULT_CAMERA_KEY,deviceId);
   } catch {
   }
+}
+
+function formatDuration(ms:number) {
+  const seconds = Math.max(0,Math.floor(ms / 1000));
+  const minutes = Math.floor(seconds / 60);
+  const remaining = seconds % 60;
+  return `${String(minutes).padStart(2,"0")}:${String(remaining).padStart(2,"0")}`;
+}
+
+async function userIsPro() {
+  try {
+    const response = await fetch("/api/account",{method:"GET",headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+    const data = await response.json().catch(() => ({}));
+    if (response.ok && data?.account?.planId === "pro") return true;
+  } catch {
+  }
+  try {
+    const response = await fetch("/api/access-session",{method:"GET",headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+    const data = await response.json().catch(() => ({}));
+    return Boolean(response.ok && data?.planId === "pro");
+  } catch {
+    return false;
+  }
+}
+
+function clearRecordingTimer() {
+  if (recordingStopTimer) window.clearTimeout(recordingStopTimer);
+  recordingStopTimer = 0;
+}
+
+function removeSaveNotice() {
+  document.querySelector(".pvr-onlive-save-notice")?.remove();
+}
+
+function showSaveNotice(blob:Blob,duration:number) {
+  removeSaveNotice();
+  const notice = document.createElement("section");
+  notice.className = "pvr-onlive-save-notice";
+  notice.setAttribute("role","dialog");
+  notice.setAttribute("aria-label","Save your ONLIVE recording");
+  notice.innerHTML = `<div class="pvr-onlive-save-card"><span>PRO FEATURE · ONLIVE ENDED</span><strong>SAVE YOUR ONLIVE?</strong><p>Your private session is ready. Recordings are limited to 45 minutes.</p><div class="pvr-onlive-save-meta"><span>${formatDuration(duration)}</span><span>WEBM</span></div><div class="pvr-onlive-save-actions"><button type="button" data-onlive-action="discard">DISCARD</button><button type="button" data-onlive-action="save">SAVE ONLIVE</button></div></div>`;
+  document.body.appendChild(notice);
+
+  notice.querySelector<HTMLButtonElement>("[data-onlive-action='discard']")?.addEventListener("click",() => {
+    pendingRecording = null;
+    pendingRecordingDuration = 0;
+    removeSaveNotice();
+  });
+
+  notice.querySelector<HTMLButtonElement>("[data-onlive-action='save']")?.addEventListener("click",() => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `userfx-onlive-${new Date().toISOString().replace(/[:.]/g,"-")}.webm`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url),1000);
+    pendingRecording = null;
+    pendingRecordingDuration = 0;
+    removeSaveNotice();
+  });
+}
+
+function completeRecording(blob:Blob,duration:number) {
+  pendingRecording = blob.size > 0 ? blob : null;
+  pendingRecordingDuration = duration;
+  if (recordingSessionEnded && pendingRecording) showSaveNotice(pendingRecording,pendingRecordingDuration);
+}
+
+async function startProRecording(stream:MediaStream | null) {
+  if (!stream || typeof MediaRecorder === "undefined") return;
+  if (mediaRecorder && mediaRecorder.state !== "inactive") return;
+  if (!(await userIsPro())) return;
+
+  const mimeType = ["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find((type) => MediaRecorder.isTypeSupported(type)) || "";
+  try {
+    recordingChunks = [];
+    recordingSessionEnded = false;
+    pendingRecording = null;
+    pendingRecordingDuration = 0;
+    recordingStartedAt = Date.now();
+    mediaRecorder = mimeType ? new MediaRecorder(stream,{mimeType}) : new MediaRecorder(stream);
+    mediaRecorder.addEventListener("dataavailable",(event) => {
+      if (event.data.size > 0) recordingChunks.push(event.data);
+    });
+    mediaRecorder.addEventListener("stop",() => {
+      clearRecordingTimer();
+      const duration = Math.min(MAX_ONLIVE_MS,Date.now() - recordingStartedAt);
+      const type = mediaRecorder?.mimeType || mimeType || "video/webm";
+      const blob = new Blob(recordingChunks,{type});
+      recordingChunks = [];
+      mediaRecorder = null;
+      completeRecording(blob,duration);
+    },{once:true});
+    mediaRecorder.start(1000);
+    recordingStopTimer = window.setTimeout(() => {
+      if (mediaRecorder?.state === "recording") mediaRecorder.stop();
+    },MAX_ONLIVE_MS);
+  } catch {
+    mediaRecorder = null;
+    recordingChunks = [];
+    clearRecordingTimer();
+  }
+}
+
+function finishProRecording() {
+  recordingSessionEnded = true;
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+    return;
+  }
+  if (pendingRecording) showSaveNotice(pendingRecording,pendingRecordingDuration);
 }
 
 async function applyCameraDevice(studio:HTMLElement,deviceId:string) {
@@ -273,10 +394,12 @@ function configureCameraStudio() {
       if (enter && !enter.disabled) enter.click();
       activeStream = getStudioStream(studio);
       cameraLive = Boolean(activeStream?.getVideoTracks().some((track) => track.enabled && track.readyState === "live"));
+      if (cameraLive) void startProRecording(activeStream);
       activeStream?.getVideoTracks().forEach((track) => {
         track.addEventListener("ended",() => {
           cameraLive = false;
           activeStream = null;
+          finishProRecording();
           syncCameraControls(studio,controls);
         },{once:true});
       });
@@ -289,6 +412,7 @@ function configureCameraStudio() {
     if (cameraButton && !cameraButton.classList.contains("is-off")) cameraButton.click();
     cameraLive = false;
     flashEnabled = false;
+    finishProRecording();
     window.setTimeout(() => syncCameraControls(studio,controls),40);
   });
 
@@ -331,6 +455,8 @@ export default function PrivateRoomCameraEnhancer() {
     return () => {
       observer.disconnect();
       window.cancelAnimationFrame(frame);
+      clearRecordingTimer();
+      if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
     };
   },[]);
 
