@@ -83,6 +83,7 @@ export default function PrivateRoomTopNav() {
   },[readLiveState]);
 
   function navigate(item:(typeof NAV_ITEMS)[number]) {
+    if (item.label === "GALLERY" && cameraLive) return;
     if (item.external) {
       window.location.assign(item.route);
       return;
@@ -107,11 +108,14 @@ export default function PrivateRoomTopNav() {
           </span>
         </button>
         <nav className="pvr-club-tabs" aria-label="Private Room navigation">
-          {NAV_ITEMS.map((item) => (
-            <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
-              {item.label}
-            </button>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const galleryLocked = item.label === "GALLERY" && cameraLive;
+            return (
+              <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
         <div className="pvr-club-actions">
           <button type="button" className="pvr-club-code" onClick={openProfile}>
@@ -146,8 +150,9 @@ export default function PrivateRoomTopNav() {
             </span>
           </button>
           <button type="button" className="pvr-club-profile" onClick={openProfile}>
-            <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
             <span>
               ᴘʀᴏꜰɪʟᴇ
@@ -172,11 +177,14 @@ export default function PrivateRoomTopNav() {
             ● ONCAM
           </button>
         )}
-        {NAV_ITEMS.map((item) => (
-          <button key={item.label} type="button" className={!item.external && route === item.route ? "is-active" : ""} onClick={() => navigate(item)}>
-            {item.label}
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const galleryLocked = item.label === "GALLERY" && cameraLive;
+          return (
+            <button key={item.label} type="button" className={`${!item.external && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked}>
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
     </header>
   );
