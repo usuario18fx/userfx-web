@@ -14,37 +14,37 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Checkout cleanup branch
-        uses: actions/checkout@v4
-        with:
-          ref: cleanup/unify-project
-          fetch-depth: 0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
+      - name: Clone cleanup branch
+        run: |
+          git clone --branch cleanup/unify-project --single-branch "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
 
       - name: Install dependencies
+        working-directory: repo
         run: npm ci
 
       - name: Unify project
+        working-directory: repo
         run: node scripts/project-cleanup.mjs
 
       - name: Format TSX JSX CSS
+        working-directory: repo
         run: node scripts/format-userfx.mjs
 
       - name: Build
+        working-directory: repo
         run: npm run build
 
       - name: Remove one-time cleanup runner
+        working-directory: repo
         run: |
           rm -f scripts/project-cleanup.mjs
           rm -f .github/workflows/project-cleanup.yml
 
       - name: Commit cleaned project
+        working-directory: repo
         run: |
           git config user.name "userfx-cleanup"
           git config user.email "userfx-cleanup@users.noreply.github.com"
