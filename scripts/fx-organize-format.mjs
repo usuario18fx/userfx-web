@@ -1,159 +1,116 @@
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import prettier from "prettier";
+import postcss from "postcss";
+import ts from "typescript";
 
 const ROOT = process.cwd();
+const DIRECT_INDENT = "          ";
+const SKIP_DIRS = new Set([".git", ".vercel", "dist", "node_modules"]);
 
-const files = {
-  app: path.join(ROOT, "app.jsx"),
-  main: path.join(ROOT, "main.jsx"),
-  vaultCss: path.join(ROOT, "components", "VaultHome", "VaultHome.css"),
-  vaultMobile: path.join(ROOT, "components", "VaultHome", "mobile-polish.css"),
-  deviceTsx: path.join(ROOT, "components", "VaultDevice", "VaultDevice.tsx"),
-  deviceCss: path.join(ROOT, "components", "VaultDevice", "VaultDevice.css"),
-  deviceMobile: path.join(ROOT, "components", "VaultDevice", "VaultDevice.mobile.css"),
-  privateRoomLiveShell: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomLiveShell.tsx"),
-  privateRoomLuxury: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomLuxury.css"),
-  privateRoomUnified: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomUnified.css"),
-  directGateCss: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomDirectGate.css"),
-  directGateButtons: path.join(ROOT, "components", "PrivateRoom", "PrivateRoomDirectGateButtons.css"),
-  legacyAccessModal: path.join(ROOT, "components", "FxAccess", "FxAccessModal"),
-};
-
-function exists(file) {
-  return fs.existsSync(file);
+function filePath(...parts) {
+return path.join(ROOT, ...parts);
 }
 
-function read(file) {
-  return fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "");
+function exists(...parts) {
+return fs.existsSync(filePath(...parts));
 }
 
-function write(file, content) {
-  fs.writeFileSync(file, content.replace(/\r\n/g, "\n").trimEnd() + "\n", "utf8");
+function read(...parts) {
+return fs.readFileSync(filePath(...parts), "utf8").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
 }
 
-function appendCss(target, source, title) {
-  if (!exists(target) || !exists(source)) return false;
-
-  const targetContent = read(target);
-  const sourceContent = read(source);
-  const marker = `/* USER FX · MERGED · ${title} */`;
-
-  if (!targetContent.includes(marker)) {
-    write(
-      target,
-      `${targetContent.trimEnd()}\n\n/*=============================================*/\n${marker}\n/*=============================================*/\n${sourceContent.trim()}\n`,
-    );
-  }
-
-  fs.rmSync(source);
-  return true;
+function writeRelative(relativePath, content) {
+const target = filePath(relativePath);
+fs.mkdirSync(path.dirname(target), { recursive: true });
+fs.writeFileSync(target, content.replace(/\r\n/g, "\n").trimEnd() + "\n", "utf8");
 }
 
-function removeImport(file, importPath) {
-  if (!exists(file)) return;
-  const content = read(file);
-  const escaped = importPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const next = content.replace(new RegExp(`^\\s*import\\s+["']${escaped}["'];?\\s*$`, "gm"), "");
-  write(file, next.replace(/\n{3,}/g, "\n\n"));
+function removeRelative(relativePath) {
+const target = filePath(relativePath);
+if (fs.existsSync(target)) fs.rmSync(target, { recursive: true, force: true });
 }
 
-function compactCss(content) {
-  const directionFor = (property) => {
-    if (property === "top" || property === "bottom") return "⬆️⬇️";
-    if (property === "left" || property === "right") return "⬅️➡️";
-    if (["width", "min-width", "max-width"].includes(property)) return "↔️";
-    if (["height", "min-height", "max-height"].includes(property)) return "↕️";
-    if (property === "transform" || property === "transform-origin") return "↗️";
-    if (property === "font-size") return "↗️ tamaño";
-    if (property === "margin" || property.startsWith("margin-")) return "↔️↕️";
-    if (property === "padding" || property.startsWith("padding-")) return "↔️↕️";
-    return "";
-  };
-
-  return content
-    .split("\n")
-    .map((line) => {
-      let next = line.replace(/\s+$/g, "");
-
-      if (!next.trim().startsWith("/*") && !next.trim().startsWith("//")) {
-        next = next.replace(/^(\s*[.#\w\[\]:>,+~*][^{]*?)\s+\{$/, "$1{");
-      }
-
-      const match = next.match(
-        /^(\s*)(--?[A-Za-z][A-Za-z0-9-]*|[A-Za-z][A-Za-z0-9-]*):\s*(.+?);\s*(\/\*.*\*\/)?$/,
-      );
-      if (!match) return next;
-
-      const [, indent, property, value, existingComment] = match;
-      const icon = directionFor(property);
-      const comment = existingComment || (icon ? `/* ${icon} */` : "");
-      return `${indent}${property}:${value};${comment ? ` ${comment}` : ""}`;
-    })
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n");
+function replaceRequired(source, search, replacement, label) {
+const next = source.replace(search, replacement);
+if (next === source) throw new Error(`Missing expected Telegram block: ${label}`);
+return next;
 }
 
-function walk(dir, result = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (["node_modules", ".git", "dist", ".vercel"].includes(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, result);
-    else result.push(full);
-  }
-  return result;
+function syntheticUsernameHelper() {
+return `function syntheticUsernameForId(id) {\n  const value = String(id || "").trim();\n  return /^\\d{5,20}$/.test(value) ? \`id_\${value}\` : "";\n}\n\nfunction visibleSpecialText(value) {\n  return String(value || "")\n    .replace(/TGMX-([A-HJ-NP-Z2-9]{4})/g, "SPCL-$1")\n    .replace(/\\bTGMX\\b/g, "SPCL")\n    .replace(/@id_(\\d{5,20})\\b/g, "ID $1")\n    .replace(/\\bid_(\\d{5,20})\\b/g, "ID $1");\n}\n`;
 }
 
-console.log("USER FX · 1/4 · Unifying component CSS...");
-appendCss(files.vaultCss, files.vaultMobile, "MOBILE POLISH → VaultHome.css");
-appendCss(files.deviceCss, files.deviceMobile, "MOBILE → VaultDevice.css");
-appendCss(files.privateRoomLuxury, files.privateRoomUnified, "UNIFIED UPDATES → PrivateRoomLuxury.css");
-appendCss(files.directGateCss, files.directGateButtons, "IDENTITY → PrivateRoomDirectGate.css");
-
-removeImport(files.app, "./components/VaultHome/mobile-polish.css");
-removeImport(files.deviceTsx, "./VaultDevice.mobile.css");
-removeImport(files.privateRoomLiveShell, "./PrivateRoomUnified.css");
-removeImport(files.privateRoomLiveShell, "./PrivateRoomDirectGateButtons.css");
-
-if (exists(files.legacyAccessModal)) {
-  fs.rmSync(files.legacyAccessModal, { recursive: true, force: true });
-  console.log("Removed legacy FxAccessModal robot implementation");
+function consolidateTelegram() {
+const corePath = filePath("lib", "telegram", "core.js");
+if (!fs.existsSync(corePath)) {
+console.log("USER FX · Telegram already consolidated.");
+return;
 }
 
-console.log("USER FX · 2/4 · Running Prettier across project code...");
-execFileSync(
-  process.platform === "win32" ? "npx.cmd" : "npx",
-  [
-    "prettier",
-    "--write",
-    "app.jsx",
-    "main.jsx",
-    "index.html",
-    "global.css",
-    "components/**/*.{ts,tsx,js,jsx,css}",
-    "api/**/*.{ts,js}",
-    "lib/**/*.{ts,js}",
-    "public/**/*.{css,js,html}",
-    "scripts/**/*.{js,mjs,ts}",
-    "*.{js,ts,json}",
-  ],
-  { cwd: ROOT, stdio: "inherit" },
+let source = fs.readFileSync(corePath, "utf8").replace(/\r\n/g, "\n");
+
+source = replaceRequired(
+source,
+'const USERFX_SITE_URL = process.env.USERFX_SITE_URL || "https://userfx-web.vercel.app";',
+'const USERFX_SITE_URL = process.env.USERFX_SITE_URL || "https://user18fx.com";',
+"canonical USERFX_SITE_URL",
 );
 
-console.log("USER FX · 3/4 · Applying compact COOL CSS format + adjustment markers...");
-for (const file of walk(ROOT)) {
-  if (!file.endsWith(".css")) continue;
-  write(file, compactCss(read(file)));
-}
+source = replaceRequired(
+source,
+'const adminBot = new Telegraf(ADMIN_BOT_TOKEN);\nbot.telegram.webhookReply = false;',
+`const adminBot = new Telegraf(ADMIN_BOT_TOKEN);\n\n${syntheticUsernameHelper()}\nbot.telegram.webhookReply = false;`,
+"synthetic username helpers",
+);
 
-console.log("USER FX · 4/4 · Done.");
-console.log("Unified:");
-console.log("  mobile-polish.css → components/VaultHome/VaultHome.css");
-console.log("  VaultDevice.mobile.css → components/VaultDevice/VaultDevice.css");
-console.log("  PrivateRoomUnified.css → components/PrivateRoom/PrivateRoomLuxury.css");
-console.log("  PrivateRoomDirectGateButtons.css → components/PrivateRoom/PrivateRoomDirectGate.css");
-console.log("Removed stale:");
-console.log("  components/FxAccess/FxAccessModal/");
-console.log("Formatted:");
-console.log("  TS / TSX / JS / JSX / CSS / HTML across the project");
-console.log("Next: npm run build");
+source = replaceRequired(
+source,
+'  const username = from?.username ? `@${from.username}` : "sin_username";',
+'  const rawUsername = from?.username || syntheticUsernameForId(from?.id);\n  const username = rawUsername ? `@${rawUsername}` : "sin_username";',
+"getUserMeta synthetic username",
+);
+
+source = source.replaceAll(
+'ctx.from?.username || ""',
+'ctx.from?.username || syntheticUsernameForId(ctx.from?.id)',
+);
+
+source = replaceRequired(
+source,
+'  const text = fxGenZRewrite(value);',
+'  const text = fxGenZRewrite(value);',
+"fxBotTone anchor",
+);
+
+source = replaceRequired(
+source,
+'/(<[^>]+>|https?:\\/\\/[^\\s<]+|t\\.me\\/[^\\s<]+|@[A-Za-z0-9_]+|(?:TGMX|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;',
+'/(<[^>]+>|https?:\\/\\/[^\\s<]+|t\\.me\\/[^\\s<]+|@[A-Za-z0-9_]+|\\bid_\\d{5,20}\\b|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;',
+"protected outgoing tokens",
+);
+
+source = replaceRequired(
+source,
+'      button.text = fxBotTone(button.text);',
+'      button.text = visibleSpecialText(fxBotTone(button.text));',
+"button visible special text",
+);
+
+source = replaceRequired(
+source,
+'      nextPayload[field] = fxBotTone(nextPayload[field]);',
+'      nextPayload[field] = visibleSpecialText(fxBotTone(nextPayload[field]));',
+"message visible special text",
+);
+
+source = replaceRequired(
+source,
+'  return fxOriginalUserCallApi(method, nextPayload, signal);',
+`  let nextMethod = method;\n\n  if (\n    method === "sendPhoto" &&\n    typeof nextPayload.photo === "string" &&\n    /\\.mp4(?:\\?|$)/i.test(nextPayload.photo)\n  ) {\n    nextMethod = "sendVideo";\n    nextPayload.video = nextPayload.photo;\n    delete nextPayload.photo;\n  }\n\n  return fxOriginalUserCallApi(nextMethod, nextPayload, signal);`,
+"mp4 media adapter",
+);
+
+source = replaceRequired(
+source,
+`function telegramFxPanelKeyboard(usernameNormalized, mask) {\n  const rows = TELEGRAMFX_FIELDS.map(([, label, bit]) => [\n      Markup.button.callback(\n      \`${"${mask & bit ? \"✔\" : \"✘\"} ${label}"}\`,\n      \`tfx_toggle_${"${usernameNormalized}
