@@ -1,7 +1,8 @@
-          import { Telegraf, Markup } from "telegraf";
+﻿          import { Telegraf, Markup } from "telegraf";
           import Redis from "ioredis";
           import winston from "winston";
           import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
           export const config = {
             api: {
               bodyParser: false,
@@ -312,6 +313,41 @@ const missingEnv = Object.entries(requiredEnv)
 if (missingEnv.length > 0) {
   throw new Error(`Missing required environment variables: ${missingEnv.join(", ")}`);
 }
+
+function getVisitorsSupabase() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Missing Supabase configuration");
+  }
+
+  if (!globalThis.__userfxVisitorsSupabase) {
+    globalThis.__userfxVisitorsSupabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  }
+
+  return globalThis.__userfxVisitorsSupabase;
+}
+
+function maskVisitorIp(value) {
+  const ip = String(value || "").trim();
+
+  if (!ip) return "—";
+
+  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(ip)) {
+    const parts = ip.split(".");
+    return `${parts[0]}.${parts[1]}.xxx.xxx`;
+  }
+
+  if (ip.includes(":")) {
+    return `${ip.split(":").filter(Boolean).slice(0, 2).join(":")}:…`;
+  }
+
+  return "—";
+}
+
 // ======================================================
 // REDIS
 // ======================================================
@@ -1991,6 +2027,96 @@ bot.command("report", async (ctx) => {
     await ctx.reply("✘ ᴇʀʀᴏʀ ɢᴇɴᴇʀᴀᴛɪɴɢ ʀᴇᴘᴏʀᴛ.");
   }
 });
+
+//// USER FX · VISITOR COMMANDS //
+bot.command("visitors", async (ctx) => {
+  if (!isAdmin(ctx)) {
+    await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
+    return;
+  }
+
+  const arg = String(getCommandArg(ctx) || "").trim().toLowerCase();
+  const showFullIp = arg === "full";
+  const requestedLimit = /^\d{1,2}$/.test(arg) ? Number(arg) : 10;
+  const limit = Math.min(Math.max(requestedLimit, 1), 30);
+
+  try {
+    const supabase = getVisitorsSupabase();
+
+    const { data, error } = await supabase
+      .from("track_events")
+      .select("created_at,ip,geo,telegram")
+      .eq("event", "miniapp_open")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    if (!Array.isArray(data) || data.length === 0) {
+      await ctx.reply("📊 ɴᴏ ᴠɪꜱɪᴛᴏʀꜱ ʀᴇᴄᴏʀᴅᴇᴅ.");
+      return;
+    }
+
+    const lines = ["USER FX · VISITORS", ""];
+
+    data.forEach((row, index) => {
+      const telegram = row?.telegram && typeof row.telegram === "object" ? row.telegram : {};
+      const geo = row?.geo && typeof row.geo === "object" ? row.geo : {};
+
+      const user = telegram?.username
+        ? `@${telegram.username}`
+        : telegram?.id
+          ? `TG-${telegram.id}`
+          : "BROWSER";
+
+      const ip = showFullIp
+        ? String(row?.ip || "—")
+        : maskVisitorIp(row?.ip);
+
+      lines.push(`${String(index + 1).padStart(2, "0")} · ${user}`);
+      lines.push(`IP · ${ip}`);
+      lines.push(`${String(geo?.city || "—")}, ${String(geo?.country || "—")}`);
+      lines.push(String(row?.created_at || "—"));
+      lines.push("");
+    });
+
+    await ctx.reply(lines.join("\n"));
+  } catch (error) {
+    logger.error("VISITORS COMMAND ERROR", {
+      message: error?.message || null,
+      stack: error?.stack || null,
+    });
+
+    await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ʟᴏᴀᴅ ᴠɪꜱɪᴛᴏʀꜱ.");
+  }
+});
+
+bot.command("visitorstats", async (ctx) => {
+  if (!isAdmin(ctx)) {
+    await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
+    return;
+  }
+
+  try {
+    const supabase = getVisitorsSupabase();
+
+    const { count, error } = await supabase
+      .from("track_events")
+      .select("*", { count: "exact", head: true })
+      .eq("event", "miniapp_open");
+
+    if (error) throw error;
+
+    await ctx.reply(`VIEW-${String(count ?? 0).padStart(5, "0")}`);
+  } catch (error) {
+    logger.error("VISITORSTATS COMMAND ERROR", {
+      message: error?.message || null,
+    });
+
+    await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ʟᴏᴀᴅ ꜱᴛᴀᴛꜱ.");
+  }
+});
+
 //// ADMIN BOT / MY ID  //
 adminBot.command("myid", async (ctx) => {
   try {
@@ -2497,3 +2623,4 @@ export default async function handler(req, res) {
     });
   }
 }
+
