@@ -274,26 +274,57 @@ async function formatProject() {
   }
 }
 
-function removeStaleFiles() {
-  const stale = [
-    "PrivateRoomDirectGate.CONFLICT-BACKUP.css",
-    "GITIGNORE-ADD.txt",
-    "components/PrivateRoom/PrivateRoomDirectGateButtons.css",
-    "components/PrivateRoom/PrivateRoomUnified.css",
-    "components/VaultHome/mobile-polish.css",
-    "components/VaultDevice/VaultDevice.mobile.css",
+function appendCss(target, source, label) {
+  if (!exists(source)) return false;
+  const current = exists(target) ? read(target).trimEnd() : "";
+  const incoming = read(source).trim();
+  write(target, `${current}\n\n/* ${label} */\n${incoming}`);
+  remove(source);
+  return true;
+}
+
+function removeCssImportEverywhere(basename) {
+  for (const relativePath of walk(".")) {
+    const extension = path.extname(relativePath).toLowerCase();
+    if (!CODE_EXTS.has(extension)) continue;
+    const source = read(relativePath);
+    const next = source
+      .split("\n")
+      .filter((line) => !(line.includes("import") && line.includes(basename)))
+      .join("\n");
+    if (next !== source) write(relativePath, next);
+  }
+}
+
+function unifyCss() {
+  const merges = [
+    ["components/VaultHome/VaultHome.css", "components/VaultHome/mobile-polish.css", "USER FX · MOBILE"],
+    ["components/VaultDevice/VaultDevice.css", "components/VaultDevice/VaultDevice.mobile.css", "USER FX · DEVICE MOBILE"],
+    ["components/PrivateRoom/PrivateRoomLuxury.css", "components/PrivateRoom/PrivateRoomUnified.css", "USER FX · PRIVATE ROOM UNIFIED"],
+    ["components/PrivateRoom/PrivateRoomDirectGate.css", "components/PrivateRoom/PrivateRoomDirectGateButtons.css", "USER FX · DIRECT GATE BUTTONS"],
   ];
-  for (const file of stale) remove(file);
+
+  for (const [target, source, label] of merges) {
+    if (!exists(source)) continue;
+    removeCssImportEverywhere(path.basename(source));
+    appendCss(target, source, label);
+  }
+}
+
+function removeStaleFiles() {
+  for (const file of ["PrivateRoomDirectGate.CONFLICT-BACKUP.css", "GITIGNORE-ADD.txt", "-recuperar"]) remove(file);
 }
 
 async function main() {
-  console.log("USER FX · 1/4 · Consolidating Telegram...");
+  console.log("USER FX · 1/5 · Consolidating Telegram...");
   consolidateTelegram();
-  console.log("USER FX · 2/4 · Removing stale patch/backup files...");
+  console.log("USER FX · 2/5 · Unifying CSS files...");
+  unifyCss();
+  console.log("USER FX · 3/5 · Removing stale patch/backup files...");
   removeStaleFiles();
-  console.log("USER FX · 3/4 · Formatting TS/TSX/JS/JSX/CSS...");
+  console.log("USER FX · 4/5 · Formatting TS/TSX/JS/JSX/CSS...");
   await formatProject();
-  console.log("USER FX · 4/4 · Complete. Run npm run build.");
+  console.log("USER FX · 5/5 · Complete. Run npm run build.");
 }
 
 await main();
