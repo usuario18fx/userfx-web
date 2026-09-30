@@ -2088,7 +2088,29 @@ bot.command("visitors", async (ctx) => {
       lines.push("");
     });
 
-    await ctx.reply(lines.join("\n"));
+    const output = lines.join("\n");
+    const chunks = [];
+    let remaining = output;
+
+    while (remaining.length > 0) {
+      if (remaining.length <= 3500) {
+        chunks.push(remaining);
+        break;
+      }
+
+      let splitAt = remaining.lastIndexOf("\n", 3500);
+
+      if (splitAt <= 0) {
+        splitAt = 3500;
+      }
+
+      chunks.push(remaining.slice(0, splitAt));
+      remaining = remaining.slice(splitAt).trimStart();
+    }
+
+    for (const chunk of chunks) {
+      await ctx.reply(chunk);
+    }
   } catch (error) {
     logger.error("VISITORS COMMAND ERROR", {
       message: error?.message || null,
@@ -2631,6 +2653,7 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
 
 
