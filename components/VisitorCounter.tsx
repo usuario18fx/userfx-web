@@ -5,6 +5,10 @@ type VisitorStats = {
   unique: number;
 };
 
+function formatCounterValue(value: number | null) {
+  return String(Math.max(0, value ?? 0)).padStart(5, "0");
+}
+
 export default function VisitorCounter() {
   const [stats, setStats] = useState<VisitorStats | null>(null);
   const [showUnique, setShowUnique] = useState(false);
@@ -33,13 +37,15 @@ export default function VisitorCounter() {
   }, []);
 
   const value = stats ? (showUnique ? stats.unique : stats.visitors) : null;
-  const label = showUnique ? "Users" : "Views";
+  const label = showUnique ? "USER" : "VIEW";
+  const icon = showUnique ? "/assets/iconos/user.png" : "/assets/iconos/view.png";
+  const formattedValue = `${label}-${formatCounterValue(value)}`;
 
   return (
-    <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((current) => !current)} title={label} aria-label={`${label}: ${value ?? 0}`}>
-      <img src="/assets/iconos/user.png" alt="" aria-hidden="true" className="vx-visitorIcon" draggable={false} />
+    <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((current) => !current)} title={showUnique ? "Unique users" : "Views"} aria-label={formattedValue}>
+      <img src={icon} alt="" aria-hidden="true" className="vx-visitorIcon" draggable={false} />
       <span>
-        {value === null ? "—" : value.toLocaleString("es-ES")}
+        {formattedValue}
       </span>
     </button>
   );
