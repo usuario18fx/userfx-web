@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
+type VisitorStats = {
+  visitors: number;
+  unique: number;
+};
+
 export default function VisitorCounter() {
-  const [count, setCount] = useState<number | null>(null);
+  const [stats, setStats] = useState<VisitorStats | null>(null);
+  const [showUnique, setShowUnique] = useState(false);
 
   useEffect(() => {
     fetch("/api/miniapp-stats")
@@ -10,8 +16,11 @@ export default function VisitorCounter() {
         return res.json();
       })
       .then((data) => {
-        if (data.ok && typeof data.visitors === "number") {
-          setCount(data.visitors);
+        if (data.ok && typeof data.visitors === "number" && typeof data.unique === "number") {
+          setStats({
+            visitors: data.visitors,
+            unique: data.unique,
+          });
           return;
         }
 
@@ -19,15 +28,18 @@ export default function VisitorCounter() {
       })
       .catch((error) => {
         console.error("VisitorCounter:", error);
-        setCount(null);
+        setStats(null);
       });
   }, []);
 
+  const value = stats ? (showUnique ? stats.unique : stats.visitors) : null;
+  const label = showUnique ? "Users" : "Views";
+
   return (
-    <button type="button" className="vx-visitorCount" title="Views" aria-label={`Views: ${count ?? 0}`}>
+    <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((current) => !current)} title={label} aria-label={`${label}: ${value ?? 0}`}>
       <img src="/assets/iconos/user.png" alt="" aria-hidden="true" className="vx-visitorIcon" draggable={false} />
       <span>
-        {count === null ? "—" : count.toLocaleString("es-ES")}
+        {value === null ? "—" : value.toLocaleString("es-ES")}
       </span>
     </button>
   );
