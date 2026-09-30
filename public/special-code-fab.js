@@ -1,29 +1,28 @@
-(() => {
-  const TELEGRAM_IDENTITY_URL = "https://t.me/User18Fx_bot?start=identity";
+          (() => {
+            const TELEGRAM_IDENTITY_URL = "https://t.me/User18Fx_bot?start=identity";
 
-  const READY_MESSAGE =
-    "USERNAME VERIFIED. TAP THE CROWN TO GET YOUR SPECIAL CODE IN TELEGRAM, THEN COME BACK AND ENTER IT HERE.";
+            const READY_MESSAGE = "USERNAME VERIFIED. TAP THE CROWN TO GET YOUR SPECIAL CODE IN TELEGRAM, THEN COME BACK AND ENTER IT HERE.";
 
-  const ACCESS_MESSAGE = "YOU MADE IT! ACCESS IS UNLOCKED — WELCOME TO USER FX.";
+            const ACCESS_MESSAGE = "YOU MADE IT! ACCESS IS UNLOCKED — WELCOME TO USER FX.";
 
-  const crownSvg = `
+            const crownSvg = `
     <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
       <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"></path>
     </svg>`;
 
-  let state = {
-    enabled: false,
-    visible: true,
-  };
+            let state = {
+              enabled: false,
+              visible: true,
+            };
 
-  let syncQueued = false;
+            let syncQueued = false;
 
-  function ensureReadyStyles() {
-    if (document.getElementById("userfx-special-ready-style")) return;
+            function ensureReadyStyles() {
+              if (document.getElementById("userfx-special-ready-style")) return;
 
-    const style = document.createElement("style");
-    style.id = "userfx-special-ready-style";
-    style.textContent = `
+              const style = document.createElement("style");
+              style.id = "userfx-special-ready-style";
+              style.textContent = `
       .smkl-modal__stage.is-special-ready .smkl-telegram-mode-btn {
         pointer-events: none !important;
         opacity: .34 !important;
@@ -227,147 +226,144 @@
       }
     `;
 
-    document.head.appendChild(style);
-  }
+              document.head.appendChild(style);
+            }
 
-  function setButtonMessage(button, message) {
-    const tip = button?.querySelector?.(".smkl-special-code-fab__tip");
-    if (!tip) return;
-    if (tip.textContent !== message) tip.textContent = message;
-  }
+            function setButtonMessage(button, message) {
+              const tip = button?.querySelector?.(".smkl-special-code-fab__tip");
+              if (!tip) return;
+              if (tip.textContent !== message) tip.textContent = message;
+            }
 
-  function setClassState(element, className, enabled) {
-    if (!element) return;
-    const hasClass = element.classList.contains(className);
-    if (hasClass !== enabled) element.classList.toggle(className, enabled);
-  }
+            function setClassState(element, className, enabled) {
+              if (!element) return;
+              const hasClass = element.classList.contains(className);
+              if (hasClass !== enabled) element.classList.toggle(className, enabled);
+            }
 
-  function syncIdentityDigits(stage) {
-    if (!stage) return;
+            function syncIdentityDigits(stage) {
+              if (!stage) return;
 
-    const input = stage.querySelector(".smkl-code-real-input");
-    const digits = Array.from(stage.querySelectorAll(".smkl-code-digit"));
-    if (!input || !digits.length) return;
+              const input = stage.querySelector(".smkl-code-real-input");
+              const digits = Array.from(stage.querySelectorAll(".smkl-code-digit"));
+              if (!input || !digits.length) return;
 
-    const renderDigits = () => {
-      const codePart = String(input.value || "")
-        .toUpperCase()
-        .replace(/^(SPCL|TGMX)-?/i, "")
-        .replace(/[^A-HJ-NP-Z2-9]/g, "")
-        .slice(0, 4);
+              const renderDigits = () => {
+                const codePart = String(input.value || "")
+                  .toUpperCase()
+                  .replace(/^(SPCL|TGMX)-?/i, "")
+                  .replace(/[^A-HJ-NP-Z2-9]/g, "")
+                  .slice(0, 4);
 
-      digits.forEach((digit, index) => {
-        const char = codePart[index] || "";
-        if (digit.textContent !== char) digit.textContent = char;
-        setClassState(digit, "is-filled", Boolean(char));
-      });
-    };
+                digits.forEach((digit, index) => {
+                  const char = codePart[index] || "";
+                  if (digit.textContent !== char) digit.textContent = char;
+                  setClassState(digit, "is-filled", Boolean(char));
+                });
+              };
 
-    if (input.dataset.userfxDigitMirror !== "1") {
-      input.dataset.userfxDigitMirror = "1";
-      input.addEventListener("input", renderDigits);
-      input.addEventListener("change", renderDigits);
-    }
+              if (input.dataset.userfxDigitMirror !== "1") {
+                input.dataset.userfxDigitMirror = "1";
+                input.addEventListener("input", renderDigits);
+                input.addEventListener("change", renderDigits);
+              }
 
-    renderDigits();
-  }
+              renderDigits();
+            }
 
-  function applyReadyUi(stage) {
-    if (!stage) return;
+            function applyReadyUi(stage) {
+              if (!stage) return;
 
-    const accessCleared = Boolean(stage.querySelector(".smkl-form__submit--get-in"));
+              const accessCleared = Boolean(stage.querySelector(".smkl-form__submit--get-in"));
 
-    setClassState(stage, "is-special-ready", state.enabled && !accessCleared);
-    setClassState(stage, "is-access-cleared", accessCleared);
+              setClassState(stage, "is-special-ready", state.enabled && !accessCleared);
+              setClassState(stage, "is-access-cleared", accessCleared);
 
-    const telegramButton = stage.querySelector(".smkl-telegram-mode-btn");
-    if (telegramButton) {
-      const shouldDisableTelegram = state.enabled || accessCleared;
+              const telegramButton = stage.querySelector(".smkl-telegram-mode-btn");
+              if (telegramButton) {
+                const shouldDisableTelegram = state.enabled || accessCleared;
 
-      if (telegramButton.disabled !== shouldDisableTelegram) {
-        telegramButton.disabled = shouldDisableTelegram;
-      }
+                if (telegramButton.disabled !== shouldDisableTelegram) {
+                  telegramButton.disabled = shouldDisableTelegram;
+                }
 
-      telegramButton.setAttribute("aria-disabled", shouldDisableTelegram ? "true" : "false");
+                telegramButton.setAttribute("aria-disabled", shouldDisableTelegram ? "true" : "false");
 
-      if (shouldDisableTelegram) {
-        telegramButton.setAttribute(
-          "title",
-          accessCleared ? "Private access unlocked" : "Telegram username already verified",
-        );
-      }
-    }
+                if (shouldDisableTelegram) {
+                  telegramButton.setAttribute("title", accessCleared ? "Private access unlocked" : "Telegram username already verified");
+                }
+              }
 
-    const typingText = stage.querySelector(".smkl-typing-text");
+              const typingText = stage.querySelector(".smkl-typing-text");
 
-    if (accessCleared) {
-      if (typingText && typingText.textContent !== ACCESS_MESSAGE) {
-        typingText.textContent = ACCESS_MESSAGE;
-      }
-    } else if (state.enabled) {
-      if (typingText && typingText.textContent !== READY_MESSAGE) {
-        typingText.textContent = READY_MESSAGE;
-      }
-    }
+              if (accessCleared) {
+                if (typingText && typingText.textContent !== ACCESS_MESSAGE) {
+                  typingText.textContent = ACCESS_MESSAGE;
+                }
+              } else if (state.enabled) {
+                if (typingText && typingText.textContent !== READY_MESSAGE) {
+                  typingText.textContent = READY_MESSAGE;
+                }
+              }
 
-    syncIdentityDigits(stage);
-  }
+              syncIdentityDigits(stage);
+            }
 
-  function applyState(button) {
-    if (!button) return;
+            function applyState(button) {
+              if (!button) return;
 
-    const shouldHide = !state.visible;
-    const shouldDisable = !state.enabled;
-    const ariaDisabled = state.enabled ? "false" : "true";
+              const shouldHide = !state.visible;
+              const shouldDisable = !state.enabled;
+              const ariaDisabled = state.enabled ? "false" : "true";
 
-    if (button.hidden !== shouldHide) button.hidden = shouldHide;
-    if (button.disabled !== shouldDisable) button.disabled = shouldDisable;
+              if (button.hidden !== shouldHide) button.hidden = shouldHide;
+              if (button.disabled !== shouldDisable) button.disabled = shouldDisable;
 
-    setClassState(button, "is-ready", state.enabled);
-    setClassState(button, "is-locked", !state.enabled);
+              setClassState(button, "is-ready", state.enabled);
+              setClassState(button, "is-locked", !state.enabled);
 
-    if (button.getAttribute("aria-disabled") !== ariaDisabled) {
-      button.setAttribute("aria-disabled", ariaDisabled);
-    }
+              if (button.getAttribute("aria-disabled") !== ariaDisabled) {
+                button.setAttribute("aria-disabled", ariaDisabled);
+              }
 
-    setButtonMessage(button, state.enabled ? "GET SPECIAL CODE" : "VERIFY USERNAME FIRST");
-  }
+              setButtonMessage(button, state.enabled ? "GET SPECIAL CODE" : "VERIFY USERNAME FIRST");
+            }
 
-  function openSpecialCode(event) {
-    const button = event.currentTarget;
-    if (!state.enabled || button.disabled) return;
+            function openSpecialCode(event) {
+              const button = event.currentTarget;
+              if (!state.enabled || button.disabled) return;
 
-    setButtonMessage(button, "OPENING TELEGRAM...");
-    setClassState(button, "is-ready", false);
+              setButtonMessage(button, "OPENING TELEGRAM...");
+              setClassState(button, "is-ready", false);
 
-    try {
-      localStorage.setItem("userfx_identity_return", "1");
-    } catch {}
+              try {
+                localStorage.setItem("userfx_identity_return", "1");
+              } catch {}
 
-    window.open(TELEGRAM_IDENTITY_URL, "_blank", "noopener,noreferrer");
+              window.open(TELEGRAM_IDENTITY_URL, "_blank", "noopener,noreferrer");
 
-    window.setTimeout(() => {
-      if (state.enabled) {
-        setClassState(button, "is-ready", true);
-        setButtonMessage(button, "GET SPECIAL CODE");
-      }
-    }, 1800);
-  }
+              window.setTimeout(() => {
+                if (state.enabled) {
+                  setClassState(button, "is-ready", true);
+                  setButtonMessage(button, "GET SPECIAL CODE");
+                }
+              }, 1800);
+            }
 
-  function syncFloatingButton() {
-    ensureReadyStyles();
+            function syncFloatingButton() {
+              ensureReadyStyles();
 
-    const stage = document.querySelector(".smkl-modal__stage");
-    if (!stage) return;
+              const stage = document.querySelector(".smkl-modal__stage");
+              if (!stage) return;
 
-    let button = stage.querySelector(".smkl-special-code-fab");
+              let button = stage.querySelector(".smkl-special-code-fab");
 
-    if (!button) {
-      button = document.createElement("button");
-      button.type = "button";
-      button.className = "smkl-special-code-fab is-locked";
-      button.setAttribute("aria-label", "Get special code");
-      button.innerHTML = `${crownSvg}<span class="smkl-special-code-fab__tip">VERIFY USERNAME FIRST</span>`;
+              if (!button) {
+                button = document.createElement("button");
+                button.type = "button";
+                button.className = "smkl-special-code-fab is-locked";
+                button.setAttribute("aria-label", "Get special code");
+                button.innerHTML = `${crownSvg}<span class="smkl-special-code-fab__tip">VERIFY USERNAME FIRST</span>`;
       button.addEventListener("click", openSpecialCode);
       stage.appendChild(button);
     }

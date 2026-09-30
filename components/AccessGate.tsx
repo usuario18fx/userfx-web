@@ -1,146 +1,132 @@
-import { useState, useEffect } from "react";
-import VaultHome from "./VaultHome/VaultHome";
+          import { useState, useEffect } from "react";
+          import VaultHome from "./VaultHome/VaultHome";
 
-const STORAGE_KEY = "vault_unlocked";
-const MAX_ATTEMPTS = 5;
+          const STORAGE_KEY = "vault_unlocked";
+          const MAX_ATTEMPTS = 5;
 
-export default function AccessGate() {
-  const [prefix, setPrefix] = useState("");
-  const [suffix, setSuffix] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [attempts, setAttempts] = useState(0);
+          export default function AccessGate() {
+            const [prefix, setPrefix] = useState("");
+            const [suffix, setSuffix] = useState("");
+            const [unlocked, setUnlocked] = useState(false);
+            const [checking, setChecking] = useState(true);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState("");
+            const [attempts, setAttempts] = useState(0);
 
-  // La sesión del servidor es la fuente principal de verdad.
-  // sessionStorage queda solo como reflejo local del estado autenticado.
-  useEffect(() => {
-    let cancelled = false;
+            // La sesión del servidor es la fuente principal de verdad.
+            // sessionStorage queda solo como reflejo local del estado autenticado.
+            useEffect(() => {
+              let cancelled = false;
 
-    async function bootstrapSession() {
-      try {
-        const res = await fetch("/api/access-session", {
-          method: "GET",
-          credentials: "same-origin",
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-        });
+              async function bootstrapSession() {
+                try {
+                  const res = await fetch("/api/access-session", {
+                    method: "GET",
+                    credentials: "same-origin",
+                    headers: { Accept: "application/json" },
+                    cache: "no-store",
+                  });
 
-        const data = await res.json().catch(() => null);
+                  const data = await res.json().catch(() => null);
 
-        if (!cancelled && res.ok && data?.authenticated === true) {
-          sessionStorage.setItem(STORAGE_KEY, "true");
-          setUnlocked(true);
-        } else if (!cancelled) {
-          sessionStorage.removeItem(STORAGE_KEY);
-          setUnlocked(false);
-        }
-      } catch {
-        if (!cancelled) {
-          // No conceder acceso únicamente por un valor local si el servidor no pudo validarlo.
-          sessionStorage.removeItem(STORAGE_KEY);
-          setUnlocked(false);
-        }
-      } finally {
-        if (!cancelled) setChecking(false);
-      }
+                  if (!cancelled && res.ok && data?.authenticated === true) {
+                    sessionStorage.setItem(STORAGE_KEY, "true");
+                    setUnlocked(true);
+                  } else if (!cancelled) {
+                    sessionStorage.removeItem(STORAGE_KEY);
+                    setUnlocked(false);
+                  }
+                } catch {
+                  if (!cancelled) {
+                    // No conceder acceso únicamente por un valor local si el servidor no pudo validarlo.
+                    sessionStorage.removeItem(STORAGE_KEY);
+                    setUnlocked(false);
+                  }
+                } finally {
+                  if (!cancelled) setChecking(false);
+                }
 
-      fetch("/api/miniapp-track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          initData: window.Telegram?.WebApp?.initData || "",
-        }),
-      }).catch(() => {});
-    }
+                fetch("/api/miniapp-track", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    initData: window.Telegram?.WebApp?.initData || "",
+                  }),
+                }).catch(() => {});
+              }
 
-    bootstrapSession();
+              bootstrapSession();
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+              return () => {
+                cancelled = true;
+              };
+            }, []);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+            async function handleSubmit(e: React.FormEvent) {
+              e.preventDefault();
 
-    if (attempts >= MAX_ATTEMPTS) {
-      setError("Demasiados intentos. Recarga la página.");
-      return;
-    }
+              if (attempts >= MAX_ATTEMPTS) {
+                setError("Demasiados intentos. Recarga la página.");
+                return;
+              }
 
-    setLoading(true);
-    setError("");
+              setLoading(true);
+              setError("");
 
-    try {
-      const res = await fetch("/api/verify", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prefix, suffix }),
-      });
-      const data = await res.json();
+              try {
+                const res = await fetch("/api/verify", {
+                  method: "POST",
+                  credentials: "same-origin",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ prefix, suffix }),
+                });
+                const data = await res.json();
 
-      if (data.ok) {
-        sessionStorage.setItem(STORAGE_KEY, "true");
-        setUnlocked(true);
-      } else {
-        setAttempts((n) => n + 1);
-        setError(data.error || "Código inválido");
-        setSuffix("");
-      }
-    } catch {
-      setError("Error de conexión");
-    } finally {
-      setLoading(false);
-    }
-  }
+                if (data.ok) {
+                  sessionStorage.setItem(STORAGE_KEY, "true");
+                  setUnlocked(true);
+                } else {
+                  setAttempts((n) => n + 1);
+                  setError(data.error || "Código inválido");
+                  setSuffix("");
+                }
+              } catch {
+                setError("Error de conexión");
+              } finally {
+                setLoading(false);
+              }
+            }
 
-  if (checking) return null;
+            if (checking) return null;
 
-  if (unlocked) return <VaultHome />;
+            if (unlocked) return <VaultHome />;
 
-  return (
-    <div className="access-gate">
-      <style>{GATE_CSS}</style>
-      <form onSubmit={handleSubmit}>
-        <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
-        <p className="access-gate__kicker">𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT</p>
-        <div className="access-gate__inputs">
-          <input
-            value={prefix}
-            onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-            placeholder="PREFIX"
-            maxLength={4}
-            autoCapitalize="characters"
-            autoComplete="off"
-            disabled={loading || attempts >= MAX_ATTEMPTS}
-          />
-          <input
-            value={suffix}
-            onChange={(e) => setSuffix(e.target.value.toUpperCase())}
-            placeholder="SUFFIX"
-            maxLength={4}
-            autoCapitalize="characters"
-            autoComplete="off"
-            disabled={loading || attempts >= MAX_ATTEMPTS}
-          />
-        </div>
-        <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
-          {loading ? "Verificando..." : "Entrar"}
-        </button>
-        {error && (
-          <p role="alert" className="access-error">
-            {error}
-          </p>
-        )}
-      </form>
-    </div>
-  );
-}
+            return (
+              <div className="access-gate">
+                <style>{GATE_CSS}</style>
+                <form onSubmit={handleSubmit}>
+                  <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
+                  <p className="access-gate__kicker">
+                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT
+                  </p>
+                  <div className="access-gate__inputs">
+                    <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+                    <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+                  </div>
+                  <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
+                    {loading ? "Verificando..." : "Entrar"}
+                  </button>
+                  {error && (
+                    <p role="alert" className="access-error">
+                      {error}
+                    </p>
+                  )}
+                </form>
+              </div>
+            );
+          }
 
-const GATE_CSS = `
+          const GATE_CSS = `
 .access-gate{
   display:flex;
   align-items:center;

@@ -1,94 +1,88 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import "./PrivateRoomRoutePage.css";
+          import { useEffect, useState } from "react";
+          import { createPortal } from "react-dom";
+          import "./PrivateRoomRoutePage.css";
 
-const CONTACTS = [
-  {name:"@User18Fx",status:"FRIEND · ONLINE",preview:"Private message thread",initials:"FX"},
-  {name:"@GreenGrower",status:"MEMBER · OFFLINE",preview:"No new messages",initials:"GG"},
-];
+          const CONTACTS = [
+            { name: "@User18Fx", status: "FRIEND · ONLINE", preview: "Private message thread", initials: "FX" },
+            { name: "@GreenGrower", status: "MEMBER · OFFLINE", preview: "No new messages", initials: "GG" },
+          ];
 
-function openMembership() {
-  document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
-}
+          function openMembership() {
+            document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
+          }
 
-export default function PrivateRoomBuzon() {
-  const [target,setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
-  const [chatLocked,setChatLocked] = useState(false);
+          export default function PrivateRoomBuzon() {
+            const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
+            const [chatLocked, setChatLocked] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+            useEffect(() => {
+              let cancelled = false;
 
-    fetch("/api/access-session",{
-      method:"GET",
-      headers:{Accept:"application/json"},
-      credentials:"same-origin",
-      cache:"no-store",
-    })
-      .then((response) => response.json())
-      .then((session) => {
-        if (cancelled) return;
-        setChatLocked(Boolean(session?.authenticated && (session?.accessLabel === "SPCL" || session?.memberAccess === true)));
-      })
-      .catch(() => {
-        if (!cancelled) setChatLocked(false);
-      });
+              fetch("/api/access-session", {
+                method: "GET",
+                headers: { Accept: "application/json" },
+                credentials: "same-origin",
+                cache: "no-store",
+              })
+                .then((response) => response.json())
+                .then((session) => {
+                  if (cancelled) return;
+                  setChatLocked(Boolean(session?.authenticated && (session?.accessLabel === "SPCL" || session?.memberAccess === true)));
+                })
+                .catch(() => {
+                  if (!cancelled) setChatLocked(false);
+                });
 
-    return () => {
-      cancelled = true;
-    };
-  },[]);
+              return () => {
+                cancelled = true;
+              };
+            }, []);
 
-  if (!target) {
-    window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
-  }
+            if (!target) {
+              window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
+            }
 
-  if (!target) return null;
+            if (!target) return null;
 
-  return createPortal(
-    <section className="pvr-route-page pvr-buzon-route" aria-label="Private Room mailbox">
-      <header className="pvr-route-page-head">
-        <div>
-          <span>
-            USER FX · PRIVATE CONTACTS
-          </span>
-          <h1>
-            BUZON
-          </h1>
-        </div>
-        <button type="button" onClick={() => { window.location.hash = "#/private-room"; }}>
-          MYROOM
-        </button>
-      </header>
-      <div className="pvr-buzon-layout">
-        <aside className="pvr-buzon-contacts">
-          <header>
-            <strong>
-              MESSAGES
-            </strong>
-            <span>
-              {CONTACTS.length}
-            </span>
-          </header>
-          {CONTACTS.map((contact) => (
-            <button key={contact.name} type="button" className="pvr-buzon-contact-card" disabled={chatLocked}>
-              <span className="pvr-buzon-contact-avatar">
-                {contact.initials}
-              </span>
-              <span>
-                <strong>
-                  {contact.name}
-                </strong>
-                <small>
-                  {chatLocked ? "Paid membership required" : contact.preview}
-                </small>
-              </span>
-              <i>
-                {chatLocked ? "LOCKED" : contact.status}
-              </i>
-            </button>
-          ))}
-        </aside>
-        <section className={`pvr-buzon-chat${chatLocked ? " is-locked" : ""}`}>
+            return createPortal(
+              <section className="pvr-route-page pvr-buzon-route" aria-label="Private Room mailbox">
+                <header className="pvr-route-page-head">
+                  <div>
+                    <span>
+                    USER FX · PRIVATE CONTACTS
+                    </span>
+                    <h1>
+                    BUZON
+                    </h1>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.hash = "#/private-room";
+                    }}>
+                    MYROOM
+                  </button>
+                </header>
+                <div className="pvr-buzon-layout">
+                  <aside className="pvr-buzon-contacts">
+                    <header>
+                      <strong>
+                      MESSAGES
+                      </strong>
+                      <span>{CONTACTS.length}</span>
+                    </header>
+                    {CONTACTS.map((contact) => (
+                      <button key={contact.name} type="button" className="pvr-buzon-contact-card" disabled={chatLocked}>
+                        <span className="pvr-buzon-contact-avatar">{contact.initials}</span>
+                        <span>
+                          <strong>{contact.name}</strong>
+                          <small>{chatLocked ? "Paid membership required" : contact.preview}</small>
+                        </span>
+                        <i>{chatLocked ? "LOCKED" : contact.status}</i>
+                      </button>
+                    ))}
+                  </aside>
+                  <section className={`pvr-buzon-chat${chatLocked ? " is-locked" : ""}`}>
           <div className="pvr-buzon-chat-empty">
             {chatLocked ? (
               <>
@@ -101,13 +95,13 @@ export default function PrivateRoomBuzon() {
                   </span>
                 </button>
                 <span>
-                  PAID FEATURE
+                PAID FEATURE
                 </span>
                 <strong>
-                  CHAT LOCKED
+                CHAT LOCKED
                 </strong>
                 <p>
-                  SPCL access can enter the Private Room, but private chat requires a paid membership.
+                SPCL access can enter the Private Room, but private chat requires a paid membership.
                 </p>
                 <button type="button" className="pvr-buzon-unlock" onClick={openMembership}>
                   VIEW MEMBERSHIP
@@ -116,13 +110,13 @@ export default function PrivateRoomBuzon() {
             ) : (
               <>
                 <span>
-                  PRIVATE MESSAGES
+                PRIVATE MESSAGES
                 </span>
                 <strong>
-                  SELECT A CONTACT
+                SELECT A CONTACT
                 </strong>
                 <p>
-                  Your conversations with RoomFX members will appear here.
+                Your conversations with RoomFX members will appear here.
                 </p>
               </>
             )}

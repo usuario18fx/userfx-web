@@ -1,147 +1,149 @@
-import { useCallback, useEffect, useState } from "react";
-import "./PrivateRoomTopNav.css";
+          import { useCallback, useEffect, useState } from "react";
+          import "./PrivateRoomTopNav.css";
 
-const HOME_URL = "https://user18fx.com";
+          const HOME_URL = "https://user18fx.com";
 
-const NAV_ITEMS = [
-  {label:"INICIO",route:HOME_URL,external:true},
-  {label:"MYROOM",route:"#/private-room"},
-  {label:"STAGE",route:"#/private-room/stage"},
-  {label:"GALLERY",route:"#/private-room/gallery"},
-  {label:"BUZON",route:"#/private-room/buzon"},
-] as const;
+          const NAV_ITEMS = [
+            { label: "INICIO", route: HOME_URL, external: true },
+            { label: "MYROOM", route: "#/private-room" },
+            { label: "STAGE", route: "#/private-room/stage" },
+            { label: "GALLERY", route: "#/private-room/gallery" },
+            { label: "BUZON", route: "#/private-room/buzon" },
+          ] as const;
 
-function cameraIsLive() {
-  const indicator = document.querySelector<HTMLElement>(".pvr-account-online");
-  return Boolean(indicator && !indicator.classList.contains("is-offline"));
-}
+          function cameraIsLive() {
+            const indicator = document.querySelector<HTMLElement>(".pvr-account-online");
+            return Boolean(indicator && !indicator.classList.contains("is-offline"));
+          }
 
-function openProfile() {
-  const launcher = document.querySelector<HTMLButtonElement>(".pvr-account-launcher");
-  if (launcher && !launcher.classList.contains("is-open")) launcher.click();
-}
+          function openProfile() {
+            const launcher = document.querySelector<HTMLButtonElement>(".pvr-account-launcher");
+            if (launcher && !launcher.classList.contains("is-open")) launcher.click();
+          }
 
-function openCamera() {
-  window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
-}
+          function openCamera() {
+            window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
+          }
 
-function openMembership() {
-  document.querySelector<HTMLButtonElement>(".buttonupgrade")?.click();
-}
+          function openMembership() {
+            document.querySelector<HTMLButtonElement>(".buttonupgrade")?.click();
+          }
 
-function openRewards() {
-  window.dispatchEvent(new CustomEvent("userfx:open-rewards"));
-}
+          function openRewards() {
+            window.dispatchEvent(new CustomEvent("userfx:open-rewards"));
+          }
 
-function clearLocalAccessState() {
-  try {
-    ["vault_unlocked","vault_plan","userfx_access_code","memberAccess"].forEach((key) => sessionStorage.removeItem(key));
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith("userfx_browser_handoff:")) sessionStorage.removeItem(key);
-    });
-  } catch {
-  }
-}
+          function clearLocalAccessState() {
+            try {
+              ["vault_unlocked", "vault_plan", "userfx_access_code", "memberAccess"].forEach((key) => sessionStorage.removeItem(key));
+              Object.keys(sessionStorage).forEach((key) => {
+                if (key.startsWith("userfx_browser_handoff:")) sessionStorage.removeItem(key);
+              });
+            } catch {}
+          }
 
-function isExternalNavItem(item: (typeof NAV_ITEMS)[number]): item is Extract<(typeof NAV_ITEMS)[number], { external: true }> {
-  return "external" in item && item.external;
-}
+          function isExternalNavItem(item: (typeof NAV_ITEMS)[number]): item is Extract<(typeof NAV_ITEMS)[number], { external: true }> {
+            return "external" in item && item.external;
+          }
 
-async function logout() {
-  try {
-    await fetch("/api/access-session",{
-      method:"DELETE",
-      headers:{Accept:"application/json"},
-      credentials:"same-origin",
-      cache:"no-store",
-    });
-  } catch {
-  }
+          async function logout() {
+            try {
+              await fetch("/api/access-session", {
+                method: "DELETE",
+                headers: { Accept: "application/json" },
+                credentials: "same-origin",
+                cache: "no-store",
+              });
+            } catch {}
 
-  clearLocalAccessState();
-  window.location.assign(HOME_URL);
-}
+            clearLocalAccessState();
+            window.location.assign(HOME_URL);
+          }
 
-async function openInBrowser() {
-  try {
-    const response = await fetch("/api/handoff",{
-      method:"POST",
-      headers:{Accept:"application/json"},
-      credentials:"same-origin",
-      cache:"no-store",
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data?.url) return;
-    const telegram = window.Telegram?.WebApp;
-    if (typeof telegram?.openLink === "function") {
-      telegram.openLink(data.url);
-      return;
-    }
-    window.open(data.url,"_blank","noopener,noreferrer");
-  } catch {
-  }
-}
+          async function openInBrowser() {
+            try {
+              const response = await fetch("/api/handoff", {
+                method: "POST",
+                headers: { Accept: "application/json" },
+                credentials: "same-origin",
+                cache: "no-store",
+              });
+              const data = await response.json().catch(() => ({}));
+              if (!response.ok || !data?.url) return;
+              const telegram = window.Telegram?.WebApp;
+              if (typeof telegram?.openLink === "function") {
+                telegram.openLink(data.url);
+                return;
+              }
+              window.open(data.url, "_blank", "noopener,noreferrer");
+            } catch {}
+          }
 
-export default function PrivateRoomTopNav() {
-  const [route,setRoute] = useState(() => window.location.hash || "#/private-room");
-  const [accessCode,setAccessCode] = useState("PRIVATE ACCESS");
-  const [cameraLive,setCameraLive] = useState(false);
-  const [insideTelegram,setInsideTelegram] = useState(false);
+          export default function PrivateRoomTopNav() {
+            const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
+            const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
+            const [cameraLive, setCameraLive] = useState(false);
+            const [insideTelegram, setInsideTelegram] = useState(false);
 
-  const readLiveState = useCallback(() => {
-    const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
-    if (access) setAccessCode(access);
-    setCameraLive(cameraIsLive());
-  },[]);
+            const readLiveState = useCallback(() => {
+              const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
+              if (access) setAccessCode(access);
+              setCameraLive(cameraIsLive());
+            }, []);
 
-  useEffect(() => {
-    const handleHashChange = () => setRoute(window.location.hash || "#/private-room");
-    window.addEventListener("hashchange",handleHashChange);
-    return () => window.removeEventListener("hashchange",handleHashChange);
-  },[]);
+            useEffect(() => {
+              const handleHashChange = () => setRoute(window.location.hash || "#/private-room");
+              window.addEventListener("hashchange", handleHashChange);
+              return () => window.removeEventListener("hashchange", handleHashChange);
+            }, []);
 
-  useEffect(() => {
-    setInsideTelegram(Boolean(window.Telegram?.WebApp?.initData));
-  },[]);
+            useEffect(() => {
+              setInsideTelegram(Boolean(window.Telegram?.WebApp?.initData));
+            }, []);
 
-  useEffect(() => {
-    readLiveState();
-    const observer = new MutationObserver(readLiveState);
-    observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});
-    return () => observer.disconnect();
-  },[readLiveState]);
+            useEffect(() => {
+              readLiveState();
+              const observer = new MutationObserver(readLiveState);
+              observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class"] });
+              return () => observer.disconnect();
+            }, [readLiveState]);
 
-  function navigate(item:(typeof NAV_ITEMS)[number]) {
-    if (item.label === "GALLERY" && cameraLive) return;
-    if (isExternalNavItem(item)) {
-      window.location.assign(item.route);
-      return;
-    }
-    window.location.hash = item.route;
-  }
+            function navigate(item: (typeof NAV_ITEMS)[number]) {
+              if (item.label === "GALLERY" && cameraLive) return;
+              if (isExternalNavItem(item)) {
+                window.location.assign(item.route);
+                return;
+              }
+              window.location.hash = item.route;
+            }
 
-  return (
-    <header className="pvr-club-nav pvr-club-nav--unified">
-      <div className="pvr-club-nav-inner">
-        <button type="button" className="pvr-club-brand" onClick={() => { window.location.hash = "#/private-room"; }}>
-          <span className="pvr-club-brand-mark">
-            FX
-          </span>
-          <span className="pvr-club-brand-copy">
-            <strong>
-              MY ROOM
-            </strong>
-            <small>
-              PRIVATE CLUB
-            </small>
-          </span>
-        </button>
-        <nav className="pvr-club-tabs" aria-label="Private Room navigation">
-          {NAV_ITEMS.map((item) => {
-            const galleryLocked = item.label === "GALLERY" && cameraLive;
-            const isExternal = isExternalNavItem(item);
             return (
-              <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
+              <header className="pvr-club-nav pvr-club-nav--unified">
+                <div className="pvr-club-nav-inner">
+                  <button
+                    type="button"
+                    className="pvr-club-brand"
+                    onClick={() => {
+                      window.location.hash = "#/private-room";
+                    }}>
+                    <span className="pvr-club-brand-mark">
+                    FX
+                    </span>
+                    <span className="pvr-club-brand-copy">
+                      <strong>
+                      MY ROOM
+                      </strong>
+                      <small>
+                      PRIVATE CLUB
+                      </small>
+                    </span>
+                  </button>
+                  <nav className="pvr-club-tabs" aria-label="Private Room navigation">
+                    {NAV_ITEMS.map((item) => {
+                      const galleryLocked = item.label === "GALLERY" && cameraLive;
+                      const isExternal = isExternalNavItem(item);
+                      return (
+                        <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
                 {item.label}
               </button>
             );
@@ -150,11 +152,9 @@ export default function PrivateRoomTopNav() {
         <div className="pvr-club-actions">
           <button type="button" className="pvr-club-code" onClick={openProfile}>
             <span>
-              MEMBER ACCESS
+            MEMBER ACCESS
             </span>
-            <strong>
-              {accessCode}
-            </strong>
+            <strong>{accessCode}</strong>
           </button>
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={openCamera}>
             <span />
@@ -176,7 +176,7 @@ export default function PrivateRoomTopNav() {
               <span className="pvr-reward-coin" />
             </span>
             <span className="pvr-reward-text">
-              Rewards
+            Rewards
             </span>
           </button>
           <button type="button" className="pvr-club-profile" onClick={openProfile}>

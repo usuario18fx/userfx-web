@@ -1,74 +1,69 @@
-import crypto from "crypto";
-import Redis from "ioredis";
+          import crypto from "crypto";
+          import Redis from "ioredis";
 
-const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE =
-  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
-const SESSION_COOKIE = "userfx_vault_session";
+          const REDIS_URL = process.env.REDIS_URL;
+          const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+          const SESSION_COOKIE = "userfx_vault_session";
 
-const MAX_ATTEMPTS = 5;
-const WINDOW_SECONDS = 15 * 60;
+          const MAX_ATTEMPTS = 5;
+          const WINDOW_SECONDS = 15 * 60;
 
-const BASIC_SESSION_SECONDS = 12 * 60 * 60;
-const PRO_SESSION_SECONDS = 24 * 60 * 60;
-const VIP_SESSION_SECONDS = 7 * 24 * 60 * 60;
+          const BASIC_SESSION_SECONDS = 12 * 60 * 60;
+          const PRO_SESSION_SECONDS = 24 * 60 * 60;
+          const VIP_SESSION_SECONDS = 7 * 24 * 60 * 60;
 
-const PREFIX_TO_PLAN = Object.freeze({
-  BSIC: "basic",
-  PRX0: "pro",
-  VIPX: "vip",
-});
+          const PREFIX_TO_PLAN = Object.freeze({
+            BSIC: "basic",
+            PRX0: "pro",
+            VIPX: "vip",
+          });
 
-const PLAN_ACCESS_LIMITS = Object.freeze({
-  basic: 1,
-  pro: 10,
-  vip: null,
-});
+          const PLAN_ACCESS_LIMITS = Object.freeze({
+            basic: 1,
+            pro: 10,
+            vip: null,
+          });
 
-const PLAN_TO_ACCESS_MODE = Object.freeze({
-  basic: "single_entry",
-  pro: "ten_entries",
-  vip: "unlimited_entries",
-});
+          const PLAN_TO_ACCESS_MODE = Object.freeze({
+            basic: "single_entry",
+            pro: "ten_entries",
+            vip: "unlimited_entries",
+          });
 
-function getRedis() {
-  if (!REDIS_URL) {
-    throw new Error("Missing REDIS_URL");
-  }
+          function getRedis() {
+            if (!REDIS_URL) {
+              throw new Error("Missing REDIS_URL");
+            }
 
-  if (!globalThis.__userfxRedis) {
-    globalThis.__userfxRedis = new Redis(REDIS_URL, {
-      lazyConnect: true,
-      enableReadyCheck: false,
-      maxRetriesPerRequest: 1,
-      connectTimeout: 10000,
-    });
+            if (!globalThis.__userfxRedis) {
+              globalThis.__userfxRedis = new Redis(REDIS_URL, {
+                lazyConnect: true,
+                enableReadyCheck: false,
+                maxRetriesPerRequest: 1,
+                connectTimeout: 10000,
+              });
 
-    globalThis.__userfxRedis.on("error", (error) => {
-      console.error("[verify/redis]", error.message);
-    });
-  }
+              globalThis.__userfxRedis.on("error", (error) => {
+                console.error("[verify/redis]", error.message);
+              });
+            }
 
-  return globalThis.__userfxRedis;
-}
+            return globalThis.__userfxRedis;
+          }
 
-function hashValue(value) {
-  return crypto.createHash("sha256").update(String(value)).digest("hex");
-}
+          function hashValue(value) {
+            return crypto.createHash("sha256").update(String(value)).digest("hex");
+          }
 
-function getClientIp(req) {
-  return String(
-    req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown",
-  )
-    .split(",")[0]
-    .trim();
-}
+          function getClientIp(req) {
+            return String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown")
+              .split(",")[0]
+              .trim();
+          }
 
-function createWatermarkId(fullCode) {
-  const prefix = String(fullCode || "").split("-")[0] || "USER";
-  const fingerprint = hashValue(`watermark:${fullCode}`)
-    .slice(0, 8)
-    .toUpperCase();
+          function createWatermarkId(fullCode) {
+            const prefix = String(fullCode || "").split("-")[0] || "USER";
+            const fingerprint = hashValue(`watermark:${fullCode}`).slice(0, 8).toUpperCase();
 
   return `${prefix}-${fingerprint}`;
 }
@@ -96,19 +91,11 @@ function getSessionSeconds(planId) {
 function getAccessState(record, planId) {
   const maxAccesses = PLAN_ACCESS_LIMITS[planId];
   const parsedUsedAccesses = Number(record.usedAccesses);
-  const fallbackUsedAccesses =
-    normalizeCodeStatus(record.status) === "consumed" &&
-    Number.isFinite(maxAccesses)
-      ? maxAccesses
-      : 0;
+  const fallbackUsedAccesses = normalizeCodeStatus(record.status) === "consumed" && Number.isFinite(maxAccesses) ? maxAccesses : 0;
 
-  const usedAccesses = Number.isFinite(parsedUsedAccesses)
-    ? Math.max(0, Math.floor(parsedUsedAccesses))
-    : fallbackUsedAccesses;
+  const usedAccesses = Number.isFinite(parsedUsedAccesses) ? Math.max(0, Math.floor(parsedUsedAccesses)) : fallbackUsedAccesses;
 
-  const remainingAccesses = Number.isFinite(maxAccesses)
-    ? Math.max(0, maxAccesses - usedAccesses)
-    : null;
+  const remainingAccesses = Number.isFinite(maxAccesses) ? Math.max(0, maxAccesses - usedAccesses) : null;
 
   return {
     maxAccesses,
@@ -151,12 +138,7 @@ function isSecureRequest(req) {
 }
 
 function serializeSessionCookie(req, token, maxAge) {
-  const parts = [
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-  ];
+  const parts = [`${SESSION_COOKIE}=${encodeURIComponent(token)}`, "Path=/", "HttpOnly", "SameSite=Lax"];
 
   if (isSecureRequest(req)) {
     parts.push("Secure");
@@ -169,17 +151,7 @@ function serializeSessionCookie(req, token, maxAge) {
   return parts.join("; ");
 }
 
-async function createAccessSession({
-  redis,
-  req,
-  res,
-  redisKey,
-  rawRecord,
-  record,
-  fullCode,
-  planId,
-  accessState,
-}) {
+async function createAccessSession({ redis, req, res, redisKey, rawRecord, record, fullCode, planId, accessState }) {
   const token = crypto.randomBytes(32).toString("base64url");
   const sessionHash = hashValue(token);
   const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
@@ -187,18 +159,13 @@ async function createAccessSession({
   const sessionExpiresAt = Date.now() + sessionSeconds * 1000;
   const accessMode = PLAN_TO_ACCESS_MODE[planId];
   const usedAccesses = accessState.usedAccesses + 1;
-  const remainingAccesses = Number.isFinite(accessState.maxAccesses)
-    ? Math.max(0, accessState.maxAccesses - usedAccesses)
-    : null;
+  const remainingAccesses = Number.isFinite(accessState.maxAccesses) ? Math.max(0, accessState.maxAccesses - usedAccesses) : null;
   const usedAt = new Date().toISOString();
   const watermarkId = createWatermarkId(fullCode);
 
   const updatedRecord = {
     ...record,
-    status:
-      remainingAccesses === 0 && accessState.maxAccesses !== null
-        ? "consumed"
-        : "active",
+    status: remainingAccesses === 0 && accessState.maxAccesses !== null ? "consumed" : "active",
     watermarkId,
     maxAccesses: accessState.maxAccesses,
     usedAccesses,
@@ -242,14 +209,14 @@ async function createAccessSession({
   const result = Number(
     await redis.eval(
       `
-        local current = redis.call("GET", KEYS[1])
-        if not current then return 0 end
-        if current ~= ARGV[1] then return -1 end
-        redis.call("SET", KEYS[1], ARGV[2])
-        redis.call("SET", KEYS[2], ARGV[3], "EX", tonumber(ARGV[4]))
-        redis.call("SET", KEYS[3], ARGV[5])
-        return 1
-      `,
+                  local current = redis.call("GET", KEYS[1])
+                  if not current then return 0 end
+                  if current ~= ARGV[1] then return -1 end
+                  redis.call("SET", KEYS[1], ARGV[2])
+                  redis.call("SET", KEYS[2], ARGV[3], "EX", tonumber(ARGV[4]))
+                  redis.call("SET", KEYS[3], ARGV[5])
+                  return 1
+                `,
       3,
       redisKey,
       sessionKey,
@@ -270,10 +237,7 @@ async function createAccessSession({
   }
 
   const persistentMaxAge = planId === "vip" ? sessionSeconds : undefined;
-  res.setHeader(
-    "Set-Cookie",
-    serializeSessionCookie(req, token, persistentMaxAge),
-  );
+  res.setHeader("Set-Cookie", serializeSessionCookie(req, token, persistentMaxAge));
 
   return {
     ok: true,
@@ -403,19 +367,13 @@ export default async function handler(req, res) {
       await recordFailedAttempt(redis, ip);
       return res.status(401).json({
         ok: false,
-        error:
-          status === "consumed"
-            ? "This code has no accesses remaining."
-            : "This code is no longer active.",
+        error: status === "consumed" ? "This code has no accesses remaining." : "This code is no longer active.",
       });
     }
 
     const accessState = getAccessState(record, recordPlanId);
 
-    if (
-      accessState.remainingAccesses !== null &&
-      accessState.remainingAccesses <= 0
-    ) {
+    if (accessState.remainingAccesses !== null && accessState.remainingAccesses <= 0) {
       await recordFailedAttempt(redis, ip);
       return res.status(401).json({
         ok: false,

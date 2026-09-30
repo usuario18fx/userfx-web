@@ -1,80 +1,71 @@
-import crypto from "crypto";
-import Redis from "ioredis";
+          import crypto from "crypto";
+          import Redis from "ioredis";
 
-const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
-const SESSION_COOKIE = "userfx_vault_session";
-const HANDOFF_TTL_SECONDS = 5 * 60;
-const CANONICAL_ORIGIN = String(process.env.USERFX_CANONICAL_URL || "https://user18fx.com").replace(
-  /\/$/,
-  "",
-);
+          const REDIS_URL = process.env.REDIS_URL;
+          const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+          const SESSION_COOKIE = "userfx_vault_session";
+          const HANDOFF_TTL_SECONDS = 5 * 60;
+          const CANONICAL_ORIGIN = String(process.env.USERFX_CANONICAL_URL || "https://user18fx.com").replace(/\/$/, "");
 
-function getRedis() {
-  if (!REDIS_URL) throw new Error("Missing REDIS_URL");
+          function getRedis() {
+            if (!REDIS_URL) throw new Error("Missing REDIS_URL");
 
-  if (!globalThis.__userfxRedis) {
-    globalThis.__userfxRedis = new Redis(REDIS_URL, {
-      lazyConnect: true,
-      enableReadyCheck: false,
-      maxRetriesPerRequest: 1,
-      connectTimeout: 10000,
-    });
+            if (!globalThis.__userfxRedis) {
+              globalThis.__userfxRedis = new Redis(REDIS_URL, {
+                lazyConnect: true,
+                enableReadyCheck: false,
+                maxRetriesPerRequest: 1,
+                connectTimeout: 10000,
+              });
 
-    globalThis.__userfxRedis.on("error", (error) => {
-      console.error("[handoff/redis]", error.message);
-    });
-  }
+              globalThis.__userfxRedis.on("error", (error) => {
+                console.error("[handoff/redis]", error.message);
+              });
+            }
 
-  return globalThis.__userfxRedis;
-}
+            return globalThis.__userfxRedis;
+          }
 
-function hashValue(value) {
-  return crypto.createHash("sha256").update(String(value)).digest("hex");
-}
+          function hashValue(value) {
+            return crypto.createHash("sha256").update(String(value)).digest("hex");
+          }
 
-function parseCookies(header) {
-  return String(header || "")
-    .split(";")
-    .reduce((cookies, part) => {
-      const separator = part.indexOf("=");
-      if (separator < 0) return cookies;
+          function parseCookies(header) {
+            return String(header || "")
+              .split(";")
+              .reduce((cookies, part) => {
+                const separator = part.indexOf("=");
+                if (separator < 0) return cookies;
 
-      const name = part.slice(0, separator).trim();
-      const value = part.slice(separator + 1).trim();
-      if (!name) return cookies;
+                const name = part.slice(0, separator).trim();
+                const value = part.slice(separator + 1).trim();
+                if (!name) return cookies;
 
-      try {
-        cookies[name] = decodeURIComponent(value);
-      } catch {
-        cookies[name] = value;
-      }
+                try {
+                  cookies[name] = decodeURIComponent(value);
+                } catch {
+                  cookies[name] = value;
+                }
 
-      return cookies;
-    }, {});
-}
+                return cookies;
+              }, {});
+          }
 
-function getSessionToken(req) {
-  const cookies = parseCookies(req.headers.cookie);
-  const token = String(cookies[SESSION_COOKIE] || "");
-  return /^[A-Za-z0-9_-]{40,64}$/.test(token) ? token : "";
-}
+          function getSessionToken(req) {
+            const cookies = parseCookies(req.headers.cookie);
+            const token = String(cookies[SESSION_COOKIE] || "");
+            return /^[A-Za-z0-9_-]{40,64}$/.test(token) ? token : "";
+          }
 
-function isSecureRequest(req) {
-  const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
-    .split(",")[0]
-    .trim();
-  return process.env.NODE_ENV === "production" || forwardedProto === "https";
-}
+          function isSecureRequest(req) {
+            const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
+              .split(",")[0]
+              .trim();
+            return process.env.NODE_ENV === "production" || forwardedProto === "https";
+          }
 
-function serializeSessionCookie(req, token, maxAge) {
-  const parts = [
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    `Max-Age=${Math.max(0, Math.floor(maxAge))}`,
-  ];
+          function serializeSessionCookie(req, token, maxAge) {
+            const parts = [`${SESSION_COOKIE}=${encodeURIComponent(token)}`, "Path=/", "HttpOnly", "SameSite=Lax", `Max-Age=${Math.max(0, Math.floor(maxAge))}`];
 
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
@@ -147,11 +138,11 @@ export default async function handler(req, res) {
 
     const rawRecord = await redis.eval(
       `
-        local current = redis.call("GET", KEYS[1])
-        if not current then return false end
-        redis.call("DEL", KEYS[1])
-        return current
-      `,
+                  local current = redis.call("GET", KEYS[1])
+                  if not current then return false end
+                  redis.call("DEL", KEYS[1])
+                  return current
+                `,
       1,
       handoffKey,
     );

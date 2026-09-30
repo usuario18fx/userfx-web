@@ -1,94 +1,77 @@
-import crypto from "crypto";
-import Redis from "ioredis";
-import { ensureAccount } from "../lib/account.js";
-import {
-  getTelegramFxAccess,
-  hasTelegramFxAccess,
-  normalizeTelegramUsername,
-} from "../lib/telegram/access.js";
+          import crypto from "crypto";
+          import Redis from "ioredis";
+          import { ensureAccount } from "../lib/account.js";
+          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
 
-const REDIS_URL = process.env.REDIS_URL;
-const CODE_ENGINE_NAMESPACE =
-  process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
-const SESSION_COOKIE = "userfx_vault_session";
-const IDENTITY_COOKIE = "userfx_identity_session";
-const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
+          const REDIS_URL = process.env.REDIS_URL;
+          const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+          const SESSION_COOKIE = "userfx_vault_session";
+          const IDENTITY_COOKIE = "userfx_identity_session";
+          const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
 
-function getRedis() {
-  if (!REDIS_URL) {
-    throw new Error("Missing REDIS_URL");
-  }
+          function getRedis() {
+            if (!REDIS_URL) {
+              throw new Error("Missing REDIS_URL");
+            }
 
-  if (!globalThis.__userfxRedis) {
-    globalThis.__userfxRedis = new Redis(REDIS_URL, {
-      lazyConnect: true,
-      enableReadyCheck: false,
-      maxRetriesPerRequest: 1,
-      connectTimeout: 10000,
-    });
+            if (!globalThis.__userfxRedis) {
+              globalThis.__userfxRedis = new Redis(REDIS_URL, {
+                lazyConnect: true,
+                enableReadyCheck: false,
+                maxRetriesPerRequest: 1,
+                connectTimeout: 10000,
+              });
 
-    globalThis.__userfxRedis.on("error", (error) => {
-      console.error("[access-session/redis]", error.message);
-    });
-  }
+              globalThis.__userfxRedis.on("error", (error) => {
+                console.error("[access-session/redis]", error.message);
+              });
+            }
 
-  return globalThis.__userfxRedis;
-}
+            return globalThis.__userfxRedis;
+          }
 
-function hashValue(value) {
-  return crypto.createHash("sha256").update(String(value)).digest("hex");
-}
+          function hashValue(value) {
+            return crypto.createHash("sha256").update(String(value)).digest("hex");
+          }
 
-function parseCookies(header) {
-  return String(header || "")
-    .split(";")
-    .reduce((cookies, part) => {
-      const separator = part.indexOf("=");
-      if (separator < 0) return cookies;
+          function parseCookies(header) {
+            return String(header || "")
+              .split(";")
+              .reduce((cookies, part) => {
+                const separator = part.indexOf("=");
+                if (separator < 0) return cookies;
 
-      const name = part.slice(0, separator).trim();
-      const value = part.slice(separator + 1).trim();
-      if (!name) return cookies;
+                const name = part.slice(0, separator).trim();
+                const value = part.slice(separator + 1).trim();
+                if (!name) return cookies;
 
-      try {
-        cookies[name] = decodeURIComponent(value);
-      } catch {
-        cookies[name] = value;
-      }
+                try {
+                  cookies[name] = decodeURIComponent(value);
+                } catch {
+                  cookies[name] = value;
+                }
 
-      return cookies;
-    }, {});
-}
+                return cookies;
+              }, {});
+          }
 
-function isSecureRequest(req) {
-  const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
-    .split(",")[0]
-    .trim();
+          function isSecureRequest(req) {
+            const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
+              .split(",")[0]
+              .trim();
 
-  return process.env.NODE_ENV === "production" || forwardedProto === "https";
-}
+            return process.env.NODE_ENV === "production" || forwardedProto === "https";
+          }
 
-function serializeSessionCookie(req, token, maxAge) {
-  const parts = [
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    `Max-Age=${Math.max(0, Math.floor(maxAge))}`,
-  ];
+          function serializeSessionCookie(req, token, maxAge) {
+            const parts = [`${SESSION_COOKIE}=${encodeURIComponent(token)}`, "Path=/", "HttpOnly", "SameSite=Lax", `Max-Age=${Math.max(0, Math.floor(maxAge))}`];
 
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
 }
 
 function clearSessionCookie(req) {
-  const parts = [
-    `${SESSION_COOKIE}=`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    "Max-Age=0",
-  ];
+  const parts = [`${SESSION_COOKIE}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
 
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
@@ -113,11 +96,7 @@ async function readIdentitySession(redis, req) {
   try {
     const record = JSON.parse(raw);
 
-    if (
-      record?.purpose !== "telegram_identity_session" ||
-      !record?.userId ||
-      !record?.telegramUsername
-    ) {
+    if (record?.purpose !== "telegram_identity_session" || !record?.userId || !record?.telegramUsername) {
       return null;
     }
 
@@ -167,16 +146,11 @@ async function attachPersistentAccount(redis, sessionKey, session) {
   const nextSession = {
     ...session,
     accountId: account.accountId,
-    telegramUserId:
-      session?.telegramUserId || session?.userId || account.telegramUserId || null,
+    telegramUserId: session?.telegramUserId || session?.userId || account.telegramUserId || null,
   };
 
   if (sessionKey) {
-    await redis.set(
-      sessionKey,
-      JSON.stringify(nextSession),
-      "KEEPTTL",
-    );
+    await redis.set(sessionKey, JSON.stringify(nextSession), "KEEPTTL");
   }
 
   return nextSession;
@@ -228,9 +202,7 @@ export default async function handler(req, res) {
       const token = crypto.randomBytes(32).toString("base64url");
       const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${hashValue(token)}`;
       const createdAt = new Date().toISOString();
-      const expiresAt = new Date(
-        Date.now() + IDENTITY_ACCESS_SECONDS * 1000,
-      ).toISOString();
+      const expiresAt = new Date(Date.now() + IDENTITY_ACCESS_SECONDS * 1000).toISOString();
 
       const session = {
         accountId: account.accountId,
@@ -249,17 +221,9 @@ export default async function handler(req, res) {
         expiresAt,
       };
 
-      await redis.set(
-        sessionKey,
-        JSON.stringify(session),
-        "EX",
-        IDENTITY_ACCESS_SECONDS,
-      );
+      await redis.set(sessionKey, JSON.stringify(session), "EX", IDENTITY_ACCESS_SECONDS);
 
-      res.setHeader(
-        "Set-Cookie",
-        serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS),
-      );
+      res.setHeader("Set-Cookie", serializeSessionCookie(req, token, IDENTITY_ACCESS_SECONDS));
 
       return res.status(200).json({
         ok: true,

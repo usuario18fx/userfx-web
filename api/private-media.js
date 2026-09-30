@@ -1,33 +1,33 @@
-import crypto from "node:crypto";
-import { Readable } from "node:stream";
-import { get } from "@vercel/blob";
-import sharp from "sharp";
-import { readVaultSession } from "../lib/vault-session.js";
+          import crypto from "node:crypto";
+          import { Readable } from "node:stream";
+          import { get } from "@vercel/blob";
+          import sharp from "sharp";
+          import { readVaultSession } from "../lib/vault-session.js";
 
-const PLAN_LEVEL = Object.freeze({
-  basic: 1,
-  pro: 2,
-  vip: 3,
-});
+          const PLAN_LEVEL = Object.freeze({
+            basic: 1,
+            pro: 2,
+            vip: 3,
+          });
 
-const PREFIX_TO_PLAN = Object.freeze({
-  BSIC: "basic",
-  PRX0: "pro",
-  VIPX: "vip",
-});
+          const PREFIX_TO_PLAN = Object.freeze({
+            BSIC: "basic",
+            PRX0: "pro",
+            VIPX: "vip",
+          });
 
-const PLAN_TO_PREFIX = Object.freeze({
-  basic: "BSIC",
-  pro: "PRX0",
-  vip: "VIPX",
-});
+          const PLAN_TO_PREFIX = Object.freeze({
+            basic: "BSIC",
+            pro: "PRX0",
+            vip: "VIPX",
+          });
 
-const WATERMARK_PLANS = new Set(["pro", "vip"]);
+          const WATERMARK_PLANS = new Set(["pro", "vip"]);
 
-const PRIVATE_PATH_PATTERN = /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
+          const PRIVATE_PATH_PATTERN = /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
 
-function getRequestedPathname(req) {
-  const origin = `https://${req.headers.host || "userfx.local"}`;
+          function getRequestedPathname(req) {
+            const origin = `https://${req.headers.host || "userfx.local"}`;
   const url = new URL(req.url || "/api/private-media", origin);
 
   return String(url.searchParams.get("pathname") || "").trim();
@@ -52,12 +52,7 @@ function getWatermarkId(session) {
 }
 
 function escapeXml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
 
 function buildWatermarkSvg(width, height, watermarkId) {
@@ -81,19 +76,19 @@ function buildWatermarkSvg(width, height, watermarkId) {
   }
 
   return Buffer.from(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="${safeWidth}" height="${safeHeight}" viewBox="0 0 ${safeWidth} ${safeHeight}">
-      <style>
-        text {
-          fill: rgba(18, 18, 18, 0.20);
-          font-family: Arial, Helvetica, sans-serif;
-          font-size: ${fontSize}px;
-          font-weight: 500;
-          letter-spacing: 0.02em;
-        }
-      </style>
-      ${marks}
-    </svg>
-  `);
+              <svg xmlns="http://www.w3.org/2000/svg" width="${safeWidth}" height="${safeHeight}" viewBox="0 0 ${safeWidth} ${safeHeight}">
+                <style>
+                  text {
+                    fill: rgba(18, 18, 18, 0.20);
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: ${fontSize}px;
+                    font-weight: 500;
+                    letter-spacing: 0.02em;
+                  }
+                </style>
+                ${marks}
+              </svg>
+            `);
 }
 
 async function streamToBuffer(stream) {

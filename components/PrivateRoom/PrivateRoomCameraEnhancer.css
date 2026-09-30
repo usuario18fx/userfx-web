@@ -1,54 +1,397 @@
 /* ═══════════ USER FX · CAMERA ENHANCER ═══════════ */
-.pvr-camera-media-controls{position:absolute;z-index:7;left:50%;bottom:12px;display:flex;align-items:stretch;overflow:visible;transform:translateX(-50%);border:3px solid #090909;border-radius:10px;background:#1d1d1d;box-shadow:0 8px 18px rgba(0,0,0,.46)}
-.pvr-camera-media-controls button{position:relative;width:58px;height:38px;padding:0;display:grid;place-items:center;border:0;border-top:1px solid #4e4d4d;border-right:1px solid #111;background:linear-gradient(to bottom,#333333,#242323);color:#090909;cursor:pointer;box-shadow:0 9px 4px 1px rgba(0,0,0,.18);transition:background .12s linear,box-shadow .12s linear,transform .12s ease}
-.pvr-camera-media-controls button:first-child{border-radius:6px 0 0 6px}
-.pvr-camera-media-controls button:last-child{border-right:0;border-radius:0 6px 6px 0}
-.pvr-camera-media-controls button span{font-size:14px;font-weight:900;line-height:1;text-shadow:-1px -1px 1px rgba(224,224,224,.10),0 2px 3px rgba(0,0,0,.30)}
-.pvr-camera-media-controls button[data-camera-action="pause"] span{font-size:19px;letter-spacing:-4px;transform:translateX(-1px)}
-.pvr-camera-media-controls button[data-camera-action="settings"] span{font-size:17px;letter-spacing:0;transform:none}
-.pvr-camera-media-controls button[data-camera-action="flash"] span{font-size:16px;letter-spacing:0;transform:none}
-.pvr-camera-media-controls button:disabled{cursor:not-allowed;opacity:.24}
-.pvr-camera-media-controls button.is-active{border-top-color:transparent;background:#1d1d1d;color:#cae2fd;box-shadow:inset 0 2px 5px rgba(0,0,0,.52),0 0 0 1px rgba(0,0,0,.40);transform:translateY(1px)}
-.pvr-camera-media-controls button[data-camera-action="flash"].is-active{color:#fff7bb;box-shadow:inset 0 2px 5px rgba(0,0,0,.52),0 0 14px rgba(255,244,157,.34)}
-.pvr-camera-media-controls button.is-active span{text-shadow:0 0 5px #cae2fd,0 0 12px #cae2fd,0 0 16px rgba(93,167,255,.48)}
-.pvr-camera-studio.is-live-camera{border:5px solid rgba(255,255,255,.94)!important;box-shadow:0 0 0 1px rgba(255,255,255,.95),0 0 28px rgba(255,255,255,.34),0 28px 80px #000000bd!important}
-.pvr-camera-studio.is-live-camera .pvr-camera-preview{box-shadow:inset 0 0 22px rgba(255,255,255,.12)}
-.pvr-camera-device-menu{position:absolute;z-index:8;right:14px;bottom:62px;width:min(260px,calc(100% - 28px));padding:10px;border:1px solid #b18d4d66;border-radius:8px;background:#08090bea;box-shadow:0 12px 28px #00000099;backdrop-filter:blur(10px)}
-.pvr-camera-device-menu[hidden]{display:none}
-.pvr-camera-device-menu>span{display:block;margin-bottom:7px;color:#d6b66f;font-family:"Cinzel",serif;font-size:7px;font-weight:800;letter-spacing:.11em}
-.pvr-camera-device-menu select{width:100%;height:34px;padding:0 9px;border:1px solid #ffffff18;border-radius:6px;outline:0;background:#101318;color:#e8e3da;font-size:8px;cursor:pointer}
-.pvr-camera-device-menu select:focus{border-color:#b18d4d}
-.pvr-camera-device-menu small{display:block;margin-top:7px;color:#7e776e;font-size:5.5px;letter-spacing:.08em}
-.pvr-myroom-oncam{transition:border-color .2s ease,box-shadow .2s ease}
-.pvr-myroom-oncam.is-live{border-color:rgba(255,255,255,.42)!important;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 24px rgba(255,255,255,.06)}
-.pvr-myroom-oncam.is-live .pvr-myroom-oncam-screen{position:relative;overflow:hidden;border-color:rgba(255,255,255,.5)!important;background:#030404}
-.pvr-myroom-oncam-live-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:brightness(.9) contrast(1.02)}
-.pvr-myroom-oncam-screen.is-online:after{content:"ONLINE";position:absolute;top:9px;right:9px;z-index:3;padding:4px 7px;border:1px solid rgba(121,211,117,.55);border-radius:999px;background:rgba(7,14,8,.76);color:#8ee28a;font-size:6px;font-weight:900;letter-spacing:.13em;box-shadow:0 0 10px rgba(117,226,117,.15)}
-.pvr-myroom-oncam-screen.is-online>span,.pvr-myroom-oncam-screen.is-online>strong,.pvr-myroom-oncam-screen.is-online>small{position:relative;z-index:3;text-shadow:0 1px 8px #000}
-.pvr-myroom-oncam-screen.is-online>strong{color:#fff}
-.pvr-myroom-channel-panel{display:grid;gap:10px;border:1px solid rgba(196,157,87,.34)!important;background:linear-gradient(180deg,#0a0c0fe8,#08090be8)}
-.pvr-myroom-channel-panel>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #ffffff0d}
-.pvr-myroom-channel-panel>header strong{color:#e7e0d6;font-size:8px;letter-spacing:.08em}
-.pvr-myroom-channel-panel>header span{display:grid;place-items:center;min-width:42px;height:20px;padding:0 7px;border-radius:10px;background:#262117;color:#d3b56f;font-size:7px}
-.pvr-myroom-channel-copy{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pvr-myroom-channel-copy strong{color:#d9c292;font-size:7px;letter-spacing:.08em}
-.pvr-myroom-channel-copy span{color:#777067;font-size:5.5px;letter-spacing:.07em;text-align:right}
-.pvr-myroom-channel-progress{height:5px;overflow:hidden;border:1px solid #ffffff10;border-radius:999px;background:#050607}
-.pvr-myroom-channel-progress span{display:block;width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#7c5e2d,#d3b16f);transition:width .3s ease}
-.pvr-myroom-private-meeting{min-height:34px;border:1px solid #ffffff12;border-radius:7px;background:#0d0f12;color:#676159;font-size:6.5px;font-weight:900;letter-spacing:.08em;cursor:not-allowed}
-.pvr-myroom-channel-panel.is-ready{border-color:rgba(121,211,117,.38)!important;box-shadow:0 0 18px rgba(121,211,117,.05)}
-.pvr-myroom-channel-panel.is-ready .pvr-myroom-channel-progress span{background:linear-gradient(90deg,#4d8b52,#82d587)}
-.pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting{border-color:#79d37566;background:linear-gradient(180deg,#17331a,#102313);color:#9de699;cursor:pointer;box-shadow:0 0 14px rgba(121,211,117,.08)}
-.pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting:hover{border-color:#8ee28a;color:#c5f4c2}
-.pvr-onlive-save-notice{position:fixed;inset:0;z-index:16000;display:grid;place-items:center;padding:18px;background:#020304b8;backdrop-filter:blur(10px)}
-.pvr-onlive-save-card{width:min(420px,calc(100vw - 28px));padding:18px;border:1px solid #d7bd8866;border-radius:12px;background:radial-gradient(circle at 50% 0,#26313a55,transparent 42%),linear-gradient(180deg,#0d1217,#080a0d);box-shadow:0 28px 70px #000000bb,0 0 26px #ffffff0a;color:#eae6df}
-.pvr-onlive-save-card>span{display:block;color:#8fa6bd;font-size:6px;font-weight:900;letter-spacing:.16em}
-.pvr-onlive-save-card>strong{display:block;margin-top:7px;color:#f2eee7;font-family:"Cinzel",Georgia,serif;font-size:21px;letter-spacing:.06em}
-.pvr-onlive-save-card>p{margin:9px 0 0;color:#8f8a82;font-size:8px;line-height:1.55}
-.pvr-onlive-save-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding:9px 10px;border:1px solid #ffffff10;border-radius:8px;background:#07090c}
-.pvr-onlive-save-meta span{color:#b9c8d6;font-size:7px;font-weight:800;letter-spacing:.11em}
-.pvr-onlive-save-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:12px}
-.pvr-onlive-save-actions button{min-height:38px;border:1px solid #ffffff16;border-radius:8px;background:#111419;color:#938e86;font-size:7px;font-weight:900;letter-spacing:.09em;cursor:pointer}
-.pvr-onlive-save-actions button:last-child{border-color:#d1b57966;background:linear-gradient(180deg,#d3b16f,#a77e3f);color:#17120b;box-shadow:0 3px 0 #705027}
-.pvr-onlive-save-actions button:hover{filter:brightness(1.08)}
-@media(max-width:700px){.pvr-camera-media-controls{bottom:8px}.pvr-camera-media-controls button{width:46px;height:36px}.pvr-camera-device-menu{right:8px;bottom:54px;width:calc(100% - 16px)}.pvr-camera-studio.is-live-camera{border-width:3px!important}.pvr-onlive-save-card{padding:15px}.pvr-onlive-save-card>strong{font-size:18px}}
+.pvr-camera-media-controls{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:12px;
+  display:flex;
+  align-items:stretch;
+  overflow:visible;
+  transform:translateX(-50%);
+  border:3px solid #090909;
+  border-radius:10px;
+  background:#1d1d1d;
+  box-shadow:0 8px 18px rgba(0, 0, 0, 0.46);
+}
+.pvr-camera-media-controls button{
+  position:relative;
+  width:58px;
+  height:38px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-top:1px solid #4e4d4d;
+  border-right:1px solid #111;
+  background:linear-gradient(to bottom, #333333, #242323);
+  color:#090909;
+  cursor:pointer;
+  box-shadow:0 9px 4px 1px rgba(0, 0, 0, 0.18);
+  transition:
+    background 0.12s linear,
+    box-shadow 0.12s linear,
+    transform 0.12s ease;
+}
+.pvr-camera-media-controls button:first-child{
+  border-radius:6px 0 0 6px;
+}
+.pvr-camera-media-controls button:last-child{
+  border-right:0;
+  border-radius:0 6px 6px 0;
+}
+.pvr-camera-media-controls button span{
+  font-size:14px;
+  font-weight:900;
+  line-height:1;
+  text-shadow:
+    -1px -1px 1px rgba(224, 224, 224, 0.1),
+    0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.pvr-camera-media-controls button[data-camera-action="pause"] span{
+  font-size:19px;
+  letter-spacing:-4px;
+  transform:translateX(-1px);
+}
+.pvr-camera-media-controls button[data-camera-action="settings"] span{
+  font-size:17px;
+  letter-spacing:0;
+  transform:none;
+}
+.pvr-camera-media-controls button[data-camera-action="flash"] span{
+  font-size:16px;
+  letter-spacing:0;
+  transform:none;
+}
+.pvr-camera-media-controls button:disabled{
+  cursor:not-allowed;
+  opacity:0.24;
+}
+.pvr-camera-media-controls button.is-active{
+  border-top-color:transparent;
+  background:#1d1d1d;
+  color:#cae2fd;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.52),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+  transform:translateY(1px);
+}
+.pvr-camera-media-controls button[data-camera-action="flash"].is-active{
+  color:#fff7bb;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.52),
+    0 0 14px rgba(255, 244, 157, 0.34);
+}
+.pvr-camera-media-controls button.is-active span{
+  text-shadow:
+    0 0 5px #cae2fd,
+    0 0 12px #cae2fd,
+    0 0 16px rgba(93, 167, 255, 0.48);
+}
+.pvr-camera-studio.is-live-camera{
+  border:5px solid rgba(255, 255, 255, 0.94) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.95),
+    0 0 28px rgba(255, 255, 255, 0.34),
+    0 28px 80px #000000bd !important;
+}
+.pvr-camera-studio.is-live-camera .pvr-camera-preview{
+  box-shadow:inset 0 0 22px rgba(255, 255, 255, 0.12);
+}
+.pvr-camera-device-menu{
+  position:absolute;
+  z-index:8;
+  right:14px;
+  bottom:62px;
+  width:min(260px, calc(100% - 28px));
+  padding:10px;
+  border:1px solid #b18d4d66;
+  border-radius:8px;
+  background:#08090bea;
+  box-shadow:0 12px 28px #00000099;
+  backdrop-filter:blur(10px);
+}
+.pvr-camera-device-menu[hidden]{
+  display:none;
+}
+.pvr-camera-device-menu > span{
+  display:block;
+  margin-bottom:7px;
+  color:#d6b66f;
+  font-family:"Cinzel", serif;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:0.11em;
+}
+.pvr-camera-device-menu select{
+  width:100%;
+  height:34px;
+  padding:0 9px;
+  border:1px solid #ffffff18;
+  border-radius:6px;
+  outline:0;
+  background:#101318;
+  color:#e8e3da;
+  font-size:8px;
+  cursor:pointer;
+}
+.pvr-camera-device-menu select:focus{
+  border-color:#b18d4d;
+}
+.pvr-camera-device-menu small{
+  display:block;
+  margin-top:7px;
+  color:#7e776e;
+  font-size:5.5px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-oncam{
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.pvr-myroom-oncam.is-live{
+  border-color:rgba(255, 255, 255, 0.42) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 24px rgba(255, 255, 255, 0.06);
+}
+.pvr-myroom-oncam.is-live .pvr-myroom-oncam-screen{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(255, 255, 255, 0.5) !important;
+  background:#030404;
+}
+.pvr-myroom-oncam-live-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scaleX(-1);
+  filter:brightness(0.9) contrast(1.02);
+}
+.pvr-myroom-oncam-screen.is-online:after{
+  content:"ONLINE";
+  position:absolute;
+  top:9px;
+  right:9px;
+  z-index:3;
+  padding:4px 7px;
+  border:1px solid rgba(121, 211, 117, 0.55);
+  border-radius:999px;
+  background:rgba(7, 14, 8, 0.76);
+  color:#8ee28a;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:0.13em;
+  box-shadow:0 0 10px rgba(117, 226, 117, 0.15);
+}
+.pvr-myroom-oncam-screen.is-online > span,
+.pvr-myroom-oncam-screen.is-online > strong,
+.pvr-myroom-oncam-screen.is-online > small{
+  position:relative;
+  z-index:3;
+  text-shadow:0 1px 8px #000;
+}
+.pvr-myroom-oncam-screen.is-online > strong{
+  color:#fff;
+}
+.pvr-myroom-channel-panel{
+  display:grid;
+  gap:10px;
+  border:1px solid rgba(196, 157, 87, 0.34) !important;
+  background:linear-gradient(180deg, #0a0c0fe8, #08090be8);
+}
+.pvr-myroom-channel-panel > header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding-bottom:9px;
+  border-bottom:1px solid #ffffff0d;
+}
+.pvr-myroom-channel-panel > header strong{
+  color:#e7e0d6;
+  font-size:8px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-channel-panel > header span{
+  display:grid;
+  place-items:center;
+  min-width:42px;
+  height:20px;
+  padding:0 7px;
+  border-radius:10px;
+  background:#262117;
+  color:#d3b56f;
+  font-size:7px;
+}
+.pvr-myroom-channel-copy{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.pvr-myroom-channel-copy strong{
+  color:#d9c292;
+  font-size:7px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-channel-copy span{
+  color:#777067;
+  font-size:5.5px;
+  letter-spacing:0.07em;
+  text-align:right;
+}
+.pvr-myroom-channel-progress{
+  height:5px;
+  overflow:hidden;
+  border:1px solid #ffffff10;
+  border-radius:999px;
+  background:#050607;
+}
+.pvr-myroom-channel-progress span{
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg, #7c5e2d, #d3b16f);
+  transition:width 0.3s ease;
+}
+.pvr-myroom-private-meeting{
+  min-height:34px;
+  border:1px solid #ffffff12;
+  border-radius:7px;
+  background:#0d0f12;
+  color:#676159;
+  font-size:6.5px;
+  font-weight:900;
+  letter-spacing:0.08em;
+  cursor:not-allowed;
+}
+.pvr-myroom-channel-panel.is-ready{
+  border-color:rgba(121, 211, 117, 0.38) !important;
+  box-shadow:0 0 18px rgba(121, 211, 117, 0.05);
+}
+.pvr-myroom-channel-panel.is-ready .pvr-myroom-channel-progress span{
+  background:linear-gradient(90deg, #4d8b52, #82d587);
+}
+.pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting{
+  border-color:#79d37566;
+  background:linear-gradient(180deg, #17331a, #102313);
+  color:#9de699;
+  cursor:pointer;
+  box-shadow:0 0 14px rgba(121, 211, 117, 0.08);
+}
+.pvr-myroom-channel-panel.is-ready .pvr-myroom-private-meeting:hover{
+  border-color:#8ee28a;
+  color:#c5f4c2;
+}
+.pvr-onlive-save-notice{
+  position:fixed;
+  inset:0;
+  z-index:16000;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:#020304b8;
+  backdrop-filter:blur(10px);
+}
+.pvr-onlive-save-card{
+  width:min(420px, calc(100vw - 28px));
+  padding:18px;
+  border:1px solid #d7bd8866;
+  border-radius:12px;
+  background:radial-gradient(circle at 50% 0, #26313a55, transparent 42%), linear-gradient(180deg, #0d1217, #080a0d);
+  box-shadow:
+    0 28px 70px #000000bb,
+    0 0 26px #ffffff0a;
+  color:#eae6df;
+}
+.pvr-onlive-save-card > span{
+  display:block;
+  color:#8fa6bd;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:0.16em;
+}
+.pvr-onlive-save-card > strong{
+  display:block;
+  margin-top:7px;
+  color:#f2eee7;
+  font-family:"Cinzel", Georgia, serif;
+  font-size:21px;
+  letter-spacing:0.06em;
+}
+.pvr-onlive-save-card > p{
+  margin:9px 0 0;
+  color:#8f8a82;
+  font-size:8px;
+  line-height:1.55;
+}
+.pvr-onlive-save-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:14px;
+  padding:9px 10px;
+  border:1px solid #ffffff10;
+  border-radius:8px;
+  background:#07090c;
+}
+.pvr-onlive-save-meta span{
+  color:#b9c8d6;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:0.11em;
+}
+.pvr-onlive-save-actions{
+  display:grid;
+  grid-template-columns:1fr 1.25fr;
+  gap:8px;
+  margin-top:12px;
+}
+.pvr-onlive-save-actions button{
+  min-height:38px;
+  border:1px solid #ffffff16;
+  border-radius:8px;
+  background:#111419;
+  color:#938e86;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:0.09em;
+  cursor:pointer;
+}
+.pvr-onlive-save-actions button:last-child{
+  border-color:#d1b57966;
+  background:linear-gradient(180deg, #d3b16f, #a77e3f);
+  color:#17120b;
+  box-shadow:0 3px 0 #705027;
+}
+.pvr-onlive-save-actions button:hover{
+  filter:brightness(1.08);
+}
+@media (max-width: 700px){
+  .pvr-camera-media-controls{
+    bottom:8px;
+  }
+  .pvr-camera-media-controls button{
+    width:46px;
+    height:36px;
+  }
+  .pvr-camera-device-menu{
+    right:8px;
+    bottom:54px;
+    width:calc(100% - 16px);
+  }
+  .pvr-camera-studio.is-live-camera{
+    border-width:3px !important;
+  }
+  .pvr-onlive-save-card{
+    padding:15px;
+  }
+  .pvr-onlive-save-card > strong{
+    font-size:18px;
+  }
+}

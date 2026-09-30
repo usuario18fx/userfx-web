@@ -1,36 +1,36 @@
 /* ====== VAULT ACTIONS · BOTÓN BAJO LAS PUERTAS ====== */
 .fx-access-launcher{
   position:relative;
-  left:auto !important; /* ⬅️➡️ */
-  top:auto !important; /* ⬆️⬇️ */
+  left: auto !important; /* ⬅️➡️ */
+  top: auto !important; /* ⬆️⬇️ */
   z-index:20;
   display:flex;
   justify-content:center;
-  width:100%; /* ↔️ */
-  max-width:100%; /* ↔️ */
-  margin:12px auto 0; /* ↔️↕️ */
-  transform:none !important; /* ↗️ */
+  width: 100%; /* ↔️ */
+  max-width: 100%; /* ↔️ */
+  margin: 12px auto 0; /* ↔️↕️ */
+  transform: none !important; /* ↗️ */
 }
 
 .fx-access-launcher .smkl-access-button{
-  width:min(250px, 78%); /* ↔️ */
-  min-height:46px; /* ↕️ */
-  margin:0 auto; /* ↔️↕️ */
+  width: min(250px, 78%); /* ↔️ */
+  min-height: 46px; /* ↕️ */
+  margin: 0 auto; /* ↔️↕️ */
 }
 
-@media (max-width:700px){
+@media (max-width: 700px){
   .fx-access-launcher{
-    width:100%; /* ↔️ */
-    margin-top:10px; /* ⬆️⬇️ */
+    width: 100%; /* ↔️ */
+    margin-top: 10px; /* ⬆️⬇️ */
   }
 
   .fx-access-launcher .smkl-access-button{
-    width:min(230px, 72vw); /* ↔️ */
-    min-height:44px; /* ↕️ */
+    width: min(230px, 72vw); /* ↔️ */
+    min-height: 44px; /* ↕️ */
   }
 }
 
-@media (prefers-reduced-motion:reduce){
+@media (prefers-reduced-motion: reduce){
   .fx-access-launcher,
   .fx-access-launcher *{
     animation:none !important;

@@ -4,16 +4,16 @@
 .va-identity{
   position:relative;
   z-index:6;
-  width:min(100%, 520px); /* ↔️ */
-  margin:0 auto 18px; /* ↔️↕️ */
+  width: min(100%, 520px); /* ↔️ */
+  margin: 0 auto 18px; /* ↔️↕️ */
   font-family:"JetBrains Mono", ui-monospace, monospace;
 }
 
 .va-identity__label{
   display:block;
-  margin:0 0 8px; /* ↔️↕️ */
+  margin: 0 0 8px; /* ↔️↕️ */
   color:#e7cb7c;
-  font-size:10px; /* ↗️ tamaño */
+  font-size: 10px; /* ↗️ tamaño */
   font-weight:800;
   letter-spacing:0.28em;
   text-align:center;
@@ -23,8 +23,8 @@
   position:relative;
   display:flex;
   align-items:center;
-  width:100%; /* ↔️ */
-  min-height:50px; /* ↕️ */
+  width: 100%; /* ↔️ */
+  min-height: 50px; /* ↕️ */
   border:1px solid #745a27;
   border-radius:2px;
   background:linear-gradient(180deg, #090907, #020302);
@@ -38,19 +38,19 @@
 .va-identity__shell::after{
   content:"";
   position:absolute;
-  left:12px; /* ⬅️➡️ */
-  right:12px; /* ⬅️➡️ */
-  height:1px; /* ↕️ */
+  left: 12px; /* ⬅️➡️ */
+  right: 12px; /* ⬅️➡️ */
+  height: 1px; /* ↕️ */
   pointer-events:none;
 }
 
 .va-identity__shell::before{
-  top:5px; /* ⬆️⬇️ */
+  top: 5px; /* ⬆️⬇️ */
   background:linear-gradient(90deg, transparent, #a77f31, transparent);
 }
 
 .va-identity__shell::after{
-  bottom:5px; /* ⬆️⬇️ */
+  bottom: 5px; /* ⬆️⬇️ */
   background:linear-gradient(90deg, transparent, #5d4820, transparent);
 }
 
@@ -69,25 +69,25 @@
   position:relative;
   z-index:2;
   flex:0 0 auto;
-  padding:0 0 0 16px; /* ↔️↕️ */
+  padding: 0 0 0 16px; /* ↔️↕️ */
   color:#e7cb7c;
-  font-size:14px; /* ↗️ tamaño */
+  font-size: 14px; /* ↗️ tamaño */
   font-weight:900;
 }
 
 .va-identity__input{
   position:relative;
   z-index:2;
-  width:100%; /* ↔️ */
-  min-width:0; /* ↔️ */
-  height:48px; /* ↕️ */
-  padding:0 16px 0 4px; /* ↔️↕️ */
+  width: 100%; /* ↔️ */
+  min-width: 0; /* ↔️ */
+  height: 48px; /* ↕️ */
+  padding: 0 16px 0 4px; /* ↔️↕️ */
   border:0;
   outline:0;
   background:transparent;
   color:#f4eee4;
   font-family:"JetBrains Mono", ui-monospace, monospace;
-  font-size:13px; /* ↗️ tamaño */
+  font-size: 13px; /* ↗️ tamaño */
   font-weight:700;
   letter-spacing:0.08em;
 }
@@ -99,10 +99,10 @@
 
 .va-submitGhost{
   position:absolute;
-  width:1px; /* ↔️ */
-  height:1px; /* ↕️ */
-  padding:0; /* ↔️↕️ */
-  margin:-1px; /* ↔️↕️ */
+  width: 1px; /* ↔️ */
+  height: 1px; /* ↕️ */
+  padding: 0; /* ↔️↕️ */
+  margin: -1px; /* ↔️↕️ */
   overflow:hidden;
   clip:rect(0, 0, 0, 0);
   white-space:nowrap;
@@ -111,23 +111,23 @@
   pointer-events:none;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px){
   .va-identity{
-    width:calc(100% - 18px); /* ↔️ */
-    margin-bottom:14px; /* ↔️↕️ */
+    width: calc(100% - 18px); /* ↔️ */
+    margin-bottom: 14px; /* ↔️↕️ */
   }
 
   .va-identity__label{
-    font-size:9px; /* ↗️ tamaño */
+    font-size: 9px; /* ↗️ tamaño */
     letter-spacing:0.24em;
   }
 
   .va-identity__shell{
-    min-height:48px; /* ↕️ */
+    min-height: 48px; /* ↕️ */
   }
 
   .va-identity__input{
-    height:46px; /* ↕️ */
-    font-size:12px; /* ↗️ tamaño */
+    height: 46px; /* ↕️ */
+    font-size: 12px; /* ↗️ tamaño */
   }
 }

@@ -1,175 +1,128 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+          import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
-import "./PrivateRoomDirectGate.css";
+          import "./PrivateRoomDirectGate.css";
 
+          const ACCESS_CODE_KEY = "userfx_access_code";
 
+          const STORAGE_KEY = "vault_unlocked";
 
-const ACCESS_CODE_KEY = "userfx_access_code";
+          const USERNAME_STORAGE_KEY = "userfx_telegram_username";
 
-const STORAGE_KEY = "vault_unlocked";
+          const MAX_ATTEMPTS = 5;
 
-const USERNAME_STORAGE_KEY = "userfx_telegram_username";
+          const SESSION_CHECK_TIMEOUT_MS = 6000;
 
-const MAX_ATTEMPTS = 5;
+          type DirectGateProps = {
+            children: ReactNode;
+          };
 
-const SESSION_CHECK_TIMEOUT_MS = 6000;
+          type SessionResponse = {
+            ok?: boolean;
 
+            authenticated?: boolean;
 
+            planId?: "basic" | "pro" | "vip";
 
-type DirectGateProps = {
+            telegramUsername?: string;
 
-  children: ReactNode;
+            error?: string;
+          };
 
-};
+          type VerifyResponse = {
+            ok?: boolean;
 
+            planId?: "basic" | "pro" | "vip";
 
+            error?: string;
+          };
 
-type SessionResponse = {
+          type TelegramEligibilityResponse = {
+            ok?: boolean;
 
-  ok?: boolean;
+            eligible?: boolean;
 
-  authenticated?: boolean;
+            username?: string;
 
-  planId?: "basic" | "pro" | "vip";
+            error?: string;
+          };
 
-  telegramUsername?: string;
+          type IdentityResponse = {
+            ok?: boolean;
 
-  error?: string;
+            verified?: boolean;
 
-};
+            username?: string;
 
+            error?: string;
+          };
 
+          type AccessPlanId = "basic" | "pro" | "vip";
 
-type VerifyResponse = {
+          type SecondaryMode = "none" | "code" | "plans";
 
-  ok?: boolean;
+          const ACCESS_PLANS: Array<{
+            id: AccessPlanId;
 
-  planId?: "basic" | "pro" | "vip";
+            name: string;
 
-  error?: string;
+            prefix: "BSIC" | "PRX0" | "VIPX";
 
-};
+            stars: number;
 
+            emoji: string;
+          }> = [
+            {
+              id: "basic",
 
+              name: "BASIC",
 
-type TelegramEligibilityResponse = {
+              prefix: "BSIC",
 
-  ok?: boolean;
+              stars: 350,
 
-  eligible?: boolean;
+              emoji: "🌹",
+            },
 
-  username?: string;
+            {
+              id: "pro",
 
-  error?: string;
+              name: "PRO",
 
-};
+              prefix: "PRX0",
 
+              stars: 750,
 
+              emoji: "🔥",
+            },
 
-type IdentityResponse = {
+            {
+              id: "vip",
 
-  ok?: boolean;
+              name: "VIP",
 
-  verified?: boolean;
+              prefix: "VIPX",
 
-  username?: string;
+              stars: 1500,
 
-  error?: string;
+              emoji: "👑",
+            },
+          ];
 
-};
+          function normalizeTelegramUsername(value: string) {
+            const clean = String(value || "")
+              .trim()
 
+              .replace(/^@+/, "")
 
+              .replace(/[^A-Za-z0-9\_]/g, "")
 
-type AccessPlanId = "basic" | "pro" | "vip";
+              .slice(0, 32);
 
-type SecondaryMode = "none" | "code" | "plans";
-
-
-
-const ACCESS_PLANS: Array<{
-
-  id: AccessPlanId;
-
-  name: string;
-
-  prefix: "BSIC" | "PRX0" | "VIPX";
-
-  stars: number;
-
-  emoji: string;
-
-}> = [
-
-  {
-
-    id: "basic",
-
-    name: "BASIC",
-
-    prefix: "BSIC",
-
-    stars: 350,
-
-    emoji: "🌹",
-
-  },
-
-  {
-
-    id: "pro",
-
-    name: "PRO",
-
-    prefix: "PRX0",
-
-    stars: 750,
-
-    emoji: "🔥",
-
-  },
-
-  {
-
-    id: "vip",
-
-    name: "VIP",
-
-    prefix: "VIPX",
-
-    stars: 1500,
-
-    emoji: "👑",
-
-  },
-
-];
-
-
-
-function normalizeTelegramUsername(value: string) {
-
-  const clean = String(value || "")
-
-    .trim()
-
-    .replace(/^@+/, "")
-
-    .replace(/[^A-Za-z0-9\_]/g, "")
-
-    .slice(0, 32);
-
-
-
-  return clean ? `@${clean}` : "";
-
+            return clean ? `@${clean}` : "";
 }
 
-
-
 function normalizeSpecialSuffix(value: string) {
-
   return String(value || "")
-
     .trim()
 
     .toUpperCase()
@@ -179,13 +132,9 @@ function normalizeSpecialSuffix(value: string) {
     .replace(/[^A-HJ-NP-Z2-9]/g, "")
 
     .slice(0, 4);
-
 }
 
-
-
 export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
-
   const forceGate = typeof window !== "undefined" && window.location.hash === "#/private-room-access";
 
   const [checking, setChecking] = useState(!forceGate);
@@ -232,32 +181,20 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
   const sessionRestoreAttemptedRef = useRef(false);
 
-
-
   function openTelegramLink(url: string) {
-
-    const telegram = window.Telegram?.WebApp as
-
-      { openTelegramLink?: (telegramUrl: string) => void } | undefined;
+    const telegram = window.Telegram?.WebApp as { openTelegramLink?: (telegramUrl: string) => void } | undefined;
 
     if (typeof telegram?.openTelegramLink === "function") {
-
       telegram.openTelegramLink(url);
 
       return;
-
     }
 
     window.open(url, "\_blank", "noopener,noreferrer");
-
   }
 
-
-
   function getTelegramWebAppUsername() {
-    const telegram = window.Telegram?.WebApp as
-      | { initDataUnsafe?: { user?: { username?: string } } }
-      | undefined;
+    const telegram = window.Telegram?.WebApp as { initDataUnsafe?: { user?: { username?: string } } } | undefined;
 
     return normalizeTelegramUsername(telegram?.initDataUnsafe?.user?.username || "");
   }
@@ -286,43 +223,29 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }
 
   function toggleSecondaryMode(nextMode: Exclude<SecondaryMode, "none">) {
-
     setSecondaryMode((current) => (current === nextMode ? "none" : nextMode));
 
     setError("");
-
   }
 
-
-
   async function handleFastPaste() {
-
     try {
-
       const clipboard = await navigator.clipboard.readText();
 
       const clean = String(clipboard || "")
-
         .trim()
 
         .toUpperCase()
 
         .replace(/\s+/g, "");
 
-      const fullCode = clean.match(
-
-        /^(BSIC|PRX0|VIPX|SPCL)-?([A-HJ-NP-Z2-9]{4})$/,
-
-      );
+      const fullCode = clean.match(/^(BSIC|PRX0|VIPX|SPCL)-?([A-HJ-NP-Z2-9]{4})$/);
 
       if (fullCode) {
-
         setPrefix(fullCode[1]);
 
         setSuffix(fullCode[2]);
-
       } else {
-
         const lastFour = clean
 
           .replace(/[^A-HJ-NP-Z2-9]/g, "")
@@ -330,74 +253,56 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
           .slice(-4);
 
         setSuffix(lastFour);
-
       }
 
       setError("");
-
     } catch {
-
       setError("ALLOW CLIPBOARD ACCESS TO PASTE");
-
-    }}
+    }
+  }
 
   /* ─────   LOCAL DEV ACCESS ─────── */
 
   useEffect(() => {
-
     if (!import.meta.env.DEV) return;
 
-    const previewGate =
-
-      new URLSearchParams(window.location.search).get("preview") === "gate" || forceGate;
+    const previewGate = new URLSearchParams(window.location.search).get("preview") === "gate" || forceGate;
 
     setAuthenticated(!previewGate);
 
     setChecking(false);
-
   }, [forceGate]);
 
   /* ─────   SAVED TELEGRAM USERNAME ─────── */
 
   useEffect(() => {
-
     try {
-
       const saved = normalizeTelegramUsername(localStorage.getItem(USERNAME_STORAGE_KEY) || "");
 
       if (saved) {
         setTelegramUsername(saved);
         setUsernameRemembered(true);
       }
-
-    } catch {
-
-    }
-
-    }, []);
+    } catch {}
+  }, []);
 
   /* ═══════════ VERIFIED TRANSITION ═══════════ */
 
   useEffect(() => {
-
     if (!telegramVerified) {
-
       setVerifiedStage("idle");
 
       return;
-
     }
 
     setSecondaryMode("none");
 
     setVerifiedStage("granted");
-
   }, [telegramVerified]);
 
   /* ─────   RETURN FROM TELEGRAM · SPECIAL CODE ─────── */
 
   useEffect(() => {
-
     const params = new URLSearchParams(window.location.search);
 
     if (params.get("identity") !== "1") return;
@@ -405,16 +310,9 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     let savedUsername = "";
 
     try {
-      savedUsername = normalizeTelegramUsername(
-        params.get("username") ||
-          localStorage.getItem(USERNAME_STORAGE_KEY) ||
-          getTelegramWebAppUsername() ||
-          "",
-      );
+      savedUsername = normalizeTelegramUsername(params.get("username") || localStorage.getItem(USERNAME_STORAGE_KEY) || getTelegramWebAppUsername() || "");
     } catch {
-      savedUsername = normalizeTelegramUsername(
-        params.get("username") || getTelegramWebAppUsername() || "",
-      );
+      savedUsername = normalizeTelegramUsername(params.get("username") || getTelegramWebAppUsername() || "");
     }
 
     if (!savedUsername) return;
@@ -428,19 +326,15 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     returningIdentityRef.current = true;
 
     async function restoreTelegramIdentity() {
-
       try {
-
         setTelegramLoading(true);
 
         setTelegramError("");
 
         const response = await fetch(
-
           `/api/telegram-eligibility?username=${encodeURIComponent(savedUsername)}`,
 
           {
-
             method: "GET",
 
             headers: { Accept: "application/json" },
@@ -450,32 +344,18 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
             cache: "no-store",
 
             signal: controller.signal,
-
           },
-
         );
 
-        const data: TelegramEligibilityResponse =
-
-          await response.json().catch(() => ({}));
+        const data: TelegramEligibilityResponse = await response.json().catch(() => ({}));
 
         if (!response.ok || !data?.eligible) {
-
-          throw new Error(
-
-            data?.error || "USERNAME IS NOT ACTIVE IN TELEGRAMFX",
-
-          );
-
+          throw new Error(data?.error || "USERNAME IS NOT ACTIVE IN TELEGRAMFX");
         }
 
         if (cancelled) return;
 
-        const verifiedUsername = normalizeTelegramUsername(
-
-          data.username || savedUsername,
-
-        );
+        const verifiedUsername = normalizeTelegramUsername(data.username || savedUsername);
 
         setTelegramUsername(verifiedUsername);
 
@@ -491,51 +371,24 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
         setSecondaryMode("none");
 
-
-
         try {
-
           localStorage.setItem(USERNAME_STORAGE_KEY, verifiedUsername);
-
         } catch {
-
           /* storage unavailable */
-
         }
-
       } catch (returnError) {
-
         if (!cancelled) {
-
           returningIdentityRef.current = false;
 
           setTelegramVerified(false);
 
-          setTelegramError(
-
-            returnError instanceof Error && returnError.name === "AbortError"
-
-              ? "CONNECTION TIMED OUT · TRY AGAIN"
-
-              : returnError instanceof Error && returnError.message
-
-                ? returnError.message
-
-                : "TELEGRAM IDENTITY CHECK FAILED",
-
-          );
-
+          setTelegramError(returnError instanceof Error && returnError.name === "AbortError" ? "CONNECTION TIMED OUT · TRY AGAIN" : returnError instanceof Error && returnError.message ? returnError.message : "TELEGRAM IDENTITY CHECK FAILED");
         }
-
       } finally {
-
         clearTimeout(timeoutId);
 
         if (!cancelled) {
-
           setTelegramLoading(false);
-
-
 
           const cleanParams = new URLSearchParams(window.location.search);
 
@@ -543,54 +396,41 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
           cleanParams.delete("username");
 
-
-
           const query = cleanParams.toString();
 
-
-
           window.history.replaceState(
-
             {},
 
             "",
 
             `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
-
           );
-
-        }}
-
+        }
+      }
     }
 
     void restoreTelegramIdentity();
 
     return () => {
-
       cancelled = true;
 
       controller.abort();
 
       clearTimeout(timeoutId);
-
     };
-
   }, []);
 
   /* ─────   EXISTING ACCESS SESSION ─────── */
 
   useEffect(() => {
-
     if (import.meta.env.DEV) return;
 
     if (forceGate) {
-
       setAuthenticated(false);
 
       setChecking(false);
 
       return;
-
     }
 
     let cancelled = false;
@@ -600,7 +440,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     const timeoutId = setTimeout(() => controller.abort(), SESSION_CHECK_TIMEOUT_MS);
 
     fetch("/api/access-session", {
-
       method: "GET",
 
       headers: { Accept: "application/json" },
@@ -610,73 +449,50 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
       cache: "no-store",
 
       signal: controller.signal,
-
     })
-
       .then((response) => response.json().then((data: SessionResponse) => ({ response, data })))
 
       .then(({ response, data }) => {
-
         if (cancelled) return;
 
         if (response.ok && data?.authenticated) {
-
           try {
-
             sessionStorage.setItem(STORAGE_KEY, "true");
 
             if (data.planId) sessionStorage.setItem("vault_plan", data.planId);
-
-          } catch {
-
-          }
+          } catch {}
 
           setAuthenticated(true);
-
         } else {
-
           try {
-
             sessionStorage.removeItem(STORAGE_KEY);
-
-          } catch {
-
-          }
+          } catch {}
 
           setAuthenticated(false);
-
         }
-
       })
 
       .catch(() => {
-
         // Cubre tanto fallos de red como el abort por timeout:
 
         // nunca dejamos "checking" colgado indefinidamente.
 
         if (!cancelled) setAuthenticated(false);
-
       })
 
       .finally(() => {
-
         clearTimeout(timeoutId);
 
         if (!cancelled) setChecking(false);
-
       });
 
     return () => {
-
       cancelled = true;
 
       controller.abort();
 
       clearTimeout(timeoutId);
-
     };
-
   }, [forceGate]);
 
   useEffect(() => {
@@ -715,9 +531,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
           return;
         }
 
-        const restoredUsername = normalizeTelegramUsername(
-          sessionData.telegramUsername || identityData.username || "",
-        );
+        const restoredUsername = normalizeTelegramUsername(sessionData.telegramUsername || identityData.username || "");
 
         if (restoredUsername) {
           rememberTelegramUsername(restoredUsername);
@@ -746,60 +560,48 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }, [authenticated, checking, forceGate]);
 
   useEffect(() => {
-
     function closePrefixMenu(event: MouseEvent) {
-
       if (prefixDropdownRef.current && !prefixDropdownRef.current.contains(event.target as Node)) {
-
         setPrefixMenuOpen(false);
-
-      }}
+      }
+    }
 
     function closePrefixMenuOnEscape(event: KeyboardEvent) {
-
       if (event.key === "Escape") {
-
         setPrefixMenuOpen(false);
-
-      }}
+      }
+    }
 
     document.addEventListener("mousedown", closePrefixMenu);
 
     document.addEventListener("keydown", closePrefixMenuOnEscape);
 
     return () => {
-
       document.removeEventListener("mousedown", closePrefixMenu);
 
       document.removeEventListener("keydown", closePrefixMenuOnEscape);
-
     };
-
-    }, []);
+  }, []);
 
   /* ─────   LOCK PRIVATE GATE VIEWPORT ─────── */
 
-useEffect(() => {
+  useEffect(() => {
+    if (checking || authenticated) return;
 
-  if (checking || authenticated) return;
+    if (typeof window === "undefined") return;
 
-  if (typeof window === "undefined") return;
+    const isMobile = window.innerWidth <= 650;
 
-  const isMobile = window.innerWidth <= 650;
+    if (isMobile) return; // en móvil no bloqueamos overflow
 
-  if (isMobile) return; // en móvil no bloqueamos overflow
+    const bodyOverflow = document.body.style.overflow;
 
-  const bodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-  document.body.style.overflow = "hidden";
-
-  return () => {
-
-    document.body.style.overflow = bodyOverflow;
-
-  };
-
-}, [checking, authenticated]);
+    return () => {
+      document.body.style.overflow = bodyOverflow;
+    };
+  }, [checking, authenticated]);
 
   /* ─────   VERIFY CODE ─────── */
 
@@ -833,9 +635,7 @@ useEffect(() => {
 
         if (!rememberedUsername) {
           try {
-            rememberedUsername = normalizeTelegramUsername(
-              localStorage.getItem(USERNAME_STORAGE_KEY) || "",
-            );
+            rememberedUsername = normalizeTelegramUsername(localStorage.getItem(USERNAME_STORAGE_KEY) || "");
           } catch {
             rememberedUsername = "";
           }
@@ -953,11 +753,7 @@ useEffect(() => {
         setAuthenticated(true);
       }, 650);
     } catch (submitError) {
-      setError(
-        submitError instanceof Error && submitError.message
-          ? submitError.message
-          : "CONNECTION ERROR · TRY AGAIN",
-      );
+      setError(submitError instanceof Error && submitError.message ? submitError.message : "CONNECTION ERROR · TRY AGAIN");
     } finally {
       setLoading(false);
     }
@@ -966,12 +762,9 @@ useEffect(() => {
   /* ─────   TELEGRAM USERNAME CHECK ─────── */
 
   async function handleTelegramSubmit(event: FormEvent<HTMLFormElement>) {
-
     event.preventDefault();
 
     if (telegramLoading || specialLoading) return;
-
-
 
     const normalizedUsername = normalizeTelegramUsername(telegramUsername);
 
@@ -979,12 +772,9 @@ useEffect(() => {
 
     returningIdentityRef.current = false;
 
-
-
     /* ───── LOCAL DEV TELEGRAM VERIFY ───── */
 
     if (import.meta.env.DEV && normalizedUsername.toLowerCase() === "@user18fx") {
-
       setTelegramUsername(normalizedUsername);
 
       setTelegramVerified(true);
@@ -998,21 +788,17 @@ useEffect(() => {
       rememberTelegramUsername(normalizedUsername);
 
       return;
-
     }
 
     if (!normalizedUsername) {
-
       setTelegramError("ENTER A VALID TELEGRAM USERNAME");
 
       setTelegramVerified(false);
 
       return;
-
     }
 
     try {
-
       setTelegramLoading(true);
 
       setTelegramError("");
@@ -1022,11 +808,9 @@ useEffect(() => {
       setSpecialCode("");
 
       const response = await fetch(
-
         `/api/telegram-eligibility?username=${encodeURIComponent(normalizedUsername)}`,
 
         {
-
           method: "GET",
 
           headers: { Accept: "application/json" },
@@ -1034,17 +818,13 @@ useEffect(() => {
           credentials: "same-origin",
 
           cache: "no-store",
-
         },
-
       );
 
       const data: TelegramEligibilityResponse = await response.json().catch(() => ({}));
 
       if (!response.ok || !data?.eligible) {
-
         throw new Error(data?.error || "USERNAME IS NOT ACTIVE IN TELEGRAMFX");
-
       }
 
       const verifiedUsername = normalizeTelegramUsername(data.username || normalizedUsername);
@@ -1056,61 +836,32 @@ useEffect(() => {
       setUsernameRemembered(true);
 
       rememberTelegramUsername(verifiedUsername);
-
     } catch (telegramCheckError) {
-
-      setTelegramError(
-
-        telegramCheckError instanceof Error && telegramCheckError.message
-
-          ? telegramCheckError.message
-
-          : "TELEGRAMFX CHECK FAILED",
-
-      );
-
+      setTelegramError(telegramCheckError instanceof Error && telegramCheckError.message ? telegramCheckError.message : "TELEGRAMFX CHECK FAILED");
     } finally {
-
       setTelegramLoading(false);
-
     }
-
   }
-
-
 
   /* ─────   SPECIAL CODE · FAST PASTE ─────── */
 
   async function handleSpecialPaste() {
-
     try {
-
       const clipboard = await navigator.clipboard.readText();
 
-
-
       const pastedCode = normalizeSpecialSuffix(clipboard);
-
-
 
       setSpecialCode(pastedCode);
 
       setTelegramError("");
-
     } catch {
-
       setTelegramError("ALLOW CLIPBOARD ACCESS TO PASTE");
-
     }
-
   }
-
-
 
   /* ─────   SPECIAL CODE VERIFY ─────── */
 
   async function handleSpecialSubmit(event: FormEvent<HTMLFormElement>) {
-
     event.preventDefault();
 
     if (!telegramVerified || specialLoading || telegramLoading) return;
@@ -1120,29 +871,23 @@ useEffect(() => {
     const specialSuffix = normalizeSpecialSuffix(specialCode);
 
     if (!normalizedUsername || specialSuffix.length !== 4) {
-
       setTelegramError("ENTER YOUR COMPLETE SPCL CODE");
 
       return;
-
     }
 
     try {
-
       setSpecialLoading(true);
 
       setTelegramError("");
 
       const identityResponse = await fetch("/api/identity", {
-
         method: "POST",
 
         headers: {
-
           Accept: "application/json",
 
           "Content-Type": "application/json",
-
         },
 
         credentials: "same-origin",
@@ -1150,25 +895,19 @@ useEffect(() => {
         cache: "no-store",
 
         body: JSON.stringify({
-
           username: normalizedUsername,
 
           code: `SPCL-${specialSuffix}`,
-
         }),
-
       });
 
       const identityData: IdentityResponse = await identityResponse.json().catch(() => ({}));
 
       if (!identityResponse.ok || !identityData?.verified) {
-
         throw new Error(identityData?.error || "IDENTITY VERIFICATION FAILED");
-
       }
 
       const sessionResponse = await fetch("/api/access-session", {
-
         method: "POST",
 
         headers: { Accept: "application/json" },
@@ -1176,29 +915,22 @@ useEffect(() => {
         credentials: "same-origin",
 
         cache: "no-store",
-
       });
 
       const sessionData: SessionResponse = await sessionResponse.json().catch(() => ({}));
 
       if (!sessionResponse.ok || !sessionData?.authenticated) {
-
         throw new Error(sessionData?.error || "PRIVATE SESSION COULD NOT BE CREATED");
-
       }
 
       try {
-
         sessionStorage.setItem(STORAGE_KEY, "true");
 
         sessionStorage.setItem("vault_plan", "vip");
 
         sessionStorage.setItem(ACCESS_CODE_KEY, `SPCL-${specialSuffix}`);
-
       } catch {
-
         // Mobile WebViews can block client storage.
-
       }
 
       rememberTelegramUsername(normalizedUsername);
@@ -1207,677 +939,515 @@ useEffect(() => {
       window.setTimeout(() => {
         setAuthenticated(true);
       }, 650);
-
     } catch (specialError) {
-
       setSpecialCode("");
 
-      setTelegramError(
-
-        specialError instanceof Error && specialError.message
-
-          ? specialError.message
-
-          : "SPECIAL CODE VERIFICATION FAILED",
-
-      );
-
+      setTelegramError(specialError instanceof Error && specialError.message ? specialError.message : "SPECIAL CODE VERIFICATION FAILED");
     } finally {
-
       setSpecialLoading(false);
-
     }
-
   }
 
-
-
   if (checking) {
-
     return (
-
       <main className="pvr-direct-checking">
-
-      <span>
-
+        <span>
         USER FX
+        </span>
 
-      </span>
-
-      <strong>
-
-          CHECKING PRIVATE ACCESS…
-
-      </strong>
-
+        <strong>
+        CHECKING PRIVATE ACCESS…
+        </strong>
       </main>
-
     );
-
-    }
+  }
 
   if (authenticated) {
-
     return <>{children}</>;
-
   }
 
   return (
-
-
-
-  <main className="pvr-direct-gate">
-
-  <section className="pvr-direct-card">
-
-
-
-{/* ═════════ FONDO DECORATIVO ═════════ */}
-
-  <div className="pvr-direct-fondo-wrap" aria-hidden="true">
-
-  <img src="/wallpaperModal.png" alt="" className="pvr-direct-fondo" draggable={false} />
-
-  <img src="/icon.png" alt="" className="pvr-direct-fondo" draggable={false} />
-
-  </div>
-
-  <div className="direct-icon3" aria-hidden="true" />
-
-  <div className="direct-icon4" aria-hidden="true" />
-
-{/* ═════════ HEADER ═════════ */}
-
-  <header className="pvr-direct-head">
-
-  <span>
-
-    USER FX · PRIVATE CLUB</span>
-
-  <strong>
-
-    PRIVATE ROOM</strong>
-
-  <small>
-
-    CODED ACCESS</small>
-
-  </header>
-
-{/* ═════════ COPY ═════════ */}
-
-  <div className="pvr-direct-copy">
-
-  <h1>
-
-  ᴇɴᴛᴇʀ ᴡʜɪᴛ
-
-  <br />
-
-  <em>
-
-    𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌</em>
-
-  </h1>
-
-  <p>
-
-    𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓</p>
-
-  </div>
-
-{/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
-
-  {!telegramVerified ? (
-
-  <section className="pvr-direct-verified-zone">
-
-{/* ───── PANEL TELEGRAM ───── */}
-
-  <section className="pvr-direct-telegram-panel is-primary">
-
-  <header>
-
-  <span>
-
-  <b>
-
-    ·TELEGRAM IDENTITY·
-
-  </b>
-
-  </span>
-
-  <strong>
-
-    ENTER YOUR USERNAME
-
-  </strong>
-
-  </header>
-
-  <form className="pvr-direct-telegram-form" onSubmit={handleTelegramSubmit}>
-
-  <div className="pvr-direct-username">
-
-  <button type="button" className={`pvr-direct-telegram-remember ${usernameRemembered ? "is-saved" : ""}`} onClick={() => rememberTelegramUsername()} disabled={telegramLoading || specialLoading} aria-label="Remember Telegram username" title="Remember username">
-  <span>
-  @
-  </span>
-  </button>
-
-  <input type="text" value={telegramUsername.replace(/^@/, "")} onChange={(event) => { setTelegramUsername(event.target.value); setTelegramVerified(false); setUsernameRemembered(false); setSpecialCode(""); setTelegramError(""); setNotice(""); }} placeholder="username" maxLength={32} autoCapitalize="none" autoCorrect="off" autoComplete="off" spellCheck={false} disabled={telegramLoading || specialLoading} aria-label="Telegram username"/>
-
-  <button type="submit" disabled={telegramLoading || specialLoading}>
-
-  {telegramLoading ? "CHECKING…" : "VERIFY USER"}
-
-  </button>
-
-  </div>
-
-  </form>
-
-  {telegramError && (
-
-  <p className="pvr-direct-telegram-error" role="alert">
-
-  {telegramError}
-
-  </p>
-
-  )}
-
-  {notice && (
-
-  <p className="pvr-direct-notice" role="status">
-  {notice}
-  </p>
-
-  )}
-
-  </section>
-
-{/* ───── SEPARADOR “ALREADY HAVE ACCESS?” ───── */}
-
-  <div className="pvr-direct-method-label" aria-hidden="true">
-
-  <span />
-
-  <strong>
-
-    ALREADY HAVE ACCESS?
-
-  </strong>
-
-  <span />
-
-  </div>
-
-{/* ───── BOTONES DE OPCIONES ADICIONALES ───── */}
-
-  <div className="pvr-direct-secondary-actions">
-
-  <button type="button" className={secondaryMode === "code" ? "is-active" : ""} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
-
-  <span>
-
-    ALREADY GOT CODE
-
-  </span>
-
-  </button>
-
-  <button type="button" className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}>
-
-  <span>
-
-    GET MY CODE
-
-  </span>
-
-  <small>
-
-    CHOOSE & PAY
-
-  </small>
-
-  </button>
-
-  </div>
-
-  </section>
-
-  ) : verifiedStage === "granted" ? (
-
-/* ═════════ USUARIO VERIFICADO (SPECIAL CODE) ═════════ */
-
-  <section className={`pvr-direct-granted ${returningIdentityRef.current ? "is-code-entry" : ""}`} aria-live="polite">
-
-  <div className="pvr-direct-granted-check">
-
-  <img src="/assets/iconos/ok.png" alt="" aria-hidden="true" />
-
-  </div>
-
-  <strong>
-
-    YOU'VE BEEN SELECTED
-
-  </strong>
-
-  <span className="pvr-direct-granted-user">
-
-    WELCOME {telegramUsername}
-
-  </span>
-
-  <p className="pvr-direct-granted-message">
-
-  You were selected for early access to our new videocall platform. Tap the green
-
-  button below to get your FREE access code.
-
-  </p>
-
-  {returningIdentityRef.current ? (
-
-/* ───── FORMULARIO SPCL CODE ───── */
-
- <form className="pvr-direct-granted-code" onSubmit={handleSpecialSubmit}>
-
-  <div className="pvr-direct-granted-code-row">
-
-  <b>
-
-    SPCL
-
-  </b>
-
-  <i>
-
-    —
-
-  </i>
-
-  <div className="pvr-direct-granted-code-field">
-
-  <input type="text" value={specialCode} onChange={(event) => {
-
-    setSpecialCode(normalizeSpecialSuffix(event.target.value));
-
-    setTelegramError("");}} placeholder="CODE" maxLength={4} autoCapitalize="characters" autoComplete="off"  disabled={specialLoading} aria-label="Special access code"/>
-
-  <button type="button" className="pvr-direct-granted-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
-
-    PASTE
-
-  </button>
-
-  </div>
-
-  </div>
-
-  <button type="submit" className="pvr-direct-granted-enter" disabled={specialLoading || specialCode.length !== 4}>
-
-    {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
-
-  </button>
-
-  </form>
-
-  ) : (
-
-/* ───── BOTÓN SPECIAL CODE (TELEGRAM) ───── */
-
-  <button type="button" className="pvr-direct-granted-special buttonupgrade" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
-
-  <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-
-  <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
-
-  </svg>
-
-  <span>
-
-  ꜱᴘᴇᴄɪᴀʟ
-
-  <br />
-
-  ᴄᴏᴅᴇ
-
-  </span>
-
-  </button>
-
-  )}
-
-  {telegramError && (
-
-  <p className="pvr-direct-granted-error" role="alert">
-
-  {telegramError}
-
-  </p>
-
-  )}
-
-  {notice && (
-
-  <p className="pvr-direct-notice" role="status">
-  {notice}
-  </p>
-
-  )}
-
-  </section>
-
-  ) : (
-
-/* ═════════ YA VERIFICADO, MOSTRAR SPECIAL ACCESS ═════════ */
-
-  <section className="pvr-direct-verified-zone">
-
-/* ───── PANEL USERNAME VERIFICADO ───── */
-
-  <section className="pvr-direct-telegram-panel is-primary is-verified-panel">
-
-  <header>
-
-  <span>
-
-  <b>
-
-    ·TELEGRAM IDENTITY·
-
-  </b>
-
-  </span>
-
-  <strong>
-
-    USERNAME VERIFIED
-
-  </strong>
-
-  </header>
-
-  <div className="pvr-direct-username is-verified">
-
-  <button type="button" className="pvr-direct-telegram-remember is-saved" onClick={() => rememberTelegramUsername()} aria-label="Remember Telegram username" title="Username remembered">
-  <span>
-  @
-  </span>
-  </button>
-
-  <input type="text" value={telegramUsername.replace(/^@/, "")}
-
-  readOnly
-
-  aria-label="Verified Telegram username"
-
-  />
-
-  <button type="button" disabled>
-
-  VERIFIED
-
-  </button>
-
-  </div>
-
-  </section>
-
-/* ───── SPECIAL ACCESS BOTÓN + FORM ───── */
-
-  <div className="pvr-direct-special-access">
-
-  <button type="button" className="pvr-direct-special-launcher" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
-
-  <img src="/assets/iconos/corona.png" alt="" aria-hidden="true" />
-
-  <span>
-
-  <small>
-
-    STEP 02 · TELEGRAM
-
-  </small>
-
-  <strong>
-
-    GET SPECIAL CODE
-
-  </strong>
-
-  </span>
-
-  <i>↗</i>
-
-  </button>
-
-
-
-  <form className="pvr-direct-special-form" onSubmit={handleSpecialSubmit}>
-
-  <div className="pvr-direct-special-input">
-
-  <span>
-
-    SPCL
-
-  </span>
-
-  <i>
-
-    —
-
-  </i>
-
-  <div className="pvr-direct-special-code-field">
-
-  <input type="text" value={specialCode} onChange={(event) => { setSpecialCode(normalizeSpecialSuffix(event.target.value)); setTelegramError(""); }} placeholder="CODE"maxLength={4} autoCapitalize="characters" autoComplete="off"disabled={specialLoading} aria-label="Special access code"/>
-
-  <button type="button" className="pvr-direct-special-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
-
-  PASTE
-
-  </button>
-
-  </div>
-
-  </div>
-
-  <button type="submit" disabled={specialLoading || specialCode.length !== 4}>
-
-  {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
-
-  </button>
-
-  </form>
-
-  </div>
-
-  {telegramError && (
-
-  <p className="pvr-direct-telegram-error" role="alert">
-
-  {telegramError}
-
-  </p>
-
-  )}
-
-  </section>
-
-  )}
-
-{/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
-
-  <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
-
-  {secondaryMode === "code" && (
-
-/* ───── PANEL “ALREADY GOT CODE” ───── */
-
-  <form className="pvr-direct-form pvr-direct-secondary-panel" onSubmit={handleSubmit}>
-
-<div className="pvr-direct-code-line">
-
-
-
-<div className={`pvr-direct-inputs ${prefix === "SPCL" || suffix.length > 0 ? "is-on" : "is-off"}`} data-prefix={prefix}>
-
-<div ref={prefixDropdownRef} className={`pvr-direct-prefixes ${prefixMenuOpen ? "is-open" : ""}`}>
-
-<button type="button" className="pvr-direct-prefix" onClick={() => !loading && attempts < MAX_ATTEMPTS && setPrefixMenuOpen((current) => !current)} disabled={loading || attempts >= MAX_ATTEMPTS} aria-haspopup="listbox" aria-expanded={prefixMenuOpen} aria-label="Access code prefix">
-
-<span>
-
-{prefix}
-
-</span>
-
-<i aria-hidden="true" />
-
-</button>
-
-
-
-<div className="pvr-direct-prefix-menu" role="listbox" aria-label="Access code prefix options">
-
-{(["BSIC", "PRX0", "VIPX", "SPCL"] as const).filter((plan) => plan !== prefix).map((plan) => (
-
-<button key={plan} type="button" role="option" aria-selected={prefix === plan} className={prefix === plan ? "is-selected" : ""} onClick={() => { setPrefix(plan); setSuffix(""); setPrefixMenuOpen(false); setError(""); setNotice(""); }}>
-
-{plan}
-
-</button>
-
-))}
-
-</div>
-
-</div>
-
-
-
-<span className="pvr-direct-code-emoji" aria-hidden="true">
-
-{prefix === "BSIC" ? "🌹" : prefix === "PRX0" ? "🔥" : prefix === "VIPX" ? "👑" : "✦"}
-
-</span>
-
-
-
-<input type="text" value={suffix} onChange={(event) => { setSuffix(event.target.value.toUpperCase()); setNotice(""); }} placeholder="CODE" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} aria-label="Access code suffix" />
-
-</div>
-
-
-
-<button type="submit" className={`pvr-direct-code-enter ${suffix.length === 4 ? "is-on" : "is-off"}`} data-prefix={prefix} disabled={loading || attempts >= MAX_ATTEMPTS}>
-
-{loading ? "VERIFYING…" : "ENTER"}
-
-</button>
-
-
-
-</div>
-
-
-
-{error && (
-
-<p className="pvr-direct-error" role="alert">
-
-{error}
-
-</p>
-
-)}
-
-{notice && (
-
-<p className="pvr-direct-notice" role="status">
-{notice}
-</p>
-
-)}
-
-<small className="pvr-direct-attempts">
-
-{attempts >= MAX_ATTEMPTS ? "ACCESS TEMPORARILY LOCKED · REFRESH TO TRY AGAIN" : `${MAX_ATTEMPTS - attempts} ATTEMPTS AVAILABLE`}
-
-</small>
-
-</form>
-
-  )}
-
-  {secondaryMode === "plans" && (
-
-/* ───── PANEL “GET MY CODE” (PLANES) ───── */
-
-  <section className="pvr-direct-plans pvr-direct-secondary-panel" aria-label="Choose access plan">
-
-  {ACCESS_PLANS.map((plan) => (
-
-  <article key={plan.id} className={`pvr-direct-plan is-${plan.id} ${selectedPlan === plan.id ? "is-selected" : ""}`} role="button" tabIndex={0}onClick={() => setSelectedPlan(plan.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedPlan(plan.id); } }}>
-
-  <span className="pvr-direct-plan-emoji" aria-hidden="true" />
-
-  <span className="pvr-direct-plan-info">
-
-  <strong>{plan.name}</strong>
-
-  <small className="pvr-direct-plan-prefix">{plan.prefix}</small>
-
-  <small className="pvr-direct-plan-price">✦ {plan.stars}</small>
-
-  </span>
-
-  <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedPlan(plan.id); openTelegramLink(`https://t.me/User18Fx_bot?start=pay_${plan.id}`);}}>
-
-  PAY
-
-  </button>
-
-  </article>
-
-  ))}
-
-  </section>
-
-  )}
-
-  </div>
-
-{/* ═════════ FOOTER ═════════ */}
-
-  <footer className="pvr-direct-foot">
-
-  <button type="button" onClick={() => {if (telegramVerified) {setTelegramVerified(false);setVerifiedStage("idle");setSpecialCode("");setTelegramError("");setSecondaryMode("none"); } else {  window.location.hash = "#/";}}}
-
-  >
-
-  ← BACK
-
-  </button>
-
-  <button type="button" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=support")}>
-
-  NEED HELP?
-
-  </button>
-
-  </footer>
-
-  </section>
-
-  </main>
-
-);
-
-}
+    <main className="pvr-direct-gate">
+      <section className="pvr-direct-card">
+        {/* ═════════ FONDO DECORATIVO ═════════ */}
+
+        <div className="pvr-direct-fondo-wrap" aria-hidden="true">
+          <img src="/wallpaperModal.png" alt="" className="pvr-direct-fondo" draggable={false} />
+
+          <img src="/icon.png" alt="" className="pvr-direct-fondo" draggable={false} />
+        </div>
+
+        <div className="direct-icon3" aria-hidden="true" />
+
+        <div className="direct-icon4" aria-hidden="true" />
+
+        {/* ═════════ HEADER ═════════ */}
+
+        <header className="pvr-direct-head">
+          <span>
+          USER FX · PRIVATE CLUB
+          </span>
+
+          <strong>
+          PRIVATE ROOM
+          </strong>
+
+          <small>
+          CODED ACCESS
+          </small>
+        </header>
+
+        {/* ═════════ COPY ═════════ */}
+
+        <div className="pvr-direct-copy">
+          <h1>
+            ᴇɴᴛᴇʀ ᴡʜɪᴛ
+            <br />
+            <em>
+            𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌
+            </em>
+          </h1>
+
+          <p>
+          𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓
+          </p>
+        </div>
+
+        {/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
+
+        {!telegramVerified ? (
+          <section className="pvr-direct-verified-zone">
+            {/* ───── PANEL TELEGRAM ───── */}
+
+            <section className="pvr-direct-telegram-panel is-primary">
+              <header>
+                <span>
+                  <b>
+                  ·TELEGRAM IDENTITY·
+                  </b>
+                </span>
+
+                <strong>
+                ENTER YOUR USERNAME
+                </strong>
+              </header>
+
+              <form className="pvr-direct-telegram-form" onSubmit={handleTelegramSubmit}>
+                <div className="pvr-direct-username">
+                  <button type="button" className={`pvr-direct-telegram-remember ${usernameRemembered ? "is-saved" : ""}`} onClick={() => rememberTelegramUsername()} disabled={telegramLoading || specialLoading} aria-label="Remember Telegram username" title="Remember username">
+                    <span>
+                    @
+                    </span>
+                  </button>
+
+                  <input
+                    type="text"
+                    value={telegramUsername.replace(/^@/, "")}
+                    onChange={(event) => {
+                      setTelegramUsername(event.target.value);
+                      setTelegramVerified(false);
+                      setUsernameRemembered(false);
+                      setSpecialCode("");
+                      setTelegramError("");
+                      setNotice("");
+                    }}
+                    placeholder="username"
+                    maxLength={32}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    autoComplete="off"
+                    spellCheck={false}
+                    disabled={telegramLoading || specialLoading}
+                    aria-label="Telegram username"
+                  />
+
+                  <button type="submit" disabled={telegramLoading || specialLoading}>
+                    {telegramLoading ? "CHECKING…" : "VERIFY USER"}
+                  </button>
+                </div>
+              </form>
+
+              {telegramError && (
+                <p className="pvr-direct-telegram-error" role="alert">
+                  {telegramError}
+                </p>
+              )}
+
+              {notice && (
+                <p className="pvr-direct-notice" role="status">
+                  {notice}
+                </p>
+              )}
+            </section>
+
+            {/* ───── SEPARADOR “ALREADY HAVE ACCESS?” ───── */}
+
+            <div className="pvr-direct-method-label" aria-hidden="true">
+              <span />
+
+              <strong>
+              ALREADY HAVE ACCESS?
+              </strong>
+
+              <span />
+            </div>
+
+            {/* ───── BOTONES DE OPCIONES ADICIONALES ───── */}
+
+            <div className="pvr-direct-secondary-actions">
+              <button type="button" className={secondaryMode === "code" ? "is-active" : ""} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
+                <span>
+                ALREADY GOT CODE
+                </span>
+              </button>
+
+              <button type="button" className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}>
+                <span>
+                GET MY CODE
+                </span>
+
+                <small>
+                CHOOSE & PAY
+                </small>
+              </button>
+            </div>
+          </section>
+        ) : verifiedStage === "granted" ? (
+          /* ═════════ USUARIO VERIFICADO (SPECIAL CODE) ═════════ */
+
+          <section className={`pvr-direct-granted ${returningIdentityRef.current ? "is-code-entry" : ""}`} aria-live="polite">
+            <div className="pvr-direct-granted-check">
+              <img src="/assets/iconos/ok.png" alt="" aria-hidden="true" />
+            </div>
+
+            <strong>
+            YOU'VE BEEN SELECTED
+            </strong>
+
+            <span className="pvr-direct-granted-user">WELCOME {telegramUsername}</span>
+
+            <p className="pvr-direct-granted-message">
+            You were selected for early access to our new videocall platform. Tap the green button below to get your FREE access code.
+            </p>
+
+            {returningIdentityRef.current ? (
+              /* ───── FORMULARIO SPCL CODE ───── */
+
+              <form className="pvr-direct-granted-code" onSubmit={handleSpecialSubmit}>
+                <div className="pvr-direct-granted-code-row">
+                  <b>
+                  SPCL
+                  </b>
+
+                  <i>
+                  —
+                  </i>
+
+                  <div className="pvr-direct-granted-code-field">
+                    <input
+                      type="text"
+                      value={specialCode}
+                      onChange={(event) => {
+                        setSpecialCode(normalizeSpecialSuffix(event.target.value));
+
+                        setTelegramError("");
+                      }}
+                      placeholder="CODE"
+                      maxLength={4}
+                      autoCapitalize="characters"
+                      autoComplete="off"
+                      disabled={specialLoading}
+                      aria-label="Special access code"
+                    />
+
+                    <button type="button" className="pvr-direct-granted-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
+                      PASTE
+                    </button>
+                  </div>
+                </div>
+
+                <button type="submit" className="pvr-direct-granted-enter" disabled={specialLoading || specialCode.length !== 4}>
+                  {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
+                </button>
+              </form>
+            ) : (
+              /* ───── BOTÓN SPECIAL CODE (TELEGRAM) ───── */
+
+              <button type="button" className="pvr-direct-granted-special buttonupgrade" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
+                <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
+                </svg>
+
+                <span>
+                  ꜱᴘᴇᴄɪᴀʟ
+                  <br />
+                  ᴄᴏᴅᴇ
+                </span>
+              </button>
+            )}
+
+            {telegramError && (
+              <p className="pvr-direct-granted-error" role="alert">
+                {telegramError}
+              </p>
+            )}
+
+            {notice && (
+              <p className="pvr-direct-notice" role="status">
+                {notice}
+              </p>
+            )}
+          </section>
+        ) : (
+          /* ═════════ YA VERIFICADO, MOSTRAR SPECIAL ACCESS ═════════ */
+
+          <section className="pvr-direct-verified-zone">
+            /* ───── PANEL USERNAME VERIFICADO ───── */
+            <section className="pvr-direct-telegram-panel is-primary is-verified-panel">
+              <header>
+                <span>
+                  <b>
+                  ·TELEGRAM IDENTITY·
+                  </b>
+                </span>
+
+                <strong>
+                USERNAME VERIFIED
+                </strong>
+              </header>
+
+              <div className="pvr-direct-username is-verified">
+                <button type="button" className="pvr-direct-telegram-remember is-saved" onClick={() => rememberTelegramUsername()} aria-label="Remember Telegram username" title="Username remembered">
+                  <span>
+                  @
+                  </span>
+                </button>
+
+                <input
+                  type="text"
+                  value={telegramUsername.replace(/^@/, "")}
+
+                  readOnly
+
+                  aria-label="Verified Telegram username"
+                />
+
+                <button type="button" disabled>
+                  VERIFIED
+                </button>
+              </div>
+            </section>
+            /* ───── SPECIAL ACCESS BOTÓN + FORM ───── */
+            <div className="pvr-direct-special-access">
+              <button type="button" className="pvr-direct-special-launcher" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
+                <img src="/assets/iconos/corona.png" alt="" aria-hidden="true" />
+
+                <span>
+                  <small>
+                  STEP 02 · TELEGRAM
+                  </small>
+
+                  <strong>
+                  GET SPECIAL CODE
+                  </strong>
+                </span>
+
+                <i>
+                ↗
+                </i>
+              </button>
+
+              <form className="pvr-direct-special-form" onSubmit={handleSpecialSubmit}>
+                <div className="pvr-direct-special-input">
+                  <span>
+                  SPCL
+                  </span>
+
+                  <i>
+                  —
+                  </i>
+
+                  <div className="pvr-direct-special-code-field">
+                    <input
+                      type="text"
+                      value={specialCode}
+                      onChange={(event) => {
+                        setSpecialCode(normalizeSpecialSuffix(event.target.value));
+                        setTelegramError("");
+                      }}
+                      placeholder="CODE"
+                      maxLength={4}
+                      autoCapitalize="characters"
+                      autoComplete="off"
+                      disabled={specialLoading}
+                      aria-label="Special access code"
+                    />
+
+                    <button type="button" className="pvr-direct-special-paste" onClick={handleSpecialPaste} disabled={specialLoading}>
+                      PASTE
+                    </button>
+                  </div>
+                </div>
+
+                <button type="submit" disabled={specialLoading || specialCode.length !== 4}>
+                  {specialLoading ? "VERIFYING…" : "VERIFY & ENTER"}
+                </button>
+              </form>
+            </div>
+            {telegramError && (
+              <p className="pvr-direct-telegram-error" role="alert">
+                {telegramError}
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
+
+        <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
+          {secondaryMode === "code" && (
+            /* ───── PANEL “ALREADY GOT CODE” ───── */
+
+            <form className="pvr-direct-form pvr-direct-secondary-panel" onSubmit={handleSubmit}>
+              <div className="pvr-direct-code-line">
+                <div className={`pvr-direct-inputs ${prefix === "SPCL" || suffix.length > 0 ? "is-on" : "is-off"}`} data-prefix={prefix}>
+                  <div ref={prefixDropdownRef} className={`pvr-direct-prefixes ${prefixMenuOpen ? "is-open" : ""}`}>
+                    <button type="button" className="pvr-direct-prefix" onClick={() => !loading && attempts < MAX_ATTEMPTS && setPrefixMenuOpen((current) => !current)} disabled={loading || attempts >= MAX_ATTEMPTS} aria-haspopup="listbox" aria-expanded={prefixMenuOpen} aria-label="Access code prefix">
+                      <span>{prefix}</span>
+
+                      <i aria-hidden="true" />
+                    </button>
+
+                    <div className="pvr-direct-prefix-menu" role="listbox" aria-label="Access code prefix options">
+                      {(["BSIC", "PRX0", "VIPX", "SPCL"] as const)
+                        .filter((plan) => plan !== prefix)
+                        .map((plan) => (
+                          <button
+                            key={plan}
+                            type="button"
+                            role="option"
+                            aria-selected={prefix === plan}
+                            className={prefix === plan ? "is-selected" : ""}
+                            onClick={() => {
+                              setPrefix(plan);
+                              setSuffix("");
+                              setPrefixMenuOpen(false);
+                              setError("");
+                              setNotice("");
+                            }}>
+                            {plan}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+
+                  <span className="pvr-direct-code-emoji" aria-hidden="true">
+                    {prefix === "BSIC" ? "🌹" : prefix === "PRX0" ? "🔥" : prefix === "VIPX" ? "👑" : "✦"}
+                  </span>
+
+                  <input
+                    type="text"
+                    value={suffix}
+                    onChange={(event) => {
+                      setSuffix(event.target.value.toUpperCase());
+                      setNotice("");
+                    }}
+                    placeholder="CODE"
+                    maxLength={4}
+                    autoCapitalize="characters"
+                    autoComplete="off"
+                    disabled={loading || attempts >= MAX_ATTEMPTS}
+                    aria-label="Access code suffix"
+                  />
+                </div>
+
+                <button type="submit" className={`pvr-direct-code-enter ${suffix.length === 4 ? "is-on" : "is-off"}`} data-prefix={prefix} disabled={loading || attempts >= MAX_ATTEMPTS}>
+                  {loading ? "VERIFYING…" : "ENTER"}
+                </button>
+              </div>
+
+              {error && (
+                <p className="pvr-direct-error" role="alert">
+                  {error}
+                </p>
+              )}
+
+              {notice && (
+                <p className="pvr-direct-notice" role="status">
+                  {notice}
+                </p>
+              )}
+
+              <small className="pvr-direct-attempts">{attempts >= MAX_ATTEMPTS ? "ACCESS TEMPORARILY LOCKED · REFRESH TO TRY AGAIN" : `${MAX_ATTEMPTS - attempts} ATTEMPTS AVAILABLE`}</small>
+            </form>
+          )}
+
+          {secondaryMode === "plans" && (
+            /* ───── PANEL “GET MY CODE” (PLANES) ───── */
+
+            <section className="pvr-direct-plans pvr-direct-secondary-panel" aria-label="Choose access plan">
+              {ACCESS_PLANS.map((plan) => (
+                <article
+                  key={plan.id}
+                  className={`pvr-direct-plan is-${plan.id} ${selectedPlan === plan.id ? "is-selected" : ""}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedPlan(plan.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedPlan(plan.id);
+                    }
+                  }}>
+                  <span className="pvr-direct-plan-emoji" aria-hidden="true" />
+
+                  <span className="pvr-direct-plan-info">
+                    <strong>{plan.name}</strong>
+
+                    <small className="pvr-direct-plan-prefix">{plan.prefix}</small>
+
+                    <small className="pvr-direct-plan-price">✦ {plan.stars}</small>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedPlan(plan.id);
+                      openTelegramLink(`https://t.me/User18Fx_bot?start=pay_${plan.id}`);
+                              }}>
+                              PAY
+                            </button>
+                          </article>
+                        ))}
+                      </section>
+                    )}
+                  </div>
+
+                  {/* ═════════ FOOTER ═════════ */}
+
+                  <footer className="pvr-direct-foot">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (telegramVerified) {
+                          setTelegramVerified(false);
+                          setVerifiedStage("idle");
+                          setSpecialCode("");
+                          setTelegramError("");
+                          setSecondaryMode("none");
+                        } else {
+                          window.location.hash = "#/";
+                        }
+                      }}>
+                      ← BACK
+                    </button>
+
+                    <button type="button" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=support")}>
+                      NEED HELP?
+                    </button>
+                  </footer>
+                </section>
+              </main>
+            );
+          }
