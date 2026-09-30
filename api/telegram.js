@@ -2045,10 +2045,9 @@ bot.command("visitors", async (ctx) => {
 
     const { data, error } = await supabase
       .from("track_events")
-      .select("created_at,ip,geo,telegram")
+      .select("*")
       .eq("event", "miniapp_open")
-      .order("created_at", { ascending: false })
-      .limit(limit);
+      .limit(200);
 
     if (error) throw error;
 
@@ -2076,7 +2075,16 @@ bot.command("visitors", async (ctx) => {
       lines.push(`${String(index + 1).padStart(2, "0")} · ${user}`);
       lines.push(`IP · ${ip}`);
       lines.push(`${String(geo?.city || "—")}, ${String(geo?.country || "—")}`);
-      lines.push(String(row?.created_at || "—"));
+      const eventDate =
+        row?.created_at ||
+        row?.createdAt ||
+        row?.timestamp ||
+        row?.ts ||
+        row?.date ||
+        row?.time ||
+        "—";
+
+      lines.push(String(eventDate));
       lines.push("");
     });
 
@@ -2623,5 +2631,6 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
 
