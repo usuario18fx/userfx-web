@@ -1819,7 +1819,7 @@ bot.on("text", async (ctx, next) => {
       await sendMainPanel(ctx);
       return;
     }
-    if (/^\/(access|find|revoke|users|identity)(?:@\w+)?(?:\s|$)/i.test(text)) {
+    if (/^\/(access|find|revoke|users|identity|visitors|visitorstats|clearvideo|resetvc|report)(?:@\w+)?(?:\s|$)/i.test(text)) {
       return next();
     }
     if (text.startsWith("/")) {
@@ -2623,4 +2623,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
