@@ -1,40 +1,34 @@
-          import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-          export default function VisitorCounter() {
-            const [stats, setStats] = useState<{
-              visitors: number;
-              unique: number;
-            } | null>(null);
+export default function VisitorCounter() {
+  const [count, setCount] = useState<number | null>(null);
 
-            const [showUnique, setShowUnique] = useState(false);
+  useEffect(() => {
+    fetch("/api/miniapp-stats")
+      .then(async (res) => {
+        if (!res.ok) throw new Error("No se pudo cargar el contador");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.ok && typeof data.visitors === "number") {
+          setCount(data.visitors);
+          return;
+        }
 
-            useEffect(() => {
-              fetch("/api/miniapp-stats")
-                .then((res) => res.json())
-                .then((data) => {
-                  if (data.ok) {
-                    setStats({
-                      visitors: data.visitors,
-                      unique: data.unique_visitors,
-                    });
-                  }
-                })
-                .catch(() => {});
-            }, []);
+        throw new Error("Respuesta inválida");
+      })
+      .catch((error) => {
+        console.error("VisitorCounter:", error);
+        setCount(null);
+      });
+  }, []);
 
-            if (!stats) return null;
-
-            return (
-              <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((value) => !value)} title={showUnique ? "Unique visitors" : "Total opens"}>
-                {showUnique ? (
-                  <span className="vx-visitorEye" aria-hidden>
-                    👁️
-                  </span>
-                ) : (
-                  <img src="/assets/iconos/user.png" alt="" className="vx-visitorIcon" draggable={false} />
-                )}
-
-                <span>{(showUnique ? stats.unique : stats.visitors).toLocaleString("es")}</span>
-              </button>
-            );
-          }
+  return (
+    <button type="button" className="vx-visitorCount" title="Views" aria-label={`Views: ${count ?? 0}`}>
+      <img src="/assets/iconos/user.png" alt="" aria-hidden="true" className="vx-visitorIcon" draggable={false} />
+      <span>
+        {count === null ? "—" : count.toLocaleString("es-ES")}
+      </span>
+    </button>
+  );
+}
