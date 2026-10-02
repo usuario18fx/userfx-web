@@ -102,7 +102,7 @@ export default function PrivateRoomStage() {
 
   useEffect(() => {
     const readCameraState = () => {
-      if (!ownerCameraLive) setCameraLive(cameraIsLive());
+      if (!streamRef.current) setCameraLive(cameraIsLive());
     };
 
     readCameraState();
@@ -124,7 +124,7 @@ export default function PrivateRoomStage() {
       window.clearInterval(heartbeat);
       streamRef.current?.getTracks().forEach((track) => track.stop());
     };
-  }, [ownerCameraLive]);
+  }, []);
 
   useEffect(() => {
     if (videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
