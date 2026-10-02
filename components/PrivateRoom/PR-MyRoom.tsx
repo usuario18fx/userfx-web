@@ -1,6 +1,6 @@
           import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
           import { createPortal } from "react-dom";
-          import "./PrivateRoomMyRoom.css";
+          import "./PR-MyRoom.css";
 
           type MediaKind = "image" | "video";
           type MyRoomPost = {
@@ -63,7 +63,7 @@
             } catch {}
           }
 
-          export default function PrivateRoomMyRoom() {
+          export default function PR-MyRoom() {
             const [target, setTarget] = useState<HTMLElement | null>(null);
             const [text, setText] = useState("");
             const [mediaUrl, setMediaUrl] = useState("");
