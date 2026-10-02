@@ -27,7 +27,7 @@ function openCameraStudio() {
   window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
 }
 
-export default function PR-Stage() {
+export default function PrivateRoomStage() {
   const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
   const [cameraLive, setCameraLive] = useState(false);
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
