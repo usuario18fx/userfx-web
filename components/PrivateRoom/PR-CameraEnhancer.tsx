@@ -440,7 +440,7 @@ function configureCameraStudio() {
   }
 }
 
-export default function PR-CameraEnhancer() {
+export default function PrivateRoomCameraEnhancer() {
   useEffect(() => {
     let frame = 0;
 
