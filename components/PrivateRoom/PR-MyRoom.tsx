@@ -63,7 +63,7 @@
             } catch {}
           }
 
-          export default function PR-MyRoom() {
+          export default function PrivateRoomMyRoom() {
             const [target, setTarget] = useState<HTMLElement | null>(null);
             const [text, setText] = useState("");
             const [mediaUrl, setMediaUrl] = useState("");
