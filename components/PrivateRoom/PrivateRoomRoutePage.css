@@ -663,79 +663,115 @@
 }
 
 
-/* ═══════════ USER FX · OWNER STAGE CONTROL ═══════════ */
-.pvr-owner-console{
-  display:grid;
-  grid-template-columns:minmax(0, 1fr) auto auto;
-  align-items:center;
-  gap:12px;
-  margin-top:14px;
-  padding:12px 14px;
-  border:1px solid #d7bd8855;
-  border-radius:10px;
-  background:linear-gradient(135deg, #16130f, #090b0d);
-  box-shadow:0 16px 38px #00000038;
+/* ═══════════ USER FX · ADMIN HUD ═══════════ */
+.pvr-stage-route{
+  position:relative;
 }
-.pvr-owner-console-copy,
-.pvr-owner-console-metric{
+.pvr-owner-console.pvr-admin-hud{
+  position:relative;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  width:max-content;
+  max-width:100%;
+  margin:10px 0 0 auto;
+  padding:6px;
+  border:1px solid #4aa3ff66;
+  border-radius:9px;
+  background:
+    linear-gradient(180deg, #10233be8, #08121ee8),
+    #08121e;
+  box-shadow:
+    0 0 0 1px #80c5ff0d inset,
+    0 0 18px #238cff22,
+    0 12px 28px #00000052;
+  backdrop-filter:blur(10px);
+}
+.pvr-owner-console.pvr-admin-hud::before{
+  content:"";
+  width:6px;
+  height:6px;
+  flex:0 0 6px;
+  border-radius:50%;
+  background:#63b7ff;
+  box-shadow:
+    0 0 0 3px #63b7ff14,
+    0 0 10px #63b7ff;
+}
+.pvr-admin-hud .pvr-owner-console-copy,
+.pvr-admin-hud .pvr-owner-console-metric{
   display:flex;
   flex-direction:column;
-  gap:3px;
+  gap:1px;
 }
-.pvr-owner-console-copy span,
-.pvr-owner-console-metric span{
-  color:#8d8375;
-  font-size:6px;
-  font-weight:800;
-  letter-spacing:0.14em;
+.pvr-admin-hud .pvr-owner-console-copy{
+  min-width:88px;
 }
-.pvr-owner-console-copy strong{
-  color:#e0c789;
-  font-family:"Cinzel", Georgia, serif;
-  font-size:13px;
-  letter-spacing:0.06em;
+.pvr-admin-hud .pvr-owner-console-copy span,
+.pvr-admin-hud .pvr-owner-console-metric span{
+  color:#6faee8;
+  font-size:5px;
+  font-weight:900;
+  letter-spacing:.14em;
 }
-.pvr-owner-console-metric{
-  min-width:74px;
-  padding:7px 12px;
-  border:1px solid #ffffff10;
-  border-radius:7px;
-  background:#08090b;
+.pvr-admin-hud .pvr-owner-console-copy strong{
+  color:#d9efff;
+  font-family:Inter, system-ui, sans-serif;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.pvr-admin-hud .pvr-owner-console-metric{
+  min-width:48px;
+  padding:4px 7px;
+  border:1px solid #4aa3ff26;
+  border-radius:6px;
+  background:#07111ccc;
   text-align:center;
 }
-.pvr-owner-console-metric strong{
-  color:#eee8df;
-  font-size:15px;
+.pvr-admin-hud .pvr-owner-console-metric strong{
+  color:#bdddff;
+  font-size:11px;
+  line-height:1;
 }
-.pvr-owner-console-actions{
+.pvr-admin-hud .pvr-owner-console-actions{
   display:flex;
-  gap:8px;
+  gap:5px;
 }
-.pvr-owner-console-actions button{
-  min-height:34px;
-  padding:0 12px;
-  border:1px solid #b9955047;
-  border-radius:7px;
-  background:#11100d;
-  color:#d8bd82;
-  font-size:7px;
+.pvr-admin-hud .pvr-owner-console-actions button{
+  min-height:27px;
+  padding:0 9px;
+  border:1px solid #4aa3ff42;
+  border-radius:6px;
+  background:#0b1b2c;
+  color:#9fd0ff;
+  font-size:6px;
   font-weight:900;
-  letter-spacing:0.08em;
+  letter-spacing:.07em;
   cursor:pointer;
+  box-shadow:inset 0 1px 0 #ffffff08;
 }
-.pvr-owner-console-actions button.is-live{
-  border-color:#55c97866;
-  background:#0b1b10;
-  color:#7fe39a;
+.pvr-admin-hud .pvr-owner-console-actions button:hover{
+  border-color:#63b7ff88;
+  color:#e4f4ff;
+  background:#102945;
 }
-.pvr-owner-console-actions button.is-danger{
-  border-color:#b95a5a66;
-  background:#1b0c0c;
-  color:#e68d8d;
+.pvr-admin-hud .pvr-owner-console-actions button.is-live{
+  border-color:#2f9cff80;
+  background:#0b2743;
+  color:#75c1ff;
+  box-shadow:0 0 12px #238cff20;
 }
-.pvr-owner-console-actions button:disabled{
+.pvr-admin-hud .pvr-owner-console-actions button.is-danger{
+  border-color:#ff5d7380;
+  background:#2a1016;
+  color:#ff93a2;
+}
+.pvr-admin-hud .pvr-owner-console-actions button:disabled{
   cursor:not-allowed;
-  opacity:.45;
+  opacity:.42;
 }
 .pvr-stage-owner-video{
   position:absolute;
@@ -745,14 +781,20 @@
   object-fit:cover;
   background:#000;
 }
-@media (max-width: 760px){
-  .pvr-owner-console{
-    grid-template-columns:1fr;
-  }
-  .pvr-owner-console-actions{
+@media (max-width:760px){
+  .pvr-owner-console.pvr-admin-hud{
     width:100%;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+    gap:6px;
   }
-  .pvr-owner-console-actions button{
+  .pvr-admin-hud .pvr-owner-console-copy{
+    flex:1 1 90px;
+  }
+  .pvr-admin-hud .pvr-owner-console-actions{
+    flex:1 1 100%;
+  }
+  .pvr-admin-hud .pvr-owner-console-actions button{
     flex:1;
   }
 }
