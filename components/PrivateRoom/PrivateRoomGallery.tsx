@@ -285,7 +285,7 @@ VIEWING NOW
 {runtime.galleryVisible ? "HIDE ALBUM" : "SHOW ALBUM"}
             </button>
           </section>
-        ) : null>
+        ) : null}
         <div className="mml-navRow">
           <div className="mml-sectionNav" role="tablist" aria-label="Gallery filters">
             <button type="button" role="tab" aria-selected={activeTab === "all"} className={`mml-sectionBtn${activeTab === "all" ? " is-active" : ""}`} onClick={() => setActiveTab("all")}>
