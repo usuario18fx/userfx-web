@@ -11,7 +11,7 @@
             document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
           }
 
-          export default function PR-Buzon() {
+          export default function PrivateRoomBuzon() {
             const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [chatLocked, setChatLocked] = useState(false);
 
