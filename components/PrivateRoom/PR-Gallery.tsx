@@ -61,7 +61,7 @@
             return "▧";
           }
 
-          export default function PR-Gallery() {
+          export default function PrivateRoomGallery() {
             const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [activeTab, setActiveTab] = useState<TabKey>("all");
             const [expandedOwners, setExpandedOwners] = useState<Set<string>>(new Set(["ProdHouse"]));
