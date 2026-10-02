@@ -1,11 +1,11 @@
           import { useCallback, useEffect, useRef, useState, type ReactElement, type PointerEvent as ReactPointerEvent } from "react";
           import { createPortal } from "react-dom";
-          import PrivateRoomDirectGate from "./PrivateRoomDirectGate";
-          import PrivateRoomAccount from "./PrivateRoomAccount";
-          import "./PrivateRoomLiveLobby.css";
-          import "./PrivateRoomMyCamDock.css";
-          import "./PrivateRoomWelcomeTour.css";
-          import "./PrivateRoomLuxury.css";
+          import PR-DirectGate from "./PR-DirectGate";
+          import PR-Account from "./PR-Account";
+          import "./PR-LiveLobby.css";
+          import "./PR-MyCamDock.css";
+          import "./PR-WelcomeTour.css";
+          import "./PR-Luxury.css";
 
 /* ═══════════ USER FX · LOCAL PRIVATE ROOM SESSION ═══════════ */
 
@@ -157,7 +157,7 @@
 
 /* ═══════════ LIVE LOBBY ═══════════ */
 
-          function PrivateRoomLiveLobby(): ReactElement | null {
+          function PR-LiveLobby(): ReactElement | null {
             const [target, setTarget] = useState<HTMLElement | null>(null);
             const [cameraLive, setCameraLive] = useState(false);
             const [section, setSection] = useState<LobbySection>("live");
@@ -489,7 +489,7 @@
 
 /* ═══════════ MY CAM DOCK ═══════════ */
 
-function PrivateRoomMyCamDock(): ReactElement | null {
+function PR-MyCamDock(): ReactElement | null {
   const [cameraLive, setCameraLive] = useState(false);
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [visibility, setVisibility] = useState<CameraVisibility>("private");
@@ -825,7 +825,7 @@ function PrivateRoomMyCamDock(): ReactElement | null {
 
 /* ═══════════ WELCOME TOUR ═══════════ */
 
-function PrivateRoomWelcomeTour(): ReactElement {
+function PR-WelcomeTour(): ReactElement {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -931,13 +931,13 @@ function PrivateRoomWelcomeTour(): ReactElement {
 
 /* ═══════════ PRIVATE ROOM SHELL ═══════════ */
 
-export default function PrivateRoomLiveShell() {
+export default function PR-LiveShell() {
   return (
-    <PrivateRoomDirectGate>
-      <PrivateRoomAccount />
-      <PrivateRoomLiveLobby />
-      <PrivateRoomMyCamDock />
-      <PrivateRoomWelcomeTour />
-    </PrivateRoomDirectGate>
+    <PR-DirectGate>
+      <PR-Account />
+      <PR-LiveLobby />
+      <PR-MyCamDock />
+      <PR-WelcomeTour />
+    </PR-DirectGate>
   );
 }
