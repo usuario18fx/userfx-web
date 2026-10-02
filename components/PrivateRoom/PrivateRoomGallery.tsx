@@ -1,4 +1,4 @@
-          import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
+          import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
           import { createPortal } from "react-dom";
           import "./PrivateRoomGallery.css";
 
@@ -72,6 +72,45 @@
             const [uploadError, setUploadError] = useState("");
             const [projPos, setProjPos] = useState(() => ({ x: Math.max(12, window.innerWidth - 370), y: 90 }));
             const dragState = useRef({ dragging: false, offsetX: 0, offsetY: 0 });
+            const [runtime, setRuntime] = useState({ isOwner: false, galleryVisible: true, sharedWith: 0, viewingGallery: 0 });
+
+            async function applyRuntime(response: Response) {
+              if (!response.ok) return;
+              const data = await response.json();
+              if (!data?.ok) return;
+              setRuntime({
+                isOwner: Boolean(data.isOwner),
+                galleryVisible: data.galleryVisible !== false,
+                sharedWith: Number(data.sharedWith || 0),
+                viewingGallery: Number(data.viewingGallery || 0),
+              });
+            }
+
+            async function refreshRuntime() {
+              try {
+                const response = await fetch("/api/admin-runtime", { credentials: "include", cache: "no-store" });
+                await applyRuntime(response);
+              } catch {}
+            }
+
+            async function runtimeAction(action: string) {
+              try {
+                const response = await fetch("/api/admin-runtime", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action }),
+                });
+                await applyRuntime(response);
+              } catch {}
+            }
+
+            useEffect(() => {
+              refreshRuntime();
+              runtimeAction("gallery-heartbeat");
+              const heartbeat = window.setInterval(() => runtimeAction("gallery-heartbeat"), 25000);
+              return () => window.clearInterval(heartbeat);
+            }, []);
 
             if (!target) {
               window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
@@ -202,7 +241,51 @@
           MYROOM
         </button>
       </header>
-      <div className="mml-root">
+      <div className={"mml-root" + (!runtime.galleryVisible && !runtime.isOwner ? " is-hidden" : "")}>
+        {!runtime.galleryVisible && !runtime.isOwner ? (
+          <section className="mml-gallery-hidden-notice" role="status">
+            <span>
+USER FX · PRIVATE COLLECTION
+            </span>
+            <strong>
+ALBUM TEMPORARILY HIDDEN
+            </strong>
+            <p>
+The owner has paused this shared gallery.
+            </p>
+          </section>
+        ) : null}
+        {runtime.isOwner ? (
+          <section className="mml-owner-control" aria-label="Owner gallery controls">
+            <div className="mml-owner-control-title">
+              <span>
+OWNER · @User18Fx
+              </span>
+              <strong>
+ALBUM CONTROL
+              </strong>
+            </div>
+            <div className="mml-owner-control-stat">
+              <span>
+SHARED WITH
+              </span>
+              <strong>
+{runtime.sharedWith}
+              </strong>
+            </div>
+            <div className="mml-owner-control-stat">
+              <span>
+VIEWING NOW
+              </span>
+              <strong>
+{runtime.viewingGallery}
+              </strong>
+            </div>
+            <button type="button" className={runtime.galleryVisible ? "is-hide" : "is-show"} onClick={() => runtimeAction(runtime.galleryVisible ? "gallery-hide" : "gallery-show")}>
+{runtime.galleryVisible ? "HIDE ALBUM" : "SHOW ALBUM"}
+            </button>
+          </section>
+        ) : null>
         <div className="mml-navRow">
           <div className="mml-sectionNav" role="tablist" aria-label="Gallery filters">
             <button type="button" role="tab" aria-selected={activeTab === "all"} className={`mml-sectionBtn${activeTab === "all" ? " is-active" : ""}`} onClick={() => setActiveTab("all")}>
