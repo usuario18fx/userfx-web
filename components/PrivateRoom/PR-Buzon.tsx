@@ -1,6 +1,6 @@
           import { useEffect, useState } from "react";
           import { createPortal } from "react-dom";
-          import "./PrivateRoomRoutePage.css";
+          import "./PR-Stage.css";
 
           const CONTACTS = [
             { name: "@User18Fx", status: "FRIEND · ONLINE", preview: "Private message thread", initials: "FX" },
@@ -11,7 +11,7 @@
             document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
           }
 
-          export default function PrivateRoomBuzon() {
+          export default function PR-Buzon() {
             const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [chatLocked, setChatLocked] = useState(false);
 
