@@ -1,7 +1,7 @@
           import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
           import PrivateRoom from "./PrivateRoom";
-          import "./PrivateRoomAccount.css";
-          import "./PrivateRoomCamera.css";
+          import "./PR-Account.css";
+          import "./PR-Camera.css";
 
           type ProfileVisibility = "private" | "members" | "public";
           type OnlineVisibility = "hidden" | "members" | "public";
@@ -390,7 +390,7 @@ function CameraStudio({ stream, visibility, live, requesting, cameraEnabled, mic
   );
 }
 
-export default function PrivateRoomAccount() {
+export default function PR-Account() {
   const [account, setAccount] = useState<AccountData | null>(null);
   const [profile, setProfile] = useState<AccountProfile>(EMPTY_PROFILE);
   const [open, setOpen] = useState(false);
