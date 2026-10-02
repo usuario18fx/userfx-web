@@ -180,7 +180,9 @@ export default function PrivateRoomStage() {
     return () => {
       observer.disconnect();
       window.clearInterval(heartbeat);
-      streamRef.current?.getTracks().forEach((track) => track.stop());
+      if (streamRef.current && ownsStreamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
     };
   }, []);
 
@@ -211,13 +213,13 @@ MYROOM
       </header>
 
       {runtime.isOwner ? (
-        <section className="pvr-owner-console" aria-label="Owner stage controls">
+        <section className="pvr-owner-console pvr-admin-hud" aria-label="Owner stage controls">
           <div className="pvr-owner-console-copy">
             <span>
-OWNER · @User18Fx
+ADMIN · OWNER
             </span>
             <strong>
-ADMIN STAGE CONTROL
+@User18Fx
             </strong>
           </div>
           <div className="pvr-owner-console-metric">
