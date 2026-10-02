@@ -1,12 +1,12 @@
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
-          import PR-LiveShell from "./components/PrivateRoom/PR-LiveShell";
-          import PR-MyRoom from "./components/PrivateRoom/PR-MyRoom";
-          import PR-Stage from "./components/PrivateRoom/PR-Stage";
-          import PR-Gallery from "./components/PrivateRoom/PR-Gallery";
-          import PR-Buzon from "./components/PrivateRoom/PR-Buzon";
-          import PR-TopNav from "./components/PrivateRoom/PR-TopNav";
-          import PR-CameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
+          import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
+          import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
+          import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
+          import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
+          import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
+          import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
+          import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
 
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
@@ -24,10 +24,10 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route === "#/private-room/stage") return <PR-Stage />;
-  if (route === "#/private-room/gallery") return <PR-Gallery />;
-  if (route === "#/private-room/buzon") return <PR-Buzon />;
-  return <PR-MyRoom />;
+  if (route === "#/private-room/stage") return <PrivateRoomStage />;
+  if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
+  if (route === "#/private-room/buzon") return <PrivateRoomBuzon />;
+  return <PrivateRoomMyRoom />;
 }
 export default function App() {
   const [route, setRoute] = useState(getRoute);
@@ -120,7 +120,7 @@ export default function App() {
   if (route === "#/private-room-access") {
     return (
       <>
-        <PR-LiveShell />
+        <PrivateRoomLiveShell />
       </>
     );
   }
@@ -128,10 +128,10 @@ export default function App() {
   if (route.startsWith("#/private-room")) {
     return (
       <>
-        <PR-TopNav />
-        <PR-LiveShell />
+        <PrivateRoomTopNav />
+        <PrivateRoomLiveShell />
         <PrivateRoomRoute route={route} />
-        <PR-CameraEnhancer />
+        <PrivateRoomCameraEnhancer />
       </>
     );
   }
