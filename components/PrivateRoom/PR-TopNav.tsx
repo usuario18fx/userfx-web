@@ -1,5 +1,5 @@
           import { useCallback, useEffect, useState } from "react";
-          import "./PrivateRoomTopNav.css";
+          import "./PR-TopNav.css";
 
           const HOME_URL = "https://user18fx.com";
 
