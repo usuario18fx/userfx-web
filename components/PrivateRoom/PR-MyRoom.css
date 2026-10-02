@@ -716,3 +716,271 @@
     margin-top:12px;
   }
 }
+
+
+/* ═══════════ USER FX · MYROOM · LIVE SOCIAL LAYOUT ═══════════ */
+.pvr-myroom-shell{
+  width:min(1640px, calc(100% - 28px));
+  grid-template-columns:210px minmax(520px, 1fr) 410px;
+  gap:16px;
+}
+.pvr-myroom-main{
+  align-content:start;
+}
+.pvr-myroom-right{
+  top:18px;
+  gap:12px;
+}
+.pvr-myroom-oncam{
+  border-color:#c49d57 !important;
+  background:
+    linear-gradient(180deg, #16120c5e, transparent 72px),
+    #080a0de8;
+}
+.pvr-myroom-oncam.is-live{
+  border-color:#65cf72 !important;
+  box-shadow:
+    0 0 0 1px #65cf7217,
+    0 18px 48px #00000038;
+}
+.pvr-myroom-oncam-toggle{
+  display:grid;
+  grid-template-columns:1fr auto 24px;
+  gap:10px;
+  min-height:44px;
+  padding:0 12px;
+}
+.pvr-myroom-oncam-title{
+  justify-self:start;
+  color:#f0e7d8;
+  font-size:8px !important;
+  font-weight:900;
+  letter-spacing:0.12em;
+}
+.pvr-myroom-oncam-state{
+  align-self:center;
+  padding:5px 8px;
+  border:1px solid #ffffff10;
+  border-radius:999px;
+  background:#0a0d10;
+  color:#766f66;
+  font-size:6px !important;
+  font-weight:900;
+  letter-spacing:0.1em;
+}
+.pvr-myroom-oncam-state.is-live{
+  border-color:#65cf7240;
+  background:#65cf720d;
+  color:#77db7f;
+}
+.pvr-myroom-oncam-body{
+  gap:10px;
+  padding:0 12px 12px;
+}
+.pvr-myroom-oncam-screen{
+  position:relative;
+  min-height:0;
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  align-items:stretch;
+  justify-content:stretch;
+  border:1px solid #c49d5759;
+  border-radius:9px;
+  background:
+    radial-gradient(circle at 50% 50%, #1b17100f 0 1px, transparent 1px),
+    linear-gradient(180deg, #080a0d, #030405);
+}
+.pvr-myroom-oncam-screen video{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 0.22s ease;
+}
+.pvr-myroom-oncam-screen video.is-visible{
+  opacity:1;
+}
+.pvr-myroom-oncam-empty{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:20px;
+  text-align:center;
+}
+.pvr-myroom-oncam-empty span{
+  color:#70695f;
+  font-size:6px;
+  letter-spacing:0.13em;
+}
+.pvr-myroom-oncam-empty strong{
+  color:#ddd3c5;
+  font-size:12px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-oncam-empty small{
+  max-width:250px;
+  color:#5f5951;
+  font-size:5.5px;
+  line-height:1.55;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-oncam-overlay{
+  position:absolute;
+  z-index:2;
+  left:10px;
+  right:10px;
+  bottom:9px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  pointer-events:none;
+}
+.pvr-myroom-oncam-overlay span,
+.pvr-myroom-oncam-overlay strong{
+  padding:5px 7px;
+  border:1px solid #ffffff12;
+  border-radius:5px;
+  background:#050607c7;
+  backdrop-filter:blur(8px);
+}
+.pvr-myroom-oncam-overlay span{
+  color:#d1b673;
+  font-size:5.5px;
+  letter-spacing:0.1em;
+}
+.pvr-myroom-oncam-overlay strong{
+  overflow:hidden;
+  color:#e7e1d9;
+  font-size:6px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pvr-myroom-oncam-actions{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto auto;
+  gap:7px;
+}
+.pvr-myroom-oncam-actions button{
+  min-height:34px;
+  padding:0 11px;
+  border:1px solid #ffffff14;
+  border-radius:7px;
+  background:#0e1115;
+  color:#918980;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:0.08em;
+  cursor:pointer;
+}
+.pvr-myroom-oncam-actions button:hover,
+.pvr-myroom-oncam-actions button.is-active{
+  border-color:#c49d5755;
+  background:#17130d;
+  color:#dfc17f;
+}
+.pvr-myroom-oncam-actions .pvr-myroom-oncam-open{
+  border-color:#c49d57;
+  background:linear-gradient(15deg, #d3b16f, #c49d57, #a77e3f, #6f4f24, #d3b16f, #a77e3f, #c49d57, #d3b16f) no-repeat;
+  background-size:350%;
+  color:#17120b;
+}
+.pvr-myroom-oncam-meta{
+  display:grid;
+  grid-template-columns:auto 1fr auto 1fr;
+  align-items:center;
+  gap:6px;
+  padding:8px 9px;
+  border:1px solid #ffffff0d;
+  border-radius:7px;
+  background:#07090b;
+}
+.pvr-myroom-oncam-meta span{
+  color:#655f57;
+  font-size:5px;
+  letter-spacing:0.09em;
+}
+.pvr-myroom-oncam-meta strong{
+  color:#a99f92;
+  font-size:5.5px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-room-status{
+  border-color:#65cf722b;
+}
+.pvr-myroom-room-pulse{
+  display:grid;
+  gap:8px;
+  padding-top:10px;
+}
+.pvr-myroom-room-pulse > div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.pvr-myroom-room-pulse span{
+  color:#b6a77e;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-room-pulse strong{
+  color:#6fca76;
+  font-size:6px;
+  letter-spacing:0.08em;
+}
+.pvr-myroom-room-pulse i{
+  display:block;
+  width:100%;
+  height:4px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #4e9f58, #70d078);
+  box-shadow:0 0 12px #65cf7228;
+}
+.pvr-myroom-room-pulse button{
+  min-height:34px;
+  border:1px solid #65cf7236;
+  border-radius:7px;
+  background:#071209;
+  color:#6fca76;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:0.08em;
+  cursor:pointer;
+}
+.pvr-myroom-room-pulse button:hover{
+  border-color:#65cf7257;
+  background:#0a180d;
+}
+@media (max-width: 1280px){
+  .pvr-myroom-shell{
+    grid-template-columns:190px minmax(0, 1fr);
+  }
+  .pvr-myroom-right{
+    position:relative;
+    top:auto;
+    grid-column:1/-1;
+    grid-template-columns:minmax(360px, 1.4fr) minmax(220px, 0.8fr) minmax(220px, 0.8fr);
+    align-items:start;
+  }
+  .pvr-myroom-live-panel{
+    display:none;
+  }
+}
+@media (max-width: 860px){
+  .pvr-myroom-right{
+    grid-template-columns:1fr;
+  }
+  .pvr-myroom-oncam-screen{
+    aspect-ratio:16 / 9;
+  }
+}
