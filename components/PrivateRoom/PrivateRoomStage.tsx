@@ -38,6 +38,7 @@ export default function PrivateRoomStage() {
   });
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const ownsStreamRef = useRef(false);
 
   async function applyRuntime(response: Response) {
     if (!response.ok) return;
@@ -94,6 +95,7 @@ export default function PrivateRoomStage() {
 
     if (existingStream) {
       streamRef.current = existingStream;
+      ownsStreamRef.current = false;
       if (videoRef.current) videoRef.current.srcObject = existingStream;
       setOwnerCameraLive(true);
       setCameraLive(true);
@@ -103,7 +105,9 @@ export default function PrivateRoomStage() {
     if (!navigator.mediaDevices?.getUserMedia) return;
 
     try {
-      streamRef.current?.getTracks().forEach((track) => track.stop());
+      if (streamRef.current && ownsStreamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
@@ -113,6 +117,7 @@ export default function PrivateRoomStage() {
         audio: true,
       });
       streamRef.current = stream;
+      ownsStreamRef.current = true;
       if (videoRef.current) videoRef.current.srcObject = stream;
       setOwnerCameraLive(true);
       setCameraLive(true);
@@ -122,11 +127,11 @@ export default function PrivateRoomStage() {
   }
 
   function stopOwnerCamera() {
-    const existingStream = getExistingCameraStream();
-    if (streamRef.current && streamRef.current !== existingStream) {
+    if (streamRef.current && ownsStreamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
     streamRef.current = null;
+    ownsStreamRef.current = false;
     if (videoRef.current) videoRef.current.srcObject = null;
     setOwnerCameraLive(false);
     setCameraLive(cameraIsLive());
@@ -134,7 +139,18 @@ export default function PrivateRoomStage() {
 
   useEffect(() => {
     const readCameraState = () => {
-      if (!streamRef.current) setCameraLive(cameraIsLive());
+      const live = cameraIsLive();
+      setCameraLive(live);
+
+      if (live && !streamRef.current) {
+        const existingStream = getExistingCameraStream();
+        if (existingStream) {
+          streamRef.current = existingStream;
+          ownsStreamRef.current = false;
+          if (videoRef.current) videoRef.current.srcObject = existingStream;
+          setOwnerCameraLive(true);
+        }
+      }
     };
 
     readCameraState();
@@ -144,6 +160,7 @@ export default function PrivateRoomStage() {
       const existingStream = getExistingCameraStream();
       if (existingStream) {
         streamRef.current = existingStream;
+        ownsStreamRef.current = false;
         setOwnerCameraLive(true);
         setCameraLive(true);
       }
