@@ -444,6 +444,9 @@ export default function PrivateRoomCameraEnhancer() {
   useEffect(() => {
     let frame = 0;
 
+    const insideTelegram = Boolean(window.Telegram?.WebApp?.initData);
+    document.body.classList.toggle("pvr-telegram-webview", insideTelegram);
+
     configureCameraStudio();
     ensureChannelPanel();
 
@@ -463,6 +466,7 @@ export default function PrivateRoomCameraEnhancer() {
       window.cancelAnimationFrame(frame);
       clearRecordingTimer();
       if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+      document.body.classList.remove("pvr-telegram-webview");
     };
   }, []);
 
