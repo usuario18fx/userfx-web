@@ -390,7 +390,7 @@ function CameraStudio({ stream, visibility, live, requesting, cameraEnabled, mic
   );
 }
 
-export default function PR-Account() {
+export default function PrivateRoomAccount() {
   const [account, setAccount] = useState<AccountData | null>(null);
   const [profile, setProfile] = useState<AccountProfile>(EMPTY_PROFILE);
   const [open, setOpen] = useState(false);
