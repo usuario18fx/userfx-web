@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import "./PrivateRoomRoutePage.css";
+import "./PR-Stage.css";
 
 const DEV_OWNER = import.meta.env.DEV;
 
@@ -27,7 +27,7 @@ function openCameraStudio() {
   window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
 }
 
-export default function PrivateRoomStage() {
+export default function PR-Stage() {
   const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
   const [cameraLive, setCameraLive] = useState(false);
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
