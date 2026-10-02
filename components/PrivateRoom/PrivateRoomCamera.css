@@ -289,3 +289,58 @@ body:has(.pvr-camera-studio) .pvr-live-home{
     width:100%;
   }
 }
+
+
+/* ═══════════ USER FX · CAMERA STUDIO VISIBILITY FIX ═══════════ */
+.pvr-camera-studio .pvr-camera-layout{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+.pvr-camera-studio .pvr-camera-settings,
+.pvr-camera-studio .pvr-camera-device-controls,
+.pvr-camera-studio .pvr-camera-visibility{
+  visibility:visible !important;
+  opacity:1 !important;
+}
+.pvr-camera-studio .pvr-camera-media-controls{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+
+/* ═══════════ TELEGRAM WEBVIEW · COMPACT CAMERA ═══════════ */
+body.pvr-telegram-webview .pvr-camera-studio{
+  width:min(390px, calc(100vw - 30px)) !important;
+  max-height:82dvh !important;
+  border-radius:10px !important;
+}
+body.pvr-telegram-webview .pvr-camera-preview{
+  aspect-ratio:16 / 10 !important;
+  max-height:58dvh !important;
+}
+body.pvr-telegram-webview .pvr-camera-head{
+  min-height:34px !important;
+  padding:5px 8px !important;
+}
+body.pvr-telegram-webview .pvr-camera-layout{
+  bottom:6px !important;
+  width:92% !important;
+  padding:2px !important;
+}
+body.pvr-telegram-webview .pvr-camera-media-controls{
+  bottom:6px !important;
+  transform:translateX(-50%) scale(.88) !important;
+  transform-origin:center bottom !important;
+}
+
+@media (max-width: 700px){
+  body.pvr-telegram-webview .pvr-camera-studio{
+    width:min(360px, calc(100vw - 28px)) !important;
+  }
+  body.pvr-telegram-webview .pvr-camera-preview{
+    aspect-ratio:4 / 3 !important;
+  }
+}
