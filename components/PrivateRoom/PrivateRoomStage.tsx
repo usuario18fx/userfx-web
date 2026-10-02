@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./PrivateRoomRoutePage.css";
 
+const DEV_OWNER = import.meta.env.DEV;
+
 type RuntimeState = {
   isOwner: boolean;
   stage: { live: boolean; startedAt: string | null };
@@ -30,7 +32,7 @@ export default function PrivateRoomStage() {
   const [cameraLive, setCameraLive] = useState(false);
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
   const [runtime, setRuntime] = useState<RuntimeState>({
-    isOwner: false,
+    isOwner: DEV_OWNER,
     stage: { live: false, startedAt: null },
     viewingStage: 0,
   });
@@ -59,6 +61,15 @@ export default function PrivateRoomStage() {
   }
 
   async function runtimeAction(action: string) {
+    if (DEV_OWNER) {
+      if (action === "stage-start") {
+        setRuntime((current) => ({ ...current, isOwner: true, stage: { live: true, startedAt: new Date().toISOString() } }));
+      } else if (action === "stage-stop") {
+        setRuntime((current) => ({ ...current, isOwner: true, stage: { live: false, startedAt: null } }));
+      }
+      return;
+    }
+
     try {
       const response = await fetch("/api/admin-runtime", {
         method: "POST",
@@ -70,7 +81,25 @@ export default function PrivateRoomStage() {
     } catch {}
   }
 
+  function getExistingCameraStream() {
+    const candidates = Array.from(document.querySelectorAll<HTMLVideoElement>(".pvr-camera-preview video, .pvr-mycam-preview video"));
+    for (const candidate of candidates) {
+      if (candidate.srcObject instanceof MediaStream) return candidate.srcObject;
+    }
+    return null;
+  }
+
   async function startOwnerCamera() {
+    const existingStream = getExistingCameraStream();
+
+    if (existingStream) {
+      streamRef.current = existingStream;
+      if (videoRef.current) videoRef.current.srcObject = existingStream;
+      setOwnerCameraLive(true);
+      setCameraLive(true);
+      return;
+    }
+
     if (!navigator.mediaDevices?.getUserMedia) return;
 
     try {
@@ -93,7 +122,10 @@ export default function PrivateRoomStage() {
   }
 
   function stopOwnerCamera() {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
+    const existingStream = getExistingCameraStream();
+    if (streamRef.current && streamRef.current !== existingStream) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+    }
     streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
     setOwnerCameraLive(false);
@@ -107,6 +139,15 @@ export default function PrivateRoomStage() {
 
     readCameraState();
     refreshRuntime();
+
+    if (cameraIsLive()) {
+      const existingStream = getExistingCameraStream();
+      if (existingStream) {
+        streamRef.current = existingStream;
+        setOwnerCameraLive(true);
+        setCameraLive(true);
+      }
+    }
 
     const observer = new MutationObserver(readCameraState);
     observer.observe(document.body, {
