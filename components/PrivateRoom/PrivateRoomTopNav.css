@@ -252,3 +252,79 @@
     font-size:6px;
   }
 }
+
+
+/* ═══════════ USER FX · TELEGRAM → BROWSER RECOMMENDATION ═══════════ */
+.pvr-browser-recommend{
+  position:fixed;
+  inset:0;
+  z-index:17000;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:#020304c7;
+  backdrop-filter:blur(10px);
+}
+.pvr-browser-recommend-card{
+  width:min(390px, calc(100vw - 32px));
+  padding:18px;
+  border:1px solid #6eaef05c;
+  border-radius:12px;
+  background:radial-gradient(circle at 50% 0, #17304f55, transparent 42%), linear-gradient(180deg, #0d1218, #080a0d);
+  box-shadow:
+    0 28px 70px #000000c2,
+    0 0 28px #4d8fd91c;
+}
+.pvr-browser-recommend-card > span{
+  display:block;
+  color:#79b8ff;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+.pvr-browser-recommend-card > strong{
+  display:block;
+  margin-top:7px;
+  color:#eef5ff;
+  font-family:"Cinzel", Georgia, serif;
+  font-size:19px;
+  letter-spacing:.05em;
+}
+.pvr-browser-recommend-card > p{
+  margin:9px 0 0;
+  color:#8c98a7;
+  font-size:8px;
+  line-height:1.55;
+}
+.pvr-browser-recommend-actions{
+  display:grid;
+  grid-template-columns:1fr 1.25fr;
+  gap:8px;
+  margin-top:14px;
+}
+.pvr-browser-recommend-actions button{
+  min-height:38px;
+  border:1px solid #ffffff16;
+  border-radius:8px;
+  background:#111419;
+  color:#9aa5b0;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+.pvr-browser-recommend-actions button:last-child{
+  border-color:#4d8fd988;
+  background:linear-gradient(180deg, #1a3f68, #102842);
+  color:#bcdcff;
+  box-shadow:0 3px 0 #0a1a2d;
+}
+@media (max-width: 650px){
+  .pvr-browser-recommend-card{
+    width:min(340px, calc(100vw - 28px));
+    padding:15px;
+  }
+  .pvr-browser-recommend-card > strong{
+    font-size:16px;
+  }
+}
