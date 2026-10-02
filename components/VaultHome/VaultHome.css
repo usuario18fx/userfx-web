@@ -2106,10 +2106,17 @@ video{
     background-size:cover !important;
   }
   .vx-finalBackdrop{
-    background-image:url("/wallpaper1-1.png");
-    background-position:50% 31%;
-    background-size:140% auto;
-    background-repeat:no-repeat;
+    background:#08090b !important;
+  }
+  .vx-finalBackdrop #faq{
+    background:
+      linear-gradient(180deg, #05050726 0%, #05050772 100%),
+      url("/wallpaper1-1.png") center top / cover no-repeat !important;
+  }
+  .vx-finalBackdrop .vx-foot{
+    background:
+      linear-gradient(180deg, #08090b38 0%, #08090bcf 100%),
+      url("/wallpaper1-1.png") center bottom / cover no-repeat !important;
   }
   .vx-kicker{
     min-height: 92px !important; /* ↕️ */
@@ -2261,16 +2268,19 @@ video{
     letter-spacing:inherit !important;
     white-space:nowrap;
   }
-  /* El wallpaper cubre hasta el final: elimina la franja/mancha negra. */
+  /* Fondo móvil dividido: evita estirar una sola imagen entre FAQ y footer. */
   .vx-finalBackdrop{
-    background-image:url("/wallpaper1-1.png") !important;
-    background-position:center bottom !important;
-    background-size:cover !important;
-    background-repeat:no-repeat !important;
-    background-color:#08090b !important;
+    background:#08090b !important;
   }
-  .vx-foot{
-    background:transparent !important;
+  .vx-finalBackdrop #faq{
+    background:
+      linear-gradient(180deg, #05050720 0%, #05050778 100%),
+      url("/wallpaper1-1.png") center top / cover no-repeat !important;
+  }
+  .vx-finalBackdrop .vx-foot{
+    background:
+      linear-gradient(180deg, #08090b42 0%, #08090bd9 100%),
+      url("/wallpaper1-1.png") center bottom / cover no-repeat !important;
   }
   /* Evita manchas laterales oscuras sobre la última cinta. */
   .vx-ticker.is-rev::before,
