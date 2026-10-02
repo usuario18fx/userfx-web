@@ -1,5 +1,5 @@
           import { useEffect } from "react";
-          import "./PrivateRoomCameraEnhancer.css";
+          import "./PR-CameraEnhancer.css";
 
           const DEFAULT_CAMERA_KEY = "userfx_default_camera_id";
           const MAX_ONLIVE_MS = 45 * 60 * 1000;
@@ -440,7 +440,7 @@ function configureCameraStudio() {
   }
 }
 
-export default function PrivateRoomCameraEnhancer() {
+export default function PR-CameraEnhancer() {
   useEffect(() => {
     let frame = 0;
 
