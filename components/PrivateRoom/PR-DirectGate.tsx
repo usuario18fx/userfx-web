@@ -134,7 +134,7 @@ function normalizeSpecialSuffix(value: string) {
     .slice(0, 4);
 }
 
-export default function PR-DirectGate({ children }: DirectGateProps) {
+export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   const forceGate = typeof window !== "undefined" && window.location.hash === "#/private-room-access";
 
   const [checking, setChecking] = useState(!forceGate);
