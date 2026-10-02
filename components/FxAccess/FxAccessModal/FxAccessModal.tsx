@@ -1,6 +1,6 @@
           import { useEffect, useRef, type CSSProperties } from "react";
           import { createPortal } from "react-dom";
-          import PR-DirectGate from "../../PrivateRoom/PR-DirectGate";
+          import PrivateRoomDirectGate from "../../PrivateRoom/PR-DirectGate";
           import "./FxAccessModal.css";
 
 /* ═══════════ USER FX · ACCESS MODAL PORTAL ═══════════ */
@@ -98,7 +98,7 @@ export function FxAccessModal({ open, onClose }: FxAccessModalProps) {
 
   /* ───── TRUE MODAL MODE · KEEP VAULT HOME MOUNTED ─────
      replaceState does NOT emit hashchange, so App keeps rendering VaultHome.
-     PR-DirectGate sees #/private-room-access on its FIRST render,
+     PrivateRoomDirectGate sees #/private-room-access on its FIRST render,
      starts with checking=false and shows the card immediately on mobile. */
   if (open && typeof window !== "undefined" && !routePreparedRef.current) {
     previousUrlRef.current = `${window.location.pathname}${window.location.search}${window.location.hash || "#/"}`;
@@ -136,9 +136,9 @@ export function FxAccessModal({ open, onClose }: FxAccessModalProps) {
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <PR-DirectGate>
+    <PrivateRoomDirectGate>
       <PrivateRoomAccessGranted onClose={onClose} />
-    </PR-DirectGate>,
+    </PrivateRoomDirectGate>,
     document.body,
   );
 }
