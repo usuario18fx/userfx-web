@@ -8,6 +8,7 @@
           const SESSION_COOKIE = "userfx_vault_session";
           const IDENTITY_COOKIE = "userfx_identity_session";
           const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
+          const ADMIN_USER_ID = String(process.env.ADMIN_USER_ID || "").trim();
 
           function getRedis() {
             if (!REDIS_URL) {
@@ -75,6 +76,12 @@ function clearSessionCookie(req) {
 
   if (isSecureRequest(req)) parts.push("Secure");
   return parts.join("; ");
+}
+
+function isOwnerSession(session) {
+  if (!ADMIN_USER_ID) return false;
+  const userId = String(session?.telegramUserId || session?.userId || "").trim();
+  return Boolean(userId && userId === ADMIN_USER_ID);
 }
 
 function getSessionToken(req) {
@@ -239,6 +246,8 @@ export default async function handler(req, res) {
         remainingAccesses: session.remainingAccesses,
         unlimitedAccess: session.unlimitedAccess,
         expiresAt: null,
+        isOwner: isOwnerSession(session),
+        role: isOwnerSession(session) ? "owner" : "member",
       });
     }
 
@@ -344,6 +353,8 @@ export default async function handler(req, res) {
       remainingAccesses: session.remainingAccesses,
       unlimitedAccess: session.unlimitedAccess,
       expiresAt: memberAccess ? null : session.expiresAt,
+      isOwner: isOwnerSession(session),
+      role: isOwnerSession(session) ? "owner" : "member",
     });
   } catch (error) {
     console.error("[api/access-session]", error);
