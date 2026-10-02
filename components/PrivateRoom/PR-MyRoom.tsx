@@ -3,6 +3,7 @@
           import "./PR-MyRoom.css";
 
           type MediaKind = "image" | "video";
+          type CameraVisibility = "private" | "public";
           type MyRoomPost = {
             id: string;
             username: string;
@@ -74,7 +75,10 @@
             const [search, setSearch] = useState("");
             const [profileImage, setProfileImage] = useState(getProfileImage);
             const [onCamOpen, setOnCamOpen] = useState(true);
+            const [cameraLive, setCameraLive] = useState(false);
+            const [cameraVisibility, setCameraVisibility] = useState<CameraVisibility>("private");
             const fileRef = useRef<HTMLInputElement>(null);
+            const cameraVideoRef = useRef<HTMLVideoElement>(null);
             const profileFileRef = useRef<HTMLInputElement>(null);
             const username = useMemo(getUsername, []);
 
@@ -92,6 +96,48 @@
             useEffect(() => {
               persistPosts(posts);
             }, [posts]);
+
+            useEffect(() => {
+              const syncCamera = () => {
+                const candidates = Array.from(document.querySelectorAll<HTMLVideoElement>(".pvr-camera-preview video, .pvr-mycam-preview video"));
+                const streamVideo = candidates.find((candidate) => candidate.srcObject instanceof MediaStream && candidate.srcObject.getVideoTracks().some((track) => track.readyState === "live"));
+                const activeVisibility = Array.from(document.querySelectorAll<HTMLButtonElement>(".pvr-camera-visibility button")).find((button) => button.classList.contains("is-active"));
+                const visibilityText = activeVisibility?.textContent?.trim().toLowerCase();
+
+                if (visibilityText === "public" || visibilityText === "private") {
+                  setCameraVisibility(visibilityText);
+                }
+
+                if (streamVideo?.srcObject instanceof MediaStream) {
+                  setCameraLive(true);
+                  if (cameraVideoRef.current && cameraVideoRef.current.srcObject !== streamVideo.srcObject) {
+                    cameraVideoRef.current.srcObject = streamVideo.srcObject;
+                  }
+                  return;
+                }
+
+                setCameraLive(false);
+                if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
+              };
+
+              syncCamera();
+
+              const observer = new MutationObserver(syncCamera);
+              observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["class"],
+              });
+
+              const timer = window.setInterval(syncCamera, 1500);
+
+              return () => {
+                observer.disconnect();
+                window.clearInterval(timer);
+              };
+            }, []);
+
 
             function handleMedia(event: ChangeEvent<HTMLInputElement>) {
               const file = event.target.files?.[0];
@@ -165,6 +211,22 @@
     }, 0);
   }
 
+  function navigate(route: string) {
+    window.location.hash = route;
+  }
+
+  function changeCameraVisibility(next: CameraVisibility) {
+    const button = Array.from(document.querySelectorAll<HTMLButtonElement>(".pvr-camera-visibility button")).find((candidate) => candidate.textContent?.trim().toLowerCase() === next);
+
+    if (button) {
+      button.click();
+      setCameraVisibility(next);
+      return;
+    }
+
+    openCameraStudio();
+  }
+
   if (!target) return null;
 
   return createPortal(
@@ -200,13 +262,13 @@
           <button type="button" className="is-active">
             MYROOM
           </button>
-          <button type="button">
+          <button type="button" onClick={() => navigate("#/private-room/stage")}>
           STAGE
           </button>
-          <button type="button">
+          <button type="button" onClick={() => navigate("#/private-room/gallery")}>
           GALLERY
           </button>
-          <button type="button">
+          <button type="button" onClick={() => navigate("#/private-room/buzon")}>
           BUZON
           </button>
         </nav>
@@ -345,50 +407,125 @@
         </section>
       </main>
       <aside className="pvr-myroom-right">
-        <section className={`pvr-myroom-panel pvr-myroom-oncam ${onCamOpen ? "is-open" : ""}`}>
+        <section className={`pvr-myroom-panel pvr-myroom-oncam ${onCamOpen ? "is-open" : ""} ${cameraLive ? "is-live" : ""}`} aria-label="Live camera deck">
           <button type="button" className="pvr-myroom-oncam-toggle" onClick={() => setOnCamOpen((current) => !current)} aria-expanded={onCamOpen}>
-            <span>
-            ONCAM
+            <span className="pvr-myroom-oncam-title">
+            LIVE DECK · ONCAM
             </span>
-            <strong>{onCamOpen ? "−" : "+"}</strong>
+            <span className={`pvr-myroom-oncam-state ${cameraLive ? "is-live" : ""}`}>
+            {cameraLive ? "● LIVE" : "○ OFFCAM"}
+            </span>
+            <strong>
+            {onCamOpen ? "−" : "+"}
+            </strong>
           </button>
-          {onCamOpen && (
+          {onCamOpen ? (
             <div className="pvr-myroom-oncam-body">
               <div className="pvr-myroom-oncam-screen">
+                <video ref={cameraVideoRef} autoPlay muted playsInline className={cameraLive ? "is-visible" : ""}>
+                </video>
+                {!cameraLive ? (
+                  <div className="pvr-myroom-oncam-empty">
+                    <span>
+                    YOUR CAMERA
+                    </span>
+                    <strong>
+                    READY TO GO LIVE
+                    </strong>
+                    <small>
+                    KEEP YOUR PRESENCE ACTIVE WHILE YOU POST AND INTERACT
+                    </small>
+                  </div>
+                ) : null}
+                <div className="pvr-myroom-oncam-overlay">
+                  <span>
+                  {cameraVisibility.toUpperCase()}
+                  </span>
+                  <strong>
+                  {cameraLive ? username : "CAMERA READY"}
+                  </strong>
+                </div>
+              </div>
+              <div className="pvr-myroom-oncam-actions">
+                <button type="button" className="pvr-myroom-oncam-open" onClick={openCameraStudio}>
+                {cameraLive ? "MANAGE CAMERA" : "GO ONCAM"}
+                </button>
+                <button type="button" className={cameraVisibility === "private" ? "is-active" : ""} onClick={() => changeCameraVisibility("private")}>
+                PRIVATE
+                </button>
+                <button type="button" className={cameraVisibility === "public" ? "is-active" : ""} onClick={() => changeCameraVisibility("public")}>
+                PUBLIC
+                </button>
+              </div>
+              <div className="pvr-myroom-oncam-meta">
                 <span>
-                YOUR CAMERA
+                PRESENCE
                 </span>
                 <strong>
-                OFFLINE
+                {cameraLive ? "ACTIVE" : "STANDBY"}
                 </strong>
-                <small>
-                CAMERA PREVIEW
-                </small>
+                <span>
+                MODE
+                </span>
+                <strong>
+                {cameraVisibility.toUpperCase()}
+                </strong>
               </div>
-              <button type="button" className="pvr-myroom-oncam-open" onClick={openCameraStudio}>
-                OPEN CAMERA
-              </button>
             </div>
-          )}
+          ) : null}
+        </section>
+        <section className="pvr-myroom-panel pvr-myroom-room-status">
+          <header>
+            <strong>
+            YOUR ROOM
+            </strong>
+            <span>
+            {ONLINE_MEMBERS.length}/5
+            </span>
+          </header>
+          <div className="pvr-myroom-room-pulse">
+            <div>
+              <span>
+              PRIVATE MEETING
+              </span>
+              <strong>
+              READY
+              </strong>
+            </div>
+            <i>
+            </i>
+            <button type="button" onClick={() => navigate("#/private-room/stage")}>
+            OPEN STAGE
+            </button>
+          </div>
         </section>
         <section className="pvr-myroom-panel">
           <header>
             <strong>
             USERS ONLINE
             </strong>
-            <span>{ONLINE_MEMBERS.length}</span>
+            <span>
+            {ONLINE_MEMBERS.length}
+            </span>
           </header>
           <div className="pvr-myroom-online-list">
             {ONLINE_MEMBERS.map((member) => (
               <div key={member.name} className="pvr-myroom-online-user">
                 <div className="pvr-myroom-avatar">
-                  <span>{member.initials}</span>
+                  <span>
+                  {member.initials}
+                  </span>
                 </div>
                 <div>
-                  <strong>{member.name}</strong>
-                  <span>{member.role}</span>
+                  <strong>
+                  {member.name}
+                  </strong>
+                  <span>
+                  {member.role}
+                  </span>
                 </div>
-                <i />
+                <i>
+                </i>
               </div>
             ))}
           </div>
@@ -404,7 +541,7 @@
           </header>
           <div className="pvr-myroom-live-empty">
             <strong>
-            NO LIVE CAMS
+            NO PUBLIC CAMS
             </strong>
             <span>
             Public cameras from RoomFX members will appear here.
