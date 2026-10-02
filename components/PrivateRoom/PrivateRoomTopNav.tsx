@@ -21,7 +21,7 @@
             if (launcher && !launcher.classList.contains("is-open")) launcher.click();
           }
 
-          function openCamera() {
+          function openCameraNow() {
             window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
           }
 
@@ -84,6 +84,7 @@
             const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
             const [cameraLive, setCameraLive] = useState(false);
             const [insideTelegram, setInsideTelegram] = useState(false);
+            const [browserNoticeOpen, setBrowserNoticeOpen] = useState(false);
 
             const readLiveState = useCallback(() => {
               const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
@@ -107,6 +108,24 @@
               observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class"] });
               return () => observer.disconnect();
             }, [readLiveState]);
+
+            function requestCamera() {
+              if (insideTelegram) {
+                setBrowserNoticeOpen(true);
+                return;
+              }
+              openCameraNow();
+            }
+
+            function continueCameraInTelegram() {
+              setBrowserNoticeOpen(false);
+              openCameraNow();
+            }
+
+            async function continueCameraInBrowser() {
+              setBrowserNoticeOpen(false);
+              await openInBrowser();
+            }
 
             function navigate(item: (typeof NAV_ITEMS)[number]) {
               if (item.label === "GALLERY" && cameraLive) return;
@@ -156,7 +175,7 @@
             </span>
             <strong>{accessCode}</strong>
           </button>
-          <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={openCamera}>
+          <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
             <span />
             {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
@@ -207,7 +226,7 @@
           </button>
         )}
         {cameraLive && (
-          <button type="button" className="pvr-club-mobile-oncam" onClick={openCamera}>
+          <button type="button" className="pvr-club-mobile-oncam" onClick={requestCamera}>
             ● ONCAM
           </button>
         )}
@@ -221,6 +240,29 @@
           );
         })}
       </nav>
-    </header>
+        {browserNoticeOpen ? (
+          <div className="pvr-browser-recommend" role="dialog" aria-modal="true" aria-label="Open in browser recommendation">
+            <div className="pvr-browser-recommend-card">
+              <span>
+CAMERA EXPERIENCE
+              </span>
+              <strong>
+BETTER IN YOUR BROWSER
+              </strong>
+              <p>
+For a larger camera view and more stable controls, continue in your browser.
+              </p>
+              <div className="pvr-browser-recommend-actions">
+                <button type="button" onClick={continueCameraInTelegram}>
+CONTINUE HERE
+                </button>
+                <button type="button" onClick={continueCameraInBrowser}>
+OPEN IN BROWSER
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </header>
   );
 }
