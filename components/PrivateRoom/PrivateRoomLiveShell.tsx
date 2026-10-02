@@ -499,6 +499,7 @@ function PrivateRoomMyCamDock(): ReactElement | null {
   const [right, setRight] = useState(false);
   const [position, setPosition] = useState<DockPosition | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const dockRef = useRef<HTMLElement | null>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
@@ -553,6 +554,12 @@ function PrivateRoomMyCamDock(): ReactElement | null {
       document.body.classList.remove("pvr-camera-docked");
       setDocked(false);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleHashChange = () => setRoute(window.location.hash || "#/private-room");
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   useEffect(() => {
@@ -728,7 +735,9 @@ function PrivateRoomMyCamDock(): ReactElement | null {
     }, 100);
   }, []);
 
-  if (!cameraLive || !docked) return null;
+  const onStage = route === "#/private-room/stage";
+
+  if (!cameraLive || !docked || onStage) return null;
 
   const dockStyle = position ? { left: `${position.x}px`, top: `${position.y}px`, right: "auto", bottom: "auto" } : undefined;
 
