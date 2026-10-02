@@ -1,6 +1,6 @@
           import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
           import { createPortal } from "react-dom";
-          import "./PrivateRoomGallery.css";
+          import "./PR-Gallery.css";
 
           type MultimediaType = "video" | "album" | "image";
           type TabKey = "all" | "videos" | "album" | "images";
@@ -61,7 +61,7 @@
             return "▧";
           }
 
-          export default function PrivateRoomGallery() {
+          export default function PR-Gallery() {
             const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [activeTab, setActiveTab] = useState<TabKey>("all");
             const [expandedOwners, setExpandedOwners] = useState<Set<string>>(new Set(["ProdHouse"]));
