@@ -150,7 +150,7 @@ export const MOODS = [
 ];
 
 export const SKINS: Array<{ id: Skin; label: string; css: string }> = [
-  { id: "arcade", label: "ARCADE", css: "linear-gradient(140deg,#ff2bd6,#00fff7)" },
+  { id: "arcade", label: "ARCADE", css: "linear-gradient(140deg,#c49d57,#62dfff,#7cff8b)" },
   { id: "pride",  label: "PRIDE",  css: "linear-gradient(140deg,#e40303,#ff8c00,#ffed00,#008026,#004dff,#750787)" },
   { id: "trans",  label: "TRANS",  css: "linear-gradient(140deg,#5bcefa,#f5a9b8,#ffffff,#f5a9b8,#5bcefa)" },
   { id: "bi",     label: "BI",     css: "linear-gradient(140deg,#d60270,#9b4f96,#0038a8)" },
@@ -270,6 +270,7 @@ const starRow = (fama: number) => {
 const MAX_VISITORS_PREVIEW = 7;
 const MAX_NOTIFS = 14;
 const MAX_HISTORY = 8;
+const DEMO_INCOMING_CALLS = false;
 
 const CALL_KIND_LABEL: Record<CallLog["kind"], string> = {
   in: "📥 INCOMING",
@@ -1080,12 +1081,14 @@ class Fx5Store {
       this.notify("visitor", person.nick, "visited your profile");
     }, 13_000);
 
-    this.bot(() => {
-      if (this.state.call.status !== "idle") return;
-      if (Math.random() > 0.42) return;
-      const person = pick(this.onlineBots());
-      this.incomingCall(person.nick);
-    }, 17_000);
+    if (DEMO_INCOMING_CALLS) {
+      this.bot(() => {
+        if (this.state.call.status !== "idle") return;
+        if (Math.random() > 0.42) return;
+        const person = pick(this.onlineBots());
+        this.incomingCall(person.nick);
+      }, 17_000);
+    }
 
     this.bot(() => {
       if (this.state.call.status !== "live") return;
