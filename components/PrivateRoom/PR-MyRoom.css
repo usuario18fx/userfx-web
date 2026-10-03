@@ -1,3 +1,18 @@
+/* ═══════════ USER FX · MYROOM · COLOR SYSTEM ═══════════ */
+:root{
+  --fx-bg:#050607;
+  --fx-panel:#0a0c0f;
+  --fx-panel-2:#111419;
+  --fx-line:#ffffff12;
+  --fx-gold:#c49d57;
+  --fx-gold-soft:#d3b16f;
+  --fx-green:#69cf72;
+  --fx-blue:#5d8dff;
+  --fx-text:#eee8df;
+  --fx-muted:#7b746b;
+  --fx-danger:#a74343;
+}
+
 /* ═══════════ USER FX · MYROOM · BASIC ROOMFX ═══════════ */
 .pvr-live-home:has(> .pvr-myroom-shell) > :not(.pvr-myroom-shell){
   display:none !important;
@@ -30,9 +45,9 @@
   align-self:start;
   min-height:620px;
   padding:14px;
-  border:1px solid #ffffff12;
+  border:1px solid var(--fx-line);
   border-radius:10px;
-  background:#090b0edb;
+  background:color-mix(in srgb, var(--fx-panel) 86%, transparent);
 }
 .pvr-myroom-brand{
   display:flex;
@@ -46,9 +61,9 @@
   place-items:center;
   width:38px;
   height:38px;
-  border:1px solid #bd9854;
+  border:1px solid var(--fx-gold);
   border-radius:10px;
-  color:#e6c982;
+  color:var(--fx-gold-soft);
   font-family:"Cinzel", Georgia, serif;
   font-size:14px;
   font-weight:700;
@@ -77,7 +92,7 @@
   padding:14px 10px;
   border:1px solid #ffffff0d;
   border-radius:9px;
-  background:#0b0d10;
+  background:var(--fx-panel);
 }
 .pvr-myroom-profile-photo{
   width:118px;
@@ -87,7 +102,7 @@
   border:1px solid #c19a54;
   border-radius:50%;
   background:#15181c;
-  color:#e3c57f;
+  color:var(--fx-gold-soft);
   font-family:"Cinzel", Georgia, serif;
   font-size:28px;
   font-weight:700;
@@ -101,11 +116,11 @@
 }
 .pvr-myroom-profile-card > strong{
   margin-top:4px;
-  color:#eee7dd;
+  color:var(--fx-text);
   font-size:10px;
 }
 .pvr-myroom-profile-card > span{
-  color:#69cf72;
+  color:var(--fx-green);
   font-size:6px;
   letter-spacing:0.09em;
 }
@@ -115,7 +130,7 @@
   padding:0 10px;
   border:1px solid #ffffff14;
   border-radius:6px;
-  background:#111419;
+  background:var(--fx-panel-2);
   color:#aaa299;
   font-size:6px;
   font-weight:800;
@@ -124,7 +139,7 @@
 }
 .pvr-myroom-change-photo:hover{
   border-color:#b9955040;
-  color:#dfc17f;
+  color:var(--fx-gold-soft);
 }
 .pvr-myroom-menu{
   display:grid;
@@ -146,9 +161,9 @@
 }
 .pvr-myroom-menu button:hover,
 .pvr-myroom-menu button.is-active{
-  border-color:#c39c554f;
-  background:#c39c550f;
-  color:#dfc17f;
+  border-color:color-mix(in srgb, var(--fx-gold) 31%, transparent);
+  background:color-mix(in srgb, var(--fx-gold) 6%, transparent);
+  color:var(--fx-gold-soft);
 }
 .pvr-myroom-main{
   display:grid;
@@ -190,7 +205,7 @@
   min-height:38px;
   border:1px solid #ffffff14;
   border-radius:8px;
-  background:#080a0d;
+  background:var(--fx-bg);
 }
 .pvr-myroom-search span{
   display:grid;
@@ -206,7 +221,7 @@
   border:0;
   outline:0;
   background:transparent;
-  color:#ece7df;
+  color:var(--fx-text);
   font-size:9px;
 }
 .pvr-myroom-search input::placeholder{
@@ -215,9 +230,9 @@
 .pvr-myroom-composer,
 .pvr-myroom-post,
 .pvr-myroom-panel{
-  border:1px solid #ffffff12;
+  border:1px solid var(--fx-line);
   border-radius:10px;
-  background:#0a0c0fe8;
+  background:color-mix(in srgb, var(--fx-panel) 91%, transparent);
   box-shadow:0 14px 32px #00000024;
 }
 .pvr-myroom-composer{
@@ -237,10 +252,10 @@
   height:38px;
   flex:0 0 38px;
   overflow:hidden;
-  border:1px solid #c09a55;
+  border:1px solid var(--fx-gold);
   border-radius:50%;
   background:#17191d;
-  color:#e3c57f;
+  color:var(--fx-gold-soft);
   font-family:"Cinzel", Georgia, serif;
   font-size:9px;
   font-weight:700;
@@ -276,7 +291,7 @@
   position:relative;
   margin-top:10px;
   overflow:hidden;
-  border:1px solid #ffffff12;
+  border:1px solid var(--fx-line);
   border-radius:8px;
   background:#050607;
 }
@@ -334,8 +349,8 @@
 .pvr-myroom-composer-actions .pvr-myroom-post-button{
   justify-self:end;
   min-width:100px;
-  border-color:#c49d57;
-  background:linear-gradient(180deg, #d3b16f, #a77e3f);
+  border-color:var(--fx-gold);
+  background:linear-gradient(180deg, var(--fx-gold-soft), #a77e3f);
   color:#17120b;
 }
 .pvr-myroom-composer-actions .pvr-myroom-post-button:disabled{
@@ -448,11 +463,11 @@
   min-width:0;
   height:32px;
   padding:0 10px;
-  border:1px solid #ffffff12;
+  border:1px solid var(--fx-line);
   border-radius:7px;
   outline:0;
   background:#080a0c;
-  color:#ece7df;
+  color:var(--fx-text);
   font-size:8px;
 }
 .pvr-myroom-right{
@@ -492,7 +507,7 @@
 .pvr-myroom-oncam{
   padding:0;
   overflow:hidden;
-  border:1.5px solid #c49d57 !important;
+  border:1.5px solid var(--fx-gold) !important;
 }
 .pvr-myroom-oncam-toggle{
   width:100%;
@@ -512,7 +527,7 @@
   letter-spacing:0.1em;
 }
 .pvr-myroom-oncam-toggle strong{
-  color:#d9b86f;
+  color:var(--fx-gold-soft);
   font-size:18px;
   font-weight:400;
 }
@@ -613,8 +628,8 @@
   width:7px;
   height:7px;
   border-radius:50%;
-  background:#66d56d;
-  box-shadow:0 0 8px #66d56d66;
+  background:var(--fx-green);
+  box-shadow:0 0 8px color-mix(in srgb, var(--fx-green) 40%, transparent);
 }
 .pvr-myroom-live-empty{
   display:flex;
@@ -738,7 +753,7 @@
     #080a0de8;
 }
 .pvr-myroom-oncam.is-live{
-  border-color:#65cf72 !important;
+  border-color:var(--fx-green) !important;
   box-shadow:
     0 0 0 1px #65cf7217,
     0 18px 48px #00000038;
@@ -771,7 +786,7 @@
 .pvr-myroom-oncam-state.is-live{
   border-color:#65cf7240;
   background:#65cf720d;
-  color:#77db7f;
+  color:var(--fx-green);
 }
 .pvr-myroom-oncam-body{
   gap:10px;
@@ -847,7 +862,7 @@
 .pvr-myroom-oncam-overlay span,
 .pvr-myroom-oncam-overlay strong{
   padding:5px 7px;
-  border:1px solid #ffffff12;
+  border:1px solid var(--fx-line);
   border-radius:5px;
   background:#050607c7;
   backdrop-filter:blur(8px);
@@ -885,10 +900,10 @@
 .pvr-myroom-oncam-actions button.is-active{
   border-color:#c49d5755;
   background:#17130d;
-  color:#dfc17f;
+  color:var(--fx-gold-soft);
 }
 .pvr-myroom-oncam-actions .pvr-myroom-oncam-open{
-  border-color:#c49d57;
+  border-color:var(--fx-gold);
   background:linear-gradient(15deg, #d3b16f, #c49d57, #a77e3f, #6f4f24, #d3b16f, #a77e3f, #c49d57, #d3b16f) no-repeat;
   background-size:350%;
   color:#17120b;
@@ -934,7 +949,7 @@
   letter-spacing:0.08em;
 }
 .pvr-myroom-room-pulse strong{
-  color:#6fca76;
+  color:var(--fx-green);
   font-size:6px;
   letter-spacing:0.08em;
 }
@@ -951,7 +966,7 @@
   border:1px solid #65cf7236;
   border-radius:7px;
   background:#071209;
-  color:#6fca76;
+  color:var(--fx-green);
   font-size:6px;
   font-weight:900;
   letter-spacing:0.08em;
@@ -983,4 +998,25 @@
   .pvr-myroom-oncam-screen{
     aspect-ratio:16 / 9;
   }
+}
+
+/* Arcade stays cyan/green/gold — never pink as the primary identity. */
+.pvr-myroom-shell[data-mood="arcade"],
+.pvr-myroom-shell.is-arcade{
+  --fx-accent:#62dfff;
+  --fx-accent-2:#7cff8b;
+  --fx-accent-3:var(--fx-gold);
+}
+.pvr-myroom-shell[data-mood="arcade"] .pvr-myroom-panel,
+.pvr-myroom-shell.is-arcade .pvr-myroom-panel{
+  border-color:color-mix(in srgb, var(--fx-accent) 24%, var(--fx-line));
+}
+.pvr-myroom-shell[data-mood="arcade"] .pvr-myroom-oncam.is-live,
+.pvr-myroom-shell.is-arcade .pvr-myroom-oncam.is-live{
+  border-color:var(--fx-accent-2) !important;
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--fx-accent) 18%, transparent),0 18px 48px #00000038;
+}
+.pvr-myroom-shell[data-mood="arcade"] .pvr-myroom-oncam-title,
+.pvr-myroom-shell.is-arcade .pvr-myroom-oncam-title{
+  color:var(--fx-accent);
 }
