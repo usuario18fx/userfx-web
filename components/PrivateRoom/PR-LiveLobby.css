@@ -15,14 +15,46 @@
 }
 
 .pvr-live-home{
+  --pvr-live-bg:#050607;
+  --pvr-live-panel:#0a0c0f;
+  --pvr-live-panel-2:#0e1115;
+  --pvr-live-line:rgba(255,255,255,0.07);
+  --pvr-live-gold:#c49d57;
+  --pvr-live-gold-soft:#d8bd82;
+  --pvr-live-green:#69cf72;
+  --pvr-live-cyan:#62dfff;
+  --pvr-live-text:#eee8df;
+  --pvr-live-muted:#77716a;
+
+  position:relative;
   width:100%;
-  padding:30px 24px 24px;
-  border:1px solid rgba(77, 255, 171, 0.12);
-  border-radius:22px;
-  background:radial-gradient(80% 60% at 85% 0%, rgba(20, 99, 79, 0.13), transparent 72%), radial-gradient(60% 50% at 0% 100%, rgba(93, 25, 48, 0.1), transparent 74%), linear-gradient(180deg, rgba(7, 11, 13, 0.98), rgba(5, 7, 8, 0.98));
+  padding:28px 24px 24px;
+  overflow:hidden;
+  border:1px solid rgba(196,157,87,0.18);
+  border-radius:18px;
+  background:
+    radial-gradient(70% 65% at 100% 0%, rgba(98,223,255,0.06), transparent 68%),
+    radial-gradient(55% 50% at 0% 100%, rgba(196,157,87,0.07), transparent 74%),
+    linear-gradient(180deg, #090b0d 0%, var(--pvr-live-bg) 100%);
   box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.012);
+    0 28px 80px rgba(0,0,0,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+.pvr-live-home::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg, transparent 0 46%, rgba(255,255,255,0.012) 50%, transparent 54%),
+    repeating-linear-gradient(0deg, transparent 0 5px, rgba(255,255,255,0.008) 6px);
+  opacity:0.58;
+}
+
+.pvr-live-home > *{
+  position:relative;
+  z-index:1;
 }
 
 .pvr-live-home-head{
@@ -30,8 +62,8 @@
   align-items:flex-end;
   justify-content:space-between;
   gap:18px;
-  padding-bottom:18px;
-  border-bottom:1px solid rgba(255, 255, 255, 0.05);
+  padding:0 2px 18px;
+  border-bottom:1px solid var(--pvr-live-line);
 }
 
 .pvr-live-home-head > div:first-child{
@@ -46,49 +78,51 @@
 .pvr-live-self-head span,
 .pvr-live-self-head small{
   font-size:7px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.18em;
 }
 
 .pvr-live-home-head > div:first-child > span{
-  color:#687074;
+  color:#666b70;
 }
 
 .pvr-live-home-head h1{
   margin:0;
-  color:#f0edef;
+  color:var(--pvr-live-text);
   font-family:"Cinzel", serif;
-  font-size:clamp(30px, 5vw, 62px);
+  font-size:clamp(34px, 5vw, 60px);
   font-weight:500;
   line-height:0.94;
-  letter-spacing:0.02em;
+  letter-spacing:0.025em;
+  text-shadow:0 8px 26px rgba(0,0,0,0.42);
 }
 
 .pvr-live-network-status{
   display:inline-flex;
   align-items:center;
-  gap:7px;
-  padding:7px 10px;
-  border:1px solid rgba(77, 255, 171, 0.15);
+  gap:8px;
+  padding:8px 11px;
+  border:1px solid rgba(105,207,114,0.24);
   border-radius:999px;
-  background:rgba(77, 255, 171, 0.025);
-  color:#6fd9b8;
+  background:rgba(105,207,114,0.05);
+  color:#85dc8c;
   font-size:7px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.14em;
+  box-shadow:inset 0 0 16px rgba(105,207,114,0.025);
 }
 
 .pvr-live-network-status > span{
   width:7px;
   height:7px;
   border-radius:50%;
-  background:#4dffab;
-  box-shadow:0 0 10px rgba(77, 255, 171, 0.74);
+  background:var(--pvr-live-green);
+  box-shadow:0 0 10px rgba(105,207,114,0.68);
 }
 
 .pvr-live-grid{
   display:grid;
-  grid-template-columns:minmax(0, 1fr) 260px;
+  grid-template-columns:minmax(0, 1fr) 280px;
   gap:14px;
   margin-top:18px;
 }
@@ -97,9 +131,14 @@
 .pvr-live-self,
 .pvr-live-members,
 .pvr-live-upcoming{
-  border:1px solid rgba(255, 255, 255, 0.055);
-  border-radius:16px;
-  background:rgba(255, 255, 255, 0.012);
+  border:1px solid var(--pvr-live-line);
+  border-radius:14px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.004)),
+    rgba(8,10,12,0.78);
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.018);
 }
 
 .pvr-live-feature,
@@ -124,85 +163,105 @@
 
 .pvr-live-section-head span,
 .pvr-live-self-head span{
-  color:#646b70;
+  color:#686d72;
 }
 
 .pvr-live-section-head strong{
-  color:#d4d1d3;
+  color:#ded8cf;
   font-family:"Cinzel", serif;
   font-size:10px;
-  letter-spacing:0.1em;
+  letter-spacing:0.11em;
 }
 
 .pvr-live-section-head small,
 .pvr-live-self-head small{
-  color:#4dffab;
+  color:var(--pvr-live-gold-soft);
 }
 
 .pvr-live-feature-screen{
-  min-height:290px;
+  position:relative;
+  min-height:300px;
   display:grid;
   place-items:center;
   align-content:center;
   gap:10px;
   margin-top:13px;
-  padding:28px;
-  border:1px solid rgba(43, 117, 126, 0.2);
-  border-radius:14px;
-  background:radial-gradient(circle at 50% 46%, rgba(31, 115, 105, 0.13), transparent 28%), repeating-linear-gradient(to bottom, rgba(102, 216, 198, 0.018) 0, rgba(102, 216, 198, 0.018) 1px, transparent 1px, transparent 5px), linear-gradient(180deg, #061014, #030709);
+  padding:30px;
+  overflow:hidden;
+  border:1px solid rgba(98,223,255,0.13);
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(98,223,255,0.08), transparent 29%),
+    radial-gradient(circle at 50% 100%, rgba(196,157,87,0.06), transparent 40%),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 5px),
+    linear-gradient(180deg, #071014, #030506);
   text-align:center;
+  box-shadow:inset 0 0 42px rgba(0,0,0,0.35);
+}
+
+.pvr-live-feature-screen::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(98,223,255,0.025), transparent);
 }
 
 .pvr-live-signal-ring{
   position:relative;
-  width:76px;
-  height:76px;
+  width:82px;
+  height:82px;
   display:grid;
   place-items:center;
-  border:1px solid rgba(77, 255, 171, 0.16);
+  border:1px solid rgba(98,223,255,0.22);
   border-radius:50%;
-  box-shadow:0 0 36px rgba(77, 255, 171, 0.035);
+  background:rgba(98,223,255,0.015);
+  box-shadow:
+    0 0 0 10px rgba(98,223,255,0.01),
+    0 0 34px rgba(98,223,255,0.04);
 }
 
 .pvr-live-signal-ring::before,
 .pvr-live-signal-ring::after{
   content:"";
   position:absolute;
-  border:1px solid rgba(77, 255, 171, 0.08);
+  border:1px solid rgba(196,157,87,0.12);
   border-radius:50%;
 }
 
 .pvr-live-signal-ring::before{
-  inset:11px;
+  inset:12px;
 }
 
 .pvr-live-signal-ring::after{
-  inset:23px;
+  inset:25px;
 }
 
 .pvr-live-signal-ring > span{
-  width:10px;
-  height:10px;
+  width:11px;
+  height:11px;
   border-radius:50%;
-  background:#4dffab;
-  box-shadow:0 0 16px rgba(77, 255, 171, 0.72);
-  animation:pvrLivePulse 1.7s ease-in-out infinite;
+  background:var(--pvr-live-green);
+  box-shadow:
+    0 0 8px rgba(105,207,114,0.8),
+    0 0 22px rgba(105,207,114,0.34);
+  animation:pvrLivePulse 1.65s ease-in-out infinite;
 }
 
 .pvr-live-feature-screen > strong{
-  margin-top:4px;
-  color:#d9d6d8;
+  margin-top:6px;
+  color:#e4ded5;
   font-family:"Cinzel", serif;
   font-size:14px;
-  letter-spacing:0.11em;
+  letter-spacing:0.12em;
 }
 
 .pvr-live-feature-screen > p{
-  max-width:390px;
+  max-width:410px;
   margin:0;
-  color:#666d71;
+  color:#73777b;
   font-size:10px;
-  line-height:1.55;
+  line-height:1.6;
 }
 
 .pvr-live-signal-meta{
@@ -210,16 +269,17 @@
   flex-wrap:wrap;
   justify-content:center;
   gap:7px;
-  margin-top:6px;
+  margin-top:7px;
 }
 
 .pvr-live-signal-meta span{
-  padding:5px 7px;
-  border:1px solid rgba(255, 255, 255, 0.055);
+  padding:5px 8px;
+  border:1px solid rgba(255,255,255,0.06);
   border-radius:999px;
-  color:#5e666a;
+  background:rgba(255,255,255,0.012);
+  color:#73777b;
   font-size:6px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.12em;
 }
 
@@ -230,12 +290,16 @@
   align-items:center;
   padding:14px;
   text-align:center;
-  background:radial-gradient(circle at 50% 22%, rgba(35, 118, 95, 0.1), transparent 34%), rgba(255, 255, 255, 0.012);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(196,157,87,0.08), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.004));
 }
 
 .pvr-live-self.is-live{
-  border-color:rgba(77, 255, 171, 0.2);
-  box-shadow:inset 0 0 30px rgba(77, 255, 171, 0.025);
+  border-color:rgba(105,207,114,0.28);
+  box-shadow:
+    0 0 0 1px rgba(105,207,114,0.04),
+    inset 0 0 34px rgba(105,207,114,0.025);
 }
 
 .pvr-live-self-head{
@@ -243,49 +307,53 @@
 }
 
 .pvr-live-self-head small{
-  color:#70767a;
+  color:#70757a;
 }
 
 .pvr-live-self.is-live .pvr-live-self-head small{
-  color:#4dffab;
+  color:#82da89;
 }
 
 .pvr-live-self-avatar{
   position:relative;
-  width:92px;
-  height:92px;
+  width:96px;
+  height:96px;
   display:grid;
   place-items:center;
-  margin-top:26px;
-  border:1px solid rgba(77, 255, 171, 0.28);
+  margin-top:24px;
+  border:1px solid rgba(196,157,87,0.38);
   border-radius:50%;
-  background:radial-gradient(circle at 35% 28%, rgba(86, 214, 182, 0.22), transparent 42%), #091012;
-  color:#62ffca;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(216,189,130,0.16), transparent 40%),
+    #0b0e11;
+  color:var(--pvr-live-gold-soft);
   font-family:"Cinzel", serif;
   font-size:25px;
   font-weight:700;
-  box-shadow:inset 0 0 24px rgba(77, 255, 171, 0.05);
+  box-shadow:
+    inset 0 0 24px rgba(196,157,87,0.045),
+    0 14px 32px rgba(0,0,0,0.26);
 }
 
 .pvr-live-self-avatar > span{
   position:absolute;
   right:4px;
   bottom:8px;
-  width:13px;
-  height:13px;
-  border:3px solid #091012;
+  width:14px;
+  height:14px;
+  border:3px solid #0b0e11;
   border-radius:50%;
   background:#555b60;
 }
 
 .pvr-live-self-avatar > span.is-live{
-  background:#4dffab;
-  box-shadow:0 0 12px rgba(77, 255, 171, 0.82);
+  background:var(--pvr-live-green);
+  box-shadow:0 0 12px rgba(105,207,114,0.74);
 }
 
 .pvr-live-self > strong{
   margin-top:14px;
-  color:#e3dfe2;
+  color:#e8e2da;
   font-family:"Cinzel", serif;
   font-size:12px;
   letter-spacing:0.08em;
@@ -294,7 +362,7 @@
 .pvr-live-self > p{
   min-height:46px;
   margin:9px 0 16px;
-  color:#686f73;
+  color:#73777b;
   font-size:9px;
   line-height:1.55;
 }
@@ -303,25 +371,46 @@
 .pvr-live-profile-link{
   width:100%;
   min-height:40px;
-  border-radius:10px;
+  border-radius:8px;
   font-family:"Cinzel", serif;
   font-size:7px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.14em;
   cursor:pointer;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
 }
 
 .pvr-live-go-online{
-  border:1px solid rgba(77, 255, 171, 0.3);
-  background:radial-gradient(120% 170% at 50% 0%, rgba(56, 163, 118, 0.23), transparent 62%), linear-gradient(180deg, #123326, #081a14);
-  color:#58f7b7;
+  border:1px solid rgba(105,207,114,0.34);
+  background:
+    linear-gradient(180deg, rgba(105,207,114,0.14), rgba(105,207,114,0.045)),
+    #0b130d;
+  color:#8fe296;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+.pvr-live-go-online:hover{
+  border-color:rgba(105,207,114,0.58);
+  box-shadow:0 0 18px rgba(105,207,114,0.08);
+  transform:translateY(-1px);
 }
 
 .pvr-live-profile-link{
   margin-top:8px;
-  border:1px solid rgba(255, 255, 255, 0.055);
-  background:#0a0d0f;
-  color:#767d81;
+  border:1px solid rgba(196,157,87,0.2);
+  background:#0b0d10;
+  color:#a49170;
+}
+
+.pvr-live-profile-link:hover{
+  border-color:rgba(196,157,87,0.4);
+  color:var(--pvr-live-gold-soft);
+  transform:translateY(-1px);
 }
 
 .pvr-live-members,
@@ -337,14 +426,26 @@
 }
 
 .pvr-live-member-empty{
-  min-height:106px;
+  min-height:108px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   padding:12px;
-  border:1px solid rgba(255, 255, 255, 0.045);
-  border-radius:12px;
-  background:rgba(0, 0, 0, 0.13);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.012), transparent),
+    rgba(0,0,0,0.16);
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+
+.pvr-live-member-empty:hover{
+  border-color:rgba(196,157,87,0.18);
+  background:rgba(196,157,87,0.025);
+  transform:translateY(-1px);
 }
 
 .pvr-live-member-dot{
@@ -352,11 +453,11 @@
   height:7px;
   margin-bottom:11px;
   border-radius:50%;
-  background:#475055;
+  background:#4c5257;
 }
 
 .pvr-live-member-empty strong{
-  color:#9ea3a6;
+  color:#aaa49c;
   font-family:"Cinzel", serif;
   font-size:8px;
   letter-spacing:0.09em;
@@ -364,7 +465,7 @@
 
 .pvr-live-member-empty small{
   margin-top:7px;
-  color:#555c60;
+  color:#5f6468;
   font-size:7px;
   line-height:1.5;
 }
@@ -376,9 +477,11 @@
   align-items:center;
   margin-top:13px;
   padding:12px;
-  border:1px solid rgba(255, 255, 255, 0.045);
-  border-radius:12px;
-  background:linear-gradient(90deg, rgba(102, 25, 48, 0.08), transparent 45%), rgba(0, 0, 0, 0.13);
+  border:1px solid rgba(196,157,87,0.11);
+  border-radius:10px;
+  background:
+    linear-gradient(90deg, rgba(196,157,87,0.055), transparent 42%),
+    rgba(0,0,0,0.15);
 }
 
 .pvr-live-event-date,
@@ -389,29 +492,29 @@
 
 .pvr-live-event-date{
   padding-right:12px;
-  border-right:1px solid rgba(255, 255, 255, 0.055);
+  border-right:1px solid rgba(255,255,255,0.055);
 }
 
 .pvr-live-event-date span,
 .pvr-live-event-date small,
 .pvr-live-event-copy span,
 .pvr-live-event-copy small{
-  color:#666d71;
+  color:#686e72;
   font-size:6px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.14em;
 }
 
 .pvr-live-event-date strong{
   margin:3px 0;
-  color:#e4e0e2;
+  color:var(--pvr-live-gold-soft);
   font-family:"Cinzel", serif;
   font-size:15px;
 }
 
 .pvr-live-event-copy strong{
   margin:5px 0;
-  color:#cbc7ca;
+  color:#d5d0c8;
   font-family:"Cinzel", serif;
   font-size:10px;
   letter-spacing:0.08em;
@@ -419,14 +522,25 @@
 
 .pvr-live-event > button{
   min-height:38px;
-  border:1px solid rgba(255, 255, 255, 0.055);
-  border-radius:9px;
-  background:#0a0c0e;
-  color:#686f73;
+  border:1px solid rgba(196,157,87,0.16);
+  border-radius:8px;
+  background:#0b0d10;
+  color:#8e826f;
   font-family:"Cinzel", serif;
   font-size:7px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.12em;
+  cursor:pointer;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.pvr-live-event > button:hover{
+  border-color:rgba(196,157,87,0.38);
+  color:var(--pvr-live-gold-soft);
+  transform:translateY(-1px);
 }
 
 .pvr-live-nav{
@@ -437,25 +551,39 @@
 }
 
 .pvr-live-nav button{
-  min-height:39px;
-  border:1px solid rgba(255, 255, 255, 0.05);
-  border-radius:10px;
-  background:#080b0d;
-  color:#676e72;
+  min-height:40px;
+  border:1px solid rgba(255,255,255,0.055);
+  border-radius:8px;
+  background:#080a0c;
+  color:#6f7478;
   font-size:6px;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:0.13em;
   cursor:pointer;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.pvr-live-nav button:hover:not(:disabled){
+  border-color:rgba(196,157,87,0.24);
+  color:#b59a67;
+  transform:translateY(-1px);
 }
 
 .pvr-live-nav button.is-active{
-  border-color:rgba(77, 255, 171, 0.23);
-  background:rgba(77, 255, 171, 0.035);
-  color:#4dffab;
+  border-color:rgba(196,157,87,0.38);
+  background:
+    linear-gradient(180deg, rgba(196,157,87,0.1), rgba(196,157,87,0.03)),
+    #0b0d10;
+  color:var(--pvr-live-gold-soft);
+  box-shadow:inset 0 0 16px rgba(196,157,87,0.03);
 }
 
 .pvr-live-nav button:disabled{
-  opacity:0.42;
+  opacity:0.38;
   cursor:not-allowed;
 }
 
@@ -465,13 +593,14 @@
     transform:scale(0.92);
     opacity:0.72;
   }
+
   50%{
     transform:scale(1.12);
     opacity:1;
   }
 }
 
-/* ─────   TABLET ─────── */
+/* ───── TABLET ───── */
 @media (max-width: 900px){
   .pvr-live-grid{
     grid-template-columns:1fr 220px;
@@ -482,11 +611,11 @@
   }
 }
 
-/* ─────   MOBILE ─────── */
+/* ───── MOBILE ───── */
 @media (max-width: 650px){
   .pvr-live-home{
     padding:18px 12px 14px;
-    border-radius:16px;
+    border-radius:14px;
   }
 
   .pvr-live-home-head{
@@ -496,6 +625,10 @@
 
   .pvr-live-home-head h1{
     font-size:38px;
+  }
+
+  .pvr-live-network-status{
+    padding:7px 9px;
   }
 
   .pvr-live-grid{
@@ -512,8 +645,8 @@
   }
 
   .pvr-live-self-avatar{
-    width:78px;
-    height:78px;
+    width:80px;
+    height:80px;
     margin-top:18px;
     font-size:21px;
   }
