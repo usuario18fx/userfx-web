@@ -2,6 +2,7 @@
           import { createPortal } from "react-dom";
           import PrivateRoomDirectGate from "./PR-DirectGate";
           import PrivateRoomAccount from "./PR-Account";
+          import PrivateRoomMyRoom from "./PR-MyRoom";
           import "./PR-LiveLobby.css";
           import "./PR-MyCamDock.css";
           import "./PR-WelcomeTour.css";
@@ -935,7 +936,7 @@ export default function PrivateRoomLiveShell() {
   return (
     <PrivateRoomDirectGate>
       <PrivateRoomAccount />
-      <PrivateRoomLiveLobby />
+      <PrivateRoomMyRoom />
       <PrivateRoomMyCamDock />
       <PrivateRoomWelcomeTour />
     </PrivateRoomDirectGate>
