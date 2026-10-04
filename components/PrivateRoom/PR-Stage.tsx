@@ -4,6 +4,25 @@ import "./PR-Stage.css";
 
 const DEV_OWNER = import.meta.env.DEV;
 
+type PrivateRoomMood = "cine" | "vintage" | "arcade";
+const MOOD_KEY = "userfx_private_room_mood";
+const MOODS: readonly PrivateRoomMood[] = ["cine", "vintage", "arcade"];
+
+function getMood(): PrivateRoomMood {
+  try {
+    const value = localStorage.getItem(MOOD_KEY);
+    return value === "vintage" || value === "arcade" ? value : "cine";
+  } catch {
+    return "cine";
+  }
+}
+
+function setDocumentMood(mood: PrivateRoomMood) {
+  document.documentElement.dataset.pvrMood = mood;
+  try { localStorage.setItem(MOOD_KEY, mood); } catch {}
+  window.dispatchEvent(new CustomEvent("userfx:private-room-mood", { detail: mood }));
+}
+
 type RuntimeState = {
   isOwner: boolean;
   stage: { live: boolean; startedAt: string | null };
@@ -30,6 +49,7 @@ function openCameraStudio() {
 export default function PrivateRoomStage() {
   const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
   const [cameraLive, setCameraLive] = useState(false);
+  const [mood, setMood] = useState<PrivateRoomMood>(() => getMood());
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
   const [runtime, setRuntime] = useState<RuntimeState>({
     isOwner: DEV_OWNER,
@@ -37,6 +57,10 @@ export default function PrivateRoomStage() {
     viewingStage: 0,
   });
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    setDocumentMood(mood);
+  }, [mood]);
   const streamRef = useRef<MediaStream | null>(null);
   const ownsStreamRef = useRef(false);
 
@@ -207,9 +231,18 @@ USER FX · LIVE NETWORK
 STAGE
           </h1>
         </div>
-        <button type="button" onClick={() => { window.location.hash = "#/private-room"; }}>
+        <div className="pvr-stage-head-actions">
+          <div className="pvr-stage-mood-switch" role="group" aria-label="Stage visual mood">
+            {MOODS.map((option) => (
+              <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
+{option.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => { window.location.hash = "#/private-room"; }}>
 MYROOM
-        </button>
+          </button>
+        </div>
       </header>
 
       {runtime.isOwner ? (
