@@ -2090,3 +2090,20 @@
 :root[data-pvr-mood="arcade"] .pvr-live-home-head h1,:root[data-pvr-mood="arcade"] .pvr-route-page-head h1{font-family:"Space Grotesk",Inter,sans-serif;font-weight:900;letter-spacing:-.035em;text-transform:uppercase;text-shadow:0 0 26px var(--pvr-mood-glow);}
 :root[data-pvr-mood="vintage"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 3px,#b47b3410 4px),radial-gradient(circle at 20% 0,#7c4b2026,transparent 42%),linear-gradient(145deg,#28190d,#100b07 65%,#050403);}
 :root[data-pvr-mood="arcade"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff0b 5px),radial-gradient(circle at 85% 5%,#9a62ff25,transparent 38%),radial-gradient(circle at 10% 70%,#39dcff18,transparent 45%),linear-gradient(145deg,#0b1022,#04050d);}
+
+/* FX three-mode MY ROOM transformation */
+.fx5-mood-switch{position:sticky;top:8px;z-index:90;width:max-content;margin:8px auto 14px;display:flex;gap:3px;padding:5px;border:1px solid var(--pvr-mood-line);border-radius:999px;background:color-mix(in srgb,var(--pvr-mood-panel) 90%,transparent);backdrop-filter:blur(16px);box-shadow:0 12px 35px #0009}
+.fx5-mood-switch button{height:30px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--pvr-mood-muted);font:900 7px/1 Inter,system-ui,sans-serif;letter-spacing:.14em;cursor:pointer}
+.fx5-mood-switch button.is-active{background:var(--pvr-mood-accent);color:var(--pvr-mood-on-accent);box-shadow:0 0 22px var(--pvr-mood-glow)}
+:root[data-pvr-mood] .fx5{background:radial-gradient(circle at 50% -15%,var(--pvr-mood-glow),transparent 36%),var(--pvr-mood-bg)!important;color:#eef3f8}
+:root[data-pvr-mood] .fx5 .card{border-color:var(--pvr-mood-line)!important;background:linear-gradient(150deg,var(--pvr-mood-panel2),var(--pvr-mood-panel))!important;box-shadow:0 18px 50px #0008}
+:root[data-pvr-mood] .fx5 .card h2,:root[data-pvr-mood] .fx5 strong{color:var(--pvr-mood-accent)}
+:root[data-pvr-mood="cine"] .fx5 .card{border-radius:20px}
+:root[data-pvr-mood="cine"] .fx5-main{gap:18px}
+:root[data-pvr-mood="vintage"] .fx5{background:repeating-linear-gradient(0deg,#0000 0 3px,#d49a3b08 4px),radial-gradient(circle at 50% 0,#75431722,transparent 35%),#100b07!important}
+:root[data-pvr-mood="vintage"] .fx5 .card{border-radius:2px;border-width:2px;box-shadow:inset 0 0 35px #7e4c1b16,0 15px 40px #0009}
+:root[data-pvr-mood="vintage"] .fx5 .card h2{font-family:"Cinzel",Georgia,serif;letter-spacing:.08em}
+:root[data-pvr-mood="arcade"] .fx5{background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff08 5px),radial-gradient(circle at 10% 20%,#39dcff16,transparent 28%),radial-gradient(circle at 90% 45%,#9a62ff18,transparent 32%),#04050d!important}
+:root[data-pvr-mood="arcade"] .fx5 .card{border-radius:8px;box-shadow:0 18px 60px #000b,inset 0 0 30px #39dcff08}
+:root[data-pvr-mood="arcade"] .fx5 .card:hover{border-color:#39dcff88!important;transform:translateY(-1px);box-shadow:0 22px 70px #000d,0 0 25px #39dcff12}
+@media(max-width:680px){.fx5-mood-switch{width:calc(100% - 24px)}.fx5-mood-switch button{flex:1;padding:0 6px}}
