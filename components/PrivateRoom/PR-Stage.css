@@ -839,3 +839,19 @@
 :root[data-pvr-mood="arcade"] .pvr-live-home-head h1,:root[data-pvr-mood="arcade"] .pvr-route-page-head h1{font-family:"Space Grotesk",Inter,sans-serif;font-weight:900;letter-spacing:-.035em;text-transform:uppercase;text-shadow:0 0 26px var(--pvr-mood-glow);}
 :root[data-pvr-mood="vintage"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 3px,#b47b3410 4px),radial-gradient(circle at 20% 0,#7c4b2026,transparent 42%),linear-gradient(145deg,#28190d,#100b07 65%,#050403);}
 :root[data-pvr-mood="arcade"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff0b 5px),radial-gradient(circle at 85% 5%,#9a62ff25,transparent 38%),radial-gradient(circle at 10% 70%,#39dcff18,transparent 45%),linear-gradient(145deg,#0b1022,#04050d);}
+
+/* FX three-mode stage transformation */
+.pvr-stage-head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.pvr-stage-mood-switch{display:flex;gap:3px;padding:4px;border:1px solid var(--pvr-mood-line);border-radius:999px;background:#0008}
+.pvr-stage-mood-switch button{height:28px;padding:0 11px;border:0;border-radius:999px;background:transparent;color:var(--pvr-mood-muted);font-size:7px;font-weight:900;letter-spacing:.12em}
+.pvr-stage-mood-switch button.is-active{background:var(--pvr-mood-accent);color:var(--pvr-mood-on-accent);box-shadow:0 0 20px var(--pvr-mood-glow)}
+:root[data-pvr-mood="cine"] .pvr-stage-scene-grid{grid-template-columns:1.6fr 1fr 1fr;gap:16px;padding:18px}
+:root[data-pvr-mood="cine"] .pvr-stage-camera-card{border-radius:18px;overflow:hidden}
+:root[data-pvr-mood="cine"] .pvr-stage-camera-screen{min-height:220px}
+:root[data-pvr-mood="vintage"] .pvr-stage-scene{border-radius:2px;box-shadow:inset 0 0 90px #6d3b1624,0 30px 80px #000c}
+:root[data-pvr-mood="vintage"] .pvr-stage-camera-card{border-radius:2px;border-width:2px;box-shadow:inset 0 0 45px #8d55202b}
+:root[data-pvr-mood="vintage"] .pvr-stage-camera-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 3px,#d79b4a0c 4px),linear-gradient(90deg,#6e38100d,#0000,#6e38100d)}
+:root[data-pvr-mood="arcade"] .pvr-stage-scene{border-radius:12px;transform:perspective(1400px) rotateX(.35deg);box-shadow:0 40px 110px #000,0 0 45px #39dcff18}
+:root[data-pvr-mood="arcade"] .pvr-stage-camera-card{clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);border-radius:0}
+:root[data-pvr-mood="arcade"] .pvr-stage-camera-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff0c 5px)}
+@media(max-width:760px){.pvr-stage-head-actions{width:100%;justify-content:space-between}.pvr-stage-mood-switch{flex:1}.pvr-stage-mood-switch button{flex:1;padding:0 5px}}
