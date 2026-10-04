@@ -232,13 +232,6 @@ STAGE
           </h1>
         </div>
         <div className="pvr-stage-head-actions">
-          <div className="pvr-stage-mood-switch" role="group" aria-label="Stage visual mood">
-            {MOODS.map((option) => (
-              <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
-{option.toUpperCase()}
-              </button>
-            ))}
-          </div>
           <button type="button" onClick={() => { window.location.hash = "#/private-room"; }}>
 MYROOM
           </button>
