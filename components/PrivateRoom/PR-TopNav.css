@@ -339,3 +339,20 @@
 .pvr-club-nav--unified .pvr-club-reward{border:1px solid #8b5cff30;background:#17102c;border-radius:10px;}
 .pvr-club-nav--unified .pvr-reward-text{color:#8b5cff;}
 .pvr-club-nav--unified .pvr-open-browser{border-color:#8b5cff55;background:#17102c;color:#8b5cff;border-radius:10px;}
+
+
+/* ══════════ PRIVATE ROOM · CINE / VINTAGE / ARCADE SWITCH ══════════ */
+.pvr-mood-switch{display:flex;align-items:center;gap:3px;padding:4px;border:1px solid var(--pvr-mood-line,#ffffff18);border-radius:999px;background:var(--pvr-mood-panel,#080a0d);box-shadow:inset 0 0 18px #0008;}
+.pvr-mood-switch button{min-width:54px;height:27px;padding:0 9px;border:0;border-radius:999px;background:transparent;color:var(--pvr-mood-muted,#72777e);font-size:6px;font-weight:900;letter-spacing:.12em;cursor:pointer;}
+.pvr-mood-switch button.is-active{background:var(--pvr-mood-accent,#d8bd82);color:var(--pvr-mood-on-accent,#050607);box-shadow:0 0 18px var(--pvr-mood-glow,#d8bd8230);}
+:root[data-pvr-mood="cine"]{--pvr-mood-bg:#07090c;--pvr-mood-panel:#10141a;--pvr-mood-panel2:#171d25;--pvr-mood-line:#8da2b733;--pvr-mood-accent:#e7edf5;--pvr-mood-accent2:#7898bd;--pvr-mood-muted:#788492;--pvr-mood-on-accent:#07090c;--pvr-mood-glow:#a8c8ef28;}
+:root[data-pvr-mood="vintage"]{--pvr-mood-bg:#120d08;--pvr-mood-panel:#20160d;--pvr-mood-panel2:#302113;--pvr-mood-line:#c6944a42;--pvr-mood-accent:#e0b66f;--pvr-mood-accent2:#a76835;--pvr-mood-muted:#8f765b;--pvr-mood-on-accent:#160d05;--pvr-mood-glow:#d8933c2c;}
+:root[data-pvr-mood="arcade"]{--pvr-mood-bg:#050510;--pvr-mood-panel:#0b1022;--pvr-mood-panel2:#111b35;--pvr-mood-line:#28d7ff42;--pvr-mood-accent:#39dcff;--pvr-mood-accent2:#9a62ff;--pvr-mood-muted:#667493;--pvr-mood-on-accent:#02050b;--pvr-mood-glow:#39dcff35;}
+:root[data-pvr-mood] .pvr-club-nav--unified{border-bottom:1px solid var(--pvr-mood-line)!important;background:linear-gradient(180deg,var(--pvr-mood-panel),var(--pvr-mood-bg))!important;box-shadow:0 16px 50px #000b,0 0 30px var(--pvr-mood-glow)!important;}
+:root[data-pvr-mood] .pvr-club-nav--unified .pvr-club-brand{border-color:var(--pvr-mood-line)!important;background:var(--pvr-mood-panel)!important;}
+:root[data-pvr-mood] .pvr-club-nav--unified .pvr-club-tabs{border-color:var(--pvr-mood-line);background:#0005;}
+:root[data-pvr-mood] .pvr-club-nav--unified .pvr-club-tabs button.is-active{border-color:var(--pvr-mood-accent)!important;background:var(--pvr-mood-panel2)!important;color:var(--pvr-mood-accent)!important;box-shadow:0 0 20px var(--pvr-mood-glow)!important;}
+:root[data-pvr-mood="cine"] .pvr-club-brand-copy strong{font-family:Inter,system-ui,sans-serif;letter-spacing:.08em;}
+:root[data-pvr-mood="vintage"] .pvr-club-brand-copy strong{font-family:"Cinzel",Georgia,serif;letter-spacing:.12em;}
+:root[data-pvr-mood="arcade"] .pvr-club-brand-copy strong{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:.04em;text-shadow:0 0 14px var(--pvr-mood-glow);}
+@media(max-width:1050px){.pvr-mood-switch{order:4;width:100%;justify-content:center}.pvr-mood-switch button{flex:1;max-width:110px}}
