@@ -1,4 +1,25 @@
           import { useCallback, useEffect, useState } from "react";
+
+          type PrivateRoomMood = "cine" | "vintage" | "arcade";
+          const MOOD_KEY = "userfx_private_room_mood";
+          const MOODS: readonly PrivateRoomMood[] = ["cine", "vintage", "arcade"];
+
+          function readMood(): PrivateRoomMood {
+            try {
+              const stored = localStorage.getItem(MOOD_KEY);
+              return stored === "vintage" || stored === "arcade" ? stored : "cine";
+            } catch {
+              return "cine";
+            }
+          }
+
+          function applyMood(mood: PrivateRoomMood) {
+            document.documentElement.dataset.pvrMood = mood;
+            try {
+              localStorage.setItem(MOOD_KEY, mood);
+            } catch {}
+            window.dispatchEvent(new CustomEvent("userfx:private-room-mood", { detail: mood }));
+          }
           import "./PR-TopNav.css";
 
           const HOME_URL = "https://user18fx.com";
@@ -85,6 +106,11 @@
             const [cameraLive, setCameraLive] = useState(false);
             const [insideTelegram, setInsideTelegram] = useState(false);
             const [browserNoticeOpen, setBrowserNoticeOpen] = useState(false);
+            const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
+
+            useEffect(() => {
+              applyMood(mood);
+            }, [mood]);
 
             const readLiveState = useCallback(() => {
               const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
@@ -168,6 +194,13 @@
             );
           })}
         </nav>
+        <div className="pvr-mood-switch" role="group" aria-label="Private Room visual mood">
+          {MOODS.map((option) => (
+            <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
+              {option.toUpperCase()}
+            </button>
+          ))}
+        </div>
         <div className="pvr-club-actions">
           <button type="button" className="pvr-club-code" onClick={openProfile}>
             <span>
