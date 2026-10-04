@@ -194,13 +194,6 @@
             );
           })}
         </nav>
-        <div className="pvr-mood-switch" role="group" aria-label="Private Room visual mood">
-          {MOODS.map((option) => (
-            <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
-              {option.toUpperCase()}
-            </button>
-          ))}
-        </div>
         <div className="pvr-club-actions">
           <button type="button" className="pvr-club-code" onClick={openProfile}>
             <span>
@@ -250,6 +243,18 @@
           <button type="button" className="pvr-club-logout" onClick={logout}>
             LOG OUT
           </button>
+        </div>
+      </div>
+      <div className="pvr-global-mood-bar">
+        <span>
+VISUAL MODE
+        </span>
+        <div className="pvr-mood-switch" role="group" aria-label="Private Room visual mood">
+          {MOODS.map((option) => (
+            <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
+{option.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
       <nav className="pvr-club-mobile-tabs" aria-label="Private Room mobile navigation">
