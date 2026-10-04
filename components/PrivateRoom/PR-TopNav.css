@@ -328,3 +328,14 @@
     font-size:16px;
   }
 }
+
+
+/* ══════════ FX CINEMA · GLOBAL NAV REDESIGN ══════════ */
+.pvr-club-nav--unified{border-bottom:1px solid #d9dce332!important;background:linear-gradient(180deg,#090a0dfa,#030407f2)!important;box-shadow:0 18px 50px #0009,0 0 28px #d9dce30d!important;backdrop-filter:blur(18px);}
+.pvr-club-nav--unified .pvr-club-brand{border-color:#d9dce366!important;border-radius:20px!important;background:#17191f!important;box-shadow:inset 0 0 24px #d9dce30d!important;}
+.pvr-club-nav--unified .pvr-club-tabs{padding:5px;border:1px solid #d9dce322;border-radius:20px;background:#030407aa;}
+.pvr-club-nav--unified .pvr-club-tabs button{border-radius:20px!important;font-family:Inter, system-ui, sans-serif;color:#77808d!important;}
+.pvr-club-nav--unified .pvr-club-tabs button:hover,.pvr-club-nav--unified .pvr-club-tabs button.is-active{border-color:#d9dce366!important;background:#17191f!important;color:#d9dce3!important;box-shadow:0 0 20px #d9dce316!important;}
+.pvr-club-nav--unified .pvr-club-reward{border:1px solid #d9dce330;background:#17191f;border-radius:20px;}
+.pvr-club-nav--unified .pvr-reward-text{color:#d9dce3;}
+.pvr-club-nav--unified .pvr-open-browser{border-color:#d9dce355;background:#17191f;color:#d9dce3;border-radius:20px;}
