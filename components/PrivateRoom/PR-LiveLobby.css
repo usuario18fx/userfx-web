@@ -663,3 +663,17 @@
     grid-template-columns:repeat(3, 1fr);
   }
 }
+
+
+/* ══════════ FX CINEMA · MY ROOM REDESIGN ══════════ */
+.pvr-live-home{--pvr-live-gold:#d9dce3;--pvr-live-gold-soft:#d9dce3;--pvr-live-cyan:#d9dce3;padding:34px;border:1px solid #d9dce345;border-radius:20px;background:radial-gradient(80% 70% at 80% 0%,#d9dce316,transparent 62%),linear-gradient(145deg,#17191f,#090a0d 62%,#030407);box-shadow:0 36px 100px #000b,inset 0 0 0 1px #d9dce30d;}
+.pvr-live-home::before{background:repeating-linear-gradient(0deg,transparent 0 5px,#d9dce308 6px),linear-gradient(115deg,transparent 0 47%,#d9dce30b 50%,transparent 53%);}
+.pvr-live-home-head{padding:8px 4px 26px;border-color:#d9dce330;}
+.pvr-live-home-head h1{font-family:Inter, system-ui, sans-serif;font-size:clamp(48px,7vw,88px);font-weight:800;color:#f5f7fb;letter-spacing:-.02em;text-shadow:0 0 35px #d9dce322;}
+.pvr-live-home-head span,.pvr-live-section-head span{color:#d9dce3;}
+.pvr-live-feature,.pvr-live-self,.pvr-live-members,.pvr-live-upcoming{border-color:#d9dce32d;border-radius:20px;background:linear-gradient(155deg,#17191fa8,#090a0de8);box-shadow:0 22px 50px #0007,inset 0 0 26px #d9dce307;}
+.pvr-live-feature-screen{min-height:360px;border-color:#d9dce342;border-radius:20px;background:repeating-linear-gradient(0deg,transparent 0 4px,#d9dce308 5px),radial-gradient(circle at 50% 45%,#d9dce31c,transparent 30%),#030508;}
+.pvr-live-signal-ring,.pvr-live-self-avatar{border-color:#d9dce366;box-shadow:0 0 36px #d9dce318;}
+.pvr-live-section-head strong,.pvr-live-self>strong,.pvr-live-feature-screen>strong{font-family:Inter, system-ui, sans-serif;color:#eef3fa;}
+.pvr-live-go-online,.pvr-live-profile-link,.pvr-live-nav button.is-active{border-color:#d9dce366;background:#17191f;color:#d9dce3;box-shadow:0 0 22px #d9dce312;}
+@media(max-width:650px){.pvr-live-home{padding:18px 12px}.pvr-live-home-head h1{font-size:44px}.pvr-live-feature-screen{min-height:240px}}
