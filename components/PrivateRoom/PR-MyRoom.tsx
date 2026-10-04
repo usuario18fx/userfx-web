@@ -4,47 +4,20 @@ import { useEffect, useState } from "react";
 import "./PR-MyRoom.css";
 
 export type Tab = "muro" | "gente" | "salas" | "perfil";
-export type PrivateRoomMood = "cine" | "vintage" | "arcade";
-
 export type PRFX5Props = {
   nick?: string;
   initialTab?: Tab;
   className?: string;
 };
 
-const MOOD_KEY = "userfx_private_room_mood";
-const MOODS: readonly PrivateRoomMood[] = ["cine", "vintage", "arcade"];
-
-function readMood(): PrivateRoomMood {
-  try {
-    const value = localStorage.getItem(MOOD_KEY);
-    return value === "vintage" || value === "arcade" ? value : "cine";
-  } catch {
-    return "cine";
-  }
-}
-
-function applyMood(mood: PrivateRoomMood) {
-  document.documentElement.dataset.pvrMood = mood;
-  try {
-    localStorage.setItem(MOOD_KEY, mood);
-  } catch {}
-  window.dispatchEvent(new CustomEvent("userfx:private-room-mood", { detail: mood }));
-}
-
 function goTo(hash: string) {
   window.location.hash = hash;
 }
 
 export default function PRFX5({ nick = "@User18Fx", className = "" }: PRFX5Props) {
-  const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
   const [friendRequested, setFriendRequested] = useState(false);
   const [albumRequested, setAlbumRequested] = useState(false);
   const [cameraLive, setCameraLive] = useState(false);
-
-  useEffect(() => {
-    applyMood(mood);
-  }, [mood]);
 
   useEffect(() => {
     const readCamera = () => {
@@ -70,13 +43,6 @@ MY ROOM
           <p>
 Your profile, connections and private-room activity.
           </p>
-        </div>
-        <div className="pvr-myroom-mood-switch" role="group" aria-label="Private Room visual mood">
-          {MOODS.map((option) => (
-            <button key={option} type="button" className={mood === option ? "is-active" : ""} onClick={() => setMood(option)}>
-{option.toUpperCase()}
-            </button>
-          ))}
         </div>
       </header>
 
