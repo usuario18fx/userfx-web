@@ -229,26 +229,8 @@
   text-align:right;
 }
 
-/* =========================================================
-   DOSSIER POSITION INSIDE VAULT HOME
-   ========================================================= */
-
-.vx-dossierRow{
-  position:relative;
-  width:100%;
-  max-width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:22px auto 8px;
-  padding:0 12px;
-  box-sizing:border-box;
-  z-index:5;
-}
-
-.vx-dossierRow .vinfo{
-  margin:0 auto !important;
-}
+/* Dossier placement is owned by components/VaultHome/VaultHome.css.
+   VaultInfoDevice.css only styles the device itself. */
 
 /* ─────────────────────────────────────
    TABLET
@@ -299,10 +281,6 @@
    ───────────────────────────────────── */
 
 @media (max-width: 520px){
-  .vx-dossierRow{
-    margin:16px auto 6px;
-    padding:0 8px;
-  }
 
   .vinfo{
     width:min(94vw, 364px);
@@ -397,24 +375,10 @@
     transform-origin:center center !important;
   }
 
-  .vx-dossierRow{
-    width:100% !important;
-    max-width:100% !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    margin:16px auto 6px !important;
-    padding:0 8px !important;
-  }
-
-  .vx-dossierRow .vinfo{
-    position:relative !important;
-    left:auto !important;
-    right:auto !important;
+  .vinfo{
     width:min(94vw, 364px) !important;
     max-width:calc(100vw - 16px) !important;
     margin:0 auto !important;
-    transform:none !important;
   }
 
   .vx-lock.vx-lockRaise{
