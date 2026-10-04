@@ -663,3 +663,17 @@
     grid-template-columns:repeat(3, 1fr);
   }
 }
+
+
+/* ══════════ FX ARCADE NIGHT · MY ROOM REDESIGN ══════════ */
+.pvr-live-home{--pvr-live-gold:#8b5cff;--pvr-live-gold-soft:#8b5cff;--pvr-live-cyan:#8b5cff;padding:34px;border:1px solid #8b5cff45;border-radius:10px;background:radial-gradient(80% 70% at 80% 0%,#8b5cff16,transparent 62%),linear-gradient(145deg,#17102c,#080612 62%,#030407);box-shadow:0 36px 100px #000b,inset 0 0 0 1px #8b5cff0d;}
+.pvr-live-home::before{background:repeating-linear-gradient(0deg,transparent 0 5px,#8b5cff08 6px),linear-gradient(115deg,transparent 0 47%,#8b5cff0b 50%,transparent 53%);}
+.pvr-live-home-head{padding:8px 4px 26px;border-color:#8b5cff30;}
+.pvr-live-home-head h1{font-family:"Space Grotesk", Inter, sans-serif;font-size:clamp(48px,7vw,88px);font-weight:800;color:#f5f7fb;letter-spacing:-.02em;text-shadow:0 0 35px #8b5cff22;}
+.pvr-live-home-head span,.pvr-live-section-head span{color:#8b5cff;}
+.pvr-live-feature,.pvr-live-self,.pvr-live-members,.pvr-live-upcoming{border-color:#8b5cff2d;border-radius:10px;background:linear-gradient(155deg,#17102ca8,#080612e8);box-shadow:0 22px 50px #0007,inset 0 0 26px #8b5cff07;}
+.pvr-live-feature-screen{min-height:360px;border-color:#8b5cff42;border-radius:10px;background:repeating-linear-gradient(0deg,transparent 0 4px,#8b5cff08 5px),radial-gradient(circle at 50% 45%,#8b5cff1c,transparent 30%),#030508;}
+.pvr-live-signal-ring,.pvr-live-self-avatar{border-color:#8b5cff66;box-shadow:0 0 36px #8b5cff18;}
+.pvr-live-section-head strong,.pvr-live-self>strong,.pvr-live-feature-screen>strong{font-family:"Space Grotesk", Inter, sans-serif;color:#eef3fa;}
+.pvr-live-go-online,.pvr-live-profile-link,.pvr-live-nav button.is-active{border-color:#8b5cff66;background:#17102c;color:#8b5cff;box-shadow:0 0 22px #8b5cff12;}
+@media(max-width:650px){.pvr-live-home{padding:18px 12px}.pvr-live-home-head h1{font-size:44px}.pvr-live-feature-screen{min-height:240px}}
