@@ -1999,9 +1999,11 @@ export type PRFX5Props = {
   className?: string;
 };
 
-export default function PRFX5({
+export default function PRFX5({ nick = "@User18Ca", initialTab = "muro", className = "" }: PRFX5Props) {
   const [privateRoomMood, setPrivateRoomMood] = useState<PrivateRoomMood>(() => readPrivateRoomMood());
-  useEffect(() => { writePrivateRoomMood(privateRoomMood); }, [privateRoomMood]); nick = "@User18Ca", initialTab = "muro", className = "" }: PRFX5Props) {
+  useEffect(() => {
+    writePrivateRoomMood(privateRoomMood);
+  }, [privateRoomMood]);
   useFx5Bootstrap();
   const state = useFx5();
   const call = state.call;
