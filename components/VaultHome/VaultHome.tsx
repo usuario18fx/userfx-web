@@ -416,7 +416,12 @@ export default function VaultHome() {
               <Scramble text="Is a reserved place. access is not public. You'll need a ᴄᴏᴅᴇ" delay={420} />
             </p>
             <div className="vx-dossierRow">
-              <VaultMediaDevice />
+              <div className="vx-dossierOrnament" aria-hidden="true">
+                <img src="/icon8-transparent.png" alt="" draggable={false} />
+              </div>
+              <div className="vx-dossierDevice">
+                <VaultMediaDevice />
+              </div>
             </div>
           </div>
           <aside className="vx-lock vx-lockRaise">
