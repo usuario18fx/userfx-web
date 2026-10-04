@@ -17,6 +17,26 @@ import "./PR-MyRoom.css";
 
 /* ═══════════════════════════ 1 · TIPOS ═══════════════════════════════════ */
 
+
+export type PrivateRoomMood = "cine" | "vintage" | "arcade";
+const PRIVATE_ROOM_MOOD_KEY = "userfx_private_room_mood";
+const PRIVATE_ROOM_MOODS: readonly PrivateRoomMood[] = ["cine", "vintage", "arcade"];
+
+function readPrivateRoomMood(): PrivateRoomMood {
+  try {
+    const value = localStorage.getItem(PRIVATE_ROOM_MOOD_KEY);
+    return value === "vintage" || value === "arcade" ? value : "cine";
+  } catch {
+    return "cine";
+  }
+}
+
+function writePrivateRoomMood(mood: PrivateRoomMood) {
+  document.documentElement.dataset.pvrMood = mood;
+  try { localStorage.setItem(PRIVATE_ROOM_MOOD_KEY, mood); } catch {}
+  window.dispatchEvent(new CustomEvent("userfx:private-room-mood", { detail: mood }));
+}
+
 export type Skin = "pride" | "trans" | "bi" | "pan" | "ace" | "nb" | "arcade";
 export type CallFx = "none" | "vhs" | "glitch" | "zoom" | "pride";
 export type CallStatus = "idle" | "ringing" | "live";
@@ -1979,7 +1999,9 @@ export type PRFX5Props = {
   className?: string;
 };
 
-export default function PRFX5({ nick = "@User18Ca", initialTab = "muro", className = "" }: PRFX5Props) {
+export default function PRFX5({
+  const [privateRoomMood, setPrivateRoomMood] = useState<PrivateRoomMood>(() => readPrivateRoomMood());
+  useEffect(() => { writePrivateRoomMood(privateRoomMood); }, [privateRoomMood]); nick = "@User18Ca", initialTab = "muro", className = "" }: PRFX5Props) {
   useFx5Bootstrap();
   const state = useFx5();
   const call = state.call;
@@ -2038,6 +2060,13 @@ export default function PRFX5({ nick = "@User18Ca", initialTab = "muro", classNa
 
   return (
     <div className={`fx5 ${className}`.trim()} data-skin={state.me.skin} data-scene={call.scene}>
+      <div className="fx5-mood-switch" role="group" aria-label="Private Room visual mood">
+        {PRIVATE_ROOM_MOODS.map((option) => (
+          <button key={option} type="button" className={privateRoomMood === option ? "is-active" : ""} onClick={() => setPrivateRoomMood(option)}>
+{option.toUpperCase()}
+          </button>
+        ))}
+      </div>
       <div className="fx5-scan" aria-hidden="true" />
       <div className="fx5-grid" aria-hidden="true" />
       <div className="fx5-fx" aria-hidden="true">
