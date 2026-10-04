@@ -2534,47 +2534,73 @@ video{
   position:relative;
   display:flex;
   align-items:center;
+  justify-content:center;
   width:min(100%, 940px);
-  margin-top:28px;
+  margin:22px auto 8px;
+  padding:0 12px;
+  box-sizing:border-box;
   isolation:isolate;
   overflow:visible;
+  z-index:5;
 }
+.vx-dossierRow .vinfo,
 .vx-dossierDevice{
   position:relative;
   z-index:2;
   width:100%;
+  margin:0 auto !important;
 }
-.vx-dossierOrnament{
+.vx-dossierOrnament,
+.vx-icon2{
   position:absolute;
   z-index:1;
   top:50%;
   right:-120px;
   width:clamp(260px, 34vw, 520px);
-  aspect-ratio:468 / 724;
-  transform:translateY(-48%);
-  pointer-events:none;
-  opacity:.72;
-}
-.vx-dossierOrnament img{
-  display:block;
-  width:100%;
-  height:100%;
+  height:auto;
   object-fit:contain;
-  filter:grayscale(1) brightness(.82) contrast(1.14);
+  transform:translateY(-48%);
+  transform-origin:center;
+  pointer-events:none;
+  opacity:.50;
+  filter:grayscale(1) brightness(.42) contrast(1.25);
 }
-@media (max-width: 760px){
+.vx-icon4{
+  position:absolute;
+  z-index:1;
+  top:88%;
+  right:-10%;
+  width:clamp(90px, 11vw, 175px);
+  height:auto;
+  object-fit:contain;
+  pointer-events:none;
+  opacity:.20;
+  transform:rotate(205deg) scale(1.5);
+  transform-origin:center;
+  filter:grayscale(1) brightness(.42) contrast(1.25);
+}
+@media (max-width:760px){
   .vx-dossierRow{
     width:100%;
+    margin:16px auto 6px;
+    padding:0 8px;
   }
-  .vx-dossierOrnament{
+  .vx-dossierOrnament,
+  .vx-icon2{
     right:-42px;
     width:clamp(210px, 62vw, 320px);
     opacity:.46;
     transform:translateY(-46%);
   }
+  .vx-icon4{
+    top:25%;
+    right:7%;
+    width:clamp(65px, 19vw, 105px);
+  }
 }
 @media (prefers-reduced-motion: reduce){
-  .vx-dossierOrnament{
+  .vx-dossierOrnament,
+  .vx-icon2{
     transform:translateY(-48%);
   }
 }
