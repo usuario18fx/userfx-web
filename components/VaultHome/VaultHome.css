@@ -2813,3 +2813,246 @@ video{
     margin:20px auto 0;
   }
 }
+
+/* ═════════ USER FX · MOBILE LAYOUT RECOVERY ═════════ */
+html,
+body,
+#root{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+.vx{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip;
+}
+
+@media (max-width: 760px){
+  .vx-open{
+    width:100%;
+    max-width:100%;
+    padding:18px 16px 40px;
+    overflow-x:clip;
+  }
+
+  .vx-grid{
+    grid-template-columns:minmax(0, 1fr) !important;
+    gap:24px !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  .vx-grid > div,
+  .vx-grid > .vx-lock{
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  .vx-heroIdentity{
+    width:100% !important;
+    min-height:0 !important;
+    margin:0 auto 8px !important;
+    padding:8px 0 0 !important;
+    transform:none !important;
+  }
+
+  .vx-heroIdentity .vx-logoWrap{
+    width:100% !important;
+    min-height:190px !important;
+    margin:0 auto !important;
+  }
+
+  .vx-heroIdentity .vx-logoWrap img{
+    width:min(92vw, 360px) !important;
+    max-width:100% !important;
+    margin:0 auto !important;
+  }
+
+  .vx-heroIdentity .vx-kicker{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    gap:clamp(6px, 2vw, 10px) !important;
+  }
+
+  .vx-heroIdentity .vx-kickerBtn{
+    min-width:0 !important;
+    padding:7px 1px !important;
+    font-size:clamp(8px, 2.35vw, 10px) !important;
+    letter-spacing:.1em !important;
+  }
+
+  .vx-heroAccessBtn{
+    position:relative !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-height:74px !important;
+    margin:4px auto 0 !important;
+    padding:0 !important;
+  }
+
+  .vx-heroAccessBtn .smkl-access-button{
+    position:relative !important;
+    inset:auto !important;
+    width:min(285px, 82vw) !important;
+    margin:0 auto !important;
+    transform:scale(1.04) !important;
+    transform-origin:center !important;
+  }
+
+  .vx-title{
+    width:100% !important;
+    max-width:100% !important;
+    margin:8px 0 0 !important;
+    padding-top:10px !important;
+    overflow:visible !important;
+  }
+
+  .vx-access{
+    margin:0 !important;
+    font-size:clamp(50px, 15vw, 62px) !important;
+    line-height:.88 !important;
+    transform:none !important;
+  }
+
+  .vx-rest{
+    margin:2px 0 0 24px !important;
+    font-size:clamp(38px, 11.7vw, 50px) !important;
+    line-height:.88 !important;
+    transform:none !important;
+  }
+
+  .vx-titleCrown{
+    top:22px !important;
+    right:2px !important;
+    left:auto !important;
+    width:104px !important;
+    transform:rotate(-2deg) !important;
+    animation:none !important;
+  }
+
+  .vx-p,
+  .vx-pNormal{
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  .vx-pNormal{
+    font-size:17px !important;
+    line-height:1.55 !important;
+  }
+
+  .vx-dossierRow{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .vx-dossierDevice{
+    min-width:0 !important;
+    width:100% !important;
+  }
+
+  .vx-dossierOrnament{
+    right:-22px !important;
+    width:min(58vw, 230px) !important;
+    opacity:.38 !important;
+  }
+
+  .vx-lock,
+  .vx-lock.vx-lockRaise{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 auto !important;
+    transform:none !important;
+  }
+
+  .vx-sec{
+    width:100% !important;
+    max-width:100% !important;
+    padding-left:18px !important;
+    padding-right:18px !important;
+    overflow-x:hidden !important;
+  }
+
+  .vx-protocolSteps{
+    width:100% !important;
+    max-width:100% !important;
+    gap:22px !important;
+    margin-top:34px !important;
+  }
+
+  .vx-protocolReveal,
+  .vx-stepLeft,
+  .vx-stepRight{
+    width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    align-self:stretch !important;
+    transform:none !important;
+  }
+
+  .vx-step{
+    width:100% !important;
+    grid-template-columns:42px minmax(0, 1fr) !important;
+    gap:12px !important;
+    min-height:0 !important;
+    padding:18px 14px !important;
+  }
+
+  .vx-stepNum{
+    font-size:34px !important;
+  }
+
+  .vx-step h3{
+    font-size:9px !important;
+    letter-spacing:.16em !important;
+  }
+
+  .vx-step p{
+    font-size:16px !important;
+    line-height:1.5 !important;
+    word-break:normal !important;
+    overflow-wrap:normal !important;
+  }
+
+  .vx-insideBlock{
+    width:100% !important;
+    max-width:100% !important;
+    margin:28px auto 24px !important;
+  }
+
+  .vx-insideRow{
+    grid-template-columns:minmax(0, 1fr) !important;
+    gap:18px !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  .vx-insideRow .vx-lead{
+    width:100% !important;
+    max-width:none !important;
+    font-size:18px !important;
+    line-height:1.55 !important;
+    word-break:normal !important;
+    overflow-wrap:normal !important;
+  }
+
+  .vx-insideRow .vx-count{
+    width:min(100%, 300px) !important;
+    min-width:0 !important;
+    margin:0 !important;
+    justify-self:start !important;
+    transform:none !important;
+  }
+
+  .vx-chooseZone{
+    max-width:100vw !important;
+    overflow:hidden !important;
+  }
+}
+/* ═════════ END USER FX · MOBILE LAYOUT RECOVERY ═════════ */
