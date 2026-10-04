@@ -663,3 +663,17 @@
     grid-template-columns:repeat(3, 1fr);
   }
 }
+
+
+/* ══════════ FX COMMAND · MY ROOM REDESIGN ══════════ */
+.pvr-live-home{--pvr-live-gold:#36b8ff;--pvr-live-gold-soft:#36b8ff;--pvr-live-cyan:#36b8ff;padding:34px;border:1px solid #36b8ff45;border-radius:2px;background:radial-gradient(80% 70% at 80% 0%,#36b8ff16,transparent 62%),linear-gradient(145deg,#0b2235,#071522 62%,#030407);box-shadow:0 36px 100px #000b,inset 0 0 0 1px #36b8ff0d;}
+.pvr-live-home::before{background:repeating-linear-gradient(0deg,transparent 0 5px,#36b8ff08 6px),linear-gradient(115deg,transparent 0 47%,#36b8ff0b 50%,transparent 53%);}
+.pvr-live-home-head{padding:8px 4px 26px;border-color:#36b8ff30;}
+.pvr-live-home-head h1{font-family:"JetBrains Mono", Inter, monospace;font-size:clamp(48px,7vw,88px);font-weight:800;color:#f5f7fb;letter-spacing:-.02em;text-shadow:0 0 35px #36b8ff22;}
+.pvr-live-home-head span,.pvr-live-section-head span{color:#36b8ff;}
+.pvr-live-feature,.pvr-live-self,.pvr-live-members,.pvr-live-upcoming{border-color:#36b8ff2d;border-radius:2px;background:linear-gradient(155deg,#0b2235a8,#071522e8);box-shadow:0 22px 50px #0007,inset 0 0 26px #36b8ff07;}
+.pvr-live-feature-screen{min-height:360px;border-color:#36b8ff42;border-radius:2px;background:repeating-linear-gradient(0deg,transparent 0 4px,#36b8ff08 5px),radial-gradient(circle at 50% 45%,#36b8ff1c,transparent 30%),#030508;}
+.pvr-live-signal-ring,.pvr-live-self-avatar{border-color:#36b8ff66;box-shadow:0 0 36px #36b8ff18;}
+.pvr-live-section-head strong,.pvr-live-self>strong,.pvr-live-feature-screen>strong{font-family:"JetBrains Mono", Inter, monospace;color:#eef3fa;}
+.pvr-live-go-online,.pvr-live-profile-link,.pvr-live-nav button.is-active{border-color:#36b8ff66;background:#0b2235;color:#36b8ff;box-shadow:0 0 22px #36b8ff12;}
+@media(max-width:650px){.pvr-live-home{padding:18px 12px}.pvr-live-home-head h1{font-size:44px}.pvr-live-feature-screen{min-height:240px}}
