@@ -798,3 +798,23 @@
     flex:1;
   }
 }
+
+
+/* ══════════ FX COMMAND · BRANCH REDESIGN ══════════ */
+.pvr-route-page{width:min(1500px,calc(100% - 36px));font-family:"JetBrains Mono", Inter, monospace;}
+.pvr-route-page-head{margin-top:14px;padding:24px 22px;border:1px solid #36b8ff38;border-radius:2px;background:linear-gradient(135deg,#0b2235cc,#071522f2);box-shadow:0 20px 60px #0009,0 0 34px #36b8ff12;}
+.pvr-route-page-head h1{font-family:"JetBrains Mono", Inter, monospace;font-size:clamp(30px,4vw,58px);font-weight:800;color:#f4f7fb;text-shadow:0 0 24px #36b8ff30;}
+.pvr-route-page-head span{color:#36b8ff;}
+.pvr-route-page-head>button{border-color:#36b8ff66;background:#0b2235;color:#36b8ff;border-radius:2px;}
+.pvr-stage-scene{margin-top:18px;border:1px solid #36b8ff55;border-radius:2px;background:radial-gradient(circle at 50% 0%,#36b8ff16,transparent 38%),linear-gradient(155deg,#0b2235,#071522 58%,#030407);box-shadow:0 32px 90px #000b,0 0 45px #36b8ff10;}
+.pvr-stage-scene-head,.pvr-stage-scene-footer{padding:18px 20px;background:#071522e8;border-color:#36b8ff24;}
+.pvr-stage-scene-head strong{font-family:"JetBrains Mono", Inter, monospace;font-size:18px;color:#36b8ff;}
+.pvr-stage-scene-grid{gap:14px;padding:16px;min-height:560px;}
+.pvr-stage-camera-card{border-color:#36b8ff2b;border-radius:2px;background:#030508;box-shadow:0 18px 40px #0008,inset 0 0 32px #36b8ff08;}
+.pvr-stage-camera-card.is-host,.pvr-stage-camera-card.is-self{border-color:#36b8ff88;}
+.pvr-stage-camera-screen{background:repeating-linear-gradient(0deg,transparent 0 4px,#36b8ff08 5px),radial-gradient(circle at 50% 42%,#36b8ff18,transparent 32%),linear-gradient(145deg,#030508,#071522);}
+.pvr-stage-camera-initials{border-color:#36b8ff66;color:#36b8ff;font-family:"JetBrains Mono", Inter, monospace;box-shadow:0 0 42px #36b8ff18;}
+.pvr-stage-camera-fixed,.pvr-stage-camera-live-lumen{border-color:#36b8ff55;background:#0b2235e8;color:#36b8ff!important;}
+.pvr-owner-console.pvr-admin-hud{border-color:#36b8ff88;background:linear-gradient(180deg,#0b2235,#071522);box-shadow:0 0 28px #36b8ff22;}
+.pvr-admin-hud .pvr-owner-console-actions button{border-color:#36b8ff55;background:#0b2235;color:#36b8ff;}
+@media(max-width:760px){.pvr-route-page{width:calc(100% - 14px)}.pvr-route-page-head{padding:16px 14px}.pvr-stage-scene-grid{min-height:0}}
