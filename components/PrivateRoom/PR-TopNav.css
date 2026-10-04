@@ -356,3 +356,58 @@
 :root[data-pvr-mood="vintage"] .pvr-club-brand-copy strong{font-family:"Cinzel",Georgia,serif;letter-spacing:.12em;}
 :root[data-pvr-mood="arcade"] .pvr-club-brand-copy strong{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:.04em;text-shadow:0 0 14px var(--pvr-mood-glow);}
 @media(max-width:1050px){.pvr-mood-switch{order:4;width:100%;justify-content:center}.pvr-mood-switch button{flex:1;max-width:110px}}
+
+/* ══════════ GLOBAL PRIVATE ROOM MOOD BAR ══════════ */
+.pvr-global-mood-bar{
+  position:relative;
+  z-index:14001;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+  width:100%;
+  min-height:38px;
+  padding:4px 24px 5px;
+  border-top:1px solid var(--pvr-mood-line,#ffffff12);
+  border-bottom:1px solid var(--pvr-mood-line,#ffffff12);
+  background:color-mix(in srgb,var(--pvr-mood-bg,#07090c) 94%,transparent);
+  backdrop-filter:blur(16px);
+}
+.pvr-global-mood-bar>span{
+  color:var(--pvr-mood-muted,#72777e);
+  font-size:5.5px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+.pvr-global-mood-bar .pvr-mood-switch{
+  flex:0 0 auto;
+  width:auto;
+  order:initial;
+  justify-content:flex-start;
+}
+@media(max-width:1050px){
+  .pvr-global-mood-bar{
+    justify-content:center;
+    padding-inline:10px;
+  }
+  .pvr-global-mood-bar .pvr-mood-switch{
+    width:auto;
+  }
+  .pvr-global-mood-bar .pvr-mood-switch button{
+    min-width:68px;
+    max-width:none;
+    flex:0 0 auto;
+  }
+}
+@media(max-width:560px){
+  .pvr-global-mood-bar>span{
+    display:none;
+  }
+  .pvr-global-mood-bar .pvr-mood-switch{
+    width:100%;
+  }
+  .pvr-global-mood-bar .pvr-mood-switch button{
+    flex:1 1 0;
+    min-width:0;
+  }
+}
