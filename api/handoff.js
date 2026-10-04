@@ -76,6 +76,210 @@ function remainingSeconds(expiresAt) {
   return Number.isFinite(ms) ? Math.max(0, Math.floor(ms / 1000)) : 0;
 }
 
+const MAX_VOICE_BASE64_LENGTH = 3_500_000;
+const FX_VOICE_RATE_LIMIT = 40;
+const FX_VOICE_RATE_WINDOW_SECONDS = 60 * 60;
+
+function getVoiceOutputText(payload) {
+  if (typeof payload?.output_text === "string" && payload.output_text.trim()) {
+    return payload.output_text.trim();
+  }
+
+  for (const item of payload?.output || []) {
+    if (item?.type !== "message") continue;
+
+    for (const part of item?.content || []) {
+      if (part?.type === "output_text" && typeof part?.text === "string") {
+        const text = part.text.trim();
+        if (text) return text;
+      }
+    }
+  }
+
+  return "";
+}
+
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+
+  if (typeof forwarded === "string" && forwarded.trim()) {
+    return forwarded.split(",")[0].trim();
+  }
+
+  return req.socket?.remoteAddress || "unknown";
+}
+
+async function checkVoiceRateLimit(req) {
+  try {
+    const redis = getRedis();
+    const ipHash = hashValue(getClientIp(req));
+    const key = `${CODE_ENGINE_NAMESPACE}:fx-voice-rate:${ipHash}`;
+    const count = await redis.incr(key);
+
+    if (count === 1) {
+      await redis.expire(key, FX_VOICE_RATE_WINDOW_SECONDS);
+    }
+
+    return count <= FX_VOICE_RATE_LIMIT;
+  } catch (error) {
+    console.warn("[fx-voice/rate-limit]", error?.message || error);
+    return true;
+  }
+}
+
+async function handleFxVoice(req, res, body) {
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    return res.status(503).json({
+      ok: false,
+      code: "OPENAI_API_KEY_MISSING",
+      error: "FX voice backend is waiting for OPENAI_API_KEY.",
+    });
+  }
+
+  const allowed = await checkVoiceRateLimit(req);
+
+  if (!allowed) {
+    return res.status(429).json({
+      ok: false,
+      error: "FX voice rate limit reached. Try again later.",
+    });
+  }
+
+  const audioBase64 = String(body?.audioBase64 || "");
+  const mimeType = String(body?.mimeType || "audio/mp4");
+  const fileName = String(body?.fileName || "fx-voice.m4a");
+  const language = String(body?.language || "").trim();
+
+  if (!audioBase64) {
+    return res.status(400).json({
+      ok: false,
+      error: "Audio is required.",
+    });
+  }
+
+  if (audioBase64.length > MAX_VOICE_BASE64_LENGTH) {
+    return res.status(413).json({
+      ok: false,
+      error: "Audio sample is too large.",
+    });
+  }
+
+  const audioBuffer = Buffer.from(audioBase64, "base64");
+
+  if (!audioBuffer.length) {
+    return res.status(400).json({
+      ok: false,
+      error: "Audio sample is empty.",
+    });
+  }
+
+  const transcriptForm = new FormData();
+  transcriptForm.append(
+    "file",
+    new Blob([audioBuffer], { type: mimeType }),
+    fileName.includes(".") ? fileName : "fx-voice.m4a",
+  );
+  transcriptForm.append(
+    "model",
+    process.env.OPENAI_TRANSCRIBE_MODEL || "gpt-transcribe",
+  );
+
+  if (language) {
+    transcriptForm.append("language", language);
+  }
+
+  const transcriptionResponse = await fetch(
+    "https://api.openai.com/v1/audio/transcriptions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: transcriptForm,
+    },
+  );
+
+  const transcriptionPayload = await transcriptionResponse.json().catch(() => ({}));
+
+  if (!transcriptionResponse.ok) {
+    console.error("[api/handoff/fx-voice] transcription", {
+      status: transcriptionResponse.status,
+      error: transcriptionPayload?.error?.message || "unknown",
+    });
+
+    return res.status(502).json({
+      ok: false,
+      stage: "transcription",
+      error:
+        transcriptionPayload?.error?.message ||
+        "FX could not transcribe this audio.",
+    });
+  }
+
+  const transcript = String(transcriptionPayload?.text || "").trim();
+
+  if (!transcript) {
+    return res.status(422).json({
+      ok: false,
+      stage: "transcription",
+      error: "No speech was detected.",
+    });
+  }
+
+  const responseRequest = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_FX_MODEL || "gpt-6-luna",
+      instructions:
+        "You are FX, pronounced F-X, a personal mobile voice assistant. " +
+        "Reply in the same language as the user. Be concise, natural and useful for spoken output. " +
+        "Prefer 1 to 3 short sentences. Do not mention transcription, models, APIs or internal reasoning. " +
+        "If the request is ambiguous, ask one brief clarifying question.",
+      input: transcript,
+      reasoning: {
+        effort: "none",
+      },
+      text: {
+        verbosity: "low",
+      },
+      max_output_tokens: 180,
+      store: false,
+    }),
+  });
+
+  const responsePayload = await responseRequest.json().catch(() => ({}));
+  const reply = getVoiceOutputText(responsePayload);
+
+  if (!responseRequest.ok || !reply) {
+    console.error("[api/handoff/fx-voice] response", {
+      status: responseRequest.status,
+      error: responsePayload?.error?.message || "empty reply",
+    });
+
+    return res.status(200).json({
+      ok: true,
+      transcript,
+      reply: `Te escuché: ${transcript}`,
+      degraded: true,
+    });
+  }
+
+  return res.status(200).json({
+    ok: true,
+    transcript,
+    reply,
+    transcriptionModel:
+      process.env.OPENAI_TRANSCRIBE_MODEL || "gpt-transcribe",
+    responseModel: process.env.OPENAI_FX_MODEL || "gpt-6-luna",
+  });
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
@@ -85,6 +289,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    const body =
+      typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+
+    if (req.method === "POST" && body?.action === "fx_voice") {
+      return await handleFxVoice(req, res, body);
+    }
+
     const redis = getRedis();
 
     if (req.method === "POST") {
