@@ -2529,113 +2529,53 @@ video{
     font-size:5px;
   }
 }
-/* ══════════ DOSSIER + ICONO DERECHO ══════════ */
+/* ══════════ DOSSIER + ORNAMENTO DETRÁS DEL DISPOSITIVO ══════════ */
 .vx-dossierRow{
+  position:relative;
   display:flex;
   align-items:center;
-  gap:22px;
   width:min(100%, 940px);
   margin-top:28px;
-}
-.vx-dossierRow .vx-dossier{
-  flex:0 1 34rem;
-  width:100%;
-  margin-top:0;
-}
-.vx-dossierIcon{
-  position:relative;
-  display:grid;
-  place-items:center;
-  flex:0 0 clamp(180px, 22vw, 320px);
-  min-height:270px;
   isolation:isolate;
+  overflow:visible;
+}
+.vx-dossierDevice{
+  position:relative;
+  z-index:2;
+  width:100%;
+}
+.vx-dossierOrnament{
+  position:absolute;
+  z-index:1;
+  top:50%;
+  right:-120px;
+  width:clamp(260px, 34vw, 520px);
+  aspect-ratio:468 / 724;
+  transform:translateY(-48%);
   pointer-events:none;
+  opacity:.72;
 }
-.vx-dossierIconGlow{
-  position:absolute;
-  z-index:-1;
-  width:75%;
-  aspect-ratio:1;
-  border-radius:50%;
-  background:transparent;
-}
-.vx-dossierIcon img{
-  filter:grayscale(0.22) saturate(0.11) brightness(0.89) contrast(0.95) opacity(0.6) drop-shadow(0 12px 28px #00000000);
-  transform:scale(1.9) translateX(76px) translateY(-10px);
-}
-.vx-dossierIcon::after{
-  content:"";
-  position:absolute;
-  bottom:44px;
-  width:58%;
-  height:18px;
-  border-radius:50%;
-  background:#05688906;
-  filter:blur(10px);
-  animation:vxWallShadow 4.8s ease-in-out infinite;
-}
-@keyframes vxWallFloat{
-  0%{
-    transform:translateY(0) rotate(-1deg);
-  }
-  50%{
-    transform:translateY(-14px) rotate(1deg);
-  }
-  100%{
-    transform:translateY(0) rotate(-1deg);
-  }
-}
-@keyframes vxWallGlow{
-  0%{
-    opacity:0.42;
-    transform:scale(0.92);
-  }
-  50%{
-    opacity:0.9;
-    transform:scale(1.08);
-  }
-  100%{
-    opacity:0.42;
-    transform:scale(0.92);
-  }
-}
-@keyframes vxWallShadow{
-  0%{
-    opacity:0.75;
-    transform:scaleX(1);
-  }
-  50%{
-    opacity:0.4;
-    transform:scaleX(0.78);
-  }
-  100%{
-    opacity:0.75;
-    transform:scaleX(1);
-  }
+.vx-dossierOrnament img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:grayscale(1) brightness(.82) contrast(1.14);
 }
 @media (max-width: 760px){
   .vx-dossierRow{
-    display:block;
     width:100%;
   }
-  .vx-dossierIcon{
-    width:min(72%, 260px);
-    min-height:210px;
-    margin:24px auto 0;
-  }
-  .vx-dossierIcon img{
-    width:min(100%, 240px);
+  .vx-dossierOrnament{
+    right:-42px;
+    width:clamp(210px, 62vw, 320px);
+    opacity:.46;
+    transform:translateY(-46%);
   }
 }
 @media (prefers-reduced-motion: reduce){
-  .vx-dossierIconGlow{
-    animation:none;
-  }
-  .vx-dossierIcon img{
-    animation:none;
-  }
-  .vx-dossierIcon::after{
-    animation:none;
+  .vx-dossierOrnament{
+    transform:translateY(-48%);
   }
 }
 /* =========================================================
