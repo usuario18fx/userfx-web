@@ -329,6 +329,27 @@ OPEN MESSAGES
 }
 
 function AdminControl() {
+  const [permissions, setPermissions] = useState<Record<string, boolean>>(() => {
+    try {
+      return { telegramfx: true, gallery: true, chat: false, priv: false, group: false, ...JSON.parse(localStorage.getItem("userfx_admin_permissions") || "{}") };
+    } catch {
+      return { telegramfx: true, gallery: true, chat: false, priv: false, group: false };
+    }
+  });
+  const [saved, setSaved] = useState(true);
+
+  function togglePermission(key: string) {
+    setSaved(false);
+    setPermissions((current) => {
+      const next = { ...current, [key]: !current[key] };
+      try {
+        localStorage.setItem("userfx_admin_permissions", JSON.stringify(next));
+      } catch {}
+      window.setTimeout(() => setSaved(true), 180);
+      return next;
+    });
+  }
+
   return (
     <section className="pvr-room-admin pvr-admin-only" aria-label="Admin control">
       <header>
@@ -340,24 +361,28 @@ MEMBER PERMISSIONS
         </strong>
       </header>
       <div className="pvr-room-admin-permissions">
-        <button type="button" className="is-on">
-TELEGRAMFX
-        </button>
-        <button type="button" className="is-on">
-GALLERY
+        {["telegramfx", "gallery", "chat", "priv", "group"].map((key) => (
+          <button key={key} type="button" className={permissions[key] ? "is-on" : ""} onClick={() => togglePermission(key)}>
+{key.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div className="pvr-room-admin-requests">
+        <span>
+REQUESTS
+        </span>
+        <button type="button">
+ACCEPT FRIEND
         </button>
         <button type="button">
-CHAT
+REJECT
         </button>
         <button type="button">
-PRIV
-        </button>
-        <button type="button">
-GROUP
+GRANT ALBUM
         </button>
       </div>
       <small>
-STATE SAVED
+{saved ? "STATE SAVED" : "SAVING..."}
       </small>
     </section>
   );
