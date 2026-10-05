@@ -1,5 +1,4 @@
           import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-          import PrivateRoom from "./PrivateRoom";
           import "./PR-Account.css";
           import "./PR-Camera.css";
 
@@ -705,8 +704,6 @@ export default function PrivateRoomAccount() {
 
   return (
     <>
-      <PrivateRoom />
-
       {!loading && account && (
         <>
           {/* ─────   ACCOUNT BUTTON ─────── */}
