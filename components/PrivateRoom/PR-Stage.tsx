@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import "./PR-Stage.css";
 
 const DEV_OWNER = import.meta.env.DEV;
@@ -28,7 +27,6 @@ function openCameraStudio() {
 }
 
 export default function PrivateRoomStage() {
-  const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
   const [cameraLive, setCameraLive] = useState(false);
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
   const [runtime, setRuntime] = useState<RuntimeState>({
@@ -191,13 +189,7 @@ export default function PrivateRoomStage() {
     if (videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
   }, [ownerCameraLive]);
 
-  if (!target) {
-    window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
-  }
-
-  if (!target) return null;
-
-  return createPortal(
+  return (
     <section className="pvr-route-page pvr-stage-route" aria-label="Private Room Stage">
       <header className="pvr-route-page-head">
         <div>
@@ -320,7 +312,6 @@ ONLINE
           </button>
         </footer>
       </section>
-    </section>,
-    target,
+    </section>
   );
 }
