@@ -118,10 +118,6 @@ type ViewMode = "user" | "admin";
               return () => window.clearInterval(heartbeat);
             }, []);
 
-            if (!target) {
-              window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
-            }
-
             const filteredItems = useMemo(() => {
               if (activeTab === "all") return MULTIMEDIA_ITEMS;
               return MULTIMEDIA_ITEMS.filter((item) => item.type === TAB_TO_TYPE[activeTab]);
