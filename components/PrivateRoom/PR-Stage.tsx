@@ -3,10 +3,15 @@ import "./PR-Stage.css";
 
 const DEV_OWNER = import.meta.env.DEV;
 type PrivateRoomMood = "cine" | "vintage" | "arcade";
+type ViewMode = "user" | "admin";
 
 function readMood(): PrivateRoomMood {
   const value = document.documentElement.dataset.pvrMood;
   return value === "vintage" || value === "arcade" ? value : "cine";
+}
+
+function readViewMode(): ViewMode {
+  return document.documentElement.dataset.pvrViewMode === "admin" ? "admin" : "user";
 }
 
 type RuntimeState = {
@@ -35,6 +40,7 @@ function openCameraStudio() {
 export default function PrivateRoomStage() {
   const [cameraLive, setCameraLive] = useState(false);
   const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
+  const [viewMode, setViewMode] = useState<ViewMode>(() => readViewMode());
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
   const [runtime, setRuntime] = useState<RuntimeState>({
     isOwner: DEV_OWNER,
@@ -145,8 +151,13 @@ export default function PrivateRoomStage() {
 
   useEffect(() => {
     const handleMood = () => setMood(readMood());
+    const handleViewMode = () => setViewMode(readViewMode());
     window.addEventListener("userfx:private-room-mood", handleMood);
-    return () => window.removeEventListener("userfx:private-room-mood", handleMood);
+    window.addEventListener("userfx:private-room-view-mode", handleViewMode);
+    return () => {
+      window.removeEventListener("userfx:private-room-mood", handleMood);
+      window.removeEventListener("userfx:private-room-view-mode", handleViewMode);
+    };
   }, []);
 
   useEffect(() => {
@@ -202,6 +213,8 @@ export default function PrivateRoomStage() {
     if (videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
   }, [ownerCameraLive]);
 
+  const adminView = runtime.isOwner && viewMode === "admin";
+
   return (
     <section className={`pvr-route-page pvr-stage-route pvr-stage-route--${mood}`} aria-label="Private Room Stage">
       <header className="pvr-route-page-head">
@@ -220,7 +233,7 @@ MYROOM
         </div>
       </header>
 
-      {runtime.isOwner ? (
+      {adminView ? (
         <section className="pvr-owner-console pvr-admin-hud pvr-admin-only" aria-label="Owner stage controls">
           <div className="pvr-owner-console-copy">
             <span>
@@ -404,14 +417,14 @@ ONLINE
         <footer className="pvr-stage-scene-footer">
           <div>
             <strong>
-{runtime.isOwner ? "OWNER MAIN CAM" : "2 FIXED CAMS"}
+{adminView ? "OWNER MAIN CAM" : "2 FIXED CAMS"}
             </strong>
             <span>
-{runtime.isOwner ? "@User18Fx · " + runtime.viewingStage + " VIEWERS" : "HOST + YOUR CAMERA"}
+{adminView ? "@User18Fx · " + runtime.viewingStage + " VIEWERS" : "HOST + YOUR CAMERA"}
             </span>
           </div>
-          <button type="button" onClick={runtime.isOwner ? (ownerCameraLive ? stopOwnerCamera : startOwnerCamera) : openCameraStudio}>
-{runtime.isOwner ? (ownerCameraLive ? "STOP MY CAMERA" : "OPEN MY CAMERA") : cameraLive ? "MANAGE MY CAMERA" : "OPEN MY CAMERA"}
+          <button type="button" onClick={adminView ? (ownerCameraLive ? stopOwnerCamera : startOwnerCamera) : openCameraStudio}>
+{adminView ? (ownerCameraLive ? "STOP MY CAMERA" : "OPEN MY CAMERA") : cameraLive ? "MANAGE MY CAMERA" : "OPEN MY CAMERA"}
           </button>
         </footer>
       </section>
