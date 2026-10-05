@@ -827,3 +827,43 @@
 :root[data-pvr-mood="arcade"] .pvr-live-home-head h1,:root[data-pvr-mood="arcade"] .pvr-route-page-head h1{font-family:"Space Grotesk",Inter,sans-serif;font-weight:900;letter-spacing:-.035em;text-transform:uppercase;text-shadow:0 0 26px var(--pvr-mood-glow);}
 :root[data-pvr-mood="vintage"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 3px,#b47b3410 4px),radial-gradient(circle at 20% 0,#7c4b2026,transparent 42%),linear-gradient(145deg,#28190d,#100b07 65%,#050403);}
 :root[data-pvr-mood="arcade"] .pvr-live-home{background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff0b 5px),radial-gradient(circle at 85% 5%,#9a62ff25,transparent 38%),radial-gradient(circle at 10% 70%,#39dcff18,transparent 45%),linear-gradient(145deg,#0b1022,#04050d);}
+
+
+/* ══════════ PROFILE MODAL · FIXED FX BLUE ACTION BUTTONS ══════════ */
+/* These actions intentionally keep the same blue treatment in CINE, VINTAGE and ARCADE. */
+:root[data-pvr-mood] .pvr-account-view,
+:root[data-pvr-mood] .pvr-account-save,
+:root[data-pvr-mood] .pvr-profile-edit,
+:root[data-pvr-mood] .pvr-profile-camera > button{
+  border:0;
+  border-radius:8px;
+  background:linear-gradient(15deg,#00b9b9,#00b3b9,#0066b9,#005e94f8,#00b9b9,#0066b9,#00b3b9,#005e94f8) no-repeat;
+  background-size:450%;
+  background-position:left center;
+  box-shadow:0 3px 1px 0 #008cff,0 0 16px #008cff24;
+  color:#000;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:900;
+  text-shadow:1px 1px 1px #0066b9;
+  transition:background-position .3s ease,color .3s ease,transform .16s ease,box-shadow .3s ease;
+}
+:root[data-pvr-mood] .pvr-account-view:hover,
+:root[data-pvr-mood] .pvr-account-save:hover,
+:root[data-pvr-mood] .pvr-profile-edit:hover,
+:root[data-pvr-mood] .pvr-profile-camera > button:hover{
+  background-position:right center;
+  color:#001b55;
+  box-shadow:0 3px 1px 0 #008cff,0 0 22px #008cff38;
+}
+:root[data-pvr-mood] .pvr-account-view:active,
+:root[data-pvr-mood] .pvr-account-save:active,
+:root[data-pvr-mood] .pvr-profile-edit:active,
+:root[data-pvr-mood] .pvr-profile-camera > button:active{
+  transform:translateY(1px);
+  box-shadow:0 1px 1px 0 #008cff,0 0 12px #008cff2b;
+}
+:root[data-pvr-mood] .pvr-account-save:disabled{
+  opacity:.5;
+  cursor:wait;
+  filter:saturate(.6);
+}
