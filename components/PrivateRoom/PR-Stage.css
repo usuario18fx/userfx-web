@@ -855,3 +855,116 @@
 :root[data-pvr-mood="arcade"] .pvr-stage-camera-card{clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);border-radius:0}
 :root[data-pvr-mood="arcade"] .pvr-stage-camera-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 4px,#39dcff0c 5px)}
 @media(max-width:760px){.pvr-stage-head-actions{width:100%;justify-content:space-between}.pvr-stage-mood-switch{flex:1}.pvr-stage-mood-switch button{flex:1;padding:0 5px}}
+
+
+/* ══════════ STAGE · THREE DISTINCT STRUCTURES ══════════ */
+.pvr-stage-cine-layout{
+  display:grid;
+  grid-template-rows:minmax(520px,68vh) auto;
+  gap:12px;
+  padding:12px;
+}
+.pvr-stage-cine-main{
+  min-height:520px;
+  overflow:hidden;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:18px;
+  background:#020304;
+}
+.pvr-stage-cine-main .pvr-stage-camera-screen{
+  height:100%;
+  min-height:520px;
+}
+.pvr-stage-cine-strip{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.pvr-stage-route--cine .pvr-stage-cine-strip .pvr-stage-camera-card{
+  min-height:150px;
+  border-radius:12px;
+}
+.pvr-stage-route--cine .pvr-stage-cine-strip .pvr-stage-camera-screen{
+  min-height:150px;
+}
+.pvr-stage-vintage-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(280px,.5fr);
+  gap:18px;
+  padding:18px;
+}
+.pvr-stage-vintage-host{
+  min-height:600px;
+  border:8px solid #100b07;
+  outline:1px solid var(--pvr-mood-line);
+  background:#030303;
+}
+.pvr-stage-vintage-host .pvr-stage-camera-screen{
+  min-height:584px;
+}
+.pvr-stage-vintage-guests{
+  padding:20px;
+  border:1px solid var(--pvr-mood-line);
+  background:linear-gradient(180deg,#25170c,#100b07);
+}
+.pvr-stage-vintage-guests>header{
+  padding-bottom:16px;
+  border-bottom:1px solid var(--pvr-mood-line);
+}
+.pvr-stage-vintage-guests>header span{
+  display:block;
+  color:var(--pvr-mood-accent2);
+  font-size:6px;
+  letter-spacing:.15em;
+}
+.pvr-stage-vintage-guests>header strong{
+  display:block;
+  margin-top:5px;
+  color:var(--pvr-mood-accent);
+  font-family:"Cinzel",Georgia,serif;
+  font-size:14px;
+}
+.pvr-stage-vintage-guest{
+  display:grid;
+  grid-template-columns:52px 1fr;
+  align-items:center;
+  gap:12px;
+  padding:15px 0;
+  border-bottom:1px solid var(--pvr-mood-line);
+}
+.pvr-stage-vintage-guest .pvr-stage-camera-initials{
+  width:48px;
+  height:48px;
+  font-size:10px;
+}
+.pvr-stage-vintage-guest strong{
+  display:block;
+  color:#d9c19a;
+  font-size:9px;
+}
+.pvr-stage-vintage-guest small{
+  display:block;
+  margin-top:4px;
+  color:#806d57;
+  font-size:6px;
+}
+.pvr-stage-route--arcade .pvr-stage-scene-grid{
+  perspective:1100px;
+}
+.pvr-stage-route--arcade .pvr-stage-camera-card{
+  box-shadow:inset 0 0 32px #39dcff0d,0 0 24px #9a62ff0a;
+}
+@media(max-width:900px){
+  .pvr-stage-cine-strip{
+    grid-template-columns:1fr 1fr;
+  }
+  .pvr-stage-vintage-layout{
+    grid-template-columns:1fr;
+  }
+  .pvr-stage-vintage-host{
+    min-height:440px;
+  }
+  .pvr-stage-vintage-host .pvr-stage-camera-screen{
+    min-height:424px;
+  }
+}
