@@ -2,7 +2,6 @@
           import { createPortal } from "react-dom";
           import PrivateRoomDirectGate from "./PR-DirectGate";
           import PrivateRoomAccount from "./PR-Account";
-          import PrivateRoomMyRoom from "./PR-MyRoom";
           import "./PR-LiveLobby.css";
           import "./PR-MyCamDock.css";
           import "./PR-WelcomeTour.css";
@@ -933,22 +932,9 @@ function PrivateRoomWelcomeTour(): ReactElement {
 /* ═══════════ PRIVATE ROOM SHELL ═══════════ */
 
 export default function PrivateRoomLiveShell() {
-  const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(window.location.hash || "#/private-room");
-    };
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  const isMyRoom = route === "#/private-room" || route === "#/private-room/";
-
   return (
     <PrivateRoomDirectGate>
       <PrivateRoomAccount />
-      {isMyRoom ? <PrivateRoomMyRoom /> : null}
       <PrivateRoomMyCamDock />
       <PrivateRoomWelcomeTour />
     </PrivateRoomDirectGate>
