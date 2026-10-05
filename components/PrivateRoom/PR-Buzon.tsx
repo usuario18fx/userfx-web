@@ -1,126 +1,225 @@
-          import { useEffect, useState } from "react";
-          import "./PR-Stage.css";
+import { useEffect, useState } from "react";
+import "./PR-Buzon.css";
 
-          const CONTACTS = [
-            { name: "@User18Fx", status: "FRIEND · ONLINE", preview: "Private message thread", initials: "FX" },
-            { name: "@GreenGrower", status: "MEMBER · OFFLINE", preview: "No new messages", initials: "GG" },
-          ];
+type PrivateRoomMood = "cine" | "vintage" | "arcade";
 
-          function openMembership() {
-            document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
-          }
+const CONTACTS = [
+  { name: "@User18Fx", status: "ONLINE", preview: "Hey, welcome to my room.", initials: "FX" },
+  { name: "@GreenGrower", status: "OFFLINE", preview: "Stage later?", initials: "GG" },
+  { name: "@Dalyva", status: "ONLINE", preview: "Sent a private request.", initials: "DA" },
+];
 
-          export default function PrivateRoomBuzon() {
-            const [chatLocked, setChatLocked] = useState(false);
+function readMood(): PrivateRoomMood {
+  const value = document.documentElement.dataset.pvrMood;
+  return value === "vintage" || value === "arcade" ? value : "cine";
+}
 
-            useEffect(() => {
-              let cancelled = false;
+function openMembership() {
+  document.querySelector<HTMLButtonElement>(".pvr-club-membership")?.click();
+}
 
-              fetch("/api/access-session", {
-                method: "GET",
-                headers: { Accept: "application/json" },
-                credentials: "same-origin",
-                cache: "no-store",
-              })
-                .then((response) => response.json())
-                .then((session) => {
-                  if (cancelled) return;
-                  setChatLocked(Boolean(session?.authenticated && (session?.accessLabel === "SPCL" || session?.memberAccess === true)));
-                })
-                .catch(() => {
-                  if (!cancelled) setChatLocked(false);
-                });
+function ContactList({ active, onSelect, locked }: { active: string; onSelect: (name: string) => void; locked: boolean }) {
+  return (
+    <aside className="pvr-buzon-contacts">
+      <header>
+        <span>
+PRIVATE NETWORK
+        </span>
+        <strong>
+MESSAGES
+        </strong>
+      </header>
+      {CONTACTS.map((contact) => (
+        <button key={contact.name} type="button" className={active === contact.name ? "is-active" : ""} onClick={() => onSelect(contact.name)} disabled={locked}>
+          <span className="pvr-buzon-avatar">
+{contact.initials}
+          </span>
+          <span>
+            <strong>
+{contact.name}
+            </strong>
+            <small>
+{locked ? "Paid membership required" : contact.preview}
+            </small>
+          </span>
+          <i>
+{locked ? "LOCKED" : contact.status}
+          </i>
+        </button>
+      ))}
+    </aside>
+  );
+}
 
-              return () => {
-                cancelled = true;
-              };
-            }, []);
-
-            return (
-              <section className="pvr-route-page pvr-buzon-route" aria-label="Private Room mailbox">
-                <header className="pvr-route-page-head">
-                  <div>
-                    <span>
-                    USER FX · PRIVATE CONTACTS
-                    </span>
-                    <h1>
-                    BUZON
-                    </h1>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.location.hash = "#/private-room";
-                    }}>
-                    MYROOM
-                  </button>
-                </header>
-                <div className="pvr-buzon-layout">
-                  <aside className="pvr-buzon-contacts">
-                    <header>
-                      <strong>
-                      MESSAGES
-                      </strong>
-                      <span>{CONTACTS.length}</span>
-                    </header>
-                    {CONTACTS.map((contact) => (
-                      <button key={contact.name} type="button" className="pvr-buzon-contact-card" disabled={chatLocked}>
-                        <span className="pvr-buzon-contact-avatar">{contact.initials}</span>
-                        <span>
-                          <strong>{contact.name}</strong>
-                          <small>{chatLocked ? "Paid membership required" : contact.preview}</small>
-                        </span>
-                        <i>{chatLocked ? "LOCKED" : contact.status}</i>
-                      </button>
-                    ))}
-                  </aside>
-                  <section className={`pvr-buzon-chat${chatLocked ? " is-locked" : ""}`}>
-          <div className="pvr-buzon-chat-empty">
-            {chatLocked ? (
-              <>
-                <button type="button" className="pvr-paid-lock" onClick={openMembership} aria-label="Unlock chat with a paid membership">
-                  <span className="pvr-paid-lock-wrapper">
-                    <span className="pvr-paid-lock-shackle" />
-                    <svg className="pvr-paid-lock-body" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M0 5C0 2.23858 2.23858 0 5 0H23C25.7614 0 28 2.23858 28 5V23C28 25.7614 25.7614 28 23 28H5C2.23858 28 0 25.7614 0 23V5ZM16 13.2361C16.6137 12.6868 17 11.8885 17 11C17 9.34315 15.6569 8 14 8C12.3431 8 11 9.34315 11 11C11 11.8885 11.3863 12.6868 12 13.2361V18C12 19.1046 12.8954 20 14 20C15.1046 20 16 19.1046 16 18V13.2361Z" fill="white" />
-                    </svg>
-                  </span>
-                </button>
-                <span>
-                PAID FEATURE
-                </span>
-                <strong>
-                CHAT LOCKED
-                </strong>
-                <p>
-                SPCL access can enter the Private Room, but private chat requires a paid membership.
-                </p>
-                <button type="button" className="pvr-buzon-unlock" onClick={openMembership}>
-                  VIEW MEMBERSHIP
-                </button>
-              </>
-            ) : (
-              <>
-                <span>
-                PRIVATE MESSAGES
-                </span>
-                <strong>
-                SELECT A CONTACT
-                </strong>
-                <p>
-                Your conversations with RoomFX members will appear here.
-                </p>
-              </>
-            )}
-          </div>
-          <div className="pvr-buzon-compose">
-            <input type="text" placeholder={chatLocked ? "Paid membership required" : "Write a private message..."} disabled={chatLocked} />
-            <button type="button" disabled={chatLocked}>
-              {chatLocked ? "LOCKED" : "SEND"}
+function Conversation({ active, locked }: { active: string; locked: boolean }) {
+  return (
+    <section className={"pvr-buzon-chat " + (locked ? "is-locked" : "")}>
+      <header>
+        <div>
+          <span>
+PRIVATE CONVERSATION
+          </span>
+          <strong>
+{active}
+          </strong>
+        </div>
+        <small>
+{locked ? "LOCKED" : "● SECURE"}
+        </small>
+      </header>
+      <div className="pvr-buzon-thread">
+        {locked ? (
+          <div className="pvr-buzon-lock">
+            <span>
+PAID FEATURE
+            </span>
+            <strong>
+CHAT LOCKED
+            </strong>
+            <p>
+Private conversations require a paid membership.
+            </p>
+            <button type="button" onClick={openMembership}>
+VIEW MEMBERSHIP
             </button>
           </div>
-        </section>
+        ) : (
+          <>
+            <p className="is-them">
+              <strong>
+{active}
+              </strong>
+              <span>
+Hey, welcome to my room.
+              </span>
+            </p>
+            <p className="is-me">
+              <strong>
+YOU
+              </strong>
+              <span>
+Good to see you here.
+              </span>
+            </p>
+          </>
+        )}
+      </div>
+      <div className="pvr-buzon-compose">
+        <input type="text" placeholder={locked ? "Paid membership required" : "Write a private message..."} disabled={locked} />
+        <button type="button" disabled={locked}>
+{locked ? "LOCKED" : "SEND"}
+        </button>
       </div>
     </section>
+  );
+}
+
+function ActivityRail() {
+  return (
+    <aside className="pvr-buzon-activity">
+      <header>
+        <span>
+LIVE SOCIAL
+        </span>
+        <strong>
+SIGNALS
+        </strong>
+      </header>
+      <p>
+<span>NOW</span> 2 friends online
+      </p>
+      <p>
+<span>LIVE</span> Stage ready
+      </p>
+      <p>
+<span>NEW</span> 1 album request
+      </p>
+      <button type="button" onClick={() => { window.location.hash = "#/private-room/stage"; }}>
+OPEN STAGE
+      </button>
+    </aside>
+  );
+}
+
+function AdminMailbox() {
+  return (
+    <aside className="pvr-buzon-admin pvr-admin-only">
+      <span>
+ADMIN · CONTROL
+      </span>
+      <strong>
+MESSAGE MODERATION
+      </strong>
+      <div>
+        <button type="button">
+APPROVE
+        </button>
+        <button type="button">
+RESTRICT
+        </button>
+        <button type="button">
+BLOCK
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+export default function PrivateRoomBuzon() {
+  const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
+  const [chatLocked, setChatLocked] = useState(false);
+  const [active, setActive] = useState(CONTACTS[0].name);
+
+  useEffect(() => {
+    const handleMood = () => setMood(readMood());
+    window.addEventListener("userfx:private-room-mood", handleMood);
+    return () => window.removeEventListener("userfx:private-room-mood", handleMood);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/access-session", {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+    })
+      .then((response) => response.json())
+      .then((session) => {
+        if (!cancelled) setChatLocked(Boolean(session?.authenticated && (session?.accessLabel === "SPCL" || session?.memberAccess === true)));
+      })
+      .catch(() => {
+        if (!cancelled) setChatLocked(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <main className={"pvr-buzon-experience pvr-buzon-experience--" + mood} aria-label="Private Room mailbox">
+      {mood === "cine" ? (
+        <div className="pvr-buzon-cine">
+          <Conversation active={active} locked={chatLocked} />
+          <ContactList active={active} onSelect={setActive} locked={chatLocked} />
+          <AdminMailbox />
+        </div>
+      ) : mood === "vintage" ? (
+        <div className="pvr-buzon-vintage">
+          <ContactList active={active} onSelect={setActive} locked={chatLocked} />
+          <div className="pvr-buzon-vintage-letter">
+            <Conversation active={active} locked={chatLocked} />
+            <AdminMailbox />
+          </div>
+        </div>
+      ) : (
+        <div className="pvr-buzon-arcade">
+          <ContactList active={active} onSelect={setActive} locked={chatLocked} />
+          <Conversation active={active} locked={chatLocked} />
+          <ActivityRail />
+          <AdminMailbox />
+        </div>
+      )}
+    </main>
   );
 }
