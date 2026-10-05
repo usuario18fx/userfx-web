@@ -553,3 +553,20 @@
     grid-template-columns:76px 1fr;
   }
 }
+
+.pvr-room-admin-requests{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--pvr-mood-line);
+}
+.pvr-room-admin-requests>span{
+  margin-right:auto;
+  color:#6f7c88;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
