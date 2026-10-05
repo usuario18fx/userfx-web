@@ -3,6 +3,7 @@
 
           type MultimediaType = "video" | "album" | "image";
           type TabKey = "all" | "videos" | "album" | "images";
+type ViewMode = "user" | "admin";
 
           type MultimediaItem = {
             id: string;
@@ -71,6 +72,13 @@
             const [projPos, setProjPos] = useState(() => ({ x: Math.max(12, window.innerWidth - 370), y: 90 }));
             const dragState = useRef({ dragging: false, offsetX: 0, offsetY: 0 });
             const [runtime, setRuntime] = useState({ isOwner: false, galleryVisible: true, sharedWith: 0, viewingGallery: 0 });
+            const [viewMode, setViewMode] = useState<ViewMode>(() => document.documentElement.dataset.pvrViewMode === "admin" ? "admin" : "user");
+
+            useEffect(() => {
+              const handleViewMode = () => setViewMode(document.documentElement.dataset.pvrViewMode === "admin" ? "admin" : "user");
+              window.addEventListener("userfx:private-room-view-mode", handleViewMode);
+              return () => window.removeEventListener("userfx:private-room-view-mode", handleViewMode);
+            }, []);
 
             async function applyRuntime(response: Response) {
               if (!response.ok) return;
@@ -218,7 +226,7 @@
     );
   }
 
-  if (!target) return null;
+  const adminView = runtime.isOwner && viewMode === "admin";
 
   return (
     <section className="pvr-gallery-route" aria-label="Private Room Gallery">
@@ -239,8 +247,8 @@
           MYROOM
         </button>
       </header>
-      <div className={"mml-root" + (!runtime.galleryVisible && !runtime.isOwner ? " is-hidden" : "")}>
-        {!runtime.galleryVisible && !runtime.isOwner ? (
+      <div className={"mml-root" + (!runtime.galleryVisible && !adminView ? " is-hidden" : "")}>
+        {!runtime.galleryVisible && !adminView ? (
           <section className="mml-gallery-hidden-notice" role="status">
             <span>
 USER FX · PRIVATE COLLECTION
@@ -253,8 +261,8 @@ The owner has paused this shared gallery.
             </p>
           </section>
         ) : null}
-        {runtime.isOwner ? (
-          <section className="mml-owner-control" aria-label="Owner gallery controls">
+        {adminView ? (
+          <section className="mml-owner-control pvr-admin-only" aria-label="Owner gallery controls">
             <div className="mml-owner-control-title">
               <span>
 OWNER · @User18Fx
