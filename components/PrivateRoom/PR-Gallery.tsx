@@ -1,5 +1,4 @@
           import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
-          import { createPortal } from "react-dom";
           import "./PR-Gallery.css";
 
           type MultimediaType = "video" | "album" | "image";
@@ -62,7 +61,6 @@
           }
 
           export default function PrivateRoomGallery() {
-            const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [activeTab, setActiveTab] = useState<TabKey>("all");
             const [expandedOwners, setExpandedOwners] = useState<Set<string>>(new Set(["ProdHouse"]));
             const [showProjection, setShowProjection] = useState(false);
@@ -222,7 +220,7 @@
 
   if (!target) return null;
 
-  return createPortal(
+  return (
     <section className="pvr-gallery-route" aria-label="Private Room Gallery">
       <header className="pvr-route-head">
         <div>
@@ -474,7 +472,6 @@ VIEWING NOW
           </div>
         </div>
       )}
-    </section>,
-    target,
+    </section>
   );
 }
