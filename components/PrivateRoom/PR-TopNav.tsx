@@ -1,8 +1,10 @@
           import { useCallback, useEffect, useState } from "react";
 
           type PrivateRoomMood = "cine" | "vintage" | "arcade";
+type PrivateRoomViewMode = "user" | "admin";
           const MOOD_KEY = "userfx_private_room_mood";
           const MOODS: readonly PrivateRoomMood[] = ["cine", "vintage", "arcade"];
+const VIEW_MODE_KEY = "userfx_private_room_view_mode";
 
           function readMood(): PrivateRoomMood {
             try {
@@ -11,6 +13,22 @@
             } catch {
               return "cine";
             }
+          }
+
+          function readViewMode(): PrivateRoomViewMode {
+            try {
+              return localStorage.getItem(VIEW_MODE_KEY) === "admin" ? "admin" : "user";
+            } catch {
+              return "user";
+            }
+          }
+
+          function applyViewMode(mode: PrivateRoomViewMode) {
+            document.documentElement.dataset.pvrViewMode = mode;
+            try {
+              localStorage.setItem(VIEW_MODE_KEY, mode);
+            } catch {}
+            window.dispatchEvent(new CustomEvent("userfx:private-room-view-mode", { detail: mode }));
           }
 
           function applyMood(mood: PrivateRoomMood) {
@@ -107,10 +125,31 @@
             const [insideTelegram, setInsideTelegram] = useState(false);
             const [browserNoticeOpen, setBrowserNoticeOpen] = useState(false);
             const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
+            const [viewMode, setViewMode] = useState<PrivateRoomViewMode>(() => readViewMode());
+            const [isAdmin, setIsAdmin] = useState(import.meta.env.DEV);
 
             useEffect(() => {
               applyMood(mood);
             }, [mood]);
+
+            useEffect(() => {
+              applyViewMode(isAdmin ? viewMode : "user");
+            }, [isAdmin, viewMode]);
+
+            useEffect(() => {
+              let cancelled = false;
+              fetch("/api/admin-runtime", { credentials: "include", cache: "no-store" })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (!cancelled) setIsAdmin(import.meta.env.DEV || Boolean(data?.isOwner));
+                })
+                .catch(() => {
+                  if (!cancelled) setIsAdmin(import.meta.env.DEV);
+                });
+              return () => {
+                cancelled = true;
+              };
+            }, []);
 
             const readLiveState = useCallback(() => {
               const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
@@ -256,6 +295,16 @@ VISUAL MODE
             </button>
           ))}
         </div>
+        {isAdmin ? (
+          <div className="pvr-view-mode-switch" role="group" aria-label="Private Room admin preview mode">
+            <button type="button" className={viewMode === "user" ? "is-active" : ""} onClick={() => setViewMode("user")}>
+USER
+            </button>
+            <button type="button" className={viewMode === "admin" ? "is-active" : ""} onClick={() => setViewMode("admin")}>
+ADMIN
+            </button>
+          </div>
+        ) : null}
       </div>
       <nav className="pvr-club-mobile-tabs" aria-label="Private Room mobile navigation">
         {insideTelegram && (
