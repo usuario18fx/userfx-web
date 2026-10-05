@@ -1,5 +1,4 @@
           import { useEffect, useState } from "react";
-          import { createPortal } from "react-dom";
           import "./PR-Stage.css";
 
           const CONTACTS = [
@@ -12,7 +11,6 @@
           }
 
           export default function PrivateRoomBuzon() {
-            const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
             const [chatLocked, setChatLocked] = useState(false);
 
             useEffect(() => {
@@ -38,13 +36,7 @@
               };
             }, []);
 
-            if (!target) {
-              window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));
-            }
-
-            if (!target) return null;
-
-            return createPortal(
+            return (
               <section className="pvr-route-page pvr-buzon-route" aria-label="Private Room mailbox">
                 <header className="pvr-route-page-head">
                   <div>
@@ -129,7 +121,6 @@
           </div>
         </section>
       </div>
-    </section>,
-    target,
+    </section>
   );
 }
