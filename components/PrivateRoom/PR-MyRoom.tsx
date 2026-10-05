@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import "./PR-MyRoom.css";
 
+type PrivateRoomMood = "cine" | "vintage" | "arcade";
+type ViewMode = "user" | "admin";
+
 export type Tab = "muro" | "gente" | "salas" | "perfil";
 export type PRFX5Props = {
   nick?: string;
@@ -10,13 +13,28 @@ export type PRFX5Props = {
   className?: string;
 };
 
+const CHAT_LINES = [
+  { user: "@Luke", text: "Hey, good to see you online." },
+  { user: "@GreenGrower", text: "Stage later?" },
+  { user: "@VV", text: "Sent you a private message." },
+];
+
 function goTo(hash: string) {
   window.location.hash = hash;
 }
 
-export default function PRFX5({ nick = "@User18Fx", className = "" }: PRFX5Props) {
-  const [friendRequested, setFriendRequested] = useState(false);
-  const [albumRequested, setAlbumRequested] = useState(false);
+function readMood(): PrivateRoomMood {
+  const value = document.documentElement.dataset.pvrMood;
+  return value === "vintage" || value === "arcade" ? value : "cine";
+}
+
+function readViewMode(): ViewMode {
+  return document.documentElement.dataset.pvrViewMode === "admin" ? "admin" : "user";
+}
+
+function usePrivateRoomState() {
+  const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
+  const [viewMode, setViewMode] = useState<ViewMode>(() => readViewMode());
   const [cameraLive, setCameraLive] = useState(false);
 
   useEffect(() => {
@@ -24,242 +42,417 @@ export default function PRFX5({ nick = "@User18Fx", className = "" }: PRFX5Props
       const indicator = document.querySelector<HTMLElement>(".pvr-account-online");
       setCameraLive(Boolean(indicator && !indicator.classList.contains("is-offline")));
     };
+    const handleMood = () => setMood(readMood());
+    const handleViewMode = () => setViewMode(readViewMode());
+
     readCamera();
     const observer = new MutationObserver(readCamera);
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
+    window.addEventListener("userfx:private-room-mood", handleMood);
+    window.addEventListener("userfx:private-room-view-mode", handleViewMode);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("userfx:private-room-mood", handleMood);
+      window.removeEventListener("userfx:private-room-view-mode", handleViewMode);
+    };
   }, []);
 
+  return { mood, viewMode, cameraLive };
+}
+
+function CameraSpace({ cameraLive, label }: { cameraLive: boolean; label: string }) {
   return (
-    <main className={`pvr-myroom-social ${className}`} aria-label="My Room profile">
-      <header className="pvr-myroom-hero">
-        <div className="pvr-myroom-hero-copy">
-          <span className="pvr-myroom-kicker">
-USER FX · PRIVATE CLUB
-          </span>
+    <section className="pvr-room-camera" aria-label="My camera">
+      <div className="pvr-room-camera-status">
+        <span className={cameraLive ? "is-live" : ""}>
+{cameraLive ? "● ONCAM" : "○ OFFCAM"}
+        </span>
+        <small>
+{label}
+        </small>
+      </div>
+      <div className="pvr-room-camera-center">
+        <span>
+FX
+        </span>
+        <strong>
+{cameraLive ? "YOUR CAMERA IS LIVE" : "YOUR CAMERA SPACE"}
+        </strong>
+        <small>
+{cameraLive ? "Your live profile camera is active." : "Go online when you want followers to see you."}
+        </small>
+      </div>
+      <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"))}>
+{cameraLive ? "MANAGE CAM" : "GO ON CAM"}
+      </button>
+    </section>
+  );
+}
+
+function ProfileCard({ nick, friendRequested, onFriend }: { nick: string; friendRequested: boolean; onFriend: () => void }) {
+  return (
+    <section className="pvr-room-profile">
+      <header>
+        <span>
+MEMBER PROFILE
+        </span>
+        <small>
+VERIFIED
+        </small>
+      </header>
+      <div className="pvr-room-profile-main">
+        <div className="pvr-room-avatar">
+FX
+        </div>
+        <div>
           <h1>
-MY ROOM
+{nick}
           </h1>
           <p>
-Your profile, connections and private-room activity.
+Private member · live rooms · selected connections.
           </p>
         </div>
-      </header>
-
-      <section className="pvr-myroom-layout">
-        <article className="pvr-profile-card">
-          <div className={`pvr-profile-visual ${cameraLive ? "is-live" : ""}`}>
-            <div className="pvr-profile-avatar" aria-hidden="true">
-FX
-            </div>
-            <span className="pvr-profile-state">
-{cameraLive ? "ONCAM" : "ONLINE"}
-            </span>
-          </div>
-          <div className="pvr-profile-body">
-            <div className="pvr-profile-identity">
-              <div>
-                <span>
-MEMBER PROFILE
-                </span>
-                <h2>
-{nick}
-                </h2>
-              </div>
-              <span className="pvr-profile-verified">
-VERIFIED
-              </span>
-            </div>
-            <p className="pvr-profile-bio">
-Private member · Hamilton / Toronto network · here for good conversations, live rooms and selected connections.
-            </p>
-            <div className="pvr-profile-tags" aria-label="Profile interests">
-              <span>
+      </div>
+      <div className="pvr-room-tags">
+        <span>
 PRIVATE CLUB
-              </span>
-              <span>
-LIVE
-              </span>
-              <span>
+        </span>
+        <span>
 CREATOR
-              </span>
-            </div>
-            <div className="pvr-profile-actions">
-              <button type="button" className="is-primary" onClick={() => setFriendRequested(true)} disabled={friendRequested}>
+        </span>
+        <span>
+LIVE
+        </span>
+      </div>
+      <div className="pvr-room-actions">
+        <button type="button" className="is-primary" onClick={onFriend} disabled={friendRequested}>
 {friendRequested ? "REQUEST SENT" : "ADD FRIEND"}
-              </button>
-              <button type="button" onClick={() => goTo("#/private-room/buzon")}>
+        </button>
+        <button type="button" onClick={() => goTo("#/private-room/buzon")}>
 MESSAGE
-              </button>
-              {cameraLive ? (
-                <button type="button" className="is-live" onClick={() => goTo("#/private-room/stage")}>
-JOIN LIVE
-                </button>
-              ) : null}
-            </div>
-            <dl className="pvr-profile-stats">
-              <div>
-                <dt>
-FRIENDS
-                </dt>
-                <dd>
-128
-                </dd>
-              </div>
-              <div>
-                <dt>
+        </button>
+      </div>
+      <div className="pvr-room-stats">
+        <span>
+<strong>128</strong> FRIENDS
+        </span>
+        <span>
+<strong>418</strong> FOLLOWERS
+        </span>
+        <span>
+<strong>2026</strong> JOINED
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function ConversationPanel() {
+  return (
+    <section className="pvr-room-conversation">
+      <header>
+        <div>
+          <span>
 FOLLOWERS
-                </dt>
-                <dd>
-418
-                </dd>
-              </div>
-              <div>
-                <dt>
-JOINED
-                </dt>
-                <dd>
-2026
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </article>
+          </span>
+          <strong>
+ROOM CHAT
+          </strong>
+        </div>
+        <small>
+8 ONLINE
+        </small>
+      </header>
+      <div className="pvr-room-chat-tabs">
+        <button type="button" className="is-active">
+PUBLIC
+        </button>
+        <button type="button" onClick={() => goTo("#/private-room/buzon")}>
+PRIVATE
+        </button>
+      </div>
+      <div className="pvr-room-chat-feed">
+        {CHAT_LINES.map((line) => (
+          <p key={line.user}>
+            <strong>
+{line.user}
+            </strong>
+            <span>
+{line.text}
+            </span>
+          </p>
+        ))}
+      </div>
+      <div className="pvr-room-chat-compose">
+        <input type="text" placeholder="Write to your room..." aria-label="Write to your room" />
+        <button type="button">
+SEND
+        </button>
+      </div>
+    </section>
+  );
+}
 
-        <aside className="pvr-myroom-side">
-          <article className="pvr-myroom-widget pvr-stage-widget">
-            <header>
-              <span>
+function StageWidget({ cameraLive }: { cameraLive: boolean }) {
+  return (
+    <section className="pvr-room-widget pvr-room-stage-widget">
+      <header>
+        <span>
 STAGE WIDGET
-              </span>
-              <strong>
+        </span>
+        <strong>
 ROOMFX LIVE
-              </strong>
-            </header>
-            <div className="pvr-stage-widget-screen">
-              <span className={cameraLive ? "is-live" : ""}>
+        </strong>
+      </header>
+      <div className="pvr-room-stage-preview">
+        <span className={cameraLive ? "is-live" : ""}>
 {cameraLive ? "LIVE" : "READY"}
-              </span>
-              <strong>
-{cameraLive ? "Your camera is active" : "Stage is standing by"}
-              </strong>
-              <small>
-Open the dedicated Stage for the full videocall experience.
-              </small>
-            </div>
-            <button type="button" onClick={() => goTo("#/private-room/stage")}>
+        </span>
+        <strong>
+VIDEOCALL STAGE
+        </strong>
+        <small>
+Host + members
+        </small>
+      </div>
+      <button type="button" onClick={() => goTo("#/private-room/stage")}>
 OPEN STAGE
-            </button>
-          </article>
+      </button>
+    </section>
+  );
+}
 
-          <article className="pvr-myroom-widget pvr-gallery-widget">
-            <header>
-              <span>
-PHOTOS WIDGET
-              </span>
-              <strong>
-PROFILE PHOTOS
-              </strong>
-            </header>
-            <div className="pvr-photo-preview" aria-label="Profile photo previews">
-              <span>
+function GalleryWidget({ requested, onRequest }: { requested: boolean; onRequest: () => void }) {
+  return (
+    <section className="pvr-room-widget pvr-room-gallery-widget">
+      <header>
+        <span>
+GALLERY WIDGET
+        </span>
+        <strong>
+PHOTOS
+        </strong>
+      </header>
+      <div className="pvr-room-photo-strip">
+        <span>
 01
-              </span>
-              <span>
+        </span>
+        <span>
 02
-              </span>
-              <span>
+        </span>
+        <span>
 03
-              </span>
-            </div>
-            <div className="pvr-gallery-widget-actions">
-              <button type="button" onClick={() => goTo("#/private-room/gallery")}>
+        </span>
+      </div>
+      <div className="pvr-room-widget-actions">
+        <button type="button" onClick={() => goTo("#/private-room/gallery")}>
 VIEW GALLERY
-              </button>
-              <button type="button" className="is-secondary" onClick={() => setAlbumRequested(true)} disabled={albumRequested}>
-{albumRequested ? "REQUEST SENT" : "REQUEST ALBUM"}
-              </button>
-            </div>
-          </article>
-        </aside>
-      </section>
+        </button>
+        <button type="button" onClick={onRequest} disabled={requested}>
+{requested ? "REQUEST SENT" : "REQUEST ALBUM"}
+        </button>
+      </div>
+    </section>
+  );
+}
 
-      <section className="pvr-myroom-lower">
-        <article className="pvr-myroom-panel">
-          <header>
-            <span>
+function Signals() {
+  return (
+    <section className="pvr-room-signals">
+      <article>
+        <span>
 HIGHLIGHTS
-            </span>
-            <strong>
+        </span>
+        <strong>
 MEMBER SIGNALS
-            </strong>
-          </header>
-          <div className="pvr-highlight-grid">
-            <span>
+        </strong>
+        <div>
+          <small>
 EARLY MEMBER
-            </span>
-            <span>
+          </small>
+          <small>
 ROOM HOST
-            </span>
-            <span>
+          </small>
+          <small>
 7 DAY STREAK
-            </span>
-            <span>
+          </small>
+          <small>
 VERIFIED
-            </span>
-          </div>
-        </article>
-
-        <article className="pvr-myroom-panel">
-          <header>
-            <span>
+          </small>
+        </div>
+      </article>
+      <article>
+        <span>
 ACTIVITY
-            </span>
-            <strong>
+        </span>
+        <strong>
 RECENT SIGNALS
-            </strong>
-          </header>
-          <div className="pvr-activity-list">
-            <p>
-<span>NOW</span> Profile online
-            </p>
-            <p>
-<span>LIVE</span> Stage access ready
-            </p>
-            <p>
-<span>NEW</span> Profile photo updated
-            </p>
-          </div>
-        </article>
-
-        <article className="pvr-myroom-panel pvr-connections-panel">
-          <header>
-            <span>
+        </strong>
+        <p>
+NOW · Profile online
+        </p>
+        <p>
+LIVE · Stage access ready
+        </p>
+        <p>
+NEW · Profile updated
+        </p>
+      </article>
+      <article>
+        <span>
 CONNECTIONS
-            </span>
-            <strong>
+        </span>
+        <strong>
 YOUR NETWORK
-            </strong>
-          </header>
-          <div className="pvr-connection-row">
-            <span>
+        </strong>
+        <div className="pvr-room-network">
+          <small>
 MB
-            </span>
-            <span>
+          </small>
+          <small>
 TK
-            </span>
-            <span>
+          </small>
+          <small>
 VV
-            </span>
-            <span>
+          </small>
+          <small>
 +12
-            </span>
-          </div>
-          <button type="button" onClick={() => goTo("#/private-room/buzon")}>
+          </small>
+        </div>
+        <button type="button" onClick={() => goTo("#/private-room/buzon")}>
 OPEN MESSAGES
-          </button>
-        </article>
-      </section>
+        </button>
+      </article>
+    </section>
+  );
+}
+
+function AdminControl() {
+  return (
+    <section className="pvr-room-admin pvr-admin-only" aria-label="Admin control">
+      <header>
+        <span>
+ADMIN · CONTROL
+        </span>
+        <strong>
+MEMBER PERMISSIONS
+        </strong>
+      </header>
+      <div className="pvr-room-admin-permissions">
+        <button type="button" className="is-on">
+TELEGRAMFX
+        </button>
+        <button type="button" className="is-on">
+GALLERY
+        </button>
+        <button type="button">
+CHAT
+        </button>
+        <button type="button">
+PRIV
+        </button>
+        <button type="button">
+GROUP
+        </button>
+      </div>
+      <small>
+STATE SAVED
+      </small>
+    </section>
+  );
+}
+
+function CineRoom({ nick, cameraLive, friendRequested, albumRequested, onFriend, onAlbum }: RoomLayoutProps) {
+  return (
+    <div className="pvr-room-layout pvr-room-layout--cine">
+      <div className="pvr-cine-primary">
+        <CameraSpace cameraLive={cameraLive} label="CINEMA PROFILE CAM" />
+        <ConversationPanel />
+      </div>
+      <div className="pvr-cine-profile">
+        <ProfileCard nick={nick} friendRequested={friendRequested} onFriend={onFriend} />
+      </div>
+      <div className="pvr-cine-widgets">
+        <StageWidget cameraLive={cameraLive} />
+        <GalleryWidget requested={albumRequested} onRequest={onAlbum} />
+      </div>
+      <Signals />
+      <AdminControl />
+    </div>
+  );
+}
+
+function VintageRoom({ nick, cameraLive, friendRequested, albumRequested, onFriend, onAlbum }: RoomLayoutProps) {
+  return (
+    <div className="pvr-room-layout pvr-room-layout--vintage">
+      <div className="pvr-vintage-intro">
+        <ProfileCard nick={nick} friendRequested={friendRequested} onFriend={onFriend} />
+        <CameraSpace cameraLive={cameraLive} label="PRIVATE STUDIO" />
+      </div>
+      <div className="pvr-vintage-lounge">
+        <ConversationPanel />
+        <div className="pvr-vintage-widgets">
+          <GalleryWidget requested={albumRequested} onRequest={onAlbum} />
+          <StageWidget cameraLive={cameraLive} />
+        </div>
+      </div>
+      <Signals />
+      <AdminControl />
+    </div>
+  );
+}
+
+function ArcadeRoom({ nick, cameraLive, friendRequested, albumRequested, onFriend, onAlbum }: RoomLayoutProps) {
+  return (
+    <div className="pvr-room-layout pvr-room-layout--arcade">
+      <div className="pvr-arcade-console">
+        <CameraSpace cameraLive={cameraLive} label="PLAYER CAM" />
+        <ConversationPanel />
+      </div>
+      <div className="pvr-arcade-rail">
+        <ProfileCard nick={nick} friendRequested={friendRequested} onFriend={onFriend} />
+        <StageWidget cameraLive={cameraLive} />
+        <GalleryWidget requested={albumRequested} onRequest={onAlbum} />
+      </div>
+      <AdminControl />
+      <Signals />
+    </div>
+  );
+}
+
+type RoomLayoutProps = {
+  nick: string;
+  cameraLive: boolean;
+  friendRequested: boolean;
+  albumRequested: boolean;
+  onFriend: () => void;
+  onAlbum: () => void;
+};
+
+export default function PRFX5({ nick = "@User18Fx", className = "" }: PRFX5Props) {
+  const { mood, viewMode, cameraLive } = usePrivateRoomState();
+  const [friendRequested, setFriendRequested] = useState(false);
+  const [albumRequested, setAlbumRequested] = useState(false);
+
+  const props: RoomLayoutProps = {
+    nick,
+    cameraLive,
+    friendRequested,
+    albumRequested,
+    onFriend: () => setFriendRequested(true),
+    onAlbum: () => setAlbumRequested(true),
+  };
+
+  return (
+    <main className={`pvr-myroom-experience pvr-myroom-experience--${mood} pvr-view-${viewMode} ${className}`} aria-label="My Room">
+      {mood === "cine" ? (
+        <CineRoom {...props} />
+      ) : mood === "vintage" ? (
+        <VintageRoom {...props} />
+      ) : (
+        <ArcadeRoom {...props} />
+      )}
     </main>
   );
 }
