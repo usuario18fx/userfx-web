@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import "./PR-Stage.css";
 
 const DEV_OWNER = import.meta.env.DEV;
+type PrivateRoomMood = "cine" | "vintage" | "arcade";
+
+function readMood(): PrivateRoomMood {
+  const value = document.documentElement.dataset.pvrMood;
+  return value === "vintage" || value === "arcade" ? value : "cine";
+}
 
 type RuntimeState = {
   isOwner: boolean;
@@ -28,6 +34,7 @@ function openCameraStudio() {
 
 export default function PrivateRoomStage() {
   const [cameraLive, setCameraLive] = useState(false);
+  const [mood, setMood] = useState<PrivateRoomMood>(() => readMood());
   const [ownerCameraLive, setOwnerCameraLive] = useState(false);
   const [runtime, setRuntime] = useState<RuntimeState>({
     isOwner: DEV_OWNER,
@@ -137,6 +144,12 @@ export default function PrivateRoomStage() {
   }
 
   useEffect(() => {
+    const handleMood = () => setMood(readMood());
+    window.addEventListener("userfx:private-room-mood", handleMood);
+    return () => window.removeEventListener("userfx:private-room-mood", handleMood);
+  }, []);
+
+  useEffect(() => {
     const readCameraState = () => {
       const live = cameraIsLive();
       setCameraLive(live);
@@ -190,7 +203,7 @@ export default function PrivateRoomStage() {
   }, [ownerCameraLive]);
 
   return (
-    <section className="pvr-route-page pvr-stage-route" aria-label="Private Room Stage">
+    <section className={`pvr-route-page pvr-stage-route pvr-stage-route--${mood}`} aria-label="Private Room Stage">
       <header className="pvr-route-page-head">
         <div>
           <span>
@@ -208,7 +221,7 @@ MYROOM
       </header>
 
       {runtime.isOwner ? (
-        <section className="pvr-owner-console pvr-admin-hud" aria-label="Owner stage controls">
+        <section className="pvr-owner-console pvr-admin-hud pvr-admin-only" aria-label="Owner stage controls">
           <div className="pvr-owner-console-copy">
             <span>
 ADMIN · OWNER
@@ -256,47 +269,137 @@ ROOMFX LIVE
           </div>
         </header>
 
-        <div className="pvr-stage-scene-grid">
-          {STAGE_MEMBERS.map((member, index) => (
-            <article key={member.name} className={"pvr-stage-camera-card " + (member.fixed ? "is-fixed " : "") + (index === 0 ? "is-host " : "") + (index === 1 ? "is-self" : "")}>
+        {mood === "cine" ? (
+          <div className="pvr-stage-cine-layout">
+            <article className="pvr-stage-cine-main">
               <div className="pvr-stage-camera-screen">
-                {index === 0 && runtime.isOwner && ownerCameraLive ? (
+                {runtime.isOwner && ownerCameraLive ? (
                   <video ref={videoRef} className="pvr-stage-owner-video" autoPlay muted playsInline />
                 ) : (
                   <span className="pvr-stage-camera-initials">
-{member.initials}
+FX
                   </span>
                 )}
                 <div className="pvr-stage-camera-watermark">
                   <strong>
-{member.name}
+@User18Fx
                   </strong>
                   <small>
-{index === 0 && runtime.isOwner ? "OWNER · MAIN CAM" : member.role}
+MAIN CINEMA CAM
                   </small>
                 </div>
-                {member.fixed ? (
-                  <span className="pvr-stage-camera-fixed">
-{index === 0 ? "MAIN CAM" : "FIXED CAM"}
-                  </span>
-                ) : null}
-                {index === 0 && runtime.stage.live ? (
-                  <span className="pvr-stage-camera-live">
-PUBLIC LIVE
-                  </span>
-                ) : null}
-                {index === 1 && cameraLive ? (
-                  <div className="pvr-stage-camera-live-lumen" role="status" aria-label="User camera online">
-                    <span className="pvr-stage-camera-live-dot" />
-                    <span>
-ONLINE
-                    </span>
-                  </div>
-                ) : null}
               </div>
             </article>
-          ))}
-        </div>
+            <div className="pvr-stage-cine-strip">
+              {STAGE_MEMBERS.slice(1).map((member) => (
+                <article key={member.name} className="pvr-stage-camera-card">
+                  <div className="pvr-stage-camera-screen">
+                    <span className="pvr-stage-camera-initials">
+{member.initials}
+                    </span>
+                    <div className="pvr-stage-camera-watermark">
+                      <strong>
+{member.name}
+                      </strong>
+                      <small>
+{member.role}
+                      </small>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : mood === "vintage" ? (
+          <div className="pvr-stage-vintage-layout">
+            <article className="pvr-stage-vintage-host">
+              <div className="pvr-stage-camera-screen">
+                {runtime.isOwner && ownerCameraLive ? (
+                  <video ref={videoRef} className="pvr-stage-owner-video" autoPlay muted playsInline />
+                ) : (
+                  <span className="pvr-stage-camera-initials">
+FX
+                  </span>
+                )}
+                <div className="pvr-stage-camera-watermark">
+                  <strong>
+@User18Fx
+                  </strong>
+                  <small>
+HOST · PRIVATE STUDIO
+                  </small>
+                </div>
+              </div>
+            </article>
+            <aside className="pvr-stage-vintage-guests">
+              <header>
+                <span>
+GUEST SALON
+                </span>
+                <strong>
+LIVE MEMBERS
+                </strong>
+              </header>
+              {STAGE_MEMBERS.slice(1).map((member) => (
+                <article key={member.name} className="pvr-stage-vintage-guest">
+                  <span className="pvr-stage-camera-initials">
+{member.initials}
+                  </span>
+                  <div>
+                    <strong>
+{member.name}
+                    </strong>
+                    <small>
+{member.role}
+                    </small>
+                  </div>
+                </article>
+              ))}
+            </aside>
+          </div>
+        ) : (
+          <div className="pvr-stage-scene-grid">
+            {STAGE_MEMBERS.map((member, index) => (
+              <article key={member.name} className={"pvr-stage-camera-card " + (member.fixed ? "is-fixed " : "") + (index === 0 ? "is-host " : "") + (index === 1 ? "is-self" : "")}>
+                <div className="pvr-stage-camera-screen">
+                  {index === 0 && runtime.isOwner && ownerCameraLive ? (
+                    <video ref={videoRef} className="pvr-stage-owner-video" autoPlay muted playsInline />
+                  ) : (
+                    <span className="pvr-stage-camera-initials">
+{member.initials}
+                    </span>
+                  )}
+                  <div className="pvr-stage-camera-watermark">
+                    <strong>
+{member.name}
+                    </strong>
+                    <small>
+{index === 0 && runtime.isOwner ? "OWNER · MAIN CAM" : member.role}
+                    </small>
+                  </div>
+                  {member.fixed ? (
+                    <span className="pvr-stage-camera-fixed">
+{index === 0 ? "MAIN CAM" : "FIXED CAM"}
+                    </span>
+                  ) : null}
+                  {index === 0 && runtime.stage.live ? (
+                    <span className="pvr-stage-camera-live">
+PUBLIC LIVE
+                    </span>
+                  ) : null}
+                  {index === 1 && cameraLive ? (
+                    <div className="pvr-stage-camera-live-lumen" role="status" aria-label="User camera online">
+                      <span className="pvr-stage-camera-live-dot" />
+                      <span>
+ONLINE
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
 
         <footer className="pvr-stage-scene-footer">
           <div>
