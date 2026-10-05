@@ -1,0 +1,281 @@
+.pvr-buzon-experience{
+  width:min(1500px,calc(100% - 32px));
+  margin:18px auto 70px;
+  color:#e8edf3;
+  font-family:Inter,system-ui,sans-serif;
+}
+.pvr-buzon-experience *{
+  box-sizing:border-box;
+}
+.pvr-buzon-contacts,.pvr-buzon-chat,.pvr-buzon-activity,.pvr-buzon-admin{
+  border:1px solid var(--pvr-mood-line,#ffffff18);
+  background:linear-gradient(150deg,var(--pvr-mood-panel2,#151b23),var(--pvr-mood-panel,#0c1015));
+  box-shadow:0 24px 70px #0009;
+}
+.pvr-buzon-contacts{
+  padding:16px;
+}
+.pvr-buzon-contacts>header,.pvr-buzon-chat>header,.pvr-buzon-activity>header{
+  margin-bottom:14px;
+}
+.pvr-buzon-contacts>header span,.pvr-buzon-chat>header span,.pvr-buzon-activity>header span,.pvr-buzon-admin>span{
+  display:block;
+  color:var(--pvr-mood-accent2);
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.15em;
+}
+.pvr-buzon-contacts>header strong,.pvr-buzon-chat>header strong,.pvr-buzon-activity>header strong,.pvr-buzon-admin>strong{
+  display:block;
+  margin-top:5px;
+  color:var(--pvr-mood-accent);
+  font-size:13px;
+}
+.pvr-buzon-contacts>button{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  min-height:66px;
+  padding:8px;
+  border:0;
+  border-top:1px solid var(--pvr-mood-line);
+  background:transparent;
+  color:#9ca6b0;
+  text-align:left;
+  cursor:pointer;
+}
+.pvr-buzon-contacts>button.is-active{
+  background:var(--pvr-mood-glow);
+}
+.pvr-buzon-avatar{
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:50%;
+  color:var(--pvr-mood-accent);
+  font-size:7px;
+}
+.pvr-buzon-contacts>button strong,.pvr-buzon-contacts>button small{
+  display:block;
+}
+.pvr-buzon-contacts>button strong{
+  color:#d5dce3;
+  font-size:8px;
+}
+.pvr-buzon-contacts>button small{
+  margin-top:4px;
+  color:#6f7983;
+  font-size:7px;
+}
+.pvr-buzon-contacts>button i{
+  color:#66717c;
+  font-size:5px;
+  font-style:normal;
+  font-weight:900;
+}
+.pvr-buzon-chat{
+  display:flex;
+  flex-direction:column;
+  min-height:620px;
+  padding:18px;
+}
+.pvr-buzon-chat>header{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--pvr-mood-line);
+}
+.pvr-buzon-chat>header small{
+  color:#71808c;
+  font-size:6px;
+}
+.pvr-buzon-thread{
+  flex:1;
+  padding:24px 2px;
+}
+.pvr-buzon-thread>p{
+  width:min(72%,520px);
+  margin:0 0 12px;
+  padding:12px 14px;
+  border:1px solid var(--pvr-mood-line);
+  background:#05070a;
+}
+.pvr-buzon-thread>p.is-me{
+  margin-left:auto;
+  background:var(--pvr-mood-glow);
+}
+.pvr-buzon-thread>p strong,.pvr-buzon-thread>p span{
+  display:block;
+}
+.pvr-buzon-thread>p strong{
+  color:var(--pvr-mood-accent2);
+  font-size:6px;
+}
+.pvr-buzon-thread>p span{
+  margin-top:5px;
+  color:#aab4be;
+  font-size:9px;
+}
+.pvr-buzon-compose{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+}
+.pvr-buzon-compose input{
+  height:42px;
+  padding:0 12px;
+  border:1px solid var(--pvr-mood-line);
+  outline:0;
+  background:#030507;
+  color:#e1e7ed;
+}
+.pvr-buzon-compose button,.pvr-buzon-lock button,.pvr-buzon-activity button,.pvr-buzon-admin button{
+  min-height:38px;
+  padding:0 14px;
+  border:1px solid var(--pvr-mood-line);
+  background:#070a0e;
+  color:#b8c2cc;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+.pvr-buzon-lock{
+  display:grid;
+  place-items:center;
+  min-height:400px;
+  text-align:center;
+}
+.pvr-buzon-lock span{
+  color:var(--pvr-mood-accent2);
+  font-size:6px;
+}
+.pvr-buzon-lock strong{
+  color:var(--pvr-mood-accent);
+  font-size:24px;
+}
+.pvr-buzon-lock p{
+  color:#7b858f;
+  font-size:9px;
+}
+.pvr-buzon-activity,.pvr-buzon-admin{
+  padding:16px;
+}
+.pvr-buzon-activity p{
+  padding:10px 0;
+  border-bottom:1px solid var(--pvr-mood-line);
+  color:#8d98a2;
+  font-size:7px;
+}
+.pvr-buzon-activity p span{
+  display:inline-block;
+  width:42px;
+  color:var(--pvr-mood-accent2);
+  font-weight:900;
+}
+.pvr-buzon-admin>div{
+  display:flex;
+  gap:6px;
+  margin-top:12px;
+}
+.pvr-buzon-admin button{
+  flex:1;
+}
+
+/* CINE · conversation is the hero, contacts become a film strip */
+.pvr-buzon-cine{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 290px;
+  grid-template-areas:"chat contacts" "admin contacts";
+  gap:16px;
+}
+.pvr-buzon-cine .pvr-buzon-chat{
+  grid-area:chat;
+  min-height:70vh;
+  border-radius:22px;
+}
+.pvr-buzon-cine .pvr-buzon-contacts{
+  grid-area:contacts;
+  border-radius:22px;
+}
+.pvr-buzon-cine .pvr-buzon-admin{
+  grid-area:admin;
+  border-radius:16px;
+}
+
+/* VINTAGE · correspondence desk */
+.pvr-buzon-vintage{
+  display:grid;
+  grid-template-columns:360px minmax(0,1fr);
+  gap:20px;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.pvr-buzon-vintage .pvr-buzon-contacts{
+  min-height:720px;
+  border-radius:0;
+  padding:24px;
+}
+.pvr-buzon-vintage-letter{
+  display:grid;
+  gap:16px;
+}
+.pvr-buzon-vintage .pvr-buzon-chat{
+  min-height:640px;
+  border:8px solid #100b07;
+  outline:1px solid var(--pvr-mood-line);
+  border-radius:0;
+}
+.pvr-buzon-vintage .pvr-buzon-chat>header strong,.pvr-buzon-vintage .pvr-buzon-contacts>header strong{
+  font-family:"Cinzel",Georgia,serif;
+  font-weight:500;
+}
+
+/* ARCADE · three-column live social console */
+.pvr-buzon-arcade{
+  display:grid;
+  grid-template-columns:280px minmax(0,1fr) 250px;
+  grid-template-areas:"contacts chat activity" "admin admin activity";
+  gap:12px;
+}
+.pvr-buzon-arcade .pvr-buzon-contacts{
+  grid-area:contacts;
+  border-radius:10px;
+}
+.pvr-buzon-arcade .pvr-buzon-chat{
+  grid-area:chat;
+  border-radius:10px;
+  box-shadow:0 24px 70px #000b,0 0 30px var(--pvr-mood-glow);
+}
+.pvr-buzon-arcade .pvr-buzon-activity{
+  grid-area:activity;
+  border-radius:10px;
+}
+.pvr-buzon-arcade .pvr-buzon-admin{
+  grid-area:admin;
+  border-radius:10px;
+}
+@media(max-width:980px){
+  .pvr-buzon-cine,.pvr-buzon-vintage,.pvr-buzon-arcade{
+    grid-template-columns:1fr;
+    grid-template-areas:none;
+  }
+  .pvr-buzon-cine>*,
+  .pvr-buzon-arcade>*{
+    grid-area:auto!important;
+  }
+}
+@media(max-width:650px){
+  .pvr-buzon-experience{
+    width:calc(100% - 14px);
+  }
+  .pvr-buzon-chat{
+    min-height:520px!important;
+  }
+  .pvr-buzon-thread>p{
+    width:88%;
+  }
+}
