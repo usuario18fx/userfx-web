@@ -1,437 +1,555 @@
-.pvr-myroom-social{
-  --room-bg:var(--pvr-mood-bg,#07090c);
-  --room-panel:var(--pvr-mood-panel,#10141a);
-  --room-panel2:var(--pvr-mood-panel2,#151b23);
-  --room-accent:var(--pvr-mood-accent,#e7edf5);
-  --room-accent2:var(--pvr-mood-accent2,#7898bd);
-  --room-line:var(--pvr-mood-line,#ffffff18);
-  --room-glow:var(--pvr-mood-glow,#7898bd22);
-  width:min(1420px,calc(100% - 34px));
-  margin:18px auto 70px;
-  color:#edf2f7;
+.pvr-myroom-experience{
+  width:min(1500px,calc(100% - 32px));
+  margin:18px auto 72px;
+  color:#e8edf3;
   font-family:Inter,system-ui,sans-serif;
 }
-.pvr-myroom-social *{
+.pvr-myroom-experience *{
   box-sizing:border-box;
 }
-.pvr-myroom-hero{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:24px;
-  padding:28px 30px;
-  border:1px solid var(--room-line);
-  border-radius:18px;
-  background:radial-gradient(circle at 85% 0,var(--room-glow),transparent 38%),linear-gradient(145deg,var(--room-panel2),var(--room-bg));
-  box-shadow:0 28px 80px #0009;
-}
-.pvr-myroom-kicker,.pvr-myroom-widget header span,.pvr-myroom-panel header span,.pvr-profile-identity span{
-  color:var(--room-accent2);
-  font-size:7px;
-  font-weight:900;
-  letter-spacing:.16em;
-}
-.pvr-myroom-hero h1{
-  margin:4px 0 2px;
-  color:var(--room-accent);
-  font-size:clamp(34px,5vw,68px);
-  line-height:.95;
-  letter-spacing:-.055em;
-}
-.pvr-myroom-hero p{
-  margin:8px 0 0;
-  color:#8e99a6;
-  font-size:10px;
-}
-.pvr-myroom-mood-switch{
-  display:flex;
-  gap:4px;
-  padding:5px;
-  border:1px solid var(--room-line);
-  border-radius:999px;
-  background:#0008;
-}
-.pvr-myroom-mood-switch button{
-  min-width:74px;
-  height:31px;
-  border:0;
-  border-radius:999px;
-  background:transparent;
-  color:#77818c;
-  font-size:7px;
-  font-weight:900;
-  letter-spacing:.12em;
-  cursor:pointer;
-}
-.pvr-myroom-mood-switch button.is-active{
-  background:var(--room-accent);
-  color:#080a0d;
-  box-shadow:0 0 22px var(--room-glow);
-}
-.pvr-myroom-layout{
+.pvr-room-layout{
   display:grid;
-  grid-template-columns:minmax(0,1.55fr) minmax(320px,.7fr);
   gap:16px;
-  margin-top:16px;
 }
-.pvr-profile-card,.pvr-myroom-widget,.pvr-myroom-panel{
-  border:1px solid var(--room-line);
-  background:linear-gradient(150deg,var(--room-panel2),var(--room-panel));
-  box-shadow:0 22px 60px #0008;
+.pvr-room-camera,.pvr-room-profile,.pvr-room-conversation,.pvr-room-widget,.pvr-room-signals article,.pvr-room-admin{
+  border:1px solid var(--pvr-mood-line,#ffffff18);
+  background:linear-gradient(150deg,var(--pvr-mood-panel2,#151b23),var(--pvr-mood-panel,#0c1015));
+  box-shadow:0 24px 70px #0009;
 }
-.pvr-profile-card{
-  display:grid;
-  grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);
-  min-height:510px;
-  overflow:hidden;
-  border-radius:18px;
-}
-.pvr-profile-visual{
+.pvr-room-camera{
   position:relative;
-  display:grid;
-  place-items:center;
-  min-height:510px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-height:520px;
+  padding:18px;
   overflow:hidden;
-  border-right:1px solid var(--room-line);
-  background:radial-gradient(circle at 50% 38%,var(--room-glow),transparent 28%),linear-gradient(155deg,#0a0d11,#020304);
+  background:radial-gradient(circle at 50% 38%,var(--pvr-mood-glow),transparent 24%),linear-gradient(155deg,#0b0f14,#020304);
 }
-.pvr-profile-visual::after{
+.pvr-room-camera::after{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
-  background:linear-gradient(180deg,transparent 55%,#000b),repeating-linear-gradient(0deg,transparent 0 4px,#ffffff05 5px);
+  background:repeating-linear-gradient(0deg,transparent 0 4px,#ffffff05 5px);
 }
-.pvr-profile-avatar{
-  display:grid;
-  place-items:center;
-  width:168px;
-  height:168px;
-  border:1px solid var(--room-line);
-  border-radius:50%;
-  color:var(--room-accent);
-  font-size:42px;
-  font-weight:300;
-  letter-spacing:-.08em;
-  box-shadow:0 0 70px var(--room-glow);
-}
-.pvr-profile-state{
-  position:absolute;
+.pvr-room-camera-status,.pvr-room-camera-center,.pvr-room-camera>button{
+  position:relative;
   z-index:2;
-  top:18px;
-  left:18px;
-  padding:7px 10px;
-  border:1px solid var(--room-line);
-  border-radius:999px;
-  background:#05070ad9;
-  color:var(--room-accent);
+}
+.pvr-room-camera-status{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+.pvr-room-camera-status span,.pvr-room-camera-status small{
+  color:#6f7a86;
   font-size:6px;
   font-weight:900;
   letter-spacing:.15em;
 }
-.pvr-profile-visual.is-live .pvr-profile-state{
-  box-shadow:0 0 18px var(--room-glow);
+.pvr-room-camera-status span.is-live{
+  color:var(--pvr-mood-accent);
+  text-shadow:0 0 14px var(--pvr-mood-glow);
 }
-.pvr-profile-body{
-  display:flex;
-  flex-direction:column;
-  padding:36px;
+.pvr-room-camera-center{
+  display:grid;
+  place-items:center;
+  text-align:center;
 }
-.pvr-profile-identity{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:14px;
+.pvr-room-camera-center>span{
+  display:grid;
+  place-items:center;
+  width:150px;
+  height:150px;
+  margin-bottom:18px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:50%;
+  color:var(--pvr-mood-accent);
+  font-size:38px;
+  box-shadow:0 0 70px var(--pvr-mood-glow);
 }
-.pvr-profile-identity h2{
-  margin:7px 0 0;
-  color:var(--room-accent);
-  font-size:clamp(25px,3vw,42px);
-  letter-spacing:-.045em;
+.pvr-room-camera-center strong{
+  color:var(--pvr-mood-accent);
+  font-size:15px;
+  letter-spacing:.04em;
 }
-.pvr-profile-verified{
-  padding:7px 9px;
-  border:1px solid var(--room-line);
-  border-radius:999px;
+.pvr-room-camera-center small{
+  margin-top:7px;
+  color:#6f7882;
+  font-size:8px;
 }
-.pvr-profile-bio{
-  max-width:580px;
-  margin:24px 0;
-  color:#a2abb5;
-  font-size:12px;
-  line-height:1.75;
-}
-.pvr-profile-tags,.pvr-highlight-grid{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-}
-.pvr-profile-tags span,.pvr-highlight-grid span{
-  padding:8px 10px;
-  border:1px solid var(--room-line);
-  border-radius:999px;
-  background:#0003;
-  color:#aeb8c2;
-  font-size:6px;
-  font-weight:800;
-  letter-spacing:.1em;
-}
-.pvr-profile-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:auto;
-  padding-top:30px;
-}
-.pvr-profile-actions button,.pvr-myroom-widget button,.pvr-myroom-panel button{
+.pvr-room-camera>button,.pvr-room-actions button,.pvr-room-widget button,.pvr-room-conversation button,.pvr-room-signals button,.pvr-room-admin button{
   min-height:38px;
-  padding:0 15px;
-  border:1px solid var(--room-line);
+  border:1px solid var(--pvr-mood-line);
   border-radius:8px;
-  background:#090c10;
-  color:#cbd3dc;
+  background:#070a0e;
+  color:#b9c3ce;
   font-size:7px;
   font-weight:900;
   letter-spacing:.1em;
   cursor:pointer;
 }
-.pvr-profile-actions button.is-primary,.pvr-profile-actions button.is-live{
-  border-color:var(--room-accent2);
-  background:var(--room-accent);
-  color:#080a0d;
+.pvr-room-camera>button,.pvr-room-actions .is-primary{
+  border-color:var(--pvr-mood-accent2);
+  background:var(--pvr-mood-accent);
+  color:var(--pvr-mood-on-accent,#050607);
 }
-.pvr-profile-actions button:disabled,.pvr-gallery-widget-actions button:disabled{
-  cursor:default;
-  opacity:.55;
+.pvr-room-profile{
+  padding:24px;
 }
-.pvr-profile-stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin:26px 0 0;
-  padding-top:20px;
-  border-top:1px solid var(--room-line);
-}
-.pvr-profile-stats div{
+.pvr-room-profile>header,.pvr-room-conversation>header,.pvr-room-widget>header,.pvr-room-admin>header{
   display:flex;
-  flex-direction:column;
-  gap:5px;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
-.pvr-profile-stats dt{
-  color:#69737e;
+.pvr-room-profile>header span,.pvr-room-conversation>header span,.pvr-room-widget>header span,.pvr-room-admin>header span,.pvr-room-signals article>span{
+  color:var(--pvr-mood-accent2);
   font-size:6px;
-  letter-spacing:.12em;
+  font-weight:900;
+  letter-spacing:.15em;
 }
-.pvr-profile-stats dd{
+.pvr-room-profile>header small,.pvr-room-conversation>header small{
+  color:#6f7882;
+  font-size:6px;
+}
+.pvr-room-profile-main{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-top:24px;
+}
+.pvr-room-avatar{
+  display:grid;
+  place-items:center;
+  flex:0 0 76px;
+  width:76px;
+  height:76px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:50%;
+  color:var(--pvr-mood-accent);
+  font-size:18px;
+  box-shadow:0 0 30px var(--pvr-mood-glow);
+}
+.pvr-room-profile h1{
   margin:0;
-  color:var(--room-accent);
-  font-size:16px;
+  color:var(--pvr-mood-accent);
+  font-size:clamp(25px,3vw,42px);
+  letter-spacing:-.045em;
+}
+.pvr-room-profile p{
+  margin:8px 0 0;
+  color:#88939e;
+  font-size:9px;
+  line-height:1.6;
+}
+.pvr-room-tags,.pvr-room-actions,.pvr-room-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:20px;
+}
+.pvr-room-tags span{
+  padding:7px 9px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:999px;
+  color:#8c97a2;
+  font-size:6px;
   font-weight:800;
 }
-.pvr-myroom-side{
-  display:grid;
-  grid-template-rows:1fr 1fr;
-  gap:16px;
+.pvr-room-actions button{
+  padding:0 15px;
 }
-.pvr-myroom-widget,.pvr-myroom-panel{
-  padding:18px;
-  border-radius:14px;
+.pvr-room-actions button:disabled{
+  opacity:.55;
 }
-.pvr-myroom-widget header,.pvr-myroom-panel header{
+.pvr-room-stats{
+  padding-top:18px;
+  border-top:1px solid var(--pvr-mood-line);
+}
+.pvr-room-stats span{
   display:flex;
   flex-direction:column;
+  min-width:86px;
+  color:#68727c;
+  font-size:6px;
+}
+.pvr-room-stats strong{
+  margin-bottom:4px;
+  color:var(--pvr-mood-accent);
+  font-size:15px;
+}
+.pvr-room-conversation{
+  display:flex;
+  flex-direction:column;
+  min-height:420px;
+  padding:18px;
+}
+.pvr-room-conversation>header strong,.pvr-room-widget>header strong,.pvr-room-admin>header strong{
+  display:block;
+  margin-top:5px;
+  color:var(--pvr-mood-accent);
+  font-size:12px;
+}
+.pvr-room-chat-tabs{
+  display:flex;
   gap:5px;
-  margin-bottom:14px;
+  margin-top:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--pvr-mood-line);
 }
-.pvr-myroom-widget header strong,.pvr-myroom-panel header strong{
-  color:var(--room-accent);
-  font-size:13px;
-  letter-spacing:.04em;
+.pvr-room-chat-tabs button{
+  min-height:29px;
+  padding:0 12px;
 }
-.pvr-stage-widget-screen{
+.pvr-room-chat-tabs button.is-active{
+  color:var(--pvr-mood-accent);
+}
+.pvr-room-chat-feed{
+  flex:1;
+  padding:8px 0;
+}
+.pvr-room-chat-feed p{
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:10px;
+  margin:0;
+  padding:11px 4px;
+  border-bottom:1px solid var(--pvr-mood-line);
+  font-size:8px;
+}
+.pvr-room-chat-feed strong{
+  color:var(--pvr-mood-accent2);
+}
+.pvr-room-chat-feed span{
+  color:#9aa4ae;
+}
+.pvr-room-chat-compose{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+}
+.pvr-room-chat-compose input{
+  min-width:0;
+  height:38px;
+  padding:0 11px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:8px;
+  outline:0;
+  background:#030507;
+  color:#d8e0e8;
+  font-size:9px;
+}
+.pvr-room-chat-compose button{
+  padding:0 15px;
+}
+.pvr-room-widget{
+  padding:17px;
+}
+.pvr-room-stage-preview{
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
-  min-height:150px;
-  padding:16px;
-  border:1px solid var(--room-line);
-  border-radius:10px;
-  background:radial-gradient(circle at 50% 25%,var(--room-glow),transparent 30%),#030507;
+  min-height:145px;
+  margin-top:13px;
+  padding:13px;
+  border:1px solid var(--pvr-mood-line);
+  background:radial-gradient(circle at 50% 35%,var(--pvr-mood-glow),transparent 28%),#020406;
 }
-.pvr-stage-widget-screen>span{
+.pvr-room-stage-preview>span{
   width:max-content;
   margin-bottom:auto;
-  padding:5px 7px;
-  border:1px solid var(--room-line);
-  border-radius:999px;
-  color:#7f8993;
+  color:#737e89;
   font-size:6px;
-  font-weight:900;
 }
-.pvr-stage-widget-screen>span.is-live{
-  color:var(--room-accent);
-  box-shadow:0 0 16px var(--room-glow);
+.pvr-room-stage-preview>span.is-live{
+  color:var(--pvr-mood-accent);
 }
-.pvr-stage-widget-screen strong{
-  color:#e9eef4;
-  font-size:12px;
+.pvr-room-stage-preview strong{
+  color:#dce4ec;
+  font-size:10px;
 }
-.pvr-stage-widget-screen small{
-  margin-top:5px;
-  color:#6f7984;
+.pvr-room-stage-preview small{
+  margin-top:4px;
+  color:#68727d;
   font-size:7px;
-  line-height:1.5;
 }
-.pvr-stage-widget>button{
+.pvr-room-widget>button{
   width:100%;
-  margin-top:10px;
+  margin-top:8px;
 }
-.pvr-photo-preview{
+.pvr-room-photo-strip{
   display:grid;
   grid-template-columns:1.25fr 1fr 1fr;
-  gap:7px;
-  height:128px;
+  gap:6px;
+  min-height:120px;
+  margin-top:13px;
 }
-.pvr-photo-preview span{
+.pvr-room-photo-strip span{
   display:grid;
   place-items:end start;
   padding:8px;
-  border:1px solid var(--room-line);
-  border-radius:8px;
-  background:radial-gradient(circle at 50% 25%,var(--room-glow),transparent 34%),linear-gradient(145deg,#171d24,#040608);
-  color:#77818b;
+  border:1px solid var(--pvr-mood-line);
+  background:radial-gradient(circle at 50% 20%,var(--pvr-mood-glow),transparent 35%),#05070a;
+  color:#68727d;
   font-size:6px;
 }
-.pvr-gallery-widget-actions{
+.pvr-room-widget-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:7px;
-  margin-top:10px;
+  gap:6px;
+  margin-top:8px;
 }
-.pvr-gallery-widget-actions button{
-  padding:0 8px;
-}
-.pvr-myroom-lower{
+.pvr-room-signals{
   display:grid;
   grid-template-columns:1fr 1fr .8fr;
   gap:16px;
+}
+.pvr-room-signals article{
+  min-height:170px;
+  padding:18px;
+}
+.pvr-room-signals article>strong{
+  display:block;
+  margin-top:5px;
+  color:var(--pvr-mood-accent);
+  font-size:12px;
+}
+.pvr-room-signals article>div{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
   margin-top:16px;
 }
-.pvr-activity-list{
-  display:grid;
-  gap:8px;
-}
-.pvr-activity-list p{
-  margin:0;
-  padding:10px 0;
-  border-bottom:1px solid var(--room-line);
-  color:#9aa4ae;
-  font-size:8px;
-}
-.pvr-activity-list p span{
-  display:inline-block;
-  width:44px;
-  color:var(--room-accent2);
+.pvr-room-signals article small{
+  padding:7px 9px;
+  border:1px solid var(--pvr-mood-line);
+  border-radius:999px;
+  color:#87919c;
   font-size:6px;
-  font-weight:900;
 }
-.pvr-connection-row{
-  display:flex;
-  gap:7px;
-  margin-bottom:16px;
-}
-.pvr-connection-row span{
-  display:grid;
-  place-items:center;
-  width:40px;
-  height:40px;
-  border:1px solid var(--room-line);
-  border-radius:50%;
-  background:#05070a;
-  color:var(--room-accent);
+.pvr-room-signals article p{
+  margin:12px 0 0;
+  padding-bottom:9px;
+  border-bottom:1px solid var(--pvr-mood-line);
+  color:#8c96a0;
   font-size:7px;
 }
-:root[data-pvr-mood="cine"] .pvr-myroom-social{
-  --room-bg:#06080b;
-  --room-panel:#0c1015;
-  --room-panel2:#121820;
-  --room-accent:#edf2f7;
-  --room-accent2:#7f9fbe;
-  --room-line:#b8cee51f;
-  --room-glow:#6f9bc528;
+.pvr-room-network small{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  padding:0!important;
+  border-radius:50%!important;
 }
-:root[data-pvr-mood="vintage"] .pvr-myroom-social{
-  --room-bg:#0d0906;
-  --room-panel:#171008;
-  --room-panel2:#24170c;
-  --room-accent:#e1bd7c;
-  --room-accent2:#a86c37;
-  --room-line:#d2a15c2b;
-  --room-glow:#a6652926;
+.pvr-room-signals button{
+  margin-top:14px;
+  padding:0 12px;
 }
-:root[data-pvr-mood="vintage"] .pvr-myroom-hero h1,:root[data-pvr-mood="vintage"] .pvr-profile-identity h2,:root[data-pvr-mood="vintage"] .pvr-myroom-widget header strong,:root[data-pvr-mood="vintage"] .pvr-myroom-panel header strong{
+.pvr-room-admin{
+  padding:16px;
+}
+.pvr-room-admin-permissions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:13px;
+}
+.pvr-room-admin-permissions button{
+  min-width:96px;
+  padding:0 10px;
+}
+.pvr-room-admin-permissions button.is-on{
+  border-color:#008cff;
+  background:#07385f;
+  color:#8dd8ff;
+}
+.pvr-room-admin>small{
+  display:block;
+  margin-top:10px;
+  color:#4faee9;
+  font-size:6px;
+  letter-spacing:.14em;
+}
+
+/* CINE · wide screen + floating social lounge */
+.pvr-room-layout--cine .pvr-cine-primary{
+  display:grid;
+  grid-template-columns:minmax(0,1.65fr) minmax(320px,.65fr);
+  gap:16px;
+}
+.pvr-room-layout--cine .pvr-room-camera{
+  min-height:610px;
+  border-radius:22px;
+}
+.pvr-room-layout--cine .pvr-room-conversation{
+  border-radius:22px;
+}
+.pvr-room-layout--cine .pvr-cine-profile .pvr-room-profile{
+  display:grid;
+  grid-template-columns:1.4fr auto;
+  column-gap:24px;
+  border-radius:16px;
+}
+.pvr-room-layout--cine .pvr-cine-profile .pvr-room-profile>header{
+  grid-column:1/-1;
+}
+.pvr-room-layout--cine .pvr-cine-profile .pvr-room-tags,.pvr-room-layout--cine .pvr-cine-profile .pvr-room-actions,.pvr-room-layout--cine .pvr-cine-profile .pvr-room-stats{
+  grid-column:2;
+}
+.pvr-room-layout--cine .pvr-cine-profile .pvr-room-profile-main{
+  grid-row:2/5;
+}
+.pvr-room-layout--cine .pvr-cine-widgets{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.pvr-room-layout--cine .pvr-room-widget,.pvr-room-layout--cine .pvr-room-signals article,.pvr-room-layout--cine .pvr-room-admin{
+  border-radius:16px;
+}
+
+/* VINTAGE · editorial studio + lounge */
+.pvr-room-layout--vintage{
+  font-family:Georgia,"Times New Roman",serif;
+}
+.pvr-room-layout--vintage .pvr-vintage-intro{
+  display:grid;
+  grid-template-columns:minmax(330px,.65fr) minmax(0,1.35fr);
+  gap:18px;
+}
+.pvr-room-layout--vintage .pvr-room-profile{
+  min-height:560px;
+  padding:34px;
+  border-radius:2px;
+}
+.pvr-room-layout--vintage .pvr-room-profile-main{
+  align-items:flex-start;
+  flex-direction:column;
+  margin-top:70px;
+}
+.pvr-room-layout--vintage .pvr-room-profile h1{
   font-family:"Cinzel",Georgia,serif;
   font-weight:500;
-  letter-spacing:.03em;
+  letter-spacing:.02em;
 }
-:root[data-pvr-mood="vintage"] .pvr-profile-card,:root[data-pvr-mood="vintage"] .pvr-myroom-widget,:root[data-pvr-mood="vintage"] .pvr-myroom-panel,:root[data-pvr-mood="vintage"] .pvr-myroom-hero{
-  border-radius:3px;
+.pvr-room-layout--vintage .pvr-room-camera{
+  min-height:560px;
+  border:8px solid #100b07;
+  outline:1px solid var(--pvr-mood-line);
+  border-radius:0;
 }
-:root[data-pvr-mood="arcade"] .pvr-myroom-social{
-  --room-bg:#03040b;
-  --room-panel:#080c19;
-  --room-panel2:#0c1328;
-  --room-accent:#54e2ff;
-  --room-accent2:#9a62ff;
-  --room-line:#54e2ff2b;
-  --room-glow:#54e2ff22;
+.pvr-room-layout--vintage .pvr-vintage-lounge{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:18px;
 }
-:root[data-pvr-mood="arcade"] .pvr-myroom-social{
-  background:repeating-linear-gradient(0deg,transparent 0 4px,#54e2ff05 5px);
+.pvr-room-layout--vintage .pvr-vintage-widgets{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:18px;
 }
-:root[data-pvr-mood="arcade"] .pvr-profile-card,:root[data-pvr-mood="arcade"] .pvr-myroom-widget,:root[data-pvr-mood="arcade"] .pvr-myroom-panel{
-  box-shadow:0 24px 70px #000b,0 0 28px #54e2ff0b;
+.pvr-room-layout--vintage .pvr-room-conversation,.pvr-room-layout--vintage .pvr-room-widget,.pvr-room-layout--vintage .pvr-room-signals article,.pvr-room-layout--vintage .pvr-room-admin{
+  border-radius:0;
 }
-@media(max-width:980px){
-  .pvr-myroom-layout{
+.pvr-room-layout--vintage .pvr-room-conversation>header strong,.pvr-room-layout--vintage .pvr-room-widget>header strong,.pvr-room-layout--vintage .pvr-room-signals article>strong{
+  font-family:"Cinzel",Georgia,serif;
+  font-weight:500;
+}
+
+/* ARCADE · live console + right control rail */
+.pvr-room-layout--arcade{
+  grid-template-columns:minmax(0,1.55fr) minmax(330px,.55fr);
+  grid-template-areas:"console rail" "admin rail" "signals signals";
+  align-items:start;
+}
+.pvr-room-layout--arcade .pvr-arcade-console{
+  grid-area:console;
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr);
+  gap:12px;
+}
+.pvr-room-layout--arcade .pvr-arcade-rail{
+  grid-area:rail;
+  display:grid;
+  gap:12px;
+  position:sticky;
+  top:132px;
+}
+.pvr-room-layout--arcade .pvr-room-admin{
+  grid-area:admin;
+}
+.pvr-room-layout--arcade>.pvr-room-signals{
+  grid-area:signals;
+}
+.pvr-room-layout--arcade .pvr-room-camera{
+  min-height:620px;
+  border-radius:10px;
+  box-shadow:0 25px 80px #000c,0 0 35px var(--pvr-mood-glow);
+}
+.pvr-room-layout--arcade .pvr-room-conversation{
+  min-height:620px;
+  border-radius:10px;
+}
+.pvr-room-layout--arcade .pvr-room-profile,.pvr-room-layout--arcade .pvr-room-widget,.pvr-room-layout--arcade .pvr-room-signals article,.pvr-room-layout--arcade .pvr-room-admin{
+  border-radius:10px;
+}
+.pvr-room-layout--arcade .pvr-room-profile{
+  padding:18px;
+}
+.pvr-room-layout--arcade .pvr-room-profile-main{
+  margin-top:15px;
+}
+.pvr-room-layout--arcade .pvr-room-avatar{
+  width:54px;
+  height:54px;
+  flex-basis:54px;
+}
+.pvr-room-layout--arcade .pvr-room-profile h1{
+  font-size:24px;
+}
+.pvr-room-layout--arcade .pvr-room-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+.pvr-myroom-experience--arcade{
+  background:repeating-linear-gradient(0deg,transparent 0 4px,#39dcff05 5px);
+}
+
+@media(max-width:1050px){
+  .pvr-room-layout--cine .pvr-cine-primary,.pvr-room-layout--vintage .pvr-vintage-intro,.pvr-room-layout--vintage .pvr-vintage-lounge,.pvr-room-layout--arcade,.pvr-room-layout--arcade .pvr-arcade-console{
     grid-template-columns:1fr;
   }
-  .pvr-myroom-side{
-    grid-template-columns:1fr 1fr;
-    grid-template-rows:auto;
+  .pvr-room-layout--arcade{
+    grid-template-areas:"console" "rail" "admin" "signals";
   }
-  .pvr-myroom-lower{
+  .pvr-room-layout--arcade .pvr-arcade-rail{
+    position:static;
     grid-template-columns:1fr 1fr;
+  }
+  .pvr-room-layout--arcade .pvr-arcade-rail .pvr-room-profile{
+    grid-column:1/-1;
   }
 }
-@media(max-width:720px){
-  .pvr-myroom-social{
+@media(max-width:760px){
+  .pvr-myroom-experience{
     width:calc(100% - 14px);
   }
-  .pvr-myroom-hero{
-    align-items:stretch;
-    flex-direction:column;
-    padding:20px 16px;
-  }
-  .pvr-myroom-mood-switch{
-    width:100%;
-  }
-  .pvr-myroom-mood-switch button{
-    flex:1;
-    min-width:0;
-  }
-  .pvr-profile-card{
+  .pvr-room-layout--cine .pvr-cine-widgets,.pvr-room-layout--arcade .pvr-arcade-rail,.pvr-room-signals{
     grid-template-columns:1fr;
   }
-  .pvr-profile-visual{
-    min-height:310px;
-    border-right:0;
-    border-bottom:1px solid var(--room-line);
+  .pvr-room-layout--cine .pvr-cine-profile .pvr-room-profile{
+    display:block;
   }
-  .pvr-profile-body{
-    padding:24px 18px;
+  .pvr-room-layout--vintage .pvr-room-profile-main{
+    margin-top:30px;
   }
-  .pvr-myroom-side,.pvr-myroom-lower{
-    grid-template-columns:1fr;
+  .pvr-room-camera{
+    min-height:420px!important;
+  }
+  .pvr-room-chat-feed p{
+    grid-template-columns:76px 1fr;
   }
 }
