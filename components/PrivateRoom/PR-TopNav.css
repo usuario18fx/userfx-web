@@ -411,3 +411,50 @@
     min-width:0;
   }
 }
+
+
+/* ══════════ GLOBAL ADMIN / USER PREVIEW ══════════ */
+.pvr-view-mode-switch{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:4px;
+  border:1px solid var(--pvr-mood-line,#ffffff18);
+  border-radius:999px;
+  background:#030507cc;
+}
+.pvr-view-mode-switch button{
+  min-width:58px;
+  height:27px;
+  padding:0 10px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:var(--pvr-mood-muted,#72777e);
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+.pvr-view-mode-switch button.is-active{
+  background:#0b70bd;
+  color:#eaf8ff;
+  box-shadow:0 0 18px #008cff42;
+}
+:root[data-pvr-view-mode="user"] .pvr-admin-only{
+  display:none!important;
+}
+:root[data-pvr-view-mode="admin"] .pvr-user-only{
+  display:none!important;
+}
+@media(max-width:560px){
+  .pvr-global-mood-bar{
+    flex-wrap:wrap;
+  }
+  .pvr-view-mode-switch{
+    width:100%;
+  }
+  .pvr-view-mode-switch button{
+    flex:1;
+  }
+}
