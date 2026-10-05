@@ -1,6 +1,7 @@
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
           import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
+import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
           import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
           import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
@@ -24,10 +25,18 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route === "#/private-room/stage") return <PrivateRoomStage />;
-  if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
-  if (route === "#/private-room/buzon") return <PrivateRoomBuzon />;
-  return <PrivateRoomMyRoom />;
+  if (route.split("?")[0] === "#/private-room/stage") return (
+<PrivateRoomStage />
+);
+  if (route === "#/private-room/gallery") return (
+<PrivateRoomGallery />
+);
+  if (route.split("?")[0] === "#/private-room/buzon") return (
+<PrivateRoomBuzon />
+);
+  return (
+<PrivateRoomMyRoom />
+);
 }
 export default function App() {
   const [route, setRoute] = useState(getRoute);
@@ -119,22 +128,47 @@ export default function App() {
 
   if (route === "#/private-room-access") {
     return (
-      <>
-        <PrivateRoomLiveShell />
-      </>
+
+<>
+
+<PrivateRoomLiveShell />
+
+</>
+
+    );
+  }
+
+  if (route.startsWith("#/private-room") && route.split("?")[0] !== "#/private-room/gallery") {
+    return (
+
+<PrivateRoomDirectGate>
+
+<PrivateRoomRoute key={route} route={route} />
+
+</PrivateRoomDirectGate>
+
     );
   }
 
   if (route.startsWith("#/private-room")) {
     return (
-      <>
-        <PrivateRoomTopNav />
-        <PrivateRoomLiveShell />
-        <PrivateRoomRoute route={route} />
-        <PrivateRoomCameraEnhancer />
-      </>
+
+<>
+
+<PrivateRoomTopNav />
+
+<PrivateRoomLiveShell />
+
+<PrivateRoomRoute route={route} />
+
+<PrivateRoomCameraEnhancer />
+
+</>
+
     );
   }
 
-  return <VaultHome />;
+  return (
+<VaultHome />
+);
 }

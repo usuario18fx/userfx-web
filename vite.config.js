@@ -1,5 +1,6 @@
           import { defineConfig } from "vite";
           import react from "@vitejs/plugin-react";
+import { roomFxApi } from "./scripts/roomfx-vite.mjs";
 
           function localPrivateRoomSession() {
             return {
@@ -38,7 +39,7 @@
           }
 
           export default defineConfig({
-            plugins: [react(), localPrivateRoomSession()],
+            plugins: [react(), roomFxApi(), localPrivateRoomSession()],
             resolve: {
               extensions: [".mjs", ".js", ".mts", ".ts", ".tsx", ".jsx", ".json"],
             },
