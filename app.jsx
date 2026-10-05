@@ -120,7 +120,10 @@ export default function App() {
   if (route === "#/private-room-access") {
     return (
       <>
+        <PrivateRoomTopNav />
         <PrivateRoomLiveShell />
+        <PrivateRoomMyRoom />
+        <PrivateRoomCameraEnhancer />
       </>
     );
   }
