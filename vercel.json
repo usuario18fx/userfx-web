@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/room-live",
+      "destination": "/api/account?roomfx=1"
+    }
+  ],
   "functions": {
     "api/telegram.js": {
       "includeFiles": "assets/**"

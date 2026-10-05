@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import type { Mood } from "./client";
-
 const paths: Record<string, string> = {
   camera: "M15 10l5-3v10l-5-3M3 6h12v12H3z",
   mic: "M9 3h6v10a3 3 0 0 1-6 0zM5 10v3a7 7 0 0 0 14 0v-3M12 20v2M8 22h8",
@@ -18,62 +17,36 @@ const paths: Record<string, string> = {
   profile: "M8 7a4 4 0 1 0 8 0a4 4 0 1 0-8 0M4 21v-3a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v3",
   shield: "M12 2l9 4v6c0 6-9 10-9 10S3 18 3 12V6zM8 12l3 3 5-6",
 };
-
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {
   return (
-
 <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-
 <path d={paths[name] || paths.stage} />
-
 </svg>
-
   );
 }
-
 export function Avatar({ name, large = false }: { name: string; large?: boolean }) {
   return (
-
 <span className={`ufx-avatar${large ? " ufx-avatar-large" : ""}`} aria-label={name}>
-
 {name.replace(/^@/, "").split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "FX"}
-
 </span>
-
   );
 }
-
 export function MoodPicker({ mood, onChange }: { mood: Mood; onChange: (value: Mood) => void }) {
   return (
-
 <div className="ufx-mood">
-
 <span>
-
 CHOOSE YOUR ATMOSPHERE
-
 </span>
-
 <div role="group" aria-label="Room atmosphere">
-
 {(["cine", "arcade", "vintage"] as const).map((value) => (
-
 <button key={value} type="button" className={mood === value ? "is-active" : ""} aria-pressed={mood === value} onClick={() => onChange(value)}>
-
-{value === "cine" ? "◈" : value === "arcade" ? "✦" : "❖"}
-{value.toUpperCase()}
-
+{`${value === "cine" ? "◈" : value === "arcade" ? "✦" : "❖"} ${value.toUpperCase()}`}
 </button>
-
     ))}
-
 </div>
-
 </div>
-
   );
 }
-
 // Muted video avoids double audio; each remote stream has one audio sink.
 export function VideoStream({ stream, mirrored = false }: { stream: MediaStream; mirrored?: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -88,7 +61,6 @@ export function VideoStream({ stream, mirrored = false }: { stream: MediaStream;
 <video ref={ref} autoPlay playsInline muted className={mirrored ? "ufx-mirrored" : ""} />
 );
 }
-
 export function AudioStream({ stream, onBlocked, unlocked }: { stream: MediaStream; onBlocked: () => void; unlocked: number }) {
   const ref = useRef<HTMLAudioElement>(null);
   useEffect(() => {

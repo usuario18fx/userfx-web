@@ -8,7 +8,6 @@ import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
           import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
           import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
           import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
-
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -45,7 +44,6 @@ export default function App() {
     window.addEventListener("hashchange", handleRouteChange);
     return () => window.removeEventListener("hashchange", handleRouteChange);
   }, []);
-
   useEffect(() => {
     let cancelled = false;
     const params = new URLSearchParams(window.location.search);
@@ -125,49 +123,30 @@ export default function App() {
       if (timer) window.clearTimeout(timer);
     };
   }, []);
-
   if (route === "#/private-room-access") {
     return (
-
 <>
-
 <PrivateRoomLiveShell />
-
 </>
-
     );
   }
-
   if (route.startsWith("#/private-room") && route.split("?")[0] !== "#/private-room/gallery") {
     return (
-
 <PrivateRoomDirectGate>
-
 <PrivateRoomRoute key={route} route={route} />
-
 </PrivateRoomDirectGate>
-
     );
   }
-
   if (route.startsWith("#/private-room")) {
     return (
-
 <>
-
 <PrivateRoomTopNav />
-
 <PrivateRoomLiveShell />
-
 <PrivateRoomRoute route={route} />
-
 <PrivateRoomCameraEnhancer />
-
 </>
-
     );
   }
-
   return (
 <VaultHome />
 );

@@ -28,11 +28,13 @@ screens through their existing component paths and hash navigation.
 | `#/private-room/stage` | Stage |
 | `#/private-room/buzon` | Invitations |
 | `#/private-room/gallery` | Existing Gallery integration |
-| `api/room-live.js` | Authenticated presence, messages, signaling and requests |
+| `/api/room-live` | Rewritten to `api/account.js?roomfx=1` for authenticated room requests |
 | `lib/room-live.js` | Redis storage and server authorization |
 | `components/PrivateRoom/RoomFX/` | Network UI, preview and WebRTC hook |
 
 The vault gate, Telegram handoff and gallery remain in the original project.
+The new room URL shares the account function through a Vercel rewrite, keeping
+the deployment within the Hobby plan's 12-function limit.
 The legacy MyRoom/Stage/Buzón files now delegate to the shared module; the old
 CSS can remain in the repository without being imported by those wrappers.
 

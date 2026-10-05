@@ -2,6 +2,9 @@
           import Redis from "ioredis";
           import { ensureAccount, getAccount, updateAccountProfile } from "../lib/account.js";
           import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
+          import { createRoomLiveHandler } from "../lib/room-live.js";
+
+          const roomLive = createRoomLiveHandler();
 
           const REDIS_URL = process.env.REDIS_URL;
           const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
@@ -153,6 +156,9 @@ function shapeAccount(account, session) {
 }
 
 export default async function handler(req, res) {
+  // /api/room-live shares this function to stay within Vercel Hobby's limit.
+  if (req.query?.roomfx === "1") return roomLive(req, res);
+
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
 

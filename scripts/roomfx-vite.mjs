@@ -10,12 +10,12 @@ export function roomFxApi() {
       for (const name of ["REDIS_URL", "CODE_ENGINE_NAMESPACE", "ROOMFX_ICE_SERVERS"]) {
         if (environment[name] && !process.env[name]) process.env[name] = environment[name];
       }
-      const { default: handler } = await import("../api/room-live.js");
       const { default: accountHandler } = await import("../api/account.js");
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url || "/", "http://localhost");
         if (!["/api/room-live", "/api/account"].includes(url.pathname)) return next();
         req.query = Object.fromEntries(url.searchParams);
+        if (url.pathname === "/api/room-live") req.query.roomfx = "1";
         if (["POST", "PATCH"].includes(req.method)) {
           let body = "";
           for await (const chunk of req) {
@@ -36,7 +36,7 @@ export function roomFxApi() {
           res.setHeader("Content-Type", "application/json; charset=utf-8");
           res.end(JSON.stringify(value));
         };
-        await (url.pathname === "/api/account" ? accountHandler : handler)(req, res);
+        await accountHandler(req, res);
       });
     },
   };
