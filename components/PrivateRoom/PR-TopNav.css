@@ -418,6 +418,8 @@
 .pvr-club-nav--unified { --pvr-ivory:#f3ece0; --pvr-ivory-muted:#cfc5b4; --pvr-ivory-dim:#9a9082; --pvr-champagne-soft:#bfd5f9; --pvr-champagne:#73a9ec; --pvr-elevated:#102641; --pvr-mono:"JetBrains Mono",ui-monospace,monospace; --pvr-body:Inter,system-ui,sans-serif; --pvr-display:"Cinzel",Georgia,serif; z-index:10; }
 .pvr-club-nav--unified .pvr-club-nav-inner { width:100%; max-width:1880px; padding:0 16px; gap:18px; }
 .pvr-club-nav--unified .pvr-club-tabs button { border-radius:0; padding:0 11px; font:9px var(--pvr-mono); }
+.pvr-club-nav--unified :is(.pvr-club-tabs,.pvr-club-mobile-tabs) .pvr-club-tab { display:flex; align-items:center; justify-content:center; gap:7px; }
+.pvr-club-nav--unified .pvr-tab-emoji { flex:0 0 auto; font:14px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; letter-spacing:0; filter:drop-shadow(0 2px 3px #0005); }
 .pvr-club-nav--unified .pvr-club-code { border-radius:4px; color:var(--pvr-champagne-soft); }
 .pvr-club-nav--unified .pvr-club-cam { min-height:38px; padding:0 12px; display:flex; align-items:center; gap:7px; border:1px solid #ffffff16; border-radius:4px; background:#100f0d; color:var(--pvr-ivory-dim); font:9px var(--pvr-body); white-space:nowrap; }
 .pvr-club-nav--unified .pvr-club-cam .pvr-cam-dot { width:7px; height:7px; border-radius:50%; background:#726f67; }
@@ -428,7 +430,7 @@
 @media (max-width:1450px) { .pvr-club-nav--unified .pvr-club-code { display:none; } }
 @media (max-width:1230px) {
  .pvr-club-nav--unified .pvr-club-nav-inner { grid-template-columns:auto 1fr; }
- .pvr-club-nav--unified .pvr-club-tabs { display:none; }
+.pvr-club-nav--unified .pvr-club-tabs { display:none; }
  .pvr-club-nav--unified .pvr-club-actions { justify-self:end; }
  .pvr-club-nav--unified .pvr-club-mobile-tabs { display:flex; gap:4px; overflow-x:auto; padding:7px 16px; border-top:1px solid var(--pvr-hud-edge); }
  .pvr-club-nav--unified .pvr-club-mobile-tabs button { flex-shrink:0; border-radius:0; font-size:9px; }
@@ -749,6 +751,11 @@
   .pvr-club-nav--unified :is(.pvr-logout-dot, .pvr-logout-icon) {
     display: none;
   }}
+@media (max-width:600px) {
+  .pvr-club-nav--unified .pvr-club-mobile-tabs { gap:2px; padding:6px 8px; }
+  .pvr-club-nav--unified .pvr-club-mobile-tabs .pvr-club-tab { flex:1 0 0; min-width:0; min-height:38px; flex-direction:column; gap:4px; padding:4px 2px; font-size:6.5px; letter-spacing:.02em; }
+  .pvr-club-nav--unified .pvr-club-mobile-tabs .pvr-tab-emoji { font-size:15px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .pvr-club-nav--unified
     :is(.pvr-club-cam, .pvr-club-reward, .pvr-club-logout, .pvr-reward-star, .pvr-logout-icon svg),
