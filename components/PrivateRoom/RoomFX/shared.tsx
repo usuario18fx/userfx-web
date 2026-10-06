@@ -45,7 +45,7 @@ CHOOSE YOUR ATMOSPHERE
 <div role="group" aria-label="Room atmosphere">
 {(["cine", "arcade", "vintage"] as const).map((value) => (
 <button key={value} type="button" className={mood === value ? "is-active" : ""} aria-pressed={mood === value} onClick={() => onChange(value)}>
-{`${value === "cine" ? "◈" : value === "arcade" ? "✦" : "❖"} ${value.toUpperCase()}`}
+{`${value === "cine" ? "🜲" : value === "arcade" ? "✦" : "𖠜"} ${value}`}
 </button>
     ))}
 </div>
