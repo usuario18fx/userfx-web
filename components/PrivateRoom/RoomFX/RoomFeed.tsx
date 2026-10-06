@@ -8,6 +8,8 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   const [working, setWorking] = useState("");
   const busy = !!working;
   const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreviewError, setImagePreviewError] = useState(false);
   const [comments, setComments] = useState<Record<string, string>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [loadError, setLoadError] = useState("");
@@ -36,13 +38,26 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     const timer = setInterval(() => void refresh(), 15000);
     return () => { controller.abort(); clearInterval(timer); };
   }, [client, roomId, approved, revision]);
+  function previewImage() {
+    try {
+      const url = new URL(imageUrl.trim());
+      if (url.protocol !== "https:" || url.username || url.password || url.hostname === "localhost" || url.hostname.endsWith(".localhost") || url.hostname.endsWith(".local") || /^[\d.]+$/.test(url.hostname) || url.hostname.includes(":")) throw new Error("Invalid image link");
+      setImagePreviewError(false);
+      setImagePreview(url.href);
+    } catch { setImagePreview(""); setImagePreviewError(true); }
+  }
+  function openComposer() {
+    if (!composer.current) return;
+    composer.current.open = true;
+    composer.current.querySelector("textarea")?.focus();
+  }
   async function publish(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!text.trim() || busy) return;
     setWorking("publish"); setError("");
     try {
       await roomRequest(client, roomId, "posts", { method: "POST", body: { content: text.trim(), imageUrl: imageUrl.trim() } });
-      setText(""); setImageUrl(""); setRevision((current) => current + 1);
+      setText(""); setImageUrl(""); setImagePreview(""); setImagePreviewError(false); setRevision((current) => current + 1);
       if (composer.current) composer.current.open = false;
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(""); }
@@ -81,16 +96,17 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     finally { setWorking(""); }
   }
   return (
-<section className="ufx-feed" aria-labelledby="ufx-feed-title">
+<section className="ufx-feed ufx-feed-premium" aria-labelledby="ufx-feed-title">
 <div className="ufx-section-head ufx-feed-heading">
 <span className="ufx-feed-heading-icon"><Icon name="inbox" size={21} /></span>
 <div>
+<small className="ufx-feed-eyebrow">USER FX · MYROOM</small>
 <h2 id="ufx-feed-title">
 Publicaciones
 </h2>
-<span>El muro de esta sala</span>
+<span>Momentos que se quedan en tu círculo.</span>
 </div>
-<span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span>
+<div className="ufx-feed-tally"><span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span><small>PUBLICACIONES</small></div>
 </div>
 <div className="ufx-feed-body">
 {(error || loadError) &&
@@ -102,11 +118,12 @@ Publicaciones
 <details ref={composer} className="ufx-post-editor">
 <summary aria-label="Create room post">
 <Avatar name={profile.name} />
-<span>¿Qué quieres contar hoy, {profile.name}?</span>
+<span className="ufx-post-editor-copy"><strong>Comparte un momento</strong><small>¿Qué quieres contar hoy, {profile.name}?</small></span>
 <Icon name="arrow" size={16} />
 </summary>
 <form className="ufx-post-compose" onSubmit={(event) => void publish(event)}>
 <div>
+<div className="ufx-compose-caption"><span><Icon name="inbox" size={14} /> NUEVA PUBLICACIÓN</span><span><Icon name="shield" size={13} /> TU SALA</span></div>
 <label htmlFor="ufx-new-post">
 SHARE A MOMENT WITH YOUR PEOPLE
 </label>
@@ -114,14 +131,17 @@ SHARE A MOMENT WITH YOUR PEOPLE
 <label htmlFor="ufx-post-image" className="ufx-image-label">
 IMAGE LINK · OPTIONAL
 </label>
-<input id="ufx-post-image" type="url" maxLength={1000} placeholder="https://…" value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} disabled={busy} />
+<div className="ufx-image-input-row">
+<input id="ufx-post-image" type="url" maxLength={1000} placeholder="https://…" value={imageUrl} onChange={(event) => { setImageUrl(event.target.value); setImagePreview(""); setImagePreviewError(false); }} disabled={busy} />
+<button type="button" className="ufx-image-preview-button" onClick={previewImage} disabled={busy || !imageUrl.trim()}><Icon name="gallery" size={15} /> Ver imagen</button>
+</div>
+{imagePreview && <figure className="ufx-image-preview"><img key={imagePreview} src={imagePreview} alt="Vista previa de la imagen de tu publicación" referrerPolicy="no-referrer" onError={() => { setImagePreview(""); setImagePreviewError(true); }} /><figcaption><Icon name="gallery" size={13} /> Vista previa</figcaption></figure>}
+{imagePreviewError && <p className="ufx-warning" role="status">No se pudo mostrar la imagen. Revisa que el enlace sea público, HTTPS y lleve a una imagen.</p>}
 <p className="ufx-image-note">
 Use a public HTTPS image link. Images load from the linked site.
 </p>
 <footer>
-<span>
-{text.length} / 2000
-</span>
+<span className="ufx-compose-length"><meter min={0} max={2000} value={text.length} aria-label="Caracteres de la publicación" /><span>{text.length} / 2000</span></span>
 <button type="submit" className="ufx-primary" disabled={!text.trim() || busy}>
 {working === "publish" ? "SAVING…" : "PUBLISH POST"}
 <Icon name="arrow" size={15} />
@@ -148,13 +168,14 @@ Opening the feed…
 </p>
  : !posts.length ?
 <div className="ufx-feed-empty">
-<Icon name="chat" size={25} />
+<div className="ufx-feed-empty-art" aria-hidden="true"><span><Icon name="gallery" size={22} /></span><span><Icon name="inbox" size={27} /></span><i /></div>
 <h3>
 El muro está en blanco
 </h3>
 <p>
-{isOwner ? "Sé quien escriba la primera publicación de esta sala." : "La próxima publicación del anfitrión aparecerá aquí."}
+{isOwner ? "Una foto, una idea o ese momento que merece quedarse." : "La próxima publicación del anfitrión aparecerá aquí."}
 </p>
+{isOwner && <button type="button" className="ufx-feed-first-post" onClick={openComposer}><Icon name="inbox" size={15} /> Crear publicación <Icon name="arrow" size={14} /></button>}
 </div>
  : posts.map((post) => (
 <article key={post.id} className="ufx-post">
@@ -169,7 +190,7 @@ El muro está en blanco
 </time>
 </div>
 <span>
-ROOM POST
+ANFITRIÓN
 </span>
 {isOwner &&
 <button type="button" disabled={busy} aria-label="Delete post" onClick={() => void remove(post.id)}>
@@ -187,16 +208,16 @@ ROOM POST
 <div className="ufx-post-reactions">
 <button type="button" aria-label={post.likedByMe ? "Unlike post" : "Like post"} aria-pressed={post.likedByMe} disabled={busy} onClick={() => void like(post)}>
 <Icon name="heart" size={16} />
-{post.likeCount}
+<span className="ufx-reaction-label">Me gusta</span><span>{post.likeCount}</span>
 </button>
 <button type="button" aria-label="Post comments" aria-expanded={!!expanded[post.id]} onClick={() => setExpanded((current) => ({ ...current, [post.id]: !current[post.id] }))}>
 <Icon name="chat" size={16} />
-{profile.paidChat ? post.comments.length : "COMMENTS"}
+<span className="ufx-reaction-label">Comentarios</span><span>{profile.paidChat ? post.comments.length : "COMMENTS"}</span>
 </button>
 </div>
 <button type="button" onClick={onChat}>
 <Icon name="chat" size={16} />
-CHAT ABOUT THIS
+IR AL CHAT
 </button>
 </footer>
 {expanded[post.id] &&

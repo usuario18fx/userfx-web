@@ -488,11 +488,6 @@
     box-shadow 0.3s ease,
     border-color 0.3s ease;
 }
-.pvr-club-nav--unified .pvr-action-emoji {
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-  font-size: 16px;
-  line-height: 1;
-}
 .pvr-club-nav--unified .pvr-cam-icon {
   display: grid;
   place-items: center;
@@ -739,8 +734,9 @@
     border: 0;
     background: transparent;
   }
-  .pvr-club-nav--unified .pvr-action-emoji {
-    font-size: 12px;
+  .pvr-club-nav--unified :is(.pvr-cam-icon, .pvr-logout-icon) svg {
+    width: 12px;
+    height: 12px;
   }
   .pvr-club-nav--unified .pvr-club-reward {
     width: 30px;

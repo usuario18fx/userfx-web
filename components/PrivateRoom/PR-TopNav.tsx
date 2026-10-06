@@ -1,5 +1,6 @@
           import { useEffect, useState } from "react";
 import "./PR-TopNav.css";
+import { Icon } from "./RoomFX/shared";
 
           const NAV_ITEMS = [
             { label: "INICIO", route: "#/" },
@@ -110,7 +111,7 @@ import "./PR-TopNav.css";
             <strong>{accessLabel}</strong>
           </button>
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
-            <span className="pvr-cam-icon" aria-hidden="true"><span className="pvr-action-emoji">📹</span></span>
+            <span className="pvr-cam-icon" aria-hidden="true"><Icon name="camera" size={16} /></span>
             <span className="pvr-cam-label">{cameraLive ? "ONCAM" : "OFFCAM"}</span>
             <span className="pvr-cam-dot" />
           </button>
@@ -153,7 +154,7 @@ import "./PR-TopNav.css";
           <button type="button" className="pvr-club-logout" onClick={onLogout}>
             <span className="pvr-logout-dot" aria-hidden="true" />
             <span>LOG OUT</span>
-            <span className="pvr-logout-icon" aria-hidden="true"><span className="pvr-action-emoji">🚪</span></span>
+            <span className="pvr-logout-icon" aria-hidden="true"><Icon name="leave" size={15} /></span>
           </button>
         </div>
       </div>
