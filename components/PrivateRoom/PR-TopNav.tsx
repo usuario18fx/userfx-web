@@ -108,17 +108,17 @@
           })}
         </nav>
         <div className="pvr-club-actions">
-          <button type="button" className="pvr-club-code" onClick={onProfile}>
+          <button type="button" className="pvr-club-code pvr-club-action" onClick={onProfile}>
             <span>
             MEMBER ACCESS
             </span>
             <strong>{accessLabel}</strong>
           </button>
-          <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
+          <button type="button" className={`pvr-club-cam pvr-club-action ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
             <span />
             {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
-          <button type="button" className="pvr-club-reward" aria-label="Rewards" onClick={onRewards}>
+          <button type="button" className="pvr-club-reward pvr-club-action" aria-label="Rewards" onClick={onRewards}>
             <span className="pvr-reward-icon-container">
               <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
                 <path strokeLinecap="round" strokeWidth="4" stroke="#6A8EF6" d="M2 18L58 18" />
@@ -137,23 +137,23 @@
             Rewards
             </span>
           </button>
-          <button type="button" className="pvr-club-profile" aria-label="Edit your profile" onClick={onProfile}>
+          <button type="button" className="pvr-club-profile pvr-club-action" aria-label="Edit your profile" onClick={onProfile}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
           </button>
-          <button type="button" className="pvr-club-membership" aria-label="Your membership" onClick={onMembership}>
+          <button type="button" className="pvr-club-membership pvr-club-action" aria-label="Your membership" onClick={onMembership}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
           </button>
           {insideTelegram && (
-            <button type="button" className="pvr-open-browser" onClick={openInBrowser}>
+            <button type="button" className="pvr-open-browser pvr-club-action" onClick={openInBrowser}>
               OPEN IN BROWSER
             </button>
           )}
-          <button type="button" className="pvr-club-logout" onClick={onLogout}>
+          <button type="button" className="pvr-club-logout pvr-club-action" onClick={onLogout}>
             LOG OUT
           </button>
         </div>
