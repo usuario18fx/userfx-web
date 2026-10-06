@@ -190,7 +190,7 @@ function fxSmallCapsSegment(value = "") {
 function fxBotTone(value = "") {
   const text = fxGenZRewrite(value);
 
-  const protectedToken = /(<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;
+  const protectedToken = /(<code>[^<]*<\/code>|<b>(?:COD|SPCL)<\/b>|<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;
 
   return text
     .split(protectedToken)
@@ -961,7 +961,19 @@ async function sendIdentityCode(ctx, options = {}) {
     const username = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
     const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1#/private-room-access`;
     const keyboard = Markup.inlineKeyboard([[Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)]]);
-    await ctx.reply(`🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` + `${escapeHtml(username?.display || "")}` + `\n\n⇀ SPCL-   <code>${escapeHtml(record.code.slice(-4))}</code>` + `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` + `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` + `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`, { parse_mode: "HTML", reply_markup: keyboard.reply_markup });
+    const message = [
+      `<b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b> 🔐`,
+      `👤${escapeHtml(username?.display || "")}`,
+      `╔═════════════════╗`,
+      `║ <b>COD</b> ➜ <b>SPCL</b> — <code>${escapeHtml(record.code.slice(-4))}</code>      ║`,
+      `╚═════════════════╝`,
+      `ᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ`,
+      `ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.`,
+      `                                 … 𝐊𝐄𝐄𝐏 𝐈𝐓 𝐋𝐈𝐓.`,
+      `⏱️ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ`,
+      `ᴜꜱᴇᴅ ᴏɴᴄᴇ.`,
+    ].join("\n");
+    await ctx.reply(message, { parse_mode: "HTML", reply_markup: keyboard.reply_markup });
   } catch (error) {
     logger.error("T𝙶𝙼𝚇 𝙸𝙳𝙴𝙽𝚃𝙸𝚃𝚈 𝙴𝚁𝚁𝙾𝚁", {
       userId: String(ctx.from?.id || ""),
