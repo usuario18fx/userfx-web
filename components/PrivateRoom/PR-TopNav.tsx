@@ -1,14 +1,13 @@
           import { useEffect, useState } from "react";
 import "./PR-TopNav.css";
-import { Icon } from "./RoomFX/shared";
 
           const NAV_ITEMS = [
-            { label: "INICIO", emoji: "🏠", route: "#/" },
-            { label: "MYROOM", emoji: "🚪", route: "#/private-room" },
-            { label: "STAGE", emoji: "📹", route: "#/private-room/stage" },
-            { label: "GALLERY", emoji: "🖼️", route: "#/private-room/gallery" },
-            { label: "BUZON", emoji: "📬", route: "#/private-room/buzon" },
-            { label: "PROFILES", emoji: "👥", route: "#/private-room/profiles" },
+            { label: "INICIO", route: "#/" },
+            { label: "MYROOM", route: "#/private-room" },
+            { label: "STAGE", route: "#/private-room/stage" },
+            { label: "GALLERY", route: "#/private-room/gallery" },
+            { label: "BUZON", route: "#/private-room/buzon" },
+            { label: "PROFILES", route: "#/private-room/profiles" },
           ] as const;
 
           type TopNavProps = {
@@ -97,8 +96,8 @@ import { Icon } from "./RoomFX/shared";
                     {NAV_ITEMS.map((item) => {
 
                       return (
-                        <button key={item.label} type="button" className={`pvr-club-tab${route.split("?")[0] === item.route ? " is-active" : ""}`} aria-label={item.label} title={item.label} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
-                <span className="pvr-tab-emoji" aria-hidden="true">{item.emoji}</span><span className="pvr-tab-label">{item.label}</span>
+                        <button key={item.label} type="button" className={route.split("?")[0] === item.route ? "is-active" : ""} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
+                {item.label}
               </button>
             );
           })}
@@ -111,7 +110,7 @@ import { Icon } from "./RoomFX/shared";
             <strong>{accessLabel}</strong>
           </button>
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
-            <span className="pvr-cam-icon"><Icon name="camera" size={16} /></span>
+            <span className="pvr-cam-icon" aria-hidden="true"><span className="pvr-action-emoji">📹</span></span>
             <span className="pvr-cam-label">{cameraLive ? "ONCAM" : "OFFCAM"}</span>
             <span className="pvr-cam-dot" />
           </button>
@@ -154,7 +153,7 @@ import { Icon } from "./RoomFX/shared";
           <button type="button" className="pvr-club-logout" onClick={onLogout}>
             <span className="pvr-logout-dot" aria-hidden="true" />
             <span>LOG OUT</span>
-            <span className="pvr-logout-icon"><Icon name="leave" size={15} /></span>
+            <span className="pvr-logout-icon" aria-hidden="true"><span className="pvr-action-emoji">🚪</span></span>
           </button>
         </div>
       </div>
@@ -172,8 +171,8 @@ import { Icon } from "./RoomFX/shared";
         {NAV_ITEMS.map((item) => {
 
           return (
-            <button key={item.label} type="button" className={`pvr-club-tab${route.split("?")[0] === item.route ? " is-active" : ""}`} aria-label={item.label} title={item.label} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
-              <span className="pvr-tab-emoji" aria-hidden="true">{item.emoji}</span><span className="pvr-tab-label">{item.label}</span>
+            <button key={item.label} type="button" className={route.split("?")[0] === item.route ? "is-active" : ""} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
+              {item.label}
             </button>
           );
         })}
