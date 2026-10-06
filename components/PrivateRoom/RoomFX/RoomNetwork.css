@@ -440,8 +440,8 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 
 /* MyRoom: a smaller camera, with an optional chat dock alongside it. */
 .ufx-camera-surface { min-width:0; }
-.ufx-space-myroom .ufx-camera-row { --ufx-camera-width:min(700px,88dvh); display:grid; grid-template-columns:minmax(0,1fr); gap:14px; width:min(100%,var(--ufx-camera-width)); margin:0 0 23px auto; align-items:stretch; }
-.ufx-space-myroom .ufx-camera-row.has-chat { width:min(100%,calc(var(--ufx-camera-width) + 314px)); grid-template-columns:300px minmax(0,1fr); }
+.ufx-space-myroom .ufx-camera-row { --ufx-camera-width:min(700px,88dvh); display:grid; grid-template-columns:minmax(0,1fr); gap:14px; width:min(100%,var(--ufx-camera-width)); margin:0 auto 23px 0; align-items:stretch; }
+.ufx-space-myroom .ufx-camera-row.has-chat { width:min(100%,calc(var(--ufx-camera-width) + 314px)); grid-template-columns:minmax(0,1fr) 300px; }
 .ufx-space-myroom .ufx-stage-frame { aspect-ratio:2/1; min-height:0; max-height:none; }
 .ufx-space-myroom .ufx-camera-surface .ufx-call-toolbar { margin:10px 0 0; padding:9px; }
 .ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { contain:size; min-width:0; min-height:0; height:auto; background:linear-gradient(160deg,#121b2a,#0a0e17); border-color:color-mix(in srgb,var(--accent) 35%,var(--line)); box-shadow:inset 0 1px 0 #ffffff08,0 12px 32px #0004; }
@@ -692,11 +692,11 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 }
 @media (prefers-reduced-motion:reduce) { .ufx-feed-premium .ufx-post-editor summary,.ufx-feed-premium .ufx-post-editor summary>svg { transition:none; } }
 
-/* MyRoom · camera on the right, conversation on the left. */
+/* MyRoom · camera on the left, conversation on the right. */
 .ufx-space-myroom .ufx-main-column { width:min(100%,1014px); margin-inline:auto; min-width:0; }
 .ufx-space-myroom .ufx-work-grid.is-theater .ufx-main-column { width:min(100%,1234px); }
-.ufx-space-myroom .ufx-camera-row.has-chat>.ufx-chat-panel { grid-column:1; grid-row:1; }
-.ufx-space-myroom .ufx-camera-row.has-chat>.ufx-camera-surface { grid-column:2; grid-row:1; }
+.ufx-space-myroom .ufx-camera-row.has-chat>.ufx-chat-panel { grid-column:2; grid-row:1; }
+.ufx-space-myroom .ufx-camera-row.has-chat>.ufx-camera-surface { grid-column:1; grid-row:1; }
 .ufx-avatar:has(img) { position:relative; overflow:hidden; }
 .ufx-avatar>img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 35%; }
 .ufx-avatar>img[hidden] { display:none; }

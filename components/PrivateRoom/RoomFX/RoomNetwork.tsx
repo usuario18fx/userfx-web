@@ -604,7 +604,6 @@ YOU'RE IN
 <div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
 <div ref={cameraWorkspace} className={`ufx-camera-row${chatOpen ? " has-chat" : ""}`} aria-label={isStage ? "Stage workspace" : "Camera and conversation"}>
-{!isStage && roomChat}
 <div ref={cameraSurface} className={`ufx-camera-surface${movingCamera ? " is-moving" : ""}${cameraOffset.x || cameraOffset.y ? " is-moved" : ""}`} style={!isStage ? { transform: `translate(${cameraOffset.x}px, ${cameraOffset.y}px)` } : undefined}>
 <div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight?.cameraOn ? " has-video" : ""}${!isStage && cameraPanel === "people" ? " is-people-view" : ""}`} ref={frame}>
 {isStage ?
@@ -729,6 +728,7 @@ LEAVE
 </div>
 </div>
 </div>
+{!isStage && roomChat}
 </div>
 {isStage && <>
 <p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
