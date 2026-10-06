@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type PointerEvent } from "react";
 import { createClientId, requestedRoom, roomLink, roomRequest, RoomError, type Invitation, type Message, type Mood, type Profile, type RoomState } from "./client";
 import { AudioStream, Avatar, Icon, MoodPicker, VideoStream } from "./shared";
 import { useRoomCall } from "./use-room-call";
@@ -56,6 +56,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [chatLoaded, setChatLoaded] = useState(false);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const [cameraPanel, setCameraPanel] = useState<"camera" | "people">("camera");
   const [unread, setUnread] = useState(0);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -66,7 +67,9 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const infoDialog = useRef<HTMLDialogElement>(null);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility });
-  const [theater, setTheater] = useState(() => { try { return localStorage.getItem("userfx_room_view") === "theater"; } catch { return false; } });
+  const [theater, setTheater] = useState(false);
+  const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
+  const [movingCamera, setMovingCamera] = useState(false);
   const [selected, setSelected] = useState("");
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [working, setWorking] = useState("");
@@ -75,6 +78,9 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [refreshToken, setRefreshToken] = useState(0);
   const frame = useRef<HTMLDivElement>(null);
   const cameraWorkspace = useRef<HTMLDivElement>(null);
+  const cameraSurface = useRef<HTMLDivElement>(null);
+  const cameraDrag = useRef<{ pointer: number; x: number; y: number; offsetX: number; offsetY: number; minX: number; maxX: number; minY: number; maxY: number } | null>(null);
+  const cameraViewButton = useRef<HTMLButtonElement>(null);
   const chat = useRef<HTMLDivElement>(null);
   const chatToggle = useRef<HTMLButtonElement>(null);
   const chatClose = useRef<HTMLButtonElement>(null);
@@ -91,7 +97,13 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const notify = useCallback((message: string) => setToast(message), []);
   const onBlocked = useCallback(() => setSoundBlocked(true), []);
   useEffect(() => { try { localStorage.setItem("userfx_room_mood", mood); } catch {} }, [mood]);
-  useEffect(() => { try { localStorage.setItem("userfx_room_view", theater ? "theater" : "default"); } catch {} }, [theater]);
+  useEffect(() => {
+    setCameraOffset({ x: 0, y: 0 });
+    function resetPosition() { cameraDrag.current = null; setMovingCamera(false); setCameraOffset({ x: 0, y: 0 }); }
+    window.addEventListener("resize", resetPosition);
+    document.addEventListener("fullscreenchange", resetPosition);
+    return () => { window.removeEventListener("resize", resetPosition); document.removeEventListener("fullscreenchange", resetPosition); };
+  }, [theater, chatOpen]);
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(""), 4000); return () => clearTimeout(timer); }, [toast]);
   useEffect(() => { if (editing) editor.current?.showModal(); }, [editing]);
   useEffect(() => { if (info) infoDialog.current?.showModal(); }, [info]);
@@ -148,6 +160,20 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   useEffect(() => { if (chatOpen && chat.current) chat.current.scrollTop = chat.current.scrollHeight; }, [messages.length, chatOpen]);
   useEffect(() => { if (chatOpen) chatClose.current?.focus(); }, [chatOpen]);
   function closeChat() { setChatOpen(false); chatToggle.current?.focus(); }
+  function startCameraDrag(event: PointerEvent<HTMLButtonElement>) {
+    if (event.button !== 0 || document.fullscreenElement || !cameraSurface.current) return;
+    const box = cameraSurface.current.getBoundingClientRect();
+    const top = (document.querySelector(".pvr-club-nav")?.getBoundingClientRect().bottom || 0) + 8;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    cameraDrag.current = { pointer: event.pointerId, x: event.clientX, y: event.clientY, offsetX: cameraOffset.x, offsetY: cameraOffset.y, minX: 8 - box.left + cameraOffset.x, maxX: Math.max(8, window.innerWidth - box.width - 8) - box.left + cameraOffset.x, minY: top - box.top + cameraOffset.y, maxY: Math.max(top, window.innerHeight - box.height - 8) - box.top + cameraOffset.y };
+    setMovingCamera(true);
+  }
+  function moveCamera(event: PointerEvent<HTMLButtonElement>) {
+    const drag = cameraDrag.current;
+    if (!drag || drag.pointer !== event.pointerId) return;
+    setCameraOffset({ x: Math.max(drag.minX, Math.min(drag.maxX, drag.offsetX + event.clientX - drag.x)), y: Math.max(drag.minY, Math.min(drag.maxY, drag.offsetY + event.clientY - drag.y)) });
+  }
+  function stopCameraDrag() { cameraDrag.current = null; setMovingCamera(false); }
   async function copyInvite() {
     try { await navigator.clipboard.writeText(isStage ? `${window.location.origin}${window.location.pathname}#/private-room/stage` : roomLink(roomId)); notify("Invitation copied."); }
     catch { notify("Copy this invitation from your browser address bar."); }
@@ -200,7 +226,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const people = call.joined ? call.participants : state?.participants || [];
   const self = { id: profile.id, name: profile.name, cameraOn: call.cameraOn, micOn: call.micOn };
   const available = people.filter((person) => person.cameraOn && (person.id === profile.id ? call.localStream?.getVideoTracks().length : call.remoteStreams[person.id]?.getVideoTracks().length));
-  const spotlight = available.find((person) => person.id === selected) || available.find((person) => person.id !== profile.id) || (call.cameraOn ? self : null);
+  const spotlight = people.find((person) => person.id === selected) || available.find((person) => person.id !== profile.id) || (call.cameraOn ? self : null);
   const spotlightStream = spotlight?.id === profile.id ? call.localStream : spotlight ? call.remoteStreams[spotlight.id] : null;
   const stageMain = people.find((person) => person.id === selected) || people.find((person) => person.isHost) || [...people].sort((a, b) => a.joinedAt.localeCompare(b.joinedAt) || a.id.localeCompare(b.id))[0];
   const stageGuests = people.filter((person) => person.id !== stageMain?.id);
@@ -233,7 +259,7 @@ SEATS
 {people.length ?
 <div className="ufx-people-grid">
 {people.map((person) => { const personStream = person.id === profile.id ? call.localStream : call.remoteStreams[person.id]; return (
-<button type="button" key={person.id} className={selected === person.id ? "is-selected" : ""} onClick={() => setSelected(person.id)}>
+<button type="button" key={person.id} className={selected === person.id ? "is-selected" : ""} onClick={() => { setSelected(person.id); setCameraPanel("camera"); }}>
 <span className="ufx-person-visual">
 {personStream && person.cameraOn ?
 <VideoStream stream={personStream} mirrored={person.id === profile.id} />
@@ -341,12 +367,24 @@ PRIVATE ACCESS · PERSONAL CONNECTION
 </aside>
   ) : null;
   const frameControls = (
+<>
 <div className="ufx-frame-top">
+{!isStage && <button type="button" className="ufx-camera-drag" title="Arrastra para mover · flechas para ajustar · doble clic para centrar" aria-label="Mover cámara" onPointerDown={startCameraDrag} onPointerMove={moveCamera} onPointerUp={stopCameraDrag} onPointerCancel={stopCameraDrag} onLostPointerCapture={stopCameraDrag} onDoubleClick={() => setCameraOffset({ x: 0, y: 0 })} onKeyDown={(event) => {
+const steps: Record<string, [number, number]> = { ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16] };
+if (event.key === "Home" || event.key === "Escape") { event.preventDefault(); setCameraOffset({ x: 0, y: 0 }); return; }
+const step = steps[event.key];
+if (!step || document.fullscreenElement || !cameraSurface.current) return;
+event.preventDefault();
+const box = cameraSurface.current.getBoundingClientRect();
+const top = (document.querySelector(".pvr-club-nav")?.getBoundingClientRect().bottom || 0) + 8;
+setCameraOffset((current) => ({ x: current.x + Math.max(8 - box.left, Math.min(Math.max(8, window.innerWidth - box.width - 8) - box.left, step[0])), y: current.y + Math.max(top - box.top, Math.min(Math.max(top, window.innerHeight - box.height - 8) - box.top, step[1])) }));
+}}><span aria-hidden="true">⠿</span></button>}
 <span>
 <i className={call.joined ? "is-live" : ""} />
 {isStage ? call.joined ? "ROOMFX LIVE" : stageMain ? "CAMARA PRINCIPAL" : "VISTA DE MUESTRA" : call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
 </span>
 <div className="ufx-frame-actions">
+{!isStage && (cameraOffset.x !== 0 || cameraOffset.y !== 0) && <button type="button" title="Volver a la posición original" aria-label="Restablecer posición de cámara" onClick={() => setCameraOffset({ x: 0, y: 0 })}><Icon name="home" size={16} /></button>}
 <button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
 <Icon name="chat" />
 <span>
@@ -358,14 +396,20 @@ CHAT
 </b>
 }
 </button>
-<button type="button" aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
+<button type="button" title={theater ? "Vista compacta" : "Vista amplia"} aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
 <Icon name="theater" />
 </button>
-<button type="button" aria-label="Enter fullscreen" onClick={() => void (isStage ? frame.current : cameraWorkspace.current)?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
+<button type="button" title="Pantalla completa" aria-label="Enter fullscreen" onClick={() => void (isStage ? frame.current : cameraWorkspace.current)?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
 <Icon name="expand" />
 </button>
 </div>
 </div>
+{!isStage && <div className="ufx-camera-switch" role="group" aria-label="Vista del panel izquierdo">
+<button ref={cameraViewButton} type="button" aria-label="Mostrar cámara" aria-pressed={cameraPanel === "camera"} onClick={() => setCameraPanel("camera")}><Icon name="camera" size={15} /><span>CÁMARA</span></button>
+<button type="button" aria-label="Mostrar usuarios conectados" aria-pressed={cameraPanel === "people"} aria-controls="ufx-connected-people" onClick={() => setCameraPanel("people")}><Icon name="people" size={15} /><span>USUARIOS</span><b>{people.length}</b></button>
+</div>}
+{!isStage && !spotlight && cameraPanel === "camera" && <div className="ufx-camera-signature" aria-hidden="true">USER🜲FX <span>PRIVATE CONNECTION</span></div>}
+</>
   );
   const stageSeats = (
 <div className="ufx-stage-guests">
@@ -560,8 +604,8 @@ YOU'RE IN
 <div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
 <div ref={cameraWorkspace} className={`ufx-camera-row${chatOpen ? " has-chat" : ""}`} aria-label={isStage ? "Stage workspace" : "Camera and conversation"}>
-<div className="ufx-camera-surface">
-<div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
+<div ref={cameraSurface} className={`ufx-camera-surface${movingCamera ? " is-moving" : ""}${cameraOffset.x || cameraOffset.y ? " is-moved" : ""}`} style={!isStage ? { transform: `translate(${cameraOffset.x}px, ${cameraOffset.y}px)` } : undefined}>
+<div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight?.cameraOn ? " has-video" : ""}${!isStage && cameraPanel === "people" ? " is-people-view" : ""}`} ref={frame}>
 {isStage ?
 <div className="ufx-stage-grid" aria-label="Stage camera layout">
 <article className="ufx-stage-main" aria-label="Main stage camera">
@@ -579,8 +623,14 @@ YOU'RE IN
 </article>
 
 </div>
- : spotlightStream && spotlight ?
+ : spotlightStream && spotlight?.cameraOn ?
 <VideoStream stream={spotlightStream} mirrored={spotlight.id === profile.id} />
+ : spotlight && selected ?
+<div className="ufx-camera-off">
+<Avatar name={spotlight.name} large />
+<h2>{spotlight.name}</h2>
+<p>{!spotlight.cameraOn ? "Su cámara está apagada. La conversación continúa." : call.joined ? "Conectando su cámara…" : "Entra a la sala para ver su cámara."}</p>
+</div>
  :
 <div className="ufx-scene">
 <div className="ufx-orbit ufx-orbit-one" />
@@ -616,14 +666,27 @@ at home.
 </div>
 }
 {!isStage && frameControls}
-{!isStage && spotlight &&
+{!isStage && cameraPanel === "people" && <section id="ufx-connected-people" className="ufx-connected-panel" aria-label="Usuarios conectados">
+<div className="ufx-connected-heading"><span>EN ESTA SALA</span><p>Elige a alguien para ver su cámara.</p></div>
+{people.length ? <div className="ufx-connected-grid">
+{people.map((person) => {
+const stream = person.id === profile.id ? call.localStream : call.remoteStreams[person.id];
+return <button key={person.id} type="button" className={person.id === selected ? "is-selected" : ""} aria-label={`Ver cámara de ${person.name}`} onClick={() => { setSelected(person.id); setCameraPanel("camera"); cameraViewButton.current?.focus(); }}>
+<span className="ufx-connected-visual">{stream && person.cameraOn ? <VideoStream stream={stream} mirrored={person.id === profile.id} /> : <Avatar name={person.name} />}</span>
+<span className="ufx-connected-copy"><strong>{person.name}{person.id === profile.id ? " · TÚ" : ""}</strong><small><i className={person.cameraOn ? "is-live" : ""} />{person.cameraOn ? "CÁMARA ON" : "CÁMARA OFF"}</small></span>
+<Icon name="arrow" size={15} />
+</button>;
+})}
+</div> : <div className="ufx-connected-empty"><Icon name="people" size={27} /><h2>El próximo encuentro empieza contigo.</h2><p>Los usuarios conectados aparecerán aquí.</p></div>}
+</section>}
+{!isStage && cameraPanel === "camera" && spotlight &&
 <div className="ufx-frame-bottom">
 <Avatar name={spotlight.name} />
 <strong>
 {spotlight.name}{spotlight.id === profile.id ? " · YOU" : ""}
 </strong>
 <span>
-ON STAGE
+{spotlight.cameraOn ? "CAM ON" : "CAM OFF"}
 </span>
 </div>
 }

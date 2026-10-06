@@ -442,7 +442,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 .ufx-camera-surface { min-width:0; }
 .ufx-space-myroom .ufx-camera-row { --ufx-camera-width:min(700px,88dvh); display:grid; grid-template-columns:minmax(0,1fr); gap:14px; width:min(100%,var(--ufx-camera-width)); margin:0 auto 23px; align-items:stretch; }
 .ufx-space-myroom .ufx-camera-row.has-chat { width:min(100%,calc(var(--ufx-camera-width) + 314px)); grid-template-columns:minmax(0,1fr) 300px; }
-.ufx-space-myroom .ufx-stage-frame { aspect-ratio:16/9; min-height:0; max-height:none; }
+.ufx-space-myroom .ufx-stage-frame { aspect-ratio:2/1; min-height:0; max-height:none; }
 .ufx-space-myroom .ufx-camera-surface .ufx-call-toolbar { margin:10px 0 0; padding:9px; }
 .ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { contain:size; min-width:0; min-height:0; height:auto; background:linear-gradient(160deg,#121b2a,#0a0e17); border-color:color-mix(in srgb,var(--accent) 35%,var(--line)); box-shadow:inset 0 1px 0 #ffffff08,0 12px 32px #0004; }
 .ufx-space-myroom .ufx-scene { padding:50px 8% 24px; }
@@ -467,6 +467,89 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
   .ufx-space-myroom .ufx-camera-row:fullscreen { padding:12px; }
   .ufx-space-myroom .ufx-camera-row:fullscreen.has-chat .ufx-stage-frame { height:36dvh; }
   .ufx-space-myroom .ufx-camera-row:fullscreen.has-chat>.ufx-chat-panel { height:36dvh; }
+}
+
+/* Production controls keep the existing camera and chat dimensions. */
+.ufx-camera-surface { position:relative; }
+.ufx-camera-surface:is(.is-moving,.is-moved) { z-index:40; }
+.ufx-camera-surface.is-moving { user-select:none; }
+.ufx-space-myroom .ufx-frame-top { gap:8px; }
+.ufx-space-myroom .ufx-frame-top>span { margin-right:auto; }
+.ufx-space-myroom .ufx-frame-top .ufx-camera-drag { flex:0 0 22px; width:22px; border-color:transparent; background:transparent; color:#8799b0; font:20px Arial,sans-serif; cursor:grab; touch-action:none; }
+.ufx-space-myroom .ufx-frame-top .ufx-camera-drag:hover { color:var(--accent); border-color:#c6d9f029; background:#080c1699; }
+.ufx-space-myroom .is-moving .ufx-camera-drag { cursor:grabbing; color:var(--accent); }
+.ufx-camera-row:fullscreen .ufx-camera-drag { display:none; }
+.ufx-space-myroom .ufx-stage-frame { border-color:transparent; border-radius:14px; background:linear-gradient(130deg,color-mix(in srgb,var(--frame) 88%,transparent),#080c14bd) padding-box,url("/wallpaperVideo.png") center/cover padding-box,linear-gradient(135deg,#c6d9f05c,var(--line) 42%,color-mix(in srgb,var(--accent) 50%,var(--line)) 72%,#d4bb6140) border-box; box-shadow:inset 0 1px 0 #ffffff08,0 16px 42px #0005; }
+.ufx-space-myroom .ufx-stage-frame::after { content:""; position:absolute; inset:8px; z-index:0; border:1px solid #ffffff08; border-radius:9px; pointer-events:none; }
+.ufx-space-myroom .ufx-frame-top { z-index:3; }
+.ufx-space-myroom .ufx-frame-top>span { color:#c5d0df; background:#050a13bd; border-color:#c0cad929; box-shadow:inset 0 1px 0 #ffffff08; }
+.ufx-frame-actions button { box-shadow:inset 0 1px 0 #ffffff0b,0 3px 12px #0003; transition:background .18s,border-color .18s,box-shadow .18s; }
+.ufx-frame-actions button:hover:not(:disabled) { background:color-mix(in srgb,var(--accent) 18%,#09111c); box-shadow:inset 0 1px 0 #ffffff12,0 0 14px var(--accent-soft); }
+.ufx-frame-actions .ufx-chat-toggle[aria-expanded="true"] { color:var(--accent); border-color:color-mix(in srgb,var(--accent) 60%,var(--line)); background:color-mix(in srgb,var(--accent) 15%,#09111c); }
+.ufx-space-myroom .ufx-scene { padding-bottom:60px; }
+.ufx-space-myroom .ufx-scene-mark { right:6%; top:8%; color:color-mix(in srgb,var(--accent) 11%,transparent); }
+.ufx-camera-switch { position:absolute; right:13px; bottom:13px; z-index:3; display:flex; gap:3px; padding:4px; border:1px solid #c6d9f02b; border-radius:9px; background:#080c16e6; backdrop-filter:blur(14px); box-shadow:inset 0 1px 0 #ffffff0b,0 5px 18px #0004; }
+.ufx-network .ufx-camera-switch button { display:flex; align-items:center; justify-content:center; gap:6px; min-height:28px; padding:0 9px; border:1px solid transparent; border-radius:6px; background:transparent; color:var(--muted); font:8px var(--mono); letter-spacing:.05em; }
+.ufx-network .ufx-camera-switch button[aria-pressed="true"] { color:#e3edfa; border-color:color-mix(in srgb,var(--accent) 30%,transparent); background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 22%,#121d2e),#101725); box-shadow:inset 0 1px 0 #ffffff12; }
+.ufx-camera-switch button[aria-pressed="true"]>svg { color:var(--accent); }
+.ufx-camera-switch b { display:grid; place-items:center; min-width:17px; height:17px; padding:0 3px; border-radius:5px; background:var(--accent-soft); color:var(--accent); font:8px var(--mono); }
+.ufx-camera-signature { position:absolute; z-index:1; left:20px; bottom:21px; display:flex; align-items:center; gap:9px; color:#9fabbb; font:10px var(--serif); letter-spacing:.08em; }
+.ufx-camera-signature>span { padding-left:9px; border-left:1px solid #ffffff20; color:#697589; font:6px var(--mono); letter-spacing:.1em; }
+.ufx-space-myroom .ufx-stage-frame.is-people-view>:is(video,.ufx-scene,.ufx-camera-off) { visibility:hidden; }
+.ufx-network .ufx-connected-panel { position:absolute; z-index:2; inset:55px 15px 59px; min-height:0; display:flex; flex-direction:column; gap:10px; background-color:transparent!important; }
+.ufx-connected-heading { flex:0 0 auto; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.ufx-connected-heading>span { color:var(--accent); font:8px var(--mono); letter-spacing:.1em; }
+.ufx-connected-heading>p { color:var(--muted); font-size:10px; }
+.ufx-connected-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; overflow:auto; min-height:0; padding:2px 5px 4px 2px; align-content:start; overscroll-behavior:contain; }
+.ufx-network .ufx-connected-grid>button { display:flex; align-items:center; gap:10px; min-width:0; min-height:66px; padding:9px; border-radius:9px; background:linear-gradient(130deg,#ffffff07,#080d1699); border-color:#c6d9f01f; text-align:left; }
+.ufx-network .ufx-connected-grid>button:is(:hover,.is-selected) { border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); background:var(--accent-soft); }
+.ufx-connected-visual { display:grid; place-items:center; flex:0 0 44px; width:44px; height:44px; border-radius:9px; overflow:hidden; background:#080d16; border:1px solid #ffffff0c; }
+.ufx-connected-visual>.ufx-avatar { width:32px; height:32px; font-size:11px; }
+.ufx-connected-visual>video { width:100%; height:100%; object-fit:cover; }
+.ufx-connected-copy { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; }
+.ufx-connected-copy>strong { font-size:11px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ufx-connected-copy>small { display:flex; align-items:center; gap:5px; color:var(--muted); font:7px var(--mono); }
+.ufx-connected-copy i { width:4px; height:4px; border-radius:50%; background:#646b7b; }
+.ufx-connected-copy i.is-live { background:#7bcfa2; box-shadow:0 0 8px #7bcfa250; }
+.ufx-connected-grid>button>svg { color:var(--accent); }
+.ufx-connected-empty { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; padding:10px; }
+.ufx-connected-empty>svg { box-sizing:content-box; padding:13px; border:1px solid #c6d9f01f; border-radius:14px; background:var(--accent-soft); color:var(--accent); }
+.ufx-connected-empty h2 { font:500 clamp(18px,2vw,27px)/1.2 var(--serif); }
+.ufx-connected-empty p { color:var(--muted); font-size:11px; }
+.ufx-camera-off { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:55px 20px 65px; text-align:center; }
+.ufx-camera-off>.ufx-avatar { width:64px; height:64px; color:var(--accent); background:var(--accent-soft); border-color:color-mix(in srgb,var(--accent) 30%,var(--line)); }
+.ufx-camera-off h2 { font:25px var(--serif); }
+.ufx-camera-off p { color:var(--muted); font-size:11px; }
+.ufx-space-myroom .ufx-frame-bottom { z-index:1; max-width:calc(100% - 240px); }
+.ufx-space-myroom .ufx-frame-bottom strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; }
+.ufx-space-myroom .ufx-frame-bottom>span:last-child { display:none; }
+.ufx-camera-surface .ufx-call-toolbar { background:linear-gradient(145deg,#ffffff04,#ffffff00),var(--surface); border-color:#c6d9f021; border-radius:11px; box-shadow:inset 0 1px 0 #ffffff07,0 7px 20px #0002; }
+.ufx-camera-surface .ufx-call-toolbar button { background:linear-gradient(180deg,#ffffff05,#080d1629); border-color:#c6d9f022; border-radius:7px; box-shadow:inset 0 1px 0 #ffffff07; transition:background .18s,border-color .18s,box-shadow .18s; }
+.ufx-camera-surface .ufx-call-toolbar button:hover:not(:disabled) { background:var(--accent-soft); box-shadow:inset 0 1px 0 #ffffff12,0 0 13px var(--accent-soft); }
+.ufx-camera-surface .ufx-call-toolbar button[aria-pressed="true"] { color:#a1dec2; border-color:#71c7a94d; background:linear-gradient(180deg,#72d4b01a,#72d4b007); }
+.ufx-camera-surface .ufx-call-toolbar .ufx-leave { color:#ffb4c0; background:linear-gradient(180deg,#b33f5827,#6d263315); border-color:#d4637c55; }
+.ufx-space-myroom .ufx-call-toolbar>div:last-child>button:last-child:not(.ufx-leave) { color:#dfedff; border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 24%,#172334),#111a27); }
+@media (max-width:700px) {
+  .ufx-camera-signature { display:none; }
+  .ufx-space-myroom .ufx-camera-surface.is-moved .ufx-frame-top>span { font-size:7px; padding:6px 4px; }
+  .ufx-camera-switch { bottom:10px; right:10px; }
+  .ufx-space-myroom .ufx-frame-bottom { top:48px; bottom:auto; left:10px; max-width:calc(100% - 20px); padding:5px 8px; }
+  .ufx-space-myroom .ufx-frame-bottom .ufx-avatar { width:20px; height:20px; font-size:8px; }
+  .ufx-space-myroom .ufx-scene { padding:47px 8% 58px; }
+  .ufx-space-myroom .ufx-scene h2 { font-size:26px; margin:8px 0 9px; }
+  .ufx-space-myroom .ufx-scene p { font-size:10px; line-height:1.4; }
+  .ufx-space-myroom .ufx-scene>span { font-size:6px; }
+  .ufx-connected-heading { align-items:flex-start; flex-direction:column; gap:4px; }
+  .ufx-network .ufx-connected-panel { inset:49px 11px 58px; gap:8px; }
+  .ufx-connected-grid { grid-template-columns:minmax(0,1fr); }
+  .ufx-connected-empty { gap:6px; padding:0; }
+  .ufx-connected-empty>svg { padding:7px; width:20px; height:20px; }
+  .ufx-connected-empty h2 { font-size:18px; }
+  .ufx-connected-empty p { font-size:10px; }
+  .ufx-camera-off { gap:6px; padding-top:74px; padding-bottom:58px; }
+  .ufx-camera-off>.ufx-avatar { width:36px; height:36px; font-size:12px; }
+  .ufx-camera-off h2 { font-size:19px; }
+  .ufx-camera-off p { font-size:10px; }
 }
 
 /* MyRoom social area: people first, then the room's publication wall. */
