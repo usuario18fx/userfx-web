@@ -340,6 +340,46 @@ PRIVATE ACCESS · PERSONAL CONNECTION
 </footer>
 </aside>
   ) : null;
+  const frameControls = (
+<div className="ufx-frame-top">
+<span>
+<i className={call.joined ? "is-live" : ""} />
+{isStage ? call.joined ? "ROOMFX LIVE" : stageMain ? "CAMARA PRINCIPAL" : "VISTA DE MUESTRA" : call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
+</span>
+<div className="ufx-frame-actions">
+<button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
+<Icon name="chat" />
+<span>
+CHAT
+</span>
+{unread > 0 &&
+<b>
+{unread > 9 ? "9+" : unread}
+</b>
+}
+</button>
+<button type="button" aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
+<Icon name="theater" />
+</button>
+<button type="button" aria-label="Enter fullscreen" onClick={() => void (isStage ? frame.current : cameraWorkspace.current)?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
+<Icon name="expand" />
+</button>
+</div>
+</div>
+  );
+  const stageSeats = (
+<div className="ufx-stage-guests">
+{Array.from({ length: 5 }, (_, index) => {
+ const person = stageGuests[index];
+ const stream = person?.id === profile.id ? call.localStream : person ? call.remoteStreams[person.id] : null;
+ return <button type="button" key={person?.id || `seat-${index}`} className="ufx-stage-seat" disabled={!person} aria-label={person ? `Spotlight ${person.name}` : `Available stage seat ${index + 2}`} onClick={() => person && setSelected(person.id)}>
+ <span className="ufx-seat-tag">{person?.id === profile.id ? "YOUR CAM" : `SEAT ${index + 2}`}</span>
+ {stream && person?.cameraOn ? <VideoStream stream={stream} mirrored={person.id === profile.id} /> : <Avatar name={person?.name || `${index + 2}`} large />}
+ <span className="ufx-seat-copy"><strong>{person ? `${person.name}${person.id === profile.id ? " · YOU" : ""}` : "Available seat"}</strong><small>{person ? person.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "JOIN THE MOMENT"}</small></span>
+ </button>;
+})}
+</div>
+  );
   return (
 <div className={`ufx-network ufx-space-${space} ufx-mood-${mood}`}>
 <PrivateRoomTopNav cameraLive={call.cameraOn} accessLabel={profile.paidChat ? profile.planId.toUpperCase() : "SPCL"}
@@ -483,13 +523,13 @@ GET MY CODE ↗
 </div>
 <div>
 <span>
-{isStage ? "MEMBER STAGE" : "PRIVATE ROOM · HOST APPROVAL"}
+{isStage ? "ESPACIO PARA MIEMBROS" : "PRIVATE ROOM · HOST APPROVAL"}
 </span>
 <h2>
-{isStage ? "The Stage" : state?.room.ownerName || "MyRoom"}
+{isStage ? "La sala abierta" : state?.room.ownerName || "MyRoom"}
 </h2>
 <p>
-{isStage ? "Up to 6 people, one shared moment." : `${state?.room.capacity || 5} seats. One invitation at a time.`}
+{isStage ? "Nuevas conversaciones. Seis lugares para conectar." : `${state?.room.capacity || 5} seats. One invitation at a time.`}
 </p>
 </div>
 <span className="ufx-room-count">
@@ -525,21 +565,19 @@ YOU'RE IN
 {isStage ?
 <div className="ufx-stage-grid" aria-label="Stage camera layout">
 <article className="ufx-stage-main" aria-label="Main stage camera">
-<span className="ufx-seat-tag">MAIN CAM</span>
-{stageStream && stageMain?.cameraOn ? <VideoStream stream={stageStream} mirrored={stageMain.id === profile.id} /> : stageMain ? <Avatar name={stageMain.name} large /> : <span className="ufx-avatar ufx-avatar-large" aria-label="UserFX Stage">FX</span>}
-<footer><strong>{stageMain ? `${stageMain.name}${stageMain.id === profile.id ? " · YOU" : ""}` : "Your place on Stage"}</strong><small>{stageMain ? stageMain.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "WAITING FOR PARTICIPANTS"}</small></footer>
-</article>
-<div className="ufx-stage-guests">
-{Array.from({ length: 5 }, (_, index) => {
- const person = stageGuests[index];
- const stream = person?.id === profile.id ? call.localStream : person ? call.remoteStreams[person.id] : null;
- return <button type="button" key={person?.id || `seat-${index}`} className="ufx-stage-seat" disabled={!person} aria-label={person ? `Spotlight ${person.name}` : `Available stage seat ${index + 2}`} onClick={() => person && setSelected(person.id)}>
- <span className="ufx-seat-tag">{person?.id === profile.id ? "YOUR CAM" : `SEAT ${index + 2}`}</span>
- {stream && person?.cameraOn ? <VideoStream stream={stream} mirrored={person.id === profile.id} /> : <Avatar name={person?.name || `${index + 2}`} large />}
- <span className="ufx-seat-copy"><strong>{person ? `${person.name}${person.id === profile.id ? " · YOU" : ""}` : "Available seat"}</strong><small>{person ? person.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "JOIN THE MOMENT"}</small></span>
- </button>;
-})}
+{stageStream && stageMain?.cameraOn ? <VideoStream stream={stageStream} mirrored={stageMain.id === profile.id} /> : stageMain ? <Avatar name={stageMain.name} large /> : <div className="ufx-stage-welcome">
+<img className="ufx-stage-poster" src="/assets/userFX.png" alt="" />
+<div className="ufx-stage-welcome-copy">
+<span>NO HAY DOS ENCUENTROS IGUALES</span>
+<h2>La próxima gran charla<br />empieza con un hola.</h2>
+<p>Este escenario está esperando por ti.</p>
 </div>
+</div>}
+{frameControls}
+{roomChat}
+{stageMain && <footer><strong>{stageMain ? `${stageMain.name}${stageMain.id === profile.id ? " · YOU" : ""}` : "Your place on Stage"}</strong><small>{stageMain ? stageMain.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "WAITING FOR PARTICIPANTS"}</small></footer>}
+</article>
+
 </div>
  : spotlightStream && spotlight ?
 <VideoStream stream={spotlightStream} mirrored={spotlight.id === profile.id} />
@@ -577,31 +615,7 @@ at home.
 </p>
 </div>
 }
-<div className="ufx-frame-top">
-<span>
-<i className={call.joined ? "is-live" : ""} />
-{isStage ? call.joined ? "ROOMFX LIVE" : "ROOMFX · STAGE READY" : call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
-</span>
-<div className="ufx-frame-actions">
-<button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
-<Icon name="chat" />
-<span>
-CHAT
-</span>
-{unread > 0 &&
-<b>
-{unread > 9 ? "9+" : unread}
-</b>
-}
-</button>
-<button type="button" aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
-<Icon name="theater" />
-</button>
-<button type="button" aria-label="Enter fullscreen" onClick={() => void (isStage ? frame.current : cameraWorkspace.current)?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
-<Icon name="expand" />
-</button>
-</div>
-</div>
+{!isStage && frameControls}
 {!isStage && spotlight &&
 <div className="ufx-frame-bottom">
 <Avatar name={spotlight.name} />
@@ -613,10 +627,10 @@ ON STAGE
 </span>
 </div>
 }
-{isStage && roomChat}
 </div>
 <div className="ufx-call-toolbar">
-<div>
+{isStage && !call.joined && <div className="ufx-stage-ready"><Icon name="camera" /><strong>¿Listo para aparecer?</strong></div>}
+<div className={isStage && !call.joined ? "ufx-stage-idle-media" : undefined}>
 <button type="button" className={call.micOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.micOn} onClick={() => void call.toggleMedia("audio")}>
 <Icon name="mic" />
 <span>
@@ -643,9 +657,9 @@ INVITE
 LEAVE
 </button>
  :
-<button type="button" disabled={!approved || call.connecting} onClick={() => setPreview(true)}>
+<button type="button" className={isStage ? "ufx-stage-preview" : undefined} disabled={!approved || call.connecting} onClick={() => setPreview(true)}>
 <Icon name="camera" />
-PREVIEW
+{isStage ? "IR A LA VISTA PREVIA" : "PREVIEW"}
 </button>
 }
 </div>
@@ -653,6 +667,10 @@ PREVIEW
 </div>
 {!isStage && roomChat}
 </div>
+{isStage && <>
+<p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
+{stageSeats}
+</>}
 {soundBlocked &&
 <button type="button" className="ufx-audio-unlock" onClick={() => { setUnlocked((value) => value + 1); setSoundBlocked(false); }}>
 TAP TO ENABLE CALL AUDIO
@@ -752,9 +770,39 @@ USER FX · MADE FOR YOUR MOMENT
 }
 {info &&
 <dialog ref={infoDialog} className="ufx-dialog" onCancel={() => setInfo("")} aria-labelledby="ufx-info-title">
-<div className="ufx-dialog-head"><span>USER FX · PRIVATE CLUB</span><button type="button" aria-label="Close account details" onClick={() => setInfo("")}><Icon name="close" /></button></div>
-<h2 id="ufx-info-title">{info === "membership" ? "Your membership" : "Rewards"}</h2>
-{info === "membership" ? <><p>{profile.name} · {profile.paidChat ? profile.planId.toUpperCase() : "SPCL IDENTITY ACCESS"}</p><p>{profile.paidChat ? "Your album code opens its matching collection. Rooms and member chat are included in your active access." : "Your identity opens the rooms. Private albums require their BSIC, PRX0 or VIPX code; private chat requires a paid membership."}</p><a className="ufx-primary ufx-wide" href="#/private-room-access">ENTER ALBUM CODE</a><a className="ufx-primary ufx-wide" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">VIEW ACCESS OPTIONS ↗</a></> : <><p>No rewards are available yet.</p><p>New rewards will appear here when they are published.</p></>}
+<div className="ufx-dialog-head">
+<span>
+  USER FX · PRIVATE CLUB
+</span>
+<button type="button" aria-label="Close account details" onClick={() => setInfo("")}><Icon name="close" />
+</button>
+</div>
+<h2 id="ufx-info-title">
+  {info === "membership" ? "Your membership" : "Rewards"}
+</h2>
+  {info === "membership" ?
+<>
+<p>{profile.name} · {profile.paidChat ? profile.planId.toUpperCase() : "ACCESS SPCL CODE"}
+</p>
+<p>
+  {profile.paidChat ? "Your album code opens its matching collection. Rooms and member chat are included in your active access." : "Your identity opens the rooms. Private albums require their BSIC, PRX0 or VIPX code; private chat requires a paid membership."}
+</p>
+<a className="ufx-primary ufx-wide" href="#/private-room-access">
+ENTER ALBUM CODE
+</a>
+<a className="ufx-primary ufx-wide" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">
+VIEW ACCESS OPTIONS ↗
+</a>
+</>
+:
+<>
+<p>
+  No rewards are available yet.
+</p>
+<p>
+  New rewards will appear here when they are published.
+</p>
+</>}
 </dialog>
 }
 {preview &&
@@ -803,7 +851,9 @@ INTERESTS · SEPARATE WITH COMMAS
 <input type="checkbox" aria-describedby="ufx-profile-sharing-note" checked={draft.visibility !== "private"} onChange={(event) => setDraft((current) => ({ ...current, visibility: event.target.checked ? "members" : "private" }))} />
 <span>
 SHOW MY PROFILE TO MEMBERS
-<small id="ufx-profile-sharing-note">Share your profile. Room entry still needs your approval.</small>
+<small id="ufx-profile-sharing-note">
+  Share your profile. Room entry still needs your approval.
+</small>
 </span>
 </label>
 <label className="ufx-profile-visibility">
