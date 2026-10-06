@@ -66,7 +66,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [info, setInfo] = useState<"membership" | "rewards" | "">("");
   const infoDialog = useRef<HTMLDialogElement>(null);
   const [saving, setSaving] = useState(false);
-  const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility });
+  const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility, avatarUrl: profile.avatarUrl?.startsWith("https://") ? profile.avatarUrl : "", coverUrl: profile.coverUrl?.startsWith("https://") ? profile.coverUrl : "" });
   const [theater, setTheater] = useState(false);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
   const [movingCamera, setMovingCamera] = useState(false);
@@ -207,12 +207,12 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
       const response = await fetch("/api/account", { method: "PATCH", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: draft }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Unable to save your profile.");
-      setProfile((current) => ({ ...current, name: result.account.profile.displayName || current.name, bio: result.account.profile.bio, location: result.account.profile.location || "", interests: result.account.profile.interests || "", visibility: result.account.profile.visibility, onlineVisibility: result.account.profile.onlineVisibility })); setEditing(false); notify("Profile updated.");
+      setProfile((current) => ({ ...current, name: result.account.profile.displayName || current.name, bio: result.account.profile.bio, location: result.account.profile.location || "", interests: result.account.profile.interests || "", visibility: result.account.profile.visibility, onlineVisibility: result.account.profile.onlineVisibility, avatarUrl: result.account.profileImages.avatarUrl, coverUrl: result.account.profileImages.coverUrl })); setEditing(false); notify("Profile updated.");
     } catch (cause) { notify((cause as Error).message); }
     finally { setSaving(false); }
   }
   function editProfile() {
-    setDraft({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility }); setEditing(true);
+    setDraft({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility, avatarUrl: profile.avatarUrl?.startsWith("https://") ? profile.avatarUrl : "", coverUrl: profile.coverUrl?.startsWith("https://") ? profile.coverUrl : "" }); setEditing(true);
   }
   async function logout() {
     await call.leave();
@@ -604,6 +604,7 @@ YOU'RE IN
 <div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
 <div ref={cameraWorkspace} className={`ufx-camera-row${chatOpen ? " has-chat" : ""}`} aria-label={isStage ? "Stage workspace" : "Camera and conversation"}>
+{!isStage && roomChat}
 <div ref={cameraSurface} className={`ufx-camera-surface${movingCamera ? " is-moving" : ""}${cameraOffset.x || cameraOffset.y ? " is-moved" : ""}`} style={!isStage ? { transform: `translate(${cameraOffset.x}px, ${cameraOffset.y}px)` } : undefined}>
 <div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight?.cameraOn ? " has-video" : ""}${!isStage && cameraPanel === "people" ? " is-people-view" : ""}`} ref={frame}>
 {isStage ?
@@ -728,7 +729,6 @@ LEAVE
 </div>
 </div>
 </div>
-{!isStage && roomChat}
 </div>
 {isStage && <>
 <p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
@@ -741,7 +741,7 @@ TAP TO ENABLE CALL AUDIO
 }
 {!isStage && <div className="ufx-room-social" aria-label="MyRoom social activity">
 {peopleSection}
-<RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} onChat={() => { setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
+<RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} ownerProfile={state?.room.isOwner ? { name: profile.name, bio: profile.bio, location: profile.location, avatarUrl: profile.avatarUrl || "", coverUrl: profile.coverUrl || "" } : state?.room.ownerProfile || null} ownerName={state?.room.ownerName || ""} onEdit={editProfile} onChat={() => { setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
 </div>}
 
 {state?.room.isOwner && waiting.length > 0 &&
@@ -909,6 +909,18 @@ INTERESTS · SEPARATE WITH COMMAS
 <input type="text" maxLength={160} value={draft.interests} onChange={(event) => setDraft((current) => ({ ...current, interests: event.target.value }))} />
 </label>
 </div>
+<details className="ufx-profile-images-editor">
+<summary><Icon name="gallery" size={15} /> Fotos de perfil y portada <Icon name="arrow" size={13} /></summary>
+<div className="ufx-profile-fields">
+<label>FOTO DE PERFIL · ENLACE HTTPS
+<input type="url" maxLength={1000} placeholder="https://…" value={draft.avatarUrl} onChange={(event) => setDraft((current) => ({ ...current, avatarUrl: event.target.value }))} />
+</label>
+<label>PORTADA · ENLACE HTTPS
+<input type="url" maxLength={1000} placeholder="https://…" value={draft.coverUrl} onChange={(event) => setDraft((current) => ({ ...current, coverUrl: event.target.value }))} />
+</label>
+</div>
+<p>Usa enlaces públicos a tus imágenes. Solo se muestran dentro de tu sala a invitados aprobados.</p>
+</details>
 <div className="ufx-profile-privacy">
 <label className="ufx-profile-visibility">
 <input type="checkbox" aria-describedby="ufx-profile-sharing-note" checked={draft.visibility !== "private"} onChange={(event) => setDraft((current) => ({ ...current, visibility: event.target.checked ? "members" : "private" }))} />

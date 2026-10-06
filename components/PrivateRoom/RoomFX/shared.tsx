@@ -29,10 +29,11 @@ export function Icon({ name, size = 18 }: { name: string; size?: number }) {
 </svg>
   );
 }
-export function Avatar({ name, large = false }: { name: string; large?: boolean }) {
+export function Avatar({ name, large = false, src }: { name: string; large?: boolean; src?: string }) {
   return (
 <span className={`ufx-avatar${large ? " ufx-avatar-large" : ""}`} aria-label={name}>
 {name.replace(/^@/, "").split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "FX"}
+{src && <img key={src} src={src} alt="" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />}
 </span>
   );
 }

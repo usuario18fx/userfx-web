@@ -1,6 +1,6 @@
           import crypto from "crypto";
           import Redis from "ioredis";
-          import { ensureAccount, getAccount, updateAccountProfile } from "../lib/account.js";
+          import { ensureAccount, getAccount, updateAccountProfile, accountProfileImages } from "../lib/account.js";
           import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
           import { createRoomLiveHandler } from "../lib/room-live.js";
 
@@ -151,6 +151,7 @@ function shapeAccount(account, session) {
     accessLabel: session.accessMode === "telegram_identity" ? "SPCL" : session.accessLabel || null,
     memberAccess: session.accessMode === "telegram_identity",
     profile: account.profile,
+    profileImages: accountProfileImages(account),
     createdAt: account.createdAt,
     updatedAt: account.updatedAt,
     lastAccessAt: account.lastAccessAt,
@@ -216,7 +217,12 @@ export default async function handler(req, res) {
         });
       }
 
-      account = await updateAccountProfile(redis, CODE_ENGINE_NAMESPACE, account.accountId, body.profile || body);
+      try {
+        account = await updateAccountProfile(redis, CODE_ENGINE_NAMESPACE, account.accountId, body.profile || body);
+      } catch (error) {
+        if (error.status === 400) return res.status(400).json({ ok: false, error: error.message });
+        throw error;
+      }
 
       if (!account) {
         return res.status(404).json({

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { roomRequest, type Post, type PostComment, type Profile } from "./client";
+import { roomRequest, type Post, type PostComment, type Profile, type RoomHostProfile } from "./client";
 import { Avatar, Icon } from "./shared";
 
-export default function RoomFeed({ client, roomId, profile, approved, isOwner, onChat }: { client: string; roomId: string; profile: Profile; approved: boolean; isOwner: boolean; onChat: () => void }) {
+export default function RoomFeed({ client, roomId, profile, approved, isOwner, ownerProfile, ownerName, onEdit, onChat }: { client: string; roomId: string; profile: Profile; approved: boolean; isOwner: boolean; ownerProfile: RoomHostProfile | null; ownerName: string; onEdit: () => void; onChat: () => void }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [text, setText] = useState("");
   const [working, setWorking] = useState("");
@@ -10,13 +10,14 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [imagePreviewError, setImagePreviewError] = useState(false);
+  const [imageFieldsOpen, setImageFieldsOpen] = useState(false);
   const [comments, setComments] = useState<Record<string, string>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
-  const composer = useRef<HTMLDetailsElement>(null);
+  const composer = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!approved) { setPosts([]); setLoading(false); return; }
     const controller = new AbortController();
@@ -48,7 +49,6 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   }
   function openComposer() {
     if (!composer.current) return;
-    composer.current.open = true;
     composer.current.querySelector("textarea")?.focus();
   }
   async function publish(event: FormEvent<HTMLFormElement>) {
@@ -58,7 +58,7 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     try {
       await roomRequest(client, roomId, "posts", { method: "POST", body: { content: text.trim(), imageUrl: imageUrl.trim() } });
       setText(""); setImageUrl(""); setImagePreview(""); setImagePreviewError(false); setRevision((current) => current + 1);
-      if (composer.current) composer.current.open = false;
+      setImageFieldsOpen(false);
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(""); }
   }
@@ -95,18 +95,27 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(""); }
   }
+  const hostName = ownerProfile?.name || ownerName || "Tu sala";
+  function cancelPost() {
+    setText(""); setImageUrl(""); setImagePreview(""); setImagePreviewError(false); setImageFieldsOpen(false); setError("");
+    composer.current?.querySelector("textarea")?.focus();
+  }
   return (
 <section className="ufx-feed ufx-feed-premium" aria-labelledby="ufx-feed-title">
-<div className="ufx-section-head ufx-feed-heading">
-<span className="ufx-feed-heading-icon"><Icon name="inbox" size={21} /></span>
-<div>
-<small className="ufx-feed-eyebrow">USER FX · MYROOM</small>
-<h2 id="ufx-feed-title">
-Publicaciones
-</h2>
-<span>Momentos que se quedan en tu círculo.</span>
+<header className="ufx-room-profile" aria-label="Perfil del anfitrión">
+<div className="ufx-room-cover">
+{approved && ownerProfile?.coverUrl && <img key={ownerProfile.coverUrl} src={ownerProfile.coverUrl} alt={`Portada de ${hostName}`} referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />}
+<span className="ufx-room-cover-mark" aria-hidden="true">USER🜲FX</span>
 </div>
-<div className="ufx-feed-tally"><span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span><small>PUBLICACIONES</small></div>
+<div className="ufx-room-profile-main">
+<Avatar name={hostName} large src={approved ? ownerProfile?.avatarUrl : undefined} />
+{isOwner && <button type="button" className="ufx-room-edit-profile" onClick={onEdit}><Icon name="profile" size={14} /> Editar perfil</button>}
+<div className="ufx-room-profile-copy"><h2>{hostName}</h2><span><Icon name="shield" size={12} /> MYROOM · CÍRCULO PRIVADO</span>{approved && ownerProfile?.bio && <p>{ownerProfile.bio}</p>}{approved && ownerProfile?.location && <small><Icon name="home" size={12} /> {ownerProfile.location}</small>}</div>
+</div>
+</header>
+<div className="ufx-section-head ufx-feed-heading ufx-wall-heading">
+<div><small className="ufx-feed-eyebrow">LA SALA HABLA ✦</small><h2 id="ufx-feed-title">EL MURO</h2><span>Lo que pasa aquí, se queda aquí.</span></div>
+<div className="ufx-feed-tally"><span className="ufx-wall-live" aria-hidden="true" /><span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span><small>PUBLICACIONES</small></div>
 </div>
 <div className="ufx-feed-body">
 {(error || loadError) &&
@@ -115,21 +124,18 @@ Publicaciones
 </p>
 }
 {approved && isOwner &&
-<details ref={composer} className="ufx-post-editor">
-<summary aria-label="Create room post">
-<Avatar name={profile.name} />
-<span className="ufx-post-editor-copy"><strong>Comparte un momento</strong><small>¿Qué quieres contar hoy, {profile.name}?</small></span>
-<Icon name="arrow" size={16} />
-</summary>
+<div ref={composer} className="ufx-post-editor ufx-wall-editor">
+<Avatar name={profile.name} src={profile.avatarUrl} />
 <form className="ufx-post-compose" onSubmit={(event) => void publish(event)}>
 <div>
-<div className="ufx-compose-caption"><span><Icon name="inbox" size={14} /> NUEVA PUBLICACIÓN</span><span><Icon name="shield" size={13} /> TU SALA</span></div>
+<div className="ufx-compose-caption"><span>TU TURNO ✦</span></div>
 <label htmlFor="ufx-new-post">
-SHARE A MOMENT WITH YOUR PEOPLE
+PUBLICACIÓN
 </label>
-<textarea id="ufx-new-post" rows={3} maxLength={2000} placeholder="What's happening in your world?" value={text} onChange={(event) => setText(event.target.value)} disabled={busy} />
+<textarea id="ufx-new-post" rows={3} maxLength={2000} placeholder="Di algo que valga la pena leer…" value={text} onChange={(event) => setText(event.target.value)} disabled={busy} />
+{imageFieldsOpen && <div id="ufx-wall-image-fields">
 <label htmlFor="ufx-post-image" className="ufx-image-label">
-IMAGE LINK · OPTIONAL
+ENLACE DE IMAGEN · OPCIONAL
 </label>
 <div className="ufx-image-input-row">
 <input id="ufx-post-image" type="url" maxLength={1000} placeholder="https://…" value={imageUrl} onChange={(event) => { setImageUrl(event.target.value); setImagePreview(""); setImagePreviewError(false); }} disabled={busy} />
@@ -138,18 +144,21 @@ IMAGE LINK · OPTIONAL
 {imagePreview && <figure className="ufx-image-preview"><img key={imagePreview} src={imagePreview} alt="Vista previa de la imagen de tu publicación" referrerPolicy="no-referrer" onError={() => { setImagePreview(""); setImagePreviewError(true); }} /><figcaption><Icon name="gallery" size={13} /> Vista previa</figcaption></figure>}
 {imagePreviewError && <p className="ufx-warning" role="status">No se pudo mostrar la imagen. Revisa que el enlace sea público, HTTPS y lleve a una imagen.</p>}
 <p className="ufx-image-note">
-Use a public HTTPS image link. Images load from the linked site.
+Usa un enlace público HTTPS a una imagen.
 </p>
+</div>}
 <footer>
+<button type="button" className="ufx-wall-image-toggle" aria-expanded={imageFieldsOpen} aria-controls="ufx-wall-image-fields" onClick={() => setImageFieldsOpen((current) => !current)} disabled={busy}><Icon name="gallery" size={14} /> Imagen{imageUrl.trim() && <i aria-label="Imagen añadida" />}</button>
 <span className="ufx-compose-length"><meter min={0} max={2000} value={text.length} aria-label="Caracteres de la publicación" /><span>{text.length} / 2000</span></span>
+<button type="button" className="ufx-wall-cancel" onClick={cancelPost} disabled={busy}>Cancelar</button>
 <button type="submit" className="ufx-primary" disabled={!text.trim() || busy}>
-{working === "publish" ? "SAVING…" : "PUBLISH POST"}
+{working === "publish" ? "PUBLICANDO…" : "PUBLICAR"}
 <Icon name="arrow" size={15} />
 </button>
 </footer>
 </div>
 </form>
-</details>
+</div>
 }
 {approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Las publicaciones del anfitrión aparecen aquí.</span></div>}
 {!approved ?
@@ -180,7 +189,7 @@ El muro está en blanco
  : posts.map((post) => (
 <article key={post.id} className="ufx-post">
 <header>
-<Avatar name={post.authorName} />
+<Avatar name={post.authorName} src={ownerProfile?.avatarUrl} />
 <div>
 <strong>
 {post.authorName}
