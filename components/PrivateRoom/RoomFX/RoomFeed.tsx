@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { roomRequest, type Post, type PostComment, type Profile } from "./client";
 import { Avatar, Icon } from "./shared";
 
@@ -14,6 +14,7 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
+  const composer = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     if (!approved) { setPosts([]); setLoading(false); return; }
     const controller = new AbortController();
@@ -42,6 +43,7 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     try {
       await roomRequest(client, roomId, "posts", { method: "POST", body: { content: text.trim(), imageUrl: imageUrl.trim() } });
       setText(""); setImageUrl(""); setRevision((current) => current + 1);
+      if (composer.current) composer.current.open = false;
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(""); }
   }
@@ -80,28 +82,30 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   }
   return (
 <section className="ufx-feed" aria-labelledby="ufx-feed-title">
-<div className="ufx-section-head">
+<div className="ufx-section-head ufx-feed-heading">
+<span className="ufx-feed-heading-icon"><Icon name="inbox" size={21} /></span>
 <div>
-<span>
-LIFE BETWEEN CONNECTIONS
-</span>
 <h2 id="ufx-feed-title">
-Room feed
+Publicaciones
 </h2>
+<span>El muro de esta sala</span>
 </div>
-<span>
-<Icon name="shield" size={14} />
-INVITED CIRCLE
-</span>
+<span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span>
 </div>
+<div className="ufx-feed-body">
 {(error || loadError) &&
 <p className="ufx-warning" role="alert">
 {error || loadError}
 </p>
 }
 {approved && isOwner &&
-<form className="ufx-post-compose" onSubmit={(event) => void publish(event)}>
+<details ref={composer} className="ufx-post-editor">
+<summary aria-label="Create room post">
 <Avatar name={profile.name} />
+<span>¿Qué quieres contar hoy, {profile.name}?</span>
+<Icon name="arrow" size={16} />
+</summary>
+<form className="ufx-post-compose" onSubmit={(event) => void publish(event)}>
 <div>
 <label htmlFor="ufx-new-post">
 SHARE A MOMENT WITH YOUR PEOPLE
@@ -125,7 +129,9 @@ Use a public HTTPS image link. Images load from the linked site.
 </footer>
 </div>
 </form>
+</details>
 }
+{approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Las publicaciones del anfitrión aparecen aquí.</span></div>}
 {!approved ?
 <div className="ufx-feed-empty">
 <Icon name="shield" size={25} />
@@ -144,10 +150,10 @@ Opening the feed…
 <div className="ufx-feed-empty">
 <Icon name="chat" size={25} />
 <h3>
-A moment worth sharing.
+El muro está en blanco
 </h3>
 <p>
-{isOwner ? "Your first post starts your room's story." : "Your host's next update will appear here."}
+{isOwner ? "Sé quien escriba la primera publicación de esta sala." : "La próxima publicación del anfitrión aparecerá aquí."}
 </p>
 </div>
  : posts.map((post) => (
@@ -229,6 +235,7 @@ Private comments require a paid membership.
 }
 </article>
 ))}
+</div>
 </section>
   );
 }

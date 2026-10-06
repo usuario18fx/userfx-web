@@ -209,22 +209,25 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const waiting = state?.waiting || [];
   const canMessage = approved && profile.paidChat;
   const peopleSection = (
-<section className="ufx-people">
+<section className="ufx-people" aria-label={isStage ? "Stage people" : "Personas en la sala"}>
 <div className="ufx-section-head">
 <div>
 <span>
-{isStage ? "THE MOMENT WE MAKE TOGETHER" : "YOUR INNER CIRCLE"}
+{isStage ? "THE MOMENT WE MAKE TOGETHER" : "EL MOMENTO LO HACEMOS TODOS"}
 </span>
 <h3>
-In the room
+{isStage ? "In the room" : "Personas en la sala"}
 <small>
 {people.length}
 </small>
 </h3>
 </div>
-<span>
+<span className="ufx-people-caption">
+{!isStage && <Icon name="people" size={15} />}
+{!isStage ? "Un lugar para conectar" : <>
 {state?.room.capacity || (isStage ? 6 : 5)}
 SEATS
+</>}
 </span>
 </div>
 {people.length ?
@@ -249,14 +252,15 @@ SEATS
 </div>
  :
 <div className="ufx-people-empty">
-<Icon name="stage" size={25} />
+{isStage ? <Icon name="stage" size={25} /> : <span className="ufx-people-empty-icons" aria-hidden="true"><Icon name="people" size={22} /><Icon name="heart" size={20} /></span>}
 <p>
-No one on camera yet.
+{isStage ? "No one on camera yet." : "Todo empieza con alguien que se anima."}
 <br />
 <span>
-The next good conversation starts with you.
+{isStage ? "The next good conversation starts with you." : "Esta sala está tranquila por ahora. Puedes ser el primero en llegar."}
 </span>
 </p>
+{!isStage && <button type="button" className="ufx-people-enter" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => approved ? setPreview(true) : void requestEntrance()}>{status === "pending" ? "Esperando aprobación" : "Entrar ahora"}<Icon name="arrow" size={16} /></button>}
 </div>
 }
 </section>
@@ -654,10 +658,10 @@ PREVIEW
 TAP TO ENABLE CALL AUDIO
 </button>
 }
-{!isStage &&
+{!isStage && <div className="ufx-room-social" aria-label="MyRoom social activity">
+{peopleSection}
 <RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} onChat={() => { setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
-}
-{!isStage && peopleSection}
+</div>}
 
 {state?.room.isOwner && waiting.length > 0 &&
 <section className="ufx-waiting-room">
