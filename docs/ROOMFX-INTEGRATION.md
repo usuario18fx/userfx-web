@@ -41,7 +41,11 @@ screens through their existing component paths and hash navigation.
   Profile and membership use the current authenticated account. Rewards shows
   an empty state; no rewards service existed behind the previous button.
 - Gallery: the configured private album (five BASIC, three PRO and four VIP
-  files), filtered by the active membership and fetched only through the
+  files), opened explicitly from closed album cards. BSIC opens only BASIC,
+  PRX0 only PRO and VIPX only VIP. SPCL grants club entrance, not photo access,
+  including for existing SPCL sessions whose historical plan field says VIP.
+  The protected media endpoint rejects SPCL and every mismatched album code.
+  Photos are fetched only after opening the matching collection, through the
   existing protected media endpoint. The viewer supports arrow keys, Escape
   and retry for unavailable files. Sample films, invented activity and the
   upload dialog that did not persist files have been removed. No private video
@@ -195,7 +199,8 @@ publication/persistence/guest access/deletion, account-level likes and paid
 comments, directory search and visibility, theater layout, Stage participants and events,
 direct and button navigation on the same origin, full header controls,
 profile editing and 320/390/768/1280px layouts. The Gallery checks cover
-BASIC/PRO/VIP filtering, unauthorized/forbidden/invalid media requests,
+BASIC/PRO/VIP album isolation, closed collections without photo requests,
+SPCL denial (including historical VIP-tagged sessions), direct-media rejection,
 keyboard navigation and unavailable-file states. Viewer image responses are
 mocked; live Blob downloads require the configured private-store credentials. Synthetic camera verification does not replace testing two
 physical devices on different networks or TURN infrastructure.

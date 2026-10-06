@@ -7,22 +7,20 @@ const COLLECTIONS = [
   { prefix: "PRX0", plan: "pro", label: "PRO", count: 3 },
   { prefix: "VIPX", plan: "vip", label: "VIP", count: 4 },
 ] as const;
-const LEVEL: Record<string, number> = { basic: 1, pro: 2, vip: 3 };
 const FILES = COLLECTIONS.flatMap((collection) => Array.from({ length: collection.count }, (_, index) => {
   const name = `${collection.prefix}-${String(index + 1).padStart(2, "0")}`;
   return { ...collection, name, src: `/api/private-media?pathname=${encodeURIComponent(`userfx-album/${collection.prefix}/${name}.jpg`)}` };
 }));
 
-export default function PrivateRoomGallery({ planId, onMembership }: { planId: string; onMembership: () => void }) {
-  const [collection, setCollection] = useState("all");
+export default function PrivateRoomGallery({ planId, onMembership, onUnlock }: { planId: string; onMembership: () => void; onUnlock: () => void }) {
+  const [collection, setCollection] = useState("");
   const [selected, setSelected] = useState("");
   const [failed, setFailed] = useState<Set<string>>(() => new Set());
   const [retries, setRetries] = useState<Record<string, number>>({});
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
-  const level = LEVEL[planId] || 1;
-  const accessible = FILES.filter((file) => LEVEL[file.plan] <= level);
-  const filtered = accessible.filter((file) => collection === "all" || file.prefix === collection);
+  const accessible = FILES.filter((file) => file.plan === planId);
+  const filtered = accessible.filter((file) => file.prefix === collection);
   const selectedIndex = accessible.findIndex((file) => file.name === selected);
   const active = accessible[selectedIndex];
   const viewerOpen = Boolean(active);
@@ -53,17 +51,21 @@ export default function PrivateRoomGallery({ planId, onMembership }: { planId: s
 
   return (
     <section className="ufx-gallery" aria-label="Private Room Gallery">
-      <div className="ufx-gallery-summary"><Icon name="shield" /><span>PRIVATE COLLECTION · {planId.toUpperCase()} ACCESS</span><span>{accessible.length} ALBUM FILES</span></div>
-      <div className="ufx-gallery-filters" role="group" aria-label="Gallery collections">
-        <button type="button" aria-pressed={collection === "all"} onClick={() => setCollection("all")}>ALL</button>
-        {COLLECTIONS.filter((item) => LEVEL[item.plan] <= level).map((item) => <button key={item.prefix} type="button" aria-pressed={collection === item.prefix} onClick={() => setCollection(item.prefix)}>{item.label}<span>{item.count}</span></button>)}
+      <div className="ufx-gallery-summary"><Icon name="shield" /><span>PRIVATE COLLECTION · {planId.toUpperCase()} ACCESS</span><span>{accessible.length ? "1 ALBUM UNLOCKED" : "ALBUM CODE REQUIRED"}</span></div>
+      <div className="ufx-gallery-albums" role="group" aria-label="Gallery collections">
+        {COLLECTIONS.map((item) => {
+          const allowed = item.plan === planId;
+          return <button key={item.prefix} type="button" className="ufx-gallery-album" aria-label={allowed ? `Open ${item.label} album` : `Unlock ${item.label} album with ${item.prefix} code`} aria-pressed={collection === item.prefix} onClick={() => allowed ? setCollection(collection === item.prefix ? "" : item.prefix) : onUnlock()}>
+            <Icon name={allowed ? "gallery" : "shield"} size={30} /><strong>{item.label}</strong><span>{item.count} PRIVATE PHOTOS</span><small>{allowed ? (collection === item.prefix ? "CLOSE ALBUM" : "OPEN ALBUM") : `${item.prefix} CODE REQUIRED`}</small>
+          </button>;
+        })}
       </div>
       <div className="ufx-gallery-grid">
         {filtered.map((file) => <button key={file.name} type="button" className="ufx-gallery-card" aria-label={`Open private file ${file.name}`} onClick={() => { opener.current = document.activeElement as HTMLElement; setSelected(file.name); }}>
           <span className="ufx-gallery-photo">{photo(file)}</span><span className="ufx-gallery-caption"><strong>{file.name}</strong><span>{file.label}<Icon name="expand" size={14} /></span></span>
         </button>)}
       </div>
-      {level < 3 && <div className="ufx-membership-note"><Icon name="shield" /><p>More collections are included with PRO and VIP access.</p><button type="button" onClick={onMembership}>VIEW MEMBERSHIP</button></div>}
+      <div className="ufx-membership-note"><Icon name="shield" /><p>Each private album requires its matching code. SPCL opens the club without unlocking photos.</p><button type="button" onClick={onMembership}>VIEW MEMBERSHIP</button></div>
       {active && <dialog ref={dialog} className="ufx-gallery-viewer" aria-label={`Private file ${active.name}`} onCancel={() => setSelected("")} onKeyDown={(event) => {
         if (event.key === "ArrowRight") { event.preventDefault(); navigate(1); }
         if (event.key === "ArrowLeft") { event.preventDefault(); navigate(-1); }

@@ -4,12 +4,6 @@
           import sharp from "sharp";
           import { readVaultSession } from "../lib/vault-session.js";
 
-          const PLAN_LEVEL = Object.freeze({
-            basic: 1,
-            pro: 2,
-            vip: 3,
-          });
-
           const PREFIX_TO_PLAN = Object.freeze({
             BSIC: "basic",
             PRX0: "pro",
@@ -163,7 +157,7 @@ export default async function handler(req, res) {
       return res.status(401).send("Unauthorized");
     }
 
-    if (PLAN_LEVEL[session.planId] < PLAN_LEVEL[requestedPlan]) {
+    if (session.accessMode === "telegram_identity" || session.planId !== requestedPlan) {
       return res.status(403).send("Forbidden");
     }
 

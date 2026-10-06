@@ -168,7 +168,7 @@ export default function VaultHome() {
   const activeAccessPrefix = memberAccess ? "SPCL" : activePlanPrefix;
   const activeAccessState = memberAccess ? "MEMBER" : "UNLOCKED";
 
-  const unlockedPhotos = activePlanId === "vip" ? [...BASIC_INSIDE, ...PRO_INSIDE, ...VIP_INSIDE] : activePlanId === "pro" ? [...BASIC_INSIDE, ...PRO_INSIDE] : activePlanId === "basic" ? BASIC_INSIDE : [];
+  const unlockedPhotos = memberAccess ? [] : activePlanId === "vip" ? VIP_INSIDE : activePlanId === "pro" ? PRO_INSIDE : activePlanId === "basic" ? BASIC_INSIDE : [];
 
   const visiblePhotos = unlocked ? [...PREVIEW_INSIDE, ...unlockedPhotos] : PREVIEW_INSIDE;
 
@@ -420,7 +420,7 @@ export default function VaultHome() {
         </div>
       </section>
       <Ticker items={TICKER_ITEMS} />
-      {unlocked ? (
+      {unlocked && !memberAccess ? (
         <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
           <div className="vx-privateAlbumInner">
             <header className="vx-privateAlbumHeader">
@@ -438,7 +438,7 @@ export default function VaultHome() {
               </h2>
               <p className="vx-privateAlbumDescription">
                 {memberAccess ? (
-                  <>SPCL member access is active. Full private collection available.</>
+                  <>SPCL identity opens the club. Private albums require their own access code.</>
                 ) : (
                   <>
                     Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}

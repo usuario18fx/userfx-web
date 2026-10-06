@@ -316,7 +316,7 @@ Your rules.
 </div>
 }
 {isGallery ? (
-<PrivateRoomGallery planId={profile.planId} onMembership={() => setInfo("membership")} />
+<PrivateRoomGallery planId={profile.paidChat ? profile.planId : "spcl"} onMembership={() => setInfo("membership")} onUnlock={() => { window.location.hash = "#/private-room-access"; }} />
 ) : isDirectory ? (
 <ProfileDirectory key={`${profile.visibility}:${profile.name}:${profile.location}:${profile.interests}`} client={client} onEdit={editProfile} />
 ) : isInbox ? (
@@ -743,7 +743,7 @@ USER FX · MADE FOR YOUR MOMENT
 <dialog ref={infoDialog} className="ufx-dialog" onCancel={() => setInfo("")} aria-labelledby="ufx-info-title">
 <div className="ufx-dialog-head"><span>USER FX · PRIVATE CLUB</span><button type="button" aria-label="Close account details" onClick={() => setInfo("")}><Icon name="close" /></button></div>
 <h2 id="ufx-info-title">{info === "membership" ? "Your membership" : "Rewards"}</h2>
-{info === "membership" ? <><p>{profile.name} · {profile.paidChat ? profile.planId.toUpperCase() : "SPCL IDENTITY ACCESS"}</p><p>{profile.paidChat ? "Private gallery, rooms and member chat are included in your active access." : "Your identity opens the rooms and gallery. Private chat requires a paid membership."}</p><a className="ufx-primary ufx-wide" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">VIEW ACCESS OPTIONS ↗</a></> : <><p>No rewards are available yet.</p><p>New rewards will appear here when they are published.</p></>}
+{info === "membership" ? <><p>{profile.name} · {profile.paidChat ? profile.planId.toUpperCase() : "SPCL IDENTITY ACCESS"}</p><p>{profile.paidChat ? "Your album code opens its matching collection. Rooms and member chat are included in your active access." : "Your identity opens the rooms. Private albums require their BSIC, PRX0 or VIPX code; private chat requires a paid membership."}</p><a className="ufx-primary ufx-wide" href="#/private-room-access">ENTER ALBUM CODE</a><a className="ufx-primary ufx-wide" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">VIEW ACCESS OPTIONS ↗</a></> : <><p>No rewards are available yet.</p><p>New rewards will appear here when they are published.</p></>}
 </dialog>
 }
 {preview &&
