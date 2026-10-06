@@ -51,6 +51,12 @@ screens through their existing component paths and hash navigation.
 | `components/PrivateRoom/RoomFX/` | Network UI, preview and WebRTC hook |
 
 The vault gate, Telegram handoff and gallery remain in the original project.
+Access UI and responsive styles live in `components/PrivateRoom/PR-DirectGate.*`;
+the portal in `components/FxAccess/FxAccessModal/` opens that gate through explicit
+props, and `VaultHome.tsx` mounts one modal. Telegram identity generation, message
+formatting and return links live in `api/telegram.js`. Historical source-rewriting
+scripts and their npm commands have been removed. `scripts/` retains the local
+API adapter, behavioral integration check and private-album upload utility.
 The new room URL shares the account function through a Vercel rewrite, keeping
 the deployment within the Hobby plan's 12-function limit.
 The legacy MyRoom/Stage/Buzón files now delegate to the shared module; the old
@@ -169,3 +175,7 @@ through the real Vite API handlers. They cover anonymous/invalid-code rejection,
 paid-code and mobile SPCL login, HttpOnly cookies, reloads, MyRoom/Stage entrance,
 sign-out, SPCL single-use handling and cross-origin write rejection. No live
 Telegram message or shared account is used for these checks.
+The mobile home modal is checked for a single portal, unchanged URL while open,
+Back/close behavior and verified entrance into MyRoom. The actual Telegram
+message builder is checked with a mocked reply for code text and encoded
+username in the return URL.

@@ -14,6 +14,8 @@
 
           type DirectGateProps = {
             children: ReactNode;
+            forceOpen?: boolean;
+            onRequestClose?: () => void;
           };
 
           type SessionResponse = {
@@ -134,8 +136,8 @@ function normalizeSpecialSuffix(value: string) {
     .slice(0, 4);
 }
 
-export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
-  const forceGate = typeof window !== "undefined" && window.location.hash === "#/private-room-access";
+export default function PrivateRoomDirectGate({ children, forceOpen = false, onRequestClose }: DirectGateProps) {
+  const forceGate = forceOpen || (typeof window !== "undefined" && window.location.hash === "#/private-room-access");
 
   const [checking, setChecking] = useState(!forceGate);
 
@@ -1416,6 +1418,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
                           setSpecialCode("");
                           setTelegramError("");
                           setSecondaryMode("none");
+                        } else if (onRequestClose) {
+                          onRequestClose();
                         } else {
                           window.location.hash = "#/";
                         }

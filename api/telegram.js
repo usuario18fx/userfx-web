@@ -959,7 +959,7 @@ async function sendIdentityCode(ctx, options = {}) {
     if (!record) return;
 
     const username = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
-    const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1#/private-room-access`;
+    const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1&username=${encodeURIComponent(username?.display || "")}#/private-room-access`;
     const keyboard = Markup.inlineKeyboard([[Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)]]);
     const message = [
       `<b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b> 🔐`,
@@ -2665,7 +2665,6 @@ export default async function handler(req, res) {
     });
   }
 }
-
 
 
 

@@ -177,7 +177,6 @@ export default function VaultHome() {
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [verifyError, setVerifyError] = useState("");
   const [attempts, setAttempts] = useState(0);
-  const inlineCodeRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -226,9 +225,7 @@ export default function VaultHome() {
         setPrefix(match[1]);
         setSuffix(match[2]);
       }
-      if (codeFromTelegram) {
-        window.setTimeout(() => inlineCodeRef.current?.focus(), 150);
-      } else if (match[1] !== "PRX0") {
+      if (!codeFromTelegram && match[1] !== "PRX0") {
         localStorage.removeItem(SAVED_CODE_KEY);
       }
     }
@@ -327,16 +324,6 @@ export default function VaultHome() {
       setVerifyLoading(false);
     }
   }
-  function handleInlineCodeChange(value: string) {
-    const compactCode = value
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 8);
-    setPrefix(compactCode.slice(0, 4));
-    setSuffix(compactCode.slice(4, 8));
-    setVerifyError("");
-  }
-  const inlineCodeValue = prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : "";
   return (
     <div id="top" className="vx">
       <header className="vx-hud">
@@ -659,7 +646,7 @@ export default function VaultHome() {
         </footer>
       </div>
       <Ticker items={TICKER_ITEMS} reverse />
-      <FxAccessModal id="fx-access-modal" open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} accessCode={inlineCodeValue} onAccessCodeChange={handleInlineCodeChange} onAccessSubmit={handleVerify} accessLoading={verifyLoading} accessError={verifyError} inputRef={inlineCodeRef} />
+      <FxAccessModal open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} />
       {dm ? (
         <div className="vx-modal" onClick={() => setDm(false)}>
           <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
@@ -732,8 +719,6 @@ export default function VaultHome() {
             Don&apos;t have a code? Use GET MY CODE or contact @User18Fx_bot.
             </p>
           </div>
-          {/* ========   FX ACCESS MODAL =========================== */}
-          <FxAccessModal id="fx-access-modal" open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} accessCode={inlineCodeValue} onAccessCodeChange={handleInlineCodeChange} onAccessSubmit={handleVerify} accessLoading={verifyLoading} accessError={verifyError} inputRef={inlineCodeRef} />
         </div>
       ) : null}
     </div>
