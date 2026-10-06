@@ -109,6 +109,14 @@ handlers and never reads a client-side access flag as authorization.
 Paid-code verification confirms `/api/access-session` before opening the room
 so the newly issued cookie is associated with its persistent account.
 
+Server configuration trims surrounding whitespace and copied BOM characters
+before using the Supabase URL and service key. The local adapter also reports
+missing credentials or `[SENSITIVE]` placeholders by variable name, without
+printing their values. A placeholder downloaded from Vercel cannot authenticate
+to Redis or Supabase; retain the real local credentials from your backup rather
+than overwriting them with placeholders. Restart Vite after changing server
+environment variables.
+
 ## Storage and boundaries
 
 - Presence expires after 30 seconds without a heartbeat; peer records after 35.
