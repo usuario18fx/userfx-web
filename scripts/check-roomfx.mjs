@@ -63,15 +63,15 @@ try {
   assert.equal((await call("host", "", "bootstrap")).data.myRoom.id, room);
   passed("vault session required; personal room identity is stable");
 
-  for (const op of ["messages", "signals", "presence"]) {
+  for (const op of ["messages", "posts", "signals", "presence"]) {
     assert.equal(
       (
         await call(
           "guest",
           room,
           op,
-          op === "messages" ? "GET" : "POST",
-          op === "messages" ? undefined : {},
+          ["messages", "posts"].includes(op) ? "GET" : "POST",
+          ["messages", "posts"].includes(op) ? undefined : {},
         )
       ).status,
       403,
@@ -141,6 +141,22 @@ try {
   );
   assert.equal((await call("spcl", "stage", "messages")).status, 403);
   passed("chat is room-scoped, validates content/origin, and enforces the SPCL membership rule");
+
+  const post = await call("host", room, "posts", "POST", { content: "A moment for my private circle." });
+  assert.equal(post.status, 201);
+  assert.equal((await call("guest", room, "posts")).data.posts[0].id, post.data.post.id);
+  assert.equal((await call("guest", guest.myRoom.id, "posts")).data.posts.length, 0);
+  assert.equal((await call("stranger", room, "posts")).status, 403);
+  assert.equal((await call("guest", room, "posts", "POST", { content: "Not the host" })).status, 403);
+  assert.equal((await call("guest", room, "remove-post", "POST", { id: post.data.post.id })).status, 403);
+  assert.equal((await call("host", "stage", "posts")).status, 400);
+  assert.equal((await call("host", room, "posts", "POST", { content: " " })).status, 400);
+  assert.equal((await call("host", room, "posts", "POST", { content: "x".repeat(2001) })).status, 400);
+  assert.equal((await call("host", room, "posts", "POST", { content: "CSRF" }, {}, { origin: "https://unrelated.invalid" })).status, 403);
+  assert.ok((await redis.ttl(`${ns}:roomfx:posts:${room}`)) > 89 * 86400);
+  assert.equal((await call("host", room, "remove-post", "POST", { id: post.data.post.id })).status, 200);
+  assert.equal((await call("guest", room, "posts")).data.posts.length, 0);
+  passed("MyRoom posts persist with retention, remain private, and only the host can publish/delete");
 
   await call("host", room, "presence", "POST", { cameraOn: true, micOn: false });
   await call("guest", room, "presence", "POST", { cameraOn: false, micOn: true });

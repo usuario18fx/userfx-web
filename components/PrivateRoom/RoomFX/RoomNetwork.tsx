@@ -3,6 +3,8 @@ import { createClientId, requestedRoom, roomLink, roomRequest, RoomError, type I
 import { AudioStream, Avatar, Icon, MoodPicker, VideoStream } from "./shared";
 import { useRoomCall } from "./use-room-call";
 import Preview from "./Preview";
+import RoomFeed from "./RoomFeed";
+import UpcomingEvents from "./UpcomingEvents";
 import "./RoomNetwork.css";
 type Space = "myroom" | "stage" | "buzon";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
@@ -48,7 +50,10 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [state, setState] = useState<RoomState | null>(null);
   const [mood, setMood] = useState<Mood>(() => { try { const value = localStorage.getItem("userfx_room_mood"); return value === "arcade" || value === "vintage" ? value : "cine"; } catch { return "cine"; } });
   const [messages, setMessages] = useState<Message[]>([]);
+  const [chatLoaded, setChatLoaded] = useState(false);
   const [text, setText] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
@@ -64,6 +69,9 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [refreshToken, setRefreshToken] = useState(0);
   const frame = useRef<HTMLDivElement>(null);
   const chat = useRef<HTMLDivElement>(null);
+  const chatToggle = useRef<HTMLButtonElement>(null);
+  const chatClose = useRef<HTMLButtonElement>(null);
+  const messageIds = useRef<Set<string> | null>(null);
   const editor = useRef<HTMLDialogElement>(null);
   const apiError = useRef("");
   const call = useRoomCall(client, roomId, profile.id, initial.iceServers);
@@ -90,7 +98,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
         if (apiError.current) { setError(""); apiError.current = ""; }
         if (next.room.approved && profile.paidChat) {
           const result = await roomRequest<{ messages: Message[] }>(client, roomId, "messages", { signal: controller.signal });
-          if (active) setMessages(result.messages);
+          if (active) { setMessages(result.messages); setChatLoaded(true); }
         }
         if (isInbox || next.room.isOwner) {
           const result = await roomRequest<{ items: Invitation[] }>(client, "", "inbox", { signal: controller.signal });
@@ -107,7 +115,18 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
     const timer = setInterval(() => void refresh(), 5000);
     return () => { active = false; controller.abort(); clearInterval(timer); };
   }, [client, roomId, profile.paidChat, isInbox, refreshToken, call.leave]);
-  useEffect(() => { if (chat.current) chat.current.scrollTop = chat.current.scrollHeight; }, [messages.length]);
+  useEffect(() => {
+    if (!chatLoaded) return;
+    if (messageIds.current && !chatOpen) {
+      const incoming = messages.filter((message) => !messageIds.current?.has(message.id) && message.authorId !== profile.accountId).length;
+      if (incoming) setUnread((current) => current + incoming);
+    }
+    messageIds.current = new Set(messages.map((message) => message.id));
+    if (chatOpen) setUnread(0);
+  }, [messages, chatOpen, chatLoaded, profile.accountId]);
+  useEffect(() => { if (chatOpen && chat.current) chat.current.scrollTop = chat.current.scrollHeight; }, [messages.length, chatOpen]);
+  useEffect(() => { if (chatOpen) chatClose.current?.focus(); }, [chatOpen]);
+  function closeChat() { setChatOpen(false); chatToggle.current?.focus(); }
   async function copyInvite() {
     try { await navigator.clipboard.writeText(isStage ? `${window.location.origin}${window.location.pathname}#/private-room/stage` : roomLink(roomId)); notify("Invitation copied."); }
     catch { notify("Copy this invitation from your browser address bar."); }
@@ -162,6 +181,59 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const status = state?.room.status;
   const waiting = state?.waiting || [];
   const canMessage = approved && profile.paidChat;
+  const peopleSection = (
+<section className="ufx-people">
+<div className="ufx-section-head">
+<div>
+<span>
+{isStage ? "THE MOMENT WE MAKE TOGETHER" : "YOUR INNER CIRCLE"}
+</span>
+<h3>
+In the room
+<small>
+{people.length}
+</small>
+</h3>
+</div>
+<span>
+{state?.room.capacity || (isStage ? 6 : 5)}
+SEATS
+</span>
+</div>
+{people.length ?
+<div className="ufx-people-grid">
+{people.map((person) => { const personStream = person.id === profile.id ? call.localStream : call.remoteStreams[person.id]; return (
+<button type="button" key={person.id} className={selected === person.id ? "is-selected" : ""} onClick={() => setSelected(person.id)}>
+<span className="ufx-person-visual">
+{personStream && person.cameraOn ?
+<VideoStream stream={personStream} mirrored={person.id === profile.id} />
+ :
+<Avatar name={person.name} />
+}
+</span>
+<strong>
+{person.name}
+</strong>
+<span>
+{person.micOn ? "MIC ON" : "MIC OFF"}
+</span>
+</button>
+); })}
+</div>
+ :
+<div className="ufx-people-empty">
+<Icon name="stage" size={25} />
+<p>
+No one on camera yet.
+<br />
+<span>
+The next good conversation starts with you.
+</span>
+</p>
+</div>
+}
+</section>
+  );
   return (
 <div className={`ufx-network ufx-mood-${mood}`}>
 <aside className="ufx-sidebar">
@@ -183,7 +255,7 @@ YOUR UNIVERSE
 </div>
 <nav aria-label="Private Room navigation">
 {([{ name: "myroom", title: "MyRoom", subtitle: "Your space. Your rules.", href: "#/private-room", icon: "home" }, { name: "stage", title: "Stage", subtitle: "Meet in the moment.", href: "#/private-room/stage", icon: "stage" }, { name: "gallery", title: "Gallery", subtitle: "Inside the vault.", href: "#/private-room/gallery", icon: "gallery" }, { name: "buzon", title: "Buzón", subtitle: "Invitations & conversations.", href: "#/private-room/buzon", icon: "inbox" }]).map((item) => (
-<a key={item.name} href={item.href} className={space === item.name ? "is-active" : ""} aria-current={space === item.name ? "page" : undefined}>
+<a key={item.name} href={item.href} className={space === item.name ? "is-active" : ""} aria-label={`${item.title} ${item.subtitle}`} aria-current={space === item.name ? "page" : undefined}>
 <Icon name={item.icon} size={20} />
 <span>
 <strong>
@@ -421,7 +493,7 @@ YOU'RE IN
 </span>
 </div>
 }
-<div className="ufx-work-grid">
+<div className={`ufx-work-grid${isStage ? " is-stage" : ""}`}>
 <div className="ufx-main-column">
 <div className={`ufx-stage-frame${spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
 {spotlightStream && spotlight ?
@@ -465,9 +537,22 @@ at home.
 <i className={call.joined ? "is-live" : ""} />
 {call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
 </span>
+<div className="ufx-frame-actions">
+<button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
+<Icon name="chat" />
+<span>
+CHAT
+</span>
+{unread > 0 &&
+<b>
+{unread > 9 ? "9+" : unread}
+</b>
+}
+</button>
 <button type="button" aria-label="Enter fullscreen" onClick={() => void frame.current?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
 <Icon name="expand" />
 </button>
+</div>
 </div>
 {spotlight &&
 <div className="ufx-frame-bottom">
@@ -480,153 +565,8 @@ ON STAGE
 </span>
 </div>
 }
-</div>
-<div className="ufx-call-toolbar">
-<div>
-<button type="button" className={call.micOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.micOn} onClick={() => void call.toggleMedia("audio")}>
-<Icon name="mic" />
-<span>
-{call.micOn ? "MIC ON" : "MIC OFF"}
-</span>
-</button>
-<button type="button" className={call.cameraOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.cameraOn} onClick={() => void call.toggleMedia("video")}>
-<Icon name="camera" />
-<span>
-{call.cameraOn ? "CAM ON" : "CAM OFF"}
-</span>
-</button>
-</div>
-<div>
-<button type="button" onClick={() => void copyInvite()}>
-<Icon name="link" />
-<span>
-INVITE
-</span>
-</button>
-{call.joined ?
-<button type="button" className="ufx-leave" onClick={() => void call.leave()}>
-<Icon name="leave" />
-LEAVE
-</button>
- :
-<button type="button" disabled={!approved || call.connecting} onClick={() => setPreview(true)}>
-<Icon name="camera" />
-PREVIEW
-</button>
-}
-</div>
-</div>
-{soundBlocked &&
-<button type="button" className="ufx-audio-unlock" onClick={() => { setUnlocked((value) => value + 1); setSoundBlocked(false); }}>
-TAP TO ENABLE CALL AUDIO
-</button>
-}
-<section className="ufx-people">
-<div className="ufx-section-head">
-<div>
-<span>
-{isStage ? "THE MOMENT WE MAKE TOGETHER" : "YOUR INNER CIRCLE"}
-</span>
-<h3>
-In the room
-<small>
-{people.length}
-</small>
-</h3>
-</div>
-<span>
-{state?.room.capacity || (isStage ? 6 : 5)}
-SEATS
-</span>
-</div>
-{people.length ?
-<div className="ufx-people-grid">
-{people.map((person) => { const personStream = person.id === profile.id ? call.localStream : call.remoteStreams[person.id]; return (
-<button type="button" key={person.id} className={selected === person.id ? "is-selected" : ""} onClick={() => setSelected(person.id)}>
-<span className="ufx-person-visual">
-{personStream && person.cameraOn ?
-<VideoStream stream={personStream} mirrored={person.id === profile.id} />
- :
-<Avatar name={person.name} />
-}
-</span>
-<strong>
-{person.name}
-</strong>
-<span>
-{person.micOn ? "MIC ON" : "MIC OFF"}
-</span>
-</button>
-); })}
-</div>
- :
-<div className="ufx-people-empty">
-<Icon name="stage" size={25} />
-<p>
-No one on camera yet.
-<br />
-<span>
-The next good conversation starts with you.
-</span>
-</p>
-</div>
-}
-</section>
-{state?.room.isOwner && waiting.length > 0 &&
-<section className="ufx-waiting-room">
-<div className="ufx-section-head">
-<div>
-<span>
-ON YOUR TERMS
-</span>
-<h3>
-Waiting room
-<small>
-{waiting.length}
-</small>
-</h3>
-</div>
-</div>
-{waiting.map((item) =>
-<article key={item.id}>
-<Avatar name={item.name} />
-<strong>
-{item.name}
-</strong>
-<button type="button" disabled={!!working} onClick={() => void decide(item, true)}>
-LET IN
-</button>
-<button type="button" disabled={!!working} onClick={() => void decide(item, false)}>
-DECLINE
-</button>
-</article>
-)}
-</section>
-}
-{!isStage &&
-<section className="ufx-profile-card">
-<Avatar name={state?.room.isOwner ? profile.name : state?.room.ownerName || "HOST"} large />
-<div>
-<span>
-BEHIND THE CAMERA
-</span>
-<h3>
-{state?.room.isOwner ? profile.name : state?.room.ownerName}
-</h3>
-<p>
-{state?.room.isOwner ? profile.bio || "A private space for a good conversation." : "You're a guest in this private room."}
-</p>
-</div>
-{state?.room.isOwner &&
-<button type="button" onClick={() => setEditing(true)}>
-<Icon name="profile" />
-EDIT
-</button>
-}
-</section>
-}
-</div>
-<aside className="ufx-chat-panel">
+{chatOpen &&
+<aside id="ufx-room-chat" className="ufx-chat-panel" aria-label="Room chat" onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); closeChat(); } }}>
 <header>
 <span className="ufx-chat-icon">
 <Icon name="inbox" />
@@ -639,7 +579,9 @@ Room chat
 A little more connection.
 </p>
 </div>
-<i />
+<button ref={chatClose} type="button" className="ufx-chat-close" aria-label="Close room chat" onClick={closeChat}>
+<Icon name="close" />
+</button>
 </header>
 <div className="ufx-chat-messages" ref={chat} aria-live="polite" aria-relevant="additions">
 <div className="ufx-chat-day">
@@ -697,6 +639,113 @@ GET MY CODE ↗
 PRIVATE ACCESS · PERSONAL CONNECTION
 </footer>
 </aside>
+}
+</div>
+<div className="ufx-call-toolbar">
+<div>
+<button type="button" className={call.micOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.micOn} onClick={() => void call.toggleMedia("audio")}>
+<Icon name="mic" />
+<span>
+{call.micOn ? "MIC ON" : "MIC OFF"}
+</span>
+</button>
+<button type="button" className={call.cameraOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.cameraOn} onClick={() => void call.toggleMedia("video")}>
+<Icon name="camera" />
+<span>
+{call.cameraOn ? "CAM ON" : "CAM OFF"}
+</span>
+</button>
+</div>
+<div>
+<button type="button" onClick={() => void copyInvite()}>
+<Icon name="link" />
+<span>
+INVITE
+</span>
+</button>
+{call.joined ?
+<button type="button" className="ufx-leave" onClick={() => void call.leave()}>
+<Icon name="leave" />
+LEAVE
+</button>
+ :
+<button type="button" disabled={!approved || call.connecting} onClick={() => setPreview(true)}>
+<Icon name="camera" />
+PREVIEW
+</button>
+}
+</div>
+</div>
+{soundBlocked &&
+<button type="button" className="ufx-audio-unlock" onClick={() => { setUnlocked((value) => value + 1); setSoundBlocked(false); }}>
+TAP TO ENABLE CALL AUDIO
+</button>
+}
+{!isStage &&
+<RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} onChat={() => { setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
+}
+{!isStage && peopleSection}
+
+{state?.room.isOwner && waiting.length > 0 &&
+<section className="ufx-waiting-room">
+<div className="ufx-section-head">
+<div>
+<span>
+ON YOUR TERMS
+</span>
+<h3>
+Waiting room
+<small>
+{waiting.length}
+</small>
+</h3>
+</div>
+</div>
+{waiting.map((item) =>
+<article key={item.id}>
+<Avatar name={item.name} />
+<strong>
+{item.name}
+</strong>
+<button type="button" disabled={!!working} onClick={() => void decide(item, true)}>
+LET IN
+</button>
+<button type="button" disabled={!!working} onClick={() => void decide(item, false)}>
+DECLINE
+</button>
+</article>
+)}
+</section>
+}
+{!isStage &&
+<section className="ufx-profile-card">
+<Avatar name={state?.room.isOwner ? profile.name : state?.room.ownerName || "HOST"} large />
+<div>
+<span>
+BEHIND THE CAMERA
+</span>
+<h3>
+{state?.room.isOwner ? profile.name : state?.room.ownerName}
+</h3>
+<p>
+{state?.room.isOwner ? profile.bio || "A private space for a good conversation." : "You're a guest in this private room."}
+</p>
+</div>
+{state?.room.isOwner &&
+<button type="button" onClick={() => setEditing(true)}>
+<Icon name="profile" />
+EDIT
+</button>
+}
+</section>
+}
+</div>
+{isStage &&
+<aside className="ufx-stage-details" aria-label="Stage participants and upcoming events">
+{peopleSection}
+<UpcomingEvents />
+</aside>
+}
 </div>
 </>
     )}

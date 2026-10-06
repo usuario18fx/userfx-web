@@ -79,7 +79,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 .ufx-room-count { display:flex; align-items:center; gap:6px; font:7px var(--mono); color:#a1a9bb; white-space:nowrap; }
 .ufx-room-count i { background:var(--accent); }
 .ufx-connected { display:flex; align-items:center; gap:6px; padding:10px 12px; border:1px solid #99c4b128; border-radius:6px; color:#a3cdba; background:#a3cdba08; font:8px var(--mono); white-space:nowrap; }
-.ufx-work-grid { display:grid; grid-template-columns:minmax(0,1fr) 292px; gap:21px; align-items:start; }
+.ufx-work-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:21px; align-items:start; }
 .ufx-stage-frame { aspect-ratio:16/9; position:relative; width:100%; overflow:hidden; border:1px solid #353d51; border-radius:10px; background:radial-gradient(ellipse at 75% 50%,color-mix(in srgb,var(--accent) 11%,var(--frame)),var(--frame) 70%); }
 .ufx-stage-frame:fullscreen { aspect-ratio:auto; height:100%; border-radius:0; background:#000; }
 .ufx-stage-frame>video { width:100%; height:100%; object-fit:contain; }
@@ -218,9 +218,62 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 /* Keep status labels readable on high-density laptop and phone screens. */
 .ufx-network :is(.ufx-eyebrow,.ufx-nav-caption,.ufx-topbar>span,.ufx-topbar button,.ufx-live-status,.ufx-mood>span,.ufx-mood button,.ufx-room-strip>div>span,.ufx-room-count,.ufx-connected,.ufx-scene>span,.ufx-frame-top>span,.ufx-frame-bottom>span:last-child,.ufx-call-toolbar button,.ufx-section-head>div>span,.ufx-section-head>span,.ufx-people-grid button>span:last-child,.ufx-chat-day,.ufx-chat-welcome>span,.ufx-chat-message time,.ufx-chat-panel>footer,.ufx-profile-card>div>span,.ufx-page-footer,.ufx-request-status,.ufx-request-actions button,.ufx-text-link,.ufx-dialog-head>span,.ufx-preview-label,.ufx-preview-controls button,.ufx-preview-empty>span,.ufx-invitation small) { font-size:9px; }
 .ufx-network .ufx-people-grid strong,.ufx-network .ufx-chat-message strong { font-size:11px; }
-@media (min-width:1500px) { .ufx-main { padding-top:48px; } .ufx-intro { margin-bottom:38px; } .ufx-sidebar-note { margin-top:auto; } .ufx-chat-panel { height:700px; } }
-@media (max-width:1150px) { .ufx-sidebar { width:188px; flex-basis:188px; padding-inline:12px; } .ufx-main { padding:28px 22px; } .ufx-topbar { padding-inline:22px; } .ufx-work-grid { grid-template-columns:minmax(0,1fr) 255px; gap:15px; } .ufx-room-count { display:none; } .ufx-mood button { padding:0 8px; } .ufx-intro h1 { font-size:43px; } }
-@media (max-width:920px) { .ufx-sidebar { width:78px; flex-basis:78px; padding:23px 10px; } .ufx-brand { padding:0; justify-content:center; } .ufx-brand>span:last-child,.ufx-nav-caption,.ufx-sidebar-note,.ufx-sidebar nav a>span,.ufx-sidebar nav i,.ufx-account>span:nth-child(2),.ufx-account>svg,.ufx-sidebar-links { display:none; } .ufx-sidebar nav { margin-top:35px; } .ufx-sidebar nav a { justify-content:center; height:53px; min-height:0; } .ufx-network .ufx-account { justify-content:center; margin-top:auto; } .ufx-work-grid { grid-template-columns:minmax(0,1fr) 260px; } .ufx-intro { gap:20px; } .ufx-intro h1 { font-size:39px; } .ufx-intro p { font-size:11px; } }
-@media (max-width:760px) { .ufx-network { flex-direction:column; } .ufx-sidebar { position:sticky; height:auto; top:0; width:100%; flex-basis:auto; flex-direction:row; align-items:center; padding:10px 16px; gap:17px; z-index:20; border-right:0; border-bottom:1px solid var(--line); background:#0c0e14ed; backdrop-filter:blur(12px); overflow:visible; } .ufx-brand-mark { width:32px; height:32px; font-size:20px; } .ufx-sidebar nav { display:flex; flex:1; justify-content:center; margin:0; gap:5px; } .ufx-sidebar nav a { padding:8px 11px; height:39px; } .ufx-network .ufx-account { border:0; padding:0; width:32px; margin:0; } .ufx-account .ufx-avatar { width:29px; height:29px; font-size:9px; } .ufx-topbar { min-height:56px; padding:0 18px; } .ufx-topbar>div { gap:10px; } .ufx-topbar>span { font-size:7px; } .ufx-topbar>span i { margin:0 7px; } .ufx-topbar button { font-size:7px; } .ufx-live-status { display:none; } .ufx-main { padding:26px 18px; } .ufx-intro { align-items:flex-start; } .ufx-intro h1 { font-size:45px; } .ufx-intro p { max-width:340px; } .ufx-mood { padding-top:15px; } .ufx-work-grid { grid-template-columns:minmax(0,1fr); gap:21px; } .ufx-chat-panel { min-height:420px; height:480px; } .ufx-stage-frame { min-height:280px; } .ufx-scene h2 { font-size:45px; } .ufx-call-toolbar button { padding:0 10px; } .ufx-room-strip { gap:12px; padding:15px; } .ufx-mailbox { padding:18px; } .ufx-invitation { flex-wrap:wrap; } .ufx-invitation>div:first-of-type { min-width:160px; } .ufx-section-head>span { font-size:6px; } }
+@media (min-width:1500px) { .ufx-main { padding-top:48px; } .ufx-intro { margin-bottom:38px; } .ufx-sidebar-note { margin-top:auto; } }
+@media (max-width:1150px) { .ufx-sidebar { width:188px; flex-basis:188px; padding-inline:12px; } .ufx-main { padding:28px 22px; } .ufx-topbar { padding-inline:22px; } .ufx-work-grid { gap:15px; } .ufx-room-count { display:none; } .ufx-mood button { padding:0 8px; } .ufx-intro h1 { font-size:43px; } }
+@media (max-width:920px) { .ufx-sidebar { width:78px; flex-basis:78px; padding:23px 10px; } .ufx-brand { padding:0; justify-content:center; } .ufx-brand>span:last-child,.ufx-nav-caption,.ufx-sidebar-note,.ufx-sidebar nav a>span,.ufx-sidebar nav i,.ufx-account>span:nth-child(2),.ufx-account>svg,.ufx-sidebar-links { display:none; } .ufx-sidebar nav { margin-top:35px; } .ufx-sidebar nav a { justify-content:center; height:53px; min-height:0; } .ufx-network .ufx-account { justify-content:center; margin-top:auto; }  .ufx-intro { gap:20px; } .ufx-intro h1 { font-size:39px; } .ufx-intro p { font-size:11px; } }
+@media (max-width:760px) { .ufx-network { flex-direction:column; } .ufx-sidebar { position:sticky; height:auto; top:0; width:100%; flex-basis:auto; flex-direction:row; align-items:center; padding:10px 16px; gap:17px; z-index:20; border-right:0; border-bottom:1px solid var(--line); background:#0c0e14ed; backdrop-filter:blur(12px); overflow:visible; } .ufx-brand-mark { width:32px; height:32px; font-size:20px; } .ufx-sidebar nav { display:flex; flex:1; justify-content:center; margin:0; gap:5px; } .ufx-sidebar nav a { padding:8px 11px; height:39px; } .ufx-network .ufx-account { border:0; padding:0; width:32px; margin:0; } .ufx-account .ufx-avatar { width:29px; height:29px; font-size:9px; } .ufx-topbar { min-height:56px; padding:0 18px; } .ufx-topbar>div { gap:10px; } .ufx-topbar>span { font-size:7px; } .ufx-topbar>span i { margin:0 7px; } .ufx-topbar button { font-size:7px; } .ufx-live-status { display:none; } .ufx-main { padding:26px 18px; } .ufx-intro { align-items:flex-start; } .ufx-intro h1 { font-size:45px; } .ufx-intro p { max-width:340px; } .ufx-mood { padding-top:15px; } .ufx-work-grid { grid-template-columns:minmax(0,1fr); gap:21px; } .ufx-stage-frame { min-height:280px; } .ufx-scene h2 { font-size:45px; } .ufx-call-toolbar button { padding:0 10px; } .ufx-room-strip { gap:12px; padding:15px; } .ufx-mailbox { padding:18px; } .ufx-invitation { flex-wrap:wrap; } .ufx-invitation>div:first-of-type { min-width:160px; } .ufx-section-head>span { font-size:6px; } }
 @media (max-width:500px) { .ufx-sidebar { padding:10px 13px; gap:9px; } .ufx-sidebar nav a { padding:8px 10px; } .ufx-intro { flex-direction:column; gap:22px; margin-bottom:24px; } .ufx-intro h1 { font-size:49px; } .ufx-intro p { max-width:100%; font-size:12px; } .ufx-mood { width:100%; padding:0; } .ufx-mood>span { text-align:left; } .ufx-mood>div { width:100%; } .ufx-mood button { flex:1; height:36px; font-size:9px; } .ufx-room-strip { flex-wrap:wrap; } .ufx-room-strip .ufx-primary,.ufx-connected { width:100%; min-height:38px; } .ufx-stage-frame { min-height:290px; aspect-ratio:5/4; } .ufx-scene { padding:22% 8%; } .ufx-scene h2 { font-size:42px; } .ufx-scene p { font-size:10px; max-width:225px; } .ufx-call-toolbar { padding:9px; gap:5px; } .ufx-call-toolbar>div { gap:4px; } .ufx-call-toolbar button { padding:0 8px; font-size:6px; } .ufx-call-toolbar button>span { display:none; } .ufx-call-toolbar button>svg { width:16px; height:16px; } .ufx-people { padding:16px; } .ufx-people-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ufx-profile-card { gap:12px; } .ufx-profile-card .ufx-avatar-large { width:49px; height:49px; } .ufx-profile-card h3 { font-size:20px; } .ufx-profile-card button { padding:8px; font-size:6px; } .ufx-page-footer { font-size:6px; gap:10px; letter-spacing:0; } .ufx-mail-empty { min-height:310px; } .ufx-dialog h2 { font-size:31px; } .ufx-dialog { padding:20px!important; } .ufx-membership-note { flex-wrap:wrap; } .ufx-waiting-room article { flex-wrap:wrap; } .ufx-toast { font-size:10px; width:max-content; } }
 @media (prefers-reduced-motion:reduce) { .ufx-network * { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
+
+/* Chat is part of the video surface; MyRoom gives the camera its full width. */
+.ufx-main-column { min-width:0; }
+.ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr) 320px; }
+.ufx-stage-details { display:grid; gap:20px; min-width:0; }
+.ufx-stage-details .ufx-people-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.ufx-frame-actions { display:flex; gap:7px; }
+.ufx-frame-actions .ufx-chat-toggle { display:flex; width:auto; gap:7px; padding:0 10px; font:10px var(--mono); }
+.ufx-chat-toggle b { display:grid; place-items:center; min-width:19px; height:19px; padding:0 3px; border-radius:20px; color:#080b13; background:var(--accent); font-size:9px; }
+.ufx-stage-frame .ufx-chat-panel { position:absolute; z-index:3; inset:54px 12px 12px auto; width:min(350px,calc(100% - 24px)); min-height:0; height:auto; background:#0e121eed; backdrop-filter:blur(18px); box-shadow:0 12px 50px #0007; }
+.ufx-chat-panel>header { padding:10px 12px; gap:9px; }
+.ufx-chat-panel>header p { display:none; }
+.ufx-chat-panel>header .ufx-chat-close { display:grid; place-items:center; width:32px; height:32px; margin-left:auto; background:transparent; }
+.ufx-chat-panel .ufx-chat-messages { padding:8px 12px; overscroll-behavior:contain; }
+.ufx-chat-panel .ufx-chat-welcome,.ufx-chat-panel .ufx-chat-day { display:none; }
+.ufx-chat-panel .ufx-chat-message { margin:10px 0; }
+.ufx-chat-panel .ufx-chat-locked { margin:12px 5px; gap:10px; }
+.ufx-chat-panel .ufx-compose { padding:8px; }
+.ufx-chat-panel>footer { padding:0 10px 7px; }
+.ufx-feed { margin:0 0 24px; }
+.ufx-post-compose,.ufx-post { display:flex; gap:13px; border:1px solid var(--line); border-radius:10px; padding:20px; background:var(--surface); margin-bottom:14px; }
+.ufx-post-compose>div { flex:1; min-width:0; }
+.ufx-post-compose label { display:block; color:var(--muted); font:9px var(--mono); letter-spacing:.06em; margin-bottom:12px; }
+.ufx-post-compose textarea { display:block; width:100%; min-height:88px; padding:12px; border:1px solid var(--line); border-radius:7px; background:#090c13; color:var(--ink); font-size:13px; line-height:1.7; resize:vertical; }
+.ufx-post-compose footer { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+.ufx-post-compose footer>span { color:var(--muted); font:10px var(--mono); }
+.ufx-post { display:block; }
+.ufx-post>header { display:flex; align-items:center; gap:11px; }
+.ufx-post>header>div { flex:1; min-width:0; }
+.ufx-post strong { display:block; font-size:13px; overflow-wrap:anywhere; }
+.ufx-post time { display:block; color:var(--muted); font:10px var(--mono); margin-top:4px; }
+.ufx-post>header>span { font:9px var(--mono); color:var(--accent); }
+.ufx-post>header button { display:grid; place-items:center; width:30px; height:30px; background:transparent; }
+.ufx-post>p { padding:20px 0; white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.8; }
+.ufx-post>footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid var(--line); padding-top:13px; }
+.ufx-post>footer>span,.ufx-feed .ufx-section-head>span { display:flex; align-items:center; gap:7px; color:var(--muted); font:9px var(--mono); }
+.ufx-post>footer button { display:flex; gap:7px; align-items:center; padding:7px 10px; background:transparent; color:var(--accent); font:9px var(--mono); }
+.ufx-feed-empty { display:flex; flex-direction:column; align-items:center; gap:12px; padding:38px 20px; text-align:center; border:1px dashed var(--line); border-radius:10px; color:var(--muted); }
+.ufx-feed-empty>svg { color:var(--accent); }
+.ufx-feed-empty h3 { color:var(--ink); font:26px var(--serif); }
+.ufx-feed-empty p,.ufx-feed-status { color:var(--muted); font-size:12px; }
+.ufx-feed-status { padding:20px 0; }
+.ufx-network .ufx-events { padding:19px; border:1px solid var(--line); border-radius:9px; background-color:var(--surface)!important; }
+.ufx-events .ufx-section-head>svg { color:var(--accent); }
+.ufx-event { display:flex; align-items:center; gap:13px; padding-top:15px; border-top:1px solid var(--line); }
+.ufx-event-date { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; padding:11px; border-radius:7px; background:var(--accent-soft); color:var(--accent); }
+.ufx-event-date span,.ufx-event-date small,.ufx-event>div>span { font:9px var(--mono); }
+.ufx-event-date strong { font:19px var(--serif); }
+.ufx-event h3 { margin:6px 0; font:21px/1.15 var(--serif); }
+.ufx-event p { color:var(--muted); font-size:10px; line-height:1.7; }
+@media (max-width:1150px) { .ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr) 270px; } .ufx-work-grid.is-stage .ufx-stage-frame { min-height:340px; } }
+@media (max-width:920px) { .ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr); } .ufx-stage-details { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; } }
+@media (max-width:600px) { .ufx-stage-details { grid-template-columns:minmax(0,1fr); } .ufx-stage-frame .ufx-chat-panel { inset:0; width:100%; border:0; border-radius:9px; } .ufx-chat-panel>footer { display:none; } .ufx-post-compose,.ufx-post { padding:15px; } .ufx-post-compose>.ufx-avatar { display:none; } .ufx-post>header>span { display:none; } .ufx-feed .ufx-section-head>span { font-size:8px; } }

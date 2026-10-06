@@ -7,13 +7,21 @@ screens through their existing component paths and hash navigation.
 ## Included
 
 - MyRoom: persistent room link, preview before entering, five seats, entrance
-  requests, host approval, camera and microphone controls, room chat.
+  requests, host approval, camera and microphone controls, room chat and a social
+  feed below the video. Only the host can publish/delete posts; approved guests
+  can read them without joining a call.
 - Stage: member room with six seats, live participants, spotlight selection,
-  video, audio and chat.
+  video, audio and chat. Participants and upcoming events remain in the Stage
+  details column, including the existing Friday session at 22:00 UTC. This is
+  the existing display schedule, not a new event booking backend.
 - Buzón: actual incoming/outgoing entrance requests and their current status;
   approved requests open the corresponding room and conversation.
 - Cine, Arcade and Vintage: scoped black, silver and FX accent themes.
 - Profile: edits the existing account using `/api/account`.
+- Chat: closed by default in both rooms. The video's CHAT control opens an
+  overlay inside the video, including fullscreen; close or Escape returns focus
+  to the control. New incoming messages display an unread count. Membership and
+  host approval rules remain enforced on the server.
 - Authentication: the existing vault cookie, account and access rules. No
   parallel registration or public guest identity is introduced.
 - SPCL: entrance requests remain available; private chat retains the existing
@@ -80,6 +88,9 @@ code. Production never reads a client-side access flag as authorization.
   and expires after 60 seconds.
 - Chat is capped at 100 messages per room and retained for 30 days after its
   most recent activity.
+- MyRoom posts are newest first, capped at 50 and retained for 90 days after
+  the most recent publication. Posts contain text (up to 2000 characters);
+  media uploads, comments and reactions are not implemented. Stage has no feed.
 - Entrance approval expires after 24 hours. Invitations expire after 30 days.
 - Room metadata remains available for 90 days after its owner's activity.
 - Atomic Redis admission enforces the five/six participant limits.
@@ -112,6 +123,8 @@ then run `node scripts/check-roomfx.mjs`.
 
 Browser checks use two separate authenticated browser contexts, synthetic
 camera hardware and the real Redis-backed API. They cover room entrance,
-remote video, camera controls, chat, navigation, profile editing and a 390px
+remote video, camera controls, chat overlay open/close and unread state, feed
+publication/persistence/guest access/deletion, Stage participants and events,
+navigation, profile editing and a 390px
 mobile layout. Synthetic camera verification does not replace testing two
 physical devices on different networks or TURN infrastructure.
