@@ -1,4 +1,17 @@
 /* USER🜲FX · Moodroom structure, adapted to the existing Private Club. */
+/* UserFX scroll rails: room panels, inputs, dialogs and the page share one finish. */
+html:has(.ufx-network) { --ufx-scroll-accent:#73a9ec; --ufx-scroll-gold:#d4bb61; scrollbar-gutter:stable; }
+html:has(.ufx-network), .ufx-network * { scrollbar-width:thin; scrollbar-color:var(--accent,var(--ufx-scroll-accent)) #090d15; }
+@supports selector(::-webkit-scrollbar) {
+  html:has(.ufx-network), .ufx-network * { scrollbar-width:auto; scrollbar-color:auto; }
+  html:has(.ufx-network)::-webkit-scrollbar, .ufx-network *::-webkit-scrollbar { width:8px; height:8px; }
+  html:has(.ufx-network)::-webkit-scrollbar-track, .ufx-network *::-webkit-scrollbar-track { background:#090d15; border-radius:20px; box-shadow:inset 0 0 0 1px #ffffff06; }
+  html:has(.ufx-network)::-webkit-scrollbar-thumb, .ufx-network *::-webkit-scrollbar-thumb { min-height:36px; border:2px solid #090d15; border-radius:20px; background:linear-gradient(180deg,#a3e6f5,var(--accent,var(--ufx-scroll-accent)) 48%,var(--ufx-scroll-gold)) padding-box; box-shadow:inset 0 0 4px #ffffff55; }
+  html:has(.ufx-network)::-webkit-scrollbar-thumb:hover, .ufx-network *::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#d5f8ff,var(--accent,var(--ufx-scroll-accent)) 42%,#f0d58a) padding-box; }
+  html:has(.ufx-network)::-webkit-scrollbar-button, .ufx-network *::-webkit-scrollbar-button { display:none; width:0; height:0; }
+  html:has(.ufx-network)::-webkit-scrollbar-corner, .ufx-network *::-webkit-scrollbar-corner { background:transparent; }
+}
+html:has(.ufx-profile-dialog[open]) { overflow:hidden; }
 .ufx-network { --page:#08090d; --surface:#101218; --surface-raised:#151821; --ink:#e9eaf0; --muted:#858a9d; --line:#252936; --accent:#789bfa; --accent-soft:#789bfa12; --frame:#101827; --serif:"Cormorant Garamond",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,monospace; display:flex; min-height:100dvh; width:100%; color:var(--ink); background:var(--page); font:14px/1.5 Arial,sans-serif; color-scheme:dark; isolation:isolate; text-align:left; }
 .ufx-network.ufx-mood-arcade { --accent:#ab91fb; --accent-soft:#ab91fb14; --frame:#171125; }
 .ufx-network.ufx-mood-vintage { --accent:#c8b7a3; --accent-soft:#c8b7a313; --frame:#211c1a; }
@@ -135,7 +148,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 .ufx-chat-panel>header h3 { font:20px var(--serif); }
 .ufx-chat-panel>header p { color:var(--muted); font-size:9px; margin-top:3px; }
 .ufx-chat-panel>header>i { margin-left:auto; background:var(--accent); }
-.ufx-chat-messages { flex:1; min-height:0; padding:19px 16px; overflow:auto; scrollbar-width:thin; scrollbar-color:#30374b transparent; }
+.ufx-chat-messages { flex:1; min-height:0; padding:19px 16px; overflow:auto; }
 .ufx-chat-day { margin-bottom:19px; font:6px var(--mono); color:#606a81; text-align:center; letter-spacing:.07em; }
 .ufx-chat-welcome { padding:17px 14px; margin-bottom:21px; border:1px solid color-mix(in srgb,var(--accent) 17%,transparent); background:var(--accent-soft); border-radius:7px; }
 .ufx-chat-welcome>span { font:6px var(--mono); color:var(--accent); letter-spacing:.03em; }
@@ -188,7 +201,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 .ufx-membership-note { display:flex; align-items:center; gap:15px; margin-top:20px; padding:17px; border:1px solid var(--line); border-radius:7px; color:var(--muted); }
 .ufx-membership-note p { flex:1; font-size:11px; }
 .ufx-membership-note a { color:var(--accent); font:8px var(--mono); }
-.ufx-network .ufx-dialog { position:fixed; z-index:30000; inset:0; margin:auto; width:min(520px,calc(100vw - 32px)); max-height:calc(100dvh - 40px); overflow:auto; padding:25px; border:1px solid #40485e; border-radius:13px; background:#10141e; color:var(--ink); box-shadow:0 20px 90px #0009; text-align:left; }
+.ufx-network .ufx-dialog { position:fixed; z-index:30000; inset:0; margin:auto; width:min(520px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow:auto; padding:25px; border:1px solid #40485e; border-radius:13px; background:#10141e; color:var(--ink); box-shadow:0 20px 90px #0009; text-align:left; }
 .ufx-dialog::backdrop { background:#03050adb; backdrop-filter:blur(9px); }
 .ufx-dialog-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:19px; }
 .ufx-dialog-head>span { font:8px var(--mono); color:var(--accent); letter-spacing:.12em; }
@@ -222,7 +235,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 @media (max-width:1150px) { .ufx-sidebar { width:188px; flex-basis:188px; padding-inline:12px; } .ufx-main { padding:28px 22px; } .ufx-topbar { padding-inline:22px; } .ufx-work-grid { gap:15px; } .ufx-room-count { display:none; } .ufx-mood button { padding:0 8px; } .ufx-intro h1 { font-size:43px; } }
 @media (max-width:920px) { .ufx-sidebar { width:78px; flex-basis:78px; padding:23px 10px; } .ufx-brand { padding:0; justify-content:center; } .ufx-brand>span:last-child,.ufx-nav-caption,.ufx-sidebar-note,.ufx-sidebar nav a>span,.ufx-sidebar nav i,.ufx-account>span:nth-child(2),.ufx-account>svg,.ufx-sidebar-links { display:none; } .ufx-sidebar nav { margin-top:35px; } .ufx-sidebar nav a { justify-content:center; height:53px; min-height:0; } .ufx-network .ufx-account { justify-content:center; margin-top:auto; }  .ufx-intro { gap:20px; } .ufx-intro h1 { font-size:39px; } .ufx-intro p { font-size:11px; } }
 @media (max-width:760px) { .ufx-network { flex-direction:column; } .ufx-sidebar { position:sticky; height:auto; top:0; width:100%; flex-basis:auto; flex-direction:row; align-items:center; padding:10px 16px; gap:17px; z-index:20; border-right:0; border-bottom:1px solid var(--line); background:#0c0e14ed; backdrop-filter:blur(12px); overflow:visible; } .ufx-brand-mark { width:32px; height:32px; font-size:20px; } .ufx-sidebar nav { display:flex; flex:1; justify-content:center; margin:0; gap:5px; } .ufx-sidebar nav a { padding:8px 11px; height:39px; } .ufx-network .ufx-account { border:0; padding:0; width:32px; margin:0; } .ufx-account .ufx-avatar { width:29px; height:29px; font-size:9px; } .ufx-topbar { min-height:56px; padding:0 18px; } .ufx-topbar>div { gap:10px; } .ufx-topbar>span { font-size:7px; } .ufx-topbar>span i { margin:0 7px; } .ufx-topbar button { font-size:7px; } .ufx-live-status { display:none; } .ufx-main { padding:26px 18px; } .ufx-intro { align-items:flex-start; } .ufx-intro h1 { font-size:45px; } .ufx-intro p { max-width:340px; } .ufx-mood { padding-top:15px; } .ufx-work-grid { grid-template-columns:minmax(0,1fr); gap:21px; } .ufx-stage-frame { min-height:280px; } .ufx-scene h2 { font-size:45px; } .ufx-call-toolbar button { padding:0 10px; } .ufx-room-strip { gap:12px; padding:15px; } .ufx-mailbox { padding:18px; } .ufx-invitation { flex-wrap:wrap; } .ufx-invitation>div:first-of-type { min-width:160px; } .ufx-section-head>span { font-size:6px; } }
-@media (max-width:500px) { .ufx-sidebar { padding:10px 13px; gap:9px; } .ufx-sidebar nav a { padding:8px 10px; } .ufx-intro { flex-direction:column; gap:22px; margin-bottom:24px; } .ufx-intro h1 { font-size:49px; } .ufx-intro p { max-width:100%; font-size:12px; } .ufx-mood { width:100%; padding:0; } .ufx-mood>span { text-align:left; } .ufx-mood>div { width:100%; } .ufx-mood button { flex:1; height:36px; font-size:9px; } .ufx-room-strip { flex-wrap:wrap; } .ufx-room-strip .ufx-primary,.ufx-connected { width:100%; min-height:38px; } .ufx-stage-frame { min-height:290px; aspect-ratio:5/4; } .ufx-scene { padding:22% 8%; } .ufx-scene h2 { font-size:42px; } .ufx-scene p { font-size:10px; max-width:225px; } .ufx-call-toolbar { padding:9px; gap:5px; } .ufx-call-toolbar>div { gap:4px; } .ufx-call-toolbar button { padding:0 8px; font-size:6px; } .ufx-call-toolbar button>span { display:none; } .ufx-call-toolbar button>svg { width:16px; height:16px; } .ufx-people { padding:16px; } .ufx-people-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ufx-profile-card { gap:12px; } .ufx-profile-card .ufx-avatar-large { width:49px; height:49px; } .ufx-profile-card h3 { font-size:20px; } .ufx-profile-card button { padding:8px; font-size:6px; } .ufx-page-footer { font-size:6px; gap:10px; letter-spacing:0; } .ufx-mail-empty { min-height:310px; } .ufx-dialog h2 { font-size:31px; } .ufx-dialog { padding:20px!important; } .ufx-membership-note { flex-wrap:wrap; } .ufx-waiting-room article { flex-wrap:wrap; } .ufx-toast { font-size:10px; width:max-content; } }
+@media (max-width:500px) { .ufx-sidebar { padding:10px 13px; gap:9px; } .ufx-sidebar nav a { padding:8px 10px; } .ufx-intro { flex-direction:column; gap:22px; margin-bottom:24px; } .ufx-intro h1 { font-size:49px; } .ufx-intro p { max-width:100%; font-size:12px; } .ufx-mood { width:100%; padding:0; } .ufx-mood>span { text-align:left; } .ufx-mood>div { width:100%; } .ufx-mood button { flex:1; height:36px; font-size:9px; } .ufx-room-strip { flex-wrap:wrap; } .ufx-room-strip .ufx-primary,.ufx-connected { width:100%; min-height:38px; } .ufx-stage-frame { min-height:290px; aspect-ratio:5/4; } .ufx-scene { padding:22% 8%; } .ufx-scene h2 { font-size:42px; } .ufx-scene p { font-size:10px; max-width:225px; } .ufx-call-toolbar { padding:9px; gap:5px; } .ufx-call-toolbar>div { gap:4px; } .ufx-call-toolbar button { padding:0 8px; font-size:6px; } .ufx-call-toolbar button>span { display:none; } .ufx-call-toolbar button>svg { width:16px; height:16px; } .ufx-people { padding:16px; } .ufx-people-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ufx-profile-card { gap:12px; } .ufx-profile-card .ufx-avatar-large { width:49px; height:49px; } .ufx-profile-card h3 { font-size:20px; } .ufx-profile-card button { padding:8px; font-size:6px; } .ufx-page-footer { font-size:6px; gap:10px; letter-spacing:0; } .ufx-mail-empty { min-height:310px; } .ufx-dialog h2 { font-size:31px; } .ufx-network .ufx-dialog { padding:20px; } .ufx-membership-note { flex-wrap:wrap; } .ufx-waiting-room article { flex-wrap:wrap; } .ufx-toast { font-size:10px; width:max-content; } }
 @media (prefers-reduced-motion:reduce) { .ufx-network * { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
 
 /* Chat is part of the video surface; MyRoom gives the camera its full width. */
@@ -324,7 +337,6 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 
 /* One club header, with the stage layout requested for RoomFX. */
 .ufx-network { flex-direction:column; }
-.ufx-network .ufx-dialog { max-height:calc(100dvh - 32px); overflow:auto; }
 .ufx-network .ufx-dialog p+p { margin-top:16px; }
 .ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr); }
 .ufx-stage-details { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; }
@@ -353,3 +365,32 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 @media (max-width:500px) { .ufx-space-stage .ufx-intro { padding:20px; } }
 .ufx-work-grid.is-theater .ufx-stage-grid { grid-template-columns:minmax(0,2fr) minmax(0,1fr); }
 @media (max-width:760px) { .ufx-work-grid.is-theater .ufx-stage-grid { grid-template-columns:minmax(0,1fr); } }
+
+/* Compact profile editor. Only its body scrolls when the viewport is very short. */
+.ufx-network .ufx-profile-dialog { width:min(460px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); padding:18px; overflow:hidden; border-color:transparent; background:radial-gradient(ellipse at 100% 0,color-mix(in srgb,var(--accent) 12%,transparent),transparent 55%) padding-box,linear-gradient(160deg,#111823,#0a0e16) padding-box,linear-gradient(135deg,#acd8f06e,var(--line) 45%,color-mix(in srgb,var(--accent) 40%,transparent)) border-box; box-shadow:0 24px 90px #000b,0 0 32px var(--accent-soft),inset 0 1px 0 #ffffff08; }
+.ufx-profile-dialog form { display:flex; flex-direction:column; gap:12px; max-height:calc(100dvh - 62px); }
+.ufx-profile-dialog-header,.ufx-profile-dialog-footer { flex-shrink:0; }
+.ufx-profile-dialog .ufx-dialog-head { margin-bottom:6px; }
+.ufx-profile-dialog .ufx-dialog-head button { width:28px; height:28px; border-radius:8px; }
+.ufx-network .ufx-profile-dialog h2 { font:30px/1.1 var(--serif); margin:0 0 5px; }
+.ufx-network .ufx-profile-dialog p { font-size:11px; line-height:1.4; margin:0; }
+.ufx-profile-dialog-body { min-height:0; overflow:auto; overscroll-behavior:contain; padding:2px; }
+.ufx-profile-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 12px; align-items:end; }
+.ufx-profile-field-wide { grid-column:1/-1; }
+.ufx-network .ufx-profile-dialog label { margin:0; font-size:8px; letter-spacing:.04em; }
+.ufx-network .ufx-profile-dialog :is(input:not([type="checkbox"]),textarea) { margin-top:5px; padding:8px 10px; min-height:34px; font-size:12px; }
+.ufx-network .ufx-profile-dialog textarea { height:56px; min-height:56px; resize:none; line-height:1.5; }
+.ufx-profile-dialog :is(input,textarea):focus-visible { outline-offset:2px; }
+.ufx-profile-privacy { display:grid; gap:6px; margin-top:12px; }
+.ufx-network .ufx-profile-dialog .ufx-profile-visibility { min-height:32px; padding:8px 9px; gap:9px; border:1px solid var(--line); border-radius:7px; background:#ffffff02; line-height:1.4; }
+.ufx-profile-dialog .ufx-profile-visibility span { min-width:0; }
+.ufx-profile-dialog .ufx-profile-visibility small { display:block; margin-top:4px; font:10px/1.4 Arial,sans-serif; letter-spacing:0; color:var(--muted); }
+.ufx-network .ufx-profile-dialog .ufx-profile-visibility input { flex:0 0 15px; width:15px; height:15px; }
+.ufx-profile-dialog-footer { padding-top:10px; border-top:1px solid var(--line); }
+.ufx-network .ufx-profile-dialog-footer .ufx-primary { min-height:36px; margin:0; }
+@media (max-width:500px) {
+  .ufx-network .ufx-profile-dialog { padding:14px; }
+  .ufx-profile-dialog form { gap:10px; max-height:calc(100dvh - 54px); }
+  .ufx-network .ufx-profile-dialog h2 { font-size:27px; }
+  .ufx-profile-fields { gap:9px 8px; }
+}

@@ -750,8 +750,9 @@ USER FX · MADE FOR YOUR MOMENT
 <Preview onClose={() => setPreview(false)} onJoin={(options) => { setPreview(false); void call.join(options); }} />
 }
 {editing &&
-<dialog ref={editor} className="ufx-dialog" onCancel={() => setEditing(false)} aria-labelledby="ufx-profile-title">
+<dialog ref={editor} className="ufx-dialog ufx-profile-dialog" onCancel={() => setEditing(false)} aria-labelledby="ufx-profile-title">
 <form onSubmit={(event) => void saveProfile(event)}>
+<div className="ufx-profile-dialog-header">
 <div className="ufx-dialog-head">
 <span>
 YOUR USER FX PROFILE
@@ -766,13 +767,16 @@ A little more you.
 <p>
 Your existing account. Your personal touch.
 </p>
-<label>
+</div>
+<div className="ufx-profile-dialog-body">
+<div className="ufx-profile-fields">
+<label className="ufx-profile-field-wide">
 DISPLAY NAME
 <input type="text" required minLength={2} maxLength={40} value={draft.displayName} onChange={(event) => setDraft((current) => ({ ...current, displayName: event.target.value }))} />
 </label>
-<label>
+<label className="ufx-profile-field-wide">
 ABOUT YOU
-<textarea rows={4} maxLength={280} value={draft.bio} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
+<textarea rows={2} maxLength={280} value={draft.bio} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
 </label>
 <label>
 LOCATION · OPTIONAL
@@ -782,25 +786,29 @@ LOCATION · OPTIONAL
 INTERESTS · SEPARATE WITH COMMAS
 <input type="text" maxLength={160} value={draft.interests} onChange={(event) => setDraft((current) => ({ ...current, interests: event.target.value }))} />
 </label>
+</div>
+<div className="ufx-profile-privacy">
 <label className="ufx-profile-visibility">
-<input type="checkbox" checked={draft.visibility !== "private"} onChange={(event) => setDraft((current) => ({ ...current, visibility: event.target.checked ? "members" : "private" }))} />
+<input type="checkbox" aria-describedby="ufx-profile-sharing-note" checked={draft.visibility !== "private"} onChange={(event) => setDraft((current) => ({ ...current, visibility: event.target.checked ? "members" : "private" }))} />
 <span>
 SHOW MY PROFILE TO MEMBERS
+<small id="ufx-profile-sharing-note">Share your profile. Room entry still needs your approval.</small>
 </span>
 </label>
-<p>
-Share your name, bio, location and interests in Profiles. Your room still requires your approval.
-</p>
 <label className="ufx-profile-visibility">
 <input type="checkbox" checked={draft.onlineVisibility !== "hidden"} onChange={(event) => setDraft((current) => ({ ...current, onlineVisibility: event.target.checked ? "members" : "hidden" }))} />
 <span>
 SHOW WHEN I AM IN MY ROOM
 </span>
 </label>
+</div>
+</div>
+<div className="ufx-profile-dialog-footer">
 <button type="submit" className="ufx-primary ufx-wide" disabled={saving}>
 {saving ? "SAVING…" : "SAVE PROFILE"}
 <Icon name="check" />
 </button>
+</div>
 </form>
 </dialog>
 }
