@@ -83,20 +83,15 @@ import { Icon } from "./RoomFX/shared";
                   <button
                     type="button"
                     className="pvr-club-brand"
+                    aria-label="UserFX · MyRoom"
                     onClick={() => {
                       window.location.hash = "#/private-room";
                     }}>
                     <span className="pvr-club-brand-mark">
-                    FX
+                      <img src="/assets/userfx-logo-sin.png" alt="USER FX" />
                     </span>
-                    <span className="pvr-club-brand-copy">
-                      <strong>
-                      MY ROOM
-                      </strong>
-                      <small>
-                      PRIVATE CLUB
-                      </small>
-                    </span>
+                    <span className="pvr-club-brand-live" aria-hidden="true" />
+                    <span className="pvr-club-brand-copy">| PRIV⭑VAULT |</span>
                   </button>
                   <nav className="pvr-club-tabs" aria-label="Private Room navigation">
                     {NAV_ITEMS.map((item) => {

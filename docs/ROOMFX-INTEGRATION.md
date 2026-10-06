@@ -40,6 +40,12 @@ screens through their existing component paths and hash navigation.
   buttons stay on the current origin; INICIO returns to the same app's home.
   Profile and membership use the current authenticated account. Rewards shows
   an empty state; no rewards service existed behind the previous button.
+  The room header matches the VaultHome HUD: the existing UserFX logo,
+  rose status dot, `wallpaper3.png` background at center 63%, blue overlay,
+  glass shadow and 52px main row. Room navigation and account/camera controls
+  remain in the same header; narrow screens place navigation in its second row.
+  Below 380px only the long brand caption is hidden, with an accessible brand
+  button label retained. HUD colors/image use `--pvr-hud-image/overlay/edge`.
   Header appearance lives in `components/PrivateRoom/PR-TopNav.css`:
   `.pvr-club-cam` uses the `--cam-*` color variables (blue enamel),
   `.pvr-club-reward` uses `--reward-*` (iridescent rim), and
