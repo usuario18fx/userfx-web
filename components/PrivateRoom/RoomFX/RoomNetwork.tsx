@@ -74,6 +74,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [unlocked, setUnlocked] = useState(0);
   const [refreshToken, setRefreshToken] = useState(0);
   const frame = useRef<HTMLDivElement>(null);
+  const cameraWorkspace = useRef<HTMLDivElement>(null);
   const chat = useRef<HTMLDivElement>(null);
   const chatToggle = useRef<HTMLButtonElement>(null);
   const chatClose = useRef<HTMLButtonElement>(null);
@@ -260,6 +261,81 @@ The next good conversation starts with you.
 }
 </section>
   );
+  const roomChat = chatOpen ? (
+<aside id="ufx-room-chat" className="ufx-chat-panel" aria-label="Room chat" onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); closeChat(); } }}>
+<header>
+<span className="ufx-chat-icon">
+<Icon name="inbox" />
+</span>
+<div>
+<h3>
+Room chat
+</h3>
+<p>
+A little more connection.
+</p>
+</div>
+<button ref={chatClose} type="button" className="ufx-chat-close" aria-label="Close room chat" onClick={closeChat}>
+<Icon name="close" />
+</button>
+</header>
+<div className="ufx-chat-messages" ref={chat} aria-live="polite" aria-relevant="additions">
+<div className="ufx-chat-day">
+THE CONVERSATION STARTS HERE
+</div>
+<div className="ufx-chat-welcome">
+<span>
+✦ WELCOME TO YOUR ELEMENT
+</span>
+<p>
+{isStage ? "Say hello. Share a little. See where the moment goes." : "Your private conversation stays inside this approved room."}
+</p>
+</div>
+{!canMessage ?
+<div className="ufx-chat-locked">
+<Icon name="shield" size={28} />
+<strong>
+{!approved ? "HOST APPROVAL REQUIRED" : "MEMBERSHIP REQUIRED"}
+</strong>
+<p>
+{!approved ? "You'll see the chat when your host approves your entrance." : "SPCL opens the room. A paid membership opens private chat."}
+</p>
+{approved &&
+<a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">
+GET MY CODE ↗
+</a>
+}
+</div>
+ : messages.map((message) =>
+<article key={message.id} className={`ufx-chat-message${message.authorId === profile.accountId ? " is-own" : ""}`}>
+<Avatar name={message.authorName} />
+<div>
+<header>
+<strong>
+{message.authorId === profile.accountId ? "YOU" : message.authorName}
+</strong>
+<time dateTime={message.createdAt}>
+{new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+</time>
+</header>
+<p>
+{message.content}
+</p>
+</div>
+</article>
+)}
+</div>
+<form className="ufx-compose" onSubmit={(event) => void send(event)}>
+<input type="text" value={text} onChange={(event) => setText(event.target.value)} maxLength={500} placeholder={canMessage ? "Say something…" : "Chat is locked"} disabled={!canMessage || sending} aria-label="Room message" />
+<button type="submit" disabled={!canMessage || !text.trim() || sending} aria-label="Send message">
+<Icon name="send" />
+</button>
+</form>
+<footer>
+PRIVATE ACCESS · PERSONAL CONNECTION
+</footer>
+</aside>
+  ) : null;
   return (
 <div className={`ufx-network ufx-space-${space} ufx-mood-${mood}`}>
 <PrivateRoomTopNav cameraLive={call.cameraOn} accessLabel={profile.paidChat ? profile.planId.toUpperCase() : "SPCL"}
@@ -439,6 +515,8 @@ YOU'RE IN
 }
 <div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
+<div ref={cameraWorkspace} className={`ufx-camera-row${chatOpen ? " has-chat" : ""}`} aria-label={isStage ? "Stage workspace" : "Camera and conversation"}>
+<div className="ufx-camera-surface">
 <div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
 {isStage ?
 <div className="ufx-stage-grid" aria-label="Stage camera layout">
@@ -515,7 +593,7 @@ CHAT
 <button type="button" aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
 <Icon name="theater" />
 </button>
-<button type="button" aria-label="Enter fullscreen" onClick={() => void frame.current?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
+<button type="button" aria-label="Enter fullscreen" onClick={() => void (isStage ? frame.current : cameraWorkspace.current)?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
 <Icon name="expand" />
 </button>
 </div>
@@ -531,81 +609,7 @@ ON STAGE
 </span>
 </div>
 }
-{chatOpen &&
-<aside id="ufx-room-chat" className="ufx-chat-panel" aria-label="Room chat" onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); closeChat(); } }}>
-<header>
-<span className="ufx-chat-icon">
-<Icon name="inbox" />
-</span>
-<div>
-<h3>
-Room chat
-</h3>
-<p>
-A little more connection.
-</p>
-</div>
-<button ref={chatClose} type="button" className="ufx-chat-close" aria-label="Close room chat" onClick={closeChat}>
-<Icon name="close" />
-</button>
-</header>
-<div className="ufx-chat-messages" ref={chat} aria-live="polite" aria-relevant="additions">
-<div className="ufx-chat-day">
-THE CONVERSATION STARTS HERE
-</div>
-<div className="ufx-chat-welcome">
-<span>
-✦ WELCOME TO YOUR ELEMENT
-</span>
-<p>
-{isStage ? "Say hello. Share a little. See where the moment goes." : "Your private conversation stays inside this approved room."}
-</p>
-</div>
-{!canMessage ?
-<div className="ufx-chat-locked">
-<Icon name="shield" size={28} />
-<strong>
-{!approved ? "HOST APPROVAL REQUIRED" : "MEMBERSHIP REQUIRED"}
-</strong>
-<p>
-{!approved ? "You'll see the chat when your host approves your entrance." : "SPCL opens the room. A paid membership opens private chat."}
-</p>
-{approved &&
-<a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">
-GET MY CODE ↗
-</a>
-}
-</div>
- : messages.map((message) =>
-<article key={message.id} className={`ufx-chat-message${message.authorId === profile.accountId ? " is-own" : ""}`}>
-<Avatar name={message.authorName} />
-<div>
-<header>
-<strong>
-{message.authorId === profile.accountId ? "YOU" : message.authorName}
-</strong>
-<time dateTime={message.createdAt}>
-{new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-</time>
-</header>
-<p>
-{message.content}
-</p>
-</div>
-</article>
-)}
-</div>
-<form className="ufx-compose" onSubmit={(event) => void send(event)}>
-<input type="text" value={text} onChange={(event) => setText(event.target.value)} maxLength={500} placeholder={canMessage ? "Say something…" : "Chat is locked"} disabled={!canMessage || sending} aria-label="Room message" />
-<button type="submit" disabled={!canMessage || !text.trim() || sending} aria-label="Send message">
-<Icon name="send" />
-</button>
-</form>
-<footer>
-PRIVATE ACCESS · PERSONAL CONNECTION
-</footer>
-</aside>
-}
+{isStage && roomChat}
 </div>
 <div className="ufx-call-toolbar">
 <div>
@@ -641,6 +645,9 @@ PREVIEW
 </button>
 }
 </div>
+</div>
+</div>
+{!isStage && roomChat}
 </div>
 {soundBlocked &&
 <button type="button" className="ufx-audio-unlock" onClick={() => { setUnlocked((value) => value + 1); setSoundBlocked(false); }}>

@@ -238,7 +238,7 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 @media (max-width:500px) { .ufx-sidebar { padding:10px 13px; gap:9px; } .ufx-sidebar nav a { padding:8px 10px; } .ufx-intro { flex-direction:column; gap:22px; margin-bottom:24px; } .ufx-intro h1 { font-size:49px; } .ufx-intro p { max-width:100%; font-size:12px; } .ufx-mood { width:100%; padding:0; } .ufx-mood>span { text-align:left; } .ufx-mood>div { width:100%; } .ufx-mood button { flex:1; height:36px; font-size:9px; } .ufx-room-strip { flex-wrap:wrap; } .ufx-room-strip .ufx-primary,.ufx-connected { width:100%; min-height:38px; } .ufx-stage-frame { min-height:290px; aspect-ratio:5/4; } .ufx-scene { padding:22% 8%; } .ufx-scene h2 { font-size:42px; } .ufx-scene p { font-size:10px; max-width:225px; } .ufx-call-toolbar { padding:9px; gap:5px; } .ufx-call-toolbar>div { gap:4px; } .ufx-call-toolbar button { padding:0 8px; font-size:6px; } .ufx-call-toolbar button>span { display:none; } .ufx-call-toolbar button>svg { width:16px; height:16px; } .ufx-people { padding:16px; } .ufx-people-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ufx-profile-card { gap:12px; } .ufx-profile-card .ufx-avatar-large { width:49px; height:49px; } .ufx-profile-card h3 { font-size:20px; } .ufx-profile-card button { padding:8px; font-size:6px; } .ufx-page-footer { font-size:6px; gap:10px; letter-spacing:0; } .ufx-mail-empty { min-height:310px; } .ufx-dialog h2 { font-size:31px; } .ufx-network .ufx-dialog { padding:20px; } .ufx-membership-note { flex-wrap:wrap; } .ufx-waiting-room article { flex-wrap:wrap; } .ufx-toast { font-size:10px; width:max-content; } }
 @media (prefers-reduced-motion:reduce) { .ufx-network * { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
 
-/* Chat is part of the video surface; MyRoom gives the camera its full width. */
+/* Stage keeps its chat overlay; MyRoom uses the compact camera/chat workspace below. */
 .ufx-main-column { min-width:0; }
 .ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr) 320px; }
 .ufx-stage-details { display:grid; gap:20px; min-width:0; }
@@ -393,4 +393,35 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
   .ufx-profile-dialog form { gap:10px; max-height:calc(100dvh - 54px); }
   .ufx-network .ufx-profile-dialog h2 { font-size:27px; }
   .ufx-profile-fields { gap:9px 8px; }
+}
+
+/* MyRoom: a smaller camera, with an optional chat dock alongside it. */
+.ufx-camera-surface { min-width:0; }
+.ufx-space-myroom .ufx-camera-row { --ufx-camera-width:min(700px,88dvh); display:grid; grid-template-columns:minmax(0,1fr); gap:14px; width:min(100%,var(--ufx-camera-width)); margin:0 auto 23px; align-items:stretch; }
+.ufx-space-myroom .ufx-camera-row.has-chat { width:min(100%,calc(var(--ufx-camera-width) + 314px)); grid-template-columns:minmax(0,1fr) 300px; }
+.ufx-space-myroom .ufx-stage-frame { aspect-ratio:16/9; min-height:0; max-height:none; }
+.ufx-space-myroom .ufx-camera-surface .ufx-call-toolbar { margin:10px 0 0; padding:9px; }
+.ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { contain:size; min-width:0; min-height:0; height:auto; background:linear-gradient(160deg,#121b2a,#0a0e17); border-color:color-mix(in srgb,var(--accent) 35%,var(--line)); box-shadow:inset 0 1px 0 #ffffff08,0 12px 32px #0004; }
+.ufx-space-myroom .ufx-scene { padding:50px 8% 24px; }
+.ufx-space-myroom .ufx-scene h2 { font-size:clamp(25px,3vw,42px); margin:12px 0; }
+.ufx-space-myroom .ufx-scene p { font-size:11px; line-height:1.6; max-width:260px; }
+.ufx-space-myroom .ufx-scene-mark { font-size:clamp(110px,15vw,190px); }
+.ufx-space-myroom .ufx-work-grid.is-theater .ufx-camera-row { --ufx-camera-width:min(920px,115dvh); }
+.ufx-space-myroom .ufx-camera-row:fullscreen { width:100%; height:100dvh; margin:0; padding:20px; background:var(--page); align-content:center; }
+.ufx-space-myroom .ufx-camera-row:fullscreen .ufx-stage-frame { aspect-ratio:auto; height:calc(100dvh - 110px); border-radius:10px; }
+@media (max-width:700px) {
+  .ufx-space-myroom .ufx-camera-row,.ufx-space-myroom .ufx-camera-row.has-chat { width:min(100%,480px); grid-template-columns:minmax(0,1fr); gap:10px; }
+  .ufx-space-myroom .ufx-stage-frame { aspect-ratio:4/3; min-height:0; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { height:min(320px,48dvh); }
+  .ufx-space-myroom .ufx-frame-top { inset:10px 10px auto; gap:6px; }
+  .ufx-space-myroom .ufx-frame-top>span { padding:6px; font-size:8px; letter-spacing:0; }
+  .ufx-space-myroom .ufx-frame-actions { gap:4px; }
+  .ufx-space-myroom .ufx-frame-actions button { width:26px; height:28px; }
+  .ufx-space-myroom .ufx-frame-actions .ufx-chat-toggle { width:auto; padding:0 7px; gap:4px; font-size:8px; }
+  .ufx-space-myroom .ufx-frame-actions svg { width:15px; height:15px; }
+  .ufx-space-myroom .ufx-scene h2 { font-size:30px; }
+  .ufx-space-myroom .ufx-scene p { font-size:10px; }
+  .ufx-space-myroom .ufx-camera-row:fullscreen { padding:12px; }
+  .ufx-space-myroom .ufx-camera-row:fullscreen.has-chat .ufx-stage-frame { height:36dvh; }
+  .ufx-space-myroom .ufx-camera-row:fullscreen.has-chat>.ufx-chat-panel { height:36dvh; }
 }
