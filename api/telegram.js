@@ -682,7 +682,7 @@ function telegramFxPanelKeyboard(usernameNormalized, mask) {
   const priv = buttonFor("ᴘʀɪᴠ", 8);
   const group = buttonFor("ɢʀᴏᴜᴘ", 16);
   const save = Markup.button.callback("💾 ꜱᴀᴠᴇ", `tfx_save_${usernameNormalized}_${mask}`);
-  const revoke = Markup.button.callback("⛔ ʀᴇᴠᴏᴋᴇ ᴀʟʟ", `tfx_revoke_${usernameNormalized}_0`);
+  const revoke = Markup.button.callback("⛔ ᴇxᴘᴜʟꜱᴀʀ", `tfx_revoke_${usernameNormalized}_0`);
   return Markup.inlineKeyboard([[telegramfx], [gallery, chat], [priv, group], [save, revoke]]);
 }
 async function telegramFxRequest(pathname, options = {}) {
