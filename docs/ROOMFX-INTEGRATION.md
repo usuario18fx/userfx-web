@@ -84,12 +84,24 @@ necessarily delivered to authenticated participants to establish the call.
 Without TURN, peer-to-peer calls depend on the participants' networks allowing
 a direct connection. No TURN provider was provisioned during this integration.
 
-The Vite middleware in `scripts/roomfx-vite.mjs` runs `/api/room-live` and
-`/api/account` locally, using server-only environment variables. It requires an
-actual local vault cookie and account. The existing development access-screen
-fixture does not grant access to the new server API. Use `vercel dev` for the
-complete local login flow, or use the deployed Preview with an existing access
-code. Production never reads a client-side access flag as authorization.
+The Vite middleware in `scripts/roomfx-vite.mjs` runs the real vault and room
+handlers locally: `/api/access-session`, `/api/verify`, `/api/identity`,
+`/api/telegram-eligibility`, `/api/handoff`, `/api/room-live` and `/api/account`.
+The access gate and room API validate the same server-backed cookie. There is
+no automatic development login or browser fetch override.
+
+For local use, back up any existing `.env.local`, then pull the project's
+Development variables with `vercel env pull .env.local` (after `vercel link`)
+and restart `npm run dev`. `REDIS_URL` is required; `CODE_ENGINE_NAMESPACE`
+defaults to the existing `userfx:vault` namespace. SPCL lookup also requires
+`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. They remain server-only and must
+not receive a `VITE_` prefix. Open `http://localhost:5173/#/private-room` and
+verify an access code or Telegram identity in that browser. Cookies from the
+hosted site do not authenticate localhost. A SPCL code is still single-use;
+request a fresh one from the bot when needed. Production uses its existing API
+handlers and never reads a client-side access flag as authorization.
+Paid-code verification confirms `/api/access-session` before opening the room
+so the newly issued cookie is associated with its persistent account.
 
 ## Storage and boundaries
 
@@ -151,3 +163,9 @@ comments, directory search and visibility, theater layout, Stage participants an
 navigation, profile editing and a 390px
 mobile layout. Synthetic camera verification does not replace testing two
 physical devices on different networks or TURN infrastructure.
+
+Local access checks use disposable Redis codes and a mocked Supabase allowlist
+through the real Vite API handlers. They cover anonymous/invalid-code rejection,
+paid-code and mobile SPCL login, HttpOnly cookies, reloads, MyRoom/Stage entrance,
+sign-out, SPCL single-use handling and cross-origin write rejection. No live
+Telegram message or shared account is used for these checks.

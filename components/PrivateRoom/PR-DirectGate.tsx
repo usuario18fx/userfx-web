@@ -261,18 +261,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     }
   }
 
-  /* ─────   LOCAL DEV ACCESS ─────── */
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-
-    const previewGate = new URLSearchParams(window.location.search).get("preview") === "gate" || forceGate;
-
-    setAuthenticated(!previewGate);
-
-    setChecking(false);
-  }, [forceGate]);
-
   /* ─────   SAVED TELEGRAM USERNAME ─────── */
 
   useEffect(() => {
@@ -423,8 +411,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   /* ─────   EXISTING ACCESS SESSION ─────── */
 
   useEffect(() => {
-    if (import.meta.env.DEV) return;
-
     if (forceGate) {
       setAuthenticated(false);
 
@@ -496,7 +482,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }, [forceGate]);
 
   useEffect(() => {
-    if (import.meta.env.DEV || forceGate || checking || authenticated) return;
+    if (forceGate || checking || authenticated) return;
     if (sessionRestoreAttemptedRef.current) return;
 
     sessionRestoreAttemptedRef.current = true;
@@ -725,6 +711,18 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
         return;
       }
 
+      const sessionResponse = await fetch("/api/access-session", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const sessionData: SessionResponse = await sessionResponse.json().catch(() => ({}));
+
+      if (!sessionResponse.ok || !sessionData?.authenticated) {
+        throw new Error(sessionData?.error || "PRIVATE SESSION COULD NOT BE CONFIRMED");
+      }
+
       const fullCode = `${normalizedPrefix}-${normalizedSuffix}`;
 
       try {
@@ -771,24 +769,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     /* reset Telegram-return mode for manual checks */
 
     returningIdentityRef.current = false;
-
-    /* ───── LOCAL DEV TELEGRAM VERIFY ───── */
-
-    if (import.meta.env.DEV && normalizedUsername.toLowerCase() === "@user18fx") {
-      setTelegramUsername(normalizedUsername);
-
-      setTelegramVerified(true);
-
-      setUsernameRemembered(true);
-
-      setTelegramError("");
-
-      setSpecialCode("");
-
-      rememberTelegramUsername(normalizedUsername);
-
-      return;
-    }
 
     if (!normalizedUsername) {
       setTelegramError("ENTER A VALID TELEGRAM USERNAME");
