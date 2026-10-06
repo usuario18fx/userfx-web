@@ -41,13 +41,13 @@ screens through their existing component paths and hash navigation.
   Profile and membership use the current authenticated account. Rewards shows
   an empty state; no rewards service existed behind the previous button.
   Header appearance lives in `components/PrivateRoom/PR-TopNav.css`:
-  `.pvr-club-cam` uses the `--cam-*` color variables (blue enamel),
-  `.pvr-club-reward` uses `--reward-*` (iridescent rim), and
-  `.pvr-club-logout` uses `--logout-*` (graphite/ruby). Each color block is
-  labeled near the end of the file. `--cam-live` colors the live camera dot;
-  `--reward-rim-blue/violet/pink/gold` define the reward border, and
-  `--logout-accent` colors the exit dot/icon. Profile and crown retain their
-  original `.pvr-club-profile` and `.pvr-club-membership` gradient styles.
+  `.pvr-club-cam` uses `--cam-background/text/border/dot/live` (original
+  dark button and gray status dot), `.pvr-club-reward` uses
+  `--reward-background/hover/text/coin/coin-border` (original blue gift), and
+  `.pvr-club-logout` uses `--logout-background/text/border/hover/hover-text/hover-border`
+  (original dark red). Edit these variables in their labeled existing blocks;
+  do not append competing overrides. Profile and crown retain their original
+  `.pvr-club-profile` and `.pvr-club-membership` gradient styles.
 - Gallery: the configured private album (five BASIC, three PRO and four VIP
   files), opened explicitly from closed album cards. BSIC opens only BASIC,
   PRX0 only PRO and VIPX only VIP. SPCL grants club entrance, not photo access,

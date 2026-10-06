@@ -1,6 +1,5 @@
           import { useEffect, useState } from "react";
-import "./PR-TopNav.css";
-import { Icon } from "./RoomFX/shared";
+          import "./PR-TopNav.css";
 
           const NAV_ITEMS = [
             { label: "INICIO", route: "#/" },
@@ -116,9 +115,8 @@ import { Icon } from "./RoomFX/shared";
             <strong>{accessLabel}</strong>
           </button>
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
-            <span className="pvr-cam-icon"><Icon name="camera" size={16} /></span>
-            <span className="pvr-cam-label">{cameraLive ? "ONCAM" : "OFFCAM"}</span>
-            <span className="pvr-cam-dot" />
+            <span className="pvr-cam-dot" aria-hidden="true" />
+            {cameraLive ? "ONCAM" : "OFFCAM"}
           </button>
           <button type="button" className="pvr-club-reward" aria-label="Rewards" onClick={onRewards}>
             <span className="pvr-reward-icon-container">
@@ -138,7 +136,6 @@ import { Icon } from "./RoomFX/shared";
             <span className="pvr-reward-text">
             Rewards
             </span>
-            <span className="pvr-reward-star" aria-hidden="true">✦</span>
           </button>
           <button type="button" className="pvr-club-profile" aria-label="Edit your profile" onClick={onProfile}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -157,9 +154,7 @@ import { Icon } from "./RoomFX/shared";
             </button>
           )}
           <button type="button" className="pvr-club-logout" onClick={onLogout}>
-            <span className="pvr-logout-dot" aria-hidden="true" />
-            <span>LOG OUT</span>
-            <span className="pvr-logout-icon"><Icon name="leave" size={15} /></span>
+            LOG OUT
           </button>
         </div>
       </div>
