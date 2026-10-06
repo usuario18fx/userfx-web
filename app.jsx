@@ -1,14 +1,11 @@
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
-          import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
 import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
           import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
-          import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
+          import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
           import PrivateRoomProfiles from "./components/PrivateRoom/PR-Profiles";
           import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
-          import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
-          import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -31,8 +28,8 @@ function PrivateRoomRoute({ route }) {
   if (route.split("?")[0] === "#/private-room/stage") return (
 <PrivateRoomStage />
 );
-  if (route === "#/private-room/gallery") return (
-<PrivateRoomGallery />
+  if (route.split("?")[0] === "#/private-room/gallery") return (
+<RoomNetwork space="gallery" />
 );
   if (route.split("?")[0] === "#/private-room/buzon") return (
 <PrivateRoomBuzon />
@@ -130,25 +127,15 @@ export default function App() {
   if (route === "#/private-room-access") {
     return (
 <>
-<PrivateRoomLiveShell />
+<PrivateRoomDirectGate><PrivateRoomMyRoom /></PrivateRoomDirectGate>
 </>
-    );
-  }
-  if (route.startsWith("#/private-room") && route.split("?")[0] !== "#/private-room/gallery") {
-    return (
-<PrivateRoomDirectGate>
-<PrivateRoomRoute key={route} route={route} />
-</PrivateRoomDirectGate>
     );
   }
   if (route.startsWith("#/private-room")) {
     return (
-<>
-<PrivateRoomTopNav />
-<PrivateRoomLiveShell />
-<PrivateRoomRoute route={route} />
-<PrivateRoomCameraEnhancer />
-</>
+<PrivateRoomDirectGate>
+<PrivateRoomRoute key={route} route={route} />
+</PrivateRoomDirectGate>
     );
   }
   return (

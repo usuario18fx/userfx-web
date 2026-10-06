@@ -6,8 +6,10 @@ import Preview from "./Preview";
 import RoomFeed from "./RoomFeed";
 import ProfileDirectory from "./ProfileDirectory";
 import UpcomingEvents from "./UpcomingEvents";
+import PrivateRoomTopNav from "../PR-TopNav";
+import PrivateRoomGallery from "../PR-Gallery";
 import "./RoomNetwork.css";
-type Space = "myroom" | "stage" | "buzon" | "profiles";
+type Space = "myroom" | "stage" | "buzon" | "profiles" | "gallery";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
 export default function RoomNetwork({ space }: { space: Space }) {
   const [client] = useState(createClientId);
@@ -60,6 +62,8 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [toast, setToast] = useState("");
   const [preview, setPreview] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [info, setInfo] = useState<"membership" | "rewards" | "">("");
+  const infoDialog = useRef<HTMLDialogElement>(null);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility });
   const [theater, setTheater] = useState(() => { try { return localStorage.getItem("userfx_room_view") === "theater"; } catch { return false; } });
@@ -80,6 +84,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const isStage = space === "stage";
   const isInbox = space === "buzon";
   const isDirectory = space === "profiles";
+  const isGallery = space === "gallery";
   const approved = state?.room.approved || false;
   const myRoom = initial.myRoom.id;
   const notify = useCallback((message: string) => setToast(message), []);
@@ -88,8 +93,18 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   useEffect(() => { try { localStorage.setItem("userfx_room_view", theater ? "theater" : "default"); } catch {} }, [theater]);
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(""), 4000); return () => clearTimeout(timer); }, [toast]);
   useEffect(() => { if (editing) editor.current?.showModal(); }, [editing]);
+  useEffect(() => { if (info) infoDialog.current?.showModal(); }, [info]);
   useEffect(() => {
-    if (isDirectory) return;
+    if (isDirectory || isInbox || isGallery) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.ctrlKey || event.altKey || event.metaKey || event.repeat || (event.target instanceof Element && event.target.closest("input,textarea,select,[contenteditable=true]"))) return;
+      if (event.key.toLowerCase() === "c") { event.preventDefault(); setChatOpen((value) => !value); }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isDirectory, isInbox, isGallery]);
+  useEffect(() => {
+    if (isDirectory || isGallery) return;
     let active = true;
     let pending = false;
     const controller = new AbortController();
@@ -119,7 +134,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
     void refresh();
     const timer = setInterval(() => void refresh(), 5000);
     return () => { active = false; controller.abort(); clearInterval(timer); };
-  }, [client, roomId, profile.paidChat, isInbox, isDirectory, refreshToken, call.leave]);
+  }, [client, roomId, profile.paidChat, isInbox, isDirectory, isGallery, refreshToken, call.leave]);
   useEffect(() => {
     if (!chatLoaded) return;
     if (messageIds.current && !chatOpen) {
@@ -186,6 +201,9 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const available = people.filter((person) => person.cameraOn && (person.id === profile.id ? call.localStream?.getVideoTracks().length : call.remoteStreams[person.id]?.getVideoTracks().length));
   const spotlight = available.find((person) => person.id === selected) || available.find((person) => person.id !== profile.id) || (call.cameraOn ? self : null);
   const spotlightStream = spotlight?.id === profile.id ? call.localStream : spotlight ? call.remoteStreams[spotlight.id] : null;
+  const stageMain = people.find((person) => person.id === selected) || people.find((person) => person.isHost) || [...people].sort((a, b) => a.joinedAt.localeCompare(b.joinedAt) || a.id.localeCompare(b.id))[0];
+  const stageGuests = people.filter((person) => person.id !== stageMain?.id);
+  const stageStream = stageMain?.id === profile.id ? call.localStream : stageMain ? call.remoteStreams[stageMain.id] : null;
   const status = state?.room.status;
   const waiting = state?.waiting || [];
   const canMessage = approved && profile.paidChat;
@@ -243,118 +261,24 @@ The next good conversation starts with you.
 </section>
   );
   return (
-<div className={`ufx-network ufx-mood-${mood}`}>
-<aside className="ufx-sidebar">
-<a href="#/private-room" className="ufx-brand" aria-label="UserFX MyRoom">
-<span className="ufx-brand-mark">
-FX
-</span>
-<span>
-<strong>
-USER FX
-</strong>
-<small>
-PRIVATE CONNECTIONS
-</small>
-</span>
-</a>
-<div className="ufx-nav-caption">
-YOUR UNIVERSE
-</div>
-<nav aria-label="Private Room navigation">
-{([{ name: "myroom", title: "MyRoom", subtitle: "Your space. Your rules.", href: "#/private-room", icon: "home" }, { name: "stage", title: "Stage", subtitle: "Meet in the moment.", href: "#/private-room/stage", icon: "stage" }, { name: "profiles", title: "Profiles", subtitle: "Discover your people.", href: "#/private-room/profiles", icon: "people" }, { name: "gallery", title: "Gallery", subtitle: "Inside the vault.", href: "#/private-room/gallery", icon: "gallery" }, { name: "buzon", title: "Buzón", subtitle: "Invitations & conversations.", href: "#/private-room/buzon", icon: "inbox" }]).map((item) => (
-<a key={item.name} href={item.href} className={space === item.name ? "is-active" : ""} aria-label={`${item.title} ${item.subtitle}`} aria-current={space === item.name ? "page" : undefined}>
-<Icon name={item.icon} size={20} />
-<span>
-<strong>
-{item.title}
-</strong>
-<small>
-{item.subtitle}
-</small>
-</span>
-{space === item.name &&
-<i />
-}
-</a>
-    ))}
-</nav>
-<div className="ufx-sidebar-note">
-<Icon name="shield" size={24} />
-<strong>
-By invitation.
-<br />
-By connection.
-</strong>
-<p>
-Your room opens only to guests you approve.
-</p>
-<button type="button" onClick={() => void navigator.clipboard.writeText(roomLink(myRoom)).then(() => notify("Your room invitation copied.")).catch(() => notify("Clipboard unavailable."))}>
-INVITE SOMEONE
-<Icon name="arrow" size={14} />
-</button>
-</div>
-<button type="button" className="ufx-account" onClick={editProfile}>
-<Avatar name={profile.name} />
-<span>
-<strong>
-{profile.name}
-</strong>
-<small>
-{profile.planId.toUpperCase()}
-· EDIT PROFILE
-</small>
-</span>
-<Icon name="profile" size={16} />
-</button>
-<div className="ufx-sidebar-links">
-<a href="https://user18fx.com">
-HOME ↗
-</a>
-<button type="button" onClick={() => void logout()}>
-SIGN OUT
-</button>
-</div>
-</aside>
+<div className={`ufx-network ufx-space-${space} ufx-mood-${mood}`}>
+<PrivateRoomTopNav cameraLive={call.cameraOn} accessLabel={profile.paidChat ? profile.planId.toUpperCase() : "SPCL"}
+ onCamera={() => {
+   if (isInbox || isDirectory || isGallery) { window.location.hash = "#/private-room"; return; }
+   if (call.joined) void call.toggleMedia("video");
+   else if (approved) setPreview(true);
+   else notify("Request entrance before starting your camera.");
+ }} onProfile={editProfile} onMembership={() => setInfo("membership")} onRewards={() => setInfo("rewards")} onLogout={() => void logout()} />
 <div className="ufx-body">
-<header className="ufx-topbar">
-<span>
-PRIVATE CLUB
-<i>
-/
-</i>
-{isStage ? "STAGE" : isInbox ? "BUZÓN" : isDirectory ? "PROFILES" : "MYROOM"}
-</span>
-<div>
-<span className={`ufx-live-status${call.joined ? " is-live" : ""}`}>
-<i />
-{call.joined ? "CONNECTED" : "YOUR SPACE"}
-</span>
-<button type="button" onClick={() => void copyInvite()}>
-<Icon name="link" size={16} />
-<span>
-SHARE ROOM
-</span>
-</button>
-</div>
-</header>
 <main className="ufx-main">
 <section className="ufx-intro">
 <div>
 <span className="ufx-eyebrow">
 USER FX ·
-{isStage ? "MAKE AN ENTRANCE" : isInbox ? "YOUR PRIVATE LINE" : isDirectory ? "FIND YOUR CIRCLE" : "ENTER YOUR ELEMENT"}
+{isStage ? "ROOMFX LIVE" : isGallery ? "PRIVATE COLLECTION" : isInbox ? "YOUR PRIVATE LINE" : isDirectory ? "FIND YOUR CIRCLE" : "ENTER YOUR ELEMENT"}
 </span>
 <h1>
-{isStage ?
-<>
-A little closer.
-<br />
-<em>
-A little more you.
-</em>
-</>
- : isDirectory ?
+{isStage ? "STAGE" : isGallery ? "GALLERY" : isDirectory ?
 <>
 Your people.
 <br />
@@ -381,7 +305,7 @@ Your rules.
 }
 </h1>
 <p>
-{isStage ? "Faces, voices, and the unexpected. Take your place on Stage." : isInbox ? "Manage invitations and continue conversations inside an approved room." : isDirectory ? "Shared interests. New connections. Every entrance still starts with an invitation." : "A room for your people. A mood for your moment. Let them in on your terms."}
+{isStage ? "One main camera. Five guest seats. Your shared moment." : isGallery ? "Your private album, with the access included in your membership." : isInbox ? "Manage invitations and continue conversations inside an approved room." : isDirectory ? "Shared interests. New connections. Every entrance still starts with an invitation." : "A room for your people. A mood for your moment. Let them in on your terms."}
 </p>
 </div>
 <MoodPicker mood={mood} onChange={setMood} />
@@ -391,7 +315,9 @@ Your rules.
 {error || call.error}
 </div>
 }
-{isDirectory ? (
+{isGallery ? (
+<PrivateRoomGallery planId={profile.planId} onMembership={() => setInfo("membership")} />
+) : isDirectory ? (
 <ProfileDirectory key={`${profile.visibility}:${profile.name}:${profile.location}:${profile.interests}`} client={client} onEdit={editProfile} />
 ) : isInbox ? (
 <section className="ufx-mailbox">
@@ -513,8 +439,27 @@ YOU'RE IN
 }
 <div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
-<div className={`ufx-stage-frame${spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
-{spotlightStream && spotlight ?
+<div className={`ufx-stage-frame${isStage ? " ufx-stage-board" : ""}${!isStage && spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
+{isStage ?
+<div className="ufx-stage-grid" aria-label="Stage camera layout">
+<article className="ufx-stage-main" aria-label="Main stage camera">
+<span className="ufx-seat-tag">MAIN CAM</span>
+{stageStream && stageMain?.cameraOn ? <VideoStream stream={stageStream} mirrored={stageMain.id === profile.id} /> : stageMain ? <Avatar name={stageMain.name} large /> : <span className="ufx-avatar ufx-avatar-large" aria-label="UserFX Stage">FX</span>}
+<footer><strong>{stageMain ? `${stageMain.name}${stageMain.id === profile.id ? " · YOU" : ""}` : "Your place on Stage"}</strong><small>{stageMain ? stageMain.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "WAITING FOR PARTICIPANTS"}</small></footer>
+</article>
+<div className="ufx-stage-guests">
+{Array.from({ length: 5 }, (_, index) => {
+ const person = stageGuests[index];
+ const stream = person?.id === profile.id ? call.localStream : person ? call.remoteStreams[person.id] : null;
+ return <button type="button" key={person?.id || `seat-${index}`} className="ufx-stage-seat" disabled={!person} aria-label={person ? `Spotlight ${person.name}` : `Available stage seat ${index + 2}`} onClick={() => person && setSelected(person.id)}>
+ <span className="ufx-seat-tag">{person?.id === profile.id ? "YOUR CAM" : `SEAT ${index + 2}`}</span>
+ {stream && person?.cameraOn ? <VideoStream stream={stream} mirrored={person.id === profile.id} /> : <Avatar name={person?.name || `${index + 2}`} large />}
+ <span className="ufx-seat-copy"><strong>{person ? `${person.name}${person.id === profile.id ? " · YOU" : ""}` : "Available seat"}</strong><small>{person ? person.cameraOn ? "CAMERA ON" : "CAMERA OFF" : "JOIN THE MOMENT"}</small></span>
+ </button>;
+})}
+</div>
+</div>
+ : spotlightStream && spotlight ?
 <VideoStream stream={spotlightStream} mirrored={spotlight.id === profile.id} />
  :
 <div className="ufx-scene">
@@ -553,7 +498,7 @@ at home.
 <div className="ufx-frame-top">
 <span>
 <i className={call.joined ? "is-live" : ""} />
-{call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
+{isStage ? call.joined ? "ROOMFX LIVE" : "ROOMFX · STAGE READY" : call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
 </span>
 <div className="ufx-frame-actions">
 <button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
@@ -575,7 +520,7 @@ CHAT
 </button>
 </div>
 </div>
-{spotlight &&
+{!isStage && spotlight &&
 <div className="ufx-frame-bottom">
 <Avatar name={spotlight.name} />
 <strong>
@@ -793,6 +738,13 @@ USER FX · MADE FOR YOUR MOMENT
 <Icon name="close" size={14} />
 </button>
 </div>
+}
+{info &&
+<dialog ref={infoDialog} className="ufx-dialog" onCancel={() => setInfo("")} aria-labelledby="ufx-info-title">
+<div className="ufx-dialog-head"><span>USER FX · PRIVATE CLUB</span><button type="button" aria-label="Close account details" onClick={() => setInfo("")}><Icon name="close" /></button></div>
+<h2 id="ufx-info-title">{info === "membership" ? "Your membership" : "Rewards"}</h2>
+{info === "membership" ? <><p>{profile.name} · {profile.paidChat ? profile.planId.toUpperCase() : "SPCL IDENTITY ACCESS"}</p><p>{profile.paidChat ? "Private gallery, rooms and member chat are included in your active access." : "Your identity opens the rooms and gallery. Private chat requires a paid membership."}</p><a className="ufx-primary ufx-wide" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">VIEW ACCESS OPTIONS ↗</a></> : <><p>No rewards are available yet.</p><p>New rewards will appear here when they are published.</p></>}
+</dialog>
 }
 {preview &&
 <Preview onClose={() => setPreview(false)} onJoin={(options) => { setPreview(false); void call.join(options); }} />

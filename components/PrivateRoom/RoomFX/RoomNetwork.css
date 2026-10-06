@@ -321,3 +321,35 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 @media (max-width:1150px) { .ufx-directory-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:760px) { .ufx-directory { padding:17px; } .ufx-work-grid.is-theater .ufx-stage-frame { min-height:290px; aspect-ratio:16/10; } }
 @media (max-width:500px) { .ufx-sidebar nav { gap:2px; } .ufx-sidebar nav a { padding:8px; } .ufx-directory-grid { grid-template-columns:minmax(0,1fr); } .ufx-directory .ufx-section-head { flex-wrap:wrap; gap:16px; } .ufx-directory-tools { gap:6px; flex-wrap:wrap; } .ufx-directory-tools input { flex-basis:100%; } .ufx-directory-visual { min-height:135px; } .ufx-work-grid.is-theater .ufx-stage-frame { aspect-ratio:5/4; } .ufx-work-grid.is-theater .ufx-stage-details { grid-template-columns:minmax(0,1fr); } .ufx-post>footer button { padding:7px; font-size:8px; } }
+
+/* One club header, with the stage layout requested for RoomFX. */
+.ufx-network { flex-direction:column; }
+.ufx-network .ufx-dialog { max-height:calc(100dvh - 32px); overflow:auto; }
+.ufx-network .ufx-dialog p+p { margin-top:16px; }
+.ufx-work-grid.is-stage { grid-template-columns:minmax(0,1fr); }
+.ufx-stage-details { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; }
+.ufx-stage-frame.ufx-stage-board { aspect-ratio:auto; min-height:620px; padding:64px 18px 18px; background:linear-gradient(180deg,#071621,#060b10); border-color:#208bb74d; }
+.ufx-stage-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1.65fr); gap:18px; min-height:540px; }
+.ufx-stage-main,.ufx-network .ufx-stage-seat { position:relative; display:grid; place-items:center; overflow:hidden; min-width:0; border:1px solid #2395bf52; border-radius:3px; background:linear-gradient(155deg,#09202b66,#040a10); }
+.ufx-stage-main>.ufx-avatar { width:100px; height:100px; color:#24b9f5; border:1px solid #24b9f56b; background:#09212e66; font:32px var(--mono); }
+.ufx-stage-main>video,.ufx-stage-seat>video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.ufx-stage-guests { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(3,minmax(160px,1fr)); gap:14px; }
+.ufx-network .ufx-stage-seat { padding:0; color:#24b9f5; text-align:left; }
+.ufx-network .ufx-stage-seat:disabled { opacity:1; border-color:#208bb724; cursor:default; }
+.ufx-stage-seat:last-child { grid-column:1/-1; }
+.ufx-stage-seat>.ufx-avatar { width:64px; height:64px; font:22px var(--mono); color:#24b9f5; border-color:#24b9f552; background:#09212e44; }
+.ufx-stage-seat:disabled>.ufx-avatar { color:#23718e; border-color:#164b6066; }
+.ufx-seat-tag { position:absolute; top:12px; left:12px; z-index:1; padding:5px 9px; color:#24b9f5; border:1px solid #24b9f54d; border-radius:20px; background:#05101bda; font:8px var(--mono); letter-spacing:.08em; }
+.ufx-stage-main>footer,.ufx-seat-copy { position:absolute; bottom:12px; left:12px; right:12px; z-index:1; display:flex; flex-direction:column; gap:5px; padding:9px 11px; width:fit-content; max-width:calc(100% - 24px); background:#03070be6; border-radius:6px; }
+.ufx-stage-main>footer strong,.ufx-seat-copy strong { font-size:11px; overflow-wrap:anywhere; color:#e7eef8; }
+.ufx-stage-main>footer small,.ufx-seat-copy small { font:7px var(--mono); color:#718ba0; }
+.ufx-work-grid.is-theater .ufx-stage-board { aspect-ratio:auto; max-height:none; }
+.ufx-stage-board:fullscreen { height:100dvh; display:flex; flex-direction:column; }
+.ufx-stage-board:fullscreen .ufx-stage-grid { flex:1; min-height:0; }
+@media (max-width:760px) { .ufx-stage-grid { grid-template-columns:minmax(0,1fr); min-height:0; } .ufx-stage-main { min-height:300px; } .ufx-stage-guests { grid-template-rows:repeat(3,minmax(150px,1fr)); } .ufx-stage-frame.ufx-stage-board { min-height:0; padding:58px 12px 12px; } .ufx-stage-details { grid-template-columns:minmax(0,1fr); } }
+@media (max-width:500px) { .ufx-stage-main { min-height:290px; } .ufx-stage-main>.ufx-avatar { width:76px; height:76px; } .ufx-stage-guests { gap:10px; } .ufx-seat-tag { font-size:6px; top:9px; left:9px; } .ufx-seat-copy { bottom:8px; left:8px; padding:7px; } .ufx-seat-copy strong { font-size:9px; } }
+.ufx-space-stage .ufx-intro { padding:26px; border:1px solid #208bb74d; border-radius:3px; background:linear-gradient(120deg,#0b202e,#081019); }
+.ufx-space-stage .ufx-intro h1 { font:600 clamp(38px,4vw,60px)/1.1 var(--mono); letter-spacing:.12em; }
+@media (max-width:500px) { .ufx-space-stage .ufx-intro { padding:20px; } }
+.ufx-work-grid.is-theater .ufx-stage-grid { grid-template-columns:minmax(0,2fr) minmax(0,1fr); }
+@media (max-width:760px) { .ufx-work-grid.is-theater .ufx-stage-grid { grid-template-columns:minmax(0,1fr); } }

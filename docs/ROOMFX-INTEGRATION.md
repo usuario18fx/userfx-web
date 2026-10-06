@@ -10,9 +10,10 @@ screens through their existing component paths and hash navigation.
   requests, host approval, camera and microphone controls, room chat and a social
   feed below the video. Only the host can publish/delete posts; approved guests
   can read them without joining a call.
-- Stage: member room with six seats, live participants, spotlight selection,
-  video, audio and chat. Participants and upcoming events remain in the Stage
-  details column, including the existing Friday session at 22:00 UTC. This is
+- Stage: member room with one large main camera and five guest seats, live
+  participants, spotlight selection, video, audio and chat. Participants and
+  upcoming events remain below the Stage, including the existing Friday
+  session at 22:00 UTC. This is
   the existing display schedule, not a new event booking backend.
 - Buzón: actual incoming/outgoing entrance requests and their current status;
   approved requests open the corresponding room and conversation.
@@ -34,6 +35,17 @@ screens through their existing component paths and hash navigation.
   parallel registration or public guest identity is introduced.
 - SPCL: entrance requests remain available; private chat retains the existing
   paid membership requirement.
+- Navigation: the original full My Room header, including camera, Rewards,
+  profile, membership and logout, now controls the new room views. All route
+  buttons stay on the current origin; INICIO returns to the same app's home.
+  Profile and membership use the current authenticated account. Rewards shows
+  an empty state; no rewards service existed behind the previous button.
+- Gallery: the configured private album (five BASIC, three PRO and four VIP
+  files), filtered by the active membership and fetched only through the
+  existing protected media endpoint. The viewer supports arrow keys, Escape
+  and retry for unavailable files. Sample films, invented activity and the
+  upload dialog that did not persist files have been removed. No private video
+  or upload service is added; the existing album API supports JPEG files.
 
 ## Architecture
 
@@ -44,7 +56,7 @@ screens through their existing component paths and hash navigation.
 | `#/private-room/stage` | Stage |
 | `#/private-room/buzon` | Invitations |
 | `#/private-room/profiles` | Opt-in member directory |
-| `#/private-room/gallery` | Existing Gallery integration |
+| `#/private-room/gallery` | Protected album in the shared room shell |
 | `/api/room-live` | Rewritten to `api/account.js?roomfx=1` for authenticated room requests |
 | `lib/room-live.js` | Redis storage and server authorization |
 | `lib/room-social.js` | Social interactions and directory visibility |
@@ -61,6 +73,9 @@ The new room URL shares the account function through a Vercel rewrite, keeping
 the deployment within the Hobby plan's 12-function limit.
 The legacy MyRoom/Stage/Buzón files now delegate to the shared module; the old
 CSS can remain in the repository without being imported by those wrappers.
+Gallery no longer mounts `PR-LiveShell` or `PR-CameraEnhancer`. Query parameters
+are ignored when selecting the page, so direct and button navigation resolve
+to the same view. The C key toggles room chat without intercepting typed input.
 
 The source ZIP used Next.js route handlers and PostgreSQL tables. Those routes
 were not copied into Vite. RoomFX uses the project's configured Redis service,
@@ -92,7 +107,8 @@ a direct connection. No TURN provider was provisioned during this integration.
 
 The Vite middleware in `scripts/roomfx-vite.mjs` runs the real vault and room
 handlers locally: `/api/access-session`, `/api/verify`, `/api/identity`,
-`/api/telegram-eligibility`, `/api/handoff`, `/api/room-live` and `/api/account`.
+`/api/telegram-eligibility`, `/api/handoff`, `/api/room-live`, `/api/account`
+and `/api/private-media` (including binary responses).
 The access gate and room API validate the same server-backed cookie. There is
 no automatic development login or browser fetch override.
 
@@ -116,6 +132,9 @@ printing their values. A placeholder downloaded from Vercel cannot authenticate
 to Redis or Supabase; retain the real local credentials from your backup rather
 than overwriting them with placeholders. Restart Vite after changing server
 environment variables.
+Local album requests also need `BLOB_READ_WRITE_TOKEN` from the project's
+private Blob store. It is loaded server-side without a `VITE_` prefix; media
+authorization, plan checks and server watermarks remain in `api/private-media.js`.
 
 ## Storage and boundaries
 
@@ -174,8 +193,11 @@ camera hardware and the real Redis-backed API. They cover room entrance,
 remote video, camera controls, chat overlay open/close and unread state, feed
 publication/persistence/guest access/deletion, account-level likes and paid
 comments, directory search and visibility, theater layout, Stage participants and events,
-navigation, profile editing and a 390px
-mobile layout. Synthetic camera verification does not replace testing two
+direct and button navigation on the same origin, full header controls,
+profile editing and 320/390/768/1280px layouts. The Gallery checks cover
+BASIC/PRO/VIP filtering, unauthorized/forbidden/invalid media requests,
+keyboard navigation and unavailable-file states. Viewer image responses are
+mocked; live Blob downloads require the configured private-store credentials. Synthetic camera verification does not replace testing two
 physical devices on different networks or TURN infrastructure.
 
 Local access checks use disposable Redis codes and a mocked Supabase allowlist

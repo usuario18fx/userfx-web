@@ -7,7 +7,7 @@ export function roomFxApi() {
     name: "userfx-room-api",
     async configureServer(server) {
       const environment = loadEnv(server.config.mode, server.config.envDir, "");
-      for (const name of ["REDIS_URL", "CODE_ENGINE_NAMESPACE", "ROOMFX_ICE_SERVERS", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "ADMIN_USER_ID", "USERFX_CANONICAL_URL"]) {
+      for (const name of ["REDIS_URL", "CODE_ENGINE_NAMESPACE", "ROOMFX_ICE_SERVERS", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "ADMIN_USER_ID", "USERFX_CANONICAL_URL", "BLOB_READ_WRITE_TOKEN"]) {
         const value = String(process.env[name] || environment[name] || "").trim();
         if (process.env[name] !== undefined || environment[name] !== undefined) process.env[name] = value;
       }
@@ -18,7 +18,7 @@ export function roomFxApi() {
       if (unavailable.length) {
         server.config.logger.warn(`[userfx-local-api] Missing local credentials: ${unavailable.join(", ")}. Check .env.local; a [SENSITIVE] placeholder is not a usable credential. SPCL requires all three variables.`);
       }
-      const paths = ["account", "access-session", "verify", "identity", "telegram-eligibility", "handoff"];
+      const paths = ["account", "access-session", "verify", "identity", "telegram-eligibility", "handoff", "private-media"];
       const handlers = new Map(await Promise.all(paths.map(async (name) => [`/api/${name}`, (await import(`../api/${name}.js`)).default])));
       handlers.set("/api/room-live", handlers.get("/api/account"));
       server.middlewares.use(async (req, res, next) => {
@@ -54,6 +54,7 @@ export function roomFxApi() {
           res.statusCode = status;
           return res;
         };
+        res.send = (value) => res.end(value);
         res.json = (value) => {
           res.setHeader("Content-Type", "application/json; charset=utf-8");
           res.end(JSON.stringify(value));
