@@ -154,8 +154,34 @@ try {
   assert.equal((await call("host", room, "posts", "POST", { content: "x".repeat(2001) })).status, 400);
   assert.equal((await call("host", room, "posts", "POST", { content: "CSRF" }, {}, { origin: "https://unrelated.invalid" })).status, 403);
   assert.ok((await redis.ttl(`${ns}:roomfx:posts:${room}`)) > 89 * 86400);
+  const id = post.data.post.id;
+  assert.equal((await call("stranger", room, "post-like", "POST", { id, liked: true })).status, 403);
+  assert.equal((await call("host", guest.myRoom.id, "post-like", "POST", { id, liked: true })).status, 403);
+  assert.equal((await call("guest", room, "post-like", "POST", { id, liked: true })).data.likeCount, 1);
+  assert.equal((await call("guest", room, "post-like", "POST", { id, liked: true }, { client: crypto.randomUUID() })).data.likeCount, 1);
+  assert.equal((await call("host", room, "post-like", "POST", { id, liked: true })).data.likeCount, 2);
+  assert.equal((await call("guest", room, "post-like", "POST", { id, liked: false })).data.likeCount, 1);
+  assert.equal((await call("guest", room, "post-like", "POST", { id })).status, 400);
+  assert.equal((await call("guest", room, "post-comment", "POST", { id, content: "Lovely moment" })).status, 201);
+  assert.equal((await call("guest", room, "post-comment", "POST", { id, content: "x".repeat(401) })).status, 400);
+  assert.equal((await call("stranger", room, "post-comment", "POST", { id, content: "blocked" })).status, 403);
+  await call("spcl", room, "request", "POST", {});
+  await call("host", room, "approve", "POST", { accountId: users.get("spcl").accountId, approved: true });
+  assert.equal((await call("spcl", room, "post-comment", "POST", { id, content: "blocked" })).status, 403);
+  assert.equal((await call("spcl", room, "posts")).data.posts[0].comments.length, 0);
+  assert.equal((await call("host", room, "posts")).data.posts[0].comments[0].content, "Lovely moment");
+  assert.equal((await call("host", room, "posts", "POST", { content: "image", imageUrl: "javascript:alert(1)" })).status, 400);
+  assert.equal((await call("host", room, "posts", "POST", { content: "image", imageUrl: "https://127.0.0.1/test.png" })).status, 400);
+  const image = await call("host", room, "posts", "POST", { content: "image", imageUrl: "https://images.example.com/photo.png" });
+  assert.equal(image.status, 201);
+  assert.equal(image.data.post.imageUrl, "https://images.example.com/photo.png");
+  await call("host", room, "remove-post", "POST", { id: image.data.post.id });
   assert.equal((await call("host", room, "remove-post", "POST", { id: post.data.post.id })).status, 200);
   assert.equal((await call("guest", room, "posts")).data.posts.length, 0);
+  assert.equal(await redis.exists(`${ns}:roomfx:likes:${room}:${id}`), 0);
+  assert.equal(await redis.exists(`${ns}:roomfx:comments:${room}:${id}`), 0);
+  assert.equal((await call("guest", room, "post-like", "POST", { id, liked: true })).status, 404);
+  passed("account-level likes are idempotent; comments enforce membership; deletion cleans interactions; image URLs are validated");
   passed("MyRoom posts persist with retention, remain private, and only the host can publish/delete");
 
   await call("host", room, "presence", "POST", { cameraOn: true, micOn: false });
@@ -192,6 +218,27 @@ try {
     409,
   );
   passed("signaling is recipient-scoped, cursor-based, temporary and requires active peers");
+
+  const joinedAt = (await call("host", room, "state")).data.participants[0].joinedAt;
+  await call("host", room, "presence", "POST", { cameraOn: true });
+  assert.equal((await call("host", room, "state")).data.participants[0].joinedAt, joinedAt);
+  assert.equal((await call("guest", "", "profiles")).data.profiles.some((person) => person.roomId === room), false);
+  users.get("host").profile = { displayName: "host", visibility: "members", location: "Madrid", interests: "Music, Cinema", onlineVisibility: "members" };
+  await call("host", "", "profiles");
+  const listed = (await call("guest", "", "profiles")).data.profiles.find((person) => person.roomId === room);
+  assert.equal(listed.location, "Madrid");
+  assert.equal(listed.isLive, true);
+  assert.equal(listed.cameraOn, true);
+  assert.equal(listed.viewers, 0);
+  assert.equal(listed.accountId, undefined);
+  users.get("host").profile.onlineVisibility = "hidden";
+  assert.equal((await call("guest", "", "profiles")).data.profiles.find((person) => person.roomId === room).isLive, false);
+  users.get("host").profile.visibility = "private";
+  // Even a stale directory entry cannot reveal a profile after opting out.
+  assert.equal((await call("guest", "", "profiles")).data.profiles.some((person) => person.roomId === room), false);
+  assert.equal((await call("host", "", "profiles")).data.profiles.find((person) => person.isMine).isLive, true);
+  assert.equal((await call(undefined, "", "profiles")).status, 401);
+  passed("directory opt-in and hidden online status are respected; authenticated self-view remains available; session duration survives heartbeat");
 
   const seats = await Promise.all(
     [...users.keys()].slice(0, 7).map((user) => call(user, "stage", "presence", "POST", {})),

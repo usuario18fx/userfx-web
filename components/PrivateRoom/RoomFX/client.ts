@@ -1,7 +1,9 @@
 export type Mood = "cine" | "arcade" | "vintage";
-export type Profile = { id: string; accountId: string; name: string; bio: string; planId: string; paidChat: boolean };
-export type Participant = { id: string; name: string; cameraOn: boolean; micOn: boolean };
-export type Post = { id: string; authorId: string; authorName: string; content: string; createdAt: string };
+export type Profile = { id: string; accountId: string; name: string; bio: string; location: string; interests: string; visibility: string; onlineVisibility: string; planId: string; paidChat: boolean };
+export type Participant = { id: string; name: string; cameraOn: boolean; micOn: boolean; isHost: boolean; joinedAt: string };
+export type PostComment = { id: string; authorId: string; authorName: string; content: string; createdAt: string };
+export type Post = { id: string; authorId: string; authorName: string; content: string; createdAt: string; imageUrl: string | null; likeCount: number; likedByMe: boolean; comments: PostComment[] };
+export type DirectoryProfile = { roomId: string; name: string; bio: string; location: string; interests: string; isMine: boolean; isLive: boolean; cameraOn: boolean; viewers: number };
 export type Message = { id: string; authorId: string; authorName: string; content: string; createdAt: string };
 export type Room = { id: string; ownerName: string; isOwner: boolean; approved: boolean; status: string; capacity: number };
 export type Invitation = { id: string; roomId: string; accountId: string; name: string; hostName: string; status: string; direction: "incoming" | "outgoing"; createdAt: string };

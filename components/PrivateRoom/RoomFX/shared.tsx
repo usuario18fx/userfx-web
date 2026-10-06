@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import type { Mood } from "./client";
 const paths: Record<string, string> = {
+  heart: "M12 21S2 15 2 8a5 5 0 0 1 10-1a5 5 0 0 1 10 1c0 7-10 13-10 13z",
+  people: "M3 21v-3a5 5 0 0 1 10 0v3M18 21v-3a5 5 0 0 0-3-4M4 6a4 4 0 1 0 8 0a4 4 0 1 0-8 0M16 2a4 4 0 0 1 0 8",
+  theater: "M2 5h20v14H2zM7 5v14M17 5v14",
   chat: "M4 4h16v12H9l-5 4V4zM8 8h8M8 12h5",
   calendar: "M3 5h18v16H3zM7 3v4M17 3v4M3 10h18",
   camera: "M15 10l5-3v10l-5-3M3 6h12v12H3z",

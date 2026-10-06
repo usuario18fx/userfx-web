@@ -4,6 +4,8 @@
           import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
           import { createRoomLiveHandler } from "../lib/room-live.js";
 
+          import { updateRoomDirectory } from "../lib/room-social.js";
+
           const roomLive = createRoomLiveHandler();
 
           const REDIS_URL = process.env.REDIS_URL;
@@ -195,6 +197,14 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "PATCH") {
+      let originHost;
+      try { originHost = req.headers.origin ? new URL(req.headers.origin).host : null; } catch { originHost = "invalid"; }
+      if (originHost && originHost !== String(req.headers.host || "")) {
+        return res.status(403).json({ error: "Request origin is not allowed." });
+      }
+      if (!String(req.headers["content-type"] || "").startsWith("application/json")) {
+        return res.status(415).json({ error: "JSON is required." });
+      }
       let body;
 
       try {
@@ -214,6 +224,7 @@ export default async function handler(req, res) {
           error: "ACCOUNT NOT FOUND",
         });
       }
+      await updateRoomDirectory(redis, (...parts) => `${CODE_ENGINE_NAMESPACE}:roomfx:${parts.join(":")}`, account);
     }
 
     return res.status(200).json({

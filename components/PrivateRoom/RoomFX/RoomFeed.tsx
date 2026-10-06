@@ -1,11 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { roomRequest, type Post, type Profile } from "./client";
+import { roomRequest, type Post, type PostComment, type Profile } from "./client";
 import { Avatar, Icon } from "./shared";
 
 export default function RoomFeed({ client, roomId, profile, approved, isOwner, onChat }: { client: string; roomId: string; profile: Profile; approved: boolean; isOwner: boolean; onChat: () => void }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [working, setWorking] = useState("");
+  const busy = !!working;
+  const [imageUrl, setImageUrl] = useState("");
+  const [comments, setComments] = useState<Record<string, string>>({});
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
@@ -18,9 +23,9 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
       pending = true;
       try {
         const result = await roomRequest<{ posts: Post[] }>(client, roomId, "posts", { signal: controller.signal });
-        if (!controller.signal.aborted) { setPosts(result.posts); setError(""); }
+        if (!controller.signal.aborted) { setPosts(result.posts); setLoadError(""); }
       } catch (cause) {
-        if (!controller.signal.aborted) setError((cause as Error).message);
+        if (!controller.signal.aborted) setLoadError((cause as Error).message);
       } finally {
         if (!controller.signal.aborted) setLoading(false);
         pending = false;
@@ -33,21 +38,45 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
   async function publish(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!text.trim() || busy) return;
-    setBusy(true); setError("");
+    setWorking("publish"); setError("");
     try {
-      await roomRequest(client, roomId, "posts", { method: "POST", body: { content: text.trim() } });
-      setText(""); setRevision((current) => current + 1);
+      await roomRequest(client, roomId, "posts", { method: "POST", body: { content: text.trim(), imageUrl: imageUrl.trim() } });
+      setText(""); setImageUrl(""); setRevision((current) => current + 1);
     } catch (cause) { setError((cause as Error).message); }
-    finally { setBusy(false); }
+    finally { setWorking(""); }
   }
   async function remove(id: string) {
     if (busy) return;
-    setBusy(true); setError("");
+    setWorking(id); setError("");
     try {
       await roomRequest(client, roomId, "remove-post", { method: "POST", body: { id } });
       setRevision((current) => current + 1);
     } catch (cause) { setError((cause as Error).message); }
-    finally { setBusy(false); }
+    finally { setWorking(""); }
+  }
+  async function like(post: Post) {
+    if (busy) return;
+    setWorking(post.id); setError("");
+    try {
+      const result = await roomRequest<{ likeCount: number; likedByMe: boolean }>(client, roomId, "post-like", { method: "POST", body: { id: post.id, liked: !post.likedByMe } });
+      setPosts((current) => current.map((item) => item.id === post.id ? { ...item, ...result } : item));
+      setRevision((current) => current + 1);
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setWorking(""); }
+  }
+  async function comment(event: FormEvent<HTMLFormElement>, post: Post) {
+    event.preventDefault();
+    const content = comments[post.id]?.trim();
+    if (!content || busy) return;
+    const submitted = comments[post.id];
+    setWorking(post.id); setError("");
+    try {
+      const result = await roomRequest<{ comment: PostComment }>(client, roomId, "post-comment", { method: "POST", body: { id: post.id, content } });
+      setPosts((current) => current.map((item) => item.id === post.id ? { ...item, comments: [...item.comments, result.comment].slice(-30) } : item));
+      setComments((current) => current[post.id] === submitted ? { ...current, [post.id]: "" } : current);
+      setRevision((current) => current + 1);
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setWorking(""); }
   }
   return (
 <section className="ufx-feed" aria-labelledby="ufx-feed-title">
@@ -65,9 +94,9 @@ Room feed
 INVITED CIRCLE
 </span>
 </div>
-{error &&
+{(error || loadError) &&
 <p className="ufx-warning" role="alert">
-{error}
+{error || loadError}
 </p>
 }
 {approved && isOwner &&
@@ -78,12 +107,19 @@ INVITED CIRCLE
 SHARE A MOMENT WITH YOUR PEOPLE
 </label>
 <textarea id="ufx-new-post" rows={3} maxLength={2000} placeholder="What's happening in your world?" value={text} onChange={(event) => setText(event.target.value)} disabled={busy} />
+<label htmlFor="ufx-post-image" className="ufx-image-label">
+IMAGE LINK · OPTIONAL
+</label>
+<input id="ufx-post-image" type="url" maxLength={1000} placeholder="https://…" value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} disabled={busy} />
+<p className="ufx-image-note">
+Use a public HTTPS image link. Images load from the linked site.
+</p>
 <footer>
 <span>
 {text.length} / 2000
 </span>
 <button type="submit" className="ufx-primary" disabled={!text.trim() || busy}>
-{busy ? "SAVING…" : "PUBLISH POST"}
+{working === "publish" ? "SAVING…" : "PUBLISH POST"}
 <Icon name="arrow" size={15} />
 </button>
 </footer>
@@ -138,16 +174,59 @@ ROOM POST
 <p>
 {post.content}
 </p>
+{post.imageUrl &&
+<img className="ufx-post-image" src={post.imageUrl} alt="Image shared with this room" loading="lazy" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />
+}
 <footer>
-<span>
-<Icon name="shield" size={13} />
-YOUR PRIVATE CIRCLE
-</span>
+<div className="ufx-post-reactions">
+<button type="button" aria-label={post.likedByMe ? "Unlike post" : "Like post"} aria-pressed={post.likedByMe} disabled={busy} onClick={() => void like(post)}>
+<Icon name="heart" size={16} />
+{post.likeCount}
+</button>
+<button type="button" aria-label="Post comments" aria-expanded={!!expanded[post.id]} onClick={() => setExpanded((current) => ({ ...current, [post.id]: !current[post.id] }))}>
+<Icon name="chat" size={16} />
+{profile.paidChat ? post.comments.length : "COMMENTS"}
+</button>
+</div>
 <button type="button" onClick={onChat}>
 <Icon name="chat" size={16} />
 CHAT ABOUT THIS
 </button>
 </footer>
+{expanded[post.id] &&
+<div className="ufx-post-comments">
+{profile.paidChat ?
+<>
+{post.comments.map((item) => (
+<article key={item.id}>
+<Avatar name={item.authorName} />
+<div>
+<strong>
+{item.authorName}
+</strong>
+<time dateTime={item.createdAt}>
+{new Date(item.createdAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+</time>
+<p>
+{item.content}
+</p>
+</div>
+</article>
+))}
+<form onSubmit={(event) => void comment(event, post)}>
+<input type="text" maxLength={400} aria-label="Post comment" placeholder="Add to the conversation…" value={comments[post.id] || ""} onChange={(event) => setComments((current) => ({ ...current, [post.id]: event.target.value }))} disabled={busy} />
+<button type="submit" aria-label="Send comment" disabled={busy || !comments[post.id]?.trim()}>
+<Icon name="send" size={17} />
+</button>
+</form>
+</>
+ :
+<p>
+Private comments require a paid membership.
+</p>
+}
+</div>
+}
 </article>
 ))}
 </section>

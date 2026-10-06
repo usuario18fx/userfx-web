@@ -4,9 +4,10 @@ import { AudioStream, Avatar, Icon, MoodPicker, VideoStream } from "./shared";
 import { useRoomCall } from "./use-room-call";
 import Preview from "./Preview";
 import RoomFeed from "./RoomFeed";
+import ProfileDirectory from "./ProfileDirectory";
 import UpcomingEvents from "./UpcomingEvents";
 import "./RoomNetwork.css";
-type Space = "myroom" | "stage" | "buzon";
+type Space = "myroom" | "stage" | "buzon" | "profiles";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
 export default function RoomNetwork({ space }: { space: Space }) {
   const [client] = useState(createClientId);
@@ -60,7 +61,8 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [preview, setPreview] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio });
+  const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility });
+  const [theater, setTheater] = useState(() => { try { return localStorage.getItem("userfx_room_view") === "theater"; } catch { return false; } });
   const [selected, setSelected] = useState("");
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [working, setWorking] = useState("");
@@ -77,14 +79,17 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const call = useRoomCall(client, roomId, profile.id, initial.iceServers);
   const isStage = space === "stage";
   const isInbox = space === "buzon";
+  const isDirectory = space === "profiles";
   const approved = state?.room.approved || false;
   const myRoom = initial.myRoom.id;
   const notify = useCallback((message: string) => setToast(message), []);
   const onBlocked = useCallback(() => setSoundBlocked(true), []);
   useEffect(() => { try { localStorage.setItem("userfx_room_mood", mood); } catch {} }, [mood]);
+  useEffect(() => { try { localStorage.setItem("userfx_room_view", theater ? "theater" : "default"); } catch {} }, [theater]);
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(""), 4000); return () => clearTimeout(timer); }, [toast]);
   useEffect(() => { if (editing) editor.current?.showModal(); }, [editing]);
   useEffect(() => {
+    if (isDirectory) return;
     let active = true;
     let pending = false;
     const controller = new AbortController();
@@ -114,7 +119,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
     void refresh();
     const timer = setInterval(() => void refresh(), 5000);
     return () => { active = false; controller.abort(); clearInterval(timer); };
-  }, [client, roomId, profile.paidChat, isInbox, refreshToken, call.leave]);
+  }, [client, roomId, profile.paidChat, isInbox, isDirectory, refreshToken, call.leave]);
   useEffect(() => {
     if (!chatLoaded) return;
     if (messageIds.current && !chatOpen) {
@@ -160,9 +165,12 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
       const response = await fetch("/api/account", { method: "PATCH", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: draft }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Unable to save your profile.");
-      setProfile((current) => ({ ...current, name: result.account.profile.displayName || current.name, bio: result.account.profile.bio })); setEditing(false); notify("Profile updated.");
+      setProfile((current) => ({ ...current, name: result.account.profile.displayName || current.name, bio: result.account.profile.bio, location: result.account.profile.location || "", interests: result.account.profile.interests || "", visibility: result.account.profile.visibility, onlineVisibility: result.account.profile.onlineVisibility })); setEditing(false); notify("Profile updated.");
     } catch (cause) { notify((cause as Error).message); }
     finally { setSaving(false); }
+  }
+  function editProfile() {
+    setDraft({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility }); setEditing(true);
   }
   async function logout() {
     await call.leave();
@@ -254,7 +262,7 @@ PRIVATE CONNECTIONS
 YOUR UNIVERSE
 </div>
 <nav aria-label="Private Room navigation">
-{([{ name: "myroom", title: "MyRoom", subtitle: "Your space. Your rules.", href: "#/private-room", icon: "home" }, { name: "stage", title: "Stage", subtitle: "Meet in the moment.", href: "#/private-room/stage", icon: "stage" }, { name: "gallery", title: "Gallery", subtitle: "Inside the vault.", href: "#/private-room/gallery", icon: "gallery" }, { name: "buzon", title: "Buzón", subtitle: "Invitations & conversations.", href: "#/private-room/buzon", icon: "inbox" }]).map((item) => (
+{([{ name: "myroom", title: "MyRoom", subtitle: "Your space. Your rules.", href: "#/private-room", icon: "home" }, { name: "stage", title: "Stage", subtitle: "Meet in the moment.", href: "#/private-room/stage", icon: "stage" }, { name: "profiles", title: "Profiles", subtitle: "Discover your people.", href: "#/private-room/profiles", icon: "people" }, { name: "gallery", title: "Gallery", subtitle: "Inside the vault.", href: "#/private-room/gallery", icon: "gallery" }, { name: "buzon", title: "Buzón", subtitle: "Invitations & conversations.", href: "#/private-room/buzon", icon: "inbox" }]).map((item) => (
 <a key={item.name} href={item.href} className={space === item.name ? "is-active" : ""} aria-label={`${item.title} ${item.subtitle}`} aria-current={space === item.name ? "page" : undefined}>
 <Icon name={item.icon} size={20} />
 <span>
@@ -286,7 +294,7 @@ INVITE SOMEONE
 <Icon name="arrow" size={14} />
 </button>
 </div>
-<button type="button" className="ufx-account" onClick={() => { setDraft({ displayName: profile.name, bio: profile.bio }); setEditing(true); }}>
+<button type="button" className="ufx-account" onClick={editProfile}>
 <Avatar name={profile.name} />
 <span>
 <strong>
@@ -315,7 +323,7 @@ PRIVATE CLUB
 <i>
 /
 </i>
-{isStage ? "STAGE" : isInbox ? "BUZÓN" : "MYROOM"}
+{isStage ? "STAGE" : isInbox ? "BUZÓN" : isDirectory ? "PROFILES" : "MYROOM"}
 </span>
 <div>
 <span className={`ufx-live-status${call.joined ? " is-live" : ""}`}>
@@ -335,7 +343,7 @@ SHARE ROOM
 <div>
 <span className="ufx-eyebrow">
 USER FX ·
-{isStage ? "MAKE AN ENTRANCE" : isInbox ? "YOUR PRIVATE LINE" : "ENTER YOUR ELEMENT"}
+{isStage ? "MAKE AN ENTRANCE" : isInbox ? "YOUR PRIVATE LINE" : isDirectory ? "FIND YOUR CIRCLE" : "ENTER YOUR ELEMENT"}
 </span>
 <h1>
 {isStage ?
@@ -344,6 +352,14 @@ A little closer.
 <br />
 <em>
 A little more you.
+</em>
+</>
+ : isDirectory ?
+<>
+Your people.
+<br />
+<em>
+Your kind of moment.
 </em>
 </>
  : isInbox ?
@@ -365,7 +381,7 @@ Your rules.
 }
 </h1>
 <p>
-{isStage ? "Faces, voices, and the unexpected. Take your place on Stage." : isInbox ? "Manage invitations and continue conversations inside an approved room." : "A room for your people. A mood for your moment. Let them in on your terms."}
+{isStage ? "Faces, voices, and the unexpected. Take your place on Stage." : isInbox ? "Manage invitations and continue conversations inside an approved room." : isDirectory ? "Shared interests. New connections. Every entrance still starts with an invitation." : "A room for your people. A mood for your moment. Let them in on your terms."}
 </p>
 </div>
 <MoodPicker mood={mood} onChange={setMood} />
@@ -375,7 +391,9 @@ Your rules.
 {error || call.error}
 </div>
 }
-{isInbox ? (
+{isDirectory ? (
+<ProfileDirectory key={`${profile.visibility}:${profile.name}:${profile.location}:${profile.interests}`} client={client} onEdit={editProfile} />
+) : isInbox ? (
 <section className="ufx-mailbox">
 <div className="ufx-section-head">
 <div>
@@ -493,7 +511,7 @@ YOU'RE IN
 </span>
 </div>
 }
-<div className={`ufx-work-grid${isStage ? " is-stage" : ""}`}>
+<div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
 <div className={`ufx-stage-frame${spotlightStream && spotlight ? " has-video" : ""}`} ref={frame}>
 {spotlightStream && spotlight ?
@@ -548,6 +566,9 @@ CHAT
 {unread > 9 ? "9+" : unread}
 </b>
 }
+</button>
+<button type="button" aria-label={theater ? "Default view" : "Theater view"} aria-pressed={theater} onClick={() => setTheater((current) => !current)}>
+<Icon name="theater" />
 </button>
 <button type="button" aria-label="Enter fullscreen" onClick={() => void frame.current?.requestFullscreen?.().catch(() => notify("Fullscreen isn't available in this browser."))}>
 <Icon name="expand" />
@@ -732,7 +753,7 @@ BEHIND THE CAMERA
 </p>
 </div>
 {state?.room.isOwner &&
-<button type="button" onClick={() => setEditing(true)}>
+<button type="button" onClick={editProfile}>
 <Icon name="profile" />
 EDIT
 </button>
@@ -800,6 +821,29 @@ DISPLAY NAME
 <label>
 ABOUT YOU
 <textarea rows={4} maxLength={280} value={draft.bio} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
+</label>
+<label>
+LOCATION · OPTIONAL
+<input type="text" maxLength={60} value={draft.location} onChange={(event) => setDraft((current) => ({ ...current, location: event.target.value }))} />
+</label>
+<label>
+INTERESTS · SEPARATE WITH COMMAS
+<input type="text" maxLength={160} value={draft.interests} onChange={(event) => setDraft((current) => ({ ...current, interests: event.target.value }))} />
+</label>
+<label className="ufx-profile-visibility">
+<input type="checkbox" checked={draft.visibility !== "private"} onChange={(event) => setDraft((current) => ({ ...current, visibility: event.target.checked ? "members" : "private" }))} />
+<span>
+SHOW MY PROFILE TO MEMBERS
+</span>
+</label>
+<p>
+Share your name, bio, location and interests in Profiles. Your room still requires your approval.
+</p>
+<label className="ufx-profile-visibility">
+<input type="checkbox" checked={draft.onlineVisibility !== "hidden"} onChange={(event) => setDraft((current) => ({ ...current, onlineVisibility: event.target.checked ? "members" : "hidden" }))} />
+<span>
+SHOW WHEN I AM IN MY ROOM
+</span>
 </label>
 <button type="submit" className="ufx-primary ufx-wide" disabled={saving}>
 {saving ? "SAVING…" : "SAVE PROFILE"}

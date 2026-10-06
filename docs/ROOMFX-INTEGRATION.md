@@ -17,7 +17,15 @@ screens through their existing component paths and hash navigation.
 - Buzón: actual incoming/outgoing entrance requests and their current status;
   approved requests open the corresponding room and conversation.
 - Cine, Arcade and Vintage: scoped black, silver and FX accent themes.
-- Profile: edits the existing account using `/api/account`.
+- Profiles: member-only directory with opt-in visibility, name/location/interests
+  search and live filter. Existing accounts are edited using `/api/account`;
+  private profiles and hidden online status are respected. Directory presence
+  indicates the host is connected, with an on-camera label when applicable.
+- Social feed: optional public HTTPS image URL, one like per account across
+  devices, and up to 30 private comments per post for paid members. Approved
+  SPCL guests can read posts and react, but cannot read or write comments.
+- Theater: a remembered wide video view in MyRoom and Stage. Stage participants
+  and upcoming events move below the video. The feed stays below MyRoom video.
 - Chat: closed by default in both rooms. The video's CHAT control opens an
   overlay inside the video, including fullscreen; close or Escape returns focus
   to the control. New incoming messages display an unread count. Membership and
@@ -35,9 +43,11 @@ screens through their existing component paths and hash navigation.
 | `#/private-room?room=room_…` | Invitation / approved guest room |
 | `#/private-room/stage` | Stage |
 | `#/private-room/buzon` | Invitations |
+| `#/private-room/profiles` | Opt-in member directory |
 | `#/private-room/gallery` | Existing Gallery integration |
 | `/api/room-live` | Rewritten to `api/account.js?roomfx=1` for authenticated room requests |
 | `lib/room-live.js` | Redis storage and server authorization |
+| `lib/room-social.js` | Social interactions and directory visibility |
 | `components/PrivateRoom/RoomFX/` | Network UI, preview and WebRTC hook |
 
 The vault gate, Telegram handoff and gallery remain in the original project.
@@ -89,8 +99,20 @@ code. Production never reads a client-side access flag as authorization.
 - Chat is capped at 100 messages per room and retained for 30 days after its
   most recent activity.
 - MyRoom posts are newest first, capped at 50 and retained for 90 days after
-  the most recent publication. Posts contain text (up to 2000 characters);
-  media uploads, comments and reactions are not implemented. Stage has no feed.
+  the most recent publication. Text is limited to 2000 characters; optional
+  image links to 1000. No file upload or server-side image fetching is added.
+  Images load directly from their HTTPS source without a referrer.
+- Likes are explicit/idempotent and keyed by account, not a mutable device ID.
+  Comments are limited to 400 characters, capped at 30 per post. Interactions
+  expire within the parent feed's retention and are deleted with their post.
+  Parent membership and interaction writes are atomic. Stage has no feed.
+- The member directory lists at most 60 profiles from the 200 most recently
+  active opt-ins (last 90 days). Private profiles are excluded except in their
+  owner's view; opting out takes effect on the next refresh. Hidden online
+  status suppresses presence, camera state and viewer counts for others.
+  Directory links never bypass host approval. Location is capped at 60
+  characters and comma-separated interests at 160. No public profile endpoint
+  or global Admin role is introduced.
 - Entrance approval expires after 24 hours. Invitations expire after 30 days.
 - Room metadata remains available for 90 days after its owner's activity.
 - Atomic Redis admission enforces the five/six participant limits.
@@ -124,7 +146,8 @@ then run `node scripts/check-roomfx.mjs`.
 Browser checks use two separate authenticated browser contexts, synthetic
 camera hardware and the real Redis-backed API. They cover room entrance,
 remote video, camera controls, chat overlay open/close and unread state, feed
-publication/persistence/guest access/deletion, Stage participants and events,
+publication/persistence/guest access/deletion, account-level likes and paid
+comments, directory search and visibility, theater layout, Stage participants and events,
 navigation, profile editing and a 390px
 mobile layout. Synthetic camera verification does not replace testing two
 physical devices on different networks or TURN infrastructure.

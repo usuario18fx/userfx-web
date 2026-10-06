@@ -5,6 +5,7 @@ import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
           import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
           import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
+          import PrivateRoomProfiles from "./components/PrivateRoom/PR-Profiles";
           import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
           import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
           import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
@@ -24,6 +25,9 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
+  if (route.split("?")[0] === "#/private-room/profiles") return (
+<PrivateRoomProfiles />
+  );
   if (route.split("?")[0] === "#/private-room/stage") return (
 <PrivateRoomStage />
 );
