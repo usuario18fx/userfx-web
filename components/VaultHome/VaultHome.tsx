@@ -491,8 +491,14 @@ export default function VaultHome() {
         </Reveal>
         <div className="vx-protocolSteps">
           {STEPS.map((s, i) => (
-            <React.Fragment key={s.n}>
-            <Reveal delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+            <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+              {PROTOCOL_ORNAMENTS[i] && (
+                <div
+                  className={`vx-protocolOrnament ${PROTOCOL_ORNAMENTS[i].className}`}
+                  style={{ backgroundImage: `url("${PROTOCOL_ORNAMENTS[i].src}")` }}
+                  aria-hidden="true"
+                />
+              )}
               <article className="vx-step">
                 {/* ✦ FONDO DE ESTRELLAS */}
                 <div className="vx-stepStars" aria-hidden="true">
@@ -508,20 +514,6 @@ export default function VaultHome() {
                 <small>{s.n} / 04</small>
               </article>
             </Reveal>
-            {PROTOCOL_ORNAMENTS[i] && (
-              <div className="vx-Icons" aria-hidden="true">
-                <img
-                  className={PROTOCOL_ORNAMENTS[i].className}
-                  src={PROTOCOL_ORNAMENTS[i].src}
-                  alt=""
-                  draggable={false}
-                  width={i === 0 ? 1672 : i === 1 ? 1536 : 1254}
-                  height={i === 0 ? 941 : i === 1 ? 1024 : 1254}
-                  decoding="async"
-                />
-              </div>
-            )}
-            </React.Fragment>
           ))}
         </div>
       </section>
