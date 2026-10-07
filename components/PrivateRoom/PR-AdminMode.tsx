@@ -73,14 +73,18 @@ export function AdminModeSwitch() {
     <button type="button" aria-pressed={admin.mode === "admin"} onClick={() => { if (admin.mode !== "admin") admin.login(); }}><Icon name="shield" size={12} />ADMIN</button>
   </div>;
 }
-function AdminDialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+function AdminDialog({ title, onClose, children, login = false }: { title: string; onClose: () => void; children: ReactNode; login?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const previous = useRef(document.activeElement as HTMLElement | null);
   useEffect(() => { ref.current?.showModal(); return () => previous.current?.focus(); }, []);
-  return <dialog ref={ref} className="pvr-admin-dialog" aria-labelledby="pvr-admin-title" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) onClose(); } }}>
+  const content = <>
     <header><span>USER FX · ADMIN</span><button type="button" aria-label="Cerrar" onClick={onClose}><Icon name="close" /></button></header>
+    {login && <div className="pvr-admin-login-logo" aria-hidden="true" />}
     <h2 id="pvr-admin-title">{title}</h2>
     {children}
+  </>;
+  return <dialog ref={ref} className={`pvr-admin-dialog${login ? " pvr-admin-dialog--login" : ""}`} aria-labelledby="pvr-admin-title" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) onClose(); } }}>
+    {login ? <div className="pvr-admin-login-box">{content}</div> : content}
   </dialog>;
 }
 function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: () => void; onComplete: (status: Status) => void }) {
@@ -103,16 +107,24 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
     try { const data = await request<{ url: string }>("admin-google", {}); window.location.assign(data.url); }
     catch (cause) { setError((cause as Error).message); setWorking(false); }
   }
-  return <AdminDialog title={signup ? "Crear tu acceso Admin" : "Iniciar sesión como Admin"} onClose={onClose}>
+  return <AdminDialog login title={signup ? "Crear acceso Admin" : "Hello Admin!"} onClose={onClose}>
     <p className="pvr-admin-caption">@User18Fx · Tu plataforma, tus controles.</p>
     <form onSubmit={submit}>
-      <label>Correo<input autoFocus type="email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-      <label>Contraseña<input type="password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+      <label><span className="pvr-admin-login-label">Correo</span><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+      <label><span className="pvr-admin-login-label">Contraseña</span><input type="password" placeholder="Password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
       {confirmation && <p className="pvr-admin-success" role="status">Revisa tu correo, confirma el acceso y vuelve a iniciar sesión.</p>}
       {error && <p className="pvr-admin-error" role="alert">{error}</p>}
-      <button className="pvr-admin-primary" disabled={working}>{working ? "VERIFICANDO…" : signup ? "CREAR ACCESO" : "ENTRAR COMO ADMIN"}</button>
+      <button type="submit" className="pvr-admin-primary" disabled={working}>{working ? "Verificando…" : signup ? "Crear acceso" : "Sign In"}</button>
     </form>
-    <button type="button" className="pvr-admin-google" disabled={working || !status.googleEnabled} onClick={() => void google()}><span aria-hidden="true">G</span> Continuar con Google</button>
+    <button type="button" className="pvr-admin-google" disabled={working || !status.googleEnabled} onClick={() => void google()}>
+      <svg className="pvr-admin-google-icon" viewBox="-3 0 262 262" aria-hidden="true">
+        <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4" />
+        <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853" />
+        <path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05" />
+        <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335" />
+      </svg>
+      Sign in with Google
+    </button>
     {!status.googleEnabled && <p className="pvr-admin-caption">Google pendiente de activación.</p>}
     {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Ya tengo acceso · Iniciar sesión" : "Primera vez · Crear acceso"}</button>}
   </AdminDialog>;

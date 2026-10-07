@@ -57,3 +57,61 @@
 
 @media(max-width:600px){.pvr-admin-brand-controls{gap:4px;flex-direction:column;align-items:flex-start}.pvr-admin-brand-controls .pvr-admin-switch{padding:2px}.pvr-admin-brand-controls .pvr-admin-switch button{font-size:7px;padding:4px 5px}}
 .pvr-admin-orb img,.pvr-admin-level--vipx .pvr-admin-orb svg{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 2px #0006)}
+
+/* Owner login: isolated from the benefits dialog and the platform styles. */
+.pvr-admin-dialog--login{
+  --pvr-admin-login-bg:#272727;
+  --pvr-admin-login-input:#3a3a3a;
+  --pvr-admin-login-button:#373737;
+  width:min(340px,calc(100vw - 28px));padding:1px;border:0;border-radius:24px;
+  background:#545454;isolation:isolate;color:#fff;
+  box-shadow:0 24px 80px #0009,0 4px 8px #0003,0 0 16px #ffffff14;
+  scrollbar-color:#898989 #272727;
+}
+.pvr-admin-dialog--login::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:conic-gradient(from var(--pvr-admin-login-angle),transparent 75%,#fff,transparent 100%);
+  animation:pvrAdminLoginSpin 4s ease-in-out infinite;
+}
+@property --pvr-admin-login-angle{syntax:"<angle>";inherits:false;initial-value:45deg}
+@keyframes pvrAdminLoginSpin{to{--pvr-admin-login-angle:405deg}}
+.pvr-admin-login-box{
+  position:relative;box-sizing:border-box;padding:18px 28px 24px;border-radius:23px;
+  background:var(--pvr-admin-login-bg);
+  box-shadow:inset 0 40px 60px -8px #ffffff1f,inset 4px 0 12px -6px #ffffff1f,inset 0 0 12px -4px #ffffff1f;
+}
+.pvr-admin-dialog--login header{margin-bottom:8px}
+.pvr-admin-dialog--login header>span{color:#ffffff80;letter-spacing:.15em}
+.pvr-admin-dialog--login header button{width:26px;height:26px;color:#fff}
+.pvr-admin-login-logo{
+  position:relative;box-sizing:border-box;width:65px;height:65px;margin:0 auto 12px;
+  border:2px solid #fff;border-radius:20px;
+  background:linear-gradient(135deg,#ffffff33,#00000033);
+  box-shadow:8px 8px 16px #0003,-8px -8px 16px #ffffff0f;
+}
+.pvr-admin-login-logo::before,.pvr-admin-login-logo::after{content:"";position:absolute;left:50%;transform:translateX(-50%);border:2.5px solid #fff;box-sizing:border-box}
+.pvr-admin-login-logo::before{bottom:10px;width:50%;height:20%;border-radius:40px 40px 20px 20px}
+.pvr-admin-login-logo::after{top:10px;width:30%;height:30%;border-radius:50%}
+.pvr-admin-dialog--login h2{margin:0;padding:6px 0;text-align:center;font-size:24px;font-weight:700;line-height:1.2;letter-spacing:normal;color:#fff}
+.pvr-admin-dialog--login .pvr-admin-caption{margin:6px 0 14px;text-align:center;color:#ffffff80;line-height:1.5}
+.pvr-admin-dialog--login form{gap:10px;margin:16px 0 10px}
+.pvr-admin-dialog--login label{position:relative;gap:0}
+.pvr-admin-login-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pvr-admin-dialog--login input{height:40px;padding:10px;border:1px solid transparent;border-radius:12px;background:var(--pvr-admin-login-input);color:#fff}
+.pvr-admin-dialog--login input::placeholder{color:#ffffff99;opacity:1}
+.pvr-admin-dialog--login :focus-visible{outline-color:#fff}
+.pvr-admin-dialog--login input:focus-visible{border-color:#fff}
+.pvr-admin-dialog--login .pvr-admin-primary,.pvr-admin-dialog--login .pvr-admin-google{
+  box-sizing:border-box;min-height:40px;padding:10px;border:0;border-radius:20px;
+  background:var(--pvr-admin-login-button);color:#fff;font:600 14px/1.3 Arial,sans-serif;letter-spacing:normal;
+  box-shadow:inset 0 3px 6px -4px #ffffff99,inset 0 -3px 6px -2px #000c;
+  transition:background .3s,box-shadow .3s;
+}
+.pvr-admin-dialog--login .pvr-admin-primary{margin-top:5px}
+.pvr-admin-dialog--login .pvr-admin-primary:hover:not(:disabled),.pvr-admin-dialog--login .pvr-admin-google:hover:not(:disabled){background:#ffffff40;box-shadow:inset 0 3px 6px #ffffff99,inset 0 -3px 6px #000c,0 0 8px #ffffff0d}
+.pvr-admin-google-icon{width:16px;height:16px;flex-shrink:0}
+.pvr-admin-dialog--login .pvr-admin-text{margin:10px auto 0;color:#ffffffb3;font-size:12px;text-underline-offset:4px}
+.pvr-admin-dialog--login .pvr-admin-text:hover{color:#fff;text-decoration:underline}
+.pvr-admin-dialog--login .pvr-admin-error,.pvr-admin-dialog--login .pvr-admin-success{margin:2px 0}
+@media(max-width:360px){.pvr-admin-login-box{padding-inline:22px}}
+@media(prefers-reduced-motion:reduce){.pvr-admin-dialog--login::before{animation:none}.pvr-admin-dialog--login .pvr-admin-primary,.pvr-admin-dialog--login .pvr-admin-google{transition:none}}
