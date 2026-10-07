@@ -1,6 +1,7 @@
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
 import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
+import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
           import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
           import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
@@ -39,6 +40,9 @@ function PrivateRoomRoute({ route }) {
 );
 }
 export default function App() {
+  return <AdminModeProvider><UserFXApp /></AdminModeProvider>;
+}
+function UserFXApp() {
   const [route, setRoute] = useState(getRoute);
   useEffect(() => {
     const handleRouteChange = () => setRoute(getRoute());

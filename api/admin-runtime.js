@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import Redis from "ioredis";
+import { createAdminAccessHandler } from "../lib/admin-access.js";
 
 const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
@@ -136,7 +137,10 @@ async function readRuntime(redis) {
   };
 }
 
+const adminAccess = createAdminAccessHandler({ getRedis });
 export default async function handler(req, res) {
+  const query = req.query || Object.fromEntries(new URL(req.url || "/api/admin-runtime", "http://localhost").searchParams);
+  if (String(query.op || "").startsWith("admin-")) return adminAccess(req, res);
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
 
@@ -172,6 +176,8 @@ export default async function handler(req, res) {
         if (!owner) {
           return res.status(403).json({ ok: false, error: "owner_required" });
         }
+        if (!req.headers.origin || new URL(req.headers.origin).host !== req.headers.host) return res.status(403).json({ error: "Origin not allowed." });
+        await adminAccess.requireAdmin(req, redis, session);
 
         if (action === "gallery-show") {
           await redis.set(GALLERY_VISIBLE_KEY, "1");
@@ -206,6 +212,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error("[api/admin-runtime]", error);
-    return res.status(500).json({ ok: false, error: "server_error" });
+    return res.status(error.status || 500).json({ ok: false, error: error.status ? error.message : "server_error" });
   }
 }

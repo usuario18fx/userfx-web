@@ -8,6 +8,7 @@ import ProfileDirectory from "./ProfileDirectory";
 import UpcomingEvents from "./UpcomingEvents";
 import PrivateRoomTopNav from "../PR-TopNav";
 import PrivateRoomGallery from "../PR-Gallery";
+import { useAdminMode } from "../PR-AdminMode";
 import "./RoomNetwork.css";
 type Space = "myroom" | "stage" | "buzon" | "profiles" | "gallery";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
@@ -22,6 +23,13 @@ export default function RoomNetwork({ space }: { space: Space }) {
     roomRequest<Bootstrap>(client, "", "bootstrap", { signal: controller.signal }).then(setData).catch((cause) => { if (!controller.signal.aborted) setError(cause.message); });
     return () => controller.abort();
   }, [client, attempt]);
+  useEffect(() => {
+    const refresh = () => setAttempt((value) => value + 1);
+    window.addEventListener("userfx-benefits-updated", refresh);
+    window.addEventListener("focus", refresh);
+    const timer = space === "gallery" || space === "profiles" ? window.setInterval(refresh, 60000) : undefined;
+    return () => { window.removeEventListener("userfx-benefits-updated", refresh); window.removeEventListener("focus", refresh); clearInterval(timer); };
+  }, [space]);
   if (!data) return (
 <section className="ufx-network ufx-loading" aria-live="polite">
 <span className="ufx-wordmark">
@@ -49,7 +57,9 @@ VERIFY ACCESS
 );
 }
 function NetworkSurface({ space, roomId, client, initial }: { space: Space; roomId: string; client: string; initial: Bootstrap }) {
+  const admin = useAdminMode();
   const [profile, setProfile] = useState(initial.profile);
+  useEffect(() => setProfile(initial.profile), [initial.profile]);
   const [state, setState] = useState<RoomState | null>(null);
   const [mood, setMood] = useState<Mood>(() => { try { const value = localStorage.getItem("userfx_room_mood"); return value === "arcade" || value === "vintage" ? value : "cine"; } catch { return "cine"; } });
   const [messages, setMessages] = useState<Message[]>([]);
@@ -111,11 +121,11 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
     if (isDirectory || isInbox || isGallery) return;
     function onKey(event: KeyboardEvent) {
       if (event.ctrlKey || event.altKey || event.metaKey || event.repeat || (event.target instanceof Element && event.target.closest("input,textarea,select,[contenteditable=true]"))) return;
-      if (event.key.toLowerCase() === "c") { event.preventDefault(); setChatOpen((value) => !value); }
+      if (event.key.toLowerCase() === "c") { event.preventDefault(); if (!admin.requestFeature("chat")) setChatOpen((value) => !value); }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isDirectory, isInbox, isGallery]);
+  }, [isDirectory, isInbox, isGallery, admin.requestFeature]);
   useEffect(() => {
     if (isDirectory || isGallery) return;
     let active = true;
@@ -128,8 +138,9 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
         const next = await roomRequest<RoomState>(client, roomId, "state", { signal: controller.signal });
         if (!active) return;
         setState(next);
+        if (next.profile) setProfile(next.profile);
         if (apiError.current) { setError(""); apiError.current = ""; }
-        if (next.room.approved && profile.paidChat) {
+        if (next.room.approved && (next.profile?.paidChat ?? profile.paidChat)) {
           const result = await roomRequest<{ messages: Message[] }>(client, roomId, "messages", { signal: controller.signal });
           if (active) { setMessages(result.messages); setChatLoaded(true); }
         }
@@ -286,7 +297,7 @@ SEATS
 {isStage ? "The next good conversation starts with you." : "Esta sala está tranquila por ahora. Puedes ser el primero en llegar."}
 </span>
 </p>
-{!isStage && <button type="button" className="ufx-people-enter" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => approved ? setPreview(true) : void requestEntrance()}>{status === "pending" ? "Esperando aprobación" : "Entrar ahora"}<Icon name="arrow" size={16} /></button>}
+{!isStage && <button type="button" className="ufx-people-enter" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>{status === "pending" ? "Esperando aprobación" : "Entrar ahora"}<Icon name="arrow" size={16} /></button>}
 </div>
 }
 </section>
@@ -385,7 +396,7 @@ setCameraOffset((current) => ({ x: current.x + Math.max(8 - box.left, Math.min(M
 </span>
 <div className="ufx-frame-actions">
 {!isStage && (cameraOffset.x !== 0 || cameraOffset.y !== 0) && <button type="button" title="Volver a la posición original" aria-label="Restablecer posición de cámara" onClick={() => setCameraOffset({ x: 0, y: 0 })}><Icon name="home" size={16} /></button>}
-<button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => setChatOpen((current) => !current)}>
+<button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => { if (!admin.requestFeature("chat")) setChatOpen((current) => !current); }}>
 <Icon name="chat" />
 <span>
 CHAT
@@ -426,7 +437,7 @@ CHAT
   );
   return (
 <div className={`ufx-network ufx-space-${space} ufx-mood-${mood}`}>
-<PrivateRoomTopNav cameraLive={call.cameraOn} accessLabel={profile.paidChat ? profile.planId.toUpperCase() : "SPCL"}
+<PrivateRoomTopNav cameraLive={call.cameraOn} accessLabel={profile.accessPrefix || (profile.paidChat ? profile.planId.toUpperCase() : "SPCL")}
  onCamera={() => {
    if (isInbox || isDirectory || isGallery) { window.location.hash = "#/private-room"; return; }
    if (call.joined) void call.toggleMedia("video");
@@ -480,7 +491,7 @@ Your rules.
 </div>
 }
 {isGallery ? (
-<PrivateRoomGallery planId={profile.paidChat ? profile.planId : "spcl"} onMembership={() => setInfo("membership")} onUnlock={() => { window.location.hash = "#/private-room-access"; }} />
+<PrivateRoomGallery planId={profile.galleryPlanId !== undefined ? profile.galleryPlanId || "spcl" : profile.paidChat ? profile.planId : "spcl"} onMembership={() => setInfo("membership")} onUnlock={() => { window.location.hash = "#/private-room-access"; }} />
 ) : isDirectory ? (
 <ProfileDirectory key={`${profile.visibility}:${profile.name}:${profile.location}:${profile.interests}`} client={client} onEdit={editProfile} />
 ) : isInbox ? (
@@ -587,7 +598,7 @@ IN ROOM
 YOU'RE IN
 </span>
  :
-<button type="button" className="ufx-primary" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => approved ? setPreview(true) : void requestEntrance()}>
+<button type="button" className="ufx-primary" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>
 {call.connecting ? "CONNECTING…" : status === "pending" ? "WAITING FOR HOST" : status === "rejected" ? "REQUEST DECLINED" : approved ? "PREPARE ENTRANCE" : "REQUEST ENTRANCE"}
 <Icon name="arrow" size={16} />
 </button>
@@ -700,7 +711,7 @@ return <button key={person.id} type="button" className={person.id === selected ?
 {call.micOn ? "MIC ON" : "MIC OFF"}
 </span>
 </button>
-<button type="button" className={call.cameraOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.cameraOn} onClick={() => void call.toggleMedia("video")}>
+<button type="button" className={call.cameraOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.cameraOn} onClick={() => { if (!admin.requestFeature("camera")) void call.toggleMedia("video"); }}>
 <Icon name="camera" />
 <span>
 {call.cameraOn ? "CAM ON" : "CAM OFF"}
@@ -720,7 +731,7 @@ INVITE
 LEAVE
 </button>
  :
-<button type="button" className={isStage ? "ufx-stage-preview" : undefined} disabled={!approved || call.connecting} onClick={() => setPreview(true)}>
+<button type="button" className={isStage ? "ufx-stage-preview" : undefined} disabled={!approved || call.connecting} onClick={() => { if (!admin.requestFeature("camera")) setPreview(true); }}>
 <Icon name="camera" />
 {isStage ? "IR A LA VISTA PREVIA" : "PREVIEW"}
 </button>
@@ -741,7 +752,7 @@ TAP TO ENABLE CALL AUDIO
 }
 {!isStage && <div className="ufx-room-social" aria-label="MyRoom social activity">
 {peopleSection}
-<RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} ownerProfile={state?.room.isOwner ? { name: profile.name, bio: profile.bio, location: profile.location, avatarUrl: profile.avatarUrl || "", coverUrl: profile.coverUrl || "" } : state?.room.ownerProfile || null} ownerName={state?.room.ownerName || ""} onEdit={editProfile} onChat={() => { setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
+<RoomFeed client={client} roomId={roomId} profile={profile} approved={approved} isOwner={state?.room.isOwner || false} ownerProfile={state?.room.isOwner ? { name: profile.name, bio: profile.bio, location: profile.location, avatarUrl: profile.avatarUrl || "", coverUrl: profile.coverUrl || "" } : state?.room.ownerProfile || null} ownerName={state?.room.ownerName || ""} onEdit={editProfile} onChat={() => { if (admin.requestFeature("chat")) return; setChatOpen(true); frame.current?.scrollIntoView({ block: "center" }); }} />
 </div>}
 
 {state?.room.isOwner && waiting.length > 0 &&

@@ -1,0 +1,59 @@
+.pvr-admin-brand-controls{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap;padding-block:5px}
+.pvr-admin-switch{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #65af8950;border-radius:9px;background:#0a1210;flex-shrink:0}
+.pvr-admin-switch button{display:flex;align-items:center;gap:4px;padding:6px 8px;border:0;border-radius:5px;background:transparent;color:#81958b;font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.08em;cursor:pointer}
+.pvr-admin-switch button[aria-pressed=true]{color:#d3ffe8;background:linear-gradient(135deg,#22523c,#133323);box-shadow:inset 0 1px 0 #b1ffd725}
+.pvr-admin-dialog{box-sizing:border-box;width:min(440px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:22px;border:1px solid #76978860;border-radius:24px;background:radial-gradient(ellipse at 0 0,#28483945,transparent 65%),linear-gradient(160deg,#1c1e1d,#0c0e0d);color:#e7ece8;box-shadow:0 28px 90px #000b,inset 0 1px 0 #fff1;font-family:Arial,sans-serif;overflow:auto;scrollbar-width:thin;scrollbar-color:#488260 #131713;color-scheme:dark}
+.pvr-admin-dialog::backdrop{background:#020605b8;backdrop-filter:blur(9px)}
+.pvr-admin-dialog header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.pvr-admin-dialog header>span{color:#86ae97;font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.2em}
+.pvr-admin-dialog header button{display:grid;place-items:center;width:30px;height:30px;border:1px solid #fff2;border-radius:50%;color:#c8d0ca;background:#ffffff07;cursor:pointer}
+.pvr-admin-dialog h2{margin:0 0 8px;font-size:23px;line-height:1.15;font-weight:600;letter-spacing:-.04em}
+.pvr-admin-caption{margin:8px 0 16px;color:#9baaa0;font-size:11px;line-height:1.5}
+.pvr-admin-dialog form{display:grid;gap:13px;margin:20px 0 12px}
+.pvr-admin-dialog label{display:grid;gap:7px;font-size:12px;color:#b8c7bd}
+.pvr-admin-dialog input{box-sizing:border-box;min-width:0;width:100%;height:42px;padding:0 12px;border:1px solid #6c8a7550;border-radius:9px;background:#080d0bd9;color:#f2fff6;font:14px Arial,sans-serif}
+.pvr-admin-dialog :focus-visible,.pvr-admin-switch :focus-visible{outline:2px solid #75e0a6;outline-offset:3px}
+.pvr-admin-dialog input:focus-visible{border-color:#71be94;outline-offset:1px}
+.pvr-admin-primary{width:100%;min-height:42px;padding:10px 14px;border:1px solid #73c09570;border-radius:10px;background:linear-gradient(135deg,#28593e,#173a28);color:#e3ffed;font:700 11px/1.3 Arial,sans-serif;letter-spacing:.1em;cursor:pointer;box-shadow:inset 0 1px 0 #d8ffe722,0 6px 18px #0004}
+.pvr-admin-dialog button:disabled{opacity:.45;cursor:default}
+.pvr-admin-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:40px;padding:8px;border:1px solid #ffffff24;border-radius:10px;background:#ffffff08;color:#dae2dc;font:600 12px Arial,sans-serif;cursor:pointer}
+.pvr-admin-google>span{font-size:20px;color:#c9ddd0;font-weight:800}
+.pvr-admin-text{display:block;margin:16px auto 0;padding:6px 0;border:0;background:none;color:#9bc2aa;font:11px Arial,sans-serif;cursor:pointer}
+.pvr-admin-search{margin-top:22px}
+.pvr-admin-search>div{display:flex;align-items:center;border:1px solid #6c8a7550;border-radius:10px;background:#080d0bd9}
+.pvr-admin-search span{padding-left:12px;color:#78b48e;font-size:16px}
+.pvr-admin-search input{border:0;background:transparent;padding-left:5px}
+.pvr-admin-users{display:grid;gap:6px;max-height:220px;overflow:auto;margin-top:12px;scrollbar-width:thin;scrollbar-color:#59b87c #101a14}
+.pvr-admin-users>p{padding:12px 2px;margin:0;color:#91a497;font-size:12px;line-height:1.5}
+.pvr-admin-users>button{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:1px solid #fff1;border-radius:12px;background:#fff1;color:#edf4ef;text-align:left;cursor:pointer}
+.pvr-admin-users>button:hover{background:#3b75422c;border-color:#79c38f66}
+.pvr-admin-users>button>span:nth-child(2),.pvr-admin-selected>span:nth-child(2){display:grid;gap:4px;min-width:0;flex:1}
+.pvr-admin-users strong,.pvr-admin-selected strong{font-size:13px;overflow-wrap:anywhere}
+.pvr-admin-users small,.pvr-admin-selected small{color:#98ac9e;font-size:10px}
+.pvr-admin-selected{display:flex;align-items:center;gap:10px;margin:20px 0 14px;padding:12px;border:1px solid #ffffff15;border-radius:14px;background:#05080580}
+.pvr-admin-selected>button{padding:5px;border:0;background:none;color:#97c4a6;font-size:10px;cursor:pointer}
+.pvr-admin-levels{display:flex;justify-content:center;gap:14px;padding:15px 0}
+.pvr-admin-level{display:grid;justify-items:center;gap:8px;padding:0;border:0;background:none;color:#9ead9e;cursor:pointer}
+.pvr-admin-level>strong{font:600 9px/1 ui-monospace,monospace;letter-spacing:.08em}
+.pvr-admin-orb{position:relative;display:grid;place-items:center;width:57px;height:57px;border-radius:50%;border:1px solid #fff7;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:36px;line-height:1;background:radial-gradient(circle at 36% 22%,#ffffffb3,transparent 40%),linear-gradient(160deg,#ffb36c,#d14300);box-shadow:inset 0 2px 4px #fff8,inset 0 -8px 12px #0005,0 5px 14px #0009;transition:transform .18s,box-shadow .18s}
+.pvr-admin-orb::after{content:"";position:absolute;inset:3px 8px 60%;border-radius:50%;background:linear-gradient(#fff5,transparent);pointer-events:none}
+.pvr-admin-level--spcl .pvr-admin-orb{background:radial-gradient(circle at 32% 20%,#deffcf,transparent 45%),linear-gradient(150deg,#a5ff78,#3ad119 48%,#105d20);border-color:#a5f780}
+.pvr-admin-level--spcl svg{width:38px;height:29px;fill:#071c10;filter:drop-shadow(0 2px 1px #0006)}
+.pvr-admin-level--vipx .pvr-admin-orb{background:radial-gradient(circle at 30% 18%,#fff9c8,transparent 40%),linear-gradient(150deg,#ffdd75,#efa12f 55%,#ae631c)}
+.pvr-admin-level--bsic .pvr-admin-orb{background:radial-gradient(circle at 34% 20%,#ffd4be,transparent 45%),linear-gradient(160deg,#ff7b50,#f13021 60%,#8f100e)}
+.pvr-admin-level:hover .pvr-admin-orb{transform:translateY(-3px)}
+.pvr-admin-level[aria-pressed=true]{color:#e7ffef}
+.pvr-admin-level[aria-pressed=true] .pvr-admin-orb{outline:2px solid #c8f5d7;outline-offset:4px;transform:translateY(-2px);box-shadow:inset 0 2px 4px #fff8,inset 0 -8px 12px #0005,0 0 22px #91eba338}
+.pvr-admin-benefit-summary{margin:12px 0 18px;padding:13px;border:1px solid #74a98c28;border-radius:12px;background:#111d1580}
+.pvr-admin-benefit-summary strong{font-size:12px;color:#c5e8cf}
+.pvr-admin-benefit-summary p{margin:8px 0;color:#b2c1b6;font-size:12px;line-height:1.5}
+.pvr-admin-benefit-summary small{color:#79a58b;font-size:10px}
+.pvr-admin-success,.pvr-admin-error{margin:12px 0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pvr-admin-success{display:flex;align-items:center;gap:6px;color:#9feaaf}
+.pvr-admin-error{color:#ffaaa5}
+.pvr-admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2000;max-width:calc(100vw - 40px);padding:12px 18px;border:1px solid #88ba9650;border-radius:12px;background:#132119;color:#d5f4de;font:12px/1.5 Arial,sans-serif;box-shadow:0 10px 30px #0007}
+@media(max-width:420px){.pvr-admin-dialog{padding:18px;border-radius:20px}.pvr-admin-levels{gap:12px}.pvr-admin-orb{width:52px;height:52px;font-size:33px}.pvr-admin-switch button{padding:6px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.pvr-admin-orb{transition:none}.pvr-admin-level:hover .pvr-admin-orb{transform:none}}
+
+@media(max-width:600px){.pvr-admin-brand-controls{gap:4px;flex-direction:column;align-items:flex-start}.pvr-admin-brand-controls .pvr-admin-switch{padding:2px}.pvr-admin-brand-controls .pvr-admin-switch button{font-size:7px;padding:4px 5px}}
+.pvr-admin-orb img,.pvr-admin-level--vipx .pvr-admin-orb svg{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 2px #0006)}

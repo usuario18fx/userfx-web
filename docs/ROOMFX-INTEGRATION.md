@@ -126,7 +126,7 @@ a direct connection. No TURN provider was provisioned during this integration.
 The Vite middleware in `scripts/roomfx-vite.mjs` runs the real vault and room
 handlers locally: `/api/access-session`, `/api/verify`, `/api/identity`,
 `/api/telegram-eligibility`, `/api/handoff`, `/api/room-live`, `/api/account`
-and `/api/private-media` (including binary responses).
+and `/api/private-media` (including binary responses), plus `/api/admin-runtime`.
 The access gate and room API validate the same server-backed cookie. There is
 no automatic development login or browser fetch override.
 
@@ -175,7 +175,7 @@ authorization, plan checks and server watermarks remain in `api/private-media.js
   status suppresses presence, camera state and viewer counts for others.
   Directory links never bypass host approval. Location is capped at 60
   characters and comma-separated interests at 160. No public profile endpoint
-  or global Admin role is introduced.
+  is introduced. The owner-only Admin switch is described below.
 - Entrance approval expires after 24 hours. Invitations expire after 30 days.
 - Room metadata remains available for 90 days after its owner's activity.
 - Atomic Redis admission enforces the five/six participant limits.
@@ -228,3 +228,78 @@ The mobile home modal is checked for a single portal, unchanged URL while open,
 Back/close behavior and verified entrance into MyRoom. The actual Telegram
 message builder is checked with a mocked reply for code text and encoded
 username in the return URL.
+
+## Owner User/Admin switch
+
+Only the server-verified Telegram identity `@User18Fx` whose numeric Telegram
+ID equals `ADMIN_USER_ID` can reveal USER/ADMIN by clicking PRIV⭑VAULT.
+Admin then requires a separate confirmed Supabase Auth email and password.
+The first successful owner login binds its immutable Supabase Auth user ID;
+changing a display name, browser storage or Auth user metadata cannot grant Admin.
+For a first login, use **Primera vez · Crear acceso**, confirm the email and
+sign in. Signup is available only inside the verified owner's vault session.
+
+In Admin, the header's route, OnCam, profile, membership and room Chat buttons
+open a user search instead of navigating or starting devices. Select an active
+TelegramFX identity, select one of the four prefix orbs and save. Membership
+sets the default prefix/benefits; choosing another section assigns only that
+section. Explicit section assignments take precedence over membership. The
+normal USER mode resumes the existing routes and device controls.
+
+| Orb | Prefix | Existing benefits | Assignment duration |
+| --- | --- | --- | --- |
+| Green crown | SPCL | Identity, rooms and camera; no private chat or album | No membership expiry |
+| Gold crown | VIPX | Private chat and matching VIP album | 7 days |
+| Flame | PRX0 | Private chat and matching PRO album | 24 hours |
+| Rose | BSIC | Private chat and matching BASIC album | 12 hours |
+
+Durations match the existing code-session durations in `api/verify.js`.
+After an individual grant expires, its section falls back to membership;
+when membership expires, the original verified access applies. Grants do
+not bypass host approval, TelegramFX eligibility, the vault login or album
+isolation. Room state refreshes every five seconds; Gallery/Profiles update
+on focus or every minute. Saving in the current tab refreshes its benefits.
+
+Implementation uses `components/PrivateRoom/PR-AdminMode.tsx/.css`,
+`lib/admin-access.js` and `lib/admin-benefits.js`. The existing
+`/api/admin-runtime` handles owner authentication, search and assignments
+without creating another Vercel function. The local Vite adapter runs that
+same handler. `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `REDIS_URL` and
+`ADMIN_USER_ID` stay server-only. No new dependency is required.
+
+Admin sessions last at most one hour, use a separate HttpOnly/SameSite cookie,
+and are bound to the owner vault account. Each privileged request verifies
+Supabase Auth again and validates same-origin JSON writes. Returning to USER
+invalidates that server session. Grants merge atomically into existing Redis
+accounts; login and profile edits preserve them. A capped Redis audit stores
+the latest 1000 assignments without passwords or tokens.
+
+### Google activation
+
+The existing Supabase project `dbvrecrfweqekavcwjat` had Google disabled when
+this feature was implemented. The button remains disabled until the provider
+is configured; this is not a simulated Google login. Configure its Google
+Client ID/Secret directly in Supabase Auth, with Google's authorized callback:
+
+`https://dbvrecrfweqekavcwjat.supabase.co/auth/v1/callback`
+
+Allow this app redirect in Supabase Auth URL Configuration:
+
+`https://user18fx.com/api/admin-runtime?op=admin-callback`
+
+Set the Supabase Site URL to `https://user18fx.com` and allow the home URL for
+email confirmation. For local Google testing, also allow the corresponding
+localhost API callback. The server OAuth flow uses PKCE and a single-use,
+five-minute state bound to the original owner vault account. Google must
+resolve to the already linked Auth user ID, for example the same verified
+email. Merely signing into a different Google account cannot replace it.
+
+Validation: `npm run build`, `npx tsc --noEmit`, and the existing room checks.
+Run `node scripts/check-admin-access.mjs` against a disposable Redis instance
+via `ROOMFX_TEST_REDIS_URL` for owner spoofing, CSRF, cookie isolation, account
+binding, scoped grants, expiry, persistence, real room chat authorization,
+Auth revocation, Google PKCE/replay protection and returning to USER. Local
+browser checks use the real Vite API/Redis with a mocked Auth provider, cover
+320/390/768/1280px layouts and verify search, save, header/chat updates,
+matching album denial, dialog focus and restored USER navigation. Live email
+confirmation and Google require the owner's account/provider configuration.

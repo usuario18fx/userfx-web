@@ -157,11 +157,12 @@ export default async function handler(req, res) {
       return res.status(401).send("Unauthorized");
     }
 
-    if (session.accessMode === "telegram_identity" || session.planId !== requestedPlan) {
+    const galleryPlan = session.benefits ? session.benefits.galleryPlanId : session.accessMode === "telegram_identity" ? null : session.planId;
+    if (!galleryPlan || galleryPlan !== requestedPlan) {
       return res.status(403).send("Forbidden");
     }
 
-    const shouldWatermark = WATERMARK_PLANS.has(String(session.planId));
+    const shouldWatermark = WATERMARK_PLANS.has(String(galleryPlan));
     const result = await get(pathname, {
       access: "private",
       ifNoneMatch: shouldWatermark ? undefined : req.headers["if-none-match"] || undefined,
@@ -193,7 +194,7 @@ export default async function handler(req, res) {
     }
 
     const original = await streamToBuffer(result.stream);
-    const watermarkId = getWatermarkId(session);
+    const watermarkId = getWatermarkId({ ...session, planId: galleryPlan, watermarkId: session.watermarkId?.startsWith(`${PLAN_TO_PREFIX[galleryPlan]}-`) ? session.watermarkId : undefined, codeHash: session.codeHash || crypto.createHash("sha256").update(session.accountId).digest("hex") });
     const watermarked = await applyWatermark(original, watermarkId);
     const etag = getBufferEtag(watermarked);
 

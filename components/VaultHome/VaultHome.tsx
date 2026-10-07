@@ -5,6 +5,7 @@
           import VisitorCounter from "../VisitorCounter";
           import VaultDevice from "../VaultDevice/VaultDevice";
           import Crown4D from "../Crown4D/Crown4D";
+import { AdminModeSwitch, useAdminMode } from "../PrivateRoom/PR-AdminMode";
           import "./VaultHome.css";
 
           import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
@@ -157,6 +158,7 @@ function openLink(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 export default function VaultHome() {
+  const admin = useAdminMode();
   const [clock, setClock] = useState("--:--:--");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [dm, setDm] = useState(false);
@@ -332,13 +334,14 @@ export default function VaultHome() {
   return (
     <div id="top" className="vx">
       <header className="vx-hud">
-        <a href="#top" className="vx-brand">
+        <a href="#top" className="vx-brand" onClick={(event) => { if (admin.revealSwitch()) event.preventDefault(); }}>
           <img src={LOGO} alt="USER FX" />
           <span className="vx-live" />
           <span>
           | PRIV⭑VAULT |
           </span>
         </a>
+        <AdminModeSwitch />
         <div className="vx-hudRight">
           <VisitorCounter />
           <time>{clock}</time>

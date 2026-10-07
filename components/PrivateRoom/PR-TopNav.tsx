@@ -1,14 +1,15 @@
           import { useEffect, useState } from "react";
 import "./PR-TopNav.css";
 import { Icon } from "./RoomFX/shared";
+import { AdminModeSwitch, useAdminMode } from "./PR-AdminMode";
 
           const NAV_ITEMS = [
-            { label: "INICIO", route: "#/" },
-            { label: "MYROOM", route: "#/private-room" },
-            { label: "STAGE", route: "#/private-room/stage" },
-            { label: "GALLERY", route: "#/private-room/gallery" },
-            { label: "BUZON", route: "#/private-room/buzon" },
-            { label: "PROFILES", route: "#/private-room/profiles" },
+            { label: "INICIO", route: "#/", scope: "membership" },
+            { label: "MYROOM", route: "#/private-room", scope: "myroom" },
+            { label: "STAGE", route: "#/private-room/stage", scope: "stage" },
+            { label: "GALLERY", route: "#/private-room/gallery", scope: "gallery" },
+            { label: "BUZON", route: "#/private-room/buzon", scope: "buzon" },
+            { label: "PROFILES", route: "#/private-room/profiles", scope: "profiles" },
           ] as const;
 
           type TopNavProps = {
@@ -41,6 +42,7 @@ import { Icon } from "./RoomFX/shared";
           }
 
           export default function PrivateRoomTopNav({ cameraLive, accessLabel, onCamera, onProfile, onMembership, onRewards, onLogout }: TopNavProps) {
+            const admin = useAdminMode();
             const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
             const [insideTelegram, setInsideTelegram] = useState(false);
             const [browserNoticeOpen, setBrowserNoticeOpen] = useState(false);
@@ -56,6 +58,7 @@ import { Icon } from "./RoomFX/shared";
             }, []);
 
             function requestCamera() {
+              if (admin.requestFeature("camera")) return;
               if (insideTelegram) {
                 setBrowserNoticeOpen(true);
                 return;
@@ -74,17 +77,20 @@ import { Icon } from "./RoomFX/shared";
             }
 
             function navigate(item: (typeof NAV_ITEMS)[number]) {
+              if (admin.requestFeature(item.scope)) return;
               window.location.hash = item.route;
             }
 
             return (
               <header className="pvr-club-nav pvr-club-nav--unified">
                 <div className="pvr-club-nav-inner">
+                  <div className="pvr-admin-brand-controls">
                   <button
                     type="button"
                     className="pvr-club-brand"
                     aria-label="UserFX · MyRoom"
                     onClick={() => {
+                      if (admin.revealSwitch()) return;
                       window.location.hash = "#/private-room";
                     }}>
                     <span className="pvr-club-brand-mark">
@@ -93,6 +99,8 @@ import { Icon } from "./RoomFX/shared";
                     <span className="pvr-club-brand-live" aria-hidden="true" />
                     <span className="pvr-club-brand-copy">| PRIV⭑VAULT |</span>
                   </button>
+                  <AdminModeSwitch />
+                  </div>
                   <nav className="pvr-club-tabs" aria-label="Private Room navigation">
                     {NAV_ITEMS.map((item) => {
 
@@ -104,7 +112,7 @@ import { Icon } from "./RoomFX/shared";
           })}
         </nav>
         <div className="pvr-club-actions">
-          <button type="button" className="pvr-club-code" onClick={onProfile}>
+          <button type="button" className="pvr-club-code" onClick={() => { if (!admin.requestFeature("membership")) onProfile(); }}>
             <span>
             MEMBER ACCESS
             </span>
@@ -135,13 +143,13 @@ import { Icon } from "./RoomFX/shared";
             </span>
             <span className="pvr-reward-star" aria-hidden="true">✦</span>
           </button>
-          <button type="button" className="pvr-club-profile" aria-label="Edit your profile" onClick={onProfile}>
+          <button type="button" className="pvr-club-profile" aria-label="Edit your profile" onClick={() => { if (!admin.requestFeature("profiles")) onProfile(); }}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
           </button>
-          <button type="button" className="pvr-club-membership" aria-label="Your membership" onClick={onMembership}>
+          <button type="button" className="pvr-club-membership" aria-label="Your membership" onClick={() => { if (!admin.requestFeature("membership")) onMembership(); }}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
@@ -151,7 +159,7 @@ import { Icon } from "./RoomFX/shared";
               OPEN IN BROWSER
             </button>
           )}
-          <button type="button" className="pvr-club-logout" onClick={onLogout}>
+          <button type="button" className="pvr-club-logout" onClick={() => { if (admin.mode === "admin") void admin.userMode(); onLogout(); }}>
             <span className="pvr-logout-dot" aria-hidden="true" />
             <span>LOG OUT</span>
             <span className="pvr-logout-icon" aria-hidden="true"><Icon name="leave" size={15} /></span>

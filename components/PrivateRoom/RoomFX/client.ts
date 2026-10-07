@@ -1,5 +1,5 @@
 export type Mood = "cine" | "arcade" | "vintage";
-export type Profile = { id: string; accountId: string; name: string; bio: string; avatarUrl?: string; coverUrl?: string; location: string; interests: string; visibility: string; onlineVisibility: string; planId: string; paidChat: boolean };
+export type Profile = { id: string; accountId: string; name: string; bio: string; avatarUrl?: string; coverUrl?: string; location: string; interests: string; visibility: string; onlineVisibility: string; planId: string; paidChat: boolean; accessPrefix?: string; galleryPlanId?: string | null; benefitPrefixes?: Record<string, string> };
 export type Participant = { id: string; name: string; cameraOn: boolean; micOn: boolean; isHost: boolean; joinedAt: string };
 export type PostComment = { id: string; authorId: string; authorName: string; content: string; createdAt: string };
 export type Post = { id: string; authorId: string; authorName: string; content: string; createdAt: string; imageUrl: string | null; likeCount: number; likedByMe: boolean; comments: PostComment[] };
@@ -8,7 +8,7 @@ export type Message = { id: string; authorId: string; authorName: string; conten
 export type RoomHostProfile = { name: string; bio: string; location: string; avatarUrl: string; coverUrl: string };
 export type Room = { id: string; ownerName: string; isOwner: boolean; approved: boolean; status: string; capacity: number; ownerProfile?: RoomHostProfile | null };
 export type Invitation = { id: string; roomId: string; accountId: string; name: string; hostName: string; status: string; direction: "incoming" | "outgoing"; createdAt: string };
-export type RoomState = { room: Room; participants: Participant[]; waiting: Invitation[] };
+export type RoomState = { room: Room; participants: Participant[]; waiting: Invitation[]; profile?: Profile };
 
 // One identity per mounted room; accounts remain stable across browser sessions.
 export function createClientId() { return crypto.randomUUID(); }
