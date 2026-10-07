@@ -45,6 +45,11 @@ const STEPS = [
   { n: "03", title: "COMPLETE YOUR PAYMENT", text: "Finish your payment securely inside Telegram. Once confirmed, your unique private code is delivered instantly." },
   { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
 ];
+const PROTOCOL_ORNAMENTS = [
+  { src: "/icon2.png", className: "vx-Icon2" },
+  { src: "/icon4.png", className: "vx-Icon4" },
+  { src: "/icon5.png", className: "vx-Icon5" },
+];
 
 const FAQS = [
   { q: "How do I get a code?", a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest." },
@@ -480,13 +485,14 @@ export default function VaultHome() {
           <h2>
             HOW TO UNLOCK
             <span className="vx-theVault">
-            THE VAULT
+            𝕋ℍ𝔼 𝕍𝔸𝕌𝕃𝕋
             </span>
           </h2>
         </Reveal>
         <div className="vx-protocolSteps">
           {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+            <React.Fragment key={s.n}>
+            <Reveal delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
               <article className="vx-step">
                 {/* ✦ FONDO DE ESTRELLAS */}
                 <div className="vx-stepStars" aria-hidden="true">
@@ -502,6 +508,20 @@ export default function VaultHome() {
                 <small>{s.n} / 04</small>
               </article>
             </Reveal>
+            {PROTOCOL_ORNAMENTS[i] && (
+              <div className="vx-Icons" aria-hidden="true">
+                <img
+                  className={PROTOCOL_ORNAMENTS[i].className}
+                  src={PROTOCOL_ORNAMENTS[i].src}
+                  alt=""
+                  draggable={false}
+                  width={i === 0 ? 1672 : i === 1 ? 1536 : 1254}
+                  height={i === 0 ? 941 : i === 1 ? 1024 : 1254}
+                  decoding="async"
+                />
+              </div>
+            )}
+            </React.Fragment>
           ))}
         </div>
       </section>
