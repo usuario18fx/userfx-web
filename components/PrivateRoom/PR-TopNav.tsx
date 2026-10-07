@@ -9,7 +9,6 @@ import { AdminModeSwitch, useAdminMode } from "./PR-AdminMode";
             { label: "STAGE", route: "#/private-room/stage", scope: "stage" },
             { label: "GALLERY", route: "#/private-room/gallery", scope: "gallery" },
             { label: "BUZON", route: "#/private-room/buzon", scope: "buzon" },
-            { label: "PROFILES", route: "#/private-room/profiles", scope: "profiles" },
           ] as const;
 
           type TopNavProps = {

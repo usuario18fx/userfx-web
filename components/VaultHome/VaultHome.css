@@ -2,9 +2,6 @@
    FONTS
    ═══════════════════════════════════════════════════════════════ */
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap");
-/* ═══════════════════════════════════════════════════════════════
-   BASE / RESET
-   ═══════════════════════════════════════════════════════════════ */
 html,
 body,
 #root {
@@ -30,16 +27,14 @@ video {
   display: block;
   max-width: 100%;
 }
-/* ═══════════════════════════════════════════════════════════════
-   TOKENS
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════   TOKENS ══════════════════════════════════════ */
 .vx {
   --ink: #07060a;
   --bone: #f4eee4;
   --dim: #b7aebc;
   --faint: #7a7286;
   --gold: #e0b85a;
-  --rose: #b94a5c;
+  --rose: #db3d57;
   --blue: #d8e8ff;
   --line: #ece5d824;
   --display: "Cormorant Garamond", Georgia, serif;
@@ -52,15 +47,12 @@ video {
   max-width: 100%;
   overflow-x: clip;
 }
-/* ═══════════════════════════════════════════════════════════════
-   REVEAL
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════   REVEAL ═════════════════════════════════════ */
 .vx-reveal {
   opacity: 0.2;
   transform: translateY(26px);
   filter: brightness(0.55);
-  transition:
-    opacity 0.75s ease,
+  transition: opacity 0.75s ease,
     transform 0.75s ease,
     filter 0.75s ease;
 }
@@ -69,9 +61,7 @@ video {
   transform: none;
   filter: none;
 }
-/* ═══════════════════════════════════════════════════════════════
-   HUD
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════  HUD ═════════════════════════════════════ */
 .vx-hud {
   position: relative;
   height: 52px;
@@ -156,8 +146,7 @@ video {
   font-size: 10px;
   letter-spacing: 0.16em;
   white-space: nowrap;
-  transition:
-    border-color 0.2s ease,
+  transition: border-color 0.2s ease,
     color 0.2s ease;
 }
 .vx-visitorCount:hover {
@@ -201,15 +190,18 @@ video {
 /* ═══════════════════════════════════════════════════════════════
    HERO
    ═══════════════════════════════════════════════════════════════ */
+/* ══════════════   HERO ══════════════════════════════════════════ */
 .vx-open {
   position: relative;
   overflow: hidden;
   padding: 36px 16px 48px;
+  background: url("/wallpaperGeneral.png") center / cover no-repeat #101012;
 }
 .vx-bg {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  opacity: 0.18;
 }
 .vx-damask,
 .vx-brick {
@@ -255,6 +247,7 @@ video {
 /* ═══════════════════════════════════════════════════════════════
    HERO IDENTITY (logo + kicker + access button)
    ═══════════════════════════════════════════════════════════════ */
+/* ════════════   HERO IDENTITY ══════════════════════════════════════════ */
 .vx-heroIdentity {
   position: relative;
   z-index: 10;
@@ -294,8 +287,8 @@ video {
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
-  padding: 18px 26px;
-  gap: clamp(20px, 2.8vw, 42px);
+  padding: 16px 8px;
+  gap: clamp(8px, 1.6vw, 20px);
   color: var(--blue);
   font-family: var(--mono);
   font-size: 11px;
@@ -331,15 +324,16 @@ video {
   background: transparent;
   border: 0;
   font: inherit;
-  font-size: clamp(18px, 1.35vw, 28px);
-  letter-spacing: 0.25em;
+  font-size: clamp(11px, 1.05vw, 14px);
+  letter-spacing: 0.14em;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    color 0.18s ease,
+  transition: color 0.18s ease,
     opacity 0.18s ease,
     transform 0.18s ease;
+  line-height: 1.25;
+  font-weight: 600;
 }
 .vx-kickerBtn:hover,
 .vx-kickerBtn:focus-visible {
@@ -361,15 +355,62 @@ video {
 }
 .vx-heroAccessBtn .smkl-access-button {
   position: relative;
-  width: 285px;
-  height: auto;
-  margin: 0 auto;
-  transform: scale(1.04);
+  width: min(100%, 310px);
+  height: 60px;
+  margin: 0 auto !important;
+  transform: none;
   transform-origin: center;
+  min-height: 60px;
+}
+.vx-heroIdentity .smkl-access-button__title {
+  font-size: clamp(12px, 1.05vw, 14px);
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.vx-heroIdentity .smkl-access-button__brand {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button {
+  flex: 0 1 240px;
+  width: 240px;
+  min-width: 160px;
+  max-width: 100%;
+  grid-template-columns: 44px minmax(0, 1fr) 28px;
+  min-height: 56px;
+  height: 56px;
+  padding: 5px 6px;
+  transform: none;
+  margin: 0 !important;
+  top: auto;
+  bottom: auto;
+  align-self: center;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button__rose {
+  width: 40px;
+  height: 40px;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button__rose img {
+  width: 38px;
+  height: 38px;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button__arrow {
+  width: 26px;
+  height: 36px;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button__seam--l {
+  left: 50px;
+}
+.vx-heroIdentity .vx-kicker .smkl-access-button__seam--r {
+  right: 34px;
 }
 /* ═══════════════════════════════════════════════════════════════
    TITLE (Access / Restricted)
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════   TITLE (Access / Restricted) ═══════════════════════════════════ */
 .vx-title {
   position: relative;
   display: flex;
@@ -400,16 +441,17 @@ video {
 .vx-titleCrown {
   position: absolute;
   width: clamp(100px, 15vw, 150px);
-  left: 65%;
-  top: 45%;
+  left: 68%;
+  top: 39%;
   z-index: 3;
-  transform-origin: 50% 60%;
+  transform-origin: 55% 66%;
   animation: vxCrownFloat 7.5s ease-in-out infinite;
   will-change: transform;
 }
 /* ═══════════════════════════════════════════════════════════════
    INTRO PARAGRAPH
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════  INTRO PARAGRAPH ═══════════════════════════ */
 .vx-p {
   display: block;
   width: 100%;
@@ -439,16 +481,15 @@ video {
 /* ═══════════════════════════════════════════════════════════════
    DOSSIER
    ═══════════════════════════════════════════════════════════════ */
+/* ═════  DOSSIER ═════════════════════════════════════════ */
 .vx-dossier {
   width: 100%;
   max-width: 34rem;
   margin-top: 20px;
   border: 2px solid #e0b03f44;
-  background:
-    linear-gradient(#00000095),
+  background: linear-gradient(#00000095),
     url("/wallFX.png") center / 600px repeat;
-  box-shadow:
-    inset 0 1px 0 #8d8c890a,
+  box-shadow: inset 0 1px 0 #8d8c890a,
     0 12px 28px #00000070;
 }
 .vx-dossierHead {
@@ -625,8 +666,7 @@ video {
   margin: 8px auto 0;
   padding: 6px 16px;
   overflow: hidden;
-  box-shadow:
-    0 8px 20px #00000073,
+  box-shadow: 0 8px 20px #00000073,
     0 0 16px #2d8cff25;
 }
 .vx-getCodeBtn::after {
@@ -667,19 +707,17 @@ video {
   overflow: hidden;
   border-top: 1px solid #d6c3124f;
   border-bottom: 1px solid #d6c3124f;
-  background:
-    linear-gradient(
-      90deg,
-      #c9be2626 0%,
-      #e5cb2310 18%,
-      transparent 42%,
-      transparent 58%,
-      #c9c12610 82%,
-      #c9c62626 100%
+  background: linear-gradient(
+    90deg,
+    #c9be2626 0%,
+    #e5cb2310 18%,
+    transparent 42%,
+    transparent 58%,
+    #c9c12610 82%,
+    #c9c62626 100%
     ),
     url("/wallpaper4.png") center / auto 220px repeat-x;
-  box-shadow:
-    inset 0 1px 0 #fff67a12,
+  box-shadow: inset 0 1px 0 #fff67a12,
     inset 0 -1px 0 #a1970566,
     0 4px 14px #423b0239;
   backdrop-filter: blur(5px) brightness(0.75) saturate(0.75);
@@ -727,19 +765,17 @@ video {
 .vx-ticker.is-rev {
   border-top: 1px solid #2f6fd940;
   border-bottom: 1px solid #174a9c38;
-  background:
-    linear-gradient(
-      90deg,
-      #0054db26 0%,
-      #0054db54 18%,
-      transparent 42%,
-      transparent 58%,
-      #0054db10 82%,
-      #2655f072 100%
+  background: linear-gradient(
+    90deg,
+    #0054db26 0%,
+    #0054db54 18%,
+    transparent 42%,
+    transparent 58%,
+    #0054db10 82%,
+    #2655f072 100%
     ),
     url("/wallpaper4.png") center / auto 220px repeat-x;
-  box-shadow:
-    inset 0 1px 0 #15396c12,
+  box-shadow: inset 0 1px 0 #15396c12,
     inset 0 -1px 0 #0a125366,
     0 4px 14px #030d2340;
 }
@@ -798,6 +834,7 @@ video {
   margin-left: 0.12em;
   color: var(--rose);
   font-style: italic;
+  font-weight: 700;
   text-shadow: 0 0 18px #b64b5d58;
 }
 .vx-insideTitle,
@@ -823,6 +860,7 @@ video {
   max-width: none !important;
   padding-inline: max(16px, calc(50% - 27rem)) !important;
   width: 100% !important;
+  background-color: #101012;
 }
 .vx-protocolSteps {
   display: flex;
@@ -845,8 +883,7 @@ video {
   overflow: hidden;
   isolation: isolate;
   border: 1px solid #8e6e2c;
-  background:
-    linear-gradient(180deg, #0b0d10e8, #050607f5),
+  background: linear-gradient(180deg, #0b0d10e8, #050607f5),
     url("/assets/damask.png") center / 320px repeat;
   color: #eae5dd;
 }
@@ -868,8 +905,7 @@ video {
   font-style: italic;
   line-height: 1;
   opacity: 0.5;
-  transition:
-    opacity 0.7s ease,
+  transition: opacity 0.7s ease,
     color 0.7s ease,
     text-shadow 0.7s ease;
 }
@@ -1009,8 +1045,7 @@ video {
   width: 2px;
   height: 2px;
   opacity: 0.75;
-  box-shadow:
-    11vw 126px #4682b4,
+  box-shadow: 11vw 126px #4682b4,
     31vw 38px #4682b4,
     52vw 101px #4682b4,
     71vw 57px #4682b4,
@@ -1029,8 +1064,7 @@ video {
   border-radius: 50%;
   opacity: 0.7;
   animation-duration: 12s;
-  box-shadow:
-    11vw 126px #f9d802,
+  box-shadow: 11vw 126px #f9d802,
     31vw 38px #f9d802,
     52vw 101px #fff,
     71vw 57px #f9d802,
@@ -1049,8 +1083,7 @@ video {
   border-radius: 50%;
   opacity: 0.8;
   animation-duration: 20s;
-  box-shadow:
-    11vw 126px #0279f9,
+  box-shadow: 11vw 126px #0279f9,
     31vw 38px #f9d802,
     52vw 101px #f9d802,
     71vw 57px #f9d802,
@@ -1085,8 +1118,7 @@ video {
    WHAT'S INSIDE
    ═══════════════════════════════════════════════════════════════ */
 #llaves.vx-sec .vx-insideZone {
-  background:
-    linear-gradient(180deg, #0203053d 0%, #02030550 55%, #02030591 100%),
+  background: linear-gradient(180deg, #0203053d 0%, #02030550 55%, #02030591 100%),
     url("/wallpaperGeneral.png") center 8% / cover no-repeat;
   display: flow-root !important;
   width: 100vw !important;
@@ -1097,6 +1129,17 @@ video {
 #llaves.vx-sec .vx-insideBlock {
   width: min(100%, 72rem);
   margin: 0 auto 30px !important;
+}
+/* ═══════════════════════════════════════════════════════════════
+   WHAT'S INSIDE
+   ═══════════════════════════════════════════════════════════════ */
+.vx-insideZone {
+  background: linear-gradient(180deg, #0203053d 0%, #02030550 55%, #02030591 100%),
+    url("/wallpaperGeneral.png") center 8% / cover no-repeat;
+}
+.vx-insideBlock {
+  width: min(100%, 72rem);
+  margin: 78px auto 30px;
 }
 .vx-insideRow {
   display: grid;
@@ -1143,6 +1186,7 @@ video {
   margin: 6px 0;
   color: var(--rose);
   font-size: 2rem;
+  text-shadow: 0 0 8px #e4030373, 0 0 22px #e4030340;
 }
 /* ═══════════════════════════════════════════════════════════════
    CAROUSEL
@@ -1206,8 +1250,7 @@ video {
   pointer-events: none;
   filter: blur(14px) grayscale(1) brightness(0.4);
   transform: scale(1.12);
-  transition:
-    filter 0.25s ease,
+  transition: filter 0.25s ease,
     transform 0.25s ease;
 }
 .vx-shotMask {
@@ -1257,11 +1300,31 @@ video {
    ═══════════════════════════════════════════════════════════════ */
 #faq.vx-sec {
   max-width: none;
-  padding-left: max(19px, calc(50% - 39rem));
-  padding-right: max(19px, calc(50% - 39rem));
+  padding-left: max(20px, calc(50% - 32rem));
+  padding-right: max(20px, calc(50% - 32rem));
   padding-bottom: 0;
   border-top: none;
   border-bottom: none;
+}
+#faq > .vx-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+#faq > .vx-reveal > h2 {
+  width: 100%;
+  max-width: 52rem;
+  margin: 14px auto 0;
+  font-size: clamp(2rem, 5.2vw, 3.2rem);
+  line-height: 1.08;
+  text-align: center;
+}
+#faq > .vx-reveal .vx-getIn{
+  white-space: nowrap;
+}
+#faq > .vx-reveal .vx-goldk {
+  text-align: center;
 }
 .vx-finalBackdrop {
   position: relative;
@@ -1279,7 +1342,17 @@ video {
 .vx-faq {
   margin-top: 18px;
   border-top: 1px solid var(--line);
-  background: linear-gradient(#0505070d, #05050727), url("/wallpaper.png") left top / auto no-repeat !important;
+  background: linear-gradient(#0505070d, #05050727),
+    url("/wallpaper.png") left top / auto no-repeat !important;
+  width: 100%;
+  max-width: 64rem;
+  margin: 24px auto 0;
+}
+.vx-home .vx-finalBackdrop #faq.vx-sec > .vx-faq {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(#0505070d, #05050727),
+    url("/wallpaper.png") left top / auto no-repeat !important;
 }
 .vx-faqItem {
   border-bottom: 1px solid var(--line);
@@ -1289,13 +1362,13 @@ video {
   grid-template-columns: 42px 1fr 18px;
   gap: 10px;
   width: 100%;
-  padding: 16px 0;
+  padding: 16px clamp(12px, 2vw, 24px);
   border: 0;
   background: none;
   color: var(--bone);
   font-family: var(--display);
   font-size: 1.05rem;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 .vx-faqItem b {
@@ -1305,13 +1378,13 @@ video {
 }
 .vx-faqItem > p {
   margin: 0;
-  padding: 14px 18px 16px 78px;
+  padding: 16px clamp(20px, 4vw, 56px);
   background: #252323;
   color: #eae4dc;
   border-top: 1px solid #ffffff0a;
-  box-shadow:
-    inset 0 8px 20px #00000055,
+  box-shadow: inset 0 8px 20px #00000055,
     inset 0 -1px 0 #ffffff08;
+  text-align: center;
 }
 /* ═══════════════════════════════════════════════════════════════
    FOOTER
@@ -1384,8 +1457,7 @@ video {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.18em;
-  transition:
-    color 0.25s ease,
+  transition: color 0.25s ease,
     text-shadow 0.25s ease,
     transform 0.25s ease;
 }
@@ -1468,6 +1540,7 @@ video {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+
 /* ═══════════════════════════════════════════════════════════════
    PRIVATE ALBUM
    ═══════════════════════════════════════════════════════════════ */
@@ -1478,8 +1551,7 @@ video {
   overflow: hidden;
   border-top: 1px solid #4ab97e59;
   border-bottom: 1px solid #e0b85a38;
-  background:
-    radial-gradient(circle at 50% 0%, #4ab97e1f, transparent 38%),
+  background: radial-gradient(circle at 50% 0%, #4ab97e1f, transparent 38%),
     linear-gradient(180deg, #07060af5, #0a080eff);
 }
 .vx-privateAlbumInner {
@@ -1572,8 +1644,7 @@ video {
   aspect-ratio: 4 / 5;
   object-fit: cover;
   user-select: none;
-  transition:
-    transform 0.7s ease,
+  transition: transform 0.7s ease,
     filter 0.7s ease;
 }
 .vx-privateAlbumItem:hover img {
@@ -1615,49 +1686,74 @@ video {
    ICON
    ═══════════════════════════════════════════════════════════════ */
 .vx-titleRose1 {
-  display: inline-block;
-  width: 45px;
-  height: 45px;
-  margin: 0 4px;
+  display: block;
+  width: clamp(145px, 17vw, 190px);
+  height: auto;
+  margin: 20px auto 0;
   vertical-align: middle;
   object-fit: contain;
-  transform: translateY(-5px) translateX(230px) scale(5);
+  transform: none;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 4px #00ff6259) drop-shadow(8px 4px 24px #00ff6233);
 }
 /* ═════════   ANIMATIONS ═════════════════════ */
 @keyframes vxStepStars {
-  from {transform: translateY(290px);
+  from {
+    transform: translateY(290px);
   }
-  to {transform: translateY(-290px);
-  }}
+  to {
+    transform: translateY(-290px);
+  }
+}
 @keyframes vxAccessShine {
   0%,
-  68% {left: -55%;opacity: 0;
+  68% {
+    left: -55%;
+    opacity: 0;
   }
-  72% {opacity: 0.7;
+  72% {
+    opacity: 0.7;
   }
-  88% {left: 125%;opacity: 0.35;
+  88% {
+    left: 125%;
+    opacity: 0.35;
   }
-  100% {left: 125%;opacity: 0;
-  }}
+  100% {
+    left: 125%;
+    opacity: 0;
+  }
+}
 @keyframes vxCarouselScroll {
-  from {transform: translate3d(0, 0, 0);
+  from {
+    transform: translate3d(0, 0, 0);
   }
-  to {transform: translate3d(calc(-50% - 7px), 0, 0);
-  }}
+  to {
+    transform: translate3d(calc(-50% - 7px), 0, 0);
+  }
+}
 @keyframes vxL {
-  to {transform: translateX(-50%);
-  }}
-@keyframes vxR {
-  from {transform: translateX(-50%);
+  to {
+    transform: translateX(-50%);
   }
-  to {transform: translateX(0);
-  }}
+}
+@keyframes vxR {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
 @keyframes vxCrownFloat {
   0%,
-  100% {transform: translate(-50%, -50%) rotate(-1deg) translateY(0);
+  100% {
+    transform: translate(-50%, -50%) rotate(-1deg) translateY(0);
   }
-  50% {transform: translate(-50%, -50%) rotate(1.4deg) translateY(-5px);
-  }}
+  50% {
+    transform: translate(-50%, -50%) rotate(1.4deg) translateY(-5px);
+  }
+}
 /* ════  RESPONSIVE ════════════════════ */
 @media (min-width: 900px) {
   .vx-step small {
@@ -1677,7 +1773,8 @@ video {
   .vx-footGrid {
     grid-template-columns: 1.2fr 0.8fr;
     align-items: start;
-  }}
+  }
+}
 @media (min-width: 960px) {
   .vx-grid {
     grid-template-columns: 1.05fr 0.7fr;
@@ -1688,7 +1785,8 @@ video {
   }
   .vx-grid > .vx-lock.vx-lockRaise {
     transform: translateX(-160px) translateY(40px);
-  }}
+  }
+}
 @media (max-width: 980px) {
   .vx-heroIdentity .vx-logoWrap {
     min-height: 350px;
@@ -1698,7 +1796,8 @@ video {
   }
   .vx-kicker {
     gap: 18px;
-  }}
+  }
+}
 @media (max-width: 760px) {
   .vx-open {
     width: 100%;
@@ -1758,8 +1857,9 @@ video {
     margin: 4px auto 0;
   }
   .vx-heroAccessBtn .smkl-access-button {
-    width: min(285px, 82vw);
-    transform: scale(1.04);
+    width: min(100%, 285px);
+    transform: none;
+    margin: 0 auto !important;
   }
   .vx-title {
     width: 100%;
@@ -1867,6 +1967,11 @@ video {
     width: 100%;
     max-width: 100%;
     margin: 0 auto 24px !important;
+  }
+  .vx-insideBlock {
+    width: 100%;
+    max-width: 100%;
+    margin: 28px auto 24px;
   }
   .vx-insideRow {
     grid-template-columns: minmax(0, 1fr);
@@ -1980,6 +2085,10 @@ video {
   #llaves.vx-sec .vx-insideZone {
     padding-top: 24px !important;
     padding-bottom: 60px !important;
+  }
+  .vx-insideZone {
+    padding-top: 54px;
+    padding-bottom: 60px;
     background-position: 50% 32%;
     background-size: cover;
   }
@@ -2031,8 +2140,7 @@ video {
     padding: 18px 12px 14px;
     border-radius: 20px;
     overflow: visible;
-    background:
-      linear-gradient(180deg, #02030542 0%, #02030558 55%, #02030588 100%),
+    background: linear-gradient(180deg, #02030542 0%, #02030558 55%, #02030588 100%),
       url("/wallpaperGeneral.png") center 28% / cover no-repeat;
   }
   .vx-lock.vx-lockRaise {
@@ -2077,7 +2185,9 @@ video {
     margin-top: 18px;
   }
   .vx-heroAccessBtn .smkl-access-button {
-    transform: scale(1.18);
+    transform: none;
+    width: min(100%, 285px);
+    margin: 0 auto !important;
   }
   .vx-heroIdentity {
     min-height: 430px;
@@ -2166,7 +2276,8 @@ video {
     border-radius: 7px;
     pointer-events: none;
     border: 1px solid #78d5ff18;
-  }}
+  }
+}
 @media (max-width: 600px) {
   .vx-carouselTrack {
     gap: 10px;
@@ -2201,7 +2312,8 @@ video {
     font-size: inherit;
     letter-spacing: inherit;
     white-space: nowrap;
-  }}
+  }
+}
 @media (max-width: 520px) {
   .vx-hud {
     padding: 0 10px;
@@ -2242,8 +2354,7 @@ video {
     font-size: 11px;
   }
   .vx-finalBackdrop {
-    background:
-      linear-gradient(180deg, #12121309, #07070813 54%, #03030486 100%),
+    background: linear-gradient(180deg, #12121309, #07070813 54%, #03030486 100%),
       url("/wallpaperGeneral.png") center / 390px center;
   }
   .vx-foot {
@@ -2288,7 +2399,8 @@ video {
     width: 100%;
     max-width: 100%;
     margin: 20px auto 0;
-  }}
+  }
+}
 @media (max-width: 390px) {
   .vx-heroIdentity .vx-kicker {
     gap: 6px;
@@ -2301,7 +2413,8 @@ video {
     flex-basis: 3px;
     width: 3px;
     height: 3px;
-  }}
+  }
+}
 /* ════   REDUCED MOTION ═════════════════ */
 @media (prefers-reduced-motion: reduce) {
   .vx-titleCrown,
@@ -2361,28 +2474,151 @@ video {
   .vx-dossierOrnament,
   .vx-icon2 {
     transform: translateY(-48%);
-  }}
+  }
+}
 /* ══════  KEYFRAMES ════════════════════════════════ */
 @keyframes vhdTapCueMobile {
   0%,
-  100% {opacity: 0.28;transform: translateX(-50%) translateY(0);
+  100% {
+    opacity: 0.28;
+    transform: translateX(-50%) translateY(0);
   }
-  50% {opacity: 0.72;transform: translateX(-50%) translateY(-3px);
-  }}
+  50% {
+    opacity: 0.72;
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
 @keyframes vhdHandleHintMobile {
   0%,
-  100% {opacity: 0.55;transform: scaleX(0.88);
+  100% {
+    opacity: 0.55;
+    transform: scaleX(0.88);
   }
-  50% {opacity: 1;transform: scaleX(1.08);
-  }}
+  50% {
+    opacity: 1;
+    transform: scaleX(1.08);
+  }
+}
 @keyframes vxGetAccessShineMobile {
   0%,
-  58% {opacity: 0;left: -40%;
+  58% {
+    opacity: 0;
+    left: -40%;
   }
-  66% {opacity: 0.75;
+  66% {
+    opacity: 0.75;
   }
-  82% {left: 118%;opacity: 0.35;
+  82% {
+    left: 118%;
+    opacity: 0.35;
   }
   83%,
-  100% {left: 118%;opacity: 0;
-  }}
+  100% {
+    left: 118%;
+    opacity: 0;
+  }
+}
+/* Fondo dentro de las preguntas */
+#faq.vx-sec > .vx-faq {
+  background: linear-gradient(#0a0a0f0d, #050507ab),
+    url("/wallpaper.png") left top / auto no-repeat !important;
+}
+/* Preguntas transparentes para mostrar el fondo */
+#faq .vx-faqItem,
+#faq .vx-faqItem button {
+  background: transparent !important;
+}
+/* Fondo de la respuesta abierta */
+#faq .vx-faqItem > p {
+  background: #252323 !important;
+}
+/* PROTOCOLO → CHOOSE YOUR CODE */
+#protocolo.vx-sec {
+  padding-bottom: 0 !important;
+}
+#llaves.vx-sec {
+  padding-top: 0 !important;
+}
+/* CHOOSE YOUR CODE → WHAT'S INSIDE */
+#llaves.vx-sec .vx-insideZone {
+  display: flow-root;
+  padding-top: 24px !important;
+}
+#llaves.vx-sec .vx-insideBlock {
+  margin-top: 0 !important;
+}
+#protocolo.vx-sec {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: max(16px, calc(50% - 27rem)) !important;
+}
+/* CENTRAR LOS SEPARADORES */
+.vx-protocolSteps > .vx-Icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.vx-Icons img {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+}
+.vx-Icons .vx-Icon6 {
+  /* ENTRE 01 Y 02 */
+  width: 90px;
+  height: 90px;
+  transform: translate(0px, 0px);
+}
+.vx-Icons .vx-Icon4 {
+  /* ENTRE 02 Y 03 */
+  width: 90px;
+  height: 90px;
+  transform: translate(0px, 0px);
+}
+.vx-Icons .vx-Icon7 {
+  /* ENTRE 03 Y 04 */
+  width: 50px;
+  height: 50px;
+  transform: translate(0px, 0px);
+}
+.vx-count {
+  border-radius: 12px;
+  border: 1px solid #9e0a0aa8;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none;
+  position: relative;
+  isolation: isolate;
+}
+.vx-count::before {
+  content: "";
+  position: absolute;
+  inset: -30px -40px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, #e4030329 0%, #e4030310 45%, transparent 72%);
+  pointer-events: none;
+}
+@media (max-width: 760px){
+  .vx-heroIdentity .vx-kicker {
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 8px 4px;
+  }
+  .vx-heroIdentity .vx-kickerBtn {
+    font-size: clamp(9px, 2.4vw, 12px);
+    letter-spacing: 0.1em;
+  }
+  .vx-heroIdentity .vx-kicker .smkl-access-button {
+    order: 2;
+    flex: 0 0 240px;
+    max-width: 100%;
+    margin: 8px auto 0 !important;
+  }
+}
