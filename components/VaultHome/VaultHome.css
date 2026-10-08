@@ -187,9 +187,6 @@ video {
   font-weight: 700;
   letter-spacing: 0.16em;
 }
-/* ═══════════════════════════════════════════════════════════════
-   HERO
-   ═══════════════════════════════════════════════════════════════ */
 /* ══════════════   HERO ══════════════════════════════════════════ */
 .vx-open {
   position: relative;
@@ -244,9 +241,6 @@ video {
   max-width: 72rem;
   margin: 0 auto;
 }
-/* ═══════════════════════════════════════════════════════════════
-   HERO IDENTITY (logo + kicker + access button)
-   ═══════════════════════════════════════════════════════════════ */
 /* ════════════   HERO IDENTITY ══════════════════════════════════════════ */
 .vx-heroIdentity {
   position: relative;
@@ -277,6 +271,7 @@ video {
   object-fit: contain;
   object-position: center;
 }
+
 /* Kicker — una sola definición */
 .vx-kicker {
   position: relative;
@@ -362,12 +357,14 @@ video {
   transform-origin: center;
   min-height: 60px;
 }
-.vx-heroIdentity .smkl-access-button__title {
+.vx-heroIdentity .smkl-access-button__title { 
   font-size: clamp(12px, 1.05vw, 14px);
   letter-spacing: 0.14em;
   text-indent: 0.14em;
   white-space: nowrap;
   line-height: 1.2;
+  position: relative;
+  top: -3px !important;
 }
 .vx-heroIdentity .smkl-access-button__brand {
   font-size: 8px;
@@ -407,9 +404,6 @@ video {
 .vx-heroIdentity .vx-kicker .smkl-access-button__seam--r {
   right: 34px;
 }
-/* ═══════════════════════════════════════════════════════════════
-   TITLE (Access / Restricted)
-   ═══════════════════════════════════════════════════════════════ */
 /* ═══════════   TITLE (Access / Restricted) ═══════════════════════════════════ */
 .vx-title {
   position: relative;
@@ -448,9 +442,6 @@ video {
   animation: vxCrownFloat 7.5s ease-in-out infinite;
   will-change: transform;
 }
-/* ═══════════════════════════════════════════════════════════════
-   INTRO PARAGRAPH
-   ═══════════════════════════════════════════════════════════════ */
 /* ═══════════  INTRO PARAGRAPH ═══════════════════════════ */
 .vx-p {
   display: block;
@@ -478,9 +469,6 @@ video {
   color: #dc435d;
   font-weight: 700;
 }
-/* ═══════════════════════════════════════════════════════════════
-   DOSSIER
-   ═══════════════════════════════════════════════════════════════ */
 /* ═════  DOSSIER ═════════════════════════════════════════ */
 .vx-dossier {
   width: 100%;
@@ -696,9 +684,7 @@ video {
   outline: 2px solid #fff1b3;
   outline-offset: 4px;
 }
-/* ═══════════════════════════════════════════════════════════════
-   TICKER (base + reversed)
-   ═══════════════════════════════════════════════════════════════ */
+/* ══════════  TICKER (base + reversed) ════════════════════════════════ */
 .vx-ticker {
   position: relative;
   height: 34px;
@@ -792,9 +778,7 @@ video {
   color: #d9e8ff8a;
   text-shadow: 0 0 8px #1a65e785;
 }
-/* ═══════════════════════════════════════════════════════════════
-   SECTIONS
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════   SECTIONS ════════════════════════════ */
 .vx-sec {
   width: 100%;
   max-width: 56rem;
@@ -844,9 +828,7 @@ video {
   font-weight: 600;
   letter-spacing: -0.025em;
 }
-/* ═══════════════════════════════════════════════════════════════
-   PROTOCOL
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════  PROTOCOL ══════════════════════════════ */
 .vx-protocol {
   overflow: hidden;
   padding-top: 70px;
@@ -943,6 +925,8 @@ video {
 /* PROTOCOL · original PNGs blended into the background */
 #protocolo .vx-protocolSteps {
   gap: clamp(38px, 5vw, 64px);
+  position: relative; 
+  top: -40px;
 }
 #protocolo .vx-protocolReveal {
   position: relative;
@@ -952,12 +936,12 @@ video {
   z-index: 1;
   min-height: 0;
   padding: 18px 20px;
-  border: 0;
+  border: none;
   background: transparent;
   text-shadow: 0 2px 8px #000;
 }
 #protocolo .vx-stepStars {
-  opacity: 0.2;
+  opacity: 1;
 }
 #protocolo .vx-protocolOrnament {
   position: absolute;
@@ -970,135 +954,117 @@ video {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  opacity: 0.32;
+  opacity: 0.62;
   mix-blend-mode: screen;
   mask-image: radial-gradient(ellipse at center, #000 32%, transparent 73%);
   pointer-events: none;
   user-select: none;
 }
-/* ICON 2 · wide foliage on the right, between 01 and 02 */
-#protocolo .vx-protocolOrnament.vx-Icon2 {
+#protocolo .vx-protocolOrnament.vx-Icon-fx {
   width: 500px;
   height: 300px;
+  left: 32%;
+  top: 10%;
+  opacity:0.58;
+  transform: scale(1.1);
 }
-/* ICON 4 · foliage on the left, between 02 and 03 */
-#protocolo .vx-protocolOrnament.vx-Icon4 {
+#protocolo .vx-Icon7 {
   right: auto;
-  left: -36%;
+  left: -10%;
+  top: 100%;
   width: 470px;
   height: 310px;
-  opacity: 0.28;
+  opacity: 0.25;
+ transform: scale(1.4);
 }
-/* ICON 5 · vertical ornament on the right, between 03 and 04 */
-#protocolo .vx-protocolOrnament.vx-Icon5 {
-  right: -24%;
-  width: 340px;
-  height: 340px;
+#protocolo .vx-step {
+  position: relative;
 }
-@media (max-width: 600px) {
-  #protocolo .vx-protocolSteps {
-    gap: 38px;
-  }
-  #protocolo .vx-step {
-    padding: 14px 0;
-    grid-template-columns: 42px minmax(0, 1fr);
-  }
-  #protocolo .vx-protocolReveal {
-    width: 100%;
-  }
-  #protocolo .vx-protocolOrnament.vx-Icon2,
-  #protocolo .vx-protocolOrnament.vx-Icon4,
-  #protocolo .vx-protocolOrnament.vx-Icon5 {
-    width: 260px;
-    height: 220px;
-    opacity: 0.22;
-  }
-  #protocolo .vx-protocolOrnament.vx-Icon2,
-  #protocolo .vx-protocolOrnament.vx-Icon5 {
-    right: -70px;
-  }
-  #protocolo .vx-protocolOrnament.vx-Icon4 {
-    left: -70px;
-  }
+#protocolo .vx-protocolReveal:nth-child(1) > .vx-step {
+  top: 10px;
+}
+#protocolo .vx-protocolReveal:nth-child(2) > .vx-step {
+  top: -60px;
+}
+#protocolo .vx-protocolReveal:nth-child(3) > .vx-step {
+  top: -120px;
+}
+#protocolo .vx-protocolReveal:nth-child(4) > .vx-step {
+  top: -170px;
 }
 .vx-shift {
   margin-left: 0;
 }
-/* Estrellas dentro del step */
-.vx-stepStars {
+/* FONDO DENTRO DE CADA STEP */
+#protocolo .vx-stepStars {
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(ellipse at bottom, #164d8c20 0%, #090a0f25 100%);
+  opacity: 1;
+  background: radial-gradient(
+    ellipse at bottom,
+    #0963cac7 0%,
+    #102cb7c9 100%
+  );
 }
-.vx-stars1,
-.vx-stars2,
-.vx-stars3 {
+/* TEXTO DELANTE DE LAS ESTRELLAS */
+#protocolo .vx-step > div:not(.vx-stepStars) {
+  position: relative;
+  z-index: 1;
+}
+#protocolo .vx-stepStars .vx-stars {/* CAPAS: OCUPAN TODO EL STEP */
   position: absolute;
   inset: 0;
-  background: transparent;
-  animation: vxStepStars 8s linear infinite;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: transparent;
+  background-repeat: repeat;
+  background-size: var(--star-width) var(--star-height);
+  animation: vxStarsInside var(--star-speed) linear infinite;
 }
-.vx-stars1 {
-  width: 2px;
-  height: 2px;
+#protocolo .vx-stars1 {
+  --star-width: 130px;
+  --star-height: 90px;
+  --star-speed: 8s;
   opacity: 0.75;
-  box-shadow: 11vw 126px #4682b4,
-    31vw 38px #4682b4,
-    52vw 101px #4682b4,
-    71vw 57px #4682b4,
-    89vw 137px #4682b4,
-    1833px 832px #4682b4,
-    1424px 285px #4682b4,
-    1377px 1596px #4682b4,
-    432px 153px #4682b4,
-    1348px 1410px #4682b4,
-    1529px 954px #4682b4,
-    1102px 387px #4682b4;
+  background-image:
+    radial-gradient(circle at 15% 20%, #4682b4 1px, transparent 1.5px),
+    radial-gradient(circle at 65% 55%, #4682b4 1px, transparent 1.5px),
+    radial-gradient(circle at 35% 85%, #fff 1px, transparent 1.5px);
 }
-.vx-stars2 {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
+#protocolo .vx-stars2 {
+  --star-width: 190px;
+  --star-height: 120px;
+  --star-speed: 12s;
   opacity: 0.7;
-  animation-duration: 12s;
-  box-shadow: 11vw 126px #f9d802,
-    31vw 38px #f9d802,
-    52vw 101px #fff,
-    71vw 57px #f9d802,
-    89vw 137px #f9d802,
-    1833px 832px #f9d802,
-    1424px 285px #fff,
-    1377px 1596px #f9d802,
-    432px 153px #f9d802,
-    1348px 1410px #f9d802,
-    1529px 954px #fff,
-    1102px 387px #f9d802;
+  background-image:
+    radial-gradient(circle at 25% 35%, #f9d802 1.5px, transparent 2px),
+    radial-gradient(circle at 80% 75%, #f9d802 1.5px, transparent 2px),
+    radial-gradient(circle at 55% 15%, #fff 1.5px, transparent 2px);
 }
-.vx-stars3 {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+#protocolo .vx-stars3 {
+  --star-width: 260px;
+  --star-height: 160px;
+  --star-speed: 20s;
   opacity: 0.8;
-  animation-duration: 20s;
-  box-shadow: 11vw 126px #0279f9,
-    31vw 38px #f9d802,
-    52vw 101px #f9d802,
-    71vw 57px #f9d802,
-    89vw 137px #0279f9,
-    1833px 832px #f9d802,
-    1424px 285px #f9d802,
-    1377px 1596px #f9d802,
-    432px 153px #0279f9,
-    1348px 1410px #f9d802,
-    1529px 954px #f9d802,
-    1102px 387px #f9d802;
+  background-image:
+    radial-gradient(circle at 18% 65%, #0279f9 2.5px, transparent 3px),
+    radial-gradient(circle at 72% 25%, #f9d802 2.5px, transparent 3px);
 }
-/* ═══════════════════════════════════════════════════════════════
-   DEVICE STAGE
-   ═══════════════════════════════════════════════════════════════ */
+/* MOVIMIENTO CONTINUO HACIA ARRIBA */
+@keyframes vxStarsInside {
+  from {background-position: 0 0;
+  }
+  to {background-position: 0 calc(0px - var(--star-height));
+  }}
+@media (prefers-reduced-motion: reduce) {
+  #protocolo .vx-stepStars .vx-stars {animation: none;
+  }}
+/* ═══════════  DEVICE STAGE ══════════════════════════════ */
 .vx-deviceStage {
   position: relative;
   display: flex;
@@ -1114,9 +1080,7 @@ video {
   margin-left: auto;
   margin-right: auto;
 }
-/* ═══════════════════════════════════════════════════════════════
-   WHAT'S INSIDE
-   ═══════════════════════════════════════════════════════════════ */
+/* ══════  WHAT'S INSIDE ═════════════════════════════════════ */
 #llaves.vx-sec .vx-insideZone {
   background: linear-gradient(180deg, #0203053d 0%, #02030550 55%, #02030591 100%),
     url("/wallpaperGeneral.png") center 8% / cover no-repeat;
@@ -1130,9 +1094,7 @@ video {
   width: min(100%, 72rem);
   margin: 0 auto 30px !important;
 }
-/* ═══════════════════════════════════════════════════════════════
-   WHAT'S INSIDE
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════   WHAT'S INSIDE ═════════════════════════ */
 .vx-insideZone {
   background: linear-gradient(180deg, #0203053d 0%, #02030550 55%, #02030591 100%),
     url("/wallpaperGeneral.png") center 8% / cover no-repeat;
@@ -1188,9 +1150,7 @@ video {
   font-size: 2rem;
   text-shadow: 0 0 8px #e4030373, 0 0 22px #e4030340;
 }
-/* ═══════════════════════════════════════════════════════════════
-   CAROUSEL
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════════   CAROUSEL ═════════════════════════ */
 .vx-carousel {
   position: relative;
   width: 100%;
@@ -1275,9 +1235,7 @@ video {
 .vx-shot.is-open .vx-shotMask {
   opacity: 0;
 }
-/* ═══════════════════════════════════════════════════════════════
-   CHOOSE YOUR CODE
-   ═══════════════════════════════════════════════════════════════ */
+/* ══════════   CHOOSE YOUR CODE ═══════════════════════════ */
 .vx-chooseZone {
   position: relative;
   width: 100vw;
@@ -1295,9 +1253,7 @@ video {
   margin-bottom: 0;
   padding-top: 0 !important;
 }
-/* ═══════════════════════════════════════════════════════════════
-   FAQ + FOOTER
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════  FAQ + FOOTER ═════════════════════════════ */
 #faq.vx-sec {
   max-width: none;
   padding-left: max(20px, calc(50% - 32rem));
@@ -1541,9 +1497,7 @@ video {
   text-transform: uppercase;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PRIVATE ALBUM
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════  PRIVATE ALBUM ═══════════════════════════ */
 .vx-privateAlbum {
   position: relative;
   scroll-margin-top: 76px;
@@ -1682,9 +1636,7 @@ video {
   height: 1px;
   background: #e0b85a66;
 }
-/* ═══════════════════════════════════════════════════════════════
-   ICON
-   ═══════════════════════════════════════════════════════════════ */
+/* ═════════  ICON ═════════════════════════════ */
 .vx-titleRose1 {
   display: block;
   width: clamp(145px, 17vw, 190px);
@@ -1696,827 +1648,6 @@ video {
   background: transparent !important;
   box-shadow: none !important;
   filter: drop-shadow(0 0 4px #00ff6259) drop-shadow(8px 4px 24px #00ff6233);
-}
-/* ═════════   ANIMATIONS ═════════════════════ */
-@keyframes vxStepStars {
-  from {
-    transform: translateY(290px);
-  }
-  to {
-    transform: translateY(-290px);
-  }
-}
-@keyframes vxAccessShine {
-  0%,
-  68% {
-    left: -55%;
-    opacity: 0;
-  }
-  72% {
-    opacity: 0.7;
-  }
-  88% {
-    left: 125%;
-    opacity: 0.35;
-  }
-  100% {
-    left: 125%;
-    opacity: 0;
-  }
-}
-@keyframes vxCarouselScroll {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(calc(-50% - 7px), 0, 0);
-  }
-}
-@keyframes vxL {
-  to {
-    transform: translateX(-50%);
-  }
-}
-@keyframes vxR {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-@keyframes vxCrownFloat {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) rotate(-1deg) translateY(0);
-  }
-  50% {
-    transform: translate(-50%, -50%) rotate(1.4deg) translateY(-5px);
-  }
-}
-/* ════  RESPONSIVE ════════════════════ */
-@media (min-width: 900px) {
-  .vx-step small {
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--faint);
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-  }
-  .vx-shift {
-    margin-left: 4rem;
-  }
-  .vx-footGrid {
-    grid-template-columns: 1.2fr 0.8fr;
-    align-items: start;
-  }
-}
-@media (min-width: 960px) {
-  .vx-grid {
-    grid-template-columns: 1.05fr 0.7fr;
-    align-items: end;
-  }
-  .vx-lock {
-    justify-self: start;
-  }
-  .vx-grid > .vx-lock.vx-lockRaise {
-    transform: translateX(-160px) translateY(40px);
-  }
-}
-@media (max-width: 980px) {
-  .vx-heroIdentity .vx-logoWrap {
-    min-height: 350px;
-  }
-  .vx-heroIdentity .vx-logoWrap img {
-    width: min(78vw, 560px);
-  }
-  .vx-kicker {
-    gap: 18px;
-  }
-}
-@media (max-width: 760px) {
-  .vx-open {
-    width: 100%;
-    max-width: 100%;
-    padding: 18px 16px 40px;
-    overflow-x: clip;
-  }
-  .vx-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
-    width: 100%;
-    max-width: 100%;
-  }
-  .vx-grid > div,
-  .vx-grid > .vx-lock {
-    min-width: 0;
-    max-width: 100%;
-  }
-  /* Hero identity */
-  .vx-heroIdentity {
-    width: 100%;
-    margin: 0 auto 8px;
-    padding: 8px 0 0;
-    transform: none;
-  }
-  .vx-heroIdentity .vx-logoWrap {
-    width: 100%;
-    min-height: 190px;
-    margin: 0 auto;
-  }
-  .vx-heroIdentity .vx-logoWrap img {
-    width: min(92vw, 360px);
-    max-width: 100%;
-    margin: 0 auto;
-  }
-  .vx-kicker {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0;
-    gap: clamp(6px, 2vw, 10px);
-  }
-  .vx-kickerBtn {
-    min-width: 0;
-    padding: 7px 1px;
-    font-size: clamp(8px, 2.35vw, 10px);
-    letter-spacing: 0.1em;
-  }
-  .vx-kicker > i {
-    flex: 0 0 4px;
-    width: 4px;
-    height: 4px;
-  }
-  /* Access button */
-  .vx-heroAccessBtn {
-    min-height: 74px;
-    margin: 4px auto 0;
-  }
-  .vx-heroAccessBtn .smkl-access-button {
-    width: min(100%, 285px);
-    transform: none;
-    margin: 0 auto !important;
-  }
-  .vx-title {
-    width: 100%;
-    max-width: 100%;
-    margin: 8px 0 0;
-    padding-top: 10px;
-    overflow: visible;
-  }
-  .vx-access {
-    margin: 0;
-    font-size: clamp(50px, 15vw, 62px);
-    line-height: 0.88;
-    transform: none;
-  }
-  .vx-rest {
-    margin: 2px 0 0 24px;
-    font-size: clamp(38px, 11.7vw, 50px);
-    font-family: "Arial Narrow", "Roboto Condensed", "Impact", sans-serif;
-    line-height: 0.88;
-    letter-spacing: -0.035em;
-    transform: none;
-    text-transform: uppercase;
-  }
-  .vx-titleCrown {
-    top: 22px;
-    right: 2px;
-    left: auto;
-    width: 104px;
-    animation: none;
-    transform: rotate(-2deg);
-  }
-  .vx-p,
-  .vx-pNormal {
-    width: 100%;
-    max-width: 100%;
-  }
-  .vx-pNormal {
-    font-size: 17px;
-    line-height: 1.55;
-  }
-  .vx-dossierRow {
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-  }
-  .vx-dossierDevice {
-    min-width: 0;
-    width: 100%;
-  }
-  .vx-dossierOrnament {
-    right: -22px;
-    width: min(58vw, 230px);
-    opacity: 0.38;
-  }
-  .vx-lock,
-  .vx-lock.vx-lockRaise {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    transform: none;
-  }
-  .vx-sec {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 18px;
-    padding-right: 18px;
-    overflow-x: hidden;
-  }
-  .vx-protocolSteps {
-    width: 100%;
-    max-width: 100%;
-    gap: 22px;
-    margin-top: 34px;
-  }
-  .vx-protocolReveal,
-  .vx-stepLeft,
-  .vx-stepRight {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    align-self: stretch;
-    transform: none;
-  }
-  .vx-step {
-    width: 100%;
-    grid-template-columns: 42px minmax(0, 1fr);
-    gap: 12px;
-    min-height: 0;
-    padding: 18px 14px;
-  }
-  .vx-stepNum {
-    font-size: 34px;
-  }
-  .vx-step h3 {
-    font-size: 9px;
-    letter-spacing: 0.16em;
-  }
-  .vx-step p {
-    font-size: 16px;
-    line-height: 1.5;
-    word-break: normal;
-    overflow-wrap: normal;
-  }
-  #llaves.vx-sec .vx-insideBlock {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto 24px !important;
-  }
-  .vx-insideBlock {
-    width: 100%;
-    max-width: 100%;
-    margin: 28px auto 24px;
-  }
-  .vx-insideRow {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    width: 100%;
-    max-width: 100%;
-  }
-  .vx-insideRow .vx-lead {
-    width: 100%;
-    max-width: none;
-    font-size: 18px;
-    line-height: 1.55;
-    word-break: normal;
-    overflow-wrap: normal;
-  }
-  .vx-insideRow .vx-count {
-    width: min(100%, 300px);
-    min-width: 0;
-    margin: 0;
-    justify-self: start;
-    transform: none;
-  }
-  .vx-chooseZone {
-    max-width: 100vw;
-    overflow: hidden;
-  }
-  .vx-doorLaurel {
-    width: 112%;
-    height: clamp(88px, 23vw, 122px);
-    margin: 0 -6% -28px;
-  }
-  .vx-protocolReveal {
-    width: 84%;
-  }
-  .vx-stepLeft {
-    margin-right: auto;
-  }
-  .vx-stepRight {
-    margin-left: auto;
-  }
-  .vx-step {
-    grid-template-columns: 54px 1fr;
-    padding: 22px 18px;
-  }
-  .vhd-root {
-    margin-bottom: 48px;
-  }
-  .vhd-doors {
-    height: 285px;
-    min-height: 285px;
-  }
-  .vx-hud {
-    padding: 0 10px;
-  }
-  .vx-brand {
-    gap: 7px;
-    font-size: 8px;
-    letter-spacing: 0.14em;
-  }
-  .vx-brand img {
-    height: 24px;
-  }
-  .vx-hudRight {
-    gap: 6px;
-    font-size: 8px;
-    letter-spacing: 0.1em;
-  }
-  .vx-unlockedBadge {
-    min-width: 60px;
-    padding: 3px 5px;
-  }
-  .vx-unlockedPrefix,
-  .vx-unlockedState {
-    font-size: 7px;
-  }
-  /* Dossier item tweaks */
-  .vx-dossierItem {
-    min-height: 70px;
-    padding: 10px;
-  }
-  .vx-dossierItem strong {
-    font-size: 9px;
-    letter-spacing: 0.04em;
-  }
-  .vx-dossierDrop strong {
-    font-size: 11px;
-  }
-  /* Kicker block (strip) */
-  .vx-kicker {
-    min-height: 54px;
-    margin-top: 8px;
-    padding: 7px 4px;
-    gap: 2px;
-    font-size: clamp(7px, 2.35vw, 9px);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    line-height: 1;
-  }
-  .vx-kicker > i {
-    flex: 0 0 4px;
-    width: 4px;
-    height: 4px;
-  }
-  .vx-kickerBtn {
-    min-height: 32px;
-    padding-inline: 4px;
-    font-size: inherit;
-    letter-spacing: inherit;
-  }
-  /* Inside zone background */
-  #llaves.vx-sec .vx-insideZone {
-    padding-top: 24px !important;
-    padding-bottom: 60px !important;
-  }
-  .vx-insideZone {
-    padding-top: 54px;
-    padding-bottom: 60px;
-    background-position: 50% 32%;
-    background-size: cover;
-  }
-  /* Device stage mobile */
-  .vx-deviceStage {
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 0 auto;
-    padding: 4px 0 8px;
-  }
-  .vx-deviceStage .vd-device {
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%) translateY(8%) scale(0.92);
-    transform-origin: center top;
-    margin: 0;
-  }
-  /* Session links mobile */
-  .vx-sessionLinks {
-    gap: 48px;
-  }
-  .vx-sessionLinks button {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
-    min-height: 58px;
-  }
-  .vx-sessionLinks button img {
-    width: 42px;
-    height: 42px;
-    transform: scale(1.7);
-  }
-  .vx-sessionLinks button:hover img {
-    transform: scale(1.7) translateY(-1px);
-  }
-  /* Ticker mobile */
-  .vx-ticker.is-rev {
-    position: relative;
-    top: -1px;
-    margin-bottom: -52px;
-    z-index: 20;
-  }
-  /* Lock with background mobile */
-  .vx-lock {
-    width: calc(100% - 26px);
-    max-width: 650px;
-    margin: 0 auto;
-    padding: 18px 12px 14px;
-    border-radius: 20px;
-    overflow: visible;
-    background: linear-gradient(180deg, #02030542 0%, #02030558 55%, #02030588 100%),
-      url("/wallpaperGeneral.png") center 28% / cover no-repeat;
-  }
-  .vx-lock.vx-lockRaise {
-    top: 0;
-    transform: none;
-  }
-  .vx-accessArea {
-    width: 100%;
-    padding-top: 4px;
-    gap: 6px;
-  }
-  .vx-lock .vx-getCodeBtn {
-    width: 72%;
-    height: 42px;
-    min-height: 42px;
-    margin: 6px auto 0;
-    padding: 4px 14px;
-  }
-  /* Vault laurel */
-  .vx-vaultLaurel {
-    width: 96%;
-    height: clamp(94px, 24vw, 126px);
-    margin-bottom: 0;
-  }
-  /* Kicker mobile fine-tune */
-  .vx-heroIdentity .vx-kicker {
-    gap: clamp(8px, 2.5vw, 15px);
-    margin-top: 24px;
-  }
-  .vx-heroIdentity .vx-kickerBtn {
-    padding: 9px 1px;
-    font-size: clamp(9px, 2.65vw, 13px);
-    letter-spacing: 0.13em;
-  }
-  .vx-heroIdentity .vx-kicker > i {
-    flex: 0 0 5px;
-    width: 5px;
-    height: 5px;
-  }
-  .vx-heroAccessBtn {
-    min-height: 130px;
-    margin-top: 18px;
-  }
-  .vx-heroAccessBtn .smkl-access-button {
-    transform: none;
-    width: min(100%, 285px);
-    margin: 0 auto !important;
-  }
-  .vx-heroIdentity {
-    min-height: 430px;
-    padding: 26px 0 12px;
-  }
-  .vx-heroIdentity .vx-logoWrap {
-    width: 100%;
-    min-height: 245px;
-  }
-  .vx-heroIdentity .vx-logoWrap img {
-    width: min(88vw, 420px);
-    max-width: 100%;
-  }
-  .vx-heroIdentity .vx-kicker {
-    justify-content: center;
-    gap: clamp(7px, 2.2vw, 13px);
-    margin-top: 6px;
-    padding: 0 6px;
-  }
-  .vx-heroIdentity .vx-kickerBtn {
-    padding: 7px 0;
-    font-size: clamp(8px, 2.25vw, 11px);
-    letter-spacing: 0.14em;
-  }
-  .vx-heroIdentity .vx-kicker > i {
-    flex: 0 0 4px;
-    width: 4px;
-    height: 4px;
-  }
-  .vx-heroAccessSlot {
-    min-height: 112px;
-    margin-top: 16px;
-    padding-bottom: 10px;
-  }
-  .vx-heroIdentity {
-    min-height: 0;
-    padding-bottom: 0;
-  }
-  .vx-heroAccessBtn {
-    min-height: 0;
-  }
-  .vx-title {
-    margin-top: 14px;
-  }
-  .vx-titleCrown {
-    width: 118px;
-    left: 72%;
-    top: 53%;
-  }
-  .vhd-door-inner::after {
-    content: "TAP TO OPEN";
-    position: absolute;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%);
-    width: max-content;
-    color: #d8cf67b8;
-    font-family: var(--mono);
-    font-size: 6px;
-    font-weight: 700;
-    letter-spacing: 0.24em;
-    text-indent: 0.24em;
-    opacity: 0.35;
-    animation: vhdTapCueMobile 2.6s ease-in-out infinite;
-  }
-  .vhd-door-inner i {
-    position: relative;
-    animation: vhdHandleHintMobile 2.6s ease-in-out infinite;
-  }
-  .vx-lock .vx-getCodeBtn::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -40%;
-    width: 28%;
-    height: 200%;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent, #ffffff8f, transparent);
-    transform: skewX(-18deg);
-    animation: vxGetAccessShineMobile 3.4s ease-in-out infinite;
-  }
-  .vx-lock .vx-getCodeBtn::after {
-    content: "";
-    position: absolute;
-    inset: 2px;
-    border-radius: 7px;
-    pointer-events: none;
-    border: 1px solid #78d5ff18;
-  }
-}
-@media (max-width: 600px) {
-  .vx-carouselTrack {
-    gap: 10px;
-    animation-duration: 11s;
-  }
-  .vx-carouselSlide {
-    width: 72vw;
-    max-width: 250px;
-  }
-  .vx-kicker {
-    gap: 5px;
-    flex-wrap: nowrap;
-    width: 100%;
-    min-height: 54px;
-    margin-top: 8px;
-    padding: 7px 4px;
-    overflow: visible;
-    white-space: nowrap;
-    font-size: clamp(7px, 2.35vw, 9px);
-    letter-spacing: 0.1em;
-    line-height: 1;
-  }
-  .vx-kicker > i {
-    width: 6px;
-    height: 4px;
-    flex: 0 0 4px;
-  }
-  .vx-kickerBtn {
-    min-width: 0;
-    min-height: 32px;
-    padding-inline: 4px;
-    font-size: inherit;
-    letter-spacing: inherit;
-    white-space: nowrap;
-  }
-}
-@media (max-width: 520px) {
-  .vx-hud {
-    padding: 0 10px;
-  }
-  .vx-brand {
-    gap: 7px;
-    font-size: 8px;
-    letter-spacing: 0.14em;
-  }
-  .vx-brand img {
-    height: 24px;
-  }
-  .vx-hudRight {
-    gap: 6px;
-    font-size: 8px;
-    letter-spacing: 0.1em;
-  }
-  .vx-unlockedBadge {
-    min-width: 60px;
-    padding: 3px 5px;
-  }
-  .vx-unlockedPrefix,
-  .vx-unlockedState {
-    font-size: 7px;
-  }
-  .vx-pNormal {
-    font-size: 18px;
-  }
-  .vx-dossierItem {
-    min-height: 70px;
-    padding: 10px;
-  }
-  .vx-dossierItem strong {
-    font-size: 9px;
-    letter-spacing: 0.04em;
-  }
-  .vx-dossierDrop strong {
-    font-size: 11px;
-  }
-  .vx-finalBackdrop {
-    background: linear-gradient(180deg, #12121309, #07070813 54%, #03030486 100%),
-      url("/wallpaperGeneral.png") center / 390px center;
-  }
-  .vx-foot {
-    padding: 44px 18px 24px;
-  }
-  .vx-footGrid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    width: 100%;
-  }
-  .vx-footBrand {
-    width: 100%;
-    justify-content: center;
-  }
-  .vx-footActions {
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-  .vx-sessionLinks {
-    width: 100%;
-    justify-content: center;
-    gap: 10px;
-    margin: 0 auto;
-  }
-  .vx-sessionLinks button {
-    flex: 0 0 88px;
-    width: 88px;
-  }
-  .vx-sessionLinks button img {
-    width: 72px;
-    height: 72px;
-  }
-  .vx-footCode {
-    margin-top: 4px;
-    text-align: center;
-  }
-  .vx-legal {
-    width: 100%;
-    max-width: 100%;
-    margin: 20px auto 0;
-  }
-}
-@media (max-width: 390px) {
-  .vx-heroIdentity .vx-kicker {
-    gap: 6px;
-  }
-  .vx-heroIdentity .vx-kickerBtn {
-    font-size: 7.5px;
-    letter-spacing: 0.1em;
-  }
-  .vx-heroIdentity .vx-kicker > i {
-    flex-basis: 3px;
-    width: 3px;
-    height: 3px;
-  }
-}
-/* ════   REDUCED MOTION ═════════════════ */
-@media (prefers-reduced-motion: reduce) {
-  .vx-titleCrown,
-  .vhd-door-inner::after,
-  .vhd-door-inner i,
-  .vx-lock .vx-getCodeBtn::before,
-  .vx-getCodeBtn::after,
-  .vx-tickerTrack,
-  .vx-carouselTrack,
-  .vx-stars1,
-  .vx-stars2,
-  .vx-stars3 {
-    animation: none;
-  }
-  .vx-lock {
-    background-attachment: scroll;
-  }
-  .vx-insideRow {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .vx-insideRow .vx-count {
-    min-width: 0;
-    justify-self: start;
-    transform: none;
-  }
-  .vx-footActions {
-    align-items: flex-start;
-    padding: 14px 12px;
-  }
-  .vx-footCode {
-    text-align: left;
-    white-space: normal;
-  }
-  .vx-privateAlbum {
-    padding: 64px 14px;
-  }
-  .vx-privateAlbumGrid {
-    grid-template-columns: 1fr;
-  }
-  .vx-privateAlbumTitle {
-    font-size: clamp(42px, 15vw, 64px);
-  }
-  .vx-privateAlbumItem {
-    padding: 7px;
-  }
-  .vx-privateAlbumItem figcaption {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  .vx-privateAlbumFooter {
-    flex-wrap: wrap;
-    gap: 10px;
-    text-align: center;
-  }
-  .vx-dossierOrnament,
-  .vx-icon2 {
-    transform: translateY(-48%);
-  }
-}
-/* ══════  KEYFRAMES ════════════════════════════════ */
-@keyframes vhdTapCueMobile {
-  0%,
-  100% {
-    opacity: 0.28;
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    opacity: 0.72;
-    transform: translateX(-50%) translateY(-3px);
-  }
-}
-@keyframes vhdHandleHintMobile {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scaleX(0.88);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleX(1.08);
-  }
-}
-@keyframes vxGetAccessShineMobile {
-  0%,
-  58% {
-    opacity: 0;
-    left: -40%;
-  }
-  66% {
-    opacity: 0.75;
-  }
-  82% {
-    left: 118%;
-    opacity: 0.35;
-  }
-  83%,
-  100% {
-    left: 118%;
-    opacity: 0;
-  }
 }
 /* Fondo dentro de las preguntas */
 #faq.vx-sec > .vx-faq {
@@ -2605,20 +1736,260 @@ video {
   background: radial-gradient(ellipse at center, #e4030329 0%, #e4030310 45%, transparent 72%);
   pointer-events: none;
 }
-@media (max-width: 760px){
-  .vx-heroIdentity .vx-kicker {
-    flex-wrap: wrap;
-    gap: 8px 10px;
-    padding: 8px 4px;
+/* PRIV•VAULT, TELEGRAM, X y GET MY CODE */
+.vx-heroIdentity .vx-kicker,
+.vx-heroIdentity {
+  position: relative;
+  top: -50px;
+}
+
+/* ═════════   ANIMATIONS ═════════════════════ */
+@keyframes vxStepStars {
+  from {transform: translateY(290px);
   }
-  .vx-heroIdentity .vx-kickerBtn {
-    font-size: clamp(9px, 2.4vw, 12px);
-    letter-spacing: 0.1em;
+  to {transform: translateY(-290px);
+  }}
+@keyframes vxAccessShine {
+  0%,68% {left: -55%;opacity: 0;
   }
-  .vx-heroIdentity .vx-kicker .smkl-access-button {
-    order: 2;
-    flex: 0 0 240px;
-    max-width: 100%;
-    margin: 8px auto 0 !important;
+  72% {opacity: 0.7;
   }
+  88% {left: 125%; opacity: 0.35;
+  }
+  100% {left: 125%; opacity: 0;
+  }}
+@keyframes vxCarouselScroll {
+  from {transform: translate3d(0, 0, 0);
+  }
+  to {transform: translate3d(calc(-50% - 7px), 0, 0);
+  }}
+@keyframes vxL {
+  to {transform: translateX(-50%);
+  }}
+@keyframes vxR {
+  from {transform: translateX(-50%);
+  }
+  to {transform: translateX(0);
+  }}
+@keyframes vxCrownFloat {
+  0%,
+  100% {transform: translate(-50%, -50%) rotate(-1deg) translateY(0);
+  }
+  50% {transform: translate(-50%, -50%) rotate(1.4deg) translateY(-5px);
+  }}
+  @keyframes vhdTapCueMobile {
+  0%,100% {opacity: 0.28;transform: translateX(-50%) translateY(0);}
+  50% {opacity: 0.72;transform: translateX(-50%) translateY(-3px);}
+}
+@keyframes vhdHandleHintMobile {
+  0%,100% {opacity: 0.55;transform: scaleX(0.88);}
+  50% {opacity: 1;transform: scaleX(1.08);}
+}
+@keyframes vxGetAccessShineMobile {
+  0%,58% {opacity: 0;left: -40%;}
+  66% {opacity: 0.75;}
+  82% {left: 118%;opacity: 0.35;}
+  83%,100% {left: 118%;opacity: 0;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .vx-titleCrown,.vhd-door-inner::after,.vhd-door-inner i,.vx-lock .vx-getCodeBtn::before,.vx-getCodeBtn::after,.vx-tickerTrack,.vx-carouselTrack,.vx-stars1,.vx-stars2,.vx-stars3 {animation: none;}
+  .vx-lock {background-attachment: scroll;}
+  .vx-insideRow {grid-template-columns: 1fr;gap: 16px;}
+  .vx-insideRow .vx-count {min-width: 0;justify-self: start;transform: none;}
+  .vx-footActions {align-items: flex-start;padding: 14px 12px;}
+  .vx-footCode {text-align: left;white-space: normal;}
+  .vx-privateAlbum {padding: 64px 14px;}
+  .vx-privateAlbumGrid {grid-template-columns: 1fr;}
+  .vx-privateAlbumTitle {font-size: clamp(42px, 15vw, 64px);}
+  .vx-privateAlbumItem {padding: 7px;}
+  .vx-privateAlbumItem figcaption {flex-direction: column;align-items: flex-start;gap: 5px;}
+  .vx-privateAlbumFooter {flex-wrap: wrap;gap: 10px;text-align: center;}
+  .vx-dossierOrnament,.vx-icon2 {transform: translateY(-48%);}
+}
+/* ════  RESPONSIVE ════════════════════ */
+@media (max-width: 390px) {
+  .vx-heroIdentity .vx-kicker {gap: 6px;}
+  .vx-heroIdentity .vx-kickerBtn {font-size: 7.5px;letter-spacing: 0.1em;}
+  .vx-heroIdentity .vx-kicker > i {flex-basis: 3px;width: 3px;height: 3px;}
+}
+@media (max-width: 520px) {
+  .vx-hud {padding: 0 10px;}
+  .vx-brand {gap: 7px;font-size: 8px;letter-spacing: 0.14em;}
+  .vx-brand img {height: 24px;}
+  .vx-hudRight {gap: 6px;font-size: 8px;letter-spacing: 0.1em;}
+  .vx-unlockedBadge {min-width: 60px;padding: 3px 5px;}
+  .vx-unlockedPrefix,.vx-unlockedState {font-size: 7px;}
+  .vx-pNormal {font-size: 18px;}
+  .vx-dossierItem {min-height: 70px;padding: 10px;}
+  .vx-dossierItem strong {font-size: 9px;letter-spacing: 0.04em;}
+  .vx-dossierDrop strong {font-size: 11px;}
+  .vx-finalBackdrop {background: linear-gradient(180deg, #12121309, #07070813 54%, #03030486 100%), url("/wallpaperGeneral.png") center / 390px center;}
+  .vx-foot {padding: 44px 18px 24px;}
+  .vx-footGrid {display: flex;flex-direction: column;align-items: center;justify-content: center;gap: 22px;width: 100%;}
+  .vx-footBrand {width: 100%;justify-content: center;}
+  .vx-footActions {width: 100%;align-items: center;justify-content: center;}
+  .vx-sessionLinks {width: 100%;justify-content: center;gap: 10px;margin: 0 auto;}
+  .vx-sessionLinks button {flex: 0 0 88px;width: 88px;}
+  .vx-sessionLinks button img {width: 72px;height: 72px;}
+  .vx-footCode {margin-top: 4px;text-align: center;}
+  .vx-legal {width: 100%;max-width: 100%;margin: 20px auto 0;}
+}
+@media (max-width: 600px) {
+  .vx-carouselTrack {gap: 10px;animation-duration: 11s;}
+  .vx-carouselSlide {width: 72vw;max-width: 250px;}
+  .vx-kicker {gap: 5px;flex-wrap: nowrap;width: 100%;min-height: 54px;margin-top: 8px;padding: 7px 4px;overflow: visible;white-space: nowrap;font-size: clamp(7px, 2.35vw, 9px);letter-spacing: 0.1em;line-height: 1;}
+  .vx-kicker > i {width: 6px;height: 4px;flex: 0 0 4px;}
+  .vx-kickerBtn {min-width: 0;min-height: 32px;padding-inline: 4px;font-size: inherit;letter-spacing: inherit;white-space: nowrap;}
+}
+@media (max-width: 600px) {
+  #protocolo .vx-protocolSteps {gap: 38px;
+  }
+  #protocolo .vx-step {padding: 14px 0;grid-template-columns: 42px minmax(0, 1fr);
+  }
+  #protocolo .vx-protocolReveal {width: 100%;
+  }
+  #protocolo .vx-protocolOrnament.vx-Icon2,
+  #protocolo .vx-protocolOrnament.vx-Icon4,
+  #protocolo .vx-protocolOrnament.vx-Icon5 {width: 260px;height: 220px;opacity: 0.22;
+  }
+  #protocolo .vx-protocolOrnament.vx-Icon2,
+  #protocolo .vx-protocolOrnament.vx-Icon5 {right: -70px;
+  }
+  #protocolo .vx-protocolOrnament.vx-Icon4 {left: -70px;
+  }}
+  @media (max-width: 760px){
+  .vx-heroIdentity .vx-kicker { flex-wrap: wrap; gap: 8px 10px; padding: 8px 4px;
+  }
+  .vx-heroIdentity .vx-kickerBtn {font-size: clamp(9px, 2.4vw, 12px);letter-spacing: 0.1em;
+  }
+  .vx-heroIdentity .vx-kicker .smkl-access-button {order: 2;flex: 0 0 240px;max-width: 100%; margin: 8px auto 0 !important;
+  }}
+  @media (max-width: 760px) {
+  .vx-open {width: 100%;max-width: 100%;padding: 18px 16px 40px;overflow-x: clip;}
+  .vx-grid {grid-template-columns: minmax(0, 1fr);gap: 24px;width: 100%;max-width: 100%;}
+  .vx-grid > div,.vx-grid > .vx-lock {min-width: 0;max-width: 100%;}
+  .vx-heroIdentity {width: 100%;margin: 0 auto 8px;padding: 8px 0 0;transform: none;}
+  .vx-heroIdentity .vx-logoWrap {width: 100%;min-height: 190px;margin: 0 auto;}
+  .vx-heroIdentity .vx-logoWrap img {width: min(92vw, 360px);max-width: 100%;margin: 0 auto;}
+  .vx-kicker {width: 100%;max-width: 100%;margin: 0 auto;padding: 0;gap: clamp(6px, 2vw, 10px);}
+  .vx-kickerBtn {min-width: 0;padding: 7px 1px;font-size: clamp(8px, 2.35vw, 10px);letter-spacing: 0.1em;}
+  .vx-kicker > i {flex: 0 0 4px;width: 4px;height: 4px;}
+  .vx-heroAccessBtn {min-height: 74px;margin: 4px auto 0;}
+  .vx-heroAccessBtn .smkl-access-button {width: min(100%, 285px);transform: none;margin: 0 auto !important;}
+  .vx-title {width: 100%;max-width: 100%;margin: 8px 0 0;padding-top: 10px;overflow: visible;}
+  .vx-access {margin: 0;font-size: clamp(50px, 15vw, 62px);line-height: 0.88;transform: none;}
+  .vx-rest {margin: 2px 0 0 24px;font-size: clamp(38px, 11.7vw, 50px);font-family: "Arial Narrow", "Roboto Condensed", "Impact", sans-serif;line-height: 0.88;letter-spacing: -0.035em;transform: none;text-transform: uppercase;}
+  .vx-titleCrown {top: 22px;right: 2px;left: auto;width: 104px;animation: none;transform: rotate(-2deg);}
+  .vx-p,.vx-pNormal {width: 100%;max-width: 100%;}
+  .vx-pNormal {font-size: 17px;line-height: 1.55;}
+  .vx-dossierRow {width: 100%;max-width: 100%;overflow: hidden;}
+  .vx-dossierDevice {min-width: 0;width: 100%;}
+  .vx-dossierOrnament {right: -22px;width: min(58vw, 230px);opacity: 0.38;}
+  .vx-lock,.vx-lock.vx-lockRaise {width: 100%;max-width: 100%;margin: 0 auto;transform: none;}
+  .vx-sec {width: 100%;max-width: 100%;padding-left: 18px;padding-right: 18px;overflow-x: hidden;}
+  .vx-protocolSteps {width: 100%;max-width: 100%;gap: 22px;margin-top: 34px;}
+  .vx-protocolReveal,.vx-stepLeft,.vx-stepRight {width: 100%;margin-left: 0;margin-right: 0;align-self: stretch;transform: none;}
+  .vx-step {width: 100%;grid-template-columns: 42px minmax(0, 1fr);gap: 12px;min-height: 0;padding: 18px 14px;}
+  .vx-stepNum {font-size: 34px;}
+  .vx-step h3 {font-size: 9px;letter-spacing: 0.16em;}
+  .vx-step p {font-size: 16px;line-height: 1.5;word-break: normal;overflow-wrap: normal;}
+  #llaves.vx-sec .vx-insideBlock {width: 100%;max-width: 100%;margin: 0 auto 24px !important;}
+  .vx-insideBlock {width: 100%;max-width: 100%;margin: 28px auto 24px;}
+  .vx-insideRow {grid-template-columns: minmax(0, 1fr);gap: 18px;width: 100%;max-width: 100%;}
+  .vx-insideRow .vx-lead {width: 100%;max-width: none;font-size: 18px;line-height: 1.55;word-break: normal;overflow-wrap: normal;}
+  .vx-insideRow .vx-count {width: min(100%, 300px);min-width: 0;margin: 0;justify-self: start;transform: none;}
+  .vx-chooseZone {max-width: 100vw;overflow: hidden;}
+  .vx-doorLaurel {width: 112%;height: clamp(88px, 23vw, 122px);margin: 0 -6% -28px;}
+  .vx-protocolReveal {width: 84%;}
+  .vx-stepLeft {margin-right: auto;}
+  .vx-stepRight {margin-left: auto;}
+  .vx-step {grid-template-columns: 54px 1fr;padding: 22px 18px;}
+  .vhd-root {margin-bottom: 48px;}
+  .vhd-doors {height: 285px;min-height: 285px;}
+  .vx-hud {padding: 0 10px;}
+  .vx-brand {gap: 7px;font-size: 8px;letter-spacing: 0.14em;}
+  .vx-brand img {height: 24px;}
+  .vx-hudRight {gap: 6px;font-size: 8px;letter-spacing: 0.1em;}
+  .vx-unlockedBadge {min-width: 60px;padding: 3px 5px;}
+  .vx-unlockedPrefix,.vx-unlockedState {font-size: 7px;}
+  .vx-dossierItem {min-height: 70px;padding: 10px;}
+  .vx-dossierItem strong {font-size: 9px;letter-spacing: 0.04em;}
+  .vx-dossierDrop strong {font-size: 11px;}
+  .vx-kicker {min-height: 54px;margin-top: 8px;padding: 7px 4px;gap: 2px;font-size: clamp(7px, 2.35vw, 9px);font-weight: 700;letter-spacing: 0.1em;line-height: 1;}
+  .vx-kicker > i {flex: 0 0 4px;width: 4px;height: 4px;}
+  .vx-kickerBtn {min-height: 32px;padding-inline: 4px;font-size: inherit;letter-spacing: inherit;}
+  #llaves.vx-sec .vx-insideZone {padding-top: 24px !important;padding-bottom: 60px !important;}
+  .vx-insideZone {padding-top: 54px;padding-bottom: 60px;background-position: 50% 32%;background-size: cover;}
+  .vx-deviceStage {justify-content: center;align-items: center;width: 100%;margin: 0 auto;padding: 4px 0 8px;}
+  .vx-deviceStage .vd-device {position: relative;left: 50%;transform: translateX(-50%) translateY(8%) scale(0.92);transform-origin: center top;margin: 0;}
+  .vx-sessionLinks {gap: 48px;}
+  .vx-sessionLinks button {width: 58px;height: 58px;min-width: 58px;min-height: 58px;}
+  .vx-sessionLinks button img {width: 42px;height: 42px;transform: scale(1.7);}
+  .vx-sessionLinks button:hover img {transform: scale(1.7) translateY(-1px);}
+  .vx-ticker.is-rev {position: relative;top: -1px;margin-bottom: -52px;z-index: 20;}
+  .vx-lock {width: calc(100% - 26px);max-width: 650px;margin: 0 auto;padding: 18px 12px 14px;border-radius: 20px;overflow: visible;background: linear-gradient(180deg, #02030542 0%, #02030558 55%, #02030588 100%), url("/wallpaperGeneral.png") center 28% / cover no-repeat;}
+  .vx-lock.vx-lockRaise {top: 0;transform: none;}
+  .vx-accessArea {width: 100%;padding-top: 4px;gap: 6px;}
+  .vx-lock .vx-getCodeBtn {width: 72%;height: 42px;min-height: 42px;margin: 6px auto 0;padding: 4px 14px;}
+  .vx-vaultLaurel {width: 96%;height: clamp(94px, 24vw, 126px);margin-bottom: 0;}
+  .vx-heroIdentity .vx-kicker {gap: clamp(8px, 2.5vw, 15px);margin-top: 24px;}
+  .vx-heroIdentity .vx-kickerBtn {padding: 9px 1px;font-size: clamp(9px, 2.65vw, 13px);letter-spacing: 0.13em;}
+  .vx-heroIdentity .vx-kicker > i {flex: 0 0 5px;width: 5px;height: 5px;}
+  .vx-heroAccessBtn {min-height: 130px;margin-top: 18px;}
+  .vx-heroAccessBtn .smkl-access-button {transform: none;width: min(100%, 285px);margin: 0 auto !important;}
+  .vx-heroIdentity {min-height: 430px;padding: 26px 0 12px;}
+  .vx-heroIdentity .vx-logoWrap {width: 100%;min-height: 245px;}
+  .vx-heroIdentity .vx-logoWrap img {width: min(88vw, 420px);max-width: 100%;}
+  .vx-heroIdentity .vx-kicker {justify-content: center;gap: clamp(7px, 2.2vw, 13px);margin-top: 6px;padding: 0 6px;}
+  .vx-heroIdentity .vx-kickerBtn {padding: 7px 0;font-size: clamp(8px, 2.25vw, 11px);letter-spacing: 0.14em;}
+  .vx-heroIdentity .vx-kicker > i {flex: 0 0 4px;width: 4px;height: 4px;}
+  .vx-heroAccessSlot {min-height: 112px;margin-top: 16px;padding-bottom: 10px;}
+  .vx-heroIdentity {min-height: 0;padding-bottom: 0;}
+  .vx-heroAccessBtn {min-height: 0;}
+  .vx-title {margin-top: 14px;}
+  .vx-titleCrown {width: 118px;left: 72%;top: 53%;}
+  .vhd-door-inner::after {content: "TAP TO OPEN";position: absolute;left: 50%;bottom: 22px;transform: translateX(-50%);width: max-content;color: #d8cf67b8;font-family: var(--mono);font-size: 6px;font-weight: 700;letter-spacing: 0.24em;text-indent: 0.24em;opacity: 0.35;animation: vhdTapCueMobile 2.6s ease-in-out infinite;}
+  .vhd-door-inner i {position: relative;animation: vhdHandleHintMobile 2.6s ease-in-out infinite;}
+  .vx-lock .vx-getCodeBtn::before {content: "";position: absolute;top: 50%;left: -40%;width: 28%;height: 200%;pointer-events: none;background: linear-gradient(90deg, transparent, #ffffff8f, transparent);transform: skewX(-18deg);animation: vxGetAccessShineMobile 3.4s ease-in-out infinite;}
+  .vx-lock .vx-getCodeBtn::after {content: "";position: absolute;inset: 2px;border-radius: 7px;pointer-events: none;border: 1px solid #78d5ff18;}
+}
+@media (min-width: 900px) {
+  .vx-step small {display: block;position: absolute;right: 0;top: 50%;transform: translateY(-50%);color: var(--faint);font-family: var(--mono);font-size: 9px;letter-spacing: 0.2em;}
+  .vx-shift {margin-left: 4rem;}
+  .vx-footGrid {grid-template-columns: 1.2fr 0.8fr;align-items: start;}
+}
+@media (min-width: 960px) {
+  .vx-grid {grid-template-columns: 1.05fr 0.7fr;align-items: end;}
+  .vx-lock {justify-self: start;}
+  .vx-grid > .vx-lock.vx-lockRaise {transform: translateX(-160px) translateY(40px);}
+}
+@media (max-width: 980px) {
+  .vx-heroIdentity .vx-logoWrap {min-height: 350px;}
+  .vx-heroIdentity .vx-logoWrap img {width: min(78vw, 560px);}
+  .vx-kicker {gap: 18px;}
+}
+/* MÁS SANGRÍA */
+#faq .vx-faqItem button {
+  padding: 16px 40px;
+  text-align: left;
+}
+
+#faq .vx-faqItem > p {
+  padding: 16px 40px 16px 92px;
+  text-align: left;
+}
+
+/* ROSA JUNTO A GET IN */
+#faq h2 .vx-titleRose1 {
+  display: inline-block;
+  width: 140px;
+  height: auto;
+  margin: 0 0 0 14px;
+  vertical-align: middle;
+  transform: translateY(-3px);
+}
+/* MÁS SANGRÍA EN WHAT'S INSIDE */
+#llaves.vx-sec .vx-insideBlock {
+  box-sizing: border-box;
+  padding-inline: clamp(16px, 4vw, 60px);
 }

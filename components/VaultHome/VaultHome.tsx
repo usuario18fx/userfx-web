@@ -38,9 +38,8 @@ const STEPS = [
   { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
 ];
 const PROTOCOL_ORNAMENTS = [
-  { src: "/icon2.png", className: "vx-Icon2 vx-Icon6" },
-  { src: "/icon4.png", className: "vx-Icon4" },
-  { src: "/icon5.png", className: "vx-Icon5 vx-Icon7" },
+  { src: "/icon-fx.png", className: "vx-Icon-fx" },
+  { src: "/icon7.png", className: "vx-Icon7" },
 ];
 const FAQS = [
   { q: "How do I get a code?", a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest." },
@@ -459,51 +458,56 @@ export default function VaultHome() {
               </section>
                ) : null}
  {/* ───── PROTOCOLO  ─────── */}
-      <section id="protocolo" className="vx-sec vx-protocol">
-        <Reveal>
-          <p className="vx-goldk">
-          ◈ ACCESS PROTOCOL
-          </p>
-          <h2>
-            HOW TO UNLOCK
-            <span className="vx-theVault">
-            𝕋ℍ𝔼 𝕍𝔸𝕌𝕃𝕋
-            </span>
-          </h2>
-        </Reveal>
-        <div className="vx-protocolSteps">
-          {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+              <section id="protocolo" className="vx-sec vx-protocol">
+              <Reveal>
+              <p className="vx-goldk">
+              ◈ ACCESS PROTOCOL
+              </p>
+              <h2>
+               HOW TO UNLOCK
+              <span className="vx-theVault">
+               𝕋ℍ𝔼 𝕍𝔸𝕌𝕃𝕋
+              </span>
+              </h2>
+              </Reveal>
+              <div className="vx-protocolSteps">
+               {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
               {PROTOCOL_ORNAMENTS[i] && (
-                <div
-                  className={`vx-protocolOrnament ${PROTOCOL_ORNAMENTS[i].className}`}
-                  style={{ backgroundImage: `url("${PROTOCOL_ORNAMENTS[i].src}")` }}
-                  aria-hidden="true"
-                />
+              <div className={`vx-protocolOrnament ${PROTOCOL_ORNAMENTS[i].className}`} style={{ backgroundImage: `url("${PROTOCOL_ORNAMENTS[i].src}")` }} aria-hidden="true"/>
               )}
               <article className="vx-step">
-                {/* ✦ FONDO DE ESTRELLAS */}
-                <div className="vx-stepStars" aria-hidden="true">
-                  <div className="vx-stars vx-stars1" />
-                  <div className="vx-stars vx-stars2" />
-                  <div className="vx-stars vx-stars3" />
-                </div>
-                <b className="vx-stepNum">{s.n}</b>
-                <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </div>
-                <small>{s.n} / 04</small>
+{/* ✦ FONDO DE ESTRELLAS */}
+              <div className="vx-stepStars" aria-hidden="true">
+              <div className="vx-stars vx-stars1" />
+              <div className="vx-stars vx-stars2" />
+              <div className="vx-stars vx-stars3" />
+              </div>
+              <b className="vx-stepNum">
+                {s.n}
+              </b>
+              <div>
+              <h3>
+                {s.title}
+              </h3>
+              <p>
+                {s.text}
+              </p>
+              </div>
+              <small>
+                {s.n} / 04
+              </small>
               </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-        <section id="llaves" className="vx-sec vx-tint">
-        <div className="vx-chooseZone">
-    <Reveal>
-        <p className="vx-goldk">
-         🜲 ACCESS CODE
+        </Reveal>
+               ))}
+              </div>
+              </section>
+ {/* ───── CHOOSE ZONE  ─────── */}              
+              <section id="llaves" className="vx-sec vx-tint">
+              <div className="vx-chooseZone">
+        <Reveal>
+              <p className="vx-goldk">
+               🜲 ACCESS CODE
               </p>
               <h2>
               CHOOSE YOUR
@@ -512,131 +516,131 @@ export default function VaultHome() {
               </span>
               </h2>
               <div className="vx-deviceStage">
-              <VaultDevice />
+        <VaultDevice />
               </div>
-              </Reveal>
-        </div>
-        {/* ⬆️ .vx-chooseZone → SOLO CHOOSE YOUR CODE + DEVICE */}
-        <div className="vx-insideZone">
-          <Reveal>
-            <div className="vx-insideBlock">
+        </Reveal>
+              </div>
+{/* ⬆️ .vx-chooseZone → SOLO CHOOSE YOUR CODE + DEVICE */}
+              <div className="vx-insideZone">
+        <Reveal>
+              <div className="vx-insideBlock">
               <p className="vx-goldk">
               🜲 INSIDE THE VAULT
               </p>
               <h2 className="vx-insideTitle">
-                <Scramble text="WHAT'S" />
-                <span>
-                  <Scramble text="INSIDE" delay={180} />
-                </span>
+        <Scramble text="WHAT'S" />
+              <span>
+        <Scramble text="INSIDE" delay={180} />
+              </span>
               </h2>
               <div className="vx-insideRow">
-                <p className="vx-lead">
+              <p className="vx-lead">
                   A private space where sexy, free-spirited, open-minded guys can connect. Join one-on-one or group video calls and share the moment with guys who match your vibe. You're only seeing a preview. A new exclusive drop arrives every Friday at 22:00 UTC—this is just a glimpse of what's waiting inside.
-                  <strong>
+              <strong>
                   —Keep it lit—
-                  </strong>
-                </p>
-                <div className="vx-count">
-                  <p>
+              </strong>
+              </p>
+              <div className="vx-count">
+              <p>
                   DROP IN
-                  </p>
-                  <strong>{countdown}</strong>
-                  <p>
+              </p>
+              <strong>{countdown}</strong>
+              <p>
                   FRIDAY · 22:00 UTC
-                  </p>
-                </div>
+              </p>
               </div>
-            </div>
+              </div>
+              </div>
           </Reveal>
-          <div className="vx-carousel">
-            <div className="vx-carouselTrack">
-              {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
-                <div className="vx-carouselSlide" key={`${src}-${i}`}>
-                  <HoldShot src={src} />
-                </div>
+              <div className="vx-carousel">
+              <div className="vx-carouselTrack">
+               {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
+               <div className="vx-carouselSlide" key={`${src}-${i}`}>
+          <HoldShot src={src} />
+              </div>
               ))}
-            </div>
-          </div>
-        </div>
-        {/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
-      </section>
-      <div className="vx-finalBackdrop">
-        <section id="faq" className="vx-sec">
-          <Reveal>
-            <p className="vx-goldk">
-            ◈ PRIVATE INFORMATION
-            </p>
-            <h2>
+              </div>
+              </div>
+              </div>
+{/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
+              </section>
+              <div className="vx-finalBackdrop">
+              <section id="faq" className="vx-sec">
+              <Reveal>
+              <p className="vx-goldk">
+               ◈ PRIVATE INFORMATION
+              </p>
+              <h2>
               BEFORE YOU
               <span className="vx-getIn">
               𝔾𝔼𝕋 𝕀ℕ
               </span>
               <img src={ICONS.rosa1} alt="" className="vx-titleRose1" draggable={false} />
-            </h2>
-          </Reveal>
-          <div className="vx-faq">
-            {FAQS.map((f, i) => {
+             </h2>
+             </Reveal>
+             <div className="vx-faq">
+              {FAQS.map((f, i) => {
               const open = openFaq === i;
               return (
-                <Reveal key={f.q} delay={i * 50}>
-                  <div className="vx-faqItem">
-                    <button type="button" onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
-                      <b>{String(i + 1).padStart(2, "0")}</b>
-                      <span>{f.q}</span>
-                      <i>{open ? "–" : "+"}</i>
-                    </button>
-                    {open ? <p>{f.a}</p> : null}
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-        </section>
-        {/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
-        <footer className="vx-foot">
-          <div className="vx-footGrid">
-            <div>
+              <Reveal key={f.q} delay={i * 50}>
+              <div className="vx-faqItem">
+              <button type="button" onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
+              <b>{String(i + 1).padStart(2, "0")}</b>
+              <span>{f.q}</span>
+              <i>{open ? "–" : "+"}</i>
+              </button>
+              {open ? <p>{f.a}</p> : null}
+              </div>
+              </Reveal>
+               );
+               })}
+              </div>
+              </section>
+{/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
+              <footer className="vx-foot">
+              <div className="vx-footGrid">
+              <div>
               <div className="vx-footBrand">
-                <img src={LOGO} alt="" />
-                <div>
-                  <p>
+              <img src={LOGO} alt="" />
+              <div>
+              <p>
                     USER
-                    <span>
+              <span>
                     🜲
-                    </span>
+              </span>
                     FX
-                  </p>
-                  <small>
+              </p>
+              <small>
                   PRIVATE VAULT
-                  </small>
-                </div>
+              </small>
               </div>
-            </div>
-            <div>
+              </div>
+              </div>
+              <div>
               <div className="vx-footActions">
-                <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
-                  <button type="button" onClick={() => openLink("https://t.me/User18Fx")} aria-label="Open private chat">
-                    <img src={ICONS.chat} alt="" aria-hidden="true" />
-                    <Scramble text="CHAT" hover />
-                  </button>
-                  <button type="button" onClick={() => openLink("https://t.me/User18Fx_bot?start=support")} aria-label="Open support">
-                    <img src={ICONS.support} alt="" aria-hidden="true" />
-                    <Scramble text="SUPPORT" hover />
-                  </button>
-                  <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
-                    <img src={ICONS.tv} alt="" aria-hidden="true" />
-                    <Scramble text="CHANNEL" hover />
-                  </button>
-                </nav>
-                <div className="vx-footCode">
+              <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
+              <button type="button" onClick={() => openLink("https://t.me/User18Fx")} aria-label="Open private chat">
+              <img src={ICONS.chat} alt="" aria-hidden="true" />
+              <Scramble text="CHAT" hover />
+              </button>
+              <button type="button" onClick={() => openLink("https://t.me/User18Fx_bot?start=support")} aria-label="Open support">
+              <img src={ICONS.support} alt="" aria-hidden="true" />
+              <Scramble text="SUPPORT" hover />
+              </button>
+              <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
+              <img src={ICONS.tv} alt="" aria-hidden="true" />
+              <Scramble text="CHANNEL" hover />
+              </button>
+              </nav>
+              <div className="vx-footCode">
                 | CODE | FX-011897-190122-CAHATO |
-                </div>
               </div>
-            </div>
-          </div>
-          <p className="vx-legal">
-          | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital purchases are final once access is delivered, except where Ontario law requires otherwise.
-          </p>
+              </div>
+              </div>
+              </div>
+              <p className="vx-legal">
+             | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital purchases are final once access is delivered, except where Ontario law requires otherwise.
+              </p>
         </footer>
       </div>
       <Ticker items={TICKER_ITEMS} reverse />
