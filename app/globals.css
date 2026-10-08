@@ -1,0 +1,178 @@
+@import "tailwindcss";
+@import "../components/FX/Platform.css";
+@theme {
+  --color-ink: #eee9dd;
+  --color-sky: #08090d;
+  --color-sky-lit: #0d1119;
+  --color-haze: #b45b69;
+  --color-orb: #c8ac70;
+  --color-trend: #aaffc6;
+  --color-gold: #c8ac70;
+  --color-rose: #b45b69;
+  --font-display: var(--font-funnel-display), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-funnel-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-wide: var(--font-michroma), ui-sans-serif, system-ui, sans-serif;
+}
+/* Unlayered foundation also wins over legacy portal reset rules. */
+html {
+  background: #08090d;
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #08090d;
+  color: #eee9dd;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+body[data-locked="true"] {
+  overflow: hidden;
+}
+::selection {
+  background: #c8ac70;
+  color: #08090d;
+}
+:focus-visible {
+  outline: 1.5px solid #c8ac70;
+  outline-offset: 4px;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled) {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+.fx-landing *,
+.fx-landing *::before,
+.fx-landing *::after {
+  box-sizing: border-box;
+}
+.fx-landing {
+  background: #08090d;
+  color: #eee9dd;
+}
+.stage-frame {
+  container-type: inline-size;
+}
+.stage {
+  --stage-w: min(100vw, calc(100svh * var(--stage-ar)));
+  --stage-w: min(100cqw, calc(100svh * var(--stage-ar)));
+  --u: calc(var(--stage-w) / var(--stage-cols));
+  position: relative;
+  width: var(--stage-w);
+  height: calc(var(--stage-w) / var(--stage-ar));
+  flex: none;
+}
+.glass {
+  background: linear-gradient(135deg, #9eb4d40d, #c8ac7009);
+  border: 1px solid #c8ac701e;
+  backdrop-filter: blur(18px);
+}
+.glass-tile {
+  background: #ffffff08;
+}
+.fx-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #08090d50, #08090d96),
+    url("/wallpaperGeneral.png") center/cover;
+  opacity: 0.55;
+}
+.fx-ring {
+  opacity: 0.75;
+  filter: sepia(0.6) saturate(0.6) brightness(1.1);
+}
+.fx-hero video {
+  filter: saturate(0.65) brightness(0.72);
+}
+.fx-prefix-illustration {
+  filter: drop-shadow(0 0 14px #b45b6938);
+}
+.fx-section {
+  background-image: linear-gradient(180deg, #08090deb, #08090de8), url("/wallpaperGeneral.png");
+  background-size: cover;
+  background-position: center;
+}
+.fx-section:nth-of-type(even) {
+  background-position: right bottom;
+}
+.fx-protocol-ornament {
+  filter: drop-shadow(10px 0 20px #538b372b);
+}
+.fx-faq {
+  isolation: isolate;
+}
+.fx-faq::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/icon5.png") right bottom/65% auto no-repeat;
+  opacity: 0.14;
+}
+.fx-plan-featured {
+  background: linear-gradient(135deg, #c8ac70, #99804c);
+  box-shadow: 0 0 80px #c8ac700c;
+  border: 1px solid #e6d4aa55;
+}
+.fx-footer {
+  background:
+    linear-gradient(180deg, #08090df5, #08090dcc),
+    url("/wallpaperGeneral.png") center bottom/cover;
+}
+.fx-brand {
+  color: #eee9dd;
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #9b875e #08090d;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #08090d;
+}
+::-webkit-scrollbar-thumb {
+  border: 2px solid #08090d;
+  border-radius: 12px;
+  background: linear-gradient(#789bfa, #c8ac70);
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .fx-landing *,
+  .fx-landing *::before,
+  .fx-landing *::after {
+    transition-duration: 0s !important;
+    animation: none !important;
+  }
+}
+
+.fx-landing .vx-visitorCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #c8ac7026;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #c8ac70;
+}
+.fx-landing .vx-visitorIcon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}

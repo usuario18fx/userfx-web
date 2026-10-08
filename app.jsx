@@ -1,5 +1,5 @@
           import { useEffect, useState } from "react";
-          import VaultHome from "./components/VaultHome/VaultHome";
+          import VaultHome from "./components/FX/Landing";
 import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
 import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
@@ -42,7 +42,7 @@ function PrivateRoomRoute({ route }) {
 export default function App() {
   return <AdminModeProvider><UserFXApp /></AdminModeProvider>;
 }
-function UserFXApp() {
+export function UserFXApp() {
   const [route, setRoute] = useState(getRoute);
   useEffect(() => {
     const handleRouteChange = () => setRoute(getRoute());

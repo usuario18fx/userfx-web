@@ -1,0 +1,103 @@
+/* The existing room, gallery, gate and Admin logic share the new FX surface. */
+.fx-platform {
+  min-height: 100svh;
+  color: #eee9dd;
+  background: #08090d;
+}
+.fx-platform .ufx-network {
+  --page: #08090d;
+  --surface: #101218;
+  --surface-raised: #17191f;
+  --ink: #eee9dd;
+  --muted: #a2a09b;
+  --line: #c8ac7026;
+  --accent: #c8ac70;
+  --accent-soft: #c8ac7010;
+  --frame: #11151c;
+  --serif: var(--font-display);
+  --mono: var(--font-sans);
+  background:
+    linear-gradient(#08090df0, #08090df5),
+    url("/wallpaperGeneral.png") center/cover fixed;
+  font-family: var(--font-sans);
+}
+.fx-platform .ufx-network.ufx-mood-arcade {
+  --accent: #ab91fb;
+  --accent-soft: #ab91fb14;
+}
+.fx-platform .ufx-network.ufx-mood-vintage {
+  --accent: #c8b7a3;
+  --accent-soft: #c8b7a313;
+}
+.fx-platform
+  .ufx-network
+  :is(
+    .ufx-room-strip,
+    .ufx-people,
+    .ufx-waiting-room,
+    .ufx-mailbox,
+    .ufx-post,
+    .ufx-feed-composer,
+    .ufx-stage-frame,
+    .ufx-profile-card
+  ) {
+  border-color: var(--line);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ffffff05, #c8ac7005) var(--surface) !important;
+  box-shadow:
+    inset 0 1px 0 #ffffff03,
+    0 16px 50px #0000001c;
+}
+.fx-platform .ufx-network .ufx-stage-frame {
+  overflow: hidden;
+  box-shadow: 0 0 50px #c8ac7008;
+}
+.fx-platform .ufx-network .ufx-primary {
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.fx-platform .ufx-network h1,
+.fx-platform .ufx-network h2,
+.fx-platform .ufx-network h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+}
+.fx-platform .ufx-network input,
+.fx-platform .ufx-network textarea,
+.fx-platform .ufx-network select {
+  border-color: var(--line);
+  border-radius: 12px;
+}
+.fx-platform .pvr-club-nav--unified {
+  background: linear-gradient(90deg, #0d1017ed, #08090dfa);
+  border-bottom-color: #c8ac7026;
+  backdrop-filter: blur(18px);
+}
+.fx-platform .pvr-club-nav--unified .pvr-club-tabs button {
+  border-radius: 999px;
+  font-family: var(--font-display);
+}
+.fx-platform .pvr-club-nav--unified .pvr-club-tabs button.is-active {
+  color: #dfc68b;
+  border-color: #c8ac7055;
+  background: #c8ac7014;
+}
+.fx-platform .ufx-dialog {
+  background: linear-gradient(135deg, #14171f, #0b0d12);
+  border-color: #c8ac7030;
+  border-radius: 28px;
+  color: #eee9dd;
+}
+.fx-platform :is(.pvr-direct-gate, .pvr-direct-panel, .pvr-direct-shell) {
+  font-family: var(--font-sans);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-platform *,
+  .fx-platform *::before,
+  .fx-platform *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+}

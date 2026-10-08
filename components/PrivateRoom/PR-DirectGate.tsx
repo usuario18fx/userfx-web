@@ -158,6 +158,15 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
   const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>("none");
+  useEffect(() => {
+    const supplied = new URLSearchParams(window.location.search).get("code");
+    const match = String(supplied || "").trim().toUpperCase().match(/^(SPCL|BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
+    if (!match) return;
+    setPrefix(match[1]); setSuffix(match[2]); setSecondaryMode("code");
+    // Prefilling never grants access: the existing verifier still checks it.
+    const url = new URL(window.location.href); url.searchParams.delete("code");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }, []);
 
   const [telegramUsername, setTelegramUsername] = useState("");
 
