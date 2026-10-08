@@ -59,3 +59,5 @@ Production build and TypeScript; existing `check-roomfx.mjs` and
 pricing switch, FAQ, menu focus/Escape, newsletter and private route gate.
 
 These checks do not constitute a live Google OAuth or payment transaction.
+
+The original handlers now live in `server/api/`. Only `pages/api/` exposes HTTP routes, so Vercel does not build a second set of legacy functions. Endpoint URLs and Telegram webhook remain unchanged.

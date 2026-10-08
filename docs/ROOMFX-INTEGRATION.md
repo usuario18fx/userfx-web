@@ -75,7 +75,7 @@ screens through their existing component paths and hash navigation.
 | `#/private-room/buzon` | Invitations |
 | `#/private-room/profiles` | Opt-in member directory |
 | `#/private-room/gallery` | Protected album in the shared room shell |
-| `/api/room-live` | Rewritten to `api/account.js?roomfx=1` for authenticated room requests |
+| `/api/room-live` | Rewritten to `server/api/account.js?roomfx=1` for authenticated room requests |
 | `lib/room-live.js` | Redis storage and server authorization |
 | `lib/room-social.js` | Social interactions and directory visibility |
 | `components/PrivateRoom/RoomFX/` | Network UI, preview and WebRTC hook |
@@ -84,7 +84,7 @@ The vault gate, Telegram handoff and gallery remain in the original project.
 Access UI and responsive styles live in `components/PrivateRoom/PR-DirectGate.*`;
 the portal in `components/FxAccess/FxAccessModal/` opens that gate through explicit
 props, and `VaultHome.tsx` mounts one modal. Telegram identity generation, message
-formatting and return links live in `api/telegram.js`. Historical source-rewriting
+formatting and return links live in `server/api/telegram.js`. Historical source-rewriting
 scripts and their npm commands have been removed. `scripts/` retains the local
 API adapter, behavioral integration check and private-album upload utility.
 The new room URL shares the account function through a Vercel rewrite, keeping
@@ -152,7 +152,7 @@ than overwriting them with placeholders. Restart Vite after changing server
 environment variables.
 Local album requests also need `BLOB_READ_WRITE_TOKEN` from the project's
 private Blob store. It is loaded server-side without a `VITE_` prefix; media
-authorization, plan checks and server watermarks remain in `api/private-media.js`.
+authorization, plan checks and server watermarks remain in `server/api/private-media.js`.
 
 ## Storage and boundaries
 
@@ -253,7 +253,7 @@ normal USER mode resumes the existing routes and device controls.
 | Flame | PRX0 | Private chat and matching PRO album | 24 hours |
 | Rose | BSIC | Private chat and matching BASIC album | 12 hours |
 
-Durations match the existing code-session durations in `api/verify.js`.
+Durations match the existing code-session durations in `server/api/verify.js`.
 After an individual grant expires, its section falls back to membership;
 when membership expires, the original verified access applies. Grants do
 not bypass host approval, TelegramFX eligibility, the vault login or album

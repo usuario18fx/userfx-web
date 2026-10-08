@@ -1,4 +1,4 @@
-          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
+          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../../lib/telegram/access.js";
 
           export default async function handler(req, res) {
             res.setHeader("Cache-Control", "no-store");

@@ -2,7 +2,7 @@
           import { Readable } from "node:stream";
           import { get } from "@vercel/blob";
           import sharp from "sharp";
-          import { readVaultSession } from "../lib/vault-session.js";
+          import { readVaultSession } from "../../lib/vault-session.js";
 
           const PREFIX_TO_PLAN = Object.freeze({
             BSIC: "basic",

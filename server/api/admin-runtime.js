@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import Redis from "ioredis";
-import { createAdminAccessHandler } from "../lib/admin-access.js";
+import { createAdminAccessHandler } from "../../lib/admin-access.js";
 
 const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";

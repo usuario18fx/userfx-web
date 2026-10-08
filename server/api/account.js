@@ -1,10 +1,10 @@
           import crypto from "crypto";
           import Redis from "ioredis";
-          import { ensureAccount, getAccount, updateAccountProfile, accountProfileImages } from "../lib/account.js";
-          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
-          import { createRoomLiveHandler } from "../lib/room-live.js";
+          import { ensureAccount, getAccount, updateAccountProfile, accountProfileImages } from "../../lib/account.js";
+          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../../lib/telegram/access.js";
+          import { createRoomLiveHandler } from "../../lib/room-live.js";
 
-          import { updateRoomDirectory } from "../lib/room-social.js";
+          import { updateRoomDirectory } from "../../lib/room-social.js";
 
           const roomLive = createRoomLiveHandler();
 

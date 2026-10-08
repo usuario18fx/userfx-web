@@ -1,19 +1,19 @@
 // One Next function for the existing JSON APIs; the Telegram webhook has its
 // own raw-body route. Explicit imports keep tracing deterministic on Vercel.
 const handlers = {
-  account: () => import("../../api/account.js"),
-  "room-live": () => import("../../api/account.js"),
-  "access-session": () => import("../../api/access-session.js"),
-  "admin-runtime": () => import("../../api/admin-runtime.js"),
-  "create-stars-invoice": () => import("../../api/create-stars-invoice"),
-  handoff: () => import("../../api/handoff.js"),
-  identity: () => import("../../api/identity.js"),
-  "miniapp-stats": () => import("../../api/miniapp-stats.js"),
-  "miniapp-track": () => import("../../api/miniapp-track.js"),
-  newsletter: () => import("../../api/newsletter.js"),
-  "private-media": () => import("../../api/private-media.js"),
-  "telegram-eligibility": () => import("../../api/telegram-eligibility.js"),
-  verify: () => import("../../api/verify.js"),
+  account: () => import("../../server/api/account.js"),
+  "room-live": () => import("../../server/api/account.js"),
+  "access-session": () => import("../../server/api/access-session.js"),
+  "admin-runtime": () => import("../../server/api/admin-runtime.js"),
+  "create-stars-invoice": () => import("../../server/api/create-stars-invoice"),
+  handoff: () => import("../../server/api/handoff.js"),
+  identity: () => import("../../server/api/identity.js"),
+  "miniapp-stats": () => import("../../server/api/miniapp-stats.js"),
+  "miniapp-track": () => import("../../server/api/miniapp-track.js"),
+  newsletter: () => import("../../server/api/newsletter.js"),
+  "private-media": () => import("../../server/api/private-media.js"),
+  "telegram-eligibility": () => import("../../server/api/telegram-eligibility.js"),
+  verify: () => import("../../server/api/verify.js"),
 };
 export const config = { api: { bodyParser: false } };
 export default async function api(req, res) {

@@ -1,7 +1,7 @@
           import crypto from "crypto";
           import Redis from "ioredis";
-          import { ensureAccount } from "../lib/account.js";
-          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../lib/telegram/access.js";
+          import { ensureAccount } from "../../lib/account.js";
+          import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../../lib/telegram/access.js";
 
           const REDIS_URL = process.env.REDIS_URL;
           const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";

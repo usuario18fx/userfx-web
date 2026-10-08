@@ -19,7 +19,7 @@ export function roomFxApi() {
         server.config.logger.warn(`[userfx-local-api] Missing local credentials: ${unavailable.join(", ")}. Check .env.local; a [SENSITIVE] placeholder is not a usable credential. SPCL requires all three variables.`);
       }
       const paths = ["account", "access-session", "verify", "identity", "telegram-eligibility", "handoff", "private-media", "admin-runtime"];
-      const handlers = new Map(await Promise.all(paths.map(async (name) => [`/api/${name}`, (await import(`../api/${name}.js`)).default])));
+      const handlers = new Map(await Promise.all(paths.map(async (name) => [`/api/${name}`, (await import(`../server/api/${name}.js`)).default])));
       handlers.set("/api/room-live", handlers.get("/api/account"));
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url || "/", "http://localhost");
