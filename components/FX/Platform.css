@@ -4,6 +4,18 @@
   color: #eee9dd;
   background: #08090d;
 }
+.fx-platform .fx-space-motion {
+  position: relative;
+}
+.fx-platform .fx-space-arrival {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  pointer-events: none;
+  transform-origin: left;
+  background: linear-gradient(90deg, transparent, var(--accent, #c8ac70), transparent);
+  box-shadow: 0 0 16px var(--accent, #c8ac70);
+}
 .fx-platform .ufx-network {
   --page: #08090d;
   --surface: #101218;
@@ -51,6 +63,10 @@
 .fx-platform .ufx-network .ufx-stage-frame {
   overflow: hidden;
   box-shadow: 0 0 50px #c8ac7008;
+}
+.fx-platform .ufx-stage-seat {
+  min-width: 0;
+  width: 100%;
 }
 .fx-platform .ufx-network .ufx-primary {
   border-radius: 999px;

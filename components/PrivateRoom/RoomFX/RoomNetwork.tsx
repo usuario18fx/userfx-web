@@ -9,6 +9,7 @@ import UpcomingEvents from "./UpcomingEvents";
 import PrivateRoomTopNav from "../PR-TopNav";
 import PrivateRoomGallery from "../PR-Gallery";
 import { useAdminMode } from "../PR-AdminMode";
+import { SpaceMotion, SpacePanel } from "../../FX/SpaceMotion";
 import "./RoomNetwork.css";
 type Space = "myroom" | "stage" | "buzon" | "profiles" | "gallery";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
@@ -445,8 +446,8 @@ CHAT
    else notify("Request entrance before starting your camera.");
  }} onProfile={editProfile} onMembership={() => setInfo("membership")} onRewards={() => setInfo("rewards")} onLogout={() => void logout()} />
 <div className="ufx-body">
-<main className="ufx-main">
-<section className="ufx-intro">
+<SpaceMotion space={space}>
+<SpacePanel as="section" className="ufx-intro">
 <div>
 <span className="ufx-eyebrow">
 USER FX ·
@@ -484,18 +485,22 @@ Your rules.
 </p>
 </div>
 <MoodPicker mood={mood} onChange={setMood} />
-</section>
+</SpacePanel>
 {(error || call.error) &&
 <div className="ufx-warning" role="alert">
 {error || call.error}
 </div>
 }
 {isGallery ? (
+<SpacePanel>
 <PrivateRoomGallery planId={profile.galleryPlanId !== undefined ? profile.galleryPlanId || "spcl" : profile.paidChat ? profile.planId : "spcl"} onMembership={() => setInfo("membership")} onUnlock={() => { window.location.hash = "#/private-room-access"; }} />
+</SpacePanel>
 ) : isDirectory ? (
+<SpacePanel>
 <ProfileDirectory key={`${profile.visibility}:${profile.name}:${profile.location}:${profile.interests}`} client={client} onEdit={editProfile} />
+</SpacePanel>
 ) : isInbox ? (
-<section className="ufx-mailbox">
+<SpacePanel as="section" className="ufx-mailbox">
 <div className="ufx-section-head">
 <div>
 <span>
@@ -569,10 +574,10 @@ GET MY CODE ↗
 </a>
 </div>
 }
-</section>
+</SpacePanel>
     ) : (
 <>
-<section className="ufx-room-strip">
+<SpacePanel as="section" className="ufx-room-strip">
 <div className="ufx-room-icon">
 <Icon name={isStage ? "stage" : "home"} size={24} />
 </div>
@@ -603,7 +608,7 @@ YOU'RE IN
 <Icon name="arrow" size={16} />
 </button>
 }
-</section>
+</SpacePanel>
 {!approved && state &&
 <div className="ufx-waiting-note">
 <Icon name="shield" />
@@ -612,7 +617,7 @@ YOU'RE IN
 </span>
 </div>
 }
-<div className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
+<SpacePanel className={`ufx-work-grid${isStage ? " is-stage" : ""}${theater ? " is-theater" : ""}`}>
 <div className="ufx-main-column">
 <div ref={cameraWorkspace} className={`ufx-camera-row${chatOpen ? " has-chat" : ""}`} aria-label={isStage ? "Stage workspace" : "Camera and conversation"}>
 <div ref={cameraSurface} className={`ufx-camera-surface${movingCamera ? " is-moving" : ""}${cameraOffset.x || cameraOffset.y ? " is-moved" : ""}`} style={!isStage ? { transform: `translate(${cameraOffset.x}px, ${cameraOffset.y}px)` } : undefined}>
@@ -815,7 +820,7 @@ EDIT
 <UpcomingEvents />
 </aside>
 }
-</div>
+</SpacePanel>
 </>
     )}
 <footer className="ufx-page-footer">
@@ -826,7 +831,7 @@ USER FX · MADE FOR YOUR MOMENT
 @User18Fx_bot ↗
 </a>
 </footer>
-</main>
+</SpaceMotion>
 </div>
 <div className="ufx-audio-sources">
 {Object.entries(call.remoteStreams).map(([id, stream]) =>

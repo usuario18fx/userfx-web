@@ -3,10 +3,7 @@
 import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
 import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
-          import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
           import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
-          import PrivateRoomProfiles from "./components/PrivateRoom/PR-Profiles";
-          import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -23,21 +20,13 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route.split("?")[0] === "#/private-room/profiles") return (
-<PrivateRoomProfiles />
-  );
-  if (route.split("?")[0] === "#/private-room/stage") return (
-<PrivateRoomStage />
-);
-  if (route.split("?")[0] === "#/private-room/gallery") return (
-<RoomNetwork space="gallery" />
-);
-  if (route.split("?")[0] === "#/private-room/buzon") return (
-<PrivateRoomBuzon />
-);
-  return (
-<PrivateRoomMyRoom />
-);
+  const spaces = {
+    "#/private-room/stage": "stage",
+    "#/private-room/gallery": "gallery",
+    "#/private-room/buzon": "buzon",
+    "#/private-room/profiles": "profiles",
+  };
+  return <RoomNetwork space={spaces[route.split("?")[0]] || "myroom"} />;
 }
 export default function App() {
   return <AdminModeProvider><UserFXApp /></AdminModeProvider>;
@@ -138,7 +127,7 @@ export function UserFXApp() {
   if (route.startsWith("#/private-room")) {
     return (
 <PrivateRoomDirectGate>
-<PrivateRoomRoute key={route} route={route} />
+<PrivateRoomRoute route={route} />
 </PrivateRoomDirectGate>
     );
   }
