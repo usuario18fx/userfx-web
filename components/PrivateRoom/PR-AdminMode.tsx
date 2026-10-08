@@ -73,7 +73,7 @@ export function AdminModeSwitch() {
     <button type="button" aria-pressed={admin.mode === "admin"} onClick={() => { if (admin.mode !== "admin") admin.login(); }}><Icon name="shield" size={12} />ADMIN</button>
   </div>;
 }
-function AdminDialog({ title, onClose, children, login = false }: { title: string; onClose: () => void; children: ReactNode; login?: boolean }) {
+function AdminDialog({ title, onClose, children, login = false, signup = false }: { title: string; onClose: () => void; children: ReactNode; login?: boolean; signup?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const previous = useRef(document.activeElement as HTMLElement | null);
   useEffect(() => { ref.current?.showModal(); return () => previous.current?.focus(); }, []);
@@ -82,7 +82,7 @@ function AdminDialog({ title, onClose, children, login = false }: { title: strin
     <h2 id="pvr-admin-title">{title}</h2>
     {children}
   </>;
-  return <dialog ref={ref} className={`pvr-admin-dialog${login ? " pvr-admin-dialog--login" : ""}`} aria-labelledby="pvr-admin-title" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) onClose(); } }}>
+  return <dialog ref={ref} className={`pvr-admin-dialog${login ? " pvr-admin-dialog--login" : ""}${signup ? " pvr-admin-dialog--signup" : ""}`} aria-labelledby="pvr-admin-title" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) onClose(); } }}>
     {login ? <div className="pvr-admin-login-box"><div className="pvr-admin-login-texture" aria-hidden="true" />{content}</div> : content}
   </dialog>;
 }
@@ -106,7 +106,7 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
     try { const data = await request<{ url: string }>("admin-google", {}); window.location.assign(data.url); }
     catch (cause) { setError((cause as Error).message); setWorking(false); }
   }
-  return <AdminDialog login title={signup ? "Crear acceso Admin" : "ADMIN"} onClose={onClose}>
+  return <AdminDialog login signup={signup} title={signup ? "Crear acceso Admin" : "ADMIN"} onClose={onClose}>
     <p className="pvr-admin-caption">@User18Fx · Tu plataforma, tus controles.</p>
     <form onSubmit={submit}>
       <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Correo</span><AdminLoginFieldIcon kind="email" /><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
