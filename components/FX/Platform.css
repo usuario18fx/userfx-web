@@ -146,3 +146,12 @@
     transition-duration: 0s !important;
   }
 }
+
+/* Keep the original access-card geometry while Motion stages its contents. */
+.fx-platform .fx-gate-content { display: contents; }
+.fx-platform .fx-gate-step { position: relative; z-index: 3; }
+
+.fx-platform .pvr-direct-card { --fx-gate-base-transform: translate(-50%, -50%) scale(var(--pvr-direct-scale)); }
+@media (max-width: 650px) {
+  .fx-platform .pvr-direct-card { --fx-gate-base-transform: translate(0px, 0px); }
+}

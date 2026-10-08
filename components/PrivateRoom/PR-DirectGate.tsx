@@ -1,6 +1,14 @@
           import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
+          import { motion, useReducedMotion } from "framer-motion";
+          import { EASE, stagger } from "@/lib/motion";
+
           import "./PR-DirectGate.css";
+
+          const gateBlock = {
+            hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: EASE } },
+          };
 
           const ACCESS_CODE_KEY = "userfx_access_code";
 
@@ -939,6 +947,8 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
     }
   }
 
+  const reducedMotion = useReducedMotion();
+
   if (checking) {
     return (
       <main className="pvr-direct-checking">
@@ -958,8 +968,14 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   }
 
   return (
-    <main className="pvr-direct-gate">
-      <section className="pvr-direct-card">
+    <motion.main className="pvr-direct-gate" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.3 }}>
+      <motion.section className="pvr-direct-card"
+        transformTemplate={(_, generated) => `var(--fx-gate-base-transform) ${generated === "none" ? "" : generated}`}
+        initial={reducedMotion ? false : { opacity: 0, y: 48, scale: 0.94, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+        transition={{ duration: reducedMotion ? 0 : 0.75, ease: EASE }}
+        >
+        <motion.div className="fx-gate-content" variants={stagger(0.12, 0.18)} initial={reducedMotion ? false : "hidden"} animate="show">
         {/* ═════════ FONDO DECORATIVO ═════════ */}
 
         <div className="pvr-direct-fondo-wrap" aria-hidden="true">
@@ -974,7 +990,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
         {/* ═════════ HEADER ═════════ */}
 
-        <header className="pvr-direct-head">
+        <motion.header className="pvr-direct-head" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <span>
           USER FX · PRIVATE CLUB
           </span>
@@ -986,11 +1002,11 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
           <small>
           CODED ACCESS
           </small>
-        </header>
+        </motion.header>
 
         {/* ═════════ COPY ═════════ */}
 
-        <div className="pvr-direct-copy">
+        <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
             ᴇɴᴛᴇʀ ᴡʜɪᴛ
             <br />
@@ -1002,9 +1018,13 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
           <p>
           𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓
           </p>
-        </div>
+        </motion.div>
 
         {/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
+        <motion.div key={`${telegramVerified}-${verifiedStage}`} className="fx-gate-step"
+          initial={reducedMotion ? false : { opacity: 0, y: 22, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: reducedMotion ? 0 : 0.55, delay: reducedMotion ? 0 : 0.16, ease: EASE }}>
 
         {!telegramVerified ? (
           <section className="pvr-direct-verified-zone">
@@ -1293,6 +1313,8 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
           </section>
         )}
 
+        </motion.div>
+
         {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
@@ -1440,7 +1462,8 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                       NEED HELP?
                     </button>
                   </footer>
-                </section>
-              </main>
+                </motion.div>
+                </motion.section>
+              </motion.main>
             );
           }
