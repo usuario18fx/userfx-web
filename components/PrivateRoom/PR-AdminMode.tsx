@@ -79,12 +79,11 @@ function AdminDialog({ title, onClose, children, login = false }: { title: strin
   useEffect(() => { ref.current?.showModal(); return () => previous.current?.focus(); }, []);
   const content = <>
     <header><span>USER FX · ADMIN</span><button type="button" aria-label="Cerrar" onClick={onClose}><Icon name="close" /></button></header>
-    {login && <div className="pvr-admin-login-logo" aria-hidden="true" />}
     <h2 id="pvr-admin-title">{title}</h2>
     {children}
   </>;
   return <dialog ref={ref} className={`pvr-admin-dialog${login ? " pvr-admin-dialog--login" : ""}`} aria-labelledby="pvr-admin-title" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) onClose(); } }}>
-    {login ? <div className="pvr-admin-login-box">{content}</div> : content}
+    {login ? <div className="pvr-admin-login-box"><div className="pvr-admin-login-texture" aria-hidden="true" />{content}</div> : content}
   </dialog>;
 }
 function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: () => void; onComplete: (status: Status) => void }) {
@@ -107,14 +106,14 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
     try { const data = await request<{ url: string }>("admin-google", {}); window.location.assign(data.url); }
     catch (cause) { setError((cause as Error).message); setWorking(false); }
   }
-  return <AdminDialog login title={signup ? "Crear acceso Admin" : "Hello Admin!"} onClose={onClose}>
+  return <AdminDialog login title={signup ? "Crear acceso Admin" : "ADMIN"} onClose={onClose}>
     <p className="pvr-admin-caption">@User18Fx · Tu plataforma, tus controles.</p>
     <form onSubmit={submit}>
-      <label><span className="pvr-admin-login-label">Correo</span><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-      <label><span className="pvr-admin-login-label">Contraseña</span><input type="password" placeholder="Password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Correo</span><AdminLoginFieldIcon kind="email" /><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Contraseña</span><AdminLoginFieldIcon kind="password" /><input type="password" placeholder="Password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
       {confirmation && <p className="pvr-admin-success" role="status">Revisa tu correo, confirma el acceso y vuelve a iniciar sesión.</p>}
       {error && <p className="pvr-admin-error" role="alert">{error}</p>}
-      <button type="submit" className="pvr-admin-primary" disabled={working}>{working ? "Verificando…" : signup ? "Crear acceso" : "Sign In"}</button>
+      <button type="submit" className="pvr-admin-primary" disabled={working}>{working ? "Verificando…" : signup ? "Crear acceso" : "Login"}</button>
     </form>
     <button type="button" className="pvr-admin-google" disabled={working || !status.googleEnabled} onClick={() => void google()}>
       <svg className="pvr-admin-google-icon" viewBox="-3 0 262 262" aria-hidden="true">
@@ -128,6 +127,22 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
     {!status.googleEnabled && <p className="pvr-admin-caption">Google pendiente de activación.</p>}
     {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Ya tengo acceso · Iniciar sesión" : "Primera vez · Crear acceso"}</button>}
   </AdminDialog>;
+}
+function AdminLoginFieldIcon({ kind }: { kind: "email" | "password" }) {
+  return <svg className="pvr-admin-login-field-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <g stroke="currentColor" strokeWidth="1" strokeLinejoin="round">
+      {kind === "email" ? <>
+        <path d="M21.6365 5H3L12.2275 12.3636L21.6365 5Z" />
+        <path d="M16.5 11.5L22.5 6.5V17L16.5 11.5Z" />
+        <path d="M8 11.5L2 6.5V17L8 11.5Z" />
+        <path d="M9.5 12.5L2.81805 18.5002H21.6362L15 12.5L12 15L9.5 12.5Z" />
+      </> : <>
+        <path d="M3.5 15.5503L9.20029 9.85L12.3503 13L11.6 13.7503H10.25L9.8 15.1003L8 16.0003L7.55 18.2503L5.5 19.6003H3.5V15.5503Z" />
+        <path d="M16 3.5H11L8.5 6L16 13.5L21 8.5L16 3.5Z" />
+        <path d="M16 10.5L18 8.5L15 5.5H13L12 6.5L16 10.5Z" />
+      </>}
+    </g>
+  </svg>;
 }
 function AdminBenefits({ scope, onClose, onExpired }: { scope: Scope; onClose: () => void; onExpired: () => void }) {
   const [query, setQuery] = useState("");
