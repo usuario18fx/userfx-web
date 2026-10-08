@@ -19,8 +19,8 @@ Framer Motion 13 and Lenis. `npm run dev` opens port 5173.
 - `app/globals.css`: black, ivory, gold and rose theme, connected backgrounds.
 - `components/FX/Platform.css`: the same visual language on existing rooms,
   feeds, Gallery, Buzón and gate. Camera, logout, profile and rewards icons remain.
-- `components/FX/SpaceMotion.tsx`: staggered surface arrivals and a brief accent
-  sweep for private navigation. The header stays outside the animation; reduced
+- `components/FX/SpaceMotion.tsx`: a short gold-lit title handover, then staggered
+  panel movement, scale and focus. The header stays outside the animation; reduced
   motion shows every panel immediately. Navigation reuses the room bootstrap,
   while the keyed room surface still cleans up calls on a space or room change.
 

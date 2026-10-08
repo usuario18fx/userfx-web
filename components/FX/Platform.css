@@ -7,14 +7,43 @@
 .fx-platform .fx-space-motion {
   position: relative;
 }
-.fx-platform .fx-space-arrival {
+.fx-platform .fx-space-curtain {
   position: absolute;
   inset: 0 0 auto;
-  height: 1px;
+  z-index: 20;
+  height: calc(100svh - 80px);
+  max-height: 800px;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  padding: clamp(90px, 17svh, 170px) 20px 0;
   pointer-events: none;
-  transform-origin: left;
-  background: linear-gradient(90deg, transparent, var(--accent, #c8ac70), transparent);
-  box-shadow: 0 0 16px var(--accent, #c8ac70);
+  background:
+    radial-gradient(ellipse at 50% 25%, #c8ac7020, transparent 55%),
+    linear-gradient(#08090dfc 0%, #08090df5 55%, #08090d00 100%);
+}
+.fx-platform .fx-space-curtain-copy {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+.fx-platform .fx-space-curtain-brand {
+  color: #c8ac70;
+  font: 500 9px var(--font-sans);
+  letter-spacing: 0.28em;
+}
+.fx-platform .fx-space-curtain-title {
+  display: block;
+  color: #eee9dd;
+  font: 600 clamp(38px, 8vw, 100px)/1 var(--font-display);
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.fx-platform .fx-space-curtain-rule {
+  width: clamp(120px, 20vw, 260px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #dfc68b, transparent);
+  box-shadow: 0 0 24px #c8ac7090;
 }
 .fx-platform .ufx-network {
   --page: #08090d;
