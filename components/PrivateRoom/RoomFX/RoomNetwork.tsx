@@ -10,6 +10,7 @@ import PrivateRoomTopNav from "../PR-TopNav";
 import PrivateRoomGallery from "../PR-Gallery";
 import { useAdminMode } from "../PR-AdminMode";
 import { SpaceMotion, SpacePanel } from "../../FX/SpaceMotion";
+import { useFxSound } from "./use-fx-sound";
 import "./RoomNetwork.css";
 type Space = "myroom" | "stage" | "buzon" | "profiles" | "gallery";
 type Bootstrap = { profile: Profile; myRoom: { id: string }; iceServers: RTCIceServer[] };
@@ -59,6 +60,7 @@ VERIFY ACCESS
 }
 function NetworkSurface({ space, roomId, client, initial }: { space: Space; roomId: string; client: string; initial: Bootstrap }) {
   const admin = useAdminMode();
+  const sound = useFxSound();
   const [profile, setProfile] = useState(initial.profile);
   useEffect(() => setProfile(initial.profile), [initial.profile]);
   const [state, setState] = useState<RoomState | null>(null);
@@ -76,6 +78,13 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [editing, setEditing] = useState(false);
   const [info, setInfo] = useState<"membership" | "rewards" | "">("");
   const infoDialog = useRef<HTMLDialogElement>(null);
+  const lastSoundState = useRef({ chatOpen, modal: false });
+  useEffect(() => {
+    const modal = editing || !!info || preview;
+    const previous = lastSoundState.current;
+    if (chatOpen !== previous.chatOpen || modal !== previous.modal) sound.play(chatOpen && !previous.chatOpen || modal && !previous.modal ? "open" : "close");
+    lastSoundState.current = { chatOpen, modal };
+  }, [chatOpen, editing, info, preview, sound.play]);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ displayName: profile.name, bio: profile.bio, location: profile.location, interests: profile.interests, visibility: profile.visibility, onlineVisibility: profile.onlineVisibility, avatarUrl: profile.avatarUrl?.startsWith("https://") ? profile.avatarUrl : "", coverUrl: profile.coverUrl?.startsWith("https://") ? profile.coverUrl : "" });
   const [theater, setTheater] = useState(false);
@@ -162,13 +171,16 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   }, [client, roomId, profile.paidChat, isInbox, isDirectory, isGallery, refreshToken, call.leave]);
   useEffect(() => {
     if (!chatLoaded) return;
-    if (messageIds.current && !chatOpen) {
+    if (messageIds.current) {
       const incoming = messages.filter((message) => !messageIds.current?.has(message.id) && message.authorId !== profile.accountId).length;
-      if (incoming) setUnread((current) => current + incoming);
+      if (incoming) {
+        if (!chatOpen) setUnread((current) => current + incoming);
+        sound.play("message");
+      }
     }
     messageIds.current = new Set(messages.map((message) => message.id));
     if (chatOpen) setUnread(0);
-  }, [messages, chatOpen, chatLoaded, profile.accountId]);
+  }, [messages, chatOpen, chatLoaded, profile.accountId, sound.play]);
   useEffect(() => { if (chatOpen && chat.current) chat.current.scrollTop = chat.current.scrollHeight; }, [messages.length, chatOpen]);
   useEffect(() => { if (chatOpen) chatClose.current?.focus(); }, [chatOpen]);
   function closeChat() { setChatOpen(false); chatToggle.current?.focus(); }
@@ -397,6 +409,9 @@ setCameraOffset((current) => ({ x: current.x + Math.max(8 - box.left, Math.min(M
 </span>
 <div className="ufx-frame-actions">
 {!isStage && (cameraOffset.x !== 0 || cameraOffset.y !== 0) && <button type="button" title="Volver a la posición original" aria-label="Restablecer posición de cámara" onClick={() => setCameraOffset({ x: 0, y: 0 })}><Icon name="home" size={16} /></button>}
+<button type="button" className="ufx-sound-toggle" aria-label={sound.enabled ? "Mute FX-room sounds" : "Enable FX-room sounds"} aria-pressed={sound.enabled} title={sound.enabled ? "FX SOUND · ON" : "FX SOUND · OFF"} onClick={sound.toggle}>
+<span aria-hidden="true">{sound.enabled ? "♪" : "♩"}</span><span>FX SOUND {sound.enabled ? "ON" : "OFF"}</span>
+</button>
 <button ref={chatToggle} type="button" className="ufx-chat-toggle" aria-label={unread ? `Open room chat, ${unread} unread messages` : "Open room chat"} aria-expanded={chatOpen} aria-controls="ufx-room-chat" onClick={() => { if (!admin.requestFeature("chat")) setChatOpen((current) => !current); }}>
 <Icon name="chat" />
 <span>
