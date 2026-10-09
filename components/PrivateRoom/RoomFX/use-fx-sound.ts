@@ -16,6 +16,9 @@ export function useFxSound() {
   useEffect(() => {
     try { enabledRef.current = localStorage.getItem(KEY) !== "off"; } catch {}
     setEnabled(enabledRef.current);
+    const sync = () => { try { enabledRef.current = localStorage.getItem(KEY) !== "off"; setEnabled(enabledRef.current); } catch {} };
+    window.addEventListener("userfx-room-sound", sync);
+    window.addEventListener("storage", sync);
     const unlock = () => {
       if (!enabledRef.current || !window.AudioContext) return;
       try {
@@ -26,6 +29,8 @@ export function useFxSound() {
     window.addEventListener("pointerdown", unlock);
     window.addEventListener("keydown", unlock);
     return () => {
+      window.removeEventListener("userfx-room-sound", sync);
+      window.removeEventListener("storage", sync);
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
       const context = audio.current; audio.current = null;
@@ -57,6 +62,7 @@ export function useFxSound() {
     enabledRef.current = !enabledRef.current;
     setEnabled(enabledRef.current);
     try { localStorage.setItem(KEY, enabledRef.current ? "on" : "off"); } catch {}
+    window.dispatchEvent(new Event("userfx-room-sound"));
   }, []);
   return { enabled, toggle, play };
 }

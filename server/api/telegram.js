@@ -2329,6 +2329,8 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
               const parsed = normalizeTelegramFxUsername(accessTarget);
               if (!parsed) return await ctx.reply("Uso: /access @username");
               const record = await getTelegramFxAccess(parsed.normalized);
+              const contactsRedis = await ensureRedis();
+              if (contactsRedis) await contactsRedis.multi().sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:user18fx`, parsed.normalized).sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:${parsed.normalized}`, "user18fx").exec();
               const mask = telegramFxMask(record);
               await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
                 parse_mode: "HTML",

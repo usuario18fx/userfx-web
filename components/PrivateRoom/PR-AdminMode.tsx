@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ACCESS_LEVELS, benefitDescription } from "../../lib/admin-benefits.js";
 import { Avatar, Icon } from "./RoomFX/shared";
+import Friends from "./RoomFX/Friends";
 import "./PR-AdminMode.css";
 
 type Scope = "membership" | "myroom" | "stage" | "gallery" | "buzon" | "profiles" | "camera" | "chat";
@@ -60,6 +61,7 @@ export function AdminModeProvider({ children }: { children: ReactNode }) {
   function revealSwitch() { if (!status.ownerEligible) return false; setRevealed(true); return true; }
   return <AdminContext.Provider value={{ ...status, revealed, revealSwitch, requestFeature, login: () => setLoginOpen(true), userMode }}>
     {children}
+    <Friends />
     {notice && <div className="pvr-admin-toast" role="status">{notice}</div>}
     {loginOpen && status.ownerEligible && <AdminLogin status={status} onClose={() => setLoginOpen(false)} onComplete={(next) => { revision.current++; setStatus((current) => ({ ...current, ...next })); setLoginOpen(false); setRevealed(true); }} />}
     {scope && status.mode === "admin" && <AdminBenefits scope={scope} onClose={() => setScope(null)} onExpired={expired} />}

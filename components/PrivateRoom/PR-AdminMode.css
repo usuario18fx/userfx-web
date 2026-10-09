@@ -138,3 +138,18 @@
 @keyframes pvrAdminLoginFlicker{0%,50%,100%{filter:brightness(1)}10%,60%{filter:brightness(.85)}20%,90%{filter:brightness(1.15)}30%,70%{filter:brightness(.95)}40%,80%{filter:brightness(1.05)}}
 @media(max-width:360px){.pvr-admin-dialog--login{padding:22px}.pvr-admin-login-box{padding:18px 14px 22px}.pvr-admin-dialog--login h2{font-size:24px;letter-spacing:.32em;text-indent:.32em}}
 @media(prefers-reduced-motion:reduce){.pvr-admin-login-texture{animation:none}.pvr-admin-login-field-icon,.pvr-admin-dialog--login .pvr-admin-primary,.pvr-admin-dialog--login .pvr-admin-google{transition:none}.pvr-admin-dialog--login .pvr-admin-primary:hover:not(:disabled),.pvr-admin-dialog--login .pvr-admin-google:hover:not(:disabled){animation:none;transform:none}}
+
+/* Compact horizontal admin access, with native dialog focus and no inner scroll. */
+.pvr-admin-dialog--login{width:min(700px,calc(100vw - 28px));padding:16px;border:1px solid #c4a57455;border-radius:18px;overflow:visible;max-height:none;background:#0c0c0b}
+.pvr-admin-dialog--login .pvr-admin-login-box{padding:12px 18px;border-radius:12px;display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:28px;row-gap:8px;width:auto;height:auto}
+.pvr-admin-login-box::before,.pvr-admin-login-box::after{display:none}
+.pvr-admin-dialog--login .pvr-admin-login-box>header{grid-column:1/-1;margin:0 0 2px}
+.pvr-admin-dialog--login h2{grid-column:1;grid-row:2;align-self:end;text-align:left;font-size:27px;letter-spacing:.22em;text-indent:0;padding:0}
+.pvr-admin-dialog--login .pvr-admin-login-box>.pvr-admin-caption:first-of-type{grid-column:1;grid-row:3;text-align:left;margin:0;max-width:23ch;font-size:11px}
+.pvr-admin-dialog--login form{grid-column:2;grid-row:2/5;margin:0;gap:10px;min-width:0}
+.pvr-admin-dialog--login .pvr-admin-login-field input{width:100%;min-width:0;font-size:13px;padding:8px}
+.pvr-admin-dialog--login .pvr-admin-primary{padding:9px;min-height:34px;font-size:12px}
+.pvr-admin-dialog--login .pvr-admin-google{grid-column:2;grid-row:5;padding:8px;min-height:34px;font-size:12px;margin:0}
+.pvr-admin-dialog--login .pvr-admin-caption{grid-column:2;margin:0;font-size:10px;line-height:1.3}
+.pvr-admin-dialog--login .pvr-admin-text{grid-column:2;margin:0;font-size:10px}
+@media(max-width:600px){.pvr-admin-dialog--login .pvr-admin-login-box{grid-template-columns:100px minmax(0,1fr);padding:6px;column-gap:14px}.pvr-admin-dialog--login h2{font-size:19px;letter-spacing:.12em}.pvr-admin-dialog--login.pvr-admin-dialog--signup h2{font-size:16px;letter-spacing:0}.pvr-admin-dialog--login .pvr-admin-login-box>.pvr-admin-caption:first-of-type{font-size:10px}}
