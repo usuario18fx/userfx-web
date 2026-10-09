@@ -11,7 +11,7 @@
 
           type AccessTone = "spcl" | "paid" | null;
 
-          export function FxAccessBtn({ disabled = false }: FxAccessBtnProps) {
+          export function FxAccessBtn({ onOpen, disabled = false }: FxAccessBtnProps) {
             const [hasAccess, setHasAccess] = useState(false);
             const [accessTone, setAccessTone] = useState<AccessTone>(null);
 
@@ -51,7 +51,9 @@
             }, [refreshAccess]);
 
             function handleOpen() {
-              window.location.hash = hasAccess ? "#/private-room" : "#/private-room-access";
+              if (hasAccess) window.location.hash = "#/private-room";
+              else if (onOpen) onOpen();
+              else window.location.hash = "#/private-room-access";
             }
 
             const stateClass = accessTone ? ` is-${accessTone}` : "";

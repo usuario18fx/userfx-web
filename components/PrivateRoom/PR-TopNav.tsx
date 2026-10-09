@@ -1,64 +1,25 @@
-          import { useCallback, useEffect, useState } from "react";
-          import "./PR-TopNav.css";
-
-          const HOME_URL = "https://user18fx.com";
+          import { useEffect, useState } from "react";
+import "./PR-TopNav.css";
+import { Icon } from "./RoomFX/shared";
+import { AdminModeSwitch, useAdminMode } from "./PR-AdminMode";
 
           const NAV_ITEMS = [
-            { label: "INICIO", route: HOME_URL, external: true },
-            { label: "MYROOM", route: "#/private-room" },
-            { label: "STAGE", route: "#/private-room/stage" },
-            { label: "GALLERY", route: "#/private-room/gallery" },
-            { label: "BUZON", route: "#/private-room/buzon" },
+            { label: "INICIO", route: "#/", scope: "membership" },
+            { label: "MYROOM", route: "#/private-room", scope: "myroom" },
+            { label: "STAGE", route: "#/private-room/stage", scope: "stage" },
+            { label: "GALLERY", route: "#/private-room/gallery", scope: "gallery" },
+            { label: "BUZON", route: "#/private-room/buzon", scope: "buzon" },
           ] as const;
 
-          function cameraIsLive() {
-            const indicator = document.querySelector<HTMLElement>(".pvr-account-online");
-            return Boolean(indicator && !indicator.classList.contains("is-offline"));
-          }
-
-          function openProfile() {
-            const launcher = document.querySelector<HTMLButtonElement>(".pvr-account-launcher");
-            if (launcher && !launcher.classList.contains("is-open")) launcher.click();
-          }
-
-          function openCameraNow() {
-            window.dispatchEvent(new CustomEvent("userfx:open-camera-studio"));
-          }
-
-          function openMembership() {
-            document.querySelector<HTMLButtonElement>(".buttonupgrade")?.click();
-          }
-
-          function openRewards() {
-            window.dispatchEvent(new CustomEvent("userfx:open-rewards"));
-          }
-
-          function clearLocalAccessState() {
-            try {
-              ["vault_unlocked", "vault_plan", "userfx_access_code", "memberAccess"].forEach((key) => sessionStorage.removeItem(key));
-              Object.keys(sessionStorage).forEach((key) => {
-                if (key.startsWith("userfx_browser_handoff:")) sessionStorage.removeItem(key);
-              });
-            } catch {}
-          }
-
-          function isExternalNavItem(item: (typeof NAV_ITEMS)[number]): item is Extract<(typeof NAV_ITEMS)[number], { external: true }> {
-            return "external" in item && item.external;
-          }
-
-          async function logout() {
-            try {
-              await fetch("/api/access-session", {
-                method: "DELETE",
-                headers: { Accept: "application/json" },
-                credentials: "same-origin",
-                cache: "no-store",
-              });
-            } catch {}
-
-            clearLocalAccessState();
-            window.location.assign(HOME_URL);
-          }
+          type TopNavProps = {
+            cameraLive: boolean;
+            accessLabel: string;
+            onCamera: () => void;
+            onProfile: () => void;
+            onMembership: () => void;
+            onRewards: () => void;
+            onLogout: () => void;
+          };
 
           async function openInBrowser() {
             try {
@@ -79,18 +40,11 @@
             } catch {}
           }
 
-          export default function PrivateRoomTopNav() {
+          export default function PrivateRoomTopNav({ cameraLive, accessLabel, onCamera, onProfile, onMembership, onRewards, onLogout }: TopNavProps) {
+            const admin = useAdminMode();
             const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
-            const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
-            const [cameraLive, setCameraLive] = useState(false);
             const [insideTelegram, setInsideTelegram] = useState(false);
             const [browserNoticeOpen, setBrowserNoticeOpen] = useState(false);
-
-            const readLiveState = useCallback(() => {
-              const access = document.querySelector<HTMLElement>(".pvr-live-dot")?.textContent?.trim();
-              if (access) setAccessCode(access);
-              setCameraLive(cameraIsLive());
-            }, []);
 
             useEffect(() => {
               const handleHashChange = () => setRoute(window.location.hash || "#/private-room");
@@ -102,24 +56,18 @@
               setInsideTelegram(Boolean(window.Telegram?.WebApp?.initData));
             }, []);
 
-            useEffect(() => {
-              readLiveState();
-              const observer = new MutationObserver(readLiveState);
-              observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class"] });
-              return () => observer.disconnect();
-            }, [readLiveState]);
-
             function requestCamera() {
+              if (admin.requestFeature("camera")) return;
               if (insideTelegram) {
                 setBrowserNoticeOpen(true);
                 return;
               }
-              openCameraNow();
+              onCamera();
             }
 
             function continueCameraInTelegram() {
               setBrowserNoticeOpen(false);
-              openCameraNow();
+              onCamera();
             }
 
             async function continueCameraInBrowser() {
@@ -128,58 +76,53 @@
             }
 
             function navigate(item: (typeof NAV_ITEMS)[number]) {
-              if (item.label === "GALLERY" && cameraLive) return;
-              if (isExternalNavItem(item)) {
-                window.location.assign(item.route);
-                return;
-              }
+              if (admin.requestFeature(item.scope)) return;
               window.location.hash = item.route;
             }
 
             return (
               <header className="pvr-club-nav pvr-club-nav--unified">
                 <div className="pvr-club-nav-inner">
+                  <div className="pvr-admin-brand-controls">
                   <button
                     type="button"
                     className="pvr-club-brand"
+                    aria-label="UserFX · MyRoom"
                     onClick={() => {
+                      if (admin.revealSwitch()) return;
                       window.location.hash = "#/private-room";
                     }}>
                     <span className="pvr-club-brand-mark">
-                    FX
+                      <img src="/assets/userfx-logo-sin.png" alt="USER FX" />
                     </span>
-                    <span className="pvr-club-brand-copy">
-                      <strong>
-                      MY ROOM
-                      </strong>
-                      <small>
-                      PRIVATE CLUB
-                      </small>
-                    </span>
+                    <span className="pvr-club-brand-live" aria-hidden="true" />
+                    <span className="pvr-club-brand-copy">| PRIV⭑VAULT |</span>
                   </button>
+                  <AdminModeSwitch />
+                  </div>
                   <nav className="pvr-club-tabs" aria-label="Private Room navigation">
                     {NAV_ITEMS.map((item) => {
-                      const galleryLocked = item.label === "GALLERY" && cameraLive;
-                      const isExternal = isExternalNavItem(item);
+
                       return (
-                        <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
+                        <button key={item.label} type="button" className={route.split("?")[0] === item.route ? "is-active" : ""} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
                 {item.label}
               </button>
             );
           })}
         </nav>
         <div className="pvr-club-actions">
-          <button type="button" className="pvr-club-code" onClick={openProfile}>
+          <button type="button" className="pvr-club-code" onClick={() => { if (!admin.requestFeature("membership")) onProfile(); }}>
             <span>
             MEMBER ACCESS
             </span>
-            <strong>{accessCode}</strong>
+            <strong>{accessLabel}</strong>
           </button>
           <button type="button" className={`pvr-club-cam ${cameraLive ? "is-live" : ""}`} onClick={requestCamera}>
-            <span />
-            {cameraLive ? "ONCAM" : "OFFCAM"}
+            <span className="pvr-cam-icon" aria-hidden="true"><Icon name="camera" size={16} /></span>
+            <span className="pvr-cam-label">{cameraLive ? "ONCAM" : "OFFCAM"}</span>
+            <span className="pvr-cam-dot" aria-hidden="true" />
           </button>
-          <button type="button" className="pvr-club-reward" onClick={openRewards}>
+          <button type="button" className="pvr-club-reward" aria-label="Rewards" onClick={onRewards}>
             <span className="pvr-reward-icon-container">
               <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
                 <path strokeLinecap="round" strokeWidth="4" stroke="#6A8EF6" d="M2 18L58 18" />
@@ -197,14 +140,15 @@
             <span className="pvr-reward-text">
             Rewards
             </span>
+            <span className="pvr-reward-star" aria-hidden="true">✦</span>
           </button>
-          <button type="button" className="pvr-club-profile" onClick={openProfile}>
+          <button type="button" className="pvr-club-profile" aria-label="Edit your profile" onClick={() => { if (!admin.requestFeature("profiles")) onProfile(); }}>
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="8" r="4" />
               <path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6H4.5z" />
             </svg>
           </button>
-          <button type="button" className="pvr-club-membership" onClick={openMembership}>
+          <button type="button" className="pvr-club-membership" aria-label="Your membership" onClick={() => { if (!admin.requestFeature("membership")) onMembership(); }}>
             <svg viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z" />
             </svg>
@@ -214,8 +158,10 @@
               OPEN IN BROWSER
             </button>
           )}
-          <button type="button" className="pvr-club-logout" onClick={logout}>
-            LOG OUT
+          <button type="button" className="pvr-club-logout" onClick={() => { if (admin.mode === "admin") void admin.userMode(); onLogout(); }}>
+            <span className="pvr-logout-dot" aria-hidden="true" />
+            <span>LOG OUT</span>
+            <span className="pvr-logout-icon" aria-hidden="true"><Icon name="leave" size={15} /></span>
           </button>
         </div>
       </div>
@@ -231,10 +177,9 @@
           </button>
         )}
         {NAV_ITEMS.map((item) => {
-          const galleryLocked = item.label === "GALLERY" && cameraLive;
-          const isExternal = isExternalNavItem(item);
+
           return (
-            <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked}>
+            <button key={item.label} type="button" className={route.split("?")[0] === item.route ? "is-active" : ""} aria-current={route.split("?")[0] === item.route ? "page" : undefined} onClick={() => navigate(item)}>
               {item.label}
             </button>
           );

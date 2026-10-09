@@ -1,6 +1,14 @@
           import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
+          import { motion, useReducedMotion } from "framer-motion";
+          import { EASE, stagger } from "@/lib/motion";
+
           import "./PR-DirectGate.css";
+
+          const gateBlock = {
+            hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: EASE } },
+          };
 
           const ACCESS_CODE_KEY = "userfx_access_code";
 
@@ -14,6 +22,8 @@
 
           type DirectGateProps = {
             children: ReactNode;
+            forceOpen?: boolean;
+            onRequestClose?: () => void;
           };
 
           type SessionResponse = {
@@ -134,8 +144,8 @@ function normalizeSpecialSuffix(value: string) {
     .slice(0, 4);
 }
 
-export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
-  const forceGate = typeof window !== "undefined" && window.location.hash === "#/private-room-access";
+export default function PrivateRoomDirectGate({ children, forceOpen = false, onRequestClose }: DirectGateProps) {
+  const forceGate = forceOpen || (typeof window !== "undefined" && window.location.hash === "#/private-room-access");
 
   const [checking, setChecking] = useState(!forceGate);
 
@@ -156,6 +166,15 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
   const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>("none");
+  useEffect(() => {
+    const supplied = new URLSearchParams(window.location.search).get("code");
+    const match = String(supplied || "").trim().toUpperCase().match(/^(SPCL|BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
+    if (!match) return;
+    setPrefix(match[1]); setSuffix(match[2]); setSecondaryMode("code");
+    // Prefilling never grants access: the existing verifier still checks it.
+    const url = new URL(window.location.href); url.searchParams.delete("code");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }, []);
 
   const [telegramUsername, setTelegramUsername] = useState("");
 
@@ -260,18 +279,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
       setError("ALLOW CLIPBOARD ACCESS TO PASTE");
     }
   }
-
-  /* ─────   LOCAL DEV ACCESS ─────── */
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-
-    const previewGate = new URLSearchParams(window.location.search).get("preview") === "gate" || forceGate;
-
-    setAuthenticated(!previewGate);
-
-    setChecking(false);
-  }, [forceGate]);
 
   /* ─────   SAVED TELEGRAM USERNAME ─────── */
 
@@ -423,8 +430,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   /* ─────   EXISTING ACCESS SESSION ─────── */
 
   useEffect(() => {
-    if (import.meta.env.DEV) return;
-
     if (forceGate) {
       setAuthenticated(false);
 
@@ -496,7 +501,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }, [forceGate]);
 
   useEffect(() => {
-    if (import.meta.env.DEV || forceGate || checking || authenticated) return;
+    if (forceGate || checking || authenticated) return;
     if (sessionRestoreAttemptedRef.current) return;
 
     sessionRestoreAttemptedRef.current = true;
@@ -725,6 +730,18 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
         return;
       }
 
+      const sessionResponse = await fetch("/api/access-session", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const sessionData: SessionResponse = await sessionResponse.json().catch(() => ({}));
+
+      if (!sessionResponse.ok || !sessionData?.authenticated) {
+        throw new Error(sessionData?.error || "PRIVATE SESSION COULD NOT BE CONFIRMED");
+      }
+
       const fullCode = `${normalizedPrefix}-${normalizedSuffix}`;
 
       try {
@@ -771,24 +788,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     /* reset Telegram-return mode for manual checks */
 
     returningIdentityRef.current = false;
-
-    /* ───── LOCAL DEV TELEGRAM VERIFY ───── */
-
-    if (import.meta.env.DEV && normalizedUsername.toLowerCase() === "@user18fx") {
-      setTelegramUsername(normalizedUsername);
-
-      setTelegramVerified(true);
-
-      setUsernameRemembered(true);
-
-      setTelegramError("");
-
-      setSpecialCode("");
-
-      rememberTelegramUsername(normalizedUsername);
-
-      return;
-    }
 
     if (!normalizedUsername) {
       setTelegramError("ENTER A VALID TELEGRAM USERNAME");
@@ -948,6 +947,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     }
   }
 
+  const reducedMotion = useReducedMotion();
+
   if (checking) {
     return (
       <main className="pvr-direct-checking">
@@ -967,8 +968,14 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }
 
   return (
-    <main className="pvr-direct-gate">
-      <section className="pvr-direct-card">
+    <motion.main className="pvr-direct-gate" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.3 }}>
+      <motion.section className="pvr-direct-card"
+        transformTemplate={(_, generated) => `var(--fx-gate-base-transform) ${generated === "none" ? "" : generated}`}
+        initial={reducedMotion ? false : { opacity: 0, y: 48, scale: 0.94, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+        transition={{ duration: reducedMotion ? 0 : 0.75, ease: EASE }}
+        >
+        <motion.div className="fx-gate-content" variants={stagger(0.12, 0.18)} initial={reducedMotion ? false : "hidden"} animate="show">
         {/* ═════════ FONDO DECORATIVO ═════════ */}
 
         <div className="pvr-direct-fondo-wrap" aria-hidden="true">
@@ -983,7 +990,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
         {/* ═════════ HEADER ═════════ */}
 
-        <header className="pvr-direct-head">
+        <motion.header className="pvr-direct-head" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <span>
           USER FX · PRIVATE CLUB
           </span>
@@ -995,11 +1002,11 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
           <small>
           CODED ACCESS
           </small>
-        </header>
+        </motion.header>
 
         {/* ═════════ COPY ═════════ */}
 
-        <div className="pvr-direct-copy">
+        <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
             ᴇɴᴛᴇʀ ᴡʜɪᴛ
             <br />
@@ -1011,9 +1018,13 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
           <p>
           𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓
           </p>
-        </div>
+        </motion.div>
 
         {/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
+        <motion.div key={`${telegramVerified}-${verifiedStage}`} className="fx-gate-step"
+          initial={reducedMotion ? false : { opacity: 0, y: 22, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: reducedMotion ? 0 : 0.55, delay: reducedMotion ? 0 : 0.16, ease: EASE }}>
 
         {!telegramVerified ? (
           <section className="pvr-direct-verified-zone">
@@ -1302,6 +1313,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
           </section>
         )}
 
+        </motion.div>
+
         {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
@@ -1436,6 +1449,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
                           setSpecialCode("");
                           setTelegramError("");
                           setSecondaryMode("none");
+                        } else if (onRequestClose) {
+                          onRequestClose();
                         } else {
                           window.location.hash = "#/";
                         }
@@ -1447,7 +1462,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
                       NEED HELP?
                     </button>
                   </footer>
-                </section>
-              </main>
+                </motion.div>
+                </motion.section>
+              </motion.main>
             );
           }

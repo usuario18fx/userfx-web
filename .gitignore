@@ -2,5 +2,8 @@
 .env*
 dist
 node_modules
+.next/
+out/
+*.tsbuildinfo
 private-album-source/
 .env.local

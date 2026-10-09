@@ -1,7 +1,5 @@
 {
-  "functions": {
-    "api/telegram.js": {
-      "includeFiles": "assets/**"
-    }
-  }
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }

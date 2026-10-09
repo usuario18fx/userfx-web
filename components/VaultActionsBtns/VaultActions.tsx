@@ -31,7 +31,7 @@
                 <div className="fx-access-launcher">
                   <FxAccessBtn onOpen={() => setFxAccessOpen(true)} disabled={loading} />
                 </div>
-                <FxAccessModal id="fx-access-modal" open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} accessCode={value} onAccessCodeChange={onChange} onAccessSubmit={onSubmit} onGetCode={onGetCode} accessLoading={loading} accessError={error} accessPlaceholder={placeholder} inputRef={inputRef} />
+                <FxAccessModal open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} />
               </>
             );
           }

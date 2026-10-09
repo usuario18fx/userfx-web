@@ -463,7 +463,7 @@ margin: 7px;
 .pvr-direct-secondary-actions > button:hover,
 .pvr-direct-secondary-actions > button.is-active {
   border-color: #fcc061;
-  background: #18140f;
+  background: #776146;
   transform: translateY(-1px);
 }
 .pvr-direct-secondary-actions .pvr-direct-get-code {

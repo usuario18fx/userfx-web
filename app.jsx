@@ -1,13 +1,9 @@
           import { useEffect, useState } from "react";
-          import VaultHome from "./components/VaultHome/VaultHome";
-          import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
+          import VaultHome from "./components/FX/Landing";
+import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
+import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
-          import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
-          import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
-          import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
-          import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
-          import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
-
+          import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -24,19 +20,24 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route === "#/private-room/stage") return <PrivateRoomStage />;
-  if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
-  if (route === "#/private-room/buzon") return <PrivateRoomBuzon />;
-  return <PrivateRoomMyRoom />;
+  const spaces = {
+    "#/private-room/stage": "stage",
+    "#/private-room/gallery": "gallery",
+    "#/private-room/buzon": "buzon",
+    "#/private-room/profiles": "profiles",
+  };
+  return <RoomNetwork space={spaces[route.split("?")[0]] || "myroom"} />;
 }
 export default function App() {
+  return <AdminModeProvider><UserFXApp /></AdminModeProvider>;
+}
+export function UserFXApp() {
   const [route, setRoute] = useState(getRoute);
   useEffect(() => {
     const handleRouteChange = () => setRoute(getRoute());
     window.addEventListener("hashchange", handleRouteChange);
     return () => window.removeEventListener("hashchange", handleRouteChange);
   }, []);
-
   useEffect(() => {
     let cancelled = false;
     const params = new URLSearchParams(window.location.search);
@@ -116,25 +117,21 @@ export default function App() {
       if (timer) window.clearTimeout(timer);
     };
   }, []);
-
   if (route === "#/private-room-access") {
     return (
-      <>
-        <PrivateRoomLiveShell />
-      </>
+<>
+<PrivateRoomDirectGate><PrivateRoomMyRoom /></PrivateRoomDirectGate>
+</>
     );
   }
-
   if (route.startsWith("#/private-room")) {
     return (
-      <>
-        <PrivateRoomTopNav />
-        <PrivateRoomLiveShell />
-        <PrivateRoomRoute route={route} />
-        <PrivateRoomCameraEnhancer />
-      </>
+<PrivateRoomDirectGate>
+<PrivateRoomRoute route={route} />
+</PrivateRoomDirectGate>
     );
   }
-
-  return <VaultHome />;
+  return (
+<VaultHome />
+);
 }

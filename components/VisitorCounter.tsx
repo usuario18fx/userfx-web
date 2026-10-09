@@ -39,7 +39,7 @@ export default function VisitorCounter() {
   const value = stats ? (showUnique ? stats.unique : stats.visitors) : null;
   const label = showUnique ? "USER" : "VIEW";
   const icon = showUnique ? "/assets/iconos/user.png" : "/assets/iconos/view.png";
-  const formattedValue = `${label}-${formatCounterValue(value)}`;
+  const formattedValue = `${label}-${value === null ? "—" : formatCounterValue(value)}`;
 
   return (
     <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((current) => !current)} title={showUnique ? "Unique users" : "Views"} aria-label={formattedValue}>

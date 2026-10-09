@@ -1,26 +1,19 @@
           "use client";
-
           import React, { useEffect, useRef, useState } from "react";
           import Scramble from "../Scramble";
           import VisitorCounter from "../VisitorCounter";
           import VaultDevice from "../VaultDevice/VaultDevice";
           import Crown4D from "../Crown4D/Crown4D";
+import { AdminModeSwitch, useAdminMode } from "../PrivateRoom/PR-AdminMode";
           import "./VaultHome.css";
-
           import VaultHeroDoors from "../VaultDoors/VaultHeroDoors";
           import VaultMediaDevice from "../VaultInfo/VaultInfoDevice";
-
           import { FxAccessBtn } from "../FxAccess/FxAccessBtn";
           import { FxAccessModal } from "../FxAccess/FxAccessModal/FxAccessModal";
-
           const LOGO = "/assets/userfx-logo-sin.png";
-
           const BRICK = "/assets/brick-wall.png";
-
           const DAMASK = "/assets/damask.png";
-
           const privatePhoto = (pathname: string) => `/api/private-media?pathname=${encodeURIComponent(pathname)}`;
-
 const PREVIEW_INSIDE = ["/assets/album/PRVW/PRVW-01.jpg", "/assets/album/PRVW/PRVW-02.jpg", "/assets/album/PRVW/PRVW-03.jpg", "/assets/album/PRVW/PRVW-04.jpg", "/assets/album/PRVW/PRVW-05.jpg", "/assets/album/PRVW/PRVW-06.jpg", "/assets/album/PRVW/PRVW-07.jpg"];
 const BASIC_INSIDE = [privatePhoto("userfx-album/BSIC/BSIC-01.jpg"), privatePhoto("userfx-album/BSIC/BSIC-02.jpg"), privatePhoto("userfx-album/BSIC/BSIC-03.jpg"), privatePhoto("userfx-album/BSIC/BSIC-04.jpg"), privatePhoto("userfx-album/BSIC/BSIC-05.jpg")];
 const PRO_INSIDE = [privatePhoto("userfx-album/PRX0/PRX0-01.jpg"), privatePhoto("userfx-album/PRX0/PRX0-02.jpg"), privatePhoto("userfx-album/PRX0/PRX0-03.jpg")];
@@ -37,7 +30,6 @@ const ICONS = {
   chat: "/assets/iconos/chat.png",
   tv: "/assets/iconos/tv.png",
 };
-
 const TICKER_ITEMS = ["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ", "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026", "| FX | CLOSED CIRCUIT | TORONTO,CANADA", "| ALL RIGHTS RESERVED |"];
 const STEPS = [
   { n: "01", title: "OPEN THE TELEGRAM BOT", text: "Open our Telegram bot to explore the available access levels and see what each option includes." },
@@ -45,7 +37,10 @@ const STEPS = [
   { n: "03", title: "COMPLETE YOUR PAYMENT", text: "Finish your payment securely inside Telegram. Once confirmed, your unique private code is delivered instantly." },
   { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
 ];
-
+const PROTOCOL_ORNAMENTS = [
+  { src: "/icon-fx.png", className: "vx-Icon-fx" },
+  { src: "/icon7.png", className: "vx-Icon7" },
+];
 const FAQS = [
   { q: "How do I get a code?", a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest." },
   { q: "How many times can I enter?", a: "Each plan offers a different level of access, from occasional entry to a more flexible experience." },
@@ -152,6 +147,7 @@ function openLink(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 export default function VaultHome() {
+  const admin = useAdminMode();
   const [clock, setClock] = useState("--:--:--");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [dm, setDm] = useState(false);
@@ -163,25 +159,18 @@ export default function VaultHome() {
   const [unlimitedAccess, setUnlimitedAccess] = useState(false);
   const [fxAccessOpen, setFxAccessOpen] = useState(false);
   const [memberAccess, setMemberAccess] = useState(false);
-
   const activePlanPrefix = activePlanId ? ACCESS_PLAN_PREFIX[activePlanId] : "";
   const activeAccessPrefix = memberAccess ? "SPCL" : activePlanPrefix;
   const activeAccessState = memberAccess ? "MEMBER" : "UNLOCKED";
-
-  const unlockedPhotos = activePlanId === "vip" ? [...BASIC_INSIDE, ...PRO_INSIDE, ...VIP_INSIDE] : activePlanId === "pro" ? [...BASIC_INSIDE, ...PRO_INSIDE] : activePlanId === "basic" ? BASIC_INSIDE : [];
-
+  const unlockedPhotos = memberAccess ? [] : activePlanId === "vip" ? VIP_INSIDE : activePlanId === "pro" ? PRO_INSIDE : activePlanId === "basic" ? BASIC_INSIDE : [];
   const visiblePhotos = unlocked ? [...PREVIEW_INSIDE, ...unlockedPhotos] : PREVIEW_INSIDE;
-
   const [prefix, setPrefix] = useState("");
   const [suffix, setSuffix] = useState("");
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [verifyError, setVerifyError] = useState("");
   const [attempts, setAttempts] = useState(0);
-  const inlineCodeRef = useRef<HTMLInputElement | null>(null);
-
   useEffect(() => {
     let cancelled = false;
-
     const refreshAccessSession = async () => {
       try {
         const response = await fetch("/api/access-session", {
@@ -190,10 +179,8 @@ export default function VaultHome() {
           credentials: "same-origin",
           cache: "no-store",
         });
-
         const data = await response.json().catch(() => ({}));
         if (cancelled) return;
-
         if (response.ok && data?.authenticated && isAccessPlanId(data.planId)) {
           sessionStorage.setItem("vault_plan", data.planId);
           setActivePlanId(data.planId);
@@ -220,15 +207,12 @@ export default function VaultHome() {
       .trim()
       .toUpperCase()
       .match(/^(BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
-
     if (match) {
       if (codeFromTelegram || match[1] === "PRX0") {
         setPrefix(match[1]);
         setSuffix(match[2]);
       }
-      if (codeFromTelegram) {
-        window.setTimeout(() => inlineCodeRef.current?.focus(), 150);
-      } else if (match[1] !== "PRX0") {
+      if (!codeFromTelegram && match[1] !== "PRX0") {
         localStorage.removeItem(SAVED_CODE_KEY);
       }
     }
@@ -239,7 +223,6 @@ export default function VaultHome() {
         initData: (window as TelegramWindow).Telegram?.WebApp?.initData || "",
       }),
     }).catch(() => {});
-
     return () => {
       cancelled = true;
       window.removeEventListener("focus", handleWindowFocus);
@@ -257,7 +240,6 @@ export default function VaultHome() {
   }, []);
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-
     if (attempts >= MAX_ATTEMPTS) {
       setVerifyError("ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..");
       return;
@@ -270,7 +252,6 @@ export default function VaultHome() {
       .trim()
       .toUpperCase()
       .replace(/[^A-HJ-NP-Z2-9]/g, "");
-
     if (!/^(BSIC|PRX0|VIPX)$/.test(normalizedPrefix) || normalizedSuffix.length !== 4) {
       setVerifyError("ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴄᴏᴍᴘʟᴇᴛᴇ ᴀᴄᴄᴇꜱꜱ ᴋᴇʏ");
       return;
@@ -297,7 +278,6 @@ export default function VaultHome() {
         setRemainingAccesses(Number.isFinite(Number(data.remainingAccesses)) ? Number(data.remainingAccesses) : null);
         setUnlimitedAccess(data.unlimitedAccess === true);
         setMemberAccess(false);
-
         if (data.planId === "pro") {
           localStorage.setItem(SAVED_CODE_KEY, `${normalizedPrefix}-${normalizedSuffix}`);
         } else {
@@ -306,11 +286,9 @@ export default function VaultHome() {
         setUnlocked(true);
         setCodeModal(false);
         setVerifyError("");
-
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.delete("code");
         window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`);
-
         window.setTimeout(() => {
           document.getElementById("unlocked-vault")?.scrollIntoView({
             behavior: "smooth",
@@ -327,26 +305,17 @@ export default function VaultHome() {
       setVerifyLoading(false);
     }
   }
-  function handleInlineCodeChange(value: string) {
-    const compactCode = value
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 8);
-    setPrefix(compactCode.slice(0, 4));
-    setSuffix(compactCode.slice(4, 8));
-    setVerifyError("");
-  }
-  const inlineCodeValue = prefix || suffix ? `${prefix}${prefix.length === 4 ? "-" : ""}${suffix}` : "";
   return (
     <div id="top" className="vx">
       <header className="vx-hud">
-        <a href="#top" className="vx-brand">
+        <a href="#top" className="vx-brand" onClick={(event) => { if (admin.revealSwitch()) event.preventDefault(); }}>
           <img src={LOGO} alt="USER FX" />
           <span className="vx-live" />
           <span>
           | PRIV⭑VAULT |
           </span>
         </a>
+        <AdminModeSwitch />
         <div className="vx-hudRight">
           <VisitorCounter />
           <time>{clock}</time>
@@ -429,237 +398,253 @@ export default function VaultHome() {
               <img src={ICONS.doorLaurel} alt="" draggable={false} />
             </div>
             <VaultHeroDoors />
-          </aside>
-        </div>
-      </section>
-      <Ticker items={TICKER_ITEMS} />
-      {unlocked ? (
-        <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
-          <div className="vx-privateAlbumInner">
-            <header className="vx-privateAlbumHeader">
+              </aside>
+              </div>
+              </section>
+              <Ticker items={TICKER_ITEMS} />
+              {unlocked && !memberAccess ? (
+              <section id="unlocked-vault" className="vx-privateAlbum" aria-label="Unlocked private album">
+              <div className="vx-privateAlbumInner">
+              <header className="vx-privateAlbumHeader">
               <p className="vx-privateAlbumStatus">
-                <span>
-                ✓
-                </span>
-                ACCESS GRANTED
+              <span>
+               ✓
+              </span>
+               ACCESS GRANTED
               </p>
               <h2 className="vx-privateAlbumTitle">
-                PRIVATE
-                <span>
-                ALBUM
-                </span>
+               PRIVATE
+              <span>
+               ALBUM
+              </span>
               </h2>
               <p className="vx-privateAlbumDescription">
                 {memberAccess ? (
-                  <>SPCL member access is active. Full private collection available.</>
-                ) : (
-                  <>
-                    Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
-                  </>
+              <>
+              SPCL identity opens the club. Private albums require their own access code.</>
+               ) : (
+              <>
+               Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+              </>
                 )}
               </p>
               <div className="vx-privateAlbumLine" />
-            </header>
-            <div className="vx-privateAlbumGrid">
+              </header>
+              <div className="vx-privateAlbumGrid">
               {unlockedPhotos.map((src, index) => (
-                <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
-                  <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"} />
-                  <figcaption>
-                    <span>
-                    USER 🜲 FX
-                    </span>
-                    <small>PRIVATE FILE {String(index + 1).padStart(2, "0")}</small>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-            <footer className="vx-privateAlbumFooter">
+              <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
+              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"} />
+              <figcaption>
               <span>
-              PERSONAL ACCESS
+                USER 🜲 FX
+              </span>
+              <small>
+               PRIVATE FILE {String(index + 1).padStart(2, "0")}
+              </small>
+              </figcaption>
+              </figure>
+              ))}
+              </div>
+              <footer className="vx-privateAlbumFooter">
+              <span>
+               PERSONAL ACCESS
               </span>
               <i />
               <span>
-              DO NOT DISTRIBUTE
+               DO NOT DISTRIBUTE
               </span>
-            </footer>
-          </div>
-        </section>
-      ) : null}
-      <section id="protocolo" className="vx-sec vx-protocol">
-        <Reveal>
-          <p className="vx-goldk">
-          ◈ ACCESS PROTOCOL
-          </p>
-          <h2>
-            HOW TO UNLOCK
-            <span className="vx-theVault">
-            THE VAULT
-            </span>
-          </h2>
-        </Reveal>
-        <div className="vx-protocolSteps">
-          {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+              </footer>
+              </div>
+              </section>
+               ) : null}
+ {/* ───── PROTOCOLO  ─────── */}
+              <section id="protocolo" className="vx-sec vx-protocol">
+              <Reveal>
+              <p className="vx-goldk">
+              ◈ ACCESS PROTOCOL
+              </p>
+              <h2>
+               HOW TO UNLOCK
+              <span className="vx-theVault">
+               𝕋ℍ𝔼 𝕍𝔸𝕌𝕃𝕋
+              </span>
+              </h2>
+              </Reveal>
+              <div className="vx-protocolSteps">
+               {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 90} className={i % 2 === 0 ? "vx-protocolReveal vx-stepLeft" : "vx-protocolReveal vx-stepRight"}>
+              {PROTOCOL_ORNAMENTS[i] && (
+              <div className={`vx-protocolOrnament ${PROTOCOL_ORNAMENTS[i].className}`} style={{ backgroundImage: `url("${PROTOCOL_ORNAMENTS[i].src}")` }} aria-hidden="true"/>
+              )}
               <article className="vx-step">
-                {/* ✦ FONDO DE ESTRELLAS */}
-                <div className="vx-stepStars" aria-hidden="true">
-                  <div className="vx-stars vx-stars1" />
-                  <div className="vx-stars vx-stars2" />
-                  <div className="vx-stars vx-stars3" />
-                </div>
-                <b className="vx-stepNum">{s.n}</b>
-                <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </div>
-                <small>{s.n} / 04</small>
+{/* ✦ FONDO DE ESTRELLAS */}
+              <div className="vx-stepStars" aria-hidden="true">
+              <div className="vx-stars vx-stars1" />
+              <div className="vx-stars vx-stars2" />
+              <div className="vx-stars vx-stars3" />
+              </div>
+              <b className="vx-stepNum">
+                {s.n}
+              </b>
+              <div>
+              <h3>
+                {s.title}
+              </h3>
+              <p>
+                {s.text}
+              </p>
+              </div>
+              <small>
+                {s.n} / 04
+              </small>
               </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-      <section id="llaves" className="vx-sec vx-tint">
-        <div className="vx-chooseZone">
-          <Reveal>
-            <p className="vx-goldk">
-            🜲 ACCESS CODE
-            </p>
-            <h2>
+        </Reveal>
+               ))}
+              </div>
+              </section>
+ {/* ───── CHOOSE ZONE  ─────── */}              
+              <section id="llaves" className="vx-sec vx-tint">
+              <div className="vx-chooseZone">
+        <Reveal>
+              <p className="vx-goldk">
+               🜲 ACCESS CODE
+              </p>
+              <h2>
               CHOOSE YOUR
               <span className="vx-codeTitle">
-              CODE
+              ℂ𝕆𝔻𝔼
               </span>
-            </h2>
-            <div className="vx-deviceStage">
-              <VaultDevice />
-            </div>
-          </Reveal>
-        </div>
-        {/* ⬆️ .vx-chooseZone → SOLO CHOOSE YOUR CODE + DEVICE */}
-        <div className="vx-insideZone">
-          <Reveal>
-            <div className="vx-insideBlock">
+              </h2>
+              <div className="vx-deviceStage">
+        <VaultDevice />
+              </div>
+        </Reveal>
+              </div>
+{/* ⬆️ .vx-chooseZone → SOLO CHOOSE YOUR CODE + DEVICE */}
+              <div className="vx-insideZone">
+        <Reveal>
+              <div className="vx-insideBlock">
               <p className="vx-goldk">
               🜲 INSIDE THE VAULT
               </p>
               <h2 className="vx-insideTitle">
-                <Scramble text="WHAT'S" />
-                <span>
-                  <Scramble text="INSIDE" delay={180} />
-                </span>
+        <Scramble text="WHAT'S" />
+              <span>
+        <Scramble text="INSIDE" delay={180} />
+              </span>
               </h2>
               <div className="vx-insideRow">
-                <p className="vx-lead">
+              <p className="vx-lead">
                   A private space where sexy, free-spirited, open-minded guys can connect. Join one-on-one or group video calls and share the moment with guys who match your vibe. You're only seeing a preview. A new exclusive drop arrives every Friday at 22:00 UTC—this is just a glimpse of what's waiting inside.
-                  <strong>
+              <strong>
                   —Keep it lit—
-                  </strong>
-                </p>
-                <div className="vx-count">
-                  <p>
+              </strong>
+              </p>
+              <div className="vx-count">
+              <p>
                   DROP IN
-                  </p>
-                  <strong>{countdown}</strong>
-                  <p>
+              </p>
+              <strong>{countdown}</strong>
+              <p>
                   FRIDAY · 22:00 UTC
-                  </p>
-                </div>
+              </p>
               </div>
-            </div>
+              </div>
+              </div>
           </Reveal>
-          <div className="vx-carousel">
-            <div className="vx-carouselTrack">
-              {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
-                <div className="vx-carouselSlide" key={`${src}-${i}`}>
-                  <HoldShot src={src} />
-                </div>
+              <div className="vx-carousel">
+              <div className="vx-carouselTrack">
+               {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
+               <div className="vx-carouselSlide" key={`${src}-${i}`}>
+          <HoldShot src={src} />
+              </div>
               ))}
-            </div>
-          </div>
-        </div>
-        {/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
-      </section>
-      <div className="vx-finalBackdrop">
-        <section id="faq" className="vx-sec">
-          <Reveal>
-            <p className="vx-goldk">
-            ◈ PRIVATE INFORMATION
-            </p>
-            <h2>
+              </div>
+              </div>
+              </div>
+{/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
+              </section>
+              <div className="vx-finalBackdrop">
+              <section id="faq" className="vx-sec">
+              <Reveal>
+              <p className="vx-goldk">
+               ◈ PRIVATE INFORMATION
+              </p>
+              <h2>
               BEFORE YOU
               <span className="vx-getIn">
-              GET IN
+              𝔾𝔼𝕋 𝕀ℕ
               </span>
               <img src={ICONS.rosa1} alt="" className="vx-titleRose1" draggable={false} />
-            </h2>
-          </Reveal>
-          <div className="vx-faq">
-            {FAQS.map((f, i) => {
+             </h2>
+             </Reveal>
+             <div className="vx-faq">
+              {FAQS.map((f, i) => {
               const open = openFaq === i;
               return (
-                <Reveal key={f.q} delay={i * 50}>
-                  <div className="vx-faqItem">
-                    <button type="button" onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
-                      <b>{String(i + 1).padStart(2, "0")}</b>
-                      <span>{f.q}</span>
-                      <i>{open ? "–" : "+"}</i>
-                    </button>
-                    {open ? <p>{f.a}</p> : null}
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-        </section>
-        {/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
-        <footer className="vx-foot">
-          <div className="vx-footGrid">
-            <div>
+              <Reveal key={f.q} delay={i * 50}>
+              <div className="vx-faqItem">
+              <button type="button" onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
+              <b>{String(i + 1).padStart(2, "0")}</b>
+              <span>{f.q}</span>
+              <i>{open ? "–" : "+"}</i>
+              </button>
+              {open ? <p>{f.a}</p> : null}
+              </div>
+              </Reveal>
+               );
+               })}
+              </div>
+              </section>
+{/* ⬆️ .vx-sec#faq → BEFORE YOU GET IN + preguntas */}
+              <footer className="vx-foot">
+              <div className="vx-footGrid">
+              <div>
               <div className="vx-footBrand">
-                <img src={LOGO} alt="" />
-                <div>
-                  <p>
+              <img src={LOGO} alt="" />
+              <div>
+              <p>
                     USER
-                    <span>
+              <span>
                     🜲
-                    </span>
+              </span>
                     FX
-                  </p>
-                  <small>
+              </p>
+              <small>
                   PRIVATE VAULT
-                  </small>
-                </div>
+              </small>
               </div>
-            </div>
-            <div>
+              </div>
+              </div>
+              <div>
               <div className="vx-footActions">
-                <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
-                  <button type="button" onClick={() => openLink("https://t.me/User18Fx")} aria-label="Open private chat">
-                    <img src={ICONS.chat} alt="" aria-hidden="true" />
-                    <Scramble text="CHAT" hover />
-                  </button>
-                  <button type="button" onClick={() => openLink("https://t.me/User18Fx_bot?start=support")} aria-label="Open support">
-                    <img src={ICONS.support} alt="" aria-hidden="true" />
-                    <Scramble text="SUPPORT" hover />
-                  </button>
-                  <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
-                    <img src={ICONS.tv} alt="" aria-hidden="true" />
-                    <Scramble text="CHANNEL" hover />
-                  </button>
-                </nav>
-                <div className="vx-footCode">
+              <nav className="vx-links vx-sessionLinks" aria-label="Vault session actions">
+              <button type="button" onClick={() => openLink("https://t.me/User18Fx")} aria-label="Open private chat">
+              <img src={ICONS.chat} alt="" aria-hidden="true" />
+              <Scramble text="CHAT" hover />
+              </button>
+              <button type="button" onClick={() => openLink("https://t.me/User18Fx_bot?start=support")} aria-label="Open support">
+              <img src={ICONS.support} alt="" aria-hidden="true" />
+              <Scramble text="SUPPORT" hover />
+              </button>
+              <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
+              <img src={ICONS.tv} alt="" aria-hidden="true" />
+              <Scramble text="CHANNEL" hover />
+              </button>
+              </nav>
+              <div className="vx-footCode">
                 | CODE | FX-011897-190122-CAHATO |
-                </div>
               </div>
-            </div>
-          </div>
-          <p className="vx-legal">
-          | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital purchases are final once access is delivered, except where Ontario law requires otherwise.
-          </p>
+              </div>
+              </div>
+              </div>
+              <p className="vx-legal">
+             | 18+ CONTENT | PERSONAL &amp; NON-TRANSFERABLE | Vault access is confidential and for personal use only. Sharing, reselling, recording, downloading, copying, or redistributing content is prohibited and may result in immediate termination without refund. All content is protected by Canadian copyright law. Digital purchases are final once access is delivered, except where Ontario law requires otherwise.
+              </p>
         </footer>
       </div>
       <Ticker items={TICKER_ITEMS} reverse />
-      <FxAccessModal id="fx-access-modal" open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} accessCode={inlineCodeValue} onAccessCodeChange={handleInlineCodeChange} onAccessSubmit={handleVerify} accessLoading={verifyLoading} accessError={verifyError} inputRef={inlineCodeRef} />
+      <FxAccessModal open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} />
       {dm ? (
         <div className="vx-modal" onClick={() => setDm(false)}>
           <div className="vx-modalCard" onClick={(e) => e.stopPropagation()}>
@@ -732,8 +717,6 @@ export default function VaultHome() {
             Don&apos;t have a code? Use GET MY CODE or contact @User18Fx_bot.
             </p>
           </div>
-          {/* ========   FX ACCESS MODAL =========================== */}
-          <FxAccessModal id="fx-access-modal" open={fxAccessOpen} onClose={() => setFxAccessOpen(false)} accessCode={inlineCodeValue} onAccessCodeChange={handleInlineCodeChange} onAccessSubmit={handleVerify} accessLoading={verifyLoading} accessError={verifyError} inputRef={inlineCodeRef} />
         </div>
       ) : null}
     </div>
