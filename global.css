@@ -210,8 +210,8 @@ html body #root .fx-access-launcher .smkl-access-button::before{
   opacity:0.68;
 }
 html body #root .fx-access-launcher .smkl-access-button__title{
-  color:rgba(244, 247, 250, 0.92);
-  text-shadow:0 0 16px rgba(115, 185, 239, 0.1);
+  color:#f4f7faeb;
+  text-shadow:0 0 16px #73b9ef1a;
 }
 html body #root .fx-access-launcher .smkl-access-button__brand,
 html body #root .fx-access-launcher .smkl-access-button__arrow{
@@ -274,27 +274,39 @@ html body #root video{
       inset 0 0 34px rgba(0, 0, 0, 0.42) !important;
   }}
 @media (prefers-reduced-motion: reduce){
-  html{
-    scroll-behavior:auto;
+  html{scroll-behavior:auto;
   }
   #root::before,
-  #root::after{
-    animation:none !important;
+  #root::after{ animation:none !important;
   }}
 
-
-/* FONDO DE LA PRIMERA PARTE */
-html body #root .vx-open {
-  background: linear-gradient(180deg, 
-  #12121309, #07070813 
-  54%, #03030486 100%),
-  url("/wallpaperGeneral.png") center / 390px center;
+  .fx-plan {
+  padding: 18px !important;
+  gap: 12px !important;
+  border-radius: 22px !important;
+  min-width: 0;
 }
-/* ACCESS */
-html body #root .vx-access {
-  color: #e9e6df !important;
+.fx-plan .fx-prefix-illustration {
+  width: 34px !important;
+  height: 34px !important;
 }
-/* RESTRICTED */
-html body #root .vx-rest {
-  color: #9f4052 !important;
+.fx-plan h3 {
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+}
+.fx-plan h3 span {
+  font-size: 11px !important;
+}
+.fx-plan p {
+  font-size: 12px !important;
+}
+.fx-plan > ul {
+  gap: 7px !important;
+}
+.fx-plan > ul li {
+  font-size: 11px !important;
+}
+.fx-plan a {
+  padding: 10px 14px !important;
+  font-size: 12px !important;
 }

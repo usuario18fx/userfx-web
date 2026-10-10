@@ -18,19 +18,19 @@ export default function Friends() {
   };
   // One heartbeat for the entire website, including the landing, with per-tab leases.
   useEffect(() => {
-    client.current = crypto.randomUUID(); const controller = new AbortController(); let active = true, pending = false;
+    client.current = crypto.randomUUID(); const controller = new AbortController(); let active = true, pending = false, retryAfter = 0;
     const url = `/api/room-live?op=contacts&client=${client.current}`;
     const leave = () => { void fetch(url, { method: "DELETE", credentials: "same-origin", keepalive: true }).catch(() => {}); };
     const refresh = async () => {
-      if (document.hidden || pending) return; pending = true;
+      if (!active || document.hidden || pending || Date.now() < retryAfter) return; pending = true;
       try {
         const response = await fetch(url, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "heartbeat" }), signal: controller.signal });
-        if (response.ok) { const next = await response.json(); if (active) update(next); }
+        if (response.ok) { retryAfter = 0; const next = await response.json(); if (active) update(next); } else if (response.status === 429 || response.status === 503) { retryAfter = Date.now() + 60000; }
         else if (response.status === 401 || response.status === 403) { if (active) { setData(null); ready.current = false; } }
       } catch {} finally { pending = false; }
     };
     const visibility = () => { if (document.hidden) leave(); else void refresh(); };
-    void refresh(); const timer = setInterval(() => void refresh(), 3000);
+    void refresh(); const timer = setInterval(() => void refresh(), 30000);
     window.addEventListener("pagehide", leave); window.addEventListener("hashchange", refresh); window.addEventListener("focus", refresh); document.addEventListener("visibilitychange", visibility);
     return () => { active = false; controller.abort(); clearInterval(timer); leave(); window.removeEventListener("pagehide", leave); window.removeEventListener("hashchange", refresh); window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", visibility); };
   }, [sound.play]);

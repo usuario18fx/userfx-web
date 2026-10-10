@@ -961,12 +961,22 @@ video {
   user-select: none;
 }
 #protocolo .vx-protocolOrnament.vx-Icon-fx {
+  position: absolute;
+  z-index: 0;
+  top: 10%;
+  left: 32%;
+  right: auto;
   width: 500px;
   height: 300px;
-  left: 32%;
-  top: 10%;
-  opacity:0.58;
-  transform: scale(1.1);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  transform: scale(1.5);
+  transform-origin: center;
+  mix-blend-mode: normal;
+  mask-image: none;
+  pointer-events: none;
 }
 #protocolo .vx-Icon7 {
   right: auto;
@@ -1738,11 +1748,54 @@ video {
 }
 /* PRIV•VAULT, TELEGRAM, X y GET MY CODE */
 .vx-heroIdentity .vx-kicker,
-.vx-heroIdentity {
-  position: relative;
-  top: -50px;
+.vx-heroIdentity {position: relative; top: -50px;
 }
-
+/* MÁS SANGRÍA */
+#faq .vx-faqItem button {
+  padding: 16px 40px;
+  text-align: left;
+}
+#faq .vx-faqItem > p {
+  padding: 16px 40px 16px 92px;
+  text-align: left;
+}
+/* ROSA JUNTO A GET IN */
+#faq h2 .vx-titleRose1 {
+  display: inline-block;
+  width: 140px;
+  height: auto;
+  margin: 0 0 0 14px;
+  vertical-align: middle;
+  transform: translateY(-3px);
+}
+/* MÁS SANGRÍA EN WHAT'S INSIDE */
+#llaves.vx-sec .vx-insideBlock {
+  box-sizing: border-box;
+  padding-inline: clamp(16px, 4vw, 60px);
+}
+/* CHANNEL — FX ICON */
+.vx-sessionLinks button img.vx-LogoFx {
+  display: block;
+  width: 90px;
+  height: 90px;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  margin: 0 auto 3px;
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.vx-sessionLinks button:hover img.vx-LogoFx {
+  transform: scale(1.58);
+  filter: brightness(1.25);
+}
+@media (max-width: 760px) {
+  .vx-sessionLinks button img.vx-LogoFx { width: 60px; height: 60px;transform: none;
+  }
+  .vx-sessionLinks button:hover img.vx-LogoFx {transform: scale(1.08);
+  }}
 /* ═════════   ANIMATIONS ═════════════════════ */
 @keyframes vxStepStars {
   from {transform: translateY(290px);
@@ -1850,12 +1903,11 @@ video {
   }
   #protocolo .vx-protocolOrnament.vx-Icon2,
   #protocolo .vx-protocolOrnament.vx-Icon4,
-  #protocolo .vx-protocolOrnament.vx-Icon5 {width: 260px;height: 220px;opacity: 0.22;
-  }
   #protocolo .vx-protocolOrnament.vx-Icon2,
-  #protocolo .vx-protocolOrnament.vx-Icon5 {right: -70px;
-  }
   #protocolo .vx-protocolOrnament.vx-Icon4 {left: -70px;
+  }}
+  @media (max-width: 600px) {
+  #protocolo .vx-protocolOrnament.vx-Icon-fx { width: 260px; height: 220px; top: 15%; left: 10%; opacity: 0.75; transform: scale(1);
   }}
   @media (max-width: 760px){
   .vx-heroIdentity .vx-kicker { flex-wrap: wrap; gap: 8px 10px; padding: 8px 4px;
@@ -1967,29 +2019,4 @@ video {
   .vx-heroIdentity .vx-logoWrap {min-height: 350px;}
   .vx-heroIdentity .vx-logoWrap img {width: min(78vw, 560px);}
   .vx-kicker {gap: 18px;}
-}
-/* MÁS SANGRÍA */
-#faq .vx-faqItem button {
-  padding: 16px 40px;
-  text-align: left;
-}
-
-#faq .vx-faqItem > p {
-  padding: 16px 40px 16px 92px;
-  text-align: left;
-}
-
-/* ROSA JUNTO A GET IN */
-#faq h2 .vx-titleRose1 {
-  display: inline-block;
-  width: 140px;
-  height: auto;
-  margin: 0 0 0 14px;
-  vertical-align: middle;
-  transform: translateY(-3px);
-}
-/* MÁS SANGRÍA EN WHAT'S INSIDE */
-#llaves.vx-sec .vx-insideBlock {
-  box-sizing: border-box;
-  padding-inline: clamp(16px, 4vw, 60px);
 }

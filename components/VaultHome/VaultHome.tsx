@@ -117,7 +117,9 @@ function HoldShot({ src }: { src: string }) {
   const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
   return (
     <div className={`vx-shot ${hold ? "is-open" : ""}`} onContextMenu={(e) => e.preventDefault()} onPointerDown={() => setHold(true)} onPointerUp={() => setHold(false)} onPointerLeave={() => setHold(false)} onPointerCancel={() => setHold(false)}>
-      {isVideo ? <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400} /> : <img src={src} alt="" draggable={false} className="vx-shotMedia" width={300} height={400} />}
+      {isVideo ? <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400} /> : 
+     <img src={src} alt="" draggable={false} className="vx-shotMedia" width={300} height={400} />
+     }
       <div className="vx-shotMask" aria-hidden>
         <span>
         🜲
@@ -628,7 +630,7 @@ export default function VaultHome() {
               <Scramble text="SUPPORT" hover />
               </button>
               <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
-              <img src={ICONS.tv} alt="" aria-hidden="true" />
+              <img src="/assets/icon-fx.png" alt="USER FX" className="vx-LogoFx" draggable={false} />
               <Scramble text="CHANNEL" hover />
               </button>
               </nav>

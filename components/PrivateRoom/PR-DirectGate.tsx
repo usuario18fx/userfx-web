@@ -1439,7 +1439,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
                   {/* ═════════ FOOTER ═════════ */}
 
-                  <footer className="pvr-direct-foot">
+                  <footer className="pvr-direct-foot fx-tight-footer">
                     <button
                       type="button"
                       onClick={() => {

@@ -30,8 +30,8 @@ const FX_BASE = (process.env.NEXT_PUBLIC_FX_ASSET_BASE ?? "").trim().replace(/\/
 const fx = (path: string) => `${FX_BASE}${path}`;
 export const FX = {
   logo: fx("/assets/userfx-logo-sin.png"),
-  emblem: fx("/iconFX.png"),
-  foliage: fx("/icon5.png"),
+  emblem: fx("/icon-fx.png"),
+  foliage: fx("/icon-fx.png"),
   wallpaper: fx("/wallpaperGeneral.png"),
   film: fx("/assets/video01.mp4"),
   poster: fx("/assets/userfx-logo-sin.png"),

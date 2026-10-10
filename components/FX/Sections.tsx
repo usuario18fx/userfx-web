@@ -21,47 +21,42 @@ import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
 import { RollLabel } from "./Hero";
 import { Counter, Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
-
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
     <section
       id={id}
       className="fx-section relative w-full scroll-mt-24 border-t border-ink/10 py-20 md:py-28 lg:py-36">
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-10">{children}</div>
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-10">
+{children}
+</div>
     </section>
   );
 }
 function SectionIndex({ index, label }: { index: string; label: string }) {
   return (
     <Reveal className="flex items-center gap-5">
-      <span className="font-display text-sm font-semibold uppercase tracking-[-.03em] text-gold">
-        {index}
-      </span>
-      <motion.span
-        className="h-px w-10 origin-left bg-gold/50"
-        variants={{
-          hidden: { scaleX: 0 },
-          show: { scaleX: 1, transition: { duration: 0.7, ease: EASE } },
-        }}
-      />
-      <span className="text-xs uppercase tracking-[.18em] text-ink/60">{label}</span>
+    <span className="font-display text-sm font-semibold uppercase tracking-[-.03em] text-gold">
+    {index}
+    </span>
+    <motion.span  className="h-px w-10 origin-left bg-gold/50" variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.7, ease: EASE } },}}/>
+    <span className="text-xs uppercase tracking-[.18em] text-ink/60">{label}</span>
     </Reveal>
-  );
-}
-function Title({ children }: { children: string }) {
+    );
+    }
+  function Title({ children }: { children: string }) {
   return (
     <h2 className="max-w-[18ch] font-display text-[10vw] font-semibold uppercase leading-[.9] tracking-[-.03em] sm:text-[7vw] lg:text-[4.4vw]">
-      <SplitText text={children} />
+    <SplitText text={children} />
     </h2>
-  );
-}
-function Lede({ children }: { children: string }) {
+    );
+    }
+  function Lede({ children }: { children: string }) {
   return (
     <Reveal>
-      <p className="max-w-[46ch] text-base leading-[1.6] text-ink/65">{children}</p>
+    <p className="max-w-[46ch] text-base leading-[1.6] text-ink/65">{children}</p>
     </Reveal>
-  );
-}
+    );
+    }
 export function SectionCourses() {
   const [selected, setSelected] = useState<string>(COURSES[0].id);
   const course = COURSES.find((c) => c.id === selected)!;
@@ -79,30 +74,20 @@ export function SectionCourses() {
       </RevealGroup>
       <RevealGroup className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
         <Reveal>
-          <ul className="flex flex-col">
+            <ul className="flex flex-col">
             {COURSES.map((c, i) => (
-              <li key={c.id} className="relative">
-                <button
-                  type="button"
-                  aria-pressed={selected === c.id}
-                  onClick={() => setSelected(c.id)}
-                  className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left">
-                  <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
-                  <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
-                    <span
-                      className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
-                      {c.name}
-                    </span>
-                  </span>
-                  <span className="hidden text-xs uppercase tracking-[.16em] text-ink/40 sm:block">
-                    {c.level}
-                  </span>
-                  <motion.span
-                    animate={{
-                      rotate: selected === c.id ? 90 : 0,
-                      opacity: selected === c.id ? 1 : 0.35,
-                    }}
-                    transition={{ duration: 0.4, ease: EASE }}>
+            <li key={c.id} className="relative">
+            <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left">
+            <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
+            <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
+            <span className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
+             {c.name}
+            </span>
+            </span>
+            <span className="hidden text-xs uppercase tracking-[.16em] text-ink/40 sm:block">
+            {c.level}              </span>
+            <motion.span animate={{ rotate: selected === c.id ? 90 : 0,
+                      opacity: selected === c.id ? 1 : 0.35,}} transition={{ duration: 0.4, ease: EASE }}>
                     <Glyph name="caret" className="h-5 w-5" />
                   </motion.span>
                 </button>
@@ -173,12 +158,7 @@ export function SectionMethod() {
           <Title>How to unlock the Vault.</Title>
           <Lede>Start in Telegram. Choose your code. Enter your own world.</Lede>
           <Reveal>
-            <img
-              src={FX.foliage}
-              alt=""
-              loading="lazy"
-              className="fx-protocol-ornament mt-8 w-52 max-w-full object-contain opacity-70"
-            />
+        <img src={FX.foliage} alt="" loading="lazy" className="fx-protocol-ornament" />
           </Reveal>
         </div>
         <ol className="flex flex-col gap-4">
@@ -258,7 +238,7 @@ export function SectionTrainers() {
                   />
                 </div>
                 <div className="relative space-y-2">
-                  <h3 className="font-display text-xl font-semibold uppercase tracking-[-.03em]">
+                  <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
                     {t.name}
                   </h3>
                   <p className="text-xs uppercase tracking-[.16em] text-gold/70">{t.role}</p>
@@ -331,32 +311,25 @@ export function SectionPricing() {
         </Reveal>
       </RevealGroup>
       <RevealGroup>
-        <ul className="grid gap-5 lg:grid-cols-3">
-          {PLANS.map((plan) => {
-            const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
+       <ul className="grid grid-cols-1 gap-3 md:grid-cols-3">
+{PLANS.map((plan) => {
+  const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
               <motion.li
-                key={plan.id}
-                variants={wipe(40)}
-                whileHover={{ y: -10 }}
+                key={plan.id} variants={wipe(40)} whileHover={{ y: -10 }}
                 transition={{ duration: 0.5, ease: EASE }}
-                className={`fx-plan relative flex flex-col gap-8 rounded-[40px] p-8 sm:p-10 ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}>
+                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}>
                 {plan.featured && (
                   <span className="absolute right-8 top-8 rounded-full bg-sky/10 px-3 py-1 text-[.65rem] uppercase tracking-[.16em]">
                     PRO ACCESS
                   </span>
                 )}
                 <div className="space-y-3">
-                  <img
-                    src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip}
-                    alt=""
-                    loading="lazy"
-                    className="fx-prefix-illustration h-16 w-16 object-contain"
-                  />
-                  <h3 className="font-display text-xl font-semibold uppercase tracking-[-.03em]">
-                    {plan.name} <span className="text-sm opacity-50">{plan.prefix}</span>
-                  </h3>
-                  <p className="text-sm opacity-65">{plan.tagline}</p>
+                <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt=""  loading="lazy" className="fx-prefix-illustration h-[34px] w-[34px] object-contain"/>
+                <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
+                  {plan.name} <span className="text-[11px] opacity-50">{plan.prefix}</span>
+                </h3>
+                <p className="text-sm opacity-65">{plan.tagline}</p>
                 </div>
                 <div>
                   <motion.span
@@ -373,9 +346,9 @@ export function SectionPricing() {
                       : `✪ ${plan.stars} Telegram Stars`}
                   </p>
                 </div>
-                <ul className="flex flex-1 flex-col gap-3">
+                <ul className="flex flex-1 flex-col gap-[7px]">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm leading-relaxed">
+                    <li key={feature} className="flex items-start gap-3 text-[11px] leading-relaxed">
                       <span
                         aria-hidden
                         className={`mt-2 h-1 w-1 shrink-0 rounded-full ${plan.featured ? "bg-sky/50" : "bg-gold/60"}`}
@@ -389,7 +362,7 @@ export function SectionPricing() {
                     href={`https://t.me/User18Fx_bot?start=${plan.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className={`group flex items-center justify-between gap-4 rounded-full px-6 py-4 text-sm font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}>
+                    className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}>
                     <RollLabel>{plan.cta}</RollLabel>
                     <Glyph
                       name="caret"

@@ -1,4 +1,4 @@
-﻿          import { Telegraf, Markup } from "telegraf";
+          import { Telegraf, Markup } from "telegraf";
           import Redis from "ioredis";
           import winston from "winston";
           import crypto from "crypto";
@@ -2329,9 +2329,20 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
               const parsed = normalizeTelegramFxUsername(accessTarget);
               if (!parsed) return await ctx.reply("Uso: /access @username");
               const record = await getTelegramFxAccess(parsed.normalized);
-              const contactsRedis = await ensureRedis();
-              if (contactsRedis) await contactsRedis.multi().sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:user18fx`, parsed.normalized).sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:${parsed.normalized}`, "user18fx").exec();
-              const mask = telegramFxMask(record);
+               try {
+                 const contactsRedis = await ensureRedis();
+                 if (contactsRedis) {
+                   await contactsRedis.multi()
+                     .sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:user18fx`, parsed.normalized)
+                     .sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:${parsed.normalized}`, "user18fx")
+                     .exec();
+                 }
+               } catch (error) {
+                 logger.error("TELEGRAMFX CONTACT SYNC ERROR", {
+                   ...getTelegramError(error),
+                 });
+               }
+               const mask = telegramFxMask(record);
               await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
                 parse_mode: "HTML",
                 reply_markup: telegramFxPanelKeyboard(parsed.normalized, mask).reply_markup,
@@ -2402,8 +2413,20 @@ bot.command("find", async (ctx) => {
     const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
     if (!parsed) return await ctx.reply("Uso: /find @username");
     const record = await getTelegramFxAccess(parsed.normalized);
-    if (!record) return await ctx.reply(`✘ ${parsed.display} no está registrado.`);
-    const mask = telegramFxMask(record);
+               try {
+                 const contactsRedis = await ensureRedis();
+                 if (contactsRedis) {
+                   await contactsRedis.multi()
+                     .sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:user18fx`, parsed.normalized)
+                     .sadd(`${CODE_ENGINE_NAMESPACE}:roomfx:friends:${parsed.normalized}`, "user18fx")
+                     .exec();
+                 }
+               } catch (error) {
+                 logger.error("TELEGRAMFX CONTACT SYNC ERROR", {
+                   ...getTelegramError(error),
+                 });
+               }
+               const mask = telegramFxMask(record);
     await ctx.reply(telegramFxPanelText(record.username || parsed.display, mask, true), {
       parse_mode: "HTML",
     });
