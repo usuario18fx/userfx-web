@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { BOT_URL, ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
+import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
 
 type Scene = {
@@ -97,6 +98,7 @@ function ScrollScene({ scene }: { scene: Scene }) {
 
 export default function ScrollStory() {
   const menu = useMenu();
+  const admin = useAdminMode();
   const reduced = useReducedMotion();
 
   return (
@@ -108,12 +110,15 @@ export default function ScrollStory() {
         <div className="fx-scroll-hero-veil" aria-hidden="true">
         </div>
         <header className="fx-scroll-topline">
-          <a className="fx-scroll-brand" href="#home" aria-label="UserFX · Home">
-            <img src="/assets/userfx-logo-sin.png" alt="" width={38} height={38} />
-            <span>
-              USER FX
-            </span>
-          </a>
+          <div className="fx-scroll-brand-wrap">
+            <button type="button" className="fx-scroll-brand" aria-label="UserFX · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
+              <img src="/assets/userfx-logo-sin.png" alt="" width={38} height={38} />
+              <span>
+                USER FX
+              </span>
+            </button>
+            <AdminModeSwitch />
+          </div>
           <nav className="fx-scroll-quick-nav" aria-label="Quick navigation">
             <a href="#contact">
               CONTACT US
