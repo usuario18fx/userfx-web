@@ -462,7 +462,7 @@ CHAT
  }} onProfile={editProfile} onMembership={() => setInfo("membership")} onRewards={() => setInfo("rewards")} onLogout={() => void logout()} />
 <div className="ufx-body">
 <SpaceMotion space={space}>
-{space !== "myroom" && <SpacePanel as="section" className="ufx-intro">
+{space !== "myroom" && !isStage && <SpacePanel as="section" className="ufx-intro">
 <div>
 <span className="ufx-eyebrow">
 USER FX ·
