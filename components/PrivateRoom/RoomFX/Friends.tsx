@@ -5,16 +5,37 @@ import { EASE } from "@/lib/motion";
 import { useFxSound } from "./use-fx-sound";
 import "./Friends.css";
 type Friend = { username: string; name: string; avatarUrl?: string; online: boolean };
-type Data = { self: string; friends: Friend[]; requests: string[]; notices: { id: string; username: string; at: number }[]; syncPending?: boolean };
+type Data = { self: string; friends: Friend[]; requests: string[]; notices: { id: string; username: string; at: number; kind?: "private-room" }[]; syncPending?: boolean };
 export default function Friends() {
   const [data, setData] = useState<Data | null>(null), [open, setOpen] = useState(false), [page, setPage] = useState(0);
   const [username, setUsername] = useState(""), [error, setError] = useState(""), [notice, setNotice] = useState(""), [working, setWorking] = useState(false);
-  const client = useRef(""), seen = useRef(new Set<string>()), ready = useRef(false), sound = useFxSound(), reduced = useReducedMotion();
+  const client = useRef(""), sound = useFxSound(), reduced = useReducedMotion();
   const launcher = useRef<HTMLButtonElement>(null), input = useRef<HTMLInputElement>(null);
   const update = (next: Data) => {
-    const fresh = next.notices.filter((event) => !seen.current.has(event.id) && event.at > Date.now() - 60000);
-    if (ready.current && fresh.length) { setNotice(`@${fresh[0].username} ha entrado a UserFX${fresh.length > 1 ? ` · +${fresh.length - 1}` : ""}`); sound.play("message"); }
-    seen.current = new Set(next.notices.map((event) => event.id)); ready.current = true; setData(next);
+    // Keep delivered notifications read across reloads; a recipient who was offline
+    // can still see a PrivateRoom entry from the last 24 hours on next visit.
+    const seenKey = `userfx:friend-notice-seen:${next.self}`;
+    let lastSeenAt = 0;
+    try { lastSeenAt = Number(localStorage.getItem(seenKey) || "0") || 0; } catch {}
+    const entries = next.notices.filter((event) =>
+      event.at > lastSeenAt &&
+      event.at > Date.now() - (next.self === "user18fx" ? 86400000 : 60000) &&
+      (next.self !== "user18fx" || event.kind === "private-room")
+    );
+    if (entries.length) {
+      const latest = entries.sort((a, b) => b.at - a.at)[0];
+      setNotice(latest.kind === "private-room"
+        ? `@${latest.username} se ha conectado a PrivateRoom`
+        : `@${latest.username} ha entrado a UserFX`);
+      sound.play("message");
+    }
+    // A persisted timestamp avoids the original bug where first-load alerts
+    // disappear and prevents showing the same alert on each poll.
+    const newest = Math.max(lastSeenAt, ...next.notices.map((event) => event.at));
+    if (newest > lastSeenAt) {
+      try { localStorage.setItem(seenKey, String(newest)); } catch {}
+    }
+    setData(next);
   };
   // One heartbeat for the entire website, including the landing, with per-tab leases.
   useEffect(() => {
@@ -24,9 +45,9 @@ export default function Friends() {
     const refresh = async () => {
       if (!active || document.hidden || pending || Date.now() < retryAfter) return; pending = true;
       try {
-        const response = await fetch(url, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "heartbeat" }), signal: controller.signal });
+        const response = await fetch(url, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "heartbeat", inPrivateRoom: /^#\/private-room(?:[/?]|$)/.test(window.location.hash) }), signal: controller.signal });
         if (response.ok) { retryAfter = 0; const next = await response.json(); if (active) update(next); } else if (response.status === 429 || response.status === 503) { retryAfter = Date.now() + 60000; }
-        else if (response.status === 401 || response.status === 403) { if (active) { setData(null); ready.current = false; } }
+        else if (response.status === 401 || response.status === 403) { if (active) setData(null); }
       } catch {} finally { pending = false; }
     };
     const visibility = () => { if (document.hidden) leave(); else void refresh(); };
@@ -34,7 +55,7 @@ export default function Friends() {
     window.addEventListener("pagehide", leave); window.addEventListener("hashchange", refresh); window.addEventListener("focus", refresh); document.addEventListener("visibilitychange", visibility);
     return () => { active = false; controller.abort(); clearInterval(timer); leave(); window.removeEventListener("pagehide", leave); window.removeEventListener("hashchange", refresh); window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", visibility); };
   }, [sound.play]);
-  useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(""), 6000); return () => clearTimeout(timer); }, [notice]);
+  useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(""), 8000); return () => clearTimeout(timer); }, [notice]);
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   async function act(action: string, target: string) {
     setWorking(true); setError("");
