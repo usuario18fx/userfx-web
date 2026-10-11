@@ -774,3 +774,30 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 .ufx-sound-toggle:focus-visible { outline:2px solid #dfc293; outline-offset:3px; }
 
 @media (max-width:650px) { .ufx-sound-toggle span:last-child { display:none; } }
+
+/* MyRoom host workspace: camera, live chat, profile and feed */
+@media (min-width: 1100px) {
+  .ufx-space-myroom .ufx-main-column { width:100%; max-width:none; }
+  .ufx-space-myroom .ufx-camera-row,
+  .ufx-space-myroom .ufx-camera-row.has-chat { width:100%; max-width:none; grid-template-columns:minmax(0,1.75fr) minmax(235px,.82fr) minmax(200px,.65fr); align-items:stretch; gap:14px; margin:0 0 22px; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-camera-surface { grid-column:1; grid-row:1; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { grid-column:2; grid-row:1; height:auto; min-height:420px; max-height:650px; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-myroom-host-card { grid-column:3; grid-row:1; }
+}
+.ufx-space-myroom .ufx-myroom-host-card { display:flex; flex-direction:column; align-items:stretch; gap:16px; min-width:0; margin:0; padding:20px; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
+.ufx-space-myroom .ufx-myroom-host-card>div { flex:0 1 auto; }
+.ufx-space-myroom .ufx-myroom-host-card .ufx-myroom-host-photo { display:block; width:100%; aspect-ratio:1/1; max-height:235px; object-fit:cover; border-radius:10px; }
+.ufx-space-myroom .ufx-myroom-host-card .ufx-host-stats { margin-top:16px; color:var(--accent); font:9px var(--mono); }
+.ufx-space-myroom .ufx-myroom-host-card button { margin-top:auto; border:1px solid var(--line); border-radius:9px; justify-content:center; }
+@media (min-width: 700px) and (max-width:1099px) {
+  .ufx-space-myroom .ufx-camera-row,.ufx-space-myroom .ufx-camera-row.has-chat { width:100%; max-width:none; grid-template-columns:minmax(0,1.6fr) minmax(250px,1fr); }
+  .ufx-space-myroom .ufx-camera-row>.ufx-myroom-host-card { grid-column:1/-1; grid-row:2; flex-direction:row; align-items:center; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-myroom-host-card .ufx-myroom-host-photo { width:105px; }
+}
+@media (max-width:699px) {
+  .ufx-space-myroom .ufx-camera-row,.ufx-space-myroom .ufx-camera-row.has-chat { width:100%; max-width:none; grid-template-columns:minmax(0,1fr); }
+  .ufx-space-myroom .ufx-camera-row>.ufx-camera-surface { grid-column:1; grid-row:1; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-chat-panel { grid-column:1; grid-row:2; height:330px; min-height:0; }
+  .ufx-space-myroom .ufx-camera-row>.ufx-myroom-host-card { grid-column:1; grid-row:3; }
+  .ufx-space-myroom .ufx-myroom-host-card .ufx-myroom-host-photo { width:95px; }
+}
