@@ -460,7 +460,7 @@ CHAT
    else if (approved) setPreview(true);
    else notify("Request entrance before starting your camera.");
  }} onProfile={editProfile} onMembership={() => setInfo("membership")} onRewards={() => setInfo("rewards")} onLogout={() => void logout()} />
-<div className="ufx-body">
+<div className="ufx-body" style={isStage ? { paddingTop: 0 } : undefined}>
 <SpaceMotion space={space}>
 {space !== "myroom" && !isStage && <SpacePanel as="section" className="ufx-intro">
 <div>
@@ -592,7 +592,7 @@ GET MY CODE ↗
 </SpacePanel>
     ) : (
 <>
-{isStage && <SpacePanel as="section" className="ufx-room-strip">
+{isStage && <SpacePanel as="section" className="ufx-room-strip" style={{ marginTop: 0 }}>
 <div className="ufx-room-icon">
 <Icon name={isStage ? "stage" : "home"} size={24} />
 </div>
@@ -696,6 +696,7 @@ at home.
 </p>
 </div>
 }
+{isStage && !call.joined && <button type="button" className="ufx-primary" style={{ position: "absolute", bottom: 16, right: 16, zIndex: 5 }} disabled={!approved || call.connecting} onClick={() => { if (!admin.requestFeature("camera")) setPreview(true); }}><Icon name="camera" size={16} /> IR A LA VISTA PREVIA</button>}
 {!isStage && frameControls}
 {!isStage && cameraPanel === "people" && <section id="ufx-connected-people" className="ufx-connected-panel" aria-label="Usuarios conectados">
 <div className="ufx-connected-heading"><span>EN ESTA SALA</span><p>Elige a alguien para ver su cámara.</p></div>
@@ -722,7 +723,7 @@ return <button key={person.id} type="button" className={person.id === selected ?
 </div>
 }
 </div>
-<div className="ufx-call-toolbar">
+{!isStage && <div className="ufx-call-toolbar">
 {isStage && !call.joined && <div className="ufx-stage-ready"><Icon name="camera" /><strong>¿Listo para aparecer?</strong></div>}
 <div className={isStage && !call.joined ? "ufx-stage-idle-media" : undefined}>
 <button type="button" className={call.micOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.micOn} onClick={() => void call.toggleMedia("audio")}>
@@ -757,7 +758,7 @@ LEAVE
 </button>
 }
 </div>
-</div>
+</div>}
 </div>
 {!isStage && roomChat}
 {!isStage && <aside className="ufx-profile-card ufx-myroom-host-card" aria-label="Host profile">
