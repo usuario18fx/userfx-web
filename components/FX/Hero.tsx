@@ -486,36 +486,17 @@ function CtaPill() {
       <motion.a
         variants={rise}
         href={hasAccess ? "#/private-room" : ENTER_URL}
-        className={`group inline-flex items-center justify-center transition-colors ${accessMode === "telegram" ? "border border-[#3b8dff]/70 bg-[#0c306d]/80 text-[#e8f3ff] shadow-[0_0_28px_#2587ff40] hover:bg-[#12438c]" : accessMode === "code" ? "border border-[#55d698]/75 bg-[#0e5135]/85 text-[#eafff3] shadow-[0_0_28px_#22c77b38] hover:bg-[#137249]" : "border border-gold/25 bg-white/7 hover:bg-white/12"}`}
-        style={{
-          gap: u(20),
-          paddingLeft: u(4),
-          paddingRight: u(32),
-          paddingTop: u(4),
-          paddingBottom: u(4),
-          borderRadius: u(999),
-        }}>
-        <span
-          className={`grid place-items-center rounded-full text-sky transition-transform duration-500 ease-out group-hover:scale-110 ${accessMode === "telegram" ? "bg-[#4397ff]" : accessMode === "code" ? "bg-[#63dda0]" : "bg-orb"}`}
-          style={{ width: u(72), height: u(72) }}>
-          <Glyph name="crown" style={{ width: u(26), height: u(26) }} />
-        </span>
-        <span
-          className="flex items-center"
-          style={{
-            gap: u(12),
-            fontSize: u(16),
-            lineHeight: 1,
-            letterSpacing: "-.02em",
-            fontWeight: 600,
-          }}>
+        className={`group inline-flex min-h-[48px] items-center justify-center gap-3 rounded-xl border px-5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 ${accessMode === "telegram" ? "border-[#2668cc] bg-[#123a80] text-[#f1f6ff] hover:bg-[#174c9e]" : accessMode === "code" ? "border-[#287d55] bg-[#135b3a] text-[#f0fff6] hover:bg-[#1b744b]" : "border-[#c8ac70]/40 bg-[#17191e] text-[#eee9dd] hover:border-[#c8ac70]" }` }
+        style={{ borderRadius: u(12) }}>
+        <Glyph
+          name="crown"
+          className={accessMode === "telegram" ? "text-[#61a4ff]" : accessMode === "code" ? "text-[#78ecaa]" : "text-[#c8ac70]"}
+          style={{ width: u(20), height: u(20) }}
+        />
+        <span className="whitespace-nowrap" style={{ fontSize: u(16), fontWeight: 600 }}>
           <RollLabel>{hasAccess ? "Open MyRoom" : HERO.cta}</RollLabel>
-          <Glyph
-            name="caret"
-            className="transition-transform duration-500 group-hover:translate-x-1"
-            style={{ width: u(18), height: u(18) }}
-          />
         </span>
+        <Glyph name="caret" className="transition-transform duration-300 group-hover:translate-x-1" style={{ width: u(17), height: u(17) }} />
       </motion.a>
     </Magnetic>
   );
