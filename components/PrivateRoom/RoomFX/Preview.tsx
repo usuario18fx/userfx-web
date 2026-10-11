@@ -38,7 +38,7 @@ export default function Preview({ onClose, onJoin }: { onClose: () => void; onJo
     finally { if (active.current && request === sequence.current) setBusy(false); }
   }
   return (
-<dialog ref={dialog} className="ufx-dialog" aria-labelledby="ufx-preview-title" onCancel={onClose}>
+<dialog ref={dialog} className="ufx-dialog ufx-device-dialog" aria-labelledby="ufx-preview-title" onCancel={onClose}>
 <div className="ufx-dialog-head">
 <span>
 PRIVATE DEVICE CHECK
@@ -53,7 +53,7 @@ Your entrance. Your control.
 <p>
 Test your devices before you go live. The microphone starts off.
 </p>
-<div className="ufx-preview-video">
+<div className="ufx-device-layout"><div className="ufx-device-preview"><div className="ufx-preview-video">
 {stream && cameraOn ?
 <VideoStream stream={stream} mirrored />
  :
@@ -67,7 +67,7 @@ YOUR CAMERA IS OFF
 <span className="ufx-preview-label">
 ONLY YOU CAN SEE THIS
 </span>
-</div>
+</div></div><div className="ufx-device-options">
 <div className="ufx-preview-controls">
 <button type="button" disabled={busy} aria-pressed={cameraOn} onClick={() => void test(!cameraOn, micOn)}>
 <Icon name="camera" />
@@ -112,7 +112,7 @@ Default microphone
 <button type="button" className="ufx-primary ufx-wide" disabled={busy} onClick={() => { streamRef.current?.getTracks().forEach((track) => track.stop()); onJoin({ cameraOn, micOn, videoDeviceId, audioDeviceId }); }}>
 ENTER ROOM
 <Icon name="arrow" />
-</button>
+</button></div></div>
 </dialog>
   );
 }
