@@ -457,12 +457,35 @@ export function RollLabel({ children }: { children: string }) {
   );
 }
 function CtaPill() {
+  const [hasAccess, setHasAccess] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/access-session", {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        const data = response.ok ? await response.json() : null;
+        if (!cancelled) setHasAccess(data?.authenticated === true);
+      } catch {
+        if (!cancelled) setHasAccess(false);
+      }
+    };
+    void checkSession();
+    window.addEventListener("focus", checkSession);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", checkSession);
+    };
+  }, []);
   return (
     <Magnetic strength={0.28}>
       <motion.a
         variants={rise}
-        href={ENTER_URL}
-        className="group inline-flex items-center justify-center border border-gold/25 bg-white/7 transition-colors hover:bg-white/12"
+        href={hasAccess ? "#/private-room" : ENTER_URL}
+        className={`group inline-flex items-center justify-center transition-colors ${hasAccess ? "border border-[#3b8dff]/70 bg-[#0c306d]/80 text-[#e8f3ff] shadow-[0_0_28px_#2587ff40] hover:bg-[#12438c]" : "border border-gold/25 bg-white/7 hover:bg-white/12"}`}
         style={{
           gap: u(20),
           paddingLeft: u(4),
@@ -472,7 +495,7 @@ function CtaPill() {
           borderRadius: u(999),
         }}>
         <span
-          className="grid place-items-center rounded-full bg-orb text-sky transition-transform duration-500 ease-out group-hover:scale-110"
+          className={`grid place-items-center rounded-full text-sky transition-transform duration-500 ease-out group-hover:scale-110 ${hasAccess ? "bg-[#4397ff]" : "bg-orb"}`}
           style={{ width: u(72), height: u(72) }}>
           <Glyph name="crown" style={{ width: u(26), height: u(26) }} />
         </span>
@@ -485,7 +508,7 @@ function CtaPill() {
             letterSpacing: "-.02em",
             fontWeight: 600,
           }}>
-          <RollLabel>{HERO.cta}</RollLabel>
+          <RollLabel>{hasAccess ? "Open MyRoom" : HERO.cta}</RollLabel>
           <Glyph
             name="caret"
             className="transition-transform duration-500 group-hover:translate-x-1"
