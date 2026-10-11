@@ -765,6 +765,20 @@ LEAVE
 <div><span>BEHIND THE CAMERA</span><h3>{state?.room.isOwner ? profile.name : state?.room.ownerName}</h3><p>{state?.room.isOwner ? profile.bio || "A private space for a good conversation." : "You are a guest in this private room."}</p><p className="ufx-host-stats">{people.length} IN ROOM · {state?.room.capacity || 5} SEATS</p></div>
 {state?.room.isOwner && <button type="button" onClick={editProfile}><Icon name="profile" /> EDIT PROFILE</button>}
 </aside>}
+{!isStage && !chatOpen && <nav className="ufx-myroom-shortcuts" aria-label="Atajos de MyRoom">
+  <button type="button" onClick={() => { setCameraPanel("people"); cameraSurface.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
+    <Icon name="people" size={22} /><span>USUARIOS<small>CONECTADOS · {people.length}</small></span>
+  </button>
+  <button type="button" onClick={() => { window.location.hash = "#/private-room/buzon"; }}>
+    <Icon name="inbox" size={22} /><span>BUZÓN<small>MENSAJES</small></span>
+  </button>
+  <button type="button" onClick={() => { window.location.hash = "#/private-room/gallery"; }}>
+    <Icon name="gallery" size={22} /><span>MULTIMEDIA<small>ÁLBUMES COMPARTIDOS</small></span>
+  </button>
+  <button type="button" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>
+    <Icon name="camera" size={22} /><span>ON CAM<small>{call.joined ? "TRANSMISIÓN ACTIVA" : approved ? "PREPARAR CÁMARA" : status === "pending" ? "SOLICITUD PENDIENTE" : "SOLICITAR ENTRADA"}</small></span>
+  </button>
+</nav>}
 </div>
 {isStage && <>
 <p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
