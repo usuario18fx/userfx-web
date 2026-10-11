@@ -88,7 +88,18 @@
   border-bottom: 1px solid #e9d1a425;
 }
 
+.fx-scroll-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .fx-scroll-brand {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 12px;
