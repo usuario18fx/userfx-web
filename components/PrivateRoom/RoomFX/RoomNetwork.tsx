@@ -592,7 +592,7 @@ GET MY CODE ↗
 </SpacePanel>
     ) : (
 <>
-{isStage && <SpacePanel as="section" className="ufx-room-strip" style={{ marginTop: 0 }}>
+{isStage && <SpacePanel as="section" className="ufx-room-strip">
 <div className="ufx-room-icon">
 <Icon name={isStage ? "stage" : "home"} size={24} />
 </div>
