@@ -457,7 +457,8 @@ export function RollLabel({ children }: { children: string }) {
   );
 }
 function CtaPill() {
-  const [hasAccess, setHasAccess] = useState(false);
+  const [accessMode, setAccessMode] = useState<"none" | "telegram" | "code">("none");
+  const hasAccess = accessMode !== "none";
   useEffect(() => {
     let cancelled = false;
     const checkSession = async () => {
@@ -468,9 +469,9 @@ function CtaPill() {
           cache: "no-store",
         });
         const data = response.ok ? await response.json() : null;
-        if (!cancelled) setHasAccess(data?.authenticated === true);
+        if (!cancelled) setAccessMode(data?.authenticated === true ? (data.accessMode === "telegram_identity" ? "telegram" : "code") : "none");
       } catch {
-        if (!cancelled) setHasAccess(false);
+        if (!cancelled) setAccessMode("none");
       }
     };
     void checkSession();
@@ -485,7 +486,7 @@ function CtaPill() {
       <motion.a
         variants={rise}
         href={hasAccess ? "#/private-room" : ENTER_URL}
-        className={`group inline-flex items-center justify-center transition-colors ${hasAccess ? "border border-[#3b8dff]/70 bg-[#0c306d]/80 text-[#e8f3ff] shadow-[0_0_28px_#2587ff40] hover:bg-[#12438c]" : "border border-gold/25 bg-white/7 hover:bg-white/12"}`}
+        className={`group inline-flex items-center justify-center transition-colors ${accessMode === "telegram" ? "border border-[#3b8dff]/70 bg-[#0c306d]/80 text-[#e8f3ff] shadow-[0_0_28px_#2587ff40] hover:bg-[#12438c]" : accessMode === "code" ? "border border-[#55d698]/75 bg-[#0e5135]/85 text-[#eafff3] shadow-[0_0_28px_#22c77b38] hover:bg-[#137249]" : "border border-gold/25 bg-white/7 hover:bg-white/12"}`}
         style={{
           gap: u(20),
           paddingLeft: u(4),
@@ -495,7 +496,7 @@ function CtaPill() {
           borderRadius: u(999),
         }}>
         <span
-          className={`grid place-items-center rounded-full text-sky transition-transform duration-500 ease-out group-hover:scale-110 ${hasAccess ? "bg-[#4397ff]" : "bg-orb"}`}
+          className={`grid place-items-center rounded-full text-sky transition-transform duration-500 ease-out group-hover:scale-110 ${accessMode === "telegram" ? "bg-[#4397ff]" : accessMode === "code" ? "bg-[#63dda0]" : "bg-orb"}`}
           style={{ width: u(72), height: u(72) }}>
           <Glyph name="crown" style={{ width: u(26), height: u(26) }} />
         </span>
