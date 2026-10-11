@@ -68,7 +68,7 @@ function NetworkSurface({ space, roomId, client, initial }: { space: Space; room
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatLoaded, setChatLoaded] = useState(false);
   const [text, setText] = useState("");
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(space === "myroom");
   const [cameraPanel, setCameraPanel] = useState<"camera" | "people">("camera");
   const [unread, setUnread] = useState(0);
   const [sending, setSending] = useState(false);
@@ -760,6 +760,11 @@ LEAVE
 </div>
 </div>
 {!isStage && roomChat}
+{!isStage && <aside className="ufx-profile-card ufx-myroom-host-card" aria-label="Host profile">
+{(state?.room.isOwner ? profile.avatarUrl : state?.room.ownerProfile?.avatarUrl) ? <img className="ufx-myroom-host-photo" src={(state?.room.isOwner ? profile.avatarUrl : state?.room.ownerProfile?.avatarUrl) || ""} alt="Host profile" /> : <Avatar name={state?.room.isOwner ? profile.name : state?.room.ownerName || "HOST"} large />}
+<div><span>BEHIND THE CAMERA</span><h3>{state?.room.isOwner ? profile.name : state?.room.ownerName}</h3><p>{state?.room.isOwner ? profile.bio || "A private space for a good conversation." : "You are a guest in this private room."}</p><p className="ufx-host-stats">{people.length} IN ROOM · {state?.room.capacity || 5} SEATS</p></div>
+{state?.room.isOwner && <button type="button" onClick={editProfile}><Icon name="profile" /> EDIT PROFILE</button>}
+</aside>}
 </div>
 {isStage && <>
 <p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
@@ -806,28 +811,7 @@ DECLINE
 )}
 </section>
 }
-{!isStage &&
-<section className="ufx-profile-card">
-<Avatar name={state?.room.isOwner ? profile.name : state?.room.ownerName || "HOST"} large />
-<div>
-<span>
-BEHIND THE CAMERA
-</span>
-<h3>
-{state?.room.isOwner ? profile.name : state?.room.ownerName}
-</h3>
-<p>
-{state?.room.isOwner ? profile.bio || "A private space for a good conversation." : "You're a guest in this private room."}
-</p>
-</div>
-{state?.room.isOwner &&
-<button type="button" onClick={editProfile}>
-<Icon name="profile" />
-EDIT
-</button>
-}
-</section>
-}
+
 </div>
 {isStage &&
 <aside className="ufx-stage-details" aria-label="Stage participants and upcoming events">
