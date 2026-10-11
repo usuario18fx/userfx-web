@@ -462,7 +462,7 @@ CHAT
  }} onProfile={editProfile} onMembership={() => setInfo("membership")} onRewards={() => setInfo("rewards")} onLogout={() => void logout()} />
 <div className="ufx-body">
 <SpaceMotion space={space}>
-<SpacePanel as="section" className="ufx-intro">
+{space !== "myroom" && <SpacePanel as="section" className="ufx-intro">
 <div>
 <span className="ufx-eyebrow">
 USER FX ·
@@ -500,7 +500,7 @@ Your rules.
 </p>
 </div>
 <MoodPicker mood={mood} onChange={setMood} />
-</SpacePanel>
+</SpacePanel>}
 {(error || call.error) &&
 <div className="ufx-warning" role="alert">
 {error || call.error}
