@@ -1106,21 +1106,8 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
             {/* ───── BOTONES DE OPCIONES ADICIONALES ───── */}
 
             <div className="pvr-direct-secondary-actions">
-              <button type="button" className={secondaryMode === "code" ? "is-active" : ""} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
-                <span>
-                ALREADY GOT CODE
-                </span>
-              </button>
-
-              <button type="button" className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}>
-                <span>
-                GET MY CODE
-                </span>
-
-                <small>
-                CHOOSE & PAY
-                </small>
-              </button>
+              <button type="button" className={`animated-button pvr-direct-has-code ${secondaryMode === "code" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}><span className="arr-2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" /></svg></span><span className="text">ALREADY GOT CODE</span><span className="circle" aria-hidden="true" /><span className="arr-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" /></svg></span></button>
+              <button type="button" className={`animated-button pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}><span className="arr-2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" /></svg></span><span className="text">ɢᴇᴛ ᴄᴏᴅᴇ</span><span className="circle" aria-hidden="true" /><span className="arr-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" /></svg></span></button>
             </div>
           </section>
         ) : verifiedStage === "granted" ? (
