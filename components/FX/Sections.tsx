@@ -518,9 +518,8 @@ export function SiteFooter() {
             </Magnetic>
           </Reveal>
         </RevealGroup>
-        <RevealGroup className="grid gap-12 border-t border-ink/10 py-16 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,.6fr))] lg:gap-10">
-          <Reveal className="space-y-8">
-            <Brand />
+        <RevealGroup className="grid gap-10 border-t border-gold/15 py-10 md:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,.65fr))] lg:gap-8">
+          <Reveal className="space-y-5">
             <form onSubmit={submit} noValidate className="flex w-full max-w-md flex-col gap-3">
               <label
                 htmlFor="newsletter-email"
@@ -528,7 +527,7 @@ export function SiteFooter() {
                 Inside UserFX
               </label>
               <div
-                className={`flex items-center gap-3 rounded-full border bg-white/5 py-2 pl-6 pr-2 transition-colors ${state === "invalid" ? "border-rose" : "border-ink/10"}`}>
+                className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}>
                 <input
                   id="newsletter-email"
                   type="email"
@@ -550,7 +549,7 @@ export function SiteFooter() {
                   type="submit"
                   disabled={state === "sending"}
                   aria-label="Subscribe"
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-sky disabled:opacity-40">
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40">
                   <Glyph name="caret" className="h-4 w-4" />
                 </button>
               </div>
@@ -570,13 +569,13 @@ export function SiteFooter() {
             </form>
           </Reveal>
           {FOOTER.columns.map((column) => (
-            <Reveal key={column.title} className="space-y-6">
+            <Reveal key={column.title} className="space-y-4">
               <h3 className="text-xs uppercase tracking-[.18em] text-gold/60">{column.title}</h3>
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     <a
-                      className="group inline-block text-sm text-ink/65"
+                      className="group inline-flex items-center border-b border-transparent py-1 text-sm text-ink/65 transition-colors hover:border-gold/40 hover:text-gold focus-visible:text-gold"
                       href={link.href}
                       target={link.href.startsWith("https:") ? "_blank" : undefined}
                       rel={link.href.startsWith("https:") ? "noreferrer" : undefined}>
@@ -588,7 +587,7 @@ export function SiteFooter() {
             </Reveal>
           ))}
         </RevealGroup>
-        <div className="flex flex-col gap-4 border-t border-ink/10 py-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 border-t border-gold/10 py-5 md:flex-row md:items-center md:justify-between">
           <p className="max-w-[60ch] text-xs leading-relaxed text-ink/40">
             Private access, personal codes. Your permissions are verified before protected content
             opens.
