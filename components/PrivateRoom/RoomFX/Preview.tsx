@@ -53,7 +53,7 @@ Your entrance. Your control.
 <p>
 Test your devices before you go live. The microphone starts off.
 </p>
-<div className="ufx-device-layout"><div className="ufx-device-preview"><div className="ufx-device-layout"><div className="ufx-device-preview"><div className="ufx-preview-video">
+<div className="ufx-device-layout"><div className="ufx-device-preview"><div className="ufx-preview-video">
 {stream && cameraOn ?
 <VideoStream stream={stream} mirrored />
  :
