@@ -4,6 +4,7 @@ import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
 import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
           import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
+import Friends from "./components/PrivateRoom/RoomFX/Friends";
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -29,7 +30,7 @@ function PrivateRoomRoute({ route }) {
   return <RoomNetwork space={spaces[route.split("?")[0]] || "myroom"} />;
 }
 export default function App() {
-  return <AdminModeProvider><UserFXApp /></AdminModeProvider>;
+  return <AdminModeProvider><UserFXApp /><Friends /></AdminModeProvider>;
 }
 export function UserFXApp() {
   const [route, setRoute] = useState(getRoute);
