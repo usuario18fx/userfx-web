@@ -881,3 +881,12 @@ body:has(.ufx-network)::before,body:has(.ufx-network)::after,#root:has(.ufx-netw
 @media (max-width:699px) {
   .ufx-space-myroom .ufx-camera-row:not(.has-chat)>.ufx-myroom-shortcuts {grid-column:1;grid-row:3;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));}
 }
+
+/* Horizontal device check while keeping original capture/test logic. */
+.ufx-network .ufx-device-dialog{width:min(1080px,calc(100vw - 36px));max-width:1080px;}
+.ufx-device-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.85fr);gap:22px;align-items:start;margin-top:18px;}
+.ufx-device-preview,.ufx-device-options{min-width:0;}
+.ufx-device-layout .ufx-preview-video{margin-top:0;aspect-ratio:16/10;min-height:290px;}
+.ufx-device-layout .ufx-preview-controls{margin-top:0;}
+.ufx-device-options>.ufx-wide{margin-top:20px;}
+@media(max-width:760px){.ufx-network .ufx-device-dialog{width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:16px;}.ufx-device-layout{grid-template-columns:minmax(0,1fr);gap:15px;}.ufx-device-layout .ufx-preview-video{min-height:0;aspect-ratio:16/9;}}
