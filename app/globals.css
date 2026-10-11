@@ -1,5 +1,11 @@
 @import "tailwindcss";
 @import "../components/FX/Platform.css";
+:root {
+  --font-funnel-display: "Funnel Display";
+  --font-funnel-sans: "Funnel Sans";
+  --font-michroma: "Michroma";
+}
+
 @theme {
   --color-ink: #eee9dd;
   --color-sky: #08090d;
