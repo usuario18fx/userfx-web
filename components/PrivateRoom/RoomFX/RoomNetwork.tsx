@@ -592,7 +592,7 @@ GET MY CODE ↗
 </SpacePanel>
     ) : (
 <>
-<SpacePanel as="section" className="ufx-room-strip">
+{isStage && <SpacePanel as="section" className="ufx-room-strip">
 <div className="ufx-room-icon">
 <Icon name={isStage ? "stage" : "home"} size={24} />
 </div>
@@ -623,7 +623,7 @@ YOU'RE IN
 <Icon name="arrow" size={16} />
 </button>
 }
-</SpacePanel>
+</SpacePanel>}
 {!approved && state &&
 <div className="ufx-waiting-note">
 <Icon name="shield" />
