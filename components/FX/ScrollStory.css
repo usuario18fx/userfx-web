@@ -33,10 +33,10 @@
 .fx-scroll-hero {
   position: relative;
   isolation: isolate;
-  min-height: max(720px, 100svh);
+  min-height: max(620px, 100svh);
   display: flex;
   align-items: center;
-  padding: clamp(110px, 14svh, 165px) clamp(22px, 6vw, 100px) 132px;
+  padding: clamp(90px, 11svh, 120px) clamp(22px, 6vw, 100px) 70px;
   background: #090a0d;
 }
 
@@ -54,23 +54,27 @@
 }
 
 .fx-scroll-hero-media img {
-  width: 100%;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: min(68%, 920px);
   height: 100%;
   object-fit: cover;
-  object-position: center 45%;
-  opacity: .75;
-  filter: saturate(.72) contrast(1.12) brightness(.68);
-  transform: scale(1.07);
+  object-position: 50% 32%;
+  opacity: .98;
+  filter: grayscale(.38) sepia(.20) saturate(.90) contrast(1.08) brightness(.91);
+  transform: scale(1.02);
   animation: fx-scroll-hero-breathe 17s ease-in-out infinite alternate;
 }
 
 .fx-scroll-hero-veil {
   z-index: -2;
   background:
-    linear-gradient(90deg, #07080bf5 0%, #07080bbc 32%, #07080b2c 74%),
-    linear-gradient(0deg, #07080c 0%, transparent 36%),
-    linear-gradient(180deg, #06070ade 0%, transparent 31%),
-    radial-gradient(ellipse at 70% 70%, #ba556a2a, transparent 48%);
+    linear-gradient(90deg, #07080bf5 0%, #07080bd6 28%, #07080b68 52%, #07080b0d 81%),
+    linear-gradient(0deg, #07080cdb 0%, transparent 37%),
+    linear-gradient(180deg, #06070bb8 0%, transparent 25%),
+    radial-gradient(ellipse at 70% 70%, #ba556a12, transparent 48%);
 }
 
 .fx-scroll-topline {
@@ -174,7 +178,7 @@
   max-width: 100%;
   margin: clamp(17px, 3vw, 34px) 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(60px, 9.5vw, 148px);
+  font-size: clamp(60px, 8.1vw, 124px);
   line-height: .86;
   font-weight: 500;
   letter-spacing: -.075em;
@@ -193,21 +197,21 @@
 }
 
 .fx-scroll-hero-subtitle {
-  margin-top: 27px;
-  color: #e8dfe0b8;
+  margin-top: 19px;
+  color: #e8dfe0dd;
   font-size: clamp(10px, 1.1vw, 14px);
   letter-spacing: .31em;
 }
 
 .fx-scroll-emblem {
   width: fit-content;
-  margin: clamp(15px, 3.5vh, 35px) 0 22px;
+  margin: clamp(12px, 2.4vh, 25px) 0 13px;
   filter: drop-shadow(0 7px 25px #000e);
 }
 
 .fx-scroll-emblem img {
   display: block;
-  width: clamp(76px, 9.5vw, 126px);
+  width: clamp(66px, 7.4vw, 108px);
   height: auto;
   object-fit: contain;
   animation: fx-scroll-emblem 7s ease-in-out infinite;
@@ -265,7 +269,7 @@
 
 .fx-scroll-scene {
   position: relative;
-  min-height: clamp(470px, 78svh, 1000px);
+  min-height: clamp(420px, 76svh, 960px);
   overflow: hidden;
   isolation: isolate;
   border-top: 1px solid #f6ead013;
@@ -288,13 +292,13 @@
   width: 100%;
   height: 118%;
   object-fit: cover;
-  filter: brightness(.71) saturate(.76) contrast(1.13);
+  filter: brightness(.94) saturate(.85) contrast(1.09);
   will-change: transform;
   transition: filter .5s;
 }
 
 .fx-scroll-scene-link:hover .fx-scroll-scene-image {
-  filter: brightness(.84) saturate(.94) contrast(1.09);
+  filter: brightness(1) saturate(1) contrast(1.05);
 }
 
 .fx-scroll-scene-shade {
@@ -302,9 +306,9 @@
   z-index: -2;
   inset: 0;
   background:
-    linear-gradient(90deg, #07080fe8 0%, #07080fbc 37%, #07080f0d 88%),
-    linear-gradient(0deg, #06070cdf, transparent 48%),
-    linear-gradient(180deg, #06070ca1, transparent 28%);
+    linear-gradient(90deg, #07080fd9 0%, #07080f9c 31%, #07080f00 80%),
+    linear-gradient(0deg, #06070cb8, transparent 45%),
+    linear-gradient(180deg, #06070c72, transparent 25%);
 }
 
 .fx-scroll-scene-index {
@@ -386,13 +390,13 @@
 
 .fx-scroll-scene--stage .fx-scroll-scene-shade {
   background:
-    linear-gradient(90deg, #071017e8 0%, #071017a8 40%, #07080f28 95%),
+    linear-gradient(90deg, #071017dc 0%, #07101786 37%, #07080f03 90%),
     linear-gradient(0deg, #06090cdf, transparent 50%);
 }
 
 .fx-scroll-scene--gallery .fx-scroll-scene-shade {
   background:
-    linear-gradient(90deg, #0a0815ee 0%, #0a0815a5 40%, #0a081512 95%),
+    linear-gradient(90deg, #0a0815dc 0%, #0a081582 39%, #0a081506 91%),
     linear-gradient(0deg, #06070cdf, transparent 50%);
 }
 
@@ -633,18 +637,20 @@
   }
 
   .fx-scroll-hero-media img {
-    object-position: 62% center;
+    width: 100%;
+    object-position: 66% 30%;
+    filter: grayscale(.22) sepia(.13) saturate(.82) brightness(.90) contrast(1.08);
   }
 
   .fx-scroll-hero-veil {
     background:
-      linear-gradient(90deg, #05070bdc 0%, #05070b6a 65%, #05070b3b),
-      linear-gradient(0deg, #05070b 0%, #05070b16 64%),
-      linear-gradient(180deg, #05070bc9 0%, transparent 30%);
+      linear-gradient(90deg, #05070bdf 0%, #05070b98 44%, #05070b22 90%),
+      linear-gradient(0deg, #05070beb 0%, #05070b08 70%),
+      linear-gradient(180deg, #05070b95 0%, transparent 28%);
   }
 
   .fx-scroll-hero-title h1 {
-    font-size: clamp(43px, 12.6vw, 88px);
+    font-size: clamp(43px, 11.9vw, 83px);
     letter-spacing: -.075em;
   }
 
@@ -769,5 +775,50 @@
   .fx-scroll-scene-image,
   .fx-scroll-scene-content {
     will-change: auto;
+  }
+}
+
+/* Responsive desktop: keep the CTA, title and portrait visible on laptop landscape windows. */
+@media (min-width: 701px) and (max-height: 820px) {
+  .fx-scroll-hero {
+    min-height: max(550px, 100svh);
+    padding-top: clamp(85px, 12svh, 105px);
+    padding-bottom: 37px;
+  }
+
+  .fx-scroll-hero-title h1 {
+    font-size: clamp(55px, min(6.8vw, 12.5svh), 105px);
+    margin-top: 10px;
+    line-height: .84;
+  }
+
+  .fx-scroll-hero-subtitle {
+    margin-top: 13px;
+    font-size: 11px;
+  }
+
+  .fx-scroll-emblem {
+    margin: 7px 0;
+  }
+
+  .fx-scroll-emblem img {
+    width: 67px;
+  }
+
+  .fx-scroll-hero-enter {
+    padding: 10px 7px 10px 0;
+  }
+
+  .fx-scroll-cue {
+    bottom: 18px;
+  }
+
+  .fx-scroll-scene,
+  .fx-scroll-scene-link {
+    min-height: max(420px, 72svh);
+  }
+
+  .fx-scroll-scene-content strong {
+    font-size: clamp(57px, 8.3vw, 122px);
   }
 }
