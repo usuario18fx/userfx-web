@@ -30,8 +30,9 @@ export default function VisitorCounter() {
 
         throw new Error("Respuesta inválida");
       })
-      .catch((error) => {
-        console.error("VisitorCounter:", error);
+      .catch(() => {
+        // En desarrollo, la API puede no estar configurada; mostrar un marcador neutro.
+        // No bloquear la portada ni activar el overlay de errores de Next.js.
         setStats(null);
       });
   }, []);
