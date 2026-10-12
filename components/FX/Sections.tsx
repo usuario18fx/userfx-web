@@ -211,43 +211,27 @@ export function SectionTrainers() {
   return (
     <Shell id="identity">
       <Drift className="right-[2%] bottom-[10%] h-[24rem] w-[24rem]" distance={70} />
-      <RevealGroup className="mb-14 space-y-7">
+      <RevealGroup className="fx-identity-intro mb-8 space-y-5">
         <SectionIndex index="03" label="Your prefix" />
         <Title>Every code has its place.</Title>
         <Lede>Your prefix defines your access. Each collection respects its own code.</Lede>
       </RevealGroup>
       <RevealGroup>
-        <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="fx-identity-grid">
           {TRAINERS.map((t) => (
-            <motion.li key={t.name} variants={wipe(32)}>
-              <Spotlight className="glass group flex h-full flex-col gap-6 overflow-hidden rounded-[32px] p-7 transition-colors duration-500 hover:bg-white/5">
-                <div className="relative grid h-16 w-16 place-items-center overflow-hidden rounded-full border border-gold/15 bg-sky text-3xl">
-                  <img
-                    src={
-                      t.name === "SPCL"
-                        ? FX.special
-                        : t.name === "BSIC"
-                          ? FX.basic
-                          : t.name === "PRX0"
-                            ? FX.pro
-                            : FX.vip
-                    }
-                    alt=""
-                    loading="lazy"
-                    className="h-12 w-12 object-contain grayscale transition-[filter,transform] duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
-                  />
+            <motion.li key={t.name} variants={wipe(24)} whileHover={{ y: -4 }} transition={{ duration: 0.35, ease: EASE }}>
+              <Spotlight className={"glass fx-identity-card fx-identity-card--" + t.name.toLowerCase()}>
+                <div className="fx-identity-icon" aria-hidden="true">
+                  <img src={t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-identity-icon-image" />
                 </div>
-                <div className="relative space-y-2">
-                  <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
-                    {t.name}
-                  </h3>
-                  <p className="text-xs uppercase tracking-[.16em] text-gold/70">{t.role}</p>
-                </div>
-                <span
-                  aria-hidden
-                  className="h-px w-full origin-left scale-x-0 bg-gold/30 transition-transform duration-700 ease-out group-hover:scale-x-100"
-                />
-                <p className="relative text-sm leading-[1.6] text-ink/60">{t.line}</p>
+                <h3 className="fx-identity-card-title">
+                  {t.name === "SPCL" ? "SPCL / IDENTITY" : t.name === "BSIC" ? "BASIC / BSIC" : t.name === "PRX0" ? "PRO / PRX0" : "VIP / VIPX"}
+                </h3>
+                <span className="fx-identity-card-rule" aria-hidden="true">
+                </span>
+                <p className="fx-identity-card-description">
+                  {t.line}
+                </p>
               </Spotlight>
             </motion.li>
           ))}
