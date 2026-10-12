@@ -105,7 +105,7 @@ export default function ScrollStory() {
     <div className="fx-scroll-story">
       <section id="home" className="fx-scroll-hero" aria-labelledby="fx-scroll-title">
         <div className="fx-scroll-hero-media" aria-hidden="true">
-          <img src="/assets/videocall.jpg" alt="" fetchPriority="high" decoding="async" />
+          <img src="/assets/album/PRVW/PRVW-04.jpg" alt="" fetchPriority="high" decoding="async" />
         </div>
         <div className="fx-scroll-hero-veil" aria-hidden="true">
         </div>
