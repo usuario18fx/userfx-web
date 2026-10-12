@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { BOT_URL, ENTER_URL } from "@/lib/content";
+import { ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
@@ -52,6 +52,17 @@ const SCENES: Scene[] = [
     image: "/assets/album/PRVW/PRVW-01.jpg",
     imageAlt: "UserFX original photograph",
     position: "center 39%",
+  },
+  {
+    index: "04",
+    id: "buzon",
+    kicker: "KEEP THE CONVERSATION",
+    title: "BUZÓN",
+    subtitle: "Private messages · get in touch",
+    href: "#/private-room/buzon",
+    image: "/assets/album/PRVW/PRVW-02.jpg",
+    imageAlt: "UserFX original sunset portrait",
+    position: "center 40%",
   },
 ];
 
@@ -177,93 +188,6 @@ export default function ScrollStory() {
         ))}
       </div>
 
-      <section id="protocol" className="fx-scroll-interlude" aria-labelledby="fx-scroll-protocol-title">
-        <span className="fx-scroll-interlude-line" aria-hidden="true">
-        </span>
-        <p className="fx-scroll-overline">
-          YOUR PRIVATE CLUB
-        </p>
-        <h2 id="fx-scroll-protocol-title">
-          One identity.
-          <em>
-            Endless moments.
-          </em>
-        </h2>
-        <p>
-          Your room. A shared stage. Your private collection. Every space begins with your own access.
-        </p>
-        <a href="#/private-room/buzon" className="fx-scroll-text-link">
-          EXPLORE BUZÓN <span aria-hidden="true">↗</span>
-        </a>
-      </section>
-
-      <section id="access" className="fx-scroll-access" aria-labelledby="fx-scroll-access-title">
-        <div className="fx-scroll-access-intro">
-          <p className="fx-scroll-overline">
-            PRIVATE ACCESS
-          </p>
-          <h2 id="fx-scroll-access-title">
-            YOUR KEY.
-            <span>
-              YOUR RULES.
-            </span>
-          </h2>
-        </div>
-        <div className="fx-scroll-code-line" aria-label="Access code types">
-          <span className="fx-scroll-code-label">
-            ACCESS CODE
-          </span>
-          <span>
-            BASIC <b>/ BSIC</b>
-          </span>
-          <span>
-            PRO <b>/ PRX0</b>
-          </span>
-          <span>
-            VIP <b>/ VIPX</b>
-          </span>
-        </div>
-        <div className="fx-scroll-access-links">
-          <a href={BOT_URL} target="_blank" rel="noreferrer">
-            GET MY CODE <span aria-hidden="true">↗</span>
-          </a>
-          <a href={ENTER_URL}>
-            ENTER A CODE <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </section>
-
-      <footer id="contact" className="fx-scroll-footer">
-        <div className="fx-scroll-footer-mark">
-          <img src="/iconFX.png" alt="" width={66} height={66} loading="lazy" />
-          <span>
-            USER FX / 2026
-          </span>
-        </div>
-        <div className="fx-scroll-footer-links" aria-label="Footer">
-          <a href="#/private-room">
-            MYROOM ↗
-          </a>
-          <a href="#/private-room/stage">
-            STAGE ↗
-          </a>
-          <a href="#/private-room/gallery">
-            GALLERY ↗
-          </a>
-          <a href="#/private-room/buzon">
-            BUZÓN ↗
-          </a>
-          <a href={BOT_URL} target="_blank" rel="noreferrer">
-            SUPPORT ↗
-          </a>
-          <a href="/privacy">
-            PRIVACY ↗
-          </a>
-        </div>
-        <p>
-          PRIVATE ACCESS · AGE 18+ · PERSONAL AND NON-TRANSFERABLE
-        </p>
-      </footer>
     </div>
   );
 }
