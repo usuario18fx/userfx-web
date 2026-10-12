@@ -147,6 +147,9 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
               ↓
             </motion.span>
           </span>
+          <span className="fx-scroll-scene-discover" aria-hidden="true">
+            {expanded ? "CLOSE DETAILS −" : "DISCOVER THE SPACE +"}
+          </span>
         </motion.span>
         <span className="fx-scroll-scene-watermark" aria-hidden="true">
           {scene.index}
@@ -154,7 +157,10 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
       </button>
       <AnimatePresence initial={false}>
         {expanded && course && (
-          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => {
+            const panel = document.getElementById(panelId);
+            if (panel) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
+          }}>
             <div className="fx-scroll-scene-panel-inner">
               <div className="fx-scroll-scene-panel-heading">
                 <span className="fx-scroll-scene-panel-index">
