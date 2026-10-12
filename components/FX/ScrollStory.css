@@ -933,3 +933,246 @@
   .fx-scroll-scene-panel-description { font-size: 15px; }
   .fx-scroll-story a.fx-scroll-scene-panel-enter { width: 100%; justify-content: space-between; }
 }
+
+
+/* USERFX_COMPACT_INTERACTIVE_SCENES_V2 */
+.fx-scroll-story button.fx-scroll-scene-link {
+  isolation: isolate;
+  position: relative;
+  min-height: clamp(310px, 54svh, 555px) !important;
+  padding-block: clamp(34px, 4svh, 52px);
+}
+.fx-scroll-story .fx-scroll-scene {
+  min-height: 0 !important;
+}
+.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-image {
+  z-index: 0;
+}
+.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-shade {
+  z-index: 1;
+}
+.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-index,
+.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-watermark {
+  z-index: 2;
+}
+.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-content {
+  position: relative;
+  z-index: 2;
+  width: calc(100% - 65px);
+  max-width: 900px;
+  margin-top: 4px;
+  gap: 12px;
+}
+.fx-scroll-story .fx-scroll-scene-content strong {
+  font-size: clamp(39px, 7.2vw, 112px);
+  line-height: 1;
+  letter-spacing: -.05em;
+  white-space: nowrap;
+}
+.fx-scroll-story .fx-scroll-scene-subtitle {
+  font-size: clamp(11px, 1.12vw, 16px);
+  gap: 18px;
+  padding-bottom: 8px;
+}
+.fx-scroll-story .fx-scroll-scene-index {
+  top: 20px;
+}
+.fx-scroll-scene-icon {
+  position: absolute;
+  right: clamp(23px, 7vw, 125px);
+  top: 22px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: clamp(44px, 4.1vw, 60px);
+  height: clamp(44px, 4.1vw, 60px);
+  border: 1px solid #dfc7909b;
+  border-radius: 50%;
+  color: #f5dca3;
+  background: #090b0f99;
+  box-shadow: 0 0 24px #d0b47515, inset 0 0 14px #d8ba7b13;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  transition: box-shadow .3s, border-color .3s, transform .3s;
+}
+.fx-scroll-scene-icon svg {
+  width: 61%;
+  height: 61%;
+}
+.fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-icon {
+  transform: scale(1.08);
+  border-color: #f2d18e;
+  box-shadow: 0 0 22px #eac67a48;
+}
+.fx-scroll-scene-icon--videocall .fx-icon-live-light {
+  animation: fx-icon-breath 1.9s ease-in-out infinite;
+}
+.fx-scroll-scene-icon--videocall {
+  animation: fx-icon-cam 3.6s ease-in-out infinite;
+}
+.fx-scroll-scene-icon--stage .fx-icon-spotlight {
+  transform-origin: 50% 50%;
+  animation: fx-icon-stage 9s linear infinite;
+}
+.fx-scroll-scene-icon--gallery .fx-icon-gallery-hill {
+  animation: fx-icon-slide 2.8s ease-in-out infinite;
+}
+.fx-scroll-scene-icon--buzon .fx-icon-envelope {
+  animation: fx-icon-mail 2.1s ease-in-out infinite;
+}
+@keyframes fx-icon-breath {
+  0%, 100% { opacity: .35; }
+  50% { opacity: 1; }
+}
+@keyframes fx-icon-cam {
+  0%, 100% { box-shadow: 0 0 5px #ceb67b11; }
+  50% { box-shadow: 0 0 18px #ceb67b50; }
+}
+@keyframes fx-icon-stage {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes fx-icon-slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+@keyframes fx-icon-mail {
+  0%, 100% { opacity: 1; transform: translateY(0); }
+  50% { opacity: .55; transform: translateY(-2px); }
+}
+
+/* FX emblem has a restrained halo; status represents this visitor's connectivity. */
+.fx-scroll-emblem {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 7px;
+}
+.fx-scroll-emblem img {
+  filter: drop-shadow(0 0 12px #e5d2ab33);
+}
+.fx-scroll-connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+  padding: 0;
+  color: #e3e3e0bc;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .17em;
+}
+.fx-scroll-connection svg {
+  width: 14px;
+  height: 14px;
+}
+.fx-scroll-connection-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8b8d92;
+}
+.fx-scroll-connection.is-online .fx-scroll-connection-dot {
+  background: #75d59b;
+  box-shadow: 0 0 8px #75d59b9c;
+  animation: fx-icon-breath 2s ease-in-out infinite;
+}
+
+/* Compact the original lower sections and membership panels without rewriting them. */
+.fx-landing .fx-section {
+  padding-top: clamp(44px, 6vw, 100px) !important;
+  padding-bottom: clamp(44px, 6vw, 100px) !important;
+}
+.fx-landing .fx-plan {
+  padding: 15px !important;
+  gap: 9px !important;
+  border-radius: 17px !important;
+}
+.fx-landing .fx-plan h3 {
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+.fx-landing .fx-plan h3 span {
+  font-size: .76em !important;
+  opacity: .74 !important;
+}
+.fx-landing .fx-plan h3 span::before {
+  content: "/ ";
+  color: var(--fx-story-gold);
+}
+.fx-landing .fx-plan .fx-prefix-illustration {
+  width: 30px !important;
+  height: 30px !important;
+}
+.fx-scroll-scene-panel-inner {
+  gap: 15px !important;
+  padding-top: 25px !important;
+  padding-bottom: 28px !important;
+}
+.fx-scroll-scene-panel-heading h3 {
+  font-size: clamp(27px, 3vw, 43px);
+}
+.fx-scroll-scene-panel-description {
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.58;
+}
+.fx-scroll-scene-panel-bottom {
+  padding-top: 12px;
+}
+.fx-scroll-scene-panel-facts dd {
+  font-size: clamp(19px, 1.6vw, 26px);
+}
+
+@media (max-width: 700px) {
+  .fx-scroll-story button.fx-scroll-scene-link {
+    min-height: clamp(280px, 46svh, 470px) !important;
+    padding: 44px 23px 25px;
+  }
+  .fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-content {
+    width: calc(100% - 10px);
+    gap: 8px;
+    margin-top: 0;
+  }
+  .fx-scroll-story .fx-scroll-scene-content strong {
+    font-size: clamp(31px, 8.7vw, 62px) !important;
+    white-space: nowrap;
+  }
+  .fx-scroll-story .fx-scroll-scene-subtitle {
+    font-size: 11px;
+    gap: 12px;
+  }
+  .fx-scroll-scene-icon {
+    right: 23px;
+    top: 17px;
+    width: 40px;
+    height: 40px;
+  }
+  .fx-scroll-scene-panel-inner {
+    gap: 13px !important;
+    padding: 22px 23px 26px !important;
+  }
+  .fx-scroll-scene-panel-heading h3 {
+    font-size: 31px;
+  }
+  .fx-scroll-scene-panel-description {
+    font-size: 14px;
+  }
+  .fx-landing .fx-section {
+    padding-top: 38px !important;
+    padding-bottom: 38px !important;
+  }
+  .fx-landing .fx-plan {
+    padding: 14px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-scroll-scene-icon *,
+  .fx-scroll-scene-icon,
+  .fx-scroll-connection-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}
