@@ -1176,3 +1176,27 @@
     transition: none !important;
   }
 }
+
+/* USERFX_SCENE_DISCOVER_HINT_V1 */
+.fx-scroll-scene-discover {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  color: #ead4a4;
+  font-weight: 600;
+  letter-spacing: .22em;
+  margin-top: 4px;
+  border-bottom: 1px solid #d3b7768a;
+  padding-bottom: 8px;
+}
+.fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-discover,
+.fx-scroll-scene.is-expanded .fx-scroll-scene-discover {
+  color: #fff2d3;
+  border-color: #e4c68d;
+}
+.fx-scroll-scene-panel { scroll-margin-top: 100px; }
+.fx-scroll-scene-panel-heading h3 { white-space: nowrap; }
+@media (max-width: 700px) {
+  .fx-scroll-scene-discover { font-size: 9px; letter-spacing: .16em; }
+  .fx-scroll-scene-panel { scroll-margin-top: 76px; }
+}
