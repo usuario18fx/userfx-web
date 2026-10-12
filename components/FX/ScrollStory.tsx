@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ENTER_URL } from "@/lib/content";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { COURSES, ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
@@ -66,9 +66,12 @@ const SCENES: Scene[] = [
   },
 ];
 
-function ScrollScene({ scene }: { scene: Scene }) {
+function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: boolean; onToggle: () => void }) {
   const section = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const admin = useAdminMode();
+  const course = COURSES.find((item) => item.id === (scene.id === "videocall" ? "myroom" : scene.id));
+  const panelId = "fx-scene-panel-" + scene.id;
   const { scrollYProgress } = useScroll({
     target: section,
     offset: ["start end", "end start"],
@@ -77,9 +80,9 @@ function ScrollScene({ scene }: { scene: Scene }) {
   const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1.02, 1.1]);
 
   return (
-    <section ref={section} className={"fx-scroll-scene fx-scroll-scene--" + scene.id} aria-labelledby={"fx-scene-" + scene.id}>
-      <a href={scene.href} className="fx-scroll-scene-link" aria-label={"Open " + scene.title}>
-        <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={reduced ? undefined : { y: imageY, scale: imageScale, objectPosition: scene.position }} />
+    <section ref={section} className={"fx-scroll-scene fx-scroll-scene--" + scene.id + (expanded ? " is-expanded" : "")} aria-labelledby={"fx-scene-" + scene.id}>
+      <button type="button" className="fx-scroll-scene-link" aria-expanded={expanded} aria-controls={panelId} aria-label={(expanded ? "Close " : "Read about ") + scene.title} onClick={onToggle}>
+        <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={reduced ? { objectPosition: scene.position } : { y: imageY, scale: imageScale, objectPosition: scene.position }} />
         <span className="fx-scroll-scene-shade" aria-hidden="true">
         </span>
         <span className="fx-scroll-scene-index" aria-hidden="true">
@@ -94,15 +97,59 @@ function ScrollScene({ scene }: { scene: Scene }) {
           </strong>
           <span className="fx-scroll-scene-subtitle">
             {scene.subtitle}
-            <span aria-hidden="true">
-              ↗
-            </span>
+            <motion.span aria-hidden="true" animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: reduced ? 0 : 0.3 }}>
+              ↓
+            </motion.span>
           </span>
         </motion.span>
         <span className="fx-scroll-scene-watermark" aria-hidden="true">
           {scene.index}
         </span>
-      </a>
+      </button>
+      <AnimatePresence initial={false}>
+        {expanded && course && (
+          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="fx-scroll-scene-panel-inner">
+              <div className="fx-scroll-scene-panel-heading">
+                <span className="fx-scroll-scene-panel-index">
+                  {scene.index} / DISCOVER
+                </span>
+                <h3>
+                  {course.name}
+                </h3>
+                <span className="fx-scroll-scene-panel-level">
+                  {course.level}
+                </span>
+              </div>
+              <p className="fx-scroll-scene-panel-description">
+                {course.blurb}
+              </p>
+              <div className="fx-scroll-scene-panel-bottom">
+                <dl className="fx-scroll-scene-panel-facts">
+                  {course.metrics.map((metric) => (
+                    <div key={metric.label}>
+                      <dt>
+                        {metric.label}
+                      </dt>
+                      <dd>
+                        {metric.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <a href={scene.href} className="fx-scroll-scene-panel-enter" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }}>
+                  <span>
+                    OPEN {course.name.toUpperCase()}
+                  </span>
+                  <span aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -111,6 +158,7 @@ export default function ScrollStory() {
   const menu = useMenu();
   const admin = useAdminMode();
   const reduced = useReducedMotion();
+  const [expandedScene, setExpandedScene] = useState<string | null>(null);
 
   return (
     <div className="fx-scroll-story">
@@ -184,7 +232,7 @@ export default function ScrollStory() {
 
       <div id="spaces" className="fx-scroll-scenes" aria-label="Explore UserFX spaces">
         {SCENES.map((scene) => (
-          <ScrollScene key={scene.id} scene={scene} />
+          <ScrollScene key={scene.id} scene={scene} expanded={expandedScene === scene.id} onToggle={() => setExpandedScene((current) => current === scene.id ? null : scene.id)} />
         ))}
       </div>
 
