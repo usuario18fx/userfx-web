@@ -1364,3 +1364,143 @@
     font-size: 14px;
   }
 }
+
+
+/* USERFX_IDENTITY_COMPACT_V1 — Compact access-prefix cards with individual motion */
+.fx-landing .fx-identity-intro {
+  margin-bottom: clamp(18px, 2.5vw, 36px) !important;
+}
+.fx-identity-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.35vw, 19px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.fx-identity-grid > li {
+  display: flex;
+  min-width: 0;
+}
+.fx-landing .fx-identity-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(11px, 1.1vw, 16px);
+  width: 100%;
+  min-width: 0;
+  min-height: 245px;
+  padding: clamp(18px, 2vw, 27px) !important;
+  overflow: hidden;
+  border-radius: 24px;
+  transition: border-color .3s, box-shadow .3s;
+}
+.fx-landing .fx-identity-card:hover {
+  border-color: rgba(208, 185, 141, .38);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .15);
+}
+.fx-identity-icon {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 55px;
+  height: 55px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(211, 180, 106, .18);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .43);
+  isolation: isolate;
+}
+.fx-identity-icon::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -1px;
+  border: 1px solid rgba(216, 196, 149, .20);
+  border-radius: 50%;
+  animation: fx-id-halo 4s ease-in-out infinite;
+}
+.fx-identity-icon-image {
+  display: block;
+  width: 41px;
+  height: 41px;
+  object-fit: contain;
+  filter: grayscale(.92) brightness(1.05);
+  transform-origin: 50% 55%;
+  transition: filter .35s ease;
+  will-change: transform;
+}
+.fx-identity-card:hover .fx-identity-icon-image {
+  filter: grayscale(.25) brightness(1.08);
+}
+.fx-identity-card--spcl .fx-identity-icon-image {
+  animation: fx-id-presence 5.5s ease-in-out infinite;
+}
+.fx-identity-card--bsic .fx-identity-icon-image {
+  animation: fx-id-bloom 5.2s ease-in-out infinite;
+}
+.fx-identity-card--prx0 .fx-identity-icon-image {
+  animation: fx-id-flame 2.65s ease-in-out infinite;
+}
+.fx-identity-card--vipx .fx-identity-icon-image {
+  animation: fx-id-crown 4.2s ease-in-out infinite;
+}
+.fx-identity-card-title {
+  display: block;
+  margin: 1px 0 0;
+  color: #eeeae4;
+  font-size: clamp(13px, 1.18vw, 18px);
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  letter-spacing: -.02em;
+}
+.fx-identity-card-rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(211, 180, 106, .32), transparent);
+}
+.fx-identity-card-description {
+  flex-grow: 1;
+  margin: 0;
+  color: rgba(240, 235, 225, .64);
+  font-size: clamp(12px, .92vw, 14px);
+  line-height: 1.6;
+}
+@keyframes fx-id-halo {
+  0%,100% { box-shadow: 0 0 0 rgba(212, 189, 148, 0); border-color: rgba(212, 189, 148, .12); }
+  50% { box-shadow: 0 0 17px rgba(212, 189, 148, .12); border-color: rgba(212, 189, 148, .36); }
+}
+@keyframes fx-id-presence {
+  0%,100% { opacity: .79; filter: grayscale(1) brightness(.84); transform: scale(.97); }
+  50% { opacity: 1; filter: grayscale(.88) brightness(1.18); transform: scale(1.055); }
+}
+@keyframes fx-id-bloom {
+  0%,100% { transform: scale(.96) rotate(-3deg); }
+  50% { transform: scale(1.075) rotate(3deg); }
+}
+@keyframes fx-id-flame {
+  0%,100% { transform: scale(.96) rotate(-3deg) translateY(1px); }
+  35% { transform: scale(1.08, 1.13) rotate(2deg) translateY(-3px); }
+  70% { transform: scale(1.01, 1.055) rotate(-1deg) translateY(-1px); }
+}
+@keyframes fx-id-crown {
+  0%,100% { transform: translateY(1px) rotate(-2deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+@media (max-width: 1030px) {
+  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fx-landing .fx-identity-card { min-height: 213px; }
+  .fx-identity-card-title { font-size: 17px; }
+}
+@media (max-width: 550px) {
+  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .fx-landing .fx-identity-card { min-height: 208px; padding: 16px !important; gap: 10px; border-radius: 18px; }
+  .fx-identity-icon { width: 46px; height: 46px; }
+  .fx-identity-icon-image { width: 36px; height: 36px; }
+  .fx-identity-card-title { font-size: clamp(11px, 2.75vw, 14px); }
+  .fx-identity-card-description { font-size: 11px; line-height: 1.48; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-identity-icon::before, .fx-identity-icon-image { animation: none !important; transition: none !important; will-change: auto; }
+}
