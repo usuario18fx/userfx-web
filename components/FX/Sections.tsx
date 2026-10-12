@@ -190,16 +190,26 @@ export function SectionMethod() {
           ))}
         </ol>
       </RevealGroup>
-      <RevealGroup className="mt-16 lg:mt-24" step={0.1}>
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[40px] bg-ink/10 lg:grid-cols-4">
-          {METRICS.map((m) => (
-            <Reveal
-              key={m.label}
-              className="group flex flex-col gap-2 bg-sky px-6 py-9 transition-colors duration-500 hover:bg-white/5 sm:px-8">
-              <dd className="font-display text-4xl uppercase leading-none tracking-[-.03em] transition-transform duration-500 ease-out group-hover:-translate-y-1 sm:text-5xl">
+      <RevealGroup className="fx-protocol-stats-wrap mt-9 lg:mt-12" step={0.08}>
+        <dl className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
+          {METRICS.map((m, index) => (
+            <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
+              <div className="fx-protocol-stat-head">
+                <span className="fx-protocol-stat-index">
+                  {"0" + (index + 1)}
+                </span>
+                <span className="fx-protocol-stat-line" aria-hidden="true">
+                </span>
+                <span className="fx-protocol-stat-icon" aria-hidden="true">
+                  <Glyph name={index === 0 ? "stage" : index === 1 ? "camera" : index === 2 ? "lock" : "crown"} />
+                </span>
+              </div>
+              <dd className="fx-protocol-stat-value">
                 <Counter to={m.value} suffix={m.suffix} />
               </dd>
-              <dt className="text-sm font-light text-ink/50">{m.label}</dt>
+              <dt className="fx-protocol-stat-label">
+                {m.label}
+              </dt>
             </Reveal>
           ))}
         </dl>
