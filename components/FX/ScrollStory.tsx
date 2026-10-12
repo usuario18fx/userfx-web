@@ -159,7 +159,7 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
         {expanded && course && (
           <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => {
             const panel = document.getElementById(panelId);
-            if (panel) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
+            if (panel && section.current?.classList.contains("is-expanded")) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
           }}>
             <div className="fx-scroll-scene-panel-inner">
               <div className="fx-scroll-scene-panel-heading">
