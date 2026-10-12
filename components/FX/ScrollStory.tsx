@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { COURSES, ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
+import { Glyph } from "./Glyph";
+import { Spotlight } from "./Motion";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
 
@@ -162,42 +164,47 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
             if (panel && section.current?.classList.contains("is-expanded")) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
           }}>
             <div className="fx-scroll-scene-panel-inner">
-              <div className="fx-scroll-scene-panel-heading">
-                <span className="fx-scroll-scene-panel-index">
-                  {scene.index} / DISCOVER
-                </span>
-                <h3>
-                  {course.name}
-                </h3>
-                <span className="fx-scroll-scene-panel-level">
-                  {course.level}
-                </span>
-              </div>
-              <p className="fx-scroll-scene-panel-description">
-                {course.blurb}
-              </p>
-              <div className="fx-scroll-scene-panel-bottom">
-                <dl className="fx-scroll-scene-panel-facts">
-                  {course.metrics.map((metric) => (
-                    <div key={metric.label}>
-                      <dt>
-                        {metric.label}
-                      </dt>
-                      <dd>
-                        {metric.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                <a href={scene.href} className="fx-scroll-scene-panel-enter" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }}>
-                  <span>
-                    OPEN {course.name.toUpperCase()}
-                  </span>
-                  <span aria-hidden="true">
-                    ↗
-                  </span>
-                </a>
-              </div>
+              <motion.div className="fx-scroll-protocol-reveal" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: reduced ? 0 : 0.36, ease: [0.22, 1, 0.36, 1] }}>
+                <Spotlight className="glass fx-scroll-protocol-card">
+                  <div className="fx-scroll-protocol-card-heading">
+                    <span className="fx-scroll-protocol-step">
+                      {scene.index}
+                    </span>
+                    <span className="fx-scroll-protocol-rule" aria-hidden="true">
+                    </span>
+                    <span className="fx-scroll-protocol-level">
+                      {course.level}
+                    </span>
+                    <span className="fx-scroll-protocol-glyph" aria-hidden="true">
+                      <Glyph name={course.glyph} />
+                    </span>
+                  </div>
+                  <h3 className="fx-scroll-protocol-title">
+                    {course.name}
+                  </h3>
+                  <p className="fx-scroll-protocol-description">
+                    {course.blurb}
+                  </p>
+                  <dl className="fx-scroll-protocol-metrics">
+                    {course.metrics.map((metric) => (
+                      <div key={metric.label} className="glass-tile fx-scroll-protocol-metric">
+                        <dt>
+                          {metric.label}
+                        </dt>
+                        <dd>
+                          {metric.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <a href={scene.href} className="fx-scroll-protocol-enter" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }}>
+                    <span>
+                      OPEN {course.name.toUpperCase()}
+                    </span>
+                    <Glyph name="caret" />
+                  </a>
+                </Spotlight>
+              </motion.div>
             </div>
           </motion.div>
         )}
