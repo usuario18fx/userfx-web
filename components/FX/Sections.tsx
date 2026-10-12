@@ -19,6 +19,7 @@ import { useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import { Brand } from "./Chrome";
 import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
+import ProtocolFluid from "./ProtocolFluid";
 import { RollLabel } from "./Hero";
 import { Counter, Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 function Shell({ id, children }: { id: string; children: ReactNode }) {
@@ -194,6 +195,7 @@ export function SectionMethod() {
         <dl className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
           {METRICS.map((m, index) => (
             <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
+              <ProtocolFluid variant={index} />
               <div className="fx-protocol-stat-head">
                 <span className="fx-protocol-stat-index">
                   {"0" + (index + 1)}
