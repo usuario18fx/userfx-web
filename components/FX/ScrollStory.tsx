@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { COURSES, ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
@@ -66,6 +66,51 @@ const SCENES: Scene[] = [
   },
 ];
 
+function SceneIcon({ id }: { id: string }) {
+  return (
+    <span className={"fx-scroll-scene-icon fx-scroll-scene-icon--" + id} aria-hidden="true">
+      {id === "videocall" && (
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="8" y="15" width="23" height="18" rx="4">
+          </rect>
+          <path d="m31 20 9-5v18l-9-5">
+          </path>
+          <circle className="fx-icon-live-light" cx="14" cy="20" r="2.4" fill="#82d99e" stroke="none">
+          </circle>
+        </svg>
+      )}
+      {id === "stage" && (
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+          <circle cx="24" cy="24" r="5">
+          </circle>
+          <path className="fx-icon-spotlight" d="M24 5v11 M24 32v11 M5 24h11 M32 24h11 M10.5 10.5l8 8 M29.5 29.5l8 8 M37.5 10.5l-8 8 M18.5 29.5l-8 8">
+          </path>
+        </svg>
+      )}
+      {id === "gallery" && (
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="8" y="11" width="32" height="26" rx="3">
+          </rect>
+          <circle cx="17" cy="19" r="3">
+          </circle>
+          <path className="fx-icon-gallery-hill" d="m12 32 9-9 6 6 5-5 5 8">
+          </path>
+        </svg>
+      )}
+      {id === "buzon" && (
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="8" y="14" width="32" height="22" rx="3">
+          </rect>
+          <path className="fx-icon-envelope" d="m9 17 15 11 15-11">
+          </path>
+          <path d="m9 34 11-10 M39 34 28 24">
+          </path>
+        </svg>
+      )}
+    </span>
+  );
+}
+
 function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: boolean; onToggle: () => void }) {
   const section = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
@@ -88,6 +133,7 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
         <span className="fx-scroll-scene-index" aria-hidden="true">
           {scene.index}
         </span>
+        <SceneIcon id={scene.id} />
         <motion.span className="fx-scroll-scene-content" initial={reduced ? false : { opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
           <span className="fx-scroll-scene-kicker">
             {scene.index} / {scene.kicker}
@@ -159,6 +205,18 @@ export default function ScrollStory() {
   const admin = useAdminMode();
   const reduced = useReducedMotion();
   const [expandedScene, setExpandedScene] = useState<string | null>(null);
+  const [online, setOnline] = useState(false);
+
+  useEffect(() => {
+    const refresh = () => setOnline(navigator.onLine);
+    refresh();
+    window.addEventListener("online", refresh);
+    window.addEventListener("offline", refresh);
+    return () => {
+      window.removeEventListener("online", refresh);
+      window.removeEventListener("offline", refresh);
+    };
+  }, []);
 
   return (
     <div className="fx-scroll-story">
@@ -210,6 +268,19 @@ export default function ScrollStory() {
           </p>
           <div className="fx-scroll-emblem">
             <img src="/iconFX.png" alt="FX emblem" width={106} height={106} loading="eager" />
+            <span className={"fx-scroll-connection " + (online ? "is-online" : "is-offline")} role="status" aria-live="polite">
+              <span className="fx-scroll-connection-dot" aria-hidden="true">
+              </span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="7.5" r="3">
+                </circle>
+                <path d="M5 20v-2a7 7 0 0 1 14 0v2">
+                </path>
+              </svg>
+              <span>
+                {online ? "YOU'RE ONLINE" : "OFFLINE"}
+              </span>
+            </span>
           </div>
           <a href={ENTER_URL} className="fx-scroll-hero-enter">
             <span>
