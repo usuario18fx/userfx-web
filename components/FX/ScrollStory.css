@@ -1200,3 +1200,167 @@
   .fx-scroll-scene-discover { font-size: 9px; letter-spacing: .16em; }
   .fx-scroll-scene-panel { scroll-margin-top: 76px; }
 }
+
+
+/* USERFX_PROTOCOL_ACCORDION_STYLE_V1 */
+/* The same Spotlight, glass and glass-tile components used by SectionMethod. */
+.fx-scroll-scene-panel {
+  border-top: 1px solid rgba(211, 180, 106, .25);
+}
+.fx-scroll-protocol-reveal {
+  width: 100%;
+}
+.fx-scroll-story .fx-scroll-protocol-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(13px, 1.8vw, 23px);
+  overflow: hidden;
+  border: 1px solid rgba(211, 180, 106, .25);
+  border-radius: clamp(18px, 2.5vw, 32px);
+  padding: clamp(23px, 3.6vw, 43px);
+  background: linear-gradient(135deg, rgba(24, 27, 38, .91), rgba(10, 13, 24, .88));
+  box-shadow: 0 20px 65px rgba(0, 0, 0, .15);
+  backdrop-filter: blur(18px);
+}
+.fx-scroll-protocol-card-heading {
+  display: flex;
+  align-items: center;
+  gap: clamp(11px, 2vw, 20px);
+}
+.fx-scroll-protocol-step {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  font-weight: 600;
+  color: rgba(211, 180, 106, .65);
+}
+.fx-scroll-protocol-rule {
+  height: 1px;
+  flex: 1;
+  min-width: 18px;
+  background: linear-gradient(90deg, rgba(211, 180, 106, .36), transparent);
+}
+.fx-scroll-protocol-level {
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: rgba(245, 236, 213, .7);
+}
+.fx-scroll-protocol-glyph {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(211, 180, 106, .24);
+  color: #e4c788;
+  background: rgba(211, 180, 106, .08);
+}
+.fx-scroll-protocol-glyph svg {
+  width: 24px;
+  height: 24px;
+}
+.fx-scroll-protocol-title {
+  position: relative;
+  margin: 0;
+  color: #faf7f1;
+  font-size: clamp(25px, 3vw, 37px);
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: -.025em;
+  white-space: nowrap;
+}
+.fx-scroll-protocol-description {
+  position: relative;
+  width: min(100%, 60ch);
+  margin: 0;
+  font-size: clamp(14px, 1.25vw, 17px);
+  line-height: 1.65;
+  color: rgba(242, 235, 226, .77);
+}
+.fx-scroll-protocol-metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 650px;
+  margin: 0;
+}
+.fx-scroll-story .fx-scroll-protocol-metric {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 17px;
+  border: 1px solid rgba(232, 216, 182, .10);
+  border-radius: 16px;
+  background: rgba(240, 236, 225, .04);
+}
+.fx-scroll-protocol-metric dt {
+  order: 2;
+  color: rgba(242, 235, 226, .58);
+  font-size: 12px;
+  line-height: 1.25;
+}
+.fx-scroll-protocol-metric dd {
+  order: 1;
+  margin: 0;
+  color: #f7f3ea;
+  font-size: clamp(20px, 2.2vw, 27px);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.fx-scroll-story a.fx-scroll-protocol-enter {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 14px 0 0;
+  margin-top: 2px;
+  border-top: 1px solid rgba(211, 180, 106, .24);
+  color: #dfbf7c;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-decoration: none;
+}
+.fx-scroll-protocol-enter svg {
+  width: 19px;
+  height: 19px;
+  transition: transform .25s ease;
+}
+.fx-scroll-protocol-enter:hover svg {
+  transform: translateX(4px);
+}
+@media (max-width: 700px) {
+  .fx-scroll-story .fx-scroll-protocol-card {
+    gap: 14px;
+    padding: 22px;
+  }
+  .fx-scroll-protocol-step {
+    font-size: 33px;
+  }
+  .fx-scroll-protocol-glyph {
+    width: 39px;
+    height: 39px;
+  }
+  .fx-scroll-protocol-title {
+    font-size: 29px;
+  }
+  .fx-scroll-protocol-metrics {
+    gap: 8px;
+  }
+  .fx-scroll-story .fx-scroll-protocol-metric {
+    padding: 12px;
+  }
+  .fx-scroll-protocol-description {
+    font-size: 14px;
+  }
+}
