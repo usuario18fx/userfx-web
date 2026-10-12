@@ -1372,8 +1372,8 @@
 }
 .fx-identity-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(10px, 1.35vw, 19px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -1389,8 +1389,8 @@
   gap: clamp(11px, 1.1vw, 16px);
   width: 100%;
   min-width: 0;
-  min-height: 245px;
-  padding: clamp(18px, 2vw, 27px) !important;
+  min-height: clamp(270px, 23vw, 325px);
+  padding: clamp(24px, 2.7vw, 40px) !important;
   overflow: hidden;
   border-radius: 24px;
   transition: border-color .3s, box-shadow .3s;
@@ -1403,8 +1403,8 @@
   display: grid;
   place-items: center;
   position: relative;
-  width: 55px;
-  height: 55px;
+  width: 66px;
+  height: 66px;
   flex: 0 0 auto;
   border: 1px solid rgba(211, 180, 106, .18);
   border-radius: 50%;
@@ -1422,8 +1422,8 @@
 }
 .fx-identity-icon-image {
   display: block;
-  width: 41px;
-  height: 41px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   filter: grayscale(.92) brightness(1.05);
   transform-origin: 50% 55%;
@@ -1449,7 +1449,7 @@
   display: block;
   margin: 1px 0 0;
   color: #eeeae4;
-  font-size: clamp(13px, 1.18vw, 18px);
+  font-size: clamp(18px, 1.65vw, 24px);
   font-weight: 700;
   line-height: 1.25;
   white-space: nowrap;
@@ -1464,7 +1464,7 @@
   flex-grow: 1;
   margin: 0;
   color: rgba(240, 235, 225, .64);
-  font-size: clamp(12px, .92vw, 14px);
+  font-size: clamp(14px, 1.15vw, 17px);
   line-height: 1.6;
 }
 @keyframes fx-id-halo {
@@ -1490,16 +1490,16 @@
 }
 @media (max-width: 1030px) {
   .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fx-landing .fx-identity-card { min-height: 213px; }
-  .fx-identity-card-title { font-size: 17px; }
+  .fx-landing .fx-identity-card { min-height: 255px; }
+  .fx-identity-card-title { font-size: clamp(17px, 2vw, 22px); }
 }
 @media (max-width: 550px) {
-  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .fx-landing .fx-identity-card { min-height: 208px; padding: 16px !important; gap: 10px; border-radius: 18px; }
-  .fx-identity-icon { width: 46px; height: 46px; }
-  .fx-identity-icon-image { width: 36px; height: 36px; }
-  .fx-identity-card-title { font-size: clamp(11px, 2.75vw, 14px); }
-  .fx-identity-card-description { font-size: 11px; line-height: 1.48; }
+  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .fx-landing .fx-identity-card { min-height: 235px; padding: 18px !important; gap: 13px; border-radius: 20px; }
+  .fx-identity-icon { width: 53px; height: 53px; }
+  .fx-identity-icon-image { width: 39px; height: 39px; }
+  .fx-identity-card-title { font-size: clamp(12px, 3vw, 16px); }
+  .fx-identity-card-description { font-size: 12px; line-height: 1.53; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fx-identity-icon::before, .fx-identity-icon-image { animation: none !important; transition: none !important; will-change: auto; }
