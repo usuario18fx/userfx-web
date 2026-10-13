@@ -128,57 +128,12 @@
   background: radial-gradient(circle, rgba(198,172,121,.085), rgba(10,10,14,.12) 75%);
   box-shadow: 0 0 0 16px rgba(209,180,120,.016), inset 0 0 52px rgba(0,0,0,.18);
 }
-/* Crown and FX are now independently controllable layers of the same source artwork.
-   The split is non-destructive, so the exact original gem and chrome colors remain. */
-.ufx-footer-emblem-art {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  aspect-ratio: 1;
-  min-width: 0;
-}
-.ufx-footer-emblem,
-.ufx-crown-icon-art {
-  position: absolute;
-  inset: 0;
+.ufx-footer-emblem {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
-  pointer-events: none;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .6));
-}
-.ufx-footer-emblem-no-crown {
-  /* Hide the original crown in the base logo. */
-  clip-path: polygon(0 0, 64% 0, 64% 49%, 100% 49%, 100% 100%, 0 100%);
-}
-.ufx-crown-icon {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  display: block;
-  pointer-events: none;
-  transform-origin: 83% 43%;
-  animation: ufx-crown-float 3.8s ease-in-out infinite;
-}
-.ufx-crown-icon-art {
-  /* Crown-only sprite: duplicate source, isolated to the upper-right crown region. */
-  clip-path: polygon(64% 0, 100% 0, 100% 49%, 64% 49%);
-  filter: drop-shadow(0 4px 10px rgba(9, 58, 132, .45));
-}
-@keyframes ufx-crown-float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(1.8deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ufx-crown-icon {
-    animation: none;
-  }
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.6));
 }
 .ufx-footer-visual-label { text-align: center; }
 .ufx-footer-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,191,143,.48), transparent); }
