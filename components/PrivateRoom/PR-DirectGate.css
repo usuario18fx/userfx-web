@@ -545,6 +545,7 @@
   letter-spacing:0.14em;
 }
 
+/* USERFX_CODE_ACTION_HOVER_V2 — wallpaper only on hover / keyboard focus. */
 .pvr-direct-secondary-actions{
   position:relative;
   z-index:2;
@@ -557,31 +558,52 @@
 
 .pvr-direct-secondary-actions > button{
   position:relative;
+  isolation:isolate;
   display:flex;
   align-items:center;
   justify-content:center;
   min-width:0;
   min-height:34px;
-  padding:7px 25px 7px 10px;
+  padding:7px 10px;
+  overflow:hidden;
   border:1px solid rgba(196,165,116,.36);
   border-radius:5px;
-  background:rgba(13,15,20,.74);
+  background:rgba(13,15,20,.78);
   color:#ece2d3;
   cursor:pointer;
-  transition:border-color .2s ease, background-color .2s ease, transform .2s ease;
+  transition:border-color .22s ease,transform .22s ease,box-shadow .22s ease;
 }
 
-.pvr-direct-secondary-actions .pvr-direct-get-code{
-  border-color:rgba(208,178,117,.49);
+.pvr-direct-secondary-actions > button.pvr-direct-get-code{
   color:#e8c992;
+  border-color:rgba(208,178,117,.49);
   background:rgba(73,56,34,.24);
+}
+
+/* A single background image; no icon layer or hidden crown SVG in either button. */
+.pvr-direct-secondary-actions > button::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    linear-gradient(110deg,rgba(8,9,15,.40),rgba(8,9,15,.22)),
+    url("/wallpaperGeneral.png") center / cover no-repeat;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+
+.pvr-direct-secondary-actions > button:hover::before,
+.pvr-direct-secondary-actions > button:focus-visible::before{
+  opacity:1;
 }
 
 .pvr-direct-secondary-actions > button:hover,
 .pvr-direct-secondary-actions > button:focus-visible,
 .pvr-direct-secondary-actions > button.is-active{
   border-color:#d5b77f;
-  background:rgba(24,21,21,.94);
+  box-shadow:inset 0 0 0 1px rgba(213,183,127,.14),0 5px 18px rgba(0,0,0,.24);
   transform:translateY(-1px);
 }
 
@@ -591,6 +613,8 @@
 }
 
 .pvr-direct-secondary-actions .pvr-direct-action-text{
+  position:relative;
+  z-index:1;
   display:block;
   min-width:0;
   color:inherit;
@@ -598,46 +622,12 @@
   font-weight:800;
   letter-spacing:.085em;
   white-space:nowrap;
-}
-
-.pvr-direct-secondary-actions .pvr-direct-action-hover-icon{
-  position:absolute;
-  top:50%;
-  right:7px;
-  display:grid;
-  place-items:center;
-  width:15px;
-  height:15px;
-  opacity:0;
-  color:#e6ca97;
-  pointer-events:none;
-  transform:translate(-5px,-50%) scale(.82);
-  transition:opacity .22s ease,transform .22s ease;
-}
-
-.pvr-direct-action-hover-icon svg{
-  display:block;
-  width:15px;
-  height:15px;
-}
-
-.pvr-direct-secondary-actions > button:hover .pvr-direct-action-hover-icon,
-.pvr-direct-secondary-actions > button:focus-visible .pvr-direct-action-hover-icon,
-.pvr-direct-secondary-actions > button.is-active .pvr-direct-action-hover-icon{
-  opacity:1;
-  transform:translate(0,-50%) scale(1);
-}
-
-@media (hover:none){
-  .pvr-direct-secondary-actions .pvr-direct-action-hover-icon{
-    opacity:.75;
-    transform:translate(0,-50%) scale(1);
-  }
+  text-shadow:0 1px 6px rgba(0,0,0,.72);
 }
 
 @media (prefers-reduced-motion:reduce){
   .pvr-direct-secondary-actions > button,
-  .pvr-direct-secondary-actions .pvr-direct-action-hover-icon{
+  .pvr-direct-secondary-actions > button::before{
     transition:none;
   }
 }
