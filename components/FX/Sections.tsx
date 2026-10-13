@@ -175,7 +175,15 @@ export function SectionMethod() {
                   {step.title}
                 </h3>
                 <p className="relative max-w-[52ch] text-base leading-[1.6] text-ink/65">
-                  {step.body}
+                  {step.step === "01" ? (
+                    <>
+                      {"Meet "}
+                      <a href={BOT_URL} target="_blank" rel="noreferrer" className="text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
+                        @User18Fx_bot
+                      </a>
+                      {step.body.split("@User18Fx_bot")[1]}
+                    </>
+                  ) : step.body}
                 </p>
                 <a
                   href={step.link}
