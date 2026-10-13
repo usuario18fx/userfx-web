@@ -1,0 +1,237 @@
+/* USERFX_EDITORIAL_FOOTER_V2 — fully isolated, responsive footer */
+.ufx-footer, .ufx-footer * { box-sizing: border-box; }
+.ufx-footer {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 100%;
+  overflow: clip;
+  padding: clamp(16px, 3vw, 40px);
+  color: #ebe5db;
+  background: #08090d;
+  border-top: 1px solid rgba(204, 173, 109, .16);
+}
+.ufx-footer-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: clamp(22px, 4.7vw, 76px);
+  border: 1px solid rgba(214, 180, 122, .22);
+  border-radius: clamp(22px, 3.5vw, 42px);
+  background:
+    radial-gradient(ellipse at 84% 24%, rgba(105, 76, 124, .20), transparent 48%),
+    radial-gradient(ellipse at 12% 100%, rgba(132, 95, 47, .13), transparent 45%),
+    linear-gradient(148deg, #13131a 0%, #0b0b11 55%, #08090d 100%);
+  box-shadow: inset 0 1px rgba(255,255,255,.06), 0 22px 80px rgba(0,0,0,.14);
+}
+.ufx-footer-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .08;
+  background: url('/wallpaperGeneral.png') center / cover;
+  mix-blend-mode: luminosity;
+}
+.ufx-footer-frame > * { position: relative; z-index: 1; }
+.ufx-footer-meta, .ufx-footer-brand, .ufx-footer-actions, .ufx-footer-bottom {
+  display: flex;
+  align-items: center;
+}
+.ufx-footer-meta { justify-content: space-between; gap: 16px; }
+.ufx-footer-brand { gap: 10px; font: 650 14px/1.2 system-ui, sans-serif; letter-spacing: .12em; }
+.ufx-footer-brand-icon { width: 32px; height: 32px; object-fit: contain; }
+.ufx-footer-edition, .ufx-footer-kicker, .ufx-footer-small-label, .ufx-footer-visual-label {
+  color: #baa178;
+  font: 600 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .19em;
+}
+.ufx-footer-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(180px, .7fr);
+  gap: clamp(22px, 3vw, 50px);
+  align-items: center;
+  padding-block: clamp(50px, 7vw, 112px);
+}
+.ufx-footer-hero-copy { min-width: 0; }
+.ufx-footer-kicker { margin: 0 0 22px; }
+.ufx-footer-title {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-display), 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(37px, 6.1vw, 94px);
+  line-height: .99;
+  font-weight: 700;
+  letter-spacing: -.065em;
+  text-transform: uppercase;
+}
+.ufx-footer-title > span { display: block; max-width: 100%; }
+.ufx-footer-title-secondary { color: #cbb07d; }
+.ufx-footer-description {
+  max-width: 47ch;
+  margin: clamp(20px, 3vw, 34px) 0 0;
+  color: rgba(235,229,219,.64);
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.65;
+}
+.ufx-footer-actions { flex-wrap: wrap; gap: 18px 24px; margin-top: clamp(25px, 3vw, 40px); }
+.ufx-footer-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 55px;
+  min-width: 220px;
+  padding: 7px 9px 7px 24px;
+  border-radius: 100px;
+  background: #cbb07d;
+  color: #0b0a0e;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .055em;
+  text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+.ufx-footer-cta:hover { background: #ebd19d; transform: translateY(-2px); }
+.ufx-footer-cta-arrow {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #16141a;
+  color: #ddc397;
+  font-size: 22px;
+}
+.ufx-footer-secondary-link {
+  color: #d6bb86;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-decoration: none;
+}
+.ufx-footer-secondary-link:hover, .ufx-footer-link-group a:hover { color: #f5deb2; }
+.ufx-footer-visual { display: flex; flex-direction: column; align-items: center; gap: 24px; min-width: 0; }
+.ufx-footer-emblem-ring {
+  display: grid;
+  place-items: center;
+  width: clamp(150px, 23vw, 315px);
+  aspect-ratio: 1;
+  padding: 12%;
+  border: 1px solid rgba(215,187,134,.19);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(198,172,121,.085), rgba(10,10,14,.12) 75%);
+  box-shadow: 0 0 0 16px rgba(209,180,120,.016), inset 0 0 52px rgba(0,0,0,.18);
+}
+.ufx-footer-emblem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.6));
+}
+.ufx-footer-visual-label { text-align: center; }
+.ufx-footer-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,191,143,.48), transparent); }
+.ufx-footer-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: clamp(28px, 5vw, 90px);
+  padding-block: clamp(35px, 4vw, 58px);
+}
+.ufx-footer-info h3 { margin: 12px 0; font-size: clamp(20px, 2vw, 29px); font-weight: 550; letter-spacing: -.03em; }
+.ufx-footer-info-copy { margin: 0; color: #a5a0a0; font-size: 14px; line-height: 1.5; }
+.ufx-footer-form {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  min-width: 0;
+  padding: 5px 5px 5px 16px;
+  margin-top: 23px;
+  border: 1px solid rgba(210,183,135,.32);
+  border-radius: 50px;
+  background: rgba(255,255,255,.025);
+}
+.ufx-footer-form:focus-within { border-color: rgba(236,205,148,.8); }
+.ufx-footer-form input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #f6f1e9;
+  font: 14px/1.4 system-ui, sans-serif;
+}
+.ufx-footer-form input::placeholder { color: #8b8687; }
+.ufx-footer-form button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 39px;
+  width: 39px;
+  height: 39px;
+  border: 0;
+  border-radius: 50%;
+  color: #151219;
+  background: #cbb07d;
+  font-size: 21px;
+  cursor: pointer;
+}
+.ufx-footer-form button:disabled { cursor: wait; opacity: .5; }
+.ufx-footer-form-status { min-height: 1.7em; margin: 8px 0 0; color: #98929a; font-size: 11px; line-height: 1.5; }
+.ufx-footer-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.ufx-footer-link-group h3 { margin: 0 0 20px; color: #d4b985; font: 700 11px/1.5 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .14em; }
+.ufx-footer-link-group ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.ufx-footer-link-group a { color: #aca6a6; font: 14px/1.5 system-ui, sans-serif; text-decoration: none; transition: color .2s; overflow-wrap: anywhere; }
+.ufx-footer-bottom {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(215,185,126,.13);
+  color: #888387;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .04em;
+}
+.ufx-footer-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+@media (max-width: 900px) {
+  .ufx-footer-hero { grid-template-columns: minmax(0,1fr) minmax(132px,.45fr); }
+  .ufx-footer-title { font-size: clamp(42px, 6.5vw, 70px); }
+  .ufx-footer-info { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .ufx-footer { padding: 13px; }
+  .ufx-footer-frame { padding: 25px 21px; border-radius: 24px; }
+  .ufx-footer-meta { align-items: flex-start; }
+  .ufx-footer-edition { max-width: 100px; font-size: 9px; text-align: right; }
+  .ufx-footer-hero { grid-template-columns: minmax(0,1fr); padding-block: 48px 45px; gap: 34px; }
+  .ufx-footer-kicker { font-size: 9px; }
+  .ufx-footer-title { font-size: clamp(38px, 10.1vw, 63px); letter-spacing: -.068em; }
+  .ufx-footer-description { max-width: 36ch; font-size: 14px; }
+  .ufx-footer-actions { flex-direction: column; align-items: flex-start; }
+  .ufx-footer-cta { width: 100%; min-width: 0; max-width: 320px; }
+  .ufx-footer-visual { align-items: flex-start; flex-direction: row; gap: 20px; }
+  .ufx-footer-emblem-ring { width: 86px; padding: 12px; box-shadow: 0 0 0 7px rgba(209,180,120,.016); }
+  .ufx-footer-visual-label { text-align: left; align-self: center; max-width: 125px; font-size: 9px; }
+  .ufx-footer-info { padding-block: 34px; gap: 37px; }
+  .ufx-footer-links { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 30px 16px; }
+  .ufx-footer-link-group h3 { margin-bottom: 12px; }
+  .ufx-footer-bottom { align-items: flex-start; }
+  .ufx-footer-bottom-right { display: none; }
+}
+@media (max-width: 365px) {
+  .ufx-footer-frame { padding: 23px 16px; }
+  .ufx-footer-title { font-size: 37px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ufx-footer-cta { transition: none; }
+}
