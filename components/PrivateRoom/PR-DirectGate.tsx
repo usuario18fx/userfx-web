@@ -1096,26 +1096,14 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
             {/* ───── BOTONES DE OPCIONES ADICIONALES ───── */}
 
             <div className="pvr-direct-secondary-actions">
-              <button type="button" className={`animated-button pvr-direct-has-code ${secondaryMode === "code" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
+              <button type="button" className={`pvr-direct-has-code ${secondaryMode === "code" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
                 <span className="pvr-direct-action-text">
                   ALREADY GOT CODE
                 </span>
-                <span className="pvr-direct-action-hover-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="7.5" cy="15.5" r="3.5" />
-                    <path d="M10.1 12.9 20 3l2 2-2.5 2.5 1.5 1.5-2.5 2.5L17 10l-4.2 4.2" />
-                  </svg>
-                </span>
               </button>
-              <button type="button" className={`animated-button pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}>
+              <button type="button" className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`} onClick={() => toggleSecondaryMode("plans")} aria-expanded={secondaryMode === "plans"}>
                 <span className="pvr-direct-action-text">
                   GET MY CODE
-                </span>
-                <span className="pvr-direct-action-hover-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m2.5 8 5.1 4 4.4-6 4.4 6 5.1-4-2.2 11H4.7L2.5 8Z" />
-                    <path d="M5.5 16h13" />
-                  </svg>
                 </span>
               </button>
             </div>
