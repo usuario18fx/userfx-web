@@ -20,7 +20,7 @@ import { Brand } from "./Chrome";
 import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
 import { RollLabel } from "./Hero";
-import { Counter, Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
+import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
     <section
@@ -203,7 +203,7 @@ export function SectionMethod() {
         </ol>
       </RevealGroup>
       <RevealGroup className="fx-protocol-stats-wrap mt-9 lg:mt-12" step={0.08}>
-        <dl className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
+        <div className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
           {METRICS.map((m, index) => (
             <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
               {index === 0 || index === 1 ? (
@@ -217,9 +217,6 @@ export function SectionMethod() {
               </div>
               <div className="fx-protocol-stat-content">
                 <div className="fx-protocol-stat-head">
-                  <span className="fx-protocol-stat-index">
-                    {"0" + (index + 1)}
-                  </span>
                   <span className="fx-protocol-stat-line" aria-hidden="true">
                   </span>
                   <span className="fx-protocol-stat-icon" aria-hidden="true">
@@ -227,17 +224,14 @@ export function SectionMethod() {
                   </span>
                 </div>
                 <div className="fx-protocol-stat-bottom">
-                  <dd className="fx-protocol-stat-value">
-                    <Counter to={m.value} suffix={m.suffix} />
-                  </dd>
-                  <dt className="fx-protocol-stat-label">
+                  <p className="fx-protocol-stat-label">
                     {m.label}
-                  </dt>
+                  </p>
                 </div>
               </div>
             </Reveal>
           ))}
-        </dl>
+        </div>
       </RevealGroup>
     </Shell>
   );
