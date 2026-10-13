@@ -506,7 +506,7 @@ export function SiteFooter() {
           <motion.p
             variants={stagger(0.1, 0)}
             className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
-            {HERO.badge.map((line) => (
+            {HERO.headline.map((line) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span
                   variants={maskWord}
