@@ -1721,3 +1721,56 @@
 @media (prefers-reduced-motion: reduce) {
   .fx-protocol-fluid { display: none; }
 }
+
+/* USERFX_PROTOCOL_ROOM_MEDIA_V1 — 4 backgrounds: room1.png / room2.mp4 / room3.png / room4.mp4 */
+.fx-landing .fx-protocol-stat {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #090a0f;
+}
+.fx-landing .fx-protocol-stat > .fx-protocol-stat-media {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: inherit;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  filter: saturate(.88) brightness(.85);
+  transition: transform .6s ease, filter .6s ease;
+}
+.fx-landing .fx-protocol-stat:hover > .fx-protocol-stat-media {
+  transform: scale(1.055);
+  filter: saturate(1) brightness(.95);
+}
+.fx-landing .fx-protocol-stat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(7, 8, 13, .85), rgba(7, 8, 13, .42) 76%),
+    linear-gradient(0deg, rgba(7, 8, 13, .66), transparent 80%);
+}
+.fx-landing .fx-protocol-stat > :not(.fx-protocol-stat-media) {
+  position: relative;
+  z-index: 2;
+}
+.fx-landing .fx-protocol-stat-value,
+.fx-landing .fx-protocol-stat-label {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-landing .fx-protocol-stat > .fx-protocol-stat-media {
+    transition: none;
+  }
+  .fx-landing .fx-protocol-stat:hover > .fx-protocol-stat-media {
+    transform: none;
+  }
+}
