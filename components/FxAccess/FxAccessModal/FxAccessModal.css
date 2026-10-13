@@ -32,7 +32,7 @@
   border:2px solid #a77f3f;
   background:
     linear-gradient(180deg, #17120edb, #090807ef),
-    url("/wallpaperModal.png") center / cover no-repeat;
+    url("/wallpaperGeneral.png") center / cover no-repeat;
   box-shadow:
     0 30px 90px #000000a8,
     inset 0 0 0 1px #e6c77a1a,
