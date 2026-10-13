@@ -206,11 +206,11 @@ export function SectionMethod() {
         <dl className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
           {METRICS.map((m, index) => (
             <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
-              {index === 0 ? (
-                <img src="/room1.png" alt="" loading="lazy" className="fx-protocol-stat-media" />
+              {index === 0 || index === 1 ? (
+                <img src={index === 0 ? "/room1.png" : "/room2.png"} alt="" loading="lazy" className="fx-protocol-stat-media" />
               ) : (
                 <video className="fx-protocol-stat-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1}>
-                  <source src={index === 1 ? "/room2.mp4" : index === 2 ? "/room3.mp4" : "/room4.mp4"} type="video/mp4" />
+                  <source src={index === 2 ? "/room3.mp4" : "/room4.mp4"} type="video/mp4" />
                 </video>
               )}
               <div className="fx-protocol-stat-head">
