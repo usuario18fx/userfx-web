@@ -19,7 +19,6 @@ import { useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import { Brand } from "./Chrome";
 import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
-import ProtocolFluid from "./ProtocolFluid";
 import { RollLabel } from "./Hero";
 import { Counter, Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 function Shell({ id, children }: { id: string; children: ReactNode }) {
@@ -195,7 +194,13 @@ export function SectionMethod() {
         <dl className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
           {METRICS.map((m, index) => (
             <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
-              <ProtocolFluid variant={index} />
+              {index === 0 || index === 2 ? (
+                <img src={index === 0 ? "/room1.png" : "/room3.png"} alt="" loading="lazy" className="fx-protocol-stat-media" />
+              ) : (
+                <video className="fx-protocol-stat-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1}>
+                  <source src={index === 1 ? "/room2.mp4" : "/room4.mp4"} type="video/mp4" />
+                </video>
+              )}
               <div className="fx-protocol-stat-head">
                 <span className="fx-protocol-stat-index">
                   {"0" + (index + 1)}
