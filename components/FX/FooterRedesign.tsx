@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { FX } from "@/lib/assets";
 import { BOT_URL, ENTER_URL, FOOTER } from "@/lib/content";
 import VisitorCounter from "@/components/VisitorCounter";
+import CrownFXIcon from "./CrownFXIcon";
 import "./FooterRedesign.css";
 
 type SubscribeState = "idle" | "sending" | "success" | "error";
@@ -81,7 +82,10 @@ GET MY CODE ↗
 </div>
 <div className="ufx-footer-visual" aria-hidden="true">
 <div className="ufx-footer-emblem-ring">
-<img src="/icon4.png" alt="" className="ufx-footer-emblem" />
+<div className="ufx-footer-emblem-art">
+<img src="/icon4.png" alt="" className="ufx-footer-emblem ufx-footer-emblem-no-crown" draggable={false} />
+<CrownFXIcon source="/icon4.png" />
+</div>
 </div>
 <span className="ufx-footer-visual-label">
 USER FX / MEMBERS ONLY
