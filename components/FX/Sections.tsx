@@ -213,22 +213,28 @@ export function SectionMethod() {
                   <source src={index === 2 ? "/room3.mp4" : "/room4.mp4"} type="video/mp4" />
                 </video>
               )}
-              <div className="fx-protocol-stat-head">
-                <span className="fx-protocol-stat-index">
-                  {"0" + (index + 1)}
-                </span>
-                <span className="fx-protocol-stat-line" aria-hidden="true">
-                </span>
-                <span className="fx-protocol-stat-icon" aria-hidden="true">
-                  <Glyph name={index === 0 ? "stage" : index === 1 ? "camera" : index === 2 ? "lock" : "crown"} />
-                </span>
+              <div className="fx-protocol-stat-shade" aria-hidden="true">
               </div>
-              <dd className="fx-protocol-stat-value">
-                <Counter to={m.value} suffix={m.suffix} />
-              </dd>
-              <dt className="fx-protocol-stat-label">
-                {m.label}
-              </dt>
+              <div className="fx-protocol-stat-content">
+                <div className="fx-protocol-stat-head">
+                  <span className="fx-protocol-stat-index">
+                    {"0" + (index + 1)}
+                  </span>
+                  <span className="fx-protocol-stat-line" aria-hidden="true">
+                  </span>
+                  <span className="fx-protocol-stat-icon" aria-hidden="true">
+                    <Glyph name={index === 0 ? "stage" : index === 1 ? "camera" : index === 2 ? "lock" : "crown"} />
+                  </span>
+                </div>
+                <div className="fx-protocol-stat-bottom">
+                  <dd className="fx-protocol-stat-value">
+                    <Counter to={m.value} suffix={m.suffix} />
+                  </dd>
+                  <dt className="fx-protocol-stat-label">
+                    {m.label}
+                  </dt>
+                </div>
+              </div>
             </Reveal>
           ))}
         </dl>
