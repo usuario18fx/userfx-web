@@ -217,6 +217,9 @@ export function SectionMethod() {
               </div>
               <div className="fx-protocol-stat-content">
                 <div className="fx-protocol-stat-head">
+                  <span className="fx-protocol-stat-index">
+                    {"0" + (index + 1)}
+                  </span>
                   <span className="fx-protocol-stat-line" aria-hidden="true">
                   </span>
                   <span className="fx-protocol-stat-icon" aria-hidden="true">
