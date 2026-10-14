@@ -1890,3 +1890,67 @@
     background: rgba(9, 11, 18, .84);
   }
 }
+
+/* USERFX compact disclosure — text tab, no nested glass card. */
+.fx-scroll-story .fx-scroll-scene-panel {
+  background: #101116;
+  border-block: 1px solid rgba(206,182,123,.24);
+}
+.fx-scroll-story .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 26px;
+  max-width: 1440px;
+  padding: 17px clamp(25px, 7vw, 118px);
+  margin-inline: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.fx-scroll-scene-tab-index {
+  color: #ceb67b;
+  font-size: 10px;
+  letter-spacing: .14em;
+  white-space: nowrap;
+}
+.fx-scroll-scene-tab-copy {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+.fx-scroll-scene-tab-copy strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.fx-scroll-scene-tab-copy p {
+  margin: 0;
+  max-width: 78ch;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(245,237,225,.7);
+}
+.fx-scroll-story .fx-scroll-scene-tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ceb67b88;
+  color: #ceb67b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .fx-scroll-story .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
+    padding: 14px 24px;
+    gap: 8px 14px;
+  }
+  .fx-scroll-scene-tab-copy { flex-basis: 100%; }
+}
