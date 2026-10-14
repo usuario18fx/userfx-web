@@ -12,7 +12,7 @@ export default function SiteFooter() {
 const [email, setEmail] = useState("");
 const [status, setStatus] = useState<SubscribeState>("idle");
 const abortRef = useRef<AbortController | null>(null);
-const crownRef = useRef<HTMLImageElement | null>(null);
+const crownRef = useRef<HTMLSpanElement | null>(null);
 const [hasCrownAsset, setHasCrownAsset] = useState(false);
 const [hasCrownlessLogo, setHasCrownlessLogo] = useState(true);
 
@@ -25,8 +25,9 @@ useEffect(() => {
         if (event.pointerType !== "mouse" || !crownRef.current) return;
         const x = (event.clientX / window.innerWidth - 0.5) * 2;
         const y = (event.clientY / window.innerHeight - 0.5) * 2;
-        crownRef.current.style.setProperty("--crown-x", `${-x * 14}px`);
-        crownRef.current.style.setProperty("--crown-y", `${-y * 11}px`);
+
+        crownRef.current.style.setProperty("--crown-x", `${-x * 38}px`);
+        crownRef.current.style.setProperty("--crown-y", `${-y * 29}px`);
     };
 
     window.addEventListener("pointermove", updateCrown, { passive: true });
@@ -100,9 +101,11 @@ GET MY CODE ↗
 <div className="ufx-footer-visual" aria-label="FX signature emblem">
 <div className="ufx-footer-emblem-ring">
 <div className="ufx-footer-logo-stack">
-<img src={hasCrownlessLogo ? "/fxLogoNoCrown.png" : "/assets/userfx-logo-sin.png"} alt="FX with rose emblem" className="ufx-footer-emblem" draggable={false} onError={() => setHasCrownlessLogo(false)} />
+<img src={hasCrownlessLogo ? "/iconLogo.png" : "/assets/userfx-logo-sin.png"} alt="FX with rose emblem" className="ufx-footer-emblem" draggable={false} onError={() => setHasCrownlessLogo(false)} />
 {hasCrownlessLogo && (
-<img ref={crownRef} src="/iconCorona.png" alt="" aria-hidden="true" className={`ufx-footer-crown ${hasCrownAsset ? "is-ready" : ""}`} draggable={false} onLoad={() => setHasCrownAsset(true)} onError={() => setHasCrownAsset(false)} />
+<span ref={crownRef} className={`ufx-footer-crown-anchor ${hasCrownAsset ? "is-ready" : ""}`} aria-hidden="true">
+<img src="/iconCorona.png" alt="" className="ufx-footer-crown" draggable={false} onLoad={() => setHasCrownAsset(true)} onError={() => setHasCrownAsset(false)} />
+</span>
 )}
 </div>
 </div>
