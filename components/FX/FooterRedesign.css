@@ -164,7 +164,7 @@
   opacity: 0;
   pointer-events: none;
   transform: translate3d(var(--crown-x, 0px), var(--crown-y, 0px), 0);
-  transition: transform .28s ease-out, opacity .2s ease-out;
+  transition: transform .18s ease-out, opacity .2s ease-out;
   will-change: transform;
 }
 .ufx-footer-crown-anchor.is-ready {
@@ -176,15 +176,21 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0, 80, 205, .42));
-  animation: ufx-footer-crown-float 3.1s ease-in-out infinite;
+  animation: ufx-footer-crown-float 2.6s ease-in-out infinite;
   transform-origin: center 75%;
 }
 @keyframes ufx-footer-crown-float {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
   }
+  25% {
+    transform: translate3d(-4px, -12px, 0) rotate(-3deg);
+  }
   50% {
-    transform: translateY(-15px) rotate(3deg);
+    transform: translate3d(5px, -23px, 0) rotate(5deg);
+  }
+  75% {
+    transform: translate3d(-3px, -11px, 0) rotate(-2deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
