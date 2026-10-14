@@ -56,7 +56,7 @@ export default function CrownLab() {
           <div className="fx-crown-lab-grid" />
           <div className="fx-crown-lab-shadow" />
           <div className="fx-crown-lab-object">
-            <img className="fx-crown-lab-emblem" src="/iconLogo.png" alt="Blue FX logo with a red rose" draggable={false} />
+            <img className="fx-crown-lab-emblem" src="/iconFoot.png" alt="Blue FX logo with a red rose, without crown" draggable={false} />
             {available && (
               <img className="fx-crown-lab-crown" src="/iconCorona.png" alt="Floating FX crown" draggable={false}
                 onError={() => setAvailable(false)} />
