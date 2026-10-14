@@ -330,3 +330,18 @@
 @media (prefers-reduced-motion: reduce) {
   .ufx-footer-cta { transition: none; }
 }
+
+/* Cinematic FX emblem depth: crown remains an independent layer. */
+@media (prefers-reduced-motion: no-preference) {
+  .ufx-footer-logo-stack { perspective: 950px; transform-style: preserve-3d; }
+  .ufx-footer-logo-stack .ufx-footer-emblem {
+    backface-visibility: hidden;
+    animation: ufx-emblem-depth 7s ease-in-out infinite;
+  }
+  .ufx-footer-crown-anchor { transform-style: preserve-3d; }
+  .ufx-footer-crown { backface-visibility: hidden; }
+  @keyframes ufx-emblem-depth {
+    0%, 100% { transform: scale(1.78) rotateY(-5deg) rotateX(2deg); }
+    50% { transform: scale(1.82) rotateY(6deg) rotateX(-3deg) translateY(-5px); }
+  }
+}
