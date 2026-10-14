@@ -120,7 +120,7 @@
 .ufx-footer-emblem-ring {
   display: grid;
   place-items: center;
-  width: clamp(255px, 28vw, 405px);
+  width: clamp(290px, 32vw, 450px);
   aspect-ratio: 1;
   padding: 0;
   border: 1px solid rgba(215,187,134,.19);
@@ -149,16 +149,16 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.2);
+  transform: scale(1.78);
   transform-origin: center;
 }
 .ufx-footer-crown-anchor {
   position: absolute;
   z-index: 2;
-  top: 5%;
-  right: 0%;
-  width: 38%;
-  height: 43%;
+  top: -7%;
+  right: -5%;
+  width: 55%;
+  height: 52%;
   display: grid;
   place-items: center;
   opacity: 0;
@@ -176,7 +176,7 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0, 80, 205, .42));
-  animation: ufx-footer-crown-float 3.4s ease-in-out infinite;
+  animation: ufx-footer-crown-float 3.1s ease-in-out infinite;
   transform-origin: center 75%;
 }
 @keyframes ufx-footer-crown-float {
@@ -184,7 +184,7 @@
     transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) rotate(2deg);
+    transform: translateY(-15px) rotate(3deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -298,7 +298,7 @@
     text-align: center;
   }
   .ufx-footer-emblem-ring {
-    width: clamp(225px, 65vw, 285px);
+    width: clamp(235px, 74vw, 330px);
     padding: 0;
     box-shadow: 0 0 0 8px rgba(209,180,120,.018), inset 0 0 34px rgba(0,0,0,.13);
   }
