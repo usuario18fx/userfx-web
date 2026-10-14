@@ -475,13 +475,9 @@ export function SiteFooter() {
     <footer id="contact" className="fx-footer relative scroll-mt-20 border-t border-ink/10">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-10">
         <RevealGroup className="flex flex-col gap-10 py-20 md:py-28 lg:flex-row lg:items-end lg:justify-between">
-<<<<<<< HEAD
           <motion.p
             variants={stagger(0.1, 0)}
             className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
-=======
-          <motion.p variants={stagger(0.1, 0)} className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
->>>>>>> 35ea3c9 (Update FX UI and icons)
             {HERO.headline.map((line) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span variants={maskWord} className="block whitespace-nowrap will-change-transform">
