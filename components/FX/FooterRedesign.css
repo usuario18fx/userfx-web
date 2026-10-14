@@ -120,9 +120,15 @@
 .ufx-footer-emblem-ring {
   display: grid;
   place-items: center;
+<<<<<<< HEAD
   width: clamp(290px, 32vw, 450px);
   aspect-ratio: 1;
   padding: 0;
+=======
+  width: clamp(150px, 23vw, 315px);
+  aspect-ratio: 1;
+  padding: 12%;
+>>>>>>> 35ea3c9 (Update FX UI and icons)
   border: 1px solid rgba(215,187,134,.19);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(198,172,121,.085), rgba(10,10,14,.12) 75%);
@@ -135,20 +141,28 @@
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0,0,0,.6));
 }
+<<<<<<< HEAD
 /* USERFX_FOOTER_SEPARATE_CROWN_V4 — large mark + independent moving crown. */
+=======
+/* USERFX_FOOTER_SEPARATE_CROWN_V3 — original FX rose mark + independent crown PNG. */
+>>>>>>> 35ea3c9 (Update FX UI and icons)
 .ufx-footer-logo-stack {
   position: relative;
   isolation: isolate;
   display: block;
   width: 100%;
   aspect-ratio: 1;
+<<<<<<< HEAD
   overflow: visible;
+=======
+>>>>>>> 35ea3c9 (Update FX UI and icons)
 }
 .ufx-footer-logo-stack .ufx-footer-emblem {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+<<<<<<< HEAD
   transform: scale(1.78);
   transform-origin: center;
 }
@@ -202,6 +216,35 @@
   .ufx-footer-crown {
     animation: none;
   }
+=======
+}
+.ufx-footer-crown {
+  position: absolute;
+  z-index: 2;
+  top: 1%;
+  right: 3%;
+  width: 35%;
+  height: auto;
+  max-height: 48%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 66, 178, .28));
+  transform: translate3d(var(--crown-x, 0px), var(--crown-y, 0px), 0);
+  transition: transform .24s ease-out, opacity .2s ease-out;
+  will-change: transform;
+}
+.ufx-footer-crown.is-ready { opacity: 1; }
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  .ufx-footer-crown.is-ready { animation: ufx-footer-crown-float 3.4s ease-in-out infinite; }
+}
+@keyframes ufx-footer-crown-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -5px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ufx-footer-crown { transform: none; transition: none; animation: none; will-change: auto; }
+>>>>>>> 35ea3c9 (Update FX UI and icons)
 }
 .ufx-footer-visual-label { text-align: center; }
 .ufx-footer-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,191,143,.48), transparent); }
@@ -304,8 +347,13 @@
     text-align: center;
   }
   .ufx-footer-emblem-ring {
+<<<<<<< HEAD
     width: clamp(235px, 74vw, 330px);
     padding: 0;
+=======
+    width: clamp(186px, 56vw, 235px);
+    padding: 6%;
+>>>>>>> 35ea3c9 (Update FX UI and icons)
     box-shadow: 0 0 0 8px rgba(209,180,120,.018), inset 0 0 34px rgba(0,0,0,.13);
   }
   .ufx-footer-visual-label {

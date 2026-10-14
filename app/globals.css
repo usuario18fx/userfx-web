@@ -123,8 +123,9 @@ button:disabled {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: url("/icon5.png") right bottom/65% auto no-repeat;
-  opacity: 0.14;
+  background: url("/icon4.png") right bottom/65% auto no-repeat;
+  opacity: 0.233;
+  transform: scale(1.6) rotate(180deg) translateX(-19%) translateY(-12%);
 }
 .fx-plan-featured {
   background: linear-gradient(135deg, #c8ac70, #99804c);
@@ -136,6 +137,16 @@ button:disabled {
     linear-gradient(180deg, #08090df5, #08090dcc),
     url("/wallpaperGeneral.png") center bottom/cover;
 }
+.fx-footer-emblem {
+    width: 112px;
+    height: 112px;
+    object-fit: contain;
+}
+@media (max-width: 767px) {
+    .fx-footer-emblem {
+        width: 72px;
+        height: 72px;
+}}
 .fx-brand {
   color: #eee9dd;
 }

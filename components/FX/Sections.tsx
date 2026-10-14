@@ -23,40 +23,42 @@ import { RollLabel } from "./Hero";
 import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <section
-      id={id}
-      className="fx-section relative w-full scroll-mt-24 border-t border-ink/10 py-20 md:py-28 lg:py-36">
+    <section id={id} className="fx-section relative w-full scroll-mt-24 border-t border-ink/10 py-20 md:py-28 lg:py-36">
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-10">
-{children}
-</div>
+        {children}
+      </div>
     </section>
   );
 }
 function SectionIndex({ index, label }: { index: string; label: string }) {
   return (
     <Reveal className="flex items-center gap-5">
-    <span className="font-display text-sm font-semibold uppercase tracking-[-.03em] text-gold">
-    {index}
-    </span>
-    <motion.span  className="h-px w-10 origin-left bg-gold/50" variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.7, ease: EASE } },}}/>
-    <span className="text-xs uppercase tracking-[.18em] text-ink/60">{label}</span>
+      <span className="font-display text-sm font-semibold uppercase tracking-[-.03em] text-gold">
+        {index}
+      </span>
+      <motion.span className="h-px w-10 origin-left bg-gold/50" variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.7, ease: EASE } }, }} />
+      <span className="text-xs uppercase tracking-[.18em] text-ink/60">
+{label}
+</span>
     </Reveal>
-    );
-    }
-  function Title({ children }: { children: string }) {
+  );
+}
+function Title({ children }: { children: string }) {
   return (
     <h2 className="max-w-[18ch] font-display text-[10vw] font-semibold uppercase leading-[.9] tracking-[-.03em] sm:text-[7vw] lg:text-[4.4vw]">
-    <SplitText text={children} />
+      <SplitText text={children} />
     </h2>
-    );
-    }
-  function Lede({ children }: { children: string }) {
+  );
+}
+function Lede({ children }: { children: string }) {
   return (
     <Reveal>
-    <p className="max-w-[46ch] text-base leading-[1.6] text-ink/65">{children}</p>
+      <p className="max-w-[46ch] text-base leading-[1.6] text-ink/65">
+{children}
+</p>
     </Reveal>
-    );
-    }
+  );
+}
 export function SectionCourses() {
   const [selected, setSelected] = useState<string>(COURSES[0].id);
   const course = COURSES.find((c) => c.id === selected)!;
@@ -66,7 +68,9 @@ export function SectionCourses() {
       <Drift className="right-[8%] top-[18%] h-[26rem] w-[26rem]" />
       <RevealGroup className="mb-14 space-y-7">
         <SectionIndex index="01" label="What's inside" />
-        <Title>Four spaces. One identity.</Title>
+        <Title>
+Four spaces. One identity.
+</Title>
         <Lede>
           Choose your moment. A room that belongs to you, a stage to share, and a collection that
           stays private.
@@ -74,30 +78,25 @@ export function SectionCourses() {
       </RevealGroup>
       <RevealGroup className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
         <Reveal>
-            <ul className="flex flex-col">
+          <ul className="flex flex-col">
             {COURSES.map((c, i) => (
-            <li key={c.id} className="relative">
-            <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left">
-            <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
-            <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
-            <span className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
-             {c.name}
-            </span>
-            </span>
-            <span className="hidden text-xs uppercase tracking-[.16em] text-ink/40 sm:block">
-            {c.level}              </span>
-            <motion.span animate={{ rotate: selected === c.id ? 90 : 0,
-                      opacity: selected === c.id ? 1 : 0.35,}} transition={{ duration: 0.4, ease: EASE }}>
+              <li key={c.id} className="relative">
+                <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left">
+                  <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
+                  <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
+                    <span className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
+                      {c.name}
+                    </span>
+                  </span>
+                  <span className="hidden text-xs uppercase tracking-[.16em] text-ink/40 sm:block">
+                    {c.level}              
+</span>
+                  <motion.span animate={{ rotate: selected === c.id ? 90 : 0, opacity: selected === c.id ? 1 : 0.35, }} transition={{ duration: 0.4, ease: EASE }}>
                     <Glyph name="caret" className="h-5 w-5" />
                   </motion.span>
                 </button>
                 {selected === c.id && (
-                  <motion.span
-                    layoutId="course-rule"
-                    aria-hidden
-                    className="absolute inset-x-0 bottom-0 h-px bg-gold"
-                    transition={{ duration: 0.45, ease: EASE }}
-                  />
+                  <motion.span layoutId="course-rule" aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-gold" transition={{ duration: 0.45, ease: EASE }} />
                 )}
               </li>
             ))}
@@ -107,36 +106,29 @@ export function SectionCourses() {
           <Spotlight className="glass flex h-full min-h-[24rem] flex-col justify-between overflow-hidden rounded-[40px] p-8 sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/8 blur-2xl" />
             <AnimatePresence mode="wait">
-              <motion.div
-                key={course.id}
-                className="relative flex flex-1 flex-col gap-7"
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.35, ease: EASE }}>
+              <motion.div key={course.id} className="relative flex flex-1 flex-col gap-7" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.35, ease: EASE }}>
                 <div className="grid h-14 w-14 place-items-center rounded-full bg-orb text-sky">
                   <Glyph name={course.glyph} className="h-6 w-6" />
                 </div>
                 <h3 className="font-display text-3xl font-semibold uppercase leading-none tracking-[-.03em]">
                   {course.name}
                 </h3>
-                <p className="max-w-[42ch] text-base leading-[1.6] text-ink/65">{course.blurb}</p>
+                <p className="max-w-[42ch] text-base leading-[1.6] text-ink/65">
+{course.blurb}
+</p>
                 <dl className="mt-auto flex flex-wrap gap-3">
                   {course.metrics.map((m) => (
-                    <div
-                      key={m.label}
-                      className="glass-tile flex min-w-[9.5rem] flex-1 flex-col gap-1 rounded-2xl px-5 py-4">
-                      <dt className="order-2 text-xs font-light text-ink/50">{m.label}</dt>
-                      <dd className="order-1 text-xl font-semibold tracking-[-.02em]">{m.value}</dd>
+                    <div key={m.label} className="glass-tile flex min-w-[9.5rem] flex-1 flex-col gap-1 rounded-2xl px-5 py-4">
+                      <dt className="order-2 text-xs font-light text-ink/50">
+{m.label}
+</dt>
+                      <dd className="order-1 text-xl font-semibold tracking-[-.02em]">
+{m.value}
+</dd>
                     </div>
                   ))}
                 </dl>
-                <a
-                  href={course.route}
-                  onClick={(e) => {
-                    if (admin.requestFeature(course.id)) e.preventDefault();
-                  }}
-                  className="flex items-center justify-between border-t border-ink/10 pt-5 text-sm text-gold">
+                <a href={course.route} onClick={(e) => { if (admin.requestFeature(course.id)) e.preventDefault(); }} className="flex items-center justify-between border-t border-ink/10 pt-5 text-sm text-gold">
                   Open {course.name}
                   <Glyph name="caret" className="h-4 w-4" />
                 </a>
@@ -155,10 +147,14 @@ export function SectionMethod() {
       <RevealGroup className="grid gap-14 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)] lg:gap-16">
         <div className="space-y-7 lg:sticky lg:top-28 lg:self-start">
           <SectionIndex index="02" label="Access protocol" />
-          <Title>How to unlock the Vault.</Title>
-          <Lede>Start in Telegram. Choose your code. Enter your own world.</Lede>
+          <Title>
+How to unlock the Vault.
+</Title>
+          <Lede>
+Start in Telegram. Choose your code. Enter your own world.
+</Lede>
           <Reveal>
-        <img src={FX.foliage} alt="" loading="lazy" className="fx-protocol-ornament" />
+            <img src={FX.foliage} alt="" loading="lazy" className="fx-protocol-ornament" />
           </Reveal>
         </div>
         <ol className="flex flex-col gap-4">
@@ -189,11 +185,7 @@ export function SectionMethod() {
                     </>
                   ) : step.body}
                 </p>
-                <a
-                  href={step.link}
-                  target={step.link.startsWith("https:") ? "_blank" : undefined}
-                  rel={step.link.startsWith("https:") ? "noreferrer" : undefined}
-                  className="relative mt-2 flex items-center justify-between text-sm text-gold">
+                <a href={step.link} target={step.link.startsWith("https:") ? "_blank" : undefined} rel={step.link.startsWith("https:") ? "noreferrer" : undefined} className="relative mt-2 flex items-center justify-between text-sm text-gold">
                   {step.cta}
                   <Glyph name="caret" className="h-4 w-4" />
                 </a>
@@ -245,8 +237,12 @@ export function SectionTrainers() {
       <Drift className="right-[2%] bottom-[10%] h-[24rem] w-[24rem]" distance={70} />
       <RevealGroup className="fx-identity-intro mb-8 space-y-5">
         <SectionIndex index="03" label="Your prefix" />
-        <Title>Every code has its place.</Title>
-        <Lede>Your prefix defines your access. Each collection respects its own code.</Lede>
+        <Title>
+Every code has its place.
+</Title>
+        <Lede>
+Your prefix defines your access. Each collection respects its own code.
+</Lede>
       </RevealGroup>
       <RevealGroup>
         <ul className="fx-identity-grid">
@@ -281,42 +277,15 @@ export function SectionPricing() {
       <Drift className="left-[30%] top-[6%] h-[28rem] w-[28rem]" distance={110} />
       <RevealGroup className="mb-14 space-y-7">
         <SectionIndex index="04" label="Choose your code" />
-        <Title>Your access. Your level.</Title>
+        <Title>
+Your access. Your level.
+</Title>
         <Reveal>
-          <div
-            role="radiogroup"
-            aria-label="Compare access by"
-            className="glass relative inline-flex rounded-full p-1">
+          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1">
             {(["stars", "window"] as const).map((value, i) => (
-              <button
-                key={value}
-                ref={(el) => {
-                  radios.current[i] = el;
-                }}
-                type="button"
-                role="radio"
-                aria-checked={view === value}
-                tabIndex={view === value ? 0 : -1}
-                onClick={() => setView(value)}
-                onKeyDown={(e) => {
-                  if (
-                    !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(
-                      e.key,
-                    )
-                  )
-                    return;
-                  e.preventDefault();
-                  const next = e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - i;
-                  setView(next === 0 ? "stars" : "window");
-                  radios.current[next]?.focus();
-                }}
-                className="relative rounded-full px-6 py-2.5 text-sm font-semibold">
+              <button key={value} ref={(el) => { radios.current[i] = el; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(e) => { if ( !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes( e.key, ) ) return; e.preventDefault(); const next = e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - i; setView(next === 0 ? "stars" : "window"); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold">
                 {view === value && (
-                  <motion.span
-                    layoutId="cycle-pill"
-                    className="absolute inset-0 rounded-full bg-gold text-sky"
-                    transition={{ duration: 0.4, ease: EASE }}
-                  />
+                  <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-gold text-sky" transition={{ duration: 0.4, ease: EASE }} />
                 )}
                 <span className={`relative ${view === value ? "text-sky" : "opacity-50"}`}>
                   {value === "stars" ? "Telegram Stars" : "Access window"}
@@ -327,9 +296,9 @@ export function SectionPricing() {
         </Reveal>
       </RevealGroup>
       <RevealGroup>
-       <ul className="grid grid-cols-1 gap-3 md:grid-cols-3">
-{PLANS.map((plan) => {
-  const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {PLANS.map((plan) => {
+            const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
               <motion.li
                 key={plan.id} variants={wipe(40)} whileHover={{ y: -10 }}
@@ -341,11 +310,15 @@ export function SectionPricing() {
                   </span>
                 )}
                 <div className="space-y-3">
-                <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt=""  loading="lazy" className="fx-prefix-illustration h-[34px] w-[34px] object-contain"/>
-                <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
-                  {plan.name} <span className="text-[11px] opacity-50">{plan.prefix}</span>
-                </h3>
-                <p className="text-sm opacity-65">{plan.tagline}</p>
+                  <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-prefix-illustration h-[34px] w-[34px] object-contain" />
+                  <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
+                    {plan.name} <span className="text-[11px] opacity-50">
+{plan.prefix}
+</span>
+                  </h3>
+                  <p className="text-sm opacity-65">
+{plan.tagline}
+</p>
                 </div>
                 <div>
                   <motion.span
@@ -379,11 +352,10 @@ export function SectionPricing() {
                     target="_blank"
                     rel="noreferrer"
                     className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}>
-                    <RollLabel>{plan.cta}</RollLabel>
-                    <Glyph
-                      name="caret"
-                      className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1"
-                    />
+                    <RollLabel>
+{plan.cta}
+</RollLabel>
+                    <Glyph name="caret" className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
                   </a>
                 </Magnetic>
               </motion.li>
@@ -391,7 +363,9 @@ export function SectionPricing() {
           })}
         </ul>
         <Reveal className="mt-7 flex flex-wrap items-center justify-between gap-4 text-sm text-ink/55">
-          <span>Need identity access? Start with SPCL.</span>
+          <span>
+Need identity access? Start with SPCL.
+</span>
           <a className="text-gold" href={BOT_URL} target="_blank" rel="noreferrer">
             Get my code ↗
           </a>
@@ -408,7 +382,9 @@ export function SectionFaq() {
       <RevealGroup className="grid gap-12 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-20">
         <div className="space-y-7 lg:sticky lg:top-28 lg:self-start">
           <SectionIndex index="05" label="Before you get in" />
-          <Title>Good questions. Clear answers.</Title>
+          <Title>
+Good questions. Clear answers.
+</Title>
         </div>
         <Reveal>
           <ul className="fx-faq relative">
@@ -427,11 +403,7 @@ export function SectionFaq() {
                   </span>
                   <span aria-hidden className="relative mt-2 block h-3 w-3 shrink-0">
                     <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-gold" />
-                    <motion.span
-                      className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gold"
-                      animate={{ scaleY: expanded === i ? 0 : 1 }}
-                      transition={{ duration: 0.35, ease: EASE }}
-                    />
+                    <motion.span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gold" animate={{ scaleY: expanded === i ? 0 : 1 }} transition={{ duration: 0.35, ease: EASE }} />
                   </span>
                 </button>
                 <AnimatePresence initial={false}>
@@ -503,32 +475,28 @@ export function SiteFooter() {
     <footer id="contact" className="fx-footer relative scroll-mt-20 border-t border-ink/10">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-10">
         <RevealGroup className="flex flex-col gap-10 py-20 md:py-28 lg:flex-row lg:items-end lg:justify-between">
+<<<<<<< HEAD
           <motion.p
             variants={stagger(0.1, 0)}
             className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
+=======
+          <motion.p variants={stagger(0.1, 0)} className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
+>>>>>>> 35ea3c9 (Update FX UI and icons)
             {HERO.headline.map((line) => (
               <span key={line} className="block overflow-hidden">
-                <motion.span
-                  variants={maskWord}
-                  className="block whitespace-nowrap will-change-transform">
+                <motion.span variants={maskWord} className="block whitespace-nowrap will-change-transform">
                   {line}
                 </motion.span>
               </span>
             ))}
           </motion.p>
           <Reveal className="flex flex-col items-start gap-6 lg:items-end">
-            <motion.img
-              src={FX.emblem}
-              alt=""
-              className="h-28 w-28 object-contain"
-              animate={{ y: reduced ? 0 : [0, -10, 0] }}
-              transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
-            />
+            <motion.img src={FX.emblem} alt="" className="h-28 w-28 object-contain" animate={{ y: reduced ? 0 : [0, -10, 0] }} transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }} />
             <Magnetic strength={0.3}>
-              <a
-                href={ENTER_URL}
-                className="group flex items-center gap-5 rounded-full bg-gold py-4 pl-7 pr-5 text-sm font-semibold text-sky">
-                <RollLabel>Enter the Vault</RollLabel>
+              <a href={ENTER_URL} className="group flex items-center gap-5 rounded-full bg-gold py-4 pl-7 pr-5 text-sm font-semibold text-sky">
+                <RollLabel>
+Enter the Vault
+</RollLabel>
                 <Glyph name="caret" className="h-4 w-4" />
               </a>
             </Magnetic>
@@ -537,48 +505,18 @@ export function SiteFooter() {
         <RevealGroup className="grid gap-10 border-t border-gold/15 py-10 md:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,.65fr))] lg:gap-8">
           <Reveal className="space-y-5">
             <form onSubmit={submit} noValidate className="flex w-full max-w-md flex-col gap-3">
-              <label
-                htmlFor="newsletter-email"
-                className="text-xs uppercase tracking-[.18em] text-gold/60">
+              <label htmlFor="newsletter-email" className="text-xs uppercase tracking-[.18em] text-gold/60">
                 Inside UserFX
               </label>
               <div
                 className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}>
-                <input
-                  id="newsletter-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  maxLength={254}
-                  placeholder="you@domain.com"
-                  value={email}
-                  disabled={state === "sending"}
-                  aria-invalid={state === "invalid"}
-                  aria-describedby="newsletter-note"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setState("idle");
-                  }}
-                  className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-ink/40"
-                />
-                <button
-                  type="submit"
-                  disabled={state === "sending"}
-                  aria-label="Subscribe"
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40">
+                <input id="newsletter-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="you@domain.com" value={email} disabled={state === "sending"} aria-invalid={state === "invalid"} aria-describedby="newsletter-note" onChange={(e) => { setEmail(e.target.value); setState("idle"); }} className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-ink/40" />
+                <button type="submit" disabled={state === "sending"} aria-label="Subscribe" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40">
                   <Glyph name="caret" className="h-4 w-4" />
                 </button>
               </div>
               <AnimatePresence mode="wait">
-                <motion.p
-                  key={note}
-                  id="newsletter-note"
-                  role={state === "invalid" || state === "error" ? "alert" : "status"}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, ease: EASE }}
-                  className="text-xs leading-relaxed text-ink/50">
+                <motion.p key={note} id="newsletter-note" role={state === "invalid" || state === "error" ? "alert" : "status"} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25, ease: EASE }} className="text-xs leading-relaxed text-ink/50">
                   {note}
                 </motion.p>
               </AnimatePresence>
@@ -586,16 +524,16 @@ export function SiteFooter() {
           </Reveal>
           {FOOTER.columns.map((column) => (
             <Reveal key={column.title} className="space-y-4">
-              <h3 className="text-xs uppercase tracking-[.18em] text-gold/60">{column.title}</h3>
+              <h3 className="text-xs uppercase tracking-[.18em] text-gold/60">
+{column.title}
+</h3>
               <ul className="flex flex-col gap-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      className="group inline-flex items-center border-b border-transparent py-1 text-sm text-ink/65 transition-colors hover:border-gold/40 hover:text-gold focus-visible:text-gold"
-                      href={link.href}
-                      target={link.href.startsWith("https:") ? "_blank" : undefined}
-                      rel={link.href.startsWith("https:") ? "noreferrer" : undefined}>
-                      <RollLabel>{link.label}</RollLabel>
+                    <a className="group inline-flex items-center border-b border-transparent py-1 text-sm text-ink/65 transition-colors hover:border-gold/40 hover:text-gold focus-visible:text-gold" href={link.href} target={link.href.startsWith("https:") ? "_blank" : undefined} rel={link.href.startsWith("https:") ? "noreferrer" : undefined}>
+                      <RollLabel>
+{link.label}
+</RollLabel>
                     </a>
                   </li>
                 ))}

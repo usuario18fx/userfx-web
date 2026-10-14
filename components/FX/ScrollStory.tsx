@@ -10,20 +10,18 @@ import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-Admin
 import "./ScrollStory.css";
 
 type Scene = {
-  index: string;
-  id: string;
-  kicker: string;
-  title: string;
-  subtitle: string;
-  href: string;
-  image: string;
-  imageAlt: string;
-  position?: string;
-};
-
+    index: string;
+    id: string;
+    kicker: string;  
+    title: string;
+    subtitle: string;
+    href: string;
+    image: string;
+    imageAlt: string;
+    position?: string;  
+  };
 const SCENES: Scene[] = [
-  {
-    index: "01",
+  { index: "01",
     id: "videocall",
     kicker: "ONE TO ONE",
     title: "VIDEO CALLS",
@@ -33,8 +31,7 @@ const SCENES: Scene[] = [
     imageAlt: "UserFX original videocall preview",
     position: "center 48%",
   },
-  {
-    index: "02",
+  { index: "02",
     id: "stage",
     kicker: "THE SHARED MOMENT",
     title: "STAGE",
@@ -44,8 +41,7 @@ const SCENES: Scene[] = [
     imageAlt: "UserFX original outdoor portrait",
     position: "center 62%",
   },
-  {
-    index: "03",
+  { index: "03",
     id: "gallery",
     kicker: "YOUR PRIVATE COLLECTION",
     title: "GALLERY",
@@ -54,9 +50,8 @@ const SCENES: Scene[] = [
     image: "/assets/album/PRVW/PRVW-01.jpg",
     imageAlt: "UserFX original photograph",
     position: "center 39%",
-  },
-  {
-    index: "04",
+    },
+  { index: "04",
     id: "buzon",
     kicker: "KEEP THE CONVERSATION",
     title: "BUZÓN",
@@ -65,9 +60,7 @@ const SCENES: Scene[] = [
     image: "/assets/album/PRVW/PRVW-02.jpg",
     imageAlt: "UserFX original sunset portrait",
     position: "center 40%",
-  },
-];
-
+  },];
 function SceneIcon({ id }: { id: string }) {
   return (
     <span className={"fx-scroll-scene-icon fx-scroll-scene-icon--" + id} aria-hidden="true">
@@ -159,10 +152,7 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
       </button>
       <AnimatePresence initial={false}>
         {expanded && course && (
-          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => {
-            const panel = document.getElementById(panelId);
-            if (panel && section.current?.classList.contains("is-expanded")) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
-          }}>
+          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { const panel = document.getElementById(panelId); if (panel && section.current?.classList.contains("is-expanded")) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" }); }}>
             <div className="fx-scroll-scene-panel-inner">
               <motion.div className="fx-scroll-protocol-reveal" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: reduced ? 0 : 0.36, ease: [0.22, 1, 0.36, 1] }}>
                 <Spotlight className="glass fx-scroll-protocol-card">
@@ -280,7 +270,7 @@ export default function ScrollStory() {
             LIVE · VIDEO CALLS · PRIVATE ROOMS
           </p>
           <div className="fx-scroll-emblem">
-            <img src="/iconFX.png" alt="FX emblem" width={106} height={106} loading="eager" />
+            <img src="/iconLogo.png" alt="FX emblem" width={110} height={110} loading="eager" />
             <span className={"fx-scroll-connection " + (online ? "is-online" : "is-offline")} role="status" aria-live="polite">
               <span className="fx-scroll-connection-dot" aria-hidden="true">
               </span>
