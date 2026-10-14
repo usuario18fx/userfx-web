@@ -1,0 +1,38 @@
+/* Scoped experimental study; never overrides production landing selectors. */
+.fx-crown-lab{min-height:100svh;color:#f4eee6;background:radial-gradient(ellipse at 72% 45%,#20253a 0%,#0e1019 45%,#08090d 82%);font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+.fx-crown-lab *{box-sizing:border-box}
+.fx-crown-lab-header,.fx-crown-lab-bottom{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:23px clamp(22px,5vw,90px);font-size:11px;letter-spacing:.17em;color:#bfa772}
+.fx-crown-lab-header{border-bottom:1px solid #c9ae7840}
+.fx-crown-lab-header a{color:#f4eee6;text-decoration:none}
+.fx-crown-lab-layout{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(350px,1.15fr);min-height:74svh;align-items:center;gap:3vw;padding:35px clamp(22px,5vw,90px)}
+.fx-crown-lab-copy{position:relative;z-index:3}
+.fx-crown-lab-eyebrow{font-size:11px;letter-spacing:.25em;color:#bfa772}
+.fx-crown-lab-copy h1{font-size:clamp(50px,5.5vw,104px);max-width:9ch;line-height:.91;letter-spacing:-.07em;margin:25px 0}
+.fx-crown-lab-copy h1 em{display:block;font-weight:400;color:#cbb17e}
+.fx-crown-lab-copy>p:not(.fx-crown-lab-eyebrow){font-size:15px;line-height:1.7;max-width:46ch;color:#a9a7b0}
+.fx-crown-lab-options{display:grid;gap:8px;margin-top:38px;max-width:490px}
+.fx-crown-lab-options button{text-align:left;display:grid;gap:7px;background:transparent;border:1px solid #cbb17e25;border-radius:12px;padding:15px 19px;color:#b4b1bd;cursor:pointer;transition:background .25s,border-color .25s}
+.fx-crown-lab-options button[aria-pressed="true"]{border-color:#cbb17e8a;background:#d8b98211}
+.fx-crown-lab-options strong{font-size:15px;color:#f4eee6}
+.fx-crown-lab-options small{font-size:12px;line-height:1.5}
+.fx-crown-lab-stage{position:relative;isolation:isolate;min-height:min(720px,71svh);display:grid;place-items:center;perspective:1100px;touch-action:pan-y}
+.fx-crown-lab-halo{position:absolute;width:82%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#113e8e71 5%,#15375d24 45%,transparent 70%);filter:blur(20px)}
+.fx-crown-lab-grid{position:absolute;inset:8%;border:1px solid #c9b58128;border-radius:50%;box-shadow:0 0 0 42px #d7bd6905,0 0 0 85px #d7bd6904}
+.fx-crown-lab-object{position:relative;width:min(85%,570px);aspect-ratio:1;transform-style:preserve-3d;transform:rotateX(var(--fx-tilt-x,0deg)) rotateY(var(--fx-tilt-y,0deg));transition:transform .2s ease-out;animation:fx-lab-bob 6s ease-in-out infinite}
+.fx-crown-lab-emblem{position:absolute;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 32px 35px #000b);transform:translateZ(32px)}
+.fx-crown-lab-crown{position:absolute;width:48%;height:48%;object-fit:contain;top:0;right:0;transform:translate3d(4%,-9%,125px) rotateZ(-8deg);filter:drop-shadow(0 15px 22px #0040ae93);animation:fx-lab-crown 5s ease-in-out infinite}
+.fx-crown-lab-shadow{position:absolute;width:47%;height:9%;bottom:17%;border-radius:50%;background:#01010399;filter:blur(33px)}
+.fx-crown-lab-glint{position:absolute;inset:9%;pointer-events:none;border-radius:50%;opacity:.14;background:linear-gradient(115deg,transparent 36%,#fff 49%,transparent 52%);mix-blend-mode:screen;transform:translateZ(145px)}
+.fx-crown-lab-caption{position:absolute;bottom:1%;font-size:10px;letter-spacing:.23em;color:#baa982}
+.fx-crown-lab--crystal .fx-crown-lab-halo{background:radial-gradient(circle,#0b6bdd70,#9e39c51a 45%,transparent 70%)}
+.fx-crown-lab--crystal .fx-crown-lab-object{filter:drop-shadow(0 0 35px #218cff5c)}
+.fx-crown-lab--crystal .fx-crown-lab-glint{opacity:.48;animation:fx-lab-shine 4s linear infinite}
+.fx-crown-lab--virtual .fx-crown-lab-stage{background:linear-gradient(180deg,#19213a22 60%,#17253a55);border-radius:35px}
+.fx-crown-lab--virtual .fx-crown-lab-grid{border-radius:16px;inset:22%;transform:rotateX(68deg) translateY(42%);box-shadow:0 0 0 32px #cbb17e06,0 0 0 64px #cbb17e05}
+.fx-crown-lab--virtual .fx-crown-lab-object{transform:translateY(-6%) rotateX(var(--fx-tilt-x,0deg)) rotateY(var(--fx-tilt-y,0deg)) scale(.89)}
+@keyframes fx-lab-bob{0%,100%{translate:0 0}50%{translate:0 -13px}}
+@keyframes fx-lab-crown{0%,100%{translate:0 0}50%{translate:0 -14px}}
+@keyframes fx-lab-shine{from{transform:translateZ(145px) rotate(0)}to{transform:translateZ(145px) rotate(360deg)}}
+@media(max-width:850px){.fx-crown-lab-layout{grid-template-columns:1fr}.fx-crown-lab-stage{min-height:460px}.fx-crown-lab-copy h1{font-size:clamp(48px,10vw,75px)}.fx-crown-lab-header span{display:none}}
+@media(max-width:500px){.fx-crown-lab-stage{min-height:345px}.fx-crown-lab-options{margin-top:22px}.fx-crown-lab-grid{inset:14%}}
+@media(prefers-reduced-motion:reduce){.fx-crown-lab-object,.fx-crown-lab-crown,.fx-crown-lab-glint{animation:none!important;transition:none!important}}
