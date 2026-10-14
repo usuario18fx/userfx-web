@@ -56,3 +56,27 @@
 @media (prefers-reduced-motion: reduce) {
   .fx-crown-lab .fx-crown-lab-crown { transform: translate3d(4%,-9%,125px) rotateZ(-8deg); transition: none; }
 }
+
+/* Independent layers: FX stays static; rose and crown animate separately. */
+.fx-crown-lab .fx-crown-lab-rose {
+  position:absolute;
+  z-index:2;
+  width:65%;
+  height:65%;
+  left:0;
+  bottom:0;
+  object-fit:contain;
+  transform-origin:50% 65%;
+  filter:drop-shadow(0 10px 18px #0008);
+  animation:fx-crown-rose-float 6.8s ease-in-out infinite;
+  pointer-events:none;
+}
+.fx-crown-lab .fx-crown-lab-emblem { z-index:1; }
+.fx-crown-lab .fx-crown-lab-crown { z-index:3; }
+@keyframes fx-crown-rose-float {
+  0%,100% { translate:0 0; rotate:-2deg; }
+  50% { translate:0 -7px; rotate:2deg; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .fx-crown-lab .fx-crown-lab-rose { animation:none; }
+}
