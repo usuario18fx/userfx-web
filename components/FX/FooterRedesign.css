@@ -120,9 +120,9 @@
 .ufx-footer-emblem-ring {
   display: grid;
   place-items: center;
-  width: clamp(150px, 23vw, 315px);
+  width: clamp(255px, 28vw, 405px);
   aspect-ratio: 1;
-  padding: 12%;
+  padding: 0;
   border: 1px solid rgba(215,187,134,.19);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(198,172,121,.085), rgba(10,10,14,.12) 75%);
@@ -135,46 +135,67 @@
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0,0,0,.6));
 }
-/* USERFX_FOOTER_SEPARATE_CROWN_V3 — original FX rose mark + independent crown PNG. */
+/* USERFX_FOOTER_SEPARATE_CROWN_V4 — large mark + independent moving crown. */
 .ufx-footer-logo-stack {
   position: relative;
   isolation: isolate;
   display: block;
   width: 100%;
   aspect-ratio: 1;
+  overflow: visible;
 }
 .ufx-footer-logo-stack .ufx-footer-emblem {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transform: scale(1.2);
+  transform-origin: center;
 }
-.ufx-footer-crown {
+.ufx-footer-crown-anchor {
   position: absolute;
   z-index: 2;
-  top: 11%;
-  right: 3%;
-  width: 32%;
-  height: auto;
-  max-height: 45%;
-  object-fit: contain;
+  top: 5%;
+  right: 0%;
+  width: 38%;
+  height: 43%;
+  display: grid;
+  place-items: center;
   opacity: 0;
   pointer-events: none;
-  filter: drop-shadow(0 6px 10px rgba(0, 66, 178, .28));
   transform: translate3d(var(--crown-x, 0px), var(--crown-y, 0px), 0);
-  transition: transform .24s ease-out, opacity .2s ease-out;
+  transition: transform .28s ease-out, opacity .2s ease-out;
   will-change: transform;
 }
-.ufx-footer-crown.is-ready { opacity: 1; }
-@media (hover: none) and (prefers-reduced-motion: no-preference) {
-  .ufx-footer-crown.is-ready { animation: ufx-footer-crown-float 3.4s ease-in-out infinite; }
+.ufx-footer-crown-anchor.is-ready {
+  opacity: 1;
+}
+.ufx-footer-crown {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 80, 205, .42));
+  animation: ufx-footer-crown-float 3.4s ease-in-out infinite;
+  transform-origin: center 75%;
 }
 @keyframes ufx-footer-crown-float {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -5px, 0); }
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ufx-footer-crown { transform: none; transition: none; animation: none; will-change: auto; }
+  .ufx-footer-crown-anchor {
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+  .ufx-footer-crown {
+    animation: none;
+  }
 }
 .ufx-footer-visual-label { text-align: center; }
 .ufx-footer-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,191,143,.48), transparent); }
@@ -277,8 +298,8 @@
     text-align: center;
   }
   .ufx-footer-emblem-ring {
-    width: clamp(186px, 56vw, 235px);
-    padding: 6%;
+    width: clamp(225px, 65vw, 285px);
+    padding: 0;
     box-shadow: 0 0 0 8px rgba(209,180,120,.018), inset 0 0 34px rgba(0,0,0,.13);
   }
   .ufx-footer-visual-label {
