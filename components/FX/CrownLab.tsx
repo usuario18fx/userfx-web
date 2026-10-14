@@ -15,8 +15,8 @@ export default function CrownLab() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [available, setAvailable] = useState(true);
-  const [hasSeparateFx, setHasSeparateFx] = useState(true);
-  const [hasRose, setHasRose] = useState(true);
+  const [missingAssets, setMissingAssets] = useState<string[]>([]);
+  const markMissing = (name: string) => setMissingAssets((current) => current.includes(name) ? current : [...current, name]);
   const onMove = (event: PointerEvent<HTMLElement>) => {
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -52,29 +52,21 @@ export default function CrownLab() {
           onPointerMove={onMove}
           onPointerEnter={() => setDragging(true)}
           onPointerLeave={reset}
-          style={{ "--fx-tilt-x": tilt.x + "deg", "--fx-tilt-y": tilt.y + "deg" } as React.CSSProperties}
+          style={{ "--pointer-x": tilt.y / 26, "--pointer-y": -tilt.x / 18 } as React.CSSProperties}
         >
           <div className="fx-crown-lab-halo" />
           <div className="fx-crown-lab-grid" />
           <div className="fx-crown-lab-shadow" />
-          <div className="fx-crown-lab-object">
-            {hasSeparateFx && hasRose ? (
-              <>
-                <img className="fx-crown-lab-emblem" src="/fxIcon.png" alt="Blue FX logo" draggable={false} onError={() => setHasSeparateFx(false)} />
-                <img className="fx-crown-lab-rose" src="/iconRosa.png" alt="Red rose" draggable={false} onError={() => setHasRose(false)} />
-              </>
-            ) : (
-              <img className="fx-crown-lab-emblem" src="/iconFoot.png" alt="FX logo with rose" draggable={false} />
-            )}
-            {available && (
-              <img className="fx-crown-lab-crown" src="/iconCorona.png" alt="Floating FX crown" draggable={false}
-                onError={() => setAvailable(false)} />
-            )}
-            <div className="fx-crown-lab-glint" aria-hidden="true" />
+          <div className="fx-crown-layers">
+            <div className="fx-layer fx-layer-f"><img src="/iconF.png" alt="Blue metallic letter F" draggable={false} onError={() => markMissing("iconF.png")} /></div>
+            <div className="fx-layer fx-layer-x"><img src="/iconX.png" alt="Blue metallic letter X" draggable={false} onError={() => markMissing("iconX.png")} /></div>
+            <div className="fx-layer fx-layer-rose"><div className="fx-layer-rose-motion"><img src="/iconRosa.png" alt="Red rose" draggable={false} onError={() => markMissing("iconRosa.png")} /></div></div>
+            {available && <div className="fx-layer fx-layer-crown"><div className="fx-layer-crown-motion"><img src="/iconCorona.png" alt="Blue crown" draggable={false} onError={() => { setAvailable(false); markMissing("iconCorona.png"); }} /></div></div>}
           </div>
           <span className="fx-crown-lab-caption">{stage.toUpperCase()} / INTERACTIVE STUDY</span>
         </section>
       </div>
+      {missingAssets.length > 0 && <p role="alert" className="fx-crown-lab-warning">Missing assets in /public: {missingAssets.join(", ")}</p>}
       <footer className="fx-crown-lab-bottom"><span>PROTOTYPE · NO CHANGES TO LIVE WEBSITE</span><span>USER FX © 2026</span></footer>
     </main>
   );
