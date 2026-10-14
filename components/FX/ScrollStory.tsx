@@ -5,7 +5,6 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } fr
 import { COURSES, ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { Glyph } from "./Glyph";
-import { Spotlight } from "./Motion";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
 
@@ -153,48 +152,15 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
       <AnimatePresence initial={false}>
         {expanded && course && (
           <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { const panel = document.getElementById(panelId); if (panel && section.current?.classList.contains("is-expanded")) panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" }); }}>
-            <div className="fx-scroll-scene-panel-inner">
-              <motion.div className="fx-scroll-protocol-reveal" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: reduced ? 0 : 0.36, ease: [0.22, 1, 0.36, 1] }}>
-                <Spotlight className="glass fx-scroll-protocol-card">
-                  <div className="fx-scroll-protocol-card-heading">
-                    <span className="fx-scroll-protocol-step">
-                      {scene.index}
-                    </span>
-                    <span className="fx-scroll-protocol-rule" aria-hidden="true">
-                    </span>
-                    <span className="fx-scroll-protocol-level">
-                      {course.level}
-                    </span>
-                    <span className="fx-scroll-protocol-glyph" aria-hidden="true">
-                      <Glyph name={course.glyph} />
-                    </span>
-                  </div>
-                  <h3 className="fx-scroll-protocol-title">
-                    {course.name}
-                  </h3>
-                  <p className="fx-scroll-protocol-description">
-                    {course.blurb}
-                  </p>
-                  <dl className="fx-scroll-protocol-metrics">
-                    {course.metrics.map((metric) => (
-                      <div key={metric.label} className="glass-tile fx-scroll-protocol-metric">
-                        <dt>
-                          {metric.label}
-                        </dt>
-                        <dd>
-                          {metric.value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <a href={scene.href} className="fx-scroll-protocol-enter" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }}>
-                    <span>
-                      OPEN {course.name.toUpperCase()}
-                    </span>
-                    <Glyph name="caret" />
-                  </a>
-                </Spotlight>
-              </motion.div>
+            <div className="fx-scroll-scene-panel-inner fx-scroll-scene-tab">
+              <span className="fx-scroll-scene-tab-index">{scene.index} / {course.level}</span>
+              <div className="fx-scroll-scene-tab-copy">
+                <strong>{course.name}</strong>
+                <p>{course.blurb}</p>
+              </div>
+              <a href={scene.href} className="fx-scroll-scene-tab-link" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }}>
+                OPEN {course.name.toUpperCase()} <span aria-hidden="true">↗</span>
+              </a>
             </div>
           </motion.div>
         )}
