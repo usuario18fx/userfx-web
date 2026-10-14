@@ -36,3 +36,23 @@
 @media(max-width:850px){.fx-crown-lab-layout{grid-template-columns:1fr}.fx-crown-lab-stage{min-height:460px}.fx-crown-lab-copy h1{font-size:clamp(48px,10vw,75px)}.fx-crown-lab-header span{display:none}}
 @media(max-width:500px){.fx-crown-lab-stage{min-height:345px}.fx-crown-lab-options{margin-top:22px}.fx-crown-lab-grid{inset:14%}}
 @media(prefers-reduced-motion:reduce){.fx-crown-lab-object,.fx-crown-lab-crown,.fx-crown-lab-glint{animation:none!important;transition:none!important}}
+
+/* Static FX/Rose base: motion belongs exclusively to the independent crown. */
+.fx-crown-lab .fx-crown-lab-object,
+.fx-crown-lab--virtual .fx-crown-lab-object {
+  transform: none;
+  animation: none;
+  transition: none;
+}
+.fx-crown-lab .fx-crown-lab-emblem {
+  transform: none;
+  animation: none;
+  transition: none;
+}
+.fx-crown-lab .fx-crown-lab-crown {
+  transform: translate3d(4%,-9%,125px) rotateX(var(--fx-tilt-x,0deg)) rotateY(var(--fx-tilt-y,0deg)) rotateZ(-8deg);
+  transition: transform .18s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-crown-lab .fx-crown-lab-crown { transform: translate3d(4%,-9%,125px) rotateZ(-8deg); transition: none; }
+}
