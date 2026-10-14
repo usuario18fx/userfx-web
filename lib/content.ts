@@ -8,6 +8,7 @@ export const NAV = [
 ] as const;
 export const HERO = {
   headline: ["Your", "Private", "Vault", "Unlocked"],
+  badge: ["USER FX", "PRIVATE VAULT"],
   lede: "One identity. Your room. A shared stage. A private collection that opens with your code.",
   cta: "Enter the Vault",
       } as const;
