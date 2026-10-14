@@ -12,18 +12,13 @@ export default function SiteFooter() {
 const [email, setEmail] = useState("");
 const [status, setStatus] = useState<SubscribeState>("idle");
 const abortRef = useRef<AbortController | null>(null);
-<<<<<<< HEAD
 const crownRef = useRef<HTMLSpanElement | null>(null);
-=======
-const crownRef = useRef<HTMLImageElement | null>(null);
->>>>>>> 35ea3c9 (Update FX UI and icons)
 const [hasCrownAsset, setHasCrownAsset] = useState(false);
 const [hasCrownlessLogo, setHasCrownlessLogo] = useState(true);
 
 useEffect(() => () => abortRef.current?.abort(), []);
 
 useEffect(() => {
-<<<<<<< HEAD
     const crown = crownRef.current;
     if (!crown || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -55,21 +50,6 @@ useEffect(() => {
         document.removeEventListener("mouseleave", reset);
     };
 }, []);
-=======
-    if (!hasCrownAsset || !hasCrownlessLogo || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const updateCrown = (event: PointerEvent) => {
-        if (event.pointerType !== "mouse" || !crownRef.current) return;
-        const x = (event.clientX / window.innerWidth - 0.5) * 2;
-        const y = (event.clientY / window.innerHeight - 0.5) * 2;
-        crownRef.current.style.setProperty("--crown-x", `${-x * 14}px`);
-        crownRef.current.style.setProperty("--crown-y", `${-y * 11}px`);
-    };
-
-    window.addEventListener("pointermove", updateCrown, { passive: true });
-    return () => window.removeEventListener("pointermove", updateCrown);
-}, [hasCrownAsset, hasCrownlessLogo]);
->>>>>>> 35ea3c9 (Update FX UI and icons)
 
 async function subscribe(event: FormEvent<HTMLFormElement>) {
 event.preventDefault();
@@ -140,13 +120,9 @@ GET MY CODE ↗
 <div className="ufx-footer-logo-stack">
 <img src={hasCrownlessLogo ? "/iconLogo.png" : "/assets/userfx-logo-sin.png"} alt="FX with rose emblem" className="ufx-footer-emblem" draggable={false} onError={() => setHasCrownlessLogo(false)} />
 {hasCrownlessLogo && (
-<<<<<<< HEAD
 <span ref={crownRef} className={`ufx-footer-crown-anchor ${hasCrownAsset ? "is-ready" : ""}`} aria-hidden="true">
 <img src="/iconCorona.png" alt="" className="ufx-footer-crown" draggable={false} onLoad={() => setHasCrownAsset(true)} onError={() => setHasCrownAsset(false)} />
 </span>
-=======
-<img ref={crownRef} src="/iconCorona.png" alt="" aria-hidden="true" className={`ufx-footer-crown ${hasCrownAsset ? "is-ready" : ""}`} draggable={false} onLoad={() => setHasCrownAsset(true)} onError={() => setHasCrownAsset(false)} />
->>>>>>> 35ea3c9 (Update FX UI and icons)
 )}
 </div>
 </div>
