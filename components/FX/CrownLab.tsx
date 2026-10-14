@@ -15,6 +15,8 @@ export default function CrownLab() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [available, setAvailable] = useState(true);
+  const [hasSeparateFx, setHasSeparateFx] = useState(true);
+  const [hasRose, setHasRose] = useState(true);
   const onMove = (event: PointerEvent<HTMLElement>) => {
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -56,7 +58,8 @@ export default function CrownLab() {
           <div className="fx-crown-lab-grid" />
           <div className="fx-crown-lab-shadow" />
           <div className="fx-crown-lab-object">
-            <img className="fx-crown-lab-emblem" src="/iconFoot.png" alt="Blue FX logo with a red rose, without crown" draggable={false} />
+            <img className="fx-crown-lab-emblem" src={hasSeparateFx && hasRose ? "/fxIcon.png" : "/iconFoot.png"} alt="Blue FX logo" draggable={false} onError={() => setHasSeparateFx(false)} />
+            {hasSeparateFx && hasRose && <img className="fx-crown-lab-rose" src="/iconRosa.png" alt="Red rose" draggable={false} onError={() => setHasRose(false)} />}
             {available && (
               <img className="fx-crown-lab-crown" src="/iconCorona.png" alt="Floating FX crown" draggable={false}
                 onError={() => setAvailable(false)} />
