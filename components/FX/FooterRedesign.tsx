@@ -26,8 +26,8 @@ useEffect(() => {
         const x = (event.clientX / window.innerWidth - 0.5) * 2;
         const y = (event.clientY / window.innerHeight - 0.5) * 2;
 
-        crownRef.current.style.setProperty("--crown-x", `${-x * 38}px`);
-        crownRef.current.style.setProperty("--crown-y", `${-y * 29}px`);
+        crownRef.current.style.setProperty("--crown-x", `${-x * 58}px`);
+        crownRef.current.style.setProperty("--crown-y", `${-y * 42}px`);
     };
 
     window.addEventListener("pointermove", updateCrown, { passive: true });
