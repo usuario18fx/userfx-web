@@ -117,21 +117,19 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
     offset: ["start end", "end start"],
   });
   const imageY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.18, 1.0, 1.15]);
-  const sceneRotate = useTransform(scrollYProgress, [0, 0.5, 1], [-2.4, 0, 2.4]);
-  const sceneDepth = useTransform(scrollYProgress, [0, 0.5, 1], [-65, 0, -65]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1.02, 1.1]);
 
   return (
     <section ref={section} className={"fx-scroll-scene fx-scroll-scene--" + scene.id + (expanded ? " is-expanded" : "")} aria-labelledby={"fx-scene-" + scene.id}>
       <button type="button" className="fx-scroll-scene-link" aria-expanded={expanded} aria-controls={panelId} aria-label={(expanded ? "Close " : "Read about ") + scene.title} onClick={onToggle}>
-        <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={reduced ? { objectPosition: scene.position } : { y: imageY, scale: imageScale, rotate: sceneRotate, z: sceneDepth, objectPosition: scene.position }} />
+        <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={reduced ? { objectPosition: scene.position } : { y: imageY, scale: imageScale, objectPosition: scene.position }} />
         <span className="fx-scroll-scene-shade" aria-hidden="true">
         </span>
         <span className="fx-scroll-scene-index" aria-hidden="true">
           {scene.index}
         </span>
         <SceneIcon id={scene.id} />
-        <motion.span className="fx-scroll-scene-content" initial={reduced ? false : { opacity: 0, y: 48, rotateX: 7, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}>
+        <motion.span className="fx-scroll-scene-content" initial={reduced ? false : { opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
           <span className="fx-scroll-scene-kicker">
             {scene.index} / {scene.kicker}
           </span>
