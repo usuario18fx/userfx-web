@@ -80,3 +80,23 @@
 @media(prefers-reduced-motion:reduce) {
   .fx-crown-lab .fx-crown-lab-rose { animation:none; }
 }
+
+
+/* Four-layer signature. Scoped to Crown Lab only. */
+.fx-crown-lab .fx-crown-layers{position:relative;width:min(85%,620px);aspect-ratio:1;transform-style:preserve-3d}
+.fx-crown-lab .fx-layer{position:absolute;pointer-events:none;transform-style:preserve-3d}
+.fx-crown-lab .fx-layer img{display:block;width:100%;height:100%;object-fit:contain;user-select:none}
+.fx-crown-lab .fx-layer-f{z-index:5;width:61%;height:74%;left:5%;top:13%;transform:translateZ(20px)}
+.fx-crown-lab .fx-layer-f img{filter:drop-shadow(0 22px 24px #0007)}
+.fx-crown-lab .fx-layer-x{z-index:3;width:67%;height:73%;right:0;top:19%;transform:translate3d(calc(var(--pointer-x,0)*5px),calc(var(--pointer-y,0)*3px),0);transition:transform .25s ease-out}
+.fx-crown-lab .fx-layer-rose{z-index:4;width:64%;height:54%;left:-2%;bottom:1%;transform:translate3d(calc(var(--pointer-x,0)*-3px),calc(var(--pointer-y,0)*-3px),0);transition:transform .3s ease-out}
+.fx-crown-lab .fx-layer-rose-motion{width:100%;height:100%;animation:fx-four-rose 7s ease-in-out infinite}
+.fx-crown-lab .fx-layer-rose img{filter:drop-shadow(0 12px 18px #0008)}
+.fx-crown-lab .fx-layer-crown{z-index:6;width:43%;height:42%;right:0;top:0;transform:translate3d(calc(var(--pointer-x,0)*20px),calc(var(--pointer-y,0)*14px),90px) rotateX(calc(var(--pointer-y,0)*-10deg)) rotateY(calc(var(--pointer-x,0)*15deg)) rotateZ(-8deg);transition:transform .22s ease-out;transform-origin:center 70%}
+.fx-crown-lab .fx-layer-crown-motion{width:100%;height:100%;animation:fx-four-crown 5.4s ease-in-out infinite}
+.fx-crown-lab .fx-layer-crown img{filter:drop-shadow(0 15px 22px #0040ae93)}
+.fx-crown-lab--crystal .fx-layer-crown img{filter:drop-shadow(0 0 25px #218cff80) drop-shadow(0 15px 22px #0040ae93)}
+.fx-crown-lab-warning{padding:12px 5vw;color:#ffb9b9;font-size:13px}
+@keyframes fx-four-rose{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}
+@keyframes fx-four-crown{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+@media(prefers-reduced-motion:reduce){.fx-crown-lab .fx-layer-rose-motion,.fx-crown-lab .fx-layer-crown-motion{animation:none!important}.fx-crown-lab .fx-layer-x,.fx-crown-lab .fx-layer-rose{transform:none;transition:none}.fx-crown-lab .fx-layer-crown{transform:translateZ(90px) rotateZ(-8deg);transition:none}}
