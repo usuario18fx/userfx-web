@@ -19,20 +19,37 @@ const [hasCrownlessLogo, setHasCrownlessLogo] = useState(true);
 useEffect(() => () => abortRef.current?.abort(), []);
 
 useEffect(() => {
-    if (!hasCrownAsset || !hasCrownlessLogo || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const crown = crownRef.current;
+    if (!crown || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const updateCrown = (event: PointerEvent) => {
-        if (event.pointerType !== "mouse" || !crownRef.current) return;
-        const x = (event.clientX / window.innerWidth - 0.5) * 2;
-        const y = (event.clientY / window.innerHeight - 0.5) * 2;
-
-        crownRef.current.style.setProperty("--crown-x", `${-x * 58}px`);
-        crownRef.current.style.setProperty("--crown-y", `${-y * 42}px`);
+    const moveOpposite = (clientX: number, clientY: number) => {
+        const x = (clientX / window.innerWidth - 0.5) * 2;
+        const y = (clientY / window.innerHeight - 0.5) * 2;
+        crown.style.setProperty("--crown-x", `${-x * 72}px`);
+        crown.style.setProperty("--crown-y", `${-y * 52}px`);
     };
 
-    window.addEventListener("pointermove", updateCrown, { passive: true });
-    return () => window.removeEventListener("pointermove", updateCrown);
-}, [hasCrownAsset, hasCrownlessLogo]);
+    const onMouseMove = (event: MouseEvent) => {
+        moveOpposite(event.clientX, event.clientY);
+    };
+    const onPointerMove = (event: PointerEvent) => {
+        if (event.pointerType === "pen") moveOpposite(event.clientX, event.clientY);
+    };
+    const reset = () => {
+        crown.style.setProperty("--crown-x", "0px");
+        crown.style.setProperty("--crown-y", "0px");
+    };
+
+    // Register even while images load; the crown floats independently via CSS.
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("mouseleave", reset);
+    return () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("pointermove", onPointerMove);
+        document.removeEventListener("mouseleave", reset);
+    };
+}, []);
 
 async function subscribe(event: FormEvent<HTMLFormElement>) {
 event.preventDefault();
