@@ -10,7 +10,6 @@ import {
   SectionTrainers,
 } from "./Sections";
 import SiteFooter from "./FooterRedesign";
-import MyRoomLandingSection from "./MyRoomLandingSection";
 import RoomIntro from "./RoomIntro";
 import "./LandingWidthFix.css";
 
@@ -29,7 +28,6 @@ export default function Landing() {
         <main>
           <RoomIntro />
           <ScrollStory />
-          <MyRoomLandingSection />
           <SectionMethod />
           <SectionTrainers />
           <SectionPricing />
