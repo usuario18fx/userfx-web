@@ -63,15 +63,40 @@ export default function MyRoom3D({lightsOn,mode="bedroom"}:Props){
     });
   }else{
     lamp.visible=false;tv.visible=false;
-    scene.background=new THREE.Color("#05091c");
-    box("Stage platform",6,.34,3,0,.24,-1.2,new THREE.MeshStandardMaterial({color:"#0d1831",metalness:.68,roughness:.21}));
-    box("Stage step",6.7,.13,3.65,0,.05,-1.05,mat("#22334d"));
-    box("Stage front LED",6,.045,.08,0,.39,.33,new THREE.MeshStandardMaterial({color:"#4dc1ff",emissive:"#4dc1ff",emissiveIntensity:3}));
-    box("LED backdrop",7,3,.12,0,2.4,-4.18,new THREE.MeshStandardMaterial({color:"#1547a5",emissive:"#1554aa",emissiveIntensity:1.5}));
-    [-2.5,0,2.5].forEach((x,i)=>{const beam=new THREE.PointLight(i===1?"#65c9ff":"#bb79ff",30,10);beam.position.set(x,3.5,-2);scene.add(beam)});
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(2.5,.085,12,80),new THREE.MeshStandardMaterial({color:"#8bc8ff",emissive:"#2a80ed",emissiveIntensity:3}));
-    ring.name="Stage light ring";ring.position.set(0,4,-1.2);ring.rotation.x=Math.PI/2;scene.add(ring);objects.push(ring);
-    for(let i=0;i<6;i++){const x=(i-2.5)*.86;box("Camera position "+(i+1),.58,.05,.58,x,.48,-1.2,mat(i%2?"#2e588a":"#25395c"))}
+    scene.background=new THREE.Color("#040814");
+    const gloss=new THREE.MeshStandardMaterial({color:"#111c30",metalness:.72,roughness:.18});
+    const led=new THREE.MeshStandardMaterial({color:"#a7d9ff",emissive:"#4aafff",emissiveIntensity:3});
+    // Long central runway, approaching the spectator, like a fashion catwalk.
+    box("Runway",3.3,.23,8.2,0,.22,0,gloss);
+    box("Runway left LED",.06,.075,8.2,-1.64,.39,0,led);
+    box("Runway right LED",.06,.075,8.2,1.64,.39,0,led);
+    box("Runway front LED",3.35,.075,.055,0,.39,4.1,led);
+    box("Runway backdrop",7.5,4,.14,0,2.7,-4.31,mat("#0b1427"));
+    box("Backdrop light",3.2,3.5,.16,0,2.65,-4.18,new THREE.MeshStandardMaterial({color:"#173559",emissive:"#225f9b",emissiveIntensity:1.35}));
+    // Seating on both sides of the central aisle.
+    for(const side of [-1,1]){
+      for(let row=0;row<5;row++){
+        const z=-3.1+row*1.35;
+        for(let seat=0;seat<2;seat++){
+          const x=side*(2.35+seat*.96);
+          box("Runway seat",.74,.38,.7,x,.24,z,mat("#172335"));
+          box("Runway seat back",.74,.72,.16,x,.66,z-.29,mat("#1b2a40"));
+        }
+        const flood=new THREE.PointLight(row%2?"#4c8eff":"#76c9ff",5,4);
+        flood.position.set(side*2.1,.65,z);scene.add(flood);
+      }
+    }
+    // Lighting hoops overhead.
+    for(const z of [-3,0,3]){
+      const hoop=new THREE.Mesh(new THREE.TorusGeometry(1.95,.045,10,72),led.clone());
+      hoop.name="Overhead runway light";hoop.position.set(0,4.6,z);
+      hoop.rotation.x=Math.PI/2;scene.add(hoop);objects.push(hoop);
+    }
+    [-2.8,0,2.8].forEach((x,i)=>{
+      const spotlight=new THREE.SpotLight(i===1?"#b5e2ff":"#78b4ff",34,14,.46,.6);
+      spotlight.position.set(x,4.55,-3.5);spotlight.target.position.set(0,.3,i===1?0:2.3);
+      scene.add(spotlight,spotlight.target);
+    });
   }
   lights.current={ambient,key,tv,lamp};
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
