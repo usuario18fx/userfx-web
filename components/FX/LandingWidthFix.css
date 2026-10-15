@@ -1,0 +1,9 @@
+/* Only the landing preview: prevent transforms / 3D canvases from growing document width. */
+.fx-landing{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.fx-landing>main{width:100%;max-width:100%;min-width:0}
+.fx-landing .ufx-footer,.fx-landing .ufx-footer-frame,.fx-landing .ufx-footer-hero{max-width:100%;min-width:0}
+.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr) minmax(0,.8fr)}
+.fx-landing .ufx-footer-hero-copy,.fx-landing .ufx-footer-visual{min-width:0;max-width:100%}
+.fx-landing .ufx-footer-title{max-width:100%;font-size:clamp(40px,5.7vw,94px);overflow-wrap:normal}
+.fx-landing .ufx-footer-emblem-ring{max-width:min(100%,450px)}
+@media(max-width:900px){.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr)}.fx-landing .ufx-footer-title{font-size:clamp(38px,8vw,72px)}}
