@@ -25,18 +25,24 @@ export default function CinematicJourney(){
   <header className="fx-journey-header"><a href="/">USER FX</a><span>PRIVATE VAULT / CINEMATIC STUDY</span><a href="/crown-lab">CROWN LAB ↗</a></header>
   <nav className="fx-journey-nav" aria-label="Chapters">{chapters.map(c=><a href={"#"+c.id} key={c.id}>{c.num} <span>{c.title}</span></a>)}</nav>
   <div id="identity"><ScrollPortal /></div>
-  <section id="story" className="fx-journey-section fx-journey-story"><div className="fx-journey-intro"><span className="fx-journey-kicker">02 / MY STORY</span><h2>NOT JUST PHOTOS.<br/><em>MY STORY.</em></h2><p>Portraits, places, details and moments told through image-led chapters. Public preview photographs are used here; private albums remain protected.</p></div>
-   <div className="fx-journey-photo-grid">
-    <figure className="fx-journey-photo fx-journey-photo-tall"><img src="/assets/album/PRVW/PRVW-01.jpg" alt="User FX portrait preview" loading="lazy"/><figcaption>01 / IDENTITY</figcaption></figure>
-    <figure className="fx-journey-photo"><img src="/assets/album/PRVW/PRVW-02.jpg" alt="User FX photo memory" loading="lazy"/><figcaption>02 / MOMENTS</figcaption></figure>
-    <figure className="fx-journey-photo"><img src="/assets/album/PRVW/PRVW-03.jpg" alt="User FX portrait chapter" loading="lazy"/><figcaption>03 / EXPERIENCES</figcaption></figure>
-   </div>
+  <section id="story" className="fx-full-gallery" aria-label="Cinematic photography chapter">
+    <div className="fx-gallery-title"><span>02 / PRIVATE PHOTOGRAPHY</span><h2>BEHIND<br/><em>THE FRAME.</em></h2><p>PUBLIC PREVIEW / EXCLUSIVE COLLECTIONS REQUIRE ACCESS</p></div>
+    <div className="fx-gallery-strip">
+      {["01","02","03"].map((n,i)=><figure key={n}><img loading="lazy" src={`/assets/album/PRVW/PRVW-${n}.jpg`} alt={`USER FX public photography preview ${n}`}/><figcaption>{String(i+1).padStart(2,"0")} / USER FX</figcaption></figure>)}
+    </div>
+    <a className="fx-gallery-enter" href="/#/private-room/gallery">UNLOCK THE COLLECTION ↗</a>
   </section>
-  <section id="room" className="fx-journey-section fx-journey-room"><div className="fx-journey-intro"><span className="fx-journey-kicker">03 / MYROOM 3D</span><h2>A SPACE<br/><em>OF MY OWN.</em></h2><p>Explore an interactive 3D bedroom. Drag to rotate, scroll to zoom, click an object, and switch the ambient lighting.</p><button type="button" className="fx-journey-action" onClick={()=>setRoomLight(v=>!v)} aria-pressed={roomLight}>{roomLight?"DIM THE LIGHTS":"TURN ON LIGHTS"} ↗</button></div>
-   <MyRoom3D lightsOn={roomLight}/>
-   <a className="fx-journey-link" href="/#/private-room">OPEN EXISTING MYROOM ↗</a>
+  <section id="room" className="fx-full-room">
+    <div className="fx-full-room-copy"><span>03 / BEYOND THE DOOR</span><h2>ENTER<br/><em>MY ROOM.</em></h2><p>Move the camera. Explore the objects. Change the lights.</p><button type="button" onClick={()=>setRoomLight(v=>!v)}>{roomLight?"DIM LIGHTS":"TURN ON LIGHTS"} ↗</button></div>
+    <MyRoom3D lightsOn={roomLight}/>
+    <a href="/#/private-room" className="fx-full-room-enter">ENTER PRIVATE ROOM ↗</a>
   </section>
-  <section id="stage" className="fx-journey-section fx-journey-stage"><div className="fx-journey-intro"><span className="fx-journey-kicker">04 / STAGE + GALLERY</span><h2>THE SPOTLIGHT.<br/><em>THE COLLECTION.</em></h2><p>The live stage and private gallery remain connected to the existing access system. These previews do not expose protected media.</p></div><div className="fx-journey-end-grid"><a href="/#/private-room/stage" className="fx-journey-end-card"><img src="/assets/videocall.jpg" alt="Video call preview" loading="lazy"/><strong>STAGE <span>↗</span></strong><small>SHARED SPACE / LIVE SESSIONS</small></a><a href="/#/private-room/gallery" className="fx-journey-end-card"><img src="/assets/album/PRVW/PRVW-01.jpg" alt="Gallery public preview" loading="lazy"/><strong>GALLERY <span>↗</span></strong><small>PRIVATE COLLECTION / VERIFIED ACCESS</small></a></div></section>
+  <section id="stage" className="fx-full-stage">
+    <div className="fx-full-stage-light" aria-hidden="true"/>
+    <div className="fx-full-stage-ring" aria-hidden="true"/>
+    <div className="fx-full-stage-content"><span>04 / THE LIVE EXPERIENCE</span><h2>TAKE<br/>THE <em>STAGE.</em></h2><p>PRIVATE CALLS / LIVE MOMENTS / AN EXCLUSIVE COLLECTION</p><div className="fx-full-stage-actions"><a href="/#/private-room/stage">ENTER THE STAGE ↗</a><a href="/#/private-room/gallery">VIEW THE GALLERY ↗</a></div></div>
+    <span className="fx-full-stage-bottom">USER FX / SHARED EXPERIENCE</span>
+  </section>
   {missing.length>0&&<aside className="fx-journey-assets" role="alert">Missing from public/: {missing.join(", ")}</aside>}
   <footer className="fx-journey-footer"><a href="/">RETURN TO USER18FX.COM ↗</a><span>EXPERIMENTAL PREVIEW · 2026</span></footer>
  </main>;
