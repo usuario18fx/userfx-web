@@ -29,7 +29,7 @@ export default function Landing() {
       {entered && <MenuOverlay />}
       <div className="fx-landing">
         <main>
-          {!entered ? <CrownEntrance onEnter={() => {setEntered(true);window.scrollTo({top:0,behavior:"instant"});}} /> : <><RoomIntro />
+          {!entered ? <CrownEntrance onEnter={() => {setEntered(true);window.scrollTo({top:0,behavior:"auto"});}} /> : <><RoomIntro />
           <ScrollStory />
           <SectionMethod />
           <SectionTrainers />
