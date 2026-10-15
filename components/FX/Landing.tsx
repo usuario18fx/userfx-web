@@ -10,6 +10,7 @@ import {
   SectionTrainers,
 } from "./Sections";
 import SiteFooter from "./FooterRedesign";
+import MyRoomLandingSection from "./MyRoomLandingSection";
 
 const SECTION_IDS = ["home", "spaces", "protocol", "access"] as const;
 
@@ -25,6 +26,7 @@ export default function Landing() {
       <div className="fx-landing">
         <main>
           <ScrollStory />
+          <MyRoomLandingSection />
           <SectionMethod />
           <SectionTrainers />
           <SectionPricing />
