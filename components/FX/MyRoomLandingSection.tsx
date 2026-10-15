@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import "./MyRoomLandingSection.css";
+import type { RoomScene } from "./MyRoom3D";
 
 const MyRoom3D = dynamic(() => import("./MyRoom3D"), {
   ssr: false,
@@ -11,6 +12,7 @@ const MyRoom3D = dynamic(() => import("./MyRoom3D"), {
 
 export default function MyRoomLandingSection() {
   const [lightsOn, setLightsOn] = useState(true);
+  const [roomScene, setRoomScene] = useState<RoomScene>("bedroom");
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
@@ -30,8 +32,11 @@ export default function MyRoomLandingSection() {
             {lightsOn ? "DIM LIGHTS" : "TURN ON LIGHTS"} <span aria-hidden="true">↗</span>
           </button>
         </motion.div>
-        <motion.div className="ufx-myroom-landing-view" style={reduced ? undefined : { y: roomY, scale: roomScale, opacity: roomOpacity }}><MyRoom3D lightsOn={lightsOn} /></motion.div>
+        <motion.div className="ufx-myroom-landing-view" style={reduced ? undefined : { y: roomY, scale: roomScale, opacity: roomOpacity }}><MyRoom3D key={roomScene} mode={roomScene} lightsOn={lightsOn} /></motion.div>
       </div>
+      <nav className="ufx-room-scene-picker" aria-label="Choose a virtual room">
+        {([{id:"bedroom",name:"MY ROOM",subtitle:"PRIVATE SPACE",symbol:"01"},{id:"gallery",name:"GALLERY",subtitle:"PHOTO COLLECTION",symbol:"02"},{id:"stage",name:"STAGE",subtitle:"LIVE EXPERIENCE",symbol:"03"}] as const).map((item)=><button type="button" key={item.id} aria-pressed={roomScene===item.id} onClick={()=>setRoomScene(item.id)}><span>{item.symbol}</span><strong>{item.name}</strong><small>{item.subtitle}</small><span aria-hidden="true">↗</span></button>)}
+      </nav>
       <a className="ufx-myroom-landing-enter" href="/#/private-room">ENTER PRIVATE ROOM ↗</a>
     </section>
   );
