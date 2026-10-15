@@ -13,3 +13,5 @@
 .fx-journey-stage .fx-journey-end-card small{margin-left:clamp(18px,2.2vw,34px);margin-bottom:clamp(20px,2.5vw,36px);font-size:10px;letter-spacing:.15em}
 .fx-journey-stage .fx-journey-end-card:hover img{transform:scale(1.045)}
 @media(max-width:550px){.fx-journey-stage{padding-bottom:40px}.fx-journey-stage .fx-journey-end-card{height:390px}.fx-journey-stage .fx-journey-end-card strong{font-size:clamp(36px,9vw,52px)}}
+
+.fx-room3d-wrap{position:relative;width:100%;height:clamp(360px,52vw,680px);border:1px solid #405373;background:#0b1020;overflow:hidden}.fx-room3d-canvas{width:100%;height:100%;touch-action:none;cursor:grab}.fx-room3d-canvas:active{cursor:grabbing}.fx-room3d-canvas canvas{display:block}.fx-room3d-hint{position:absolute;bottom:16px;left:18px;color:#dbc595;font-size:11px;letter-spacing:.08em;background:#090d18bb;padding:10px 14px;pointer-events:none}.fx-room3d-loading{height:clamp(360px,52vw,680px);display:grid;place-items:center;background:#0b1020;color:#ccb17d;letter-spacing:.2em}
