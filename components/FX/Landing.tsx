@@ -11,6 +11,7 @@ import {
 } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import MyRoomLandingSection from "./MyRoomLandingSection";
+import RoomIntro from "./RoomIntro";
 import "./LandingWidthFix.css";
 
 const SECTION_IDS = ["home", "spaces", "protocol", "access"] as const;
@@ -26,6 +27,7 @@ export default function Landing() {
       <MenuOverlay />
       <div className="fx-landing">
         <main>
+          <RoomIntro />
           <ScrollStory />
           <MyRoomLandingSection />
           <SectionMethod />
