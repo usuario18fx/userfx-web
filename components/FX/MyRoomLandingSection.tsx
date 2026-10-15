@@ -38,7 +38,7 @@ export default function MyRoomLandingSection() {
         {([
           {id:"bedroom",name:"MY ROOM",subtitle:"PRIVATE SPACE",symbol:"01",image:""},
           {id:"gallery",name:"GALLERY",subtitle:"PHOTO COLLECTION",symbol:"02",image:"/assets/album/PRVW/PRVW-01.jpg"},
-          {id:"stage",name:"STAGE",subtitle:"LIVE EXPERIENCE",symbol:"03",image:"/assets/videocall.jpg"}
+          {id:"stage",name:"RUNWAY STAGE",subtitle:"IMMERSIVE PASSERELLA",symbol:"03",image:"/assets/videocall.jpg"}
         ] as const).map(item => (
           <button className={"ufx-room-card ufx-room-card--"+item.id} type="button" key={item.id} aria-pressed={roomScene===item.id} onClick={()=>setRoomScene(item.id)}>
             <span className="ufx-room-card-image" aria-hidden="true">
