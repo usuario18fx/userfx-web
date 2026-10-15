@@ -11,6 +11,7 @@ import {
 } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import MyRoomLandingSection from "./MyRoomLandingSection";
+import "./LandingWidthFix.css";
 
 const SECTION_IDS = ["home", "spaces", "protocol", "access"] as const;
 
