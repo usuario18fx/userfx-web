@@ -118,7 +118,7 @@ GET MY CODE ↗
 <div className="ufx-footer-visual" aria-label="FX signature emblem">
 <div className="ufx-footer-emblem-ring">
 <div className="ufx-footer-logo-stack">
-<img src={hasCrownlessLogo ? "/iconLogo.png" : "/assets/userfx-logo-sin.png"} alt="FX with rose emblem" className="ufx-footer-emblem" draggable={false} onError={() => setHasCrownlessLogo(false)} />
+<img src={hasCrownlessLogo ? "/iconFoot.png" : "/iconFoot.png"} alt="FX with rose emblem" className="ufx-footer-emblem" draggable={false} onError={() => setHasCrownlessLogo(false)} />
 {hasCrownlessLogo && (
 <span ref={crownRef} className={`ufx-footer-crown-anchor ${hasCrownAsset ? "is-ready" : ""}`} aria-hidden="true">
 <img src="/iconCorona.png" alt="" className="ufx-footer-crown" draggable={false} onLoad={() => setHasCrownAsset(true)} onError={() => setHasCrownAsset(false)} />

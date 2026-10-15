@@ -123,17 +123,17 @@
   width: clamp(290px, 32vw, 450px);
   aspect-ratio: 1;
   padding: 0;
-  border: 1px solid rgba(215,187,134,.19);
+  border: 1px solid #00155aae;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(198,172,121,.085), rgba(10,10,14,.12) 75%);
-  box-shadow: 0 0 0 16px rgba(209,180,120,.016), inset 0 0 52px rgba(0,0,0,.18);
+  background: radial-gradient(circle, #043a8179, #09097a1f 75%);
+  box-shadow: 0 0 0 16px #d1b47804, inset 0 0 52px #2138922e;
 }
 .ufx-footer-emblem {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,.6));
+  filter: drop-shadow(0 10px 20px #0036709a);
 }
 /* USERFX_FOOTER_SEPARATE_CROWN_V4 — large mark + independent moving crown. */
 .ufx-footer-logo-stack {
@@ -146,19 +146,19 @@
 }
 .ufx-footer-logo-stack .ufx-footer-emblem {
   display: block;
-  width: 100%;
+  width: 90%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.78);
+  transform: scale(0.86);
   transform-origin: center;
 }
 .ufx-footer-crown-anchor {
   position: absolute;
   z-index: 2;
-  top: -7%;
-  right: -5%;
-  width: 55%;
-  height: 52%;
+  top: 4%;
+  right: 8%;
+  width: 35%;
+  height: 32%;
   display: grid;
   place-items: center;
   opacity: 0;
