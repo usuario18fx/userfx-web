@@ -1,5 +1,7 @@
 "use client";
 import { useState, type CSSProperties, type PointerEvent } from "react";
+import dynamic from "next/dynamic";
+const MyRoom3D = dynamic(() => import("./MyRoom3D"), { ssr: false, loading: () => <div className="fx-room3d-loading">LOADING 3D ROOM…</div> });
 import "./CinematicJourney.css";
 
 const chapters = [
@@ -38,8 +40,8 @@ export default function CinematicJourney(){
     <figure className="fx-journey-photo"><img src="/assets/album/PRVW/PRVW-03.jpg" alt="User FX portrait chapter" loading="lazy"/><figcaption>03 / EXPERIENCES</figcaption></figure>
    </div>
   </section>
-  <section id="room" className="fx-journey-section fx-journey-room"><div className="fx-journey-intro"><span className="fx-journey-kicker">03 / MYROOM 3D</span><h2>A SPACE<br/><em>OF MY OWN.</em></h2><p>Interactive room concept: switch the ambient lighting, then enter the existing MyRoom experience. Full 3D exploration is a subsequent development phase.</p><button type="button" className="fx-journey-action" onClick={()=>setRoomLight(v=>!v)} aria-pressed={roomLight}>{roomLight?"DIM THE LIGHTS":"TURN ON LIGHTS"} ↗</button></div>
-   <div className={"fx-journey-room-scene "+(roomLight?"is-lit":"is-dark")} role="img" aria-label="Concept illustration of a dark blue private room with furniture and ambient light"><div className="room-ceiling"/><div className="room-window"/><div className="room-lamp"/><div className="room-bed"/><div className="room-rug"/><span>MYROOM / INTERACTIVE CONCEPT</span></div>
+  <section id="room" className="fx-journey-section fx-journey-room"><div className="fx-journey-intro"><span className="fx-journey-kicker">03 / MYROOM 3D</span><h2>A SPACE<br/><em>OF MY OWN.</em></h2><p>Explore an interactive 3D bedroom. Drag to rotate, scroll to zoom, click an object, and switch the ambient lighting.</p><button type="button" className="fx-journey-action" onClick={()=>setRoomLight(v=>!v)} aria-pressed={roomLight}>{roomLight?"DIM THE LIGHTS":"TURN ON LIGHTS"} ↗</button></div>
+   <MyRoom3D lightsOn={roomLight}/>
    <a className="fx-journey-link" href="/#/private-room">OPEN EXISTING MYROOM ↗</a>
   </section>
   <section id="stage" className="fx-journey-section fx-journey-stage"><div className="fx-journey-intro"><span className="fx-journey-kicker">04 / STAGE + GALLERY</span><h2>THE SPOTLIGHT.<br/><em>THE COLLECTION.</em></h2><p>The live stage and private gallery remain connected to the existing access system. These previews do not expose protected media.</p></div><div className="fx-journey-end-grid"><a href="/#/private-room/stage" className="fx-journey-end-card"><img src="/assets/videocall.jpg" alt="Video call preview" loading="lazy"/><strong>STAGE <span>↗</span></strong><small>SHARED SPACE / LIVE SESSIONS</small></a><a href="/#/private-room/gallery" className="fx-journey-end-card"><img src="/assets/album/PRVW/PRVW-01.jpg" alt="Gallery public preview" loading="lazy"/><strong>GALLERY <span>↗</span></strong><small>PRIVATE COLLECTION / VERIFIED ACCESS</small></a></div></section>
