@@ -1,0 +1,22 @@
+.fx-crown-entry{position:relative;isolation:isolate;height:100svh;min-height:580px;overflow:hidden;background:radial-gradient(ellipse at 50% 43%,#0c1e35 0,#060c19 34%,#020306 82%);color:#f5f3ed}
+.fx-crown-entry-aura{position:absolute;inset:0;background:radial-gradient(ellipse 34% 37% at 50% 45%,#2069ad52,transparent);pointer-events:none}
+.fx-crown-entry-door{position:absolute;left:50%;top:17%;height:65%;width:clamp(230px,29vw,475px);border:1px solid #abdaffda;box-shadow:0 0 20px #4c9cfb75,inset 0 0 35px #0a72fd18;transform:translateX(-50%) perspective(950px) rotateY(-1deg);pointer-events:none}
+.fx-crown-entry-floor{position:absolute;top:78%;left:-30%;width:160%;height:70%;transform:perspective(340px) rotateX(69deg);transform-origin:top;background:repeating-linear-gradient(0deg,transparent 0 75px,#8bc3fb0a 76px),linear-gradient(#0b1d32,#020307 70%);box-shadow:0 -4px 40px #5294f94a;pointer-events:none}
+.fx-crown-entry-center{position:absolute;inset:19% 0 20%;display:grid;place-items:center}
+.fx-crown-entry-trigger{z-index:2;position:relative;background:none;border:0;cursor:pointer;width:min(42vw,480px);min-width:240px;filter:drop-shadow(0 12px 24px #0066fc65);animation:fx-crown-float 5s ease-in-out infinite;transition:transform .8s,filter .5s}
+.fx-crown-entry-trigger img{width:100%;display:block;height:auto}
+.fx-crown-entry-trigger:hover,.fx-crown-entry-trigger:focus-visible{filter:drop-shadow(0 0 35px #31b2ffff);outline-offset:8px}
+.fx-crown-entry-gem{position:absolute;left:45%;top:15%;width:12%;height:28%;background:radial-gradient(ellipse,#c0f8ffbd,#168bff4a 48%,transparent 75%);filter:blur(6px);pointer-events:none;animation:fx-gem-glow 3s ease-in-out infinite alternate}
+.fx-crown-entry-reflection{position:absolute;left:50%;top:78%;width:min(31vw,390px);opacity:.15;transform:translateX(-50%) scaleY(-.3);filter:blur(9px);pointer-events:none}
+.fx-crown-entry-reflection img{width:100%}
+.fx-crown-entry-copy{position:absolute;z-index:3;left:clamp(18px,5vw,100px);bottom:9%;max-width:400px;text-shadow:0 6px 20px #000}
+.fx-crown-entry-copy>span,.fx-crown-entry-copy p{color:#d4b87d;font:11px Arial,sans-serif;letter-spacing:.2em}
+.fx-crown-entry-copy h1{font:500 clamp(28px,3.3vw,57px)/.97 Arial,sans-serif;letter-spacing:-.05em;margin:14px 0}.fx-crown-entry-copy em{color:#d4b87d;font-weight:400}
+.fx-crown-entry-access{position:absolute;z-index:4;right:clamp(18px,5vw,100px);bottom:10%;background:#cbb17a;border:1px solid #e0c993;color:#070b14;padding:17px 23px;letter-spacing:.13em;cursor:pointer}
+.fx-crown-entry-flash{position:absolute;inset:0;z-index:8;background:radial-gradient(circle at 50% 42%,#e0f9ff,#258fff 30%,#03050c 73%);opacity:0;pointer-events:none;transition:opacity .8s}
+.fx-crown-entry.is-entering .fx-crown-entry-trigger{animation:none;transform:scale(14);filter:brightness(3) blur(2px)}
+.fx-crown-entry.is-entering .fx-crown-entry-flash{opacity:1}
+@keyframes fx-crown-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-11px) rotate(2deg)}}
+@keyframes fx-gem-glow{from{opacity:.35}to{opacity:1}}
+@media(max-width:700px){.fx-crown-entry-copy{bottom:16%;}.fx-crown-entry-access{bottom:6%;left:18px;right:auto}.fx-crown-entry-center{top:10%;bottom:29%}.fx-crown-entry-door{top:12%;height:59%}}
+@media(prefers-reduced-motion:reduce){.fx-crown-entry-trigger,.fx-crown-entry-gem{animation:none}.fx-crown-entry.is-entering .fx-crown-entry-trigger{transform:none}.fx-crown-entry-flash{transition:none}}
