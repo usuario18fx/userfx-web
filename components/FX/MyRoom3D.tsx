@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 export type RoomScene = "bedroom" | "gallery" | "stage";
-type Props={lightsOn:boolean; mode?:RoomScene; journeyProgress?:number};
-export default function MyRoom3D({lightsOn,mode="bedroom",journeyProgress=0}:Props){
+type Props={lightsOn:boolean; mode?:RoomScene; journeyProgress?:number; intro?:boolean};
+export default function MyRoom3D({lightsOn,mode="bedroom",journeyProgress=0,intro=false}:Props){
  const journey=useRef(0);
  useEffect(()=>{journey.current=journeyProgress},[journeyProgress]);
  const mount=useRef<HTMLDivElement>(null);
@@ -105,16 +105,16 @@ export default function MyRoom3D({lightsOn,mode="bedroom",journeyProgress=0}:Pro
   let dragging=false,lastX=0,lastY=0,yaw=mode==="gallery"?0:mode==="stage"?.04:.48,pitch=mode==="gallery"?.13:mode==="stage"?.12:.26,radius=mode==="gallery"?9:8.9,raf=0;
   function orient(){camera.position.set(Math.sin(yaw)*Math.cos(pitch)*radius,1.4+Math.sin(pitch)*radius,Math.cos(yaw)*Math.cos(pitch)*radius);camera.lookAt(0,1.35,0)}
   orient();
-  const down=(e:PointerEvent)=>{dragging=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
+  const down=(e:PointerEvent)=>{if(intro)return;dragging=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
   const move=(e:PointerEvent)=>{if(!dragging)return; yaw-=(e.clientX-lastX)*.006;pitch=Math.max(-.16,Math.min(.8,pitch+(e.clientY-lastY)*.005));lastX=e.clientX;lastY=e.clientY;orient()};
   const up=(e:PointerEvent)=>{dragging=false;if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId)};
-  const wheel=(e:WheelEvent)=>{e.preventDefault();radius=Math.max(4.2,Math.min(12,radius+e.deltaY*.009));orient()};
+  const wheel=(e:WheelEvent)=>{if(intro)return;e.preventDefault();radius=Math.max(4.2,Math.min(12,radius+e.deltaY*.009));orient()};
   const click=(e:MouseEvent)=>{const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(objects)[0];if(hit)setSelected("Selected: "+hit.object.name)};
   renderer.domElement.addEventListener("pointerdown",down);renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerup",up);renderer.domElement.addEventListener("wheel",wheel,{passive:false});renderer.domElement.addEventListener("click",click);
   const observer=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)});observer.observe(host);
-  function animate(){raf=requestAnimationFrame(animate);if(!dragging){const t=journey.current;const targetRadius=(mode==="gallery"?9:8.9)-t*2.4;radius+=(targetRadius-radius)*.028;yaw+=( (mode==="gallery"?0:mode==="stage"?.04:.48)+t*.25-yaw)*.017;orient()}renderer.render(scene,camera)}animate();
+  function animate(){raf=requestAnimationFrame(animate);if(intro){const t=Math.max(0,Math.min(1,journey.current));const marks=[new THREE.Vector3(-4,1.85,-1.1),new THREE.Vector3(0,2,-4.1),new THREE.Vector3(4,1.8,-1.2),new THREE.Vector3(2.2,1.65,-2.1)];const phase=Math.min(2,Math.floor(t*3));const blend=Math.min(1,t*3-phase);const eased=blend*blend*(3-2*blend);const target=marks[phase].clone().lerp(marks[phase+1],eased);const pos=new THREE.Vector3(0,1.85,1.8).lerp(new THREE.Vector3(1.8,1.73,-.3),Math.pow(t,1.2));camera.position.lerp(pos,.09);const current=new THREE.Vector3();camera.getWorldDirection(current);current.multiplyScalar(4).add(camera.position);current.lerp(target,.085);camera.lookAt(current);}else if(!dragging){const t=journey.current;const targetRadius=(mode==="gallery"?9:8.9)-t*2.4;radius+=(targetRadius-radius)*.028;yaw+=( (mode==="gallery"?0:mode==="stage"?.04:.48)+t*.25-yaw)*.017;orient()}renderer.render(scene,camera)}animate();
   return()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerup",up);renderer.domElement.removeEventListener("wheel",wheel);renderer.domElement.removeEventListener("click",click);scene.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>{if(m instanceof THREE.MeshBasicMaterial&&m.map)m.map.dispose();m.dispose()})}});renderer.dispose();host.removeChild(renderer.domElement);lights.current=null};
- },[mode]);
+ },[mode,intro]);
  useEffect(()=>{if(!lights.current)return;const {ambient,key,tv,lamp}=lights.current;ambient.intensity=lightsOn?1.6:.18;key.intensity=lightsOn?52:2.5;(tv.material as THREE.MeshStandardMaterial).emissiveIntensity=lightsOn?1.5:.5;(lamp.material as THREE.MeshStandardMaterial).emissiveIntensity=lightsOn?2:.12},[lightsOn]);
- return <div className="fx-room3d-wrap"><div ref={mount} className="fx-room3d-canvas" aria-label={"Interactive 3D "+mode+" rendered with Three.js"}/><div className="fx-room3d-hint" aria-live="polite">{selected}</div></div>;
+ return <div className="fx-room3d-wrap"><div ref={mount} className="fx-room3d-canvas" aria-label={intro?"Scroll controlled camera journey through MY ROOM":"Interactive 3D "+mode+" rendered with Three.js"}/><div className="fx-room3d-hint" aria-live="polite">{selected}</div></div>;
 }
