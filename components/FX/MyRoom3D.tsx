@@ -11,7 +11,7 @@ export default function MyRoom3D({lightsOn,mode="bedroom"}:Props){
   const host=mount.current;if(!host)return;
   const scene=new THREE.Scene();scene.background=new THREE.Color("#080c18");
   const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(5.4,3.7,7.5);camera.lookAt(0,1,0);
-  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;host.appendChild(renderer.domElement);
   const ambient=new THREE.AmbientLight("#a8c8ff",1.6);scene.add(ambient);
   const key=new THREE.PointLight("#64a8ff",52,16);key.position.set(-1.8,3.6,1.0);key.castShadow=true;scene.add(key);
   const moon=new THREE.DirectionalLight("#93baff",2.5);moon.position.set(3,5,-3);scene.add(moon);
@@ -20,10 +20,11 @@ export default function MyRoom3D({lightsOn,mode="bedroom"}:Props){
   const box=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:THREE.Material)=>{
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;mesh.name=name;scene.add(mesh);objects.push(mesh);return mesh;
   };
-  box("Floor",10,.17,9,0,-.1,0,mat("#151b2b"));
-  box("Back wall",10,5,.15,0,2.4,-4.4,mat("#11192c"));
-  box("Left wall",.15,5,9,-5,2.4,0,mat("#182239"));
+  box("Floor",10,.17,9,0,-.1,0,new THREE.MeshStandardMaterial({color:mode==="gallery"?"#19191e":"#202330",metalness:.34,roughness:.28}));
+  box("Back wall",10,5,.15,0,2.4,-4.4,mat(mode==="gallery"?"#15151c":"#11192c"));
+  box("Left wall",.15,5,9,-5,2.4,0,mat(mode==="gallery"?"#15151c":"#182239"));
   box("Ceiling",10,.15,9,0,5,-.0,mat("#0b101b"));
+  box("Ceiling trim",10,.08,.12,0,4.8,-4.27,mat("#997f52"));
   const decorative:THREE.Mesh[]=[];
   const lamp=box("Accent light",.4,.5,.4,-3.25,1.02,.05,new THREE.MeshStandardMaterial({color:"#bce3ff",emissive:"#3c80c8",emissiveIntensity:2}));
   const tv=box("Display",2.7,1.53,.12,2.95,1.6,.5,new THREE.MeshStandardMaterial({color:"#0c1b36",emissive:"#17448b",emissiveIntensity:1.5,metalness:.4}));
@@ -41,30 +42,40 @@ export default function MyRoom3D({lightsOn,mode="bedroom"}:Props){
     box("Night window",2.67,2.12,.11,2.25,2.85,-4.19,mat("#23496c"));
     box("Window mullion",.09,2.3,.16,2.25,2.85,-4.10,mat("#070b13"));
     box("Shelf",1.6,.14,.48,-3.95,2.6,-3.45,mat("#40506b"));
+    box("Wall panel",3.55,3.5,.08,-1.1,2.8,-4.27,mat("#1c2940"));
+    box("Desk",2.1,.13,.88,2.2,1.05,-1.9,mat("#574335"));
+    box("Desk leg",.12,1,.12,1.35,.5,-1.9,mat("#171c29"));
+    box("Desk leg",.12,1,.12,3.1,.5,-1.9,mat("#171c29"));
+    box("Desk monitor",1.28,.85,.1,2.2,1.65,-2.1,new THREE.MeshStandardMaterial({color:"#101e37",emissive:"#1550a5",emissiveIntensity:1.3}));
+    const carpet=box("Soft carpet",3.25,.04,1.45,-1.0,.03,2.3,mat("#26364d"));carpet.receiveShadow=true;
   }else if(mode==="gallery"){
     lamp.visible=false;tv.visible=false;
     scene.background=new THREE.Color("#101016");
     const loader=new THREE.TextureLoader();
     ["01","02","03"].forEach((n,i)=>{
       const x=(i-1)*2.9;
-      box("Photo frame "+n,2.25,3.1,.13,x,2.6,-4.18,mat("#e8e6e2"));
+      box("Photo frame "+n,2.35,3.26,.16,x,2.6,-4.18,mat("#bd9c6a"));
+      box("Photo mat "+n,2.19,3.1,.17,x,2.6,-4.07,mat("#f0ede7"));
       const photo=new THREE.Mesh(new THREE.PlaneGeometry(2.02,2.85),new THREE.MeshBasicMaterial({color:"#ffffff",side:THREE.DoubleSide}));
-      photo.name="Photo "+n;photo.position.set(x,2.6,-4.09);scene.add(photo);objects.push(photo);decorative.push(photo);
+      photo.name="Photo "+n;photo.position.set(x,2.6,-3.96);scene.add(photo);objects.push(photo);decorative.push(photo);
       loader.load("/assets/album/PRVW/PRVW-"+n+".jpg",texture=>{texture.colorSpace=THREE.SRGBColorSpace;(photo.material as THREE.MeshBasicMaterial).map=texture;(photo.material as THREE.MeshBasicMaterial).needsUpdate=true},undefined,()=>{});
       const spotlight=new THREE.SpotLight("#fff3dd",22,9,.5,.7);spotlight.position.set(x,4.5,-1.5);spotlight.target.position.set(x,2.4,-4);scene.add(spotlight,spotlight.target);
     });
   }else{
     lamp.visible=false;tv.visible=false;
     scene.background=new THREE.Color("#05091c");
-    box("Stage platform",6,.34,3,0,.24,-1.2,mat("#182a46"));
+    box("Stage platform",6,.34,3,0,.24,-1.2,new THREE.MeshStandardMaterial({color:"#0d1831",metalness:.68,roughness:.21}));
+    box("Stage step",6.7,.13,3.65,0,.05,-1.05,mat("#22334d"));
+    box("Stage front LED",6,.045,.08,0,.39,.33,new THREE.MeshStandardMaterial({color:"#4dc1ff",emissive:"#4dc1ff",emissiveIntensity:3}));
     box("LED backdrop",7,3,.12,0,2.4,-4.18,new THREE.MeshStandardMaterial({color:"#1547a5",emissive:"#1554aa",emissiveIntensity:1.5}));
     [-2.5,0,2.5].forEach((x,i)=>{const beam=new THREE.PointLight(i===1?"#65c9ff":"#bb79ff",30,10);beam.position.set(x,3.5,-2);scene.add(beam)});
     const ring=new THREE.Mesh(new THREE.TorusGeometry(2.5,.085,12,80),new THREE.MeshStandardMaterial({color:"#8bc8ff",emissive:"#2a80ed",emissiveIntensity:3}));
     ring.name="Stage light ring";ring.position.set(0,4,-1.2);ring.rotation.x=Math.PI/2;scene.add(ring);objects.push(ring);
+    for(let i=0;i<6;i++){const x=(i-2.5)*.86;box("Camera position "+(i+1),.58,.05,.58,x,.48,-1.2,mat(i%2?"#2e588a":"#25395c"))}
   }
   lights.current={ambient,key,tv,lamp};
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
-  let dragging=false,lastX=0,lastY=0,yaw=.48,pitch=.26,radius=8.9,raf=0;
+  let dragging=false,lastX=0,lastY=0,yaw=mode==="gallery"?0:mode==="stage"?.04:.48,pitch=mode==="gallery"?.13:mode==="stage"?.12:.26,radius=mode==="gallery"?9:8.9,raf=0;
   function orient(){camera.position.set(Math.sin(yaw)*Math.cos(pitch)*radius,1.4+Math.sin(pitch)*radius,Math.cos(yaw)*Math.cos(pitch)*radius);camera.lookAt(0,1.35,0)}
   orient();
   const down=(e:PointerEvent)=>{dragging=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
@@ -75,8 +86,8 @@ export default function MyRoom3D({lightsOn,mode="bedroom"}:Props){
   renderer.domElement.addEventListener("pointerdown",down);renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerup",up);renderer.domElement.addEventListener("wheel",wheel,{passive:false});renderer.domElement.addEventListener("click",click);
   const observer=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)});observer.observe(host);
   function animate(){raf=requestAnimationFrame(animate);renderer.render(scene,camera)}animate();
-  return()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerup",up);renderer.domElement.removeEventListener("wheel",wheel);renderer.domElement.removeEventListener("click",click);scene.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>m.dispose())}});renderer.dispose();host.removeChild(renderer.domElement);lights.current=null};
+  return()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerup",up);renderer.domElement.removeEventListener("wheel",wheel);renderer.domElement.removeEventListener("click",click);scene.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>{if(m instanceof THREE.MeshBasicMaterial&&m.map)m.map.dispose();m.dispose()})}});renderer.dispose();host.removeChild(renderer.domElement);lights.current=null};
  },[mode]);
  useEffect(()=>{if(!lights.current)return;const {ambient,key,tv,lamp}=lights.current;ambient.intensity=lightsOn?1.6:.18;key.intensity=lightsOn?52:2.5;(tv.material as THREE.MeshStandardMaterial).emissiveIntensity=lightsOn?1.5:.5;(lamp.material as THREE.MeshStandardMaterial).emissiveIntensity=lightsOn?2:.12},[lightsOn]);
- return <div className="fx-room3d-wrap"><div ref={mount} className="fx-room3d-canvas" aria-label="Interactive 3D bedroom rendered with Three.js"/><div className="fx-room3d-hint" aria-live="polite">{selected}</div></div>;
+ return <div className="fx-room3d-wrap"><div ref={mount} className="fx-room3d-canvas" aria-label={"Interactive 3D "+mode+" rendered with Three.js"}/><div className="fx-room3d-hint" aria-live="polite">{selected}</div></div>;
 }
