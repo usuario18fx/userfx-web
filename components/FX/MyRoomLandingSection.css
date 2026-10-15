@@ -17,3 +17,15 @@
 .ufx-myroom-landing-enter{display:block;width:max-content;max-width:100%;margin:36px 0 0 auto;color:#d3b986;text-decoration:none;font:12px Arial,sans-serif;letter-spacing:.18em}
 @media(max-width:900px){.ufx-myroom-landing-layout{grid-template-columns:1fr}.ufx-myroom-landing h2{font-size:clamp(64px,12vw,110px)}.ufx-myroom-landing-view .fx-room3d-wrap,.ufx-myroom-landing-loading{height:60svh;min-height:350px}}
 @media(max-width:500px){.ufx-myroom-landing{padding:65px 16px 40px}.ufx-myroom-landing h2{font-size:clamp(60px,16vw,92px)}.ufx-myroom-landing-view .fx-room3d-wrap,.ufx-myroom-landing-loading{height:390px;min-height:0}}
+
+
+/* Width repair: grid children must shrink within the actual viewport. */
+.ufx-myroom-landing{box-sizing:border-box;width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.ufx-myroom-landing *, .ufx-myroom-landing *::before,.ufx-myroom-landing *::after{box-sizing:border-box}
+.ufx-myroom-landing-layout{width:100%;max-width:100%;min-width:0;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
+.ufx-myroom-landing-copy,.ufx-myroom-landing-view{min-width:0;max-width:100%}
+.ufx-myroom-landing h2{font-size:clamp(46px,7vw,122px);max-width:100%;overflow-wrap:normal}
+.ufx-myroom-landing-view .fx-room3d-wrap{width:100%;min-width:0;max-width:100%;overflow:hidden}
+.ufx-myroom-landing-view canvas{max-width:100%}
+@media(max-width:1100px){.ufx-myroom-landing-layout{grid-template-columns:minmax(0,1fr)}.ufx-myroom-landing h2{font-size:clamp(55px,9vw,115px)}}
+@media(max-width:500px){.ufx-myroom-landing h2{font-size:clamp(52px,14vw,82px)}}
