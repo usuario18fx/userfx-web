@@ -3,6 +3,7 @@ import { useState, type CSSProperties, type PointerEvent } from "react";
 import dynamic from "next/dynamic";
 const MyRoom3D = dynamic(() => import("./MyRoom3D"), { ssr: false, loading: () => <div className="fx-room3d-loading">LOADING 3D ROOM…</div> });
 import "./CinematicJourney.css";
+import ScrollPortal from "./ScrollPortal";
 
 const chapters = [
   {num:"01",title:"PORTADA / FX IDENTITY",id:"identity",description:"Four independent pieces become one identity. Scroll to reveal the story."},
@@ -23,16 +24,7 @@ export default function CinematicJourney(){
  return <main className="fx-journey">
   <header className="fx-journey-header"><a href="/">USER FX</a><span>PRIVATE VAULT / CINEMATIC STUDY</span><a href="/crown-lab">CROWN LAB ↗</a></header>
   <nav className="fx-journey-nav" aria-label="Chapters">{chapters.map(c=><a href={"#"+c.id} key={c.id}>{c.num} <span>{c.title}</span></a>)}</nav>
-  <section id="identity" className="fx-journey-section fx-journey-identity">
-   <div className="fx-journey-copy"><span className="fx-journey-kicker">01 / FX IDENTITY</span><h1>THIS IS<br/><em>USER FX.</em></h1><p>Four elements. One signature. A cinematic identity built from metallic blue letters, a red rose and a floating crown.</p><a className="fx-journey-action" href="#story">EXPLORE MY STORY ↓</a></div>
-   <div className="fx-journey-emblem" onPointerMove={move} onPointerLeave={()=>setPointer({x:0,y:0})} style={{"--move-x":pointer.x,"--move-y":pointer.y} as CSSProperties} aria-label="FX emblem in four visual layers">
-    <div className="fx-journey-orbit"/>
-    <img className="piece piece-f" src="/iconF.png" alt="Metallic blue letter F" onError={()=>fail("iconF.png")}/>
-    <img className="piece piece-x" src="/iconX.png" alt="Metallic blue letter X" onError={()=>fail("iconX.png")}/>
-    <img className="piece piece-rose" src="/iconRosa.png" alt="Red rose" onError={()=>fail("iconRosa.png")}/>
-    <img className="piece piece-crown" src="/iconCorona.png" alt="Blue crown" onError={()=>fail("iconCorona.png")}/>
-   </div>
-  </section>
+  <div id="identity"><ScrollPortal /></div>
   <section id="story" className="fx-journey-section fx-journey-story"><div className="fx-journey-intro"><span className="fx-journey-kicker">02 / MY STORY</span><h2>NOT JUST PHOTOS.<br/><em>MY STORY.</em></h2><p>Portraits, places, details and moments told through image-led chapters. Public preview photographs are used here; private albums remain protected.</p></div>
    <div className="fx-journey-photo-grid">
     <figure className="fx-journey-photo fx-journey-photo-tall"><img src="/assets/album/PRVW/PRVW-01.jpg" alt="User FX portrait preview" loading="lazy"/><figcaption>01 / IDENTITY</figcaption></figure>
