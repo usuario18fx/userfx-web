@@ -1,0 +1,19 @@
+/* Scoped addition to original landing. No changes to the published page's other sections. */
+.ufx-myroom-landing{position:relative;background:#080b15;color:#f4efe8;padding:clamp(58px,7vw,112px) clamp(20px,4vw,90px) 55px;isolation:isolate;overflow:hidden}
+.ufx-myroom-landing-layout{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(420px,1.28fr);align-items:center;gap:clamp(22px,3vw,60px);max-width:1700px;margin:0 auto}
+.ufx-myroom-landing-copy{position:relative;z-index:2}
+.ufx-myroom-landing-kicker{font:11px/1.5 Arial,sans-serif;letter-spacing:.2em;color:#cdb57e}
+.ufx-myroom-landing h2{margin:24px 0 30px;font:400 clamp(64px,8vw,156px)/.85 Arial,sans-serif;letter-spacing:-.075em}
+.ufx-myroom-landing h2 em{font-weight:400;color:#cdb57e}
+.ufx-myroom-landing-copy p{font:clamp(13px,1.1vw,17px)/1.7 Arial,sans-serif;color:#b5b4c0;letter-spacing:.07em}
+.ufx-myroom-landing-copy button{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;margin-top:26px;padding:17px 22px;min-width:190px;min-height:56px;border:1px solid #cdb57e;background:#152038;color:#d5bd86;font:13px Arial,sans-serif;letter-spacing:.13em;cursor:pointer}
+.ufx-myroom-landing-view{min-width:0;border:1px solid #394861;background:#0a1020}
+.ufx-myroom-landing-view .fx-room3d-wrap,.ufx-myroom-landing-loading{height:clamp(420px,48vw,650px);position:relative}
+.ufx-myroom-landing-view .fx-room3d-canvas{height:100%;width:100%;touch-action:none;cursor:grab}
+.ufx-myroom-landing-view .fx-room3d-canvas:active{cursor:grabbing}
+.ufx-myroom-landing-view canvas{display:block}
+.ufx-myroom-landing-view .fx-room3d-hint{position:absolute;bottom:15px;left:15px;max-width:calc(100% - 30px);background:#081021c9;color:#d7c08f;padding:10px 13px;font:12px Arial,sans-serif;pointer-events:none}
+.ufx-myroom-landing-loading{display:grid;place-items:center;color:#d7c08f;letter-spacing:.2em}
+.ufx-myroom-landing-enter{display:block;width:max-content;max-width:100%;margin:36px 0 0 auto;color:#d3b986;text-decoration:none;font:12px Arial,sans-serif;letter-spacing:.18em}
+@media(max-width:900px){.ufx-myroom-landing-layout{grid-template-columns:1fr}.ufx-myroom-landing h2{font-size:clamp(64px,12vw,110px)}.ufx-myroom-landing-view .fx-room3d-wrap,.ufx-myroom-landing-loading{height:60svh;min-height:350px}}
+@media(max-width:500px){.ufx-myroom-landing{padding:65px 16px 40px}.ufx-myroom-landing h2{font-size:clamp(60px,16vw,92px)}.ufx-myroom-landing-view .fx-room3d-wrap,.ufx-myroom-landing-loading{height:390px;min-height:0}}
