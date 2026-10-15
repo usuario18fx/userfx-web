@@ -35,7 +35,19 @@ export default function MyRoomLandingSection() {
         <motion.div className="ufx-myroom-landing-view" style={reduced ? undefined : { y: roomY, scale: roomScale, opacity: roomOpacity }}><MyRoom3D key={roomScene} mode={roomScene} lightsOn={lightsOn} /></motion.div>
       </div>
       <nav className="ufx-room-scene-picker" aria-label="Choose a virtual room">
-        {([{id:"bedroom",name:"MY ROOM",subtitle:"PRIVATE SPACE",symbol:"01"},{id:"gallery",name:"GALLERY",subtitle:"PHOTO COLLECTION",symbol:"02"},{id:"stage",name:"STAGE",subtitle:"LIVE EXPERIENCE",symbol:"03"}] as const).map((item)=><button type="button" key={item.id} aria-pressed={roomScene===item.id} onClick={()=>setRoomScene(item.id)}><span>{item.symbol}</span><strong>{item.name}</strong><small>{item.subtitle}</small><span aria-hidden="true">↗</span></button>)}
+        {([
+          {id:"bedroom",name:"MY ROOM",subtitle:"PRIVATE SPACE",symbol:"01",image:""},
+          {id:"gallery",name:"GALLERY",subtitle:"PHOTO COLLECTION",symbol:"02",image:"/assets/album/PRVW/PRVW-01.jpg"},
+          {id:"stage",name:"STAGE",subtitle:"LIVE EXPERIENCE",symbol:"03",image:"/assets/videocall.jpg"}
+        ] as const).map(item => (
+          <button className={"ufx-room-card ufx-room-card--"+item.id} type="button" key={item.id} aria-pressed={roomScene===item.id} onClick={()=>setRoomScene(item.id)}>
+            <span className="ufx-room-card-image" aria-hidden="true">
+              {item.image ? <img src={item.image} alt="" loading="lazy"/> : <span className="ufx-room-card-bedroom-scene"/>}
+            </span>
+            <span className="ufx-room-card-info"><span>{item.symbol} / {item.subtitle}</span><strong>{item.name}</strong></span>
+            <span className="ufx-room-card-arrow" aria-hidden="true">↗</span>
+          </button>
+        ))}
       </nav>
       <a className="ufx-myroom-landing-enter" href="/#/private-room">ENTER PRIVATE ROOM ↗</a>
     </section>
