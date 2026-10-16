@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import "./CinematicTour.css";
 
 type Props = { progress: number };
@@ -193,6 +194,46 @@ export default function CinematicTour({progress}:Props){
   // Balance colored light without overwhelming the pale walls.
   const redAccent=new THREE.PointLight("#f12b56",7,5);redAccent.position.set(3.85,1.68,-2.6);scene.add(redAccent);
   const coolAccent=new THREE.PointLight("#356bdb",5,5);coolAccent.position.set(-2.9,2.2,-4.15);scene.add(coolAccent);
+  // Optional high-detail GLB furniture. Files are loaded only when they exist.
+  // Each slot replaces just its procedural counterpart, preserving all camera keyframes.
+  const modelLoader=new GLTFLoader();
+  const abort=new AbortController();
+  const modelSlots=[
+   {name:"bed",file:"/assets/my-room/bed.glb",pos:[2.85,0,-1.05],size:[3.3,2.55,3.9]},
+   {name:"sofa",file:"/assets/my-room/sofa.glb",pos:[-.55,0,-5.12],size:[4.15,1.65,1.65]},
+   {name:"mirror",file:"/assets/my-room/mirror.glb",pos:[-4.53,0,-3.35],size:[1.3,3,0.4]}
+  ] as const;
+  // Optional GLB imports are additive for now; detailed layout is retained as fallback.
+  // When a vetted model is supplied, it can be enabled by a simple manifest update.
+  const loadHighDetailModel=(file:string,position:readonly number[],bounds:readonly number[])=>{
+   fetch(file,{method:"HEAD",signal:abort.signal}).then(response=>{
+    if(!response.ok||abort.signal.aborted)return;
+    modelLoader.load(file,gltf=>{
+     if(abort.signal.aborted)return;
+     const object=gltf.scene;
+     object.updateMatrixWorld(true);
+     const cube=new THREE.Box3().setFromObject(object);
+     const current=new THREE.Vector3();cube.getSize(current);
+     if(current.x<=0||current.y<=0||current.z<=0)return;
+     const factor=Math.min(bounds[0]/current.x,bounds[1]/current.y,bounds[2]/current.z);
+     object.scale.multiplyScalar(factor);
+     object.updateMatrixWorld(true);
+     const aligned=new THREE.Box3().setFromObject(object);
+     const center=new THREE.Vector3();aligned.getCenter(center);
+     object.position.set(position[0]-center.x,position[1]-aligned.min.y,position[2]-center.z);
+     object.traverse(node=>{
+      if(node instanceof THREE.Mesh){node.castShadow=true;node.receiveShadow=true;}
+     });
+     scene.add(object);
+    },undefined,()=>{ /* Keep procedural room when a GLB cannot be decoded. */ });
+   }).catch(()=>{ /* Absent local GLB is optional. */ });
+  };
+  // GLB slots are disabled until model dimensions and orientation have been approved.
+  // To preview a model without altering any procedural objects, enable one slot here.
+  const enabledModelSlots:readonly string[]=[];
+  for(const slot of modelSlots){
+   if(enabledModelSlots.includes(slot.name))loadHighDetailModel(slot.file,slot.pos,slot.size);
+  }
   const ro=new ResizeObserver(()=>{const w=el.clientWidth,h=el.clientHeight;if(w&&h){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}});ro.observe(el);
   const position=frames[0].p.clone(),look=frames[0].l.clone(),p=P(0,0,0),l=P(0,0,0);
   let id=0;
@@ -204,7 +245,7 @@ export default function CinematicTour({progress}:Props){
    position.lerp(p,.095);look.lerp(l,.095);camera.position.copy(position);camera.lookAt(look);
    renderer.render(scene,camera);
   }animate();
-  return()=>{cancelAnimationFrame(id);ro.disconnect();scene.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];for(const m of ms){if(m instanceof THREE.MeshBasicMaterial&&m.map)m.map.dispose();m.dispose()}}});renderer.dispose();el.removeChild(renderer.domElement)};
+  return()=>{abort.abort();cancelAnimationFrame(id);ro.disconnect();scene.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];for(const m of ms){if(m instanceof THREE.MeshBasicMaterial&&m.map)m.map.dispose();m.dispose()}}});renderer.dispose();el.removeChild(renderer.domElement)};
  },[]);
  return (
  <div className="fx-cinematic-canvas" ref={host} aria-label="Recorrido 3D cinematográfico desde la puerta, por el pasillo, hasta Gallery, Videocalls y Stage" />
