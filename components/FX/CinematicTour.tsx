@@ -90,31 +90,109 @@ export default function CinematicTour({progress}:Props){
   const pink=new THREE.PointLight("#ef2d99",16,9);pink.position.set(-3.1,3.1,-3.1);scene.add(pink);
   const amber=new THREE.PointLight("#ffbb82",20,11);amber.position.set(3.1,2.6,-1);scene.add(amber);
   scene.add(new THREE.AmbientLight("#f8ebeb",1.4));
-  // Sofa under window.
-  box(4.15,.6,1.15,-.5,.52,-5.12,dark);
-  box(4.2,1.2,.34,-.5,.99,-5.75,dark);
-  for(const x of [-2.45,1.45])box(.28,.9,1.25,x,.72,-5.1,dark);
-  for(const x of [-1.8,-.5,.8])box(1.02,.22,.8,x,.89,-5.05,mat("#2f2a36"));
-  box(2.2,.07,1.12,-.4,.43,-3.55,mat("#15141b",.24,.18));
-  box(3.7,.055,2.25,-.4,.04,-3.65,mat("#25202a"));
-  // Red duvet, tall black tufted headboard, black pillows.
-  box(3.18,.34,3.55,2.85,.42,-1.1,black);
-  box(3.15,.21,3.5,2.85,.73,-1.1,mat("#d6c4c3"));
-  box(3.17,.13,2.85,2.85,.89,-.67,red);
-  box(3.35,1.65,.25,2.85,1.26,-2.96,mat("#111015",.52));
-  for(const x of [1.9,2.85,3.8])for(const y of [.9,1.45]){const stud=new THREE.Mesh(new THREE.SphereGeometry(.065,10,8),mat("#27242a",.35));stud.position.set(x,y,-2.79);scene.add(stud)}
-  for(const x of [2.15,3.55])box(1.1,.15,.65,x,1.01,-2.2,black);
-  // Dark sofa on left and tall framed mirror leaning near the corner.
-  box(2.15,.6,1,-3.65,.55,-1.3,dark);box(2.15,.85,.2,-3.65,1,-1.78,dark);
-  box(.1,2.55,1.12,-4.57,1.38,-3.45,black);
-  const mirror=new THREE.Mesh(new THREE.PlaneGeometry(1,2.33),new THREE.MeshStandardMaterial({color:"#7994ab",metalness:.75,roughness:.12}));
-  mirror.position.set(-4.48,1.45,-3.45);mirror.rotation.y=Math.PI/2-.15;scene.add(mirror);
-  // FX ROOM framed wall sign, screen and computer alongside.
+  // MY ROOM v2: detailed furniture and tactile surfaces. Hallway and camera untouched.
+  const fabricTexture=(base:string,accent:string,frequency=140)=>{
+   const tex=canvas(ctx=>{
+    ctx.fillStyle=base;ctx.fillRect(0,0,512,512);
+    for(let i=0;i<frequency*20;i++){
+     const x=(i*97.83)%512,y=(i*71.31)%512;
+     ctx.fillStyle=i%3===0?accent:"rgba(255,255,255,.032)";
+     ctx.fillRect(x,y,.8+(i%3),1+(i%4));
+    }
+   });
+   tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(2,2);
+   return new THREE.MeshStandardMaterial({map:tex,roughness:1});
+  };
+  const upholstery=fabricTexture("#15131b","rgba(52,46,60,.25)");
+  const duvet=fabricTexture("#a10821","rgba(255,125,145,.095)");
+  const sofaFabric=fabricTexture("#1a1a27","rgba(92,82,110,.12)");
+  const rugFabric=fabricTexture("#131116","rgba(94,82,96,.1)",260);
+  const roundBox=(w:number,h:number,d:number,r:number,x:number,y:number,z:number,m:THREE.Material)=>{
+   const sh=new THREE.Shape();sh.moveTo(-w/2+r,-h/2);sh.lineTo(w/2-r,-h/2);sh.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);
+   sh.lineTo(w/2,h/2-r);sh.quadraticCurveTo(w/2,h/2,w/2-r,h/2);sh.lineTo(-w/2+r,h/2);
+   sh.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);sh.lineTo(-w/2,-h/2+r);sh.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);
+   const geom=new THREE.ExtrudeGeometry(sh,{depth:d,bevelEnabled:true,bevelSize:Math.min(r*.3,.06),bevelThickness:.03,bevelSegments:3,steps:1,curveSegments:5});
+   geom.translate(0,0,-d/2);
+   const mesh=new THREE.Mesh(geom,m);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;
+  };
+  // Full-wall black carpet and dark, tactile lounge rug.
+  box(9.7,.022,9.5,0,.017,-2.08,rugFabric);
+  box(3.75,.045,2.55,-.55,.045,-3.23,sofaFabric);
+  // Sofa beneath the window: rounded seat cushions, back cushions and armrests.
+  box(4.06,.30,1.25,-.55,.36,-5.2,dark);
+  roundBox(4.05,1.02,.24,.2,-.55,.92,-5.77,sofaFabric);
+  for(const sx of [-2.50,1.39])roundBox(.31,.88,1.28,.14,sx,.72,-5.2,sofaFabric);
+  for(const sx of [-1.84,-.57,.70]){
+   roundBox(1.16,.19,.9,.09,sx,.65,-5.08,sofaFabric);
+   roundBox(1.10,.76,.19,.13,sx,1.09,-5.56,sofaFabric);
+  }
+  for(const sx of [-1.58,.85]){
+   const cushion=roundBox(.62,.55,.16,.13,sx,1,-5.42,fabricTexture("#49404a","rgba(190,154,162,.12)"));
+   cushion.rotation.z=sx<0?-.18:.19;
+  }
+  // Low black marble table with veins and small display objects.
+  const marbleMap=canvas(ctx=>{
+   ctx.fillStyle="#111017";ctx.fillRect(0,0,512,512);
+   for(let k=0;k<35;k++){
+    ctx.strokeStyle=k%4===0?"rgba(224,226,240,.5)":"rgba(168,167,188,.16)";
+    ctx.lineWidth=k%5===0?1.7:.65;ctx.beginPath();
+    const x=(k*119)%512,y=(k*61)%512;ctx.moveTo(x,y);
+    ctx.bezierCurveTo(x+32,y-24,x+80,y+32,x+135,y-25);ctx.stroke();
+   }
+  });
+  marbleMap.wrapS=THREE.RepeatWrapping;marbleMap.wrapT=THREE.RepeatWrapping;
+  box(2.2,.095,1.12,-.4,.47,-3.55,new THREE.MeshStandardMaterial({map:marbleMap,roughness:.19,metalness:.16}));
+  for(const x of [-1.33,.50])for(const z of [-3.97,-3.12])box(.042,.4,.042,x,.23,z,mat("#111018",.3,.5));
+  // Bed positioned at the right-hand wall: generous tall upholstered headboard.
+  box(3.38,.28,3.85,2.85,.32,-1.02,black);
+  roundBox(3.25,.24,3.66,.11,2.85,.60,-1.02,mat("#d2c2c0",.95));
+  roundBox(3.55,1.94,.28,.24,2.85,1.50,-2.95,upholstery);
+  // Upholstered channel quilting: visible padded black vertical ribs.
+  for(const x of [1.45,1.82,2.19,2.56,2.93,3.30,3.67,4.04,4.35]){
+   roundBox(.31,1.57,.12,.13,x,1.49,-2.72,upholstery);
+  }
+  // Smooth red cover with rounded mattress profile, not a flat red slab.
+  roundBox(3.25,.24,2.87,.12,2.85,.86,-.58,duvet);
+  // Natural soft fabric folds near the foot, subtle red piping.
+  for(let k=0;k<6;k++){
+   const fold=box(3.0,.012,.009,2.85,.995,1.02+k*.12,mat(k%2===0?"#82091b":"#b71a34",.97));
+   fold.rotation.y=(k%2?-.035:.04);
+  }
+  for(const x of [2.13,3.55]){
+   const pillow=roundBox(1.17,.22,.76,.11,x,1.04,-2.05,upholstery);
+   pillow.rotation.y=x<3?-.08:.08;
+  }
+  // Proper black-framed full-length mirror, leaning in the left corner.
+  const mirrorGroup=new THREE.Group();mirrorGroup.position.set(-4.53,1.55,-3.35);
+  mirrorGroup.rotation.y=Math.PI/2-.14;mirrorGroup.rotation.x=-.085;scene.add(mirrorGroup);
+  box(1.28,2.9,.085,0,0,0,black,mirrorGroup);
+  const reflection=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.76),new THREE.MeshPhysicalMaterial({
+   color:"#8395b3",metalness:.94,roughness:.035,clearcoat:1,clearcoatRoughness:.04,side:THREE.DoubleSide
+  }));
+  reflection.position.z=.049;mirrorGroup.add(reflection);
+  // Neon FX ROOM on the right, with actual emissive strokes and wall spill.
   pic(4.87,2.65,-3.22,-Math.PI/2,print("FX","ROOM","#ff38a7"),1.6,1.6);
-  box(1.65,.84,.14,4.84,1.6,-.25,new THREE.MeshStandardMaterial({color:"#120d27",emissive:"#a1248d",emissiveIntensity:1.8}));
-  box(.55,.48,.53,4.38,.9,.7,mat("#9b8d7e"));
-  box(.48,.33,.15,4.38,1.14,.43,new THREE.MeshStandardMaterial({color:"#191c27",emissive:"#428aff",emissiveIntensity:1.3}));
-  for(const [x,z] of [[-3.7,-4],[-3.5,-.8],[3.8,-4.7]]){const l=new THREE.PointLight("#ffab6b",7,3.8);l.position.set(x,1.12,z);scene.add(l);const globe=new THREE.Mesh(new THREE.SphereGeometry(.16,16,10),new THREE.MeshStandardMaterial({color:"#fff3d9",emissive:"#ffd8a2",emissiveIntensity:2}));globe.position.set(x,1.13,z);scene.add(globe)}
+  const neonPink=new THREE.PointLight("#ff3d9f",7,3.9);neonPink.position.set(4.14,2.85,-3.2);scene.add(neonPink);
+  const neonBlue=new THREE.PointLight("#3578ff",5,3.9);neonBlue.position.set(4.23,2.24,-3.4);scene.add(neonBlue);
+  // Black media console / screen to the right.
+  box(.62,.72,2.1,4.58,.42,-.18,mat("#17151d",.38));
+  box(.14,1.03,1.7,4.86,1.64,-.27,mat("#15121c",.18));
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.57,.91),new THREE.MeshBasicMaterial({map:canvas(ctx=>{
+   const gradient=ctx.createLinearGradient(0,0,0,512);gradient.addColorStop(0,"#150e42");gradient.addColorStop(.65,"#aa217b");gradient.addColorStop(1,"#1b1342");ctx.fillStyle=gradient;ctx.fillRect(0,0,512,512);
+   ctx.fillStyle="#fe8ca8";ctx.beginPath();ctx.arc(280,236,105,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle="#261239";for(let i=0;i<16;i++)ctx.fillRect(i*35,340-(i*39%84),26,220);
+  })}));
+  screen.position.set(4.76,1.64,-.27);screen.rotation.y=-Math.PI/2;scene.add(screen);
+  // Nightstands and soft amber globe lamps.
+  for(const [x,z] of [[1.12,-2.48],[4.51,-2.45]]){
+   box(.48,.58,.54,x,.33,z,mat("#1f1921",.45));
+   const globe=new THREE.Mesh(new THREE.SphereGeometry(.18,20,14),new THREE.MeshStandardMaterial({color:"#fff1da",emissive:"#ffc18c",emissiveIntensity:2.2}));
+   globe.position.set(x,.76,z);scene.add(globe);
+   const light=new THREE.PointLight("#ffba89",6,3.5);light.position.copy(globe.position);scene.add(light);
+  }
+  // Balance colored light without overwhelming the pale walls.
+  const redAccent=new THREE.PointLight("#f12b56",7,5);redAccent.position.set(3.85,1.68,-2.6);scene.add(redAccent);
+  const coolAccent=new THREE.PointLight("#356bdb",5,5);coolAccent.position.set(-2.9,2.2,-4.15);scene.add(coolAccent);
   const ro=new ResizeObserver(()=>{const w=el.clientWidth,h=el.clientHeight;if(w&&h){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}});ro.observe(el);
   const position=frames[0].p.clone(),look=frames[0].l.clone(),p=P(0,0,0),l=P(0,0,0);
   let id=0;
