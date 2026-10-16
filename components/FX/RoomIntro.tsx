@@ -1,26 +1,55 @@
 "use client";
-import {useRef,useState} from "react";
+import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import {useMotionValueEvent,useScroll} from "framer-motion";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import "./RoomIntro.css";
-const MyRoom3D=dynamic(()=>import("./MyRoom3D"),{ssr:false,loading:()=> <div className="fx-room-intro-loading">LOADING MY ROOM…</div>});
+const CinematicTour=dynamic(()=>import("./CinematicTour"),{ssr:false,loading:()=>(
+<div className="fx-room-intro-loading">
+LOADING USER FX ROOM…
+</div>
+)});
+const STAGES=[
+{at:0,title:"WELCOME",accent:"INSIDE",sub:"SCROLL TO ENTER YOUR WORLD"},
+{at:.12,title:"THE",accent:"CORRIDOR",sub:"STEP INSIDE · THE CAMERA KEEPS MOVING"},
+{at:.28,title:"MY",accent:"GALLERY",sub:"ART ON THE WALLS"},
+{at:.45,title:"VIDEO",accent:"CALLS",sub:"PRIVATE LIVE SESSIONS"},
+{at:.69,title:"STAGE",accent:"",sub:"PRIVATE PERFORMANCE SPACE"},
+{at:.88,title:"USER",accent:"FX",sub:"WELCOME TO MY ROOM"}
+];
 export default function RoomIntro(){
- const section=useRef<HTMLElement>(null);
- const [progress,setProgress]=useState(0);
- const [opened,setOpened]=useState(false);
- const {scrollYProgress}=useScroll({target:section,offset:["start start","end end"]});
- useMotionValueEvent(scrollYProgress,"change",v=>setProgress(Math.max(0,Math.min(1,v))));
- const labels=["LEFT WALL","BACK WALL","RIGHT WALL","MY GALLERY"];
- const label=labels[Math.min(3,Math.floor(progress*4))];
- return <section className="fx-room-intro" ref={section} aria-label="Enter USER FX virtual room">
-  <div className="fx-room-intro-sticky">
-   <div className="fx-room-intro-scene"><MyRoom3D intro mode="bedroom" lightsOn journeyProgress={progress}/></div>
-   <div className="fx-room-intro-gradient" aria-hidden="true"/>
-   <div className="fx-room-intro-top"><span>USER FX / PRIVATE ROOM</span><span>{label}</span></div>
-   <div className="fx-room-intro-caption"><span>01 / YOUR WORLD</span><h1>WELCOME<br/><em>INSIDE.</em></h1><p>SCROLL TO EXPLORE THE ROOM ↓</p></div>
-   {progress>.84&&<div className="fx-room-intro-screen"><span>THE SCREEN IS READY</span><button type="button" onClick={()=>setOpened(true)}>OPEN MY GALLERY ↗</button></div>}
-   {opened&&<div className="fx-room-intro-gallery" role="dialog" aria-modal="true" aria-label="MY GALLERY"><button type="button" className="fx-room-intro-close" onClick={()=>setOpened(false)}>CLOSE ×</button><h2>MY GALLERY</h2><div className="fx-room-intro-images">{["01","02","03"].map(n=><img key={n} src={`/assets/album/PRVW/PRVW-${n}.jpg`} alt={`USER FX public photo ${n}`}/>)}</div><a href="/#/private-room/gallery">ENTER THE PRIVATE COLLECTION ↗</a></div>}
-   <div className="fx-room-intro-progress"><div style={{width:(progress*100)+"%"}}/></div>
-  </div>
- </section>;
+const section=useRef<HTMLElement>(null);
+const [progress,setProgress]=useState(0);
+const {scrollYProgress}=useScroll({target:section,offset:["start start","end end"]});
+useMotionValueEvent(scrollYProgress,"change",v=>setProgress(Math.max(0,Math.min(1,v))));
+const index=STAGES.reduce((n,s,i)=>progress>=s.at?i:n,0);
+const current=STAGES[index];
+return (
+<section className="fx-room-intro" ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour">
+<div className="fx-room-intro-sticky">
+<CinematicTour progress={progress} />
+<div className="fx-room-intro-shade" aria-hidden="true" />
+<div className="fx-room-intro-head">
+<span>USER FX / PRIVATE WORLD</span>
+<nav aria-label="Tour sections">
+GALLERY / STAGE / CALLS / PROTOCOL
+</nav>
+</div>
+<div className="fx-room-intro-copy" key={index}>
+<small>{String(index+1).padStart(2,"0")} / CINEMATIC JOURNEY</small>
+<h1>
+{current.title} <strong>{current.accent}</strong>
+</h1>
+<p>
+{current.sub}
+</p>
+</div>
+<div className="fx-room-intro-index" aria-hidden="true">
+{String(index+1).padStart(2,"0")}
+</div>
+<div className="fx-room-intro-progress" aria-hidden="true">
+<div style={{width:progress*100+"%"}} />
+</div>
+</div>
+</section>
+);
 }
