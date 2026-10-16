@@ -1,5 +1,7 @@
-"use client";
-import Experience from "@/components/FX/Experience";
+import Landing from "@/components/FX/Landing";
+
 export default function Page() {
-  return <Experience />;
+  return (
+    <Landing />
+  );
 }
