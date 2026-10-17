@@ -202,11 +202,11 @@ export default function CinematicTour({progress}:Props){
     const cy=-.62+row*.41;
     for(let column=0;column<7;column++){
      const cx=-1.36+column*.455+(row%2?.225:0);
-     const dx=(x-cx)/.13,dy=(y-cy)/.13;
-     inset+=.09*Math.exp(-1.45*(dx*dx+dy*dy));
+     const dx=(x-cx)/.19,dy=(y-cy)/.19;
+     inset+=.035*Math.exp(-1.45*(dx*dx+dy*dy));
     }
    }
-   const broadPuff=.018*Math.cos(x*13.8)*Math.cos(y*15.2);
+   const broadPuff=.008*Math.cos(x*13.8)*Math.cos(y*15.2);
    tuftPositions.setZ(i,.035+broadPuff-inset);
   }
   tuftGeometry.computeVertexNormals();
@@ -218,40 +218,18 @@ export default function CinematicTour({progress}:Props){
    for(let column=0;column<7;column++){
     const x=-1.36+column*.455+(row%2?.225:0);
     if(Math.abs(x)>1.55)continue;
-    const stud=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),buttonMaterial);
+    const stud=new THREE.Mesh(new THREE.SphereGeometry(.012,10,8),buttonMaterial);
     stud.position.set(2.85+x,1.54-.62+row*.41,-2.815);scene.add(stud);
    }
   }
-  // Duvet: retain the existing red body, replace rigid hanging strips with flowing hems.
+  // Seamless red duvet. Use a single rounded body and top surface;
+  // remove separate hanging planes, which caused visible rectangular tears.
   roundBox(3.24,.22,3.60,.10,2.85,.73,-.99,mat("#21141b",1));
-  roundBox(3.22,.25,2.95,.11,2.85,.85,-.52,duvet);
-  softSurface(3.15,2.87,2.85,.987,-.51,duvet,.034);
-  const drapeMaterial=new THREE.MeshStandardMaterial({color:"#a10821",roughness:1,side:THREE.DoubleSide,map:duvet.map,normalMap:duvet.normalMap});
-  // Longitudinal side hems: x = left/right of bed, z runs from head to foot.
-  for(const side of [-1,1]){
-   const geometry=new THREE.PlaneGeometry(2.81,.42,44,10);
-   geometry.rotateY(Math.PI/2);
-   const positions=geometry.attributes.position;
-   for(let i=0;i<positions.count;i++){
-    const z=positions.getZ(i),y=positions.getY(i);
-    positions.setX(i,side*(.035*Math.sin(z*3.9+side*.9)+.014*Math.sin(z*11.2+y*6)));
-    positions.setY(i,y+Math.sin(z*4.8+side)*.038*(.5-y));
-   }
-   geometry.computeVertexNormals();
-   const hem=new THREE.Mesh(geometry,drapeMaterial);
-   hem.position.set(2.85+side*1.6,.72,-.51);hem.castShadow=true;hem.receiveShadow=true;scene.add(hem);
-  }
-  // Continuous, slightly scalloped front hem instead of repeated horizontal bands.
-  const frontGeometry=new THREE.PlaneGeometry(3.2,.44,48,10);
-  const frontPositions=frontGeometry.attributes.position;
-  for(let i=0;i<frontPositions.count;i++){
-   const x=frontPositions.getX(i),y=frontPositions.getY(i);
-   frontPositions.setZ(i,.025*Math.sin(x*5.2)+.012*Math.sin(x*12+y*4));
-   frontPositions.setY(i,y+.035*Math.sin(x*4.3)*(.5-y));
-  }
-  frontGeometry.computeVertexNormals();
-  const footHem=new THREE.Mesh(frontGeometry,drapeMaterial);
-  footHem.position.set(2.85,.74,.98);footHem.castShadow=true;scene.add(footHem);
+  roundBox(3.23,.31,3.05,.16,2.85,.79,-.51,duvet);
+  softSurface(3.12,2.95,2.85,.952,-.51,duvet,.014);
+  // A narrow tone-on-tone hem near the foot adds definition without intersections.
+  const hemMaterial=mat("#961028",1);
+  box(3.02,.012,.024,2.85,.806,.996,hemMaterial);
   // Pillow loft uses flattened ellipsoids instead of extruded boxes.
   for(const px of [2.13,3.57]){
    const pillow=paddedShape(1.27,.29,.78,px,1.08,-2.18,upholstery);
