@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import "./CrownLanding.css";
+const CrownModel=dynamic(()=>import("./CrownModel"),{ssr:false});
 
 const CHAPTERS = [
 { number:"01", name:"THE SIGNAL", subtitle:"Your moment begins here", description:"Every experience starts with a signal.", tone:"signal" },
@@ -45,10 +47,8 @@ return (
 <span>THE EXPERIENCE / 001</span>
 </header>
 <div className="fx-crown-hero" style={{opacity:1-story}}>
-<div className="fx-crown-object" style={{transform:`translate3d(-50%,calc(-50% - ${rise*20}vh),0) rotate(${scroll*115}deg) scale(${1-rise*.20})`}}>
-<video autoPlay muted loop playsInline preload="metadata" aria-label="Blue USER FX crown rotating">
-<source src="/assets/crown/CORONA-DARK.mp4" type="video/mp4" />
-</video>
+<div className="fx-crown-object" style={{transform:`translate3d(-50%,calc(-50% - ${rise*20}vh),0) scale(${1-rise*.20})`}}>
+<CrownModel progress={scroll} />
 <div className="fx-crown-aura" />
 </div>
 <div className="fx-crown-brand" style={{opacity:unveil,transform:`translateY(${(1-unveil)*42}px)`}}>
