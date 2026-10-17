@@ -10,38 +10,27 @@ LOADING USER FX ROOM…
 )});
 // Story pacing: give each camera view a stable reading pause before moving on.
 const STAGES=[
-{title:"WELCOME",accent:"INSIDE",sub:"SCROLL TO ENTER YOUR WORLD",body:"Una entrada distinta a USER FX. Desliza para descubrir el espacio."},
-{title:"THE",accent:"CORRIDOR",sub:"YOUR PRIVATE JOURNEY BEGINS",body:"Luz, arte y detalles. Cada paso te acerca a una experiencia privada."},
-{title:"MY",accent:"GALLERY",sub:"ART WITH PERSONALITY",body:"Una colección de piezas y símbolos que hacen único este lugar."},
-{title:"ENTER",accent:"MY ROOM",sub:"AN INTIMATE WORLD",body:"Una habitación diseñada para explorar, conectar y permanecer."},
-{title:"STAGE",accent:"",sub:"A NEW POINT OF VIEW",body:"Descubre MY ROOM desde arriba. Observa el espacio antes de continuar."},
-{title:"ENTER",accent:"MY ROOM",sub:"YOUR PRIVATE WORLD",body:"Tu espacio, tu experiencia. Sigue explorando USER FX."},
-{title:"STAGE",accent:"",sub:"YOUR MOMENT TO SHINE",body:"Las luces cambian y el espacio se transforma en tu escenario."},
-{title:"USER",accent:"FX",sub:"WELCOME TO YOUR WORLD",body:"El recorrido termina aquí. Lo que sucede después lo decides tú."}
+{title:"WELCOME",accent:"INSIDE",sub:"A PRIVATE WORLD AWAITS",body:"Comienza el recorrido. Cada paso revela una parte de USER FX."},
+{title:"STEP",accent:"INSIDE",sub:"FOLLOW THE LIGHT",body:"Entra despacio. El ambiente y sus detalles marcan el camino."},
+{title:"THE",accent:"CORRIDOR",sub:"THE JOURNEY CONTINUES",body:"Un pasillo de arte, reflejos y luz cálida conduce a tu habitación."},
+{title:"ENTER",accent:"MY ROOM",sub:"WELCOME TO YOUR SPACE",body:"Deja atrás el pasillo y descubre el interior de MY ROOM."},
+{title:"MY",accent:"GALLERY",sub:"A DIFFERENT PERSPECTIVE",body:"Desde una vista elevada, descubre la habitación y sus piezas de arte."},
+{title:"VIDEO",accent:"CALLS",sub:"CONNECT IN PRIVATE",body:"Un lugar para conversar, compartir y encontrarse."},
+{title:"STAGE",accent:"",sub:"THE ROOM IS YOUR STAGE",body:"Una perspectiva amplia, iluminación íntima y tu propio escenario."},
+{title:"USER",accent:"FX",sub:"YOUR WORLD, YOUR EXPERIENCE",body:"Explora lo que sigue a tu manera."}
 ];
-// Match the existing eight camera keyframes exactly; each interval holds
-// its initial view for 38% of the scroll distance, then moves smoothly.
+// Use one synchronized timeline for eight captions and eight 3D camera poses.
+// Longer movement windows preserve the spatial continuity between viewpoints.
 const CAMERA_STOPS=[0,.13,.28,.41,.57,.70,.84,1];
 function tourCameraProgress(scroll:number){
 const value=Math.max(0,Math.min(1,scroll));
 const segments=CAMERA_STOPS.length-1;
-const scaled=Math.min(value*segments,segments);
+const scaled=value*segments;
 const index=Math.min(Math.floor(scaled),segments-1);
-const part=scaled-index;
-// Stage 05: reach the elevated camera angle early, then hold the shot.
-// Stage 06: show ENTER MY ROOM over the same angle before moving again.
-if(index===4){
-const moving=Math.max(0,Math.min(1,(part-.04)/.36));
-const eased=moving*moving*(3-2*moving);
-return CAMERA_STOPS[4]+(CAMERA_STOPS[5]-CAMERA_STOPS[4])*eased;
-}
-if(index===5){
-const moving=Math.max(0,Math.min(1,(part-.67)/.33));
-const eased=moving*moving*(3-2*moving);
-return CAMERA_STOPS[5]+(CAMERA_STOPS[6]-CAMERA_STOPS[5])*eased;
-}
-const moving=Math.max(0,Math.min(1,(part-.38)/.62));
-const eased=moving*moving*(3-2*moving);
+const part=Math.max(0,Math.min(1,scaled-index));
+// A short reading hold, a long smooth move, then a brief arrival pause.
+const moving=Math.max(0,Math.min(1,(part-.10)/.80));
+const eased=moving*moving*moving*(moving*(moving*6-15)+10);
 return CAMERA_STOPS[index]+(CAMERA_STOPS[index+1]-CAMERA_STOPS[index])*eased;
 }
 export default function RoomIntro(){
