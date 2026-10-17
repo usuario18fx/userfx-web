@@ -104,10 +104,32 @@ export default function CinematicTour({progress}:Props){
    tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(2,2);
    return new THREE.MeshStandardMaterial({map:tex,roughness:1});
   };
+  // Poly Haven CC0 micro-surface normals. Existing colors remain unchanged.
+  // These optional 1K maps enhance the duvet, padded headboard and floor;
+  // if network access fails, their existing materials still render correctly.
+  const abort=new AbortController();
+  const textureLoader=new THREE.TextureLoader();
+  const polyHavenNormal=(material:THREE.MeshStandardMaterial,asset:string,repeatX:number,repeatY:number,strength:number)=>{
+   const file=`https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/${asset}/${asset}_nor_gl_1k.jpg`;
+   textureLoader.load(file,texture=>{
+    if(abort.signal.aborted){texture.dispose();return;}
+    texture.wrapS=THREE.RepeatWrapping;
+    texture.wrapT=THREE.RepeatWrapping;
+    texture.repeat.set(repeatX,repeatY);
+    texture.colorSpace=THREE.NoColorSpace;
+    material.normalMap=texture;
+    material.normalScale.set(strength,strength);
+    material.needsUpdate=true;
+   },undefined,()=>{ /* Preserve the original material when offline. */ });
+  };
   const upholstery=fabricTexture("#15131b","rgba(52,46,60,.25)");
   const duvet=fabricTexture("#a10821","rgba(255,125,145,.095)");
   const sofaFabric=fabricTexture("#1a1a27","rgba(92,82,110,.12)");
   const rugFabric=fabricTexture("#131116","rgba(94,82,96,.1)",260);
+  // Fine grain on the red coverlet, deep upholstered texture and carpet pile.
+  polyHavenNormal(duvet,"velour_velvet",3,3,.17);
+  polyHavenNormal(upholstery,"fabric_leather_01",2,2,.27);
+  polyHavenNormal(rugFabric,"dirty_carpet",7,7,.25);
   const roundBox=(w:number,h:number,d:number,r:number,x:number,y:number,z:number,m:THREE.Material)=>{
    const sh=new THREE.Shape();sh.moveTo(-w/2+r,-h/2);sh.lineTo(w/2-r,-h/2);sh.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);
    sh.lineTo(w/2,h/2-r);sh.quadraticCurveTo(w/2,h/2,w/2-r,h/2);sh.lineTo(-w/2+r,h/2);
@@ -197,7 +219,6 @@ export default function CinematicTour({progress}:Props){
   // Optional high-detail GLB furniture. Files are loaded only when they exist.
   // Each slot replaces just its procedural counterpart, preserving all camera keyframes.
   const modelLoader=new GLTFLoader();
-  const abort=new AbortController();
   const modelSlots=[
    {name:"bed",file:"/assets/my-room/bed.glb",pos:[2.85,0,-1.05],size:[3.3,2.55,3.9]},
    {name:"sofa",file:"/assets/my-room/sofa.glb",pos:[-.55,0,-5.12],size:[4.15,1.65,1.65]},
