@@ -120,18 +120,26 @@ export default function CinematicTour({progress}:Props){
   box(10,4.6,.15,0,2.2,-6.95,white);
   // Opening in the front wall is intentional: no occluder between hall and room.
   box(2.4,.1,2.0,-2.9,.03,-2.7,carpet);
-  const sky=canvas(ctx=>{
-   const g=ctx.createLinearGradient(0,0,0,1024);g.addColorStop(0,"#134989");g.addColorStop(.5,"#374b91");g.addColorStop(.8,"#e7676c");g.addColorStop(1,"#0b2149");ctx.fillStyle=g;ctx.fillRect(0,0,1024,1024);
-   for(let i=0;i<55;i++){const x=i*19;const h=70+(i*43%270);ctx.fillStyle="#162444";ctx.fillRect(x,870-h,17,h);
-    ctx.fillStyle="#ffd295";for(let yy=884-h;yy<860;yy+=13){if((yy+i*7)%3>1)ctx.fillRect(x+4,yy,3,4)}
+  // Window removed. Keep the existing solid rear wall and hang zebra artwork.
+  // A local photo at /assets/my-room/zebra-art.jpg automatically replaces the fallback.
+  const zebraCanvas=canvas(ctx=>{
+   ctx.fillStyle="#100e11";ctx.fillRect(0,0,512,512);
+   ctx.fillStyle="#b99a66";ctx.beginPath();ctx.ellipse(230,270,150,195,-.36,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle="#1a1416";
+   for(let i=0;i<12;i++){
+    ctx.save();ctx.translate(115+i*21,110+i*20);ctx.rotate(-.38+i*.055);
+    ctx.beginPath();ctx.ellipse(0,0,12,113,0,0,Math.PI*2);ctx.fill();ctx.restore();
    }
-   ctx.fillStyle="#1b2857";ctx.fillRect(665,260,12,580);ctx.fillStyle="#384b91";ctx.fillRect(654,390,34,18);
-   ctx.fillStyle="#d19bff";ctx.fillRect(650,377,44,12);ctx.fillStyle="#8c7fff";ctx.fillRect(669,190,3,200);
-  },1024,1024);
-  const skyline=new THREE.Mesh(new THREE.PlaneGeometry(6.6,3.15),new THREE.MeshBasicMaterial({map:sky}));skyline.position.set(0,2.55,-6.84);scene.add(skyline);
-  for(const x of [-3.45,0,3.45])box(.09,3.35,.11,x,2.6,-6.74,dark);
-  for(const y of [.93,4.2])box(6.95,.1,.11,0,y,-6.74,dark);
-  const blue=new THREE.PointLight("#367efc",12,9);blue.position.set(0,3.35,-5.7);scene.add(blue);
+   ctx.fillStyle="#171217";ctx.beginPath();ctx.arc(338,208,12,0,Math.PI*2);ctx.fill();
+  });
+  const zebraMaterial=new THREE.MeshBasicMaterial({map:zebraCanvas,side:THREE.DoubleSide});
+  pic(-.2,2.62,-6.83,0,zebraMaterial,2.9,2.9);
+  const zebraPhoto=new THREE.TextureLoader();
+  zebraPhoto.load("/assets/my-room/zebra-art.jpg",texture=>{
+   if(abort.signal.aborted){texture.dispose();return;}
+   texture.colorSpace=THREE.SRGBColorSpace;
+   zebraMaterial.map=texture;zebraMaterial.needsUpdate=true;
+  },undefined,()=>{ /* Keep the built-in zebra art until the user's image is copied locally. */ });
   const pink=new THREE.PointLight("#ef2d99",16,9);pink.position.set(-3.1,3.1,-3.1);scene.add(pink);
   const amber=new THREE.PointLight("#ffbb82",20,11);amber.position.set(3.1,2.6,-1);scene.add(amber);
   scene.add(new THREE.AmbientLight("#f8ebeb",1.4));
@@ -185,6 +193,7 @@ export default function CinematicTour({progress}:Props){
   // Full-wall black carpet and dark, tactile lounge rug.
   box(9.7,.022,9.5,0,.017,-2.08,rugFabric);
   box(3.75,.045,2.55,-.55,.045,-3.23,sofaFabric);
+  const sofaObjectsStart=scene.children.length;
   // Sofa beneath the window: rounded seat cushions, back cushions and armrests.
   box(4.06,.30,1.25,-.55,.36,-5.2,dark);
   roundBox(4.05,1.02,.24,.2,-.55,.92,-5.77,sofaFabric);
@@ -196,6 +205,16 @@ export default function CinematicTour({progress}:Props){
   for(const sx of [-1.58,.85]){
    const cushion=roundBox(.62,.55,.16,.13,sx,1,-5.42,fabricTexture("#49404a","rgba(190,154,162,.12)"));
    cushion.rotation.z=sx<0?-.18:.19;
+  }
+  // Move the sofa beside the bed, both pointing to the left.
+  const sofaGroup=new THREE.Group();
+  sofaGroup.position.set(-1.9,0,-1.05);
+  sofaGroup.rotation.y=-Math.PI/2;
+  scene.add(sofaGroup);
+  const sofaItems=scene.children.slice(sofaObjectsStart).filter(item=>item!==sofaGroup);
+  for(const item of sofaItems){
+   scene.remove(item);sofaGroup.add(item);
+   item.position.x+=.55;item.position.z+=5.2;
   }
   // Low black marble table with veins and small display objects.
   const marbleMap=canvas(ctx=>{
@@ -232,6 +251,7 @@ export default function CinematicTour({progress}:Props){
    const mesh=new THREE.Mesh(geometry,material);
    mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;
   };
+  const bedObjectsStart=scene.children.length;
   // Black base and upholstered lower rails, with no visible white slab.
   box(3.36,.31,3.78,2.85,.31,-1.03,black);
   box(3.32,.31,3.70,2.85,.53,-1.03,upholstery);
@@ -278,6 +298,16 @@ export default function CinematicTour({progress}:Props){
    pillow.rotation.y=px<3?-.07:.07;
    const seam=new THREE.Mesh(new THREE.TorusGeometry(.38,.012,6,48),mat("#25212a",1));
    seam.scale.set(1.48,.55,1);seam.position.set(px,1.085,-2.18);seam.rotation.x=Math.PI/2;scene.add(seam);
+  }
+  // Rotated leftward around its physical center; duvet, pillows and headboard stay together.
+  const bedGroup=new THREE.Group();
+  bedGroup.position.set(2.55,0,-1.0);
+  bedGroup.rotation.y=-Math.PI/2;
+  scene.add(bedGroup);
+  const bedItems=scene.children.slice(bedObjectsStart).filter(item=>item!==bedGroup);
+  for(const item of bedItems){
+   scene.remove(item);bedGroup.add(item);
+   item.position.x-=2.85;item.position.z+=1.0;
   }
   // Proper black-framed full-length mirror, leaning in the left corner.
   const mirrorGroup=new THREE.Group();mirrorGroup.position.set(-4.53,1.55,-3.35);
