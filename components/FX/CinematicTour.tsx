@@ -133,7 +133,28 @@ export default function CinematicTour({progress}:Props){
    ctx.fillStyle="#171217";ctx.beginPath();ctx.arc(338,208,12,0,Math.PI*2);ctx.fill();
   });
   const zebraMaterial=new THREE.MeshBasicMaterial({map:zebraCanvas,side:THREE.DoubleSide});
-  pic(-.2,2.62,-6.83,0,zebraMaterial,2.9,2.9);
+  pic(1.55,2.62,-6.83,0,zebraMaterial,2.4,2.5);
+  // Rectangular window on the left of the zebra, flush to the same back wall.
+  const sunset=canvas(ctx=>{
+   const grad=ctx.createLinearGradient(0,0,0,512);
+   grad.addColorStop(0,"#253f87");grad.addColorStop(.44,"#d367a0");
+   grad.addColorStop(.74,"#f2a66e");grad.addColorStop(1,"#241d47");
+   ctx.fillStyle=grad;ctx.fillRect(0,0,512,512);
+   ctx.fillStyle="#29223d";
+   for(let i=0;i<30;i++){
+    const x=i*18,top=330-(i*47%103);
+    ctx.fillRect(x,top,16,512-top);
+    ctx.fillStyle="#f4b47f";
+    for(let yy=top+12;yy<490;yy+=22)ctx.fillRect(x+5,yy,3,4);
+    ctx.fillStyle="#29223d";
+   }
+  });
+  const sunsetPane=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.25),new THREE.MeshBasicMaterial({map:sunset}));
+  sunsetPane.position.set(-2.30,2.68,-6.824);scene.add(sunsetPane);
+  for(const x of [-3.55,-2.30,-1.05])box(.075,2.45,.09,x,2.68,-6.74,dark);
+  for(const y of [1.48,3.89])box(2.57,.075,.09,-2.3,y,-6.74,dark);
+  const windowGlow=new THREE.PointLight("#c97ca5",3.8,5.5);
+  windowGlow.position.set(-2.35,2.6,-5.9);scene.add(windowGlow);
   const zebraPhoto=new THREE.TextureLoader();
   zebraPhoto.load("/assets/my-room/zebra-art.jpg",texture=>{
    if(abort.signal.aborted){texture.dispose();return;}
@@ -208,7 +229,7 @@ export default function CinematicTour({progress}:Props){
   }
   // Move the sofa beside the bed, both pointing to the left.
   const sofaGroup=new THREE.Group();
-  sofaGroup.position.set(-1.9,0,-1.05);
+  sofaGroup.position.set(4.30,0,-4.80);
   sofaGroup.rotation.y=-Math.PI/2;
   scene.add(sofaGroup);
   const sofaItems=scene.children.slice(sofaObjectsStart).filter(item=>item!==sofaGroup);
@@ -309,27 +330,30 @@ export default function CinematicTour({progress}:Props){
    scene.remove(item);bedGroup.add(item);
    item.position.x-=2.85;item.position.z+=1.0;
   }
-  // Proper black-framed full-length mirror, leaning in the left corner.
-  const mirrorGroup=new THREE.Group();mirrorGroup.position.set(-4.53,1.55,-3.35);
-  mirrorGroup.rotation.y=Math.PI/2-.14;mirrorGroup.rotation.x=-.085;scene.add(mirrorGroup);
-  box(1.28,2.9,.085,0,0,0,black,mirrorGroup);
-  const reflection=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.76),new THREE.MeshPhysicalMaterial({
-   color:"#8395b3",metalness:.94,roughness:.035,clearcoat:1,clearcoatRoughness:.04,side:THREE.DoubleSide
-  }));
-  reflection.position.z=.049;mirrorGroup.add(reflection);
+  // The former leaning black mirror/door is replaced by a low media unit and large TV.
+  // Keep furniture against the left wall, opposite the bed and sofa.
+  const consoleWood=mat("#1b171e",.45,.08);
+  box(.68,.48,3.1,-4.42,.30,-2.00,consoleWood);
+  box(.74,.055,3.2,-4.42,.57,-2.00,mat("#25202b",.23,.12));
+  for(const z of [-2.96,-2.03,-1.10]){
+   box(.018,.32,.82,-4.072,.31,z,mat("#26212d",.55));
+  }
+  // Portrait of the display is aligned parallel to the left wall.
+  box(.10,1.76,2.82,-4.66,1.72,-2.0,black);
+  const tvImage=canvas(ctx=>{
+   const g=ctx.createLinearGradient(0,0,512,512);
+   g.addColorStop(0,"#283374");g.addColorStop(.48,"#ef7697");g.addColorStop(.72,"#ffb16a");g.addColorStop(1,"#1b1835");
+   ctx.fillStyle=g;ctx.fillRect(0,0,512,512);
+   ctx.fillStyle="#211b3c";for(let i=0;i<24;i++)ctx.fillRect(i*23,330-(i*27%125),21,250);
+  });
+  const tvFace=new THREE.Mesh(new THREE.PlaneGeometry(2.71,1.64),new THREE.MeshBasicMaterial({map:tvImage,side:THREE.DoubleSide}));
+  tvFace.position.set(-4.58,1.72,-2.0);tvFace.rotation.y=Math.PI/2;scene.add(tvFace);
+  const tvFill=new THREE.PointLight("#d45f97",2.8,4);
+  tvFill.position.set(-3.9,1.9,-2);scene.add(tvFill);
   // Neon FX ROOM on the right, with actual emissive strokes and wall spill.
   pic(4.87,2.65,-3.22,-Math.PI/2,print("FX","ROOM","#ff38a7"),1.6,1.6);
   const neonPink=new THREE.PointLight("#ff3d9f",7,3.9);neonPink.position.set(4.14,2.85,-3.2);scene.add(neonPink);
   const neonBlue=new THREE.PointLight("#3578ff",5,3.9);neonBlue.position.set(4.23,2.24,-3.4);scene.add(neonBlue);
-  // Black media console / screen to the right.
-  box(.62,.72,2.1,4.58,.42,-.18,mat("#17151d",.38));
-  box(.14,1.03,1.7,4.86,1.64,-.27,mat("#15121c",.18));
-  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.57,.91),new THREE.MeshBasicMaterial({map:canvas(ctx=>{
-   const gradient=ctx.createLinearGradient(0,0,0,512);gradient.addColorStop(0,"#150e42");gradient.addColorStop(.65,"#aa217b");gradient.addColorStop(1,"#1b1342");ctx.fillStyle=gradient;ctx.fillRect(0,0,512,512);
-   ctx.fillStyle="#fe8ca8";ctx.beginPath();ctx.arc(280,236,105,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle="#261239";for(let i=0;i<16;i++)ctx.fillRect(i*35,340-(i*39%84),26,220);
-  })}));
-  screen.position.set(4.76,1.64,-.27);screen.rotation.y=-Math.PI/2;scene.add(screen);
   // Nightstands and soft amber globe lamps.
   for(const [x,z] of [[1.12,-2.48],[4.51,-2.45]]){
    box(.48,.58,.54,x,.33,z,mat("#1f1921",.45));
