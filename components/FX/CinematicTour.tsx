@@ -191,40 +191,67 @@ export default function CinematicTour({progress}:Props){
   // Black base and upholstered lower rails, with no visible white slab.
   box(3.36,.31,3.78,2.85,.31,-1.03,black);
   box(3.32,.31,3.70,2.85,.53,-1.03,upholstery);
-  // Tall rounded headboard, tufted diamond pattern and piping.
+  // Contiguous tufted upholstery: soft indentations in one continuous padded panel.
   roundBox(3.58,2.04,.32,.24,2.85,1.54,-2.97,upholstery);
+  const tuftGeometry=new THREE.PlaneGeometry(3.22,1.68,72,42);
+  const tuftPositions=tuftGeometry.attributes.position;
+  for(let i=0;i<tuftPositions.count;i++){
+   const x=tuftPositions.getX(i),y=tuftPositions.getY(i);
+   let inset=0;
+   for(let row=0;row<4;row++){
+    const cy=-.62+row*.41;
+    for(let column=0;column<7;column++){
+     const cx=-1.36+column*.455+(row%2?.225:0);
+     const dx=(x-cx)/.13,dy=(y-cy)/.13;
+     inset+=.09*Math.exp(-1.45*(dx*dx+dy*dy));
+    }
+   }
+   const broadPuff=.018*Math.cos(x*13.8)*Math.cos(y*15.2);
+   tuftPositions.setZ(i,.035+broadPuff-inset);
+  }
+  tuftGeometry.computeVertexNormals();
+  const tuftedPanel=new THREE.Mesh(tuftGeometry,upholstery);
+  tuftedPanel.position.set(2.85,1.54,-2.783);
+  tuftedPanel.castShadow=true;tuftedPanel.receiveShadow=true;scene.add(tuftedPanel);
+  const buttonMaterial=mat("#0b0a0e",.85);
   for(let row=0;row<4;row++){
-   const yy=.81+row*.44;
    for(let column=0;column<7;column++){
-    const xx=1.47+column*.45+(row%2?.22:0);
-    if(xx>4.36)continue;
-    paddedShape(.46,.57,.12,xx,yy,-2.745,upholstery);
+    const x=-1.36+column*.455+(row%2?.225:0);
+    if(Math.abs(x)>1.55)continue;
+    const stud=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),buttonMaterial);
+    stud.position.set(2.85+x,1.54-.62+row*.41,-2.815);scene.add(stud);
    }
   }
-  const buttonMaterial=mat("#09080d",.8);
-  for(let row=0;row<3;row++){
-   for(let column=0;column<6;column++){
-    const x=1.68+column*.45+(row%2?.22:0);
-    const stud=new THREE.Mesh(new THREE.SphereGeometry(.033,10,8),buttonMaterial);
-    stud.position.set(x,.99+row*.45,-2.666);scene.add(stud);
-   }
-  }
-  // Cloth mattress and red fabric draped over a rounded front edge.
+  // Duvet: retain the existing red body, replace rigid hanging strips with flowing hems.
   roundBox(3.24,.22,3.60,.10,2.85,.73,-.99,mat("#21141b",1));
   roundBox(3.22,.25,2.95,.11,2.85,.85,-.52,duvet);
-  softSurface(3.15,2.87,2.85,.987,-.51,duvet,.027);
-  // Two hemmed, softly hanging sides, with gentle silhouette movement.
+  softSurface(3.15,2.87,2.85,.987,-.51,duvet,.034);
+  const drapeMaterial=new THREE.MeshStandardMaterial({color:"#a10821",roughness:1,side:THREE.DoubleSide,map:duvet.map,normalMap:duvet.normalMap});
+  // Longitudinal side hems: x = left/right of bed, z runs from head to foot.
   for(const side of [-1,1]){
-   const geom=new THREE.PlaneGeometry(2.65,.33,38,5);
-   const v=geom.attributes.position;
-   for(let i=0;i<v.count;i++){
-    const a=v.getX(i),b=v.getY(i);
-    v.setZ(i,Math.sin(a*7+side)*.023+Math.sin(a*11+b*5)*.009);
+   const geometry=new THREE.PlaneGeometry(2.81,.42,44,10);
+   geometry.rotateY(Math.PI/2);
+   const positions=geometry.attributes.position;
+   for(let i=0;i<positions.count;i++){
+    const z=positions.getZ(i),y=positions.getY(i);
+    positions.setX(i,side*(.035*Math.sin(z*3.9+side*.9)+.014*Math.sin(z*11.2+y*6)));
+    positions.setY(i,y+Math.sin(z*4.8+side)*.038*(.5-y));
    }
-   geom.computeVertexNormals();
-   const m=new THREE.Mesh(geom,new THREE.MeshStandardMaterial({map:duvet.map,color:"#ffffff",roughness:1,side:THREE.DoubleSide,normalMap:duvet.normalMap}));
-   m.position.set(2.85,.76,side===-1?-2.0:.97);scene.add(m);
+   geometry.computeVertexNormals();
+   const hem=new THREE.Mesh(geometry,drapeMaterial);
+   hem.position.set(2.85+side*1.6,.72,-.51);hem.castShadow=true;hem.receiveShadow=true;scene.add(hem);
   }
+  // Continuous, slightly scalloped front hem instead of repeated horizontal bands.
+  const frontGeometry=new THREE.PlaneGeometry(3.2,.44,48,10);
+  const frontPositions=frontGeometry.attributes.position;
+  for(let i=0;i<frontPositions.count;i++){
+   const x=frontPositions.getX(i),y=frontPositions.getY(i);
+   frontPositions.setZ(i,.025*Math.sin(x*5.2)+.012*Math.sin(x*12+y*4));
+   frontPositions.setY(i,y+.035*Math.sin(x*4.3)*(.5-y));
+  }
+  frontGeometry.computeVertexNormals();
+  const footHem=new THREE.Mesh(frontGeometry,drapeMaterial);
+  footHem.position.set(2.85,.74,.98);footHem.castShadow=true;scene.add(footHem);
   // Pillow loft uses flattened ellipsoids instead of extruded boxes.
   for(const px of [2.13,3.57]){
    const pillow=paddedShape(1.27,.29,.78,px,1.08,-2.18,upholstery);
@@ -263,6 +290,8 @@ export default function CinematicTour({progress}:Props){
   // Balance colored light without overwhelming the pale walls.
   const redAccent=new THREE.PointLight("#f12b56",7,5);redAccent.position.set(3.85,1.68,-2.6);scene.add(redAccent);
   const coolAccent=new THREE.PointLight("#356bdb",5,5);coolAccent.position.set(-2.9,2.2,-4.15);scene.add(coolAccent);
+  // Gentle fill specifically for the sofa, with no changes to hallway lighting.
+  const sofaFill=new THREE.PointLight("#cab8c9",5.5,4.4);sofaFill.position.set(-1.4,2.4,-4.55);scene.add(sofaFill);
   // Optional high-detail GLB furniture. Files are loaded only when they exist.
   // Each slot replaces just its procedural counterpart, preserving all camera keyframes.
   const modelLoader=new GLTFLoader();
