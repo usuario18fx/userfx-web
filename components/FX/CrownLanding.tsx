@@ -47,6 +47,13 @@ return (
 <span>THE EXPERIENCE / 001</span>
 </header>
 <div className="fx-crown-hero" style={{opacity:1-story}}>
+<div className="fx-crown-atmosphere" aria-hidden="true">
+<div className="fx-crown-spotlight" />
+<div className="fx-crown-mist fx-crown-mist-left" />
+<div className="fx-crown-mist fx-crown-mist-right" />
+<div className="fx-crown-pedestal" style={{transform:`translate3d(-50%,${rise*6}vh,0) scale(${1-rise*.12})`}} />
+<div className="fx-crown-pedestal-glow" />
+</div>
 <div className="fx-crown-object" style={{transform:`translate3d(-50%,calc(-50% - ${rise*20}vh),0) scale(${1-rise*.20})`}}>
 <CrownModel progress={scroll} />
 <div className="fx-crown-aura" />
