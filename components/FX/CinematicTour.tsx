@@ -124,7 +124,7 @@ export default function CinematicTour({progress}:Props){
   };
   const upholstery=fabricTexture("#15131b","rgba(52,46,60,.25)");
   const duvet=fabricTexture("#a10821","rgba(255,125,145,.095)");
-  const sofaFabric=fabricTexture("#1a1a27","rgba(92,82,110,.12)");
+  const sofaFabric=fabricTexture("#282630","rgba(125,112,144,.16)");
   const rugFabric=fabricTexture("#131116","rgba(94,82,96,.1)",260);
   // Fine grain on the red coverlet, deep upholstered texture and carpet pile.
   polyHavenNormal(duvet,"velour_velvet",3,3,.17);
@@ -203,10 +203,10 @@ export default function CinematicTour({progress}:Props){
     for(let column=0;column<7;column++){
      const cx=-1.36+column*.455+(row%2?.225:0);
      const dx=(x-cx)/.19,dy=(y-cy)/.19;
-     inset+=.035*Math.exp(-1.45*(dx*dx+dy*dy));
+     inset+=.052*Math.exp(-1.45*(dx*dx+dy*dy));
     }
    }
-   const broadPuff=.008*Math.cos(x*13.8)*Math.cos(y*15.2);
+   const broadPuff=.014*Math.cos(x*13.8)*Math.cos(y*15.2);
    tuftPositions.setZ(i,.035+broadPuff-inset);
   }
   tuftGeometry.computeVertexNormals();
@@ -218,7 +218,7 @@ export default function CinematicTour({progress}:Props){
    for(let column=0;column<7;column++){
     const x=-1.36+column*.455+(row%2?.225:0);
     if(Math.abs(x)>1.55)continue;
-    const stud=new THREE.Mesh(new THREE.SphereGeometry(.012,10,8),buttonMaterial);
+    const stud=new THREE.Mesh(new THREE.SphereGeometry(.009,10,8),buttonMaterial);
     stud.position.set(2.85+x,1.54-.62+row*.41,-2.815);scene.add(stud);
    }
   }
@@ -227,9 +227,7 @@ export default function CinematicTour({progress}:Props){
   roundBox(3.24,.22,3.60,.10,2.85,.73,-.99,mat("#21141b",1));
   roundBox(3.23,.31,3.05,.16,2.85,.79,-.51,duvet);
   softSurface(3.12,2.95,2.85,.952,-.51,duvet,.014);
-  // A narrow tone-on-tone hem near the foot adds definition without intersections.
-  const hemMaterial=mat("#961028",1);
-  box(3.02,.012,.024,2.85,.806,.996,hemMaterial);
+  // Keep the duvet as one closed body. Avoid an intersecting hem at the corner.
   // Pillow loft uses flattened ellipsoids instead of extruded boxes.
   for(const px of [2.13,3.57]){
    const pillow=paddedShape(1.27,.29,.78,px,1.08,-2.18,upholstery);
@@ -269,7 +267,7 @@ export default function CinematicTour({progress}:Props){
   const redAccent=new THREE.PointLight("#f12b56",7,5);redAccent.position.set(3.85,1.68,-2.6);scene.add(redAccent);
   const coolAccent=new THREE.PointLight("#356bdb",5,5);coolAccent.position.set(-2.9,2.2,-4.15);scene.add(coolAccent);
   // Gentle fill specifically for the sofa, with no changes to hallway lighting.
-  const sofaFill=new THREE.PointLight("#cab8c9",5.5,4.4);sofaFill.position.set(-1.4,2.4,-4.55);scene.add(sofaFill);
+  const sofaFill=new THREE.PointLight("#f3dae7",12,5.2);sofaFill.position.set(-1.0,2.5,-4.65);scene.add(sofaFill);
   // Optional high-detail GLB furniture. Files are loaded only when they exist.
   // Each slot replaces just its procedural counterpart, preserving all camera keyframes.
   const modelLoader=new GLTFLoader();
