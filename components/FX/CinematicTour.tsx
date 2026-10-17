@@ -166,24 +166,71 @@ export default function CinematicTour({progress}:Props){
   marbleMap.wrapS=THREE.RepeatWrapping;marbleMap.wrapT=THREE.RepeatWrapping;
   box(2.2,.095,1.12,-.4,.47,-3.55,new THREE.MeshStandardMaterial({map:marbleMap,roughness:.19,metalness:.16}));
   for(const x of [-1.33,.50])for(const z of [-3.97,-3.12])box(.042,.4,.042,x,.23,z,mat("#111018",.3,.5));
-  // Bed positioned at the right-hand wall: generous tall upholstered headboard.
-  box(3.38,.28,3.85,2.85,.32,-1.02,black);
-  roundBox(3.25,.24,3.66,.11,2.85,.60,-1.02,mat("#d2c2c0",.95));
-  roundBox(3.55,1.94,.28,.24,2.85,1.50,-2.95,upholstery);
-  // Upholstered channel quilting: visible padded black vertical ribs.
-  for(const x of [1.45,1.82,2.19,2.56,2.93,3.30,3.67,4.04,4.35]){
-   roundBox(.31,1.57,.12,.13,x,1.49,-2.72,upholstery);
+  // MY ROOM: layered, softly deformed bed geometry in its original footprint.
+  // The camera path and hall are deliberately unchanged.
+  const softSurface=(w:number,d:number,x:number,y:number,z:number,material:THREE.Material,amplitude:number)=>{
+   const geometry=new THREE.PlaneGeometry(w,d,42,52);
+   const positions=geometry.attributes.position;
+   for(let i=0;i<positions.count;i++){
+    const px=positions.getX(i),pz=-positions.getY(i);
+    const edge=Math.pow(Math.max(0,1-Math.abs(px)/(w*.5)),.35)*Math.pow(Math.max(0,1-Math.abs(pz)/(d*.5)),.3);
+    const ripples=Math.sin(pz*5.7+px*1.25)*.48+Math.sin(px*9.3-pz*2.4)*.24+Math.sin(pz*15.1+px*2)*.1;
+    positions.setZ(i,amplitude*ripples*edge);
+   }
+   geometry.computeVertexNormals();
+   geometry.rotateX(-Math.PI/2);
+   const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,y,z);
+   mesh.receiveShadow=true;mesh.castShadow=true;scene.add(mesh);return mesh;
+  };
+  const paddedShape=(width:number,height:number,depth:number,x:number,y:number,z:number,material:THREE.Material)=>{
+   const geometry=new THREE.SphereGeometry(1,24,18);
+   geometry.scale(width*.5,height*.5,depth*.5);
+   const mesh=new THREE.Mesh(geometry,material);
+   mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;
+  };
+  // Black base and upholstered lower rails, with no visible white slab.
+  box(3.36,.31,3.78,2.85,.31,-1.03,black);
+  box(3.32,.31,3.70,2.85,.53,-1.03,upholstery);
+  // Tall rounded headboard, tufted diamond pattern and piping.
+  roundBox(3.58,2.04,.32,.24,2.85,1.54,-2.97,upholstery);
+  for(let row=0;row<4;row++){
+   const yy=.81+row*.44;
+   for(let column=0;column<7;column++){
+    const xx=1.47+column*.45+(row%2?.22:0);
+    if(xx>4.36)continue;
+    paddedShape(.46,.57,.12,xx,yy,-2.745,upholstery);
+   }
   }
-  // Smooth red cover with rounded mattress profile, not a flat red slab.
-  roundBox(3.25,.24,2.87,.12,2.85,.86,-.58,duvet);
-  // Natural soft fabric folds near the foot, subtle red piping.
-  for(let k=0;k<6;k++){
-   const fold=box(3.0,.012,.009,2.85,.995,1.02+k*.12,mat(k%2===0?"#82091b":"#b71a34",.97));
-   fold.rotation.y=(k%2?-.035:.04);
+  const buttonMaterial=mat("#09080d",.8);
+  for(let row=0;row<3;row++){
+   for(let column=0;column<6;column++){
+    const x=1.68+column*.45+(row%2?.22:0);
+    const stud=new THREE.Mesh(new THREE.SphereGeometry(.033,10,8),buttonMaterial);
+    stud.position.set(x,.99+row*.45,-2.666);scene.add(stud);
+   }
   }
-  for(const x of [2.13,3.55]){
-   const pillow=roundBox(1.17,.22,.76,.11,x,1.04,-2.05,upholstery);
-   pillow.rotation.y=x<3?-.08:.08;
+  // Cloth mattress and red fabric draped over a rounded front edge.
+  roundBox(3.24,.22,3.60,.10,2.85,.73,-.99,mat("#21141b",1));
+  roundBox(3.22,.25,2.95,.11,2.85,.85,-.52,duvet);
+  softSurface(3.15,2.87,2.85,.987,-.51,duvet,.027);
+  // Two hemmed, softly hanging sides, with gentle silhouette movement.
+  for(const side of [-1,1]){
+   const geom=new THREE.PlaneGeometry(2.65,.33,38,5);
+   const v=geom.attributes.position;
+   for(let i=0;i<v.count;i++){
+    const a=v.getX(i),b=v.getY(i);
+    v.setZ(i,Math.sin(a*7+side)*.023+Math.sin(a*11+b*5)*.009);
+   }
+   geom.computeVertexNormals();
+   const m=new THREE.Mesh(geom,new THREE.MeshStandardMaterial({map:duvet.map,color:"#ffffff",roughness:1,side:THREE.DoubleSide,normalMap:duvet.normalMap}));
+   m.position.set(2.85,.76,side===-1?-2.0:.97);scene.add(m);
+  }
+  // Pillow loft uses flattened ellipsoids instead of extruded boxes.
+  for(const px of [2.13,3.57]){
+   const pillow=paddedShape(1.27,.29,.78,px,1.08,-2.18,upholstery);
+   pillow.rotation.y=px<3?-.07:.07;
+   const seam=new THREE.Mesh(new THREE.TorusGeometry(.38,.012,6,48),mat("#25212a",1));
+   seam.scale.set(1.48,.55,1);seam.position.set(px,1.085,-2.18);seam.rotation.x=Math.PI/2;scene.add(seam);
   }
   // Proper black-framed full-length mirror, leaning in the left corner.
   const mirrorGroup=new THREE.Group();mirrorGroup.position.set(-4.53,1.55,-3.35);
