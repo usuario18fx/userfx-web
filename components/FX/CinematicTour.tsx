@@ -54,21 +54,65 @@ export default function CinematicTour({progress}:Props){
    const art=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);art.position.z=.044;group.add(art);
    const beam=new THREE.PointLight("#ffd0a2",.7,3);beam.position.set(0,height*.55,.42);group.add(beam);
   };
-  // Corridor: warm white concrete, black carpet, framed FX artwork.
-  box(3.7,.14,14.7,0,-.1,8.4,carpet);
-  box(.18,3.8,13.35,-1.91,1.83,8.75,white);
-  box(.18,3.8,13.35,1.91,1.83,8.75,white);
-  box(3.85,.16,13.35,0,3.77,8.75,white);
+  // Noir corridor: burgundy patterned walls, black trim and glossy veined marble.
+  // Existing room boundaries, camera keyframes and scroll controls are preserved.
+  const bronze=mat("#8b6038",.32,.68);
+  const lacquer=mat("#100c12",.27,.34);
+  const wallPattern=canvas(ctx=>{
+   ctx.fillStyle="#431b24";ctx.fillRect(0,0,512,512);
+   for(let y=15;y<512;y+=76)for(let x=16;x<512;x+=76){
+    ctx.strokeStyle="rgba(203,121,92,.30)";ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.ellipse(x,y+20,17,26,0,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,y-10);ctx.bezierCurveTo(x-25,y+13,x-24,y+40,x,y+55);
+    ctx.bezierCurveTo(x+24,y+40,x+25,y+13,x,y-10);ctx.stroke();
+    ctx.beginPath();ctx.ellipse(x,y+20,5,18,0,0,Math.PI*2);ctx.stroke();
+   }
+  });
+  wallPattern.wrapS=THREE.RepeatWrapping;wallPattern.wrapT=THREE.RepeatWrapping;
+  wallPattern.repeat.set(10,2.8);
+  const wallpaper=new THREE.MeshStandardMaterial({map:wallPattern,roughness:.88});
+  const marbleTexture=canvas(ctx=>{
+   ctx.fillStyle="#09090e";ctx.fillRect(0,0,512,512);
+   for(let k=0;k<90;k++){
+    const x=(k*97)%512,y=(k*61)%512;
+    ctx.strokeStyle=k%4===0?"rgba(225,173,103,.61)":"rgba(190,186,184,.2)";
+    ctx.lineWidth=k%7===0?1.6:.6;ctx.beginPath();ctx.moveTo(x-75,y+42);
+    ctx.bezierCurveTo(x-10,y-25,x+25,y+40,x+135,y-32);ctx.stroke();
+   }
+  });
+  marbleTexture.wrapS=THREE.RepeatWrapping;marbleTexture.wrapT=THREE.RepeatWrapping;marbleTexture.repeat.set(2,7);
+  const marble=new THREE.MeshStandardMaterial({map:marbleTexture,roughness:.13,metalness:.14});
+  box(3.7,.14,14.7,0,-.1,8.4,marble);
+  box(.18,3.8,13.35,-1.91,1.83,8.75,wallpaper);
+  box(.18,3.8,13.35,1.91,1.83,8.75,wallpaper);
+  box(3.85,.16,13.35,0,3.77,8.75,mat("#21171a",.66));
   for(const side of [-1,1]){
-   box(.13,.22,13.35,side*1.81,.12,8.75,trim);
+   const x=side*1.78;
+   box(.13,.72,13.35,x,.36,8.75,lacquer);
+   box(.14,.11,13.35,x,.77,8.75,bronze);
+   box(.15,.13,13.35,x,3.56,8.75,lacquer);
+   box(.17,.06,13.35,x,3.4,8.75,bronze);
    for(const z of [12.45,9.55,6.65]){
-    pic(side*1.81,2.05,z,side===-1?Math.PI/2:-Math.PI/2,print(z===12.45?"FX":"USER","ROOM"),1.13,1.65);
+    pic(side*1.81,2.06,z,side===-1?Math.PI/2:-Math.PI/2,print(z===12.45?"FX":"USER","ROOM"),1.13,1.65);
+    // Decorative wall-picture lights with warm falloff.
+    const sconce=new THREE.PointLight("#ffd09a",2.6,3.7);
+    sconce.position.set(side*1.48,2.97,z);scene.add(sconce);
+    box(.15,.065,.38,side*1.66,2.97,z,bronze);
    }
   }
+  // Black and brass framing visually links the corridor to the room.
+  for(const z of [3.95,7.55,11.15,14.65]){
+   for(const x of [-1.79,1.79])box(.1,3.54,.1,x,1.8,z,lacquer);
+   box(3.63,.12,.12,0,3.49,z,lacquer);
+   box(3.63,.035,.12,0,3.36,z,bronze);
+  }
   const door=new THREE.Group();scene.add(door);door.position.set(1.8,0,14.6);
-  box(.08,3.45,1.65,0,1.7,0,dark,door).rotation.y=Math.PI/2;
-  box(.1,.13,.2,-.12,1.65,-.7,mat("#cba675",.3,.8),door);
-  for(const z of [12.7,8.5,4.7]){const light=new THREE.PointLight("#ffdfbd",8,6);light.position.set(0,3.32,z);scene.add(light);box(.3,.05,.3,0,3.71,z,mat("#f9f0df"))}
+  box(.08,3.45,1.65,0,1.7,0,lacquer,door).rotation.y=Math.PI/2;
+  box(.1,.13,.2,-.12,1.65,-.7,bronze,door);
+  for(const z of [12.7,8.5,4.7]){
+   const light=new THREE.PointLight("#ffca8f",7,6);light.position.set(0,3.32,z);scene.add(light);
+   box(.3,.05,.3,0,3.69,z,new THREE.MeshStandardMaterial({color:"#fff0d2",emissive:"#ffba71",emissiveIntensity:1.4}));
+  }
   // Bedroom: white walls, dark carpet, window onto stylized Toronto skyline.
   box(10,.13,9.8,0,-.11,-2.1,carpet);
   box(.2,4.6,9.8,-5,2.25,-2.1,white);box(.2,4.6,9.8,5,2.25,-2.1,white);
