@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+const CrownModel=dynamic(()=>import("./CrownModel"),{ssr:false});
 import "./CrownLanding.css";
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
@@ -37,7 +39,6 @@ const launch=ease((progress-.29)/.23);
 const reveal=ease((progress-.36)/.18);
 const gallery=ease((progress-.58)/.18);
 const active=Math.min(2,Math.floor(clamp((progress-.72)/.28)*3));
-const angle=progress*440;
 const crownOpacity=1-ease((progress-.47)/.12);
 return (
 <main className="fx-crown-scroll-page" ref={page}>
@@ -55,10 +56,8 @@ return (
 </nav>
 <a className="fx-crown-enter" href="/#home">ENTER MY ROOM <span>↗</span></a>
 </header>
-<div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*27}vh),0) perspective(1000px) rotateY(${angle}deg) rotateZ(${-rise*8}deg) scale(${1+launch*3.7})`}}>
-<video autoPlay loop muted playsInline preload="auto" aria-label="Corona azul de USER FX">
-<source src="/assets/crown/CORONA-DARK.mp4" type="video/mp4" />
-</video>
+<div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*27}vh),0) scale(${1+launch*3.7})`}}>
+<CrownModel progress={progress} />
 <div className="fx-crown-halo" />
 </div>
 <section className="fx-crown-wordmark" id="experience" style={{opacity:reveal*(1-gallery*.9),transform:`translate3d(0,${(1-reveal)*45-gallery*12}px,0) scale(${.87+reveal*.13})`}}>
