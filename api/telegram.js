@@ -550,7 +550,9 @@ const PLAN_CONFIG = {
     name: "BASIC",
     prefix: "BSIC",
     stars: BASIC_STARS_PRICE,
-    maxAccesses: 1,
+    maxAccesses: null,
+    days: 7,
+    features: { oncam: true, rec: false, chat: true, multimedia: false },
     tier: TIER_BASIC,
   },
   pro: {
@@ -558,7 +560,9 @@ const PLAN_CONFIG = {
     name: "PRO",
     prefix: "PRX0",
     stars: PRO_STARS_PRICE,
-    maxAccesses: 10,
+    maxAccesses: null,
+    days: 30,
+    features: { oncam: true, rec: true, chat: true, multimedia: true },
     tier: TIER_PRO,
   },
   vip: {
@@ -566,8 +570,15 @@ const PLAN_CONFIG = {
     name: "VIP",
     prefix: "VIPX",
     stars: VIP_STARS_PRICE,
+    days: 90,
+    features: { oncam: true, rec: true, chat: true, multimedia: true },
     maxAccesses: null,
     tier: TIER_VIP,
+  },
+  special: {
+    id: "special", name: "SPECIAL", prefix: "SPCL", stars: 0,
+    days: null, maxAccesses: null,
+    features: { oncam: true, rec: true, chat: false, multimedia: true },
   },
 };
 // ======================================================
@@ -1007,6 +1018,10 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
       plan: plan.name,
       prefix: plan.prefix,
       stars: plan.stars,
+      days: plan.days,
+      features: { ...plan.features },
+      unlimited: plan.days === null,
+      expiresAt: plan.days === null ? null : new Date(Date.now() + plan.days * 86400000).toISOString(),
       maxAccesses: plan.maxAccesses,
       usedAccesses: 0,
       remainingAccesses: plan.maxAccesses,
@@ -1044,6 +1059,9 @@ async function validateAccessCode(code) {
   }
   if (record.status !== "active") {
     return { valid: false, reason: "not_active", record };
+  }
+  if (record.expiresAt && Date.parse(record.expiresAt) <= Date.now()) {
+    return { valid: false, reason: "expired", record };
   }
   const maxAccesses = record.maxAccesses === null ? null : Number(record.maxAccesses);
   const usedAccesses = Math.max(0, Number(record.usedAccesses) || 0);
@@ -2301,11 +2319,60 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
               logger.error("ɴᴏᴛɪꜰʏ ᴇʀʀᴏʀ", { requesterId, ...getTelegramError(error) });
             }
           });
+// ADMIN MANUAL ACCESS — codes are delivered here for manual distribution.
+async function showManualAccess(ctx) {
+    if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
+    return ctx.reply("Selecciona el código que deseas otorgar:", Markup.inlineKeyboard([
+        [Markup.button.callback("SPCL✔️", "manual_access:special"), Markup.button.callback("BSIC✔️", "manual_access:basic")],
+        [Markup.button.callback("PRX0✔️", "manual_access:pro"), Markup.button.callback("VIPX✔️", "manual_access:vip")],
+    ]));
+}
+async function handleManualAccess(ctx) {
+    if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
+    await ctx.answerCbQuery();
+    const planId = ctx.match[1];
+    const message = ctx.callbackQuery.message;
+    if (!message) return;
+    const client = await ensureRedis();
+    if (!client) return ctx.reply("No se pudo conectar a Redis. Intenta de nuevo.");
+    // One issuance per panel, including concurrent and repeated callbacks.
+    const requestKey = `${CODE_ENGINE_NAMESPACE}:manual:${message.chat.id}:${message.message_id}`;
+    const locked = await client.set(requestKey, "pending", "NX");
+    if (locked !== "OK") {
+        const previous = await client.get(requestKey);
+        return ctx.reply(previous === "pending" ? "Generación en proceso." : `Código ya generado: ${previous}`);
+    }
+    let record;
+    try {
+        // Empty userId: bearer code, manually distributed by the administrator.
+        record = await generateAccessCode(planId, "admin_manual", "");
+    } catch (error) {
+        await client.del(requestKey);
+        logger.error("MANUAL ACCESS ERROR", { message: String(error?.message || error) });
+        return ctx.reply("No se pudo generar el código. Intenta de nuevo.");
+    }
+    await client.set(requestKey, record.code);
+    const features = record.features;
+    const flag = (value) => value ? "✔️" : "✖️";
+    await ctx.editMessageText(`${record.code}
+
+ONCAM · MYROOM: ${flag(features.oncam)}
+REC · STAGE: ${flag(features.rec)}
+CHAT: ${flag(features.chat)}
+MULTIMEDIA: ${flag(features.multimedia)}
+Duración: ${record.unlimited ? "Ilimitada" : `${record.days} días`}
+
+Usa /access para generar otro código.`);
+}
+adminBot.command("access", showManualAccess);
+adminBot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
+bot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           bot.command("access", async (ctx) => {
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
             try {
               let accessTarget = getCommandArg(ctx);
+              if (!accessTarget) return showManualAccess(ctx);
               if (/^\d{5,20}$/.test(accessTarget)) {
                 try {
                   const chat = await ctx.telegram.getChat(accessTarget);
