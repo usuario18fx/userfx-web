@@ -305,7 +305,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!/^(basic|pro|vip)$/.test(String(session.planId || ""))) {
+    if (!/^(basic|pro|vip|special)$/.test(String(session.planId || ""))) {
       await redis.del(sessionKey);
       res.setHeader("Set-Cookie", clearSessionCookie(req));
       return res.status(200).json({
@@ -345,6 +345,7 @@ export default async function handler(req, res) {
       accountId: session.accountId,
       telegramUsername: session.telegramUsername || null,
       planId: session.planId,
+      features: session.features || null,
       accessMode: session.accessMode,
       accessLabel: memberAccess ? "SPCL" : session.accessLabel || null,
       memberAccess,
