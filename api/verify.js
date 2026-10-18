@@ -16,18 +16,21 @@
             BSIC: "basic",
             PRX0: "pro",
             VIPX: "vip",
+            SPCL: "special",
           });
 
           const PLAN_ACCESS_LIMITS = Object.freeze({
             basic: 1,
             pro: 10,
             vip: null,
+            special: null,
           });
 
           const PLAN_TO_ACCESS_MODE = Object.freeze({
             basic: "single_entry",
             pro: "ten_entries",
             vip: "unlimited_entries",
+            special: "unlimited_entries",
           });
 
           function getRedis() {
@@ -83,13 +86,14 @@ function normalizeCodeStatus(value) {
 }
 
 function getSessionSeconds(planId) {
+  if (planId === "special") return 30 * 24 * 60 * 60;
   if (planId === "vip") return VIP_SESSION_SECONDS;
   if (planId === "pro") return PRO_SESSION_SECONDS;
   return BASIC_SESSION_SECONDS;
 }
 
 function getAccessState(record, planId) {
-  const maxAccesses = PLAN_ACCESS_LIMITS[planId];
+  const maxAccesses = record.features && record.maxAccesses === null ? null : PLAN_ACCESS_LIMITS[planId];
   const parsedUsedAccesses = Number(record.usedAccesses);
   const fallbackUsedAccesses = normalizeCodeStatus(record.status) === "consumed" && Number.isFinite(maxAccesses) ? maxAccesses : 0;
 
@@ -155,7 +159,8 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
   const token = crypto.randomBytes(32).toString("base64url");
   const sessionHash = hashValue(token);
   const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
-  const sessionSeconds = getSessionSeconds(planId);
+  const remainingSeconds = record.expiresAt ? Math.floor((Date.parse(record.expiresAt) - Date.now()) / 1000) : Infinity;
+  const sessionSeconds = Math.max(1, Math.min(getSessionSeconds(planId), remainingSeconds));
   const sessionExpiresAt = Date.now() + sessionSeconds * 1000;
   const accessMode = PLAN_TO_ACCESS_MODE[planId];
   const usedAccesses = accessState.usedAccesses + 1;
@@ -174,8 +179,7 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
     lastUsedAt: usedAt,
   };
 
-  delete updatedRecord.days;
-  delete updatedRecord.expiresAt;
+  // Keep the original plan duration and expiry when redeeming.
 
   if (remainingAccesses === 0 && accessState.maxAccesses !== null) {
     updatedRecord.usedAt = usedAt;
@@ -184,6 +188,7 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
   const sessionRecord = JSON.stringify({
     planId,
     accessMode,
+    features: record.features || null,
     telegramUsername: record.telegramUsername || null,
     userId: record.userId ? String(record.userId) : null,
     codeHash: hashValue(fullCode).slice(0, 32),
@@ -236,7 +241,7 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
     };
   }
 
-  const persistentMaxAge = planId === "vip" ? sessionSeconds : undefined;
+  const persistentMaxAge = sessionSeconds;
   res.setHeader("Set-Cookie", serializeSessionCookie(req, token, persistentMaxAge));
 
   return {
@@ -304,7 +309,7 @@ export default async function handler(req, res) {
       .trim()
       .toUpperCase();
 
-    if (!/^(BSIC|PRX0|VIPX)$/.test(safePrefix)) {
+    if (!/^(BSIC|PRX0|VIPX|SPCL)$/.test(safePrefix)) {
       await recordFailedAttempt(redis, ip);
       return res.status(400).json({
         ok: false,
@@ -371,6 +376,11 @@ export default async function handler(req, res) {
       });
     }
 
+    if (record.expiresAt && (!Number.isFinite(Date.parse(record.expiresAt)) || Date.parse(record.expiresAt) <= Date.now())) {
+      await recordFailedAttempt(redis, ip);
+      return res.status(401).json({ ok: false, error: "This code has expired." });
+    }
+
     const accessState = getAccessState(record, recordPlanId);
 
     if (accessState.remainingAccesses !== null && accessState.remainingAccesses <= 0) {
@@ -406,6 +416,7 @@ export default async function handler(req, res) {
       ok: true,
       code: fullCode,
       planId: recordPlanId,
+      features: record.features || null,
       plan: record.plan || String(recordPlanId).toUpperCase(),
       accessMode: session.accessMode,
       watermarkId: session.watermarkId,
