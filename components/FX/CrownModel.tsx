@@ -50,28 +50,34 @@ renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
 const observer=new ResizeObserver(resize);observer.observe(el);resize();
 loader.load(file,(gltf)=>{
 if(dead)return;
-model=gltf.scene;
-// The exported file contains a textured rectangular backdrop (4 vertices).
-// Hide it, keeping only the detailed crown mesh.
-model.traverse((object)=>{
-if(object instanceof THREE.Mesh){
-const count=object.geometry.getAttribute("position")?.count ?? 0;
-if(count<=4)object.visible=false;
-}
+const source=gltf.scene;
+const meshes:THREE.Mesh[]=[];
+source.traverse((object)=>{
+if(object instanceof THREE.Mesh)meshes.push(object);
 });
-const bounds=new THREE.Box3().setFromObject(model);
-const size=new THREE.Vector3();bounds.getSize(size);
-const center=new THREE.Vector3();bounds.getCenter(center);
+// Keep only the high-resolution crown. The GLB also includes a flat blue
+// background mesh that must never be rendered or included in normalization.
+meshes.sort((a,b)=>(b.geometry.getAttribute("position")?.count??0)-(a.geometry.getAttribute("position")?.count??0));
+const crown=meshes[0];
+if(!crown)return;
+for(const mesh of meshes.slice(1)){
+mesh.parent?.remove(mesh);
+}
+source.updateMatrixWorld(true);
+const bounds=new THREE.Box3().setFromObject(crown);
+const size=new THREE.Vector3();
+const center=new THREE.Vector3();
+bounds.getSize(size);
+bounds.getCenter(center);
 if(Math.max(size.x,size.y,size.z)<.0001)return;
-model.position.sub(center);
-// The supplied GLB was authored Z-up. Convert its vertical axis to Three.js Y-up.
-const orientation=new THREE.Group();
-orientation.rotation.x=-Math.PI/2;
-orientation.add(model);
-const scale=3.0/Math.max(size.x,size.y,size.z);
+// Center in original asset coordinates before reorienting from Z-up.
+source.position.sub(center);
+const upright=new THREE.Group();
+upright.rotation.x=-Math.PI/2;
+upright.add(source);
 const pivot=new THREE.Group();
-pivot.add(orientation);
-pivot.scale.setScalar(scale);
+pivot.add(upright);
+pivot.scale.setScalar(3.0/Math.max(size.x,size.y,size.z));
 scene.add(pivot);
 model=pivot;
 setReady(true);
