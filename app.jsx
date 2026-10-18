@@ -1,3 +1,4 @@
+import CrownLanding from "./components/CrownLanding/CrownLanding";
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
           import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
@@ -31,6 +32,7 @@ function PrivateRoomRoute({ route }) {
 }
 export default function App() {
   const [route, setRoute] = useState(getRoute);
+  const [coverDismissed, setCoverDismissed] = useState(false);
   useEffect(() => {
     const handleRouteChange = () => setRoute(getRoute());
     window.addEventListener("hashchange", handleRouteChange);
@@ -136,5 +138,9 @@ export default function App() {
     );
   }
 
+  const directAccess = new URLSearchParams(window.location.search);
+  if (!coverDismissed && (route === "#/" || route === "#/corona") && !directAccess.has("code") && !directAccess.has("handoff")) {
+    return <CrownLanding onEnter={() => { setCoverDismissed(true); window.scrollTo(0, 0); }} />;
+  }
   return <VaultHome />;
 }
