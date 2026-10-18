@@ -28,7 +28,7 @@ const rim=new THREE.DirectionalLight("#317bff",6);
 rim.position.set(3,2,-3);scene.add(rim);
 scene.add(new THREE.AmbientLight("#a1bbff",1.7));
 const loader=new GLTFLoader();
-const file="/assets/crown/crown.glb";
+const file="/assets/crown/CORONA-DARK-optimizada.glb";
 const controller=new AbortController();
 const initialize=()=>{
 if(dead)return;
@@ -65,7 +65,7 @@ setReady(true);
 const animate=()=>{
 anim=requestAnimationFrame(animate);
 const t=clamp(latest.current);
-if(model){model.rotation.y=t*Math.PI*2.4;model.rotation.z=Math.sin(t*Math.PI*2)*.12;model.position.y=t*.65;}
+if(model){const spin=Math.max(0,Math.min(1,t/.4));model.rotation.y=spin*Math.PI*1.6;model.rotation.z=Math.sin(t*Math.PI*2)*.06;model.position.y=t*.8+Math.sin(performance.now()*.0014)*.045;}
 renderer?.render(scene,camera);
 };
 animate();
