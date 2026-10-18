@@ -27,6 +27,7 @@
                       accessMode: "telegram_identity",
                       accessLabel: "SPCL",
                       memberAccess: true,
+                      features: { oncam: true, rec: true, chat: true, multimedia: true },
                       unlimitedAccess: true,
                       remainingAccesses: null,
                       expiresAt: "2099-12-31T23:59:59.000Z",

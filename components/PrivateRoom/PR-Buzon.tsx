@@ -1,3 +1,4 @@
+import { usePrivatePermissions } from "./PR-Permissions";
           import { useEffect, useState } from "react";
           import { createPortal } from "react-dom";
           import "./PR-Stage.css";
@@ -13,30 +14,8 @@
 
           export default function PrivateRoomBuzon() {
             const [target, setTarget] = useState<HTMLElement | null>(() => document.querySelector<HTMLElement>(".pvr-live-home"));
-            const [chatLocked, setChatLocked] = useState(false);
-
-            useEffect(() => {
-              let cancelled = false;
-
-              fetch("/api/access-session", {
-                method: "GET",
-                headers: { Accept: "application/json" },
-                credentials: "same-origin",
-                cache: "no-store",
-              })
-                .then((response) => response.json())
-                .then((session) => {
-                  if (cancelled) return;
-                  setChatLocked(Boolean(session?.authenticated && (session?.accessLabel === "SPCL" || session?.memberAccess === true)));
-                })
-                .catch(() => {
-                  if (!cancelled) setChatLocked(false);
-                });
-
-              return () => {
-                cancelled = true;
-              };
-            }, []);
+            const { features } = usePrivatePermissions();
+            const chatLocked = !features.chat;
 
             if (!target) {
               window.requestAnimationFrame(() => setTarget(document.querySelector<HTMLElement>(".pvr-live-home")));

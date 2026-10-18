@@ -1,3 +1,4 @@
+import { sessionFeatures } from "../lib/access-features.js";
           import crypto from "crypto";
           import Redis from "ioredis";
           import { ensureAccount } from "../lib/account.js";
@@ -8,7 +9,7 @@
           const SESSION_COOKIE = "userfx_vault_session";
           const IDENTITY_COOKIE = "userfx_identity_session";
           const IDENTITY_ACCESS_SECONDS = 10 * 365 * 24 * 60 * 60;
-          const ADMIN_USER_ID = String(process.env.ADMIN_USER_ID || "").trim();
+          const ADMIN_USER_ID = String(process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || "").trim();
 
           function getRedis() {
             if (!REDIS_URL) {
@@ -238,6 +239,7 @@ export default async function handler(req, res) {
         accountId: session.accountId,
         telegramUsername: session.telegramUsername,
         planId: session.planId,
+        features: sessionFeatures(session, ADMIN_USER_ID),
         accessMode: session.accessMode,
         accessLabel: session.accessLabel,
         memberAccess: true,
@@ -345,7 +347,7 @@ export default async function handler(req, res) {
       accountId: session.accountId,
       telegramUsername: session.telegramUsername || null,
       planId: session.planId,
-      features: session.features || null,
+      features: sessionFeatures(session, ADMIN_USER_ID),
       accessMode: session.accessMode,
       accessLabel: memberAccess ? "SPCL" : session.accessLabel || null,
       memberAccess,

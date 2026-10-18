@@ -1,3 +1,4 @@
+import { PrivateFeatureGate } from "./PR-Permissions";
           import { useCallback, useEffect, useRef, useState, type ReactElement, type PointerEvent as ReactPointerEvent } from "react";
           import { createPortal } from "react-dom";
           import PrivateRoomDirectGate from "./PR-DirectGate";
@@ -19,6 +20,7 @@
             accessMode: "telegram_identity",
             accessLabel: "SPCL",
             memberAccess: true,
+            features: { oncam: true, rec: true, chat: true, multimedia: true },
             maxAccesses: null,
             usedAccesses: 0,
             remainingAccesses: null,
@@ -934,10 +936,12 @@ function PrivateRoomWelcomeTour(): ReactElement {
 export default function PrivateRoomLiveShell() {
   return (
     <PrivateRoomDirectGate>
+      <PrivateFeatureGate feature="oncam" quiet>
       <PrivateRoomAccount />
       <PrivateRoomLiveLobby />
       <PrivateRoomMyCamDock />
       <PrivateRoomWelcomeTour />
+      </PrivateFeatureGate>
     </PrivateRoomDirectGate>
   );
 }

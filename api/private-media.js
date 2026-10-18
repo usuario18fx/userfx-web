@@ -8,6 +8,7 @@
             basic: 1,
             pro: 2,
             vip: 3,
+            special: 3,
           });
 
           const PREFIX_TO_PLAN = Object.freeze({
@@ -20,9 +21,10 @@
             basic: "BSIC",
             pro: "PRX0",
             vip: "VIPX",
+            special: "SPCL",
           });
 
-          const WATERMARK_PLANS = new Set(["pro", "vip"]);
+          const WATERMARK_PLANS = new Set(["pro", "vip", "special"]);
 
           const PRIVATE_PATH_PATTERN = /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
 
@@ -38,7 +40,7 @@ function getWatermarkId(session) {
     .trim()
     .toUpperCase();
 
-  if (/^(PRX0|VIPX)-[A-F0-9]{8}$/.test(existing)) {
+  if (/^(PRX0|VIPX|SPCL)-[A-F0-9]{8}$/.test(existing)) {
     return existing;
   }
 
@@ -163,7 +165,7 @@ export default async function handler(req, res) {
       return res.status(401).send("Unauthorized");
     }
 
-    if (PLAN_LEVEL[session.planId] < PLAN_LEVEL[requestedPlan]) {
+    if (!session.features?.multimedia || !PLAN_LEVEL[session.planId] || PLAN_LEVEL[session.planId] < PLAN_LEVEL[requestedPlan]) {
       return res.status(403).send("Forbidden");
     }
 

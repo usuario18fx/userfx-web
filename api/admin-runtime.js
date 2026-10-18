@@ -1,10 +1,11 @@
+import { readVaultSession } from "../lib/vault-session.js";
 import crypto from "crypto";
 import Redis from "ioredis";
 
 const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
-const ADMIN_USER_ID = String(process.env.ADMIN_USER_ID || "").trim();
+const ADMIN_USER_ID = String(process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || "").trim();
 const GALLERY_VISIBLE_KEY = `${CODE_ENGINE_NAMESPACE}:runtime:gallery-visible`;
 const STAGE_STATE_KEY = `${CODE_ENGINE_NAMESPACE}:runtime:stage`;
 const GALLERY_PRESENCE_PREFIX = `${CODE_ENGINE_NAMESPACE}:presence:gallery:`;
@@ -147,7 +148,7 @@ export default async function handler(req, res) {
 
   try {
     const redis = getRedis();
-    const session = await readSession(redis, req);
+    const session = await readVaultSession(req);
 
     if (!session) {
       return res.status(401).json({
@@ -163,6 +164,10 @@ export default async function handler(req, res) {
       const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
       const action = String(body.action || "");
       const accountKey = String(session.accountId || session.telegramUserId || "anonymous");
+
+      if ((action === "gallery-heartbeat" && !session.features.multimedia) || (action === "stage-heartbeat" && !session.features.rec)) {
+        return res.status(403).json({ ok: false, error: "feature_not_allowed" });
+      }
 
       if (action === "gallery-heartbeat") {
         await redis.set(`${GALLERY_PRESENCE_PREFIX}${hashValue(accountKey).slice(0, 24)}`, "1", "EX", PRESENCE_TTL_SECONDS);
@@ -196,6 +201,8 @@ export default async function handler(req, res) {
     }
 
     const runtime = await readRuntime(redis);
+    if (!session.features.multimedia) { runtime.galleryVisible = false; runtime.viewingGallery = 0; }
+    if (!session.features.rec) { runtime.stage = { live: false, startedAt: null }; runtime.viewingStage = 0; }
 
     return res.status(200).json({
       ok: true,

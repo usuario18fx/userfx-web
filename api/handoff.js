@@ -318,7 +318,7 @@ export default async function handler(req, res) {
       }
 
       const ttl = remainingSeconds(session.expiresAt);
-      if (ttl <= 0 || !/^(basic|pro|vip)$/.test(String(session.planId || ""))) {
+      if (ttl <= 0 || !/^(basic|pro|vip|special)$/.test(String(session.planId || ""))) {
         return res.status(401).json({ ok: false, error: "ACCESS SESSION EXPIRED" });
       }
 
@@ -375,7 +375,7 @@ export default async function handler(req, res) {
 
     const session = record.session;
     const ttl = remainingSeconds(session.expiresAt);
-    if (ttl <= 0 || !/^(basic|pro|vip)$/.test(String(session.planId || ""))) {
+    if (ttl <= 0 || !/^(basic|pro|vip|special)$/.test(String(session.planId || ""))) {
       return res.status(401).json({ ok: false, error: "ACCESS SESSION EXPIRED" });
     }
 

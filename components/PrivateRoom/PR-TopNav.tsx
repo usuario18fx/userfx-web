@@ -1,3 +1,4 @@
+import { usePrivatePermissions } from "./PR-Permissions";
           import { useCallback, useEffect, useState } from "react";
           import "./PR-TopNav.css";
 
@@ -80,6 +81,8 @@
           }
 
           export default function PrivateRoomTopNav() {
+            const { features } = usePrivatePermissions();
+            const planLocked = (label: string) => label === "STAGE" ? !features.rec : label === "GALLERY" ? !features.multimedia : label === "BUZON" ? !features.chat : false;
             const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
             const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
             const [cameraLive, setCameraLive] = useState(false);
@@ -162,7 +165,7 @@
                       const galleryLocked = item.label === "GALLERY" && cameraLive;
                       const isExternal = isExternalNavItem(item);
                       return (
-                        <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked} title={galleryLocked ? "Turn camera off to open Gallery" : undefined}>
+                        <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked || planLocked(item.label)} title={planLocked(item.label) ? "Not included in your access" : galleryLocked ? "Turn camera off to open Gallery" : undefined}>
                 {item.label}
               </button>
             );
@@ -234,7 +237,7 @@
           const galleryLocked = item.label === "GALLERY" && cameraLive;
           const isExternal = isExternalNavItem(item);
           return (
-            <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked}>
+            <button key={item.label} type="button" className={`${!isExternal && route === item.route ? "is-active" : ""}${galleryLocked ? " is-camera-locked" : ""}`.trim()} onClick={() => navigate(item)} disabled={galleryLocked || planLocked(item.label)}>
               {item.label}
             </button>
           );

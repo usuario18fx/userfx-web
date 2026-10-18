@@ -1,4 +1,5 @@
 import CrownLanding from "./components/CrownLanding/CrownLanding";
+import { PrivatePermissionsProvider, PrivateFeatureGate } from "./components/PrivateRoom/PR-Permissions";
           import { useEffect, useState } from "react";
           import VaultHome from "./components/VaultHome/VaultHome";
           import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
@@ -25,10 +26,26 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route === "#/private-room/stage") return <PrivateRoomStage />;
-  if (route === "#/private-room/gallery") return <PrivateRoomGallery />;
-  if (route === "#/private-room/buzon") return <PrivateRoomBuzon />;
-  return <PrivateRoomMyRoom />;
+  if (route === "#/private-room/stage") return (
+<PrivateFeatureGate feature="rec">
+<PrivateRoomStage />
+</PrivateFeatureGate>
+);
+  if (route === "#/private-room/gallery") return (
+<PrivateFeatureGate feature="multimedia">
+<PrivateRoomGallery />
+</PrivateFeatureGate>
+);
+  if (route === "#/private-room/buzon") return (
+<PrivateFeatureGate feature="chat">
+<PrivateRoomBuzon />
+</PrivateFeatureGate>
+);
+  return (
+<PrivateFeatureGate feature="oncam">
+<PrivateRoomMyRoom />
+</PrivateFeatureGate>
+);
 }
 export default function App() {
   const [route, setRoute] = useState(getRoute);
@@ -121,20 +138,22 @@ export default function App() {
 
   if (route === "#/private-room-access") {
     return (
-      <>
+      <PrivatePermissionsProvider>
         <PrivateRoomLiveShell />
-      </>
+      </PrivatePermissionsProvider>
     );
   }
 
   if (route.startsWith("#/private-room")) {
     return (
-      <>
+      <PrivatePermissionsProvider>
         <PrivateRoomTopNav />
         <PrivateRoomLiveShell />
         <PrivateRoomRoute route={route} />
+        <PrivateFeatureGate feature="oncam" quiet>
         <PrivateRoomCameraEnhancer />
-      </>
+        </PrivateFeatureGate>
+      </PrivatePermissionsProvider>
     );
   }
 

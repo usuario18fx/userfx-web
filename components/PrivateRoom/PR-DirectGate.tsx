@@ -1,3 +1,4 @@
+import { usePrivatePermissions } from "./PR-Permissions";
           import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
           import "./PR-DirectGate.css";
@@ -21,7 +22,7 @@
 
             authenticated?: boolean;
 
-            planId?: "basic" | "pro" | "vip";
+            planId?: "basic" | "pro" | "vip" | "special";
 
             telegramUsername?: string;
 
@@ -31,7 +32,7 @@
           type VerifyResponse = {
             ok?: boolean;
 
-            planId?: "basic" | "pro" | "vip";
+            planId?: "basic" | "pro" | "vip" | "special";
 
             error?: string;
           };
@@ -140,6 +141,14 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   const [checking, setChecking] = useState(!forceGate);
 
   const [authenticated, setAuthenticated] = useState(false);
+  const permissions = usePrivatePermissions();
+  useEffect(() => {
+    if (permissions.ready && !permissions.authenticated) setAuthenticated(false);
+  }, [permissions.ready, permissions.authenticated]);
+
+  useEffect(() => {
+    window.dispatchEvent(new Event("userfx:access-changed"));
+  }, [authenticated]);
 
   const [prefix, setPrefix] = useState("BSIC");
 
@@ -631,6 +640,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
       setNotice("");
 
       if (normalizedPrefix === "SPCL") {
+        if (await redeemManualSpecial(normalizedSuffix)) return;
         let rememberedUsername = normalizeTelegramUsername(telegramUsername);
 
         if (!rememberedUsername) {
@@ -843,6 +853,31 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     }
   }
 
+  // Manual SPCL codes use Redis; identity codes keep their existing flow.
+  async function redeemManualSpecial(suffix: string): Promise<boolean> {
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+      body: JSON.stringify({ prefix: "SPCL", suffix }),
+    });
+    const data: VerifyResponse = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) {
+      if (response.status === 401 && data.error === "Invalid code.") return false;
+      throw new Error(data.error || "SPCL VERIFICATION FAILED");
+    }
+    const code = `SPCL-${suffix}`;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, "true");
+      sessionStorage.setItem(ACCESS_CODE_KEY, code);
+      sessionStorage.setItem("vault_plan", "special");
+      localStorage.setItem("vault_saved_code", code);
+    } catch {}
+    setAuthenticated(true);
+    return true;
+  }
+
   /* ─────   SPECIAL CODE · FAST PASTE ─────── */
 
   async function handleSpecialPaste() {
@@ -880,6 +915,8 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
       setSpecialLoading(true);
 
       setTelegramError("");
+
+      if (await redeemManualSpecial(specialSuffix)) return;
 
       const identityResponse = await fetch("/api/identity", {
         method: "POST",

@@ -1,3 +1,4 @@
+import { usePrivatePermissions } from "./PR-Permissions";
 "use client";
 
 /* ════════════════════════════════════════════════
@@ -1815,6 +1816,7 @@ function CallDock() {
 }
 
 function CallStage() {
+  const { features } = usePrivatePermissions();
   const state = useFx5();
   const call = state.call;
   useCallClock(call.status === "live");
@@ -1832,7 +1834,7 @@ function CallStage() {
     [state.people, state.online, call.participants],
   );
 
-  const send = () => { fx5.sendCallText(draft); setDraft(""); };
+  const send = () => { if (!features.chat) return; fx5.sendCallText(draft); setDraft(""); };
 
   return (
     <div className={`call-stage fx-${call.fx}`}>
@@ -1862,6 +1864,7 @@ function CallStage() {
         </div>
 
         <div className="call-side">
+          {features.chat ? (
           <div className="call-chat" ref={chatRef}>
             {call.chat.length ? (
               call.chat.map((message) => (
@@ -1873,6 +1876,11 @@ function CallStage() {
             ) : (<span className="eyebrow">CALL CHAT</span>)}
           </div>
 
+          ) : (
+          <p role="status">
+          CHAT is not included in your access.
+          </p>
+          )}
           <div className="side-bottom">
             {call.inviteOpen ? (
               <div className="invite-list">
@@ -1893,10 +1901,11 @@ function CallStage() {
                 className="fx5-input"
                 value={draft}
                 placeholder="type in call chat…"
+                disabled={!features.chat}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => { if (event.key === "Enter") send(); }}
               />
-              <EffBtn kind="primary" onClick={send} disabled={!draft.trim()}>SEND</EffBtn>
+              <EffBtn kind="primary" onClick={send} disabled={!features.chat || !draft.trim()}>SEND</EffBtn>
             </div>
 
             <div className="composer-row">
