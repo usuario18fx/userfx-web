@@ -51,6 +51,14 @@ const observer=new ResizeObserver(resize);observer.observe(el);resize();
 loader.load(file,(gltf)=>{
 if(dead)return;
 model=gltf.scene;
+// The exported file contains a textured rectangular backdrop (4 vertices).
+// Hide it, keeping only the detailed crown mesh.
+model.traverse((object)=>{
+if(object instanceof THREE.Mesh){
+const count=object.geometry.getAttribute("position")?.count ?? 0;
+if(count<=4)object.visible=false;
+}
+});
 const bounds=new THREE.Box3().setFromObject(model);
 const size=new THREE.Vector3();bounds.getSize(size);
 const center=new THREE.Vector3();bounds.getCenter(center);
