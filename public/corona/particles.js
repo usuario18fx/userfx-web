@@ -25,9 +25,12 @@ async function main() {
     precision highp float;
     attribute vec3 position;
     attribute float grain;
+    attribute vec3 color;
+    varying vec3 grainColor;
     uniform float aspect, zoom, pixelRatio;
     varying float light;
     void main() {
+      grainColor = color;
       float depth = 4.7-position.z;
       float offset = aspect>1.15 ? -.32 : 0.;
       gl_Position = vec4(position.x*2.7*zoom/aspect+offset*depth,
@@ -39,10 +42,11 @@ async function main() {
   gl.attachShader(program, shader(gl.FRAGMENT_SHADER, `
     precision mediump float;
     varying float light;
+    varying vec3 grainColor;
     void main() {
       float r=length(gl_PointCoord-.5);
       if(r>.48) discard;
-      gl_FragColor=vec4(mix(vec3(.035,.14,.30),vec3(.33,.73,1.),light), .65*(1.-r));
+      gl_FragColor=vec4(grainColor*(.5+light*.8), .65*(1.-r));
     }
   `));
   gl.linkProgram(program);
@@ -52,7 +56,32 @@ async function main() {
   if (!response.ok) throw new Error('No se pudo cargar la corona.');
   const source = new Float32Array(await response.arrayBuffer());
   if (!source.length || source.length % 3) throw new Error('Datos de corona incompletos.');
-  const count = Math.min(source.length / 3, 26000);
+  // Sample the actual transparent rose asset, retaining its red petals and green leaves.
+  const rose = await new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('No se pudo cargar rosa1.png.'));
+    image.src = '../assets/iconos/rosa1.png';
+  });
+  const samplingCanvas = document.createElement('canvas');
+  samplingCanvas.width = 384;
+  samplingCanvas.height = Math.max(1, Math.round(384 * rose.naturalHeight / rose.naturalWidth));
+  const sampling = samplingCanvas.getContext('2d', { willReadFrequently: true });
+  if (!sampling) throw new Error('No se pudo preparar la rosa.');
+  sampling.drawImage(rose, 0, 0, samplingCanvas.width, samplingCanvas.height);
+  const pixels = sampling.getImageData(0, 0, samplingCanvas.width, samplingCanvas.height).data;
+  const rosePixels = [];
+  for (let y = 0; y < samplingCanvas.height; y++) {
+    for (let x = 0; x < samplingCanvas.width; x++) {
+      const index = (y * samplingCanvas.width + x) * 4;
+      if (pixels[index + 3] > 64) rosePixels.push([x, y, pixels[index], pixels[index + 1], pixels[index + 2]]);
+    }
+  }
+  if (!rosePixels.length) throw new Error('La imagen de la rosa está vacía.');
+  const crownCount = Math.min(source.length / 3, 22000);
+  const roseCount = Math.min(rosePixels.length, 10000);
+  const count = crownCount + roseCount;
+  const colors = new Float32Array(count * 3);
   const home = new Float32Array(count * 3);
   const positions = new Float32Array(count * 3);
   const velocity = new Float32Array(count * 3);
@@ -62,8 +91,18 @@ async function main() {
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   const FLOOR = -1.38;
   for (let i = 0; i < count; i++) {
-    const index = Math.floor(i * (source.length / 3) / count) * 3;
-    home.set(source.subarray(index, index + 3), i * 3);
+    if (i < crownCount) {
+      const index = Math.floor(i * (source.length / 3) / crownCount) * 3;
+      home.set([source[index] * .66, source[index + 1] * .66, source[index + 2] * .66], i * 3);
+      colors.set([.22, .60, 1], i * 3);
+    } else {
+      const pixel = rosePixels[Math.floor((i - crownCount) * rosePixels.length / roseCount)];
+      const luminance = (pixel[2] + pixel[3] + pixel[4]) / 765;
+      home.set([(pixel[0] / samplingCanvas.width - .5) * 1.9,
+        (.5 - pixel[1] / samplingCanvas.height) * 1.9 * samplingCanvas.height / samplingCanvas.width,
+        (luminance - .5) * .14 + (random() - .5) * .035], i * 3);
+      colors.set([pixel[2] / 255, pixel[3] / 255, pixel[4] / 255], i * 3);
+    }
     grains[i] = random();
     release[i] = random() * .65;
     const angle = random() * Math.PI * 2;
@@ -82,6 +121,12 @@ async function main() {
   const grainAttribute = gl.getAttribLocation(program, 'grain');
   gl.enableVertexAttribArray(grainAttribute);
   gl.vertexAttribPointer(grainAttribute, 1, gl.FLOAT, false, 0, 0);
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+  const colorAttribute = gl.getAttribLocation(program, 'color');
+  gl.enableVertexAttribArray(colorAttribute);
+  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
   const uniforms = Object.fromEntries(['aspect', 'zoom', 'pixelRatio'].map(name => [name, gl.getUniformLocation(program, name)]));
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
@@ -90,9 +135,9 @@ async function main() {
   let dragging = false, moved = false, lastX = 0, lastY = 0, active = true, raf = 0;
   const mouse = { x: 10, y: 10, dx: 0, dy: 0, energy: 0, inside: false };
   function sync() {
-    button.textContent = phase === 'falling' || phase === 'ground' ? 'Regenerar corona' : 'Deshacer corona';
+    button.textContent = phase === 'falling' || phase === 'ground' ? 'Regenerar corona y rosa' : 'Deshacer corona y rosa';
     button.setAttribute('aria-pressed', String(phase === 'falling' || phase === 'ground'));
-    status.textContent = phase === 'ground' ? 'ARENA SUELTA · MUEVE EL MOUSE PARA DISPERSARLA' : phase === 'falling' ? 'GRANOS EN CAÍDA LIBRE' : phase === 'rising' ? 'REGENERANDO CORONA…' : `${count.toLocaleString('es')} GRANOS · PULSA PARA DESHACER`;
+    status.textContent = phase === 'ground' ? 'ARENA SUELTA · MUEVE EL MOUSE PARA DISPERSARLA' : phase === 'falling' ? 'GRANOS EN CAÍDA LIBRE' : phase === 'rising' ? 'REGENERANDO CORONA Y ROSA…' : `${count.toLocaleString('es')} GRANOS · PULSA PARA DESHACER`;
   }
   function transition(next) {
     phase = next; elapsed = 0; hold = 0;
@@ -145,12 +190,17 @@ async function main() {
     const offsetX = aspect > 1.15 ? -.32 : 0;
     const offsetY = aspect > 1.15 ? 0 : .15;
     const angle = yaw + (reduced || dragging ? 0 : Math.sin(now * .00015) * .1);
-    const cy = Math.cos(angle), sy = Math.sin(angle), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const crownRotation = [Math.cos(angle), Math.sin(angle), Math.cos(pitch), Math.sin(pitch)];
+    const roseRotation = [Math.cos(angle * .3), Math.sin(angle * .3), Math.cos(pitch * .3), Math.sin(pitch * .3)];
     for (let i = 0; i < count; i++) {
       const j = i * 3;
-      const hx = home[j] * cy + home[j + 2] * sy;
+      const isRose = i >= crownCount;
+      const [cy, sy, cp, sp] = isRose ? roseRotation : crownRotation;
+      const anchorX = isRose ? .92 : -.64;
+      const anchorY = isRose ? -.48 : .18;
+      const hx = home[j] * cy + home[j + 2] * sy + anchorX;
       const hz = -home[j] * sy + home[j + 2] * cy;
-      const hy = home[j + 1] * cp - hz * sp + (reduced ? 0 : Math.sin(now * .0007) * .025);
+      const hy = home[j + 1] * cp - hz * sp + anchorY + (reduced ? 0 : Math.sin(now * .0007) * .025);
       const tz = home[j + 1] * sp + hz * cp;
       if (phase === 'idle' || (phase === 'falling' && elapsed < release[i])) {
         positions[j] = hx; positions[j + 1] = hy; positions[j + 2] = tz;
