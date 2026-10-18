@@ -21,7 +21,7 @@ let renderer:THREE.WebGLRenderer | undefined;
 let model:THREE.Group | undefined;
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(35,1,.05,100);
-camera.position.set(0,.4,7.4);
+camera.position.set(0,0,7.4);
 const light=new THREE.DirectionalLight("#c5ddff",4.2);
 light.position.set(-2,5,5);scene.add(light);
 const rim=new THREE.DirectionalLight("#317bff",6);
@@ -56,8 +56,14 @@ const size=new THREE.Vector3();bounds.getSize(size);
 const center=new THREE.Vector3();bounds.getCenter(center);
 if(Math.max(size.x,size.y,size.z)<.0001)return;
 model.position.sub(center);
-const scale=3.6/Math.max(size.x,size.y,size.z);
-const pivot=new THREE.Group();pivot.add(model);pivot.scale.setScalar(scale);
+// The supplied GLB was authored Z-up. Convert its vertical axis to Three.js Y-up.
+const orientation=new THREE.Group();
+orientation.rotation.x=-Math.PI/2;
+orientation.add(model);
+const scale=3.0/Math.max(size.x,size.y,size.z);
+const pivot=new THREE.Group();
+pivot.add(orientation);
+pivot.scale.setScalar(scale);
 scene.add(pivot);
 model=pivot;
 setReady(true);
@@ -65,7 +71,7 @@ setReady(true);
 const animate=()=>{
 anim=requestAnimationFrame(animate);
 const t=clamp(latest.current);
-if(model){const spin=Math.max(0,Math.min(1,t/.4));model.rotation.y=spin*Math.PI*1.6;model.rotation.z=Math.sin(t*Math.PI*2)*.06;model.position.y=t*.8+Math.sin(performance.now()*.0014)*.045;}
+if(model){const spin=Math.max(0,Math.min(1,t/.4));model.rotation.y=spin*Math.PI*1.6;model.rotation.z=Math.sin(t*Math.PI*2)*.04;model.position.y=t*.65+Math.sin(performance.now()*.0014)*.04;}
 renderer?.render(scene,camera);
 };
 animate();
