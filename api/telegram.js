@@ -2365,14 +2365,15 @@ Duración: ${record.unlimited ? "Ilimitada" : `${record.days} días`}
 Usa /access para generar otro código.`);
 }
 adminBot.command("access", showManualAccess);
+bot.command("access", showManualAccess);
 adminBot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
 bot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
-          bot.command("access", async (ctx) => {
+          bot.command("permissions", async (ctx) => {
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
             try {
               let accessTarget = getCommandArg(ctx);
-              if (!accessTarget) return showManualAccess(ctx);
+              if (!accessTarget) return ctx.reply("Uso: /permissions @username");
               if (/^\d{5,20}$/.test(accessTarget)) {
                 try {
                   const chat = await ctx.telegram.getChat(accessTarget);
@@ -2382,7 +2383,7 @@ bot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
                 }
               }
               const parsed = normalizeTelegramFxUsername(accessTarget);
-              if (!parsed) return await ctx.reply("Uso: /access @username");
+              if (!parsed) return await ctx.reply("Uso: /permissions @username");
               const record = await getTelegramFxAccess(parsed.normalized);
               const mask = telegramFxMask(record);
               await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
@@ -2497,7 +2498,7 @@ bot.command("users", async (ctx) => {
         return `${index + 1}. ${row.username || "@unknown"} · ${mask ? "✅" : "⛔"} · ${mask.toString(2).padStart(5, "0")}`;
       })
       .join("\n");
-    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUsa /access @username para editar.`);
+    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUsa /permissions @username para editar.`);
   } catch (error) {
     logger.error("TELEGRAMFX USERS ERROR", {
       ...getTelegramError(error),
