@@ -89,7 +89,7 @@ async function main() {
   const release = new Float32Array(count);
   let seed = 7123;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
-  const FLOOR = -1.38;
+  const FLOOR = -1.38 / 1.4;
   for (let i = 0; i < count; i++) {
     if (i < crownCount) {
       const index = Math.floor(i * (source.length / 3) / crownCount) * 3;
@@ -131,7 +131,7 @@ async function main() {
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
   gl.clearColor(0, 0, 0, 0);
-  const zoom = 1;
+  const zoom = 1.4;
   let phase = 'rising', elapsed = 0, hold = 0, yaw = -.2, pitch = .08;
   let dragging = false, moved = false, lastX = 0, lastY = 0, active = true, raf = 0;
   const mouse = { x: 10, y: 10, dx: 0, dy: 0, energy: 0, inside: false };
