@@ -1,0 +1,279 @@
+/* Crown cover is part of the photographic landing, not a separate access gate. */
+.fx-crown-prelude {
+    position: relative;
+    z-index: 1;
+    height: 158svh;
+    min-height: 890px;
+    background: #08090e;
+    color: #f5ede1;
+}
+
+.fx-crown-prelude-sticky {
+    position: sticky;
+    top: 0;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    height: 100svh;
+    min-height: 620px;
+    background:
+        radial-gradient(ellipse at 50% 39%, rgba(14, 62, 132, .24), transparent 50%),
+        linear-gradient(180deg, rgba(7, 9, 16, .78), rgba(7, 9, 16, .93)),
+        url("/wallpaperGeneral.png") center / cover no-repeat;
+}
+
+.fx-crown-prelude-sticky::before {
+    content: "";
+    position: absolute;
+    inset: clamp(13px, 3vw, 40px);
+    z-index: -1;
+    border: 1px solid rgba(207, 179, 120, .13);
+    pointer-events: none;
+}
+
+.fx-crown-prelude-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 1.8vh, 21px);
+    width: min(100% - 42px, 1080px);
+    padding: 86px 12px 90px;
+    text-align: center;
+    transform-origin: center center;
+}
+
+.fx-crown-prelude-eyebrow,
+.fx-crown-prelude-number,
+.fx-crown-prelude-scroll {
+    font-size: clamp(9px, .8vw, 11px);
+    font-weight: 600;
+    letter-spacing: .26em;
+    color: #ceb67b;
+}
+
+.fx-crown-prelude-emblem {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    width: clamp(205px, 29vmin, 390px);
+    aspect-ratio: 1;
+    margin-block: -10px;
+    transform-origin: center 46%;
+    will-change: transform;
+}
+
+.fx-crown-prelude-aura {
+    position: absolute;
+    inset: 1%;
+    border: 1px solid rgba(197, 168, 121, .22);
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(16, 64, 131, .21), transparent 68%);
+    box-shadow: 0 0 0 22px rgba(14, 40, 85, .025), inset 0 0 54px rgba(3, 11, 26, .35);
+    animation: fx-crown-aura 7s ease-in-out infinite alternate;
+}
+
+.fx-crown-prelude-logo {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(1.2);
+    filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .6));
+}
+
+.fx-crown-prelude-crown {
+    position: absolute;
+    z-index: 2;
+    top: 2%;
+    right: 0;
+    display: block;
+    width: 47%;
+    height: 48%;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 15px rgba(18, 80, 171, .35));
+    animation: fx-crown-breathe 3.7s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.fx-crown-prelude-copy {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 100%;
+}
+
+.fx-crown-prelude-copy h2 {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: var(--font-display, "Funnel Display"), sans-serif;
+    font-size: clamp(44px, 7.3vw, 106px);
+    line-height: .91;
+    font-weight: 700;
+    letter-spacing: -.067em;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+
+.fx-crown-prelude-copy h2 span {
+    color: #ceb67b;
+}
+
+.fx-crown-prelude-copy p {
+    max-width: 45ch;
+    margin: 0;
+    font-size: clamp(12px, 1.1vw, 16px);
+    line-height: 1.55;
+    color: rgba(245, 237, 225, .7);
+}
+
+.fx-crown-prelude-enter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-width: 203px;
+    margin-top: 5px;
+    padding: 13px 2px;
+    border-bottom: 1px solid rgba(206, 182, 123, .7);
+    color: #f5ede1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-decoration: none;
+    transition: color .22s, gap .22s;
+}
+
+.fx-crown-prelude-enter span {
+    color: #ceb67b;
+    font-size: 21px;
+}
+
+.fx-crown-prelude-enter:hover,
+.fx-crown-prelude-enter:focus-visible {
+    gap: 44px;
+    color: #ceb67b;
+}
+
+.fx-crown-prelude-scroll {
+    position: absolute;
+    z-index: 2;
+    bottom: 30px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    color: rgba(238, 218, 185, .8);
+    text-decoration: none;
+    transform: translateX(-50%);
+}
+
+.fx-crown-prelude-scroll span {
+    font-size: 20px;
+    animation: fx-crown-cue 2s ease-in-out infinite;
+}
+
+.fx-crown-prelude-number {
+    position: absolute;
+    left: clamp(23px, 5vw, 88px);
+    bottom: 38px;
+    color: rgba(206, 182, 123, .45);
+}
+
+.fx-crown-prelude a:focus-visible {
+    outline: 2px solid #ceb67b;
+    outline-offset: 5px;
+}
+
+@keyframes fx-crown-aura {
+    from { box-shadow: 0 0 0 15px rgba(14, 40, 85, .02), inset 0 0 54px rgba(3, 11, 26, .35); }
+    to { box-shadow: 0 0 0 26px rgba(14, 40, 85, .065), inset 0 0 54px rgba(3, 11, 26, .24); }
+}
+
+@keyframes fx-crown-breathe {
+    from { translate: 0 0; rotate: -1deg; }
+    to { translate: 0 -12px; rotate: 2deg; }
+}
+
+@keyframes fx-crown-cue {
+    0%, 100% { transform: translateY(-3px); }
+    50% { transform: translateY(4px); }
+}
+
+@media (max-width: 700px) {
+    .fx-crown-prelude {
+        height: 138svh;
+        min-height: 740px;
+    }
+    .fx-crown-prelude-sticky {
+        min-height: 500px;
+    }
+    .fx-crown-prelude-stage {
+        gap: 13px;
+        padding: 80px 0 92px;
+    }
+    .fx-crown-prelude-emblem {
+        width: min(60vw, 300px);
+        margin-block: 0;
+    }
+    .fx-crown-prelude-copy h2 {
+        font-size: clamp(42px, 11vw, 70px);
+    }
+    .fx-crown-prelude-copy p {
+        max-width: 32ch;
+    }
+    .fx-crown-prelude-number {
+        bottom: 36px;
+        left: 25px;
+    }
+    .fx-crown-prelude-scroll {
+        left: auto;
+        right: 21px;
+        bottom: 27px;
+        transform: none;
+    }
+}
+
+@media (max-height: 680px) {
+    .fx-crown-prelude-stage {
+        gap: 8px;
+        padding: 32px 12px 48px;
+    }
+    .fx-crown-prelude-emblem {
+        width: clamp(155px, 25vmin, 250px);
+    }
+    .fx-crown-prelude-copy h2 {
+        font-size: clamp(34px, 6vh, 60px);
+    }
+    .fx-crown-prelude-scroll,
+    .fx-crown-prelude-number {
+        bottom: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-crown-prelude {
+        height: auto;
+        min-height: 0;
+    }
+    .fx-crown-prelude-sticky {
+        position: relative;
+        min-height: 100svh;
+    }
+    .fx-crown-prelude-aura,
+    .fx-crown-prelude-crown,
+    .fx-crown-prelude-scroll span {
+        animation: none;
+    }
+    .fx-crown-prelude-enter {
+        transition: none;
+    }
+}
