@@ -119,7 +119,7 @@ function ScrollScene({ scene, expanded, onToggle }: { scene: Scene; expanded: bo
   const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1.02, 1.1]);
 
   return (
-    <section ref={section} className={"fx-scroll-scene fx-scroll-scene--" + scene.id + (expanded ? " is-expanded" : "")} aria-labelledby={"fx-scene-" + scene.id}>
+    <section ref={section} id={"space-" + scene.id} className={"fx-scroll-scene fx-scroll-scene--" + scene.id + (expanded ? " is-expanded" : "")} aria-labelledby={"fx-scene-" + scene.id}>
       <button type="button" className="fx-scroll-scene-link" aria-expanded={expanded} aria-controls={panelId} aria-label={(expanded ? "Close " : "Read about ") + scene.title} onClick={onToggle}>
         <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={reduced ? { objectPosition: scene.position } : { y: imageY, scale: imageScale, objectPosition: scene.position }} />
         <span className="fx-scroll-scene-shade" aria-hidden="true">
@@ -259,6 +259,16 @@ export default function ScrollStory() {
               ↗
             </span>
           </a>
+          <nav className="fx-scroll-space-nav" aria-label="Jump to the four UserFX spaces">
+            {SCENES.map((scene) => (
+              <a key={scene.id} href={"#space-" + scene.id} className={"fx-scroll-space-nav-link fx-scroll-space-nav-link--" + scene.id} aria-label={"Explore " + scene.title}>
+                <SceneIcon id={scene.id} />
+                <span>
+                  {scene.id === "videocall" ? "MYROOM" : scene.title}
+                </span>
+              </a>
+            ))}
+          </nav>
         </motion.div>
         <a href="#spaces" className="fx-scroll-cue" aria-label="Scroll to discover the spaces">
           <span>
