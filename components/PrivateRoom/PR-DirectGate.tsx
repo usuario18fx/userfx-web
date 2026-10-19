@@ -270,18 +270,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
     }
   }
 
-  /* ─────   LOCAL DEV ACCESS ─────── */
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-
-    const previewGate = new URLSearchParams(window.location.search).get("preview") === "gate" || forceGate;
-
-    setAuthenticated(!previewGate);
-
-    setChecking(false);
-  }, [forceGate]);
-
   /* ─────   SAVED TELEGRAM USERNAME ─────── */
 
   useEffect(() => {
@@ -432,8 +420,6 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   /* ─────   EXISTING ACCESS SESSION ─────── */
 
   useEffect(() => {
-    if (import.meta.env.DEV) return;
-
     if (forceGate) {
       setAuthenticated(false);
 
@@ -505,7 +491,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
   }, [forceGate]);
 
   useEffect(() => {
-    if (import.meta.env.DEV || forceGate || checking || authenticated) return;
+    if (forceGate || checking || authenticated) return;
     if (sessionRestoreAttemptedRef.current) return;
 
     sessionRestoreAttemptedRef.current = true;
