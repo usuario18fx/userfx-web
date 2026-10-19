@@ -2320,13 +2320,18 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
             }
           });
 // ADMIN MANUAL ACCESS — codes are delivered here for manual distribution.
+function manualAccessKeyboard(selectedPlan = "") {
+    const button = (label, plan) => Markup.button.callback(
+        label + (selectedPlan === plan ? " ✔️" : ""), `manual_access:${plan}`
+    );
+    return Markup.inlineKeyboard([
+        [button("SPCL", "special"), button("BSIC", "basic")],
+        [button("PRX0", "pro"), button("VIPX", "vip")],
+    ]);
+}
 async function showManualAccess(ctx) {
     if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
-    return ctx.reply("Selecciona el código que deseas otorgar:", Markup.inlineKeyboard([
-        [Markup.button.callback("SPCL✔️", "manual_access:special"), Markup.button.callback("BSIC✔️", "manual_access:basic")],
-        [Markup.button.callback("PRX0✔️", "manual_access:pro"), Markup.button.callback("VIPX✔️", "manual_access:vip")],
-    ]));
-}
+    return ctx.reply("Selecciona el código que deseas otorgar:", manualAccessKeyboard());}
 async function handleManualAccess(ctx) {
     if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
     await ctx.answerCbQuery();
@@ -2362,7 +2367,7 @@ CHAT: ${flag(features.chat)}
 MULTIMEDIA: ${flag(features.multimedia)}
 Duración: ${record.unlimited ? "Ilimitada" : `${record.days} días`}
 
-Usa /access para generar otro código.`);
+Usa /access para generar otro código.`, manualAccessKeyboard(planId));
 }
 adminBot.command("access", showManualAccess);
 bot.command("access", showManualAccess);
