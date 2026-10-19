@@ -131,7 +131,8 @@ async function main() {
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
   gl.clearColor(0, 0, 0, 0);
-  let phase = 'rising', elapsed = 0, hold = 0, zoom = 1, yaw = -.2, pitch = .08;
+  const zoom = 1;
+  let phase = 'rising', elapsed = 0, hold = 0, yaw = -.2, pitch = .08;
   let dragging = false, moved = false, lastX = 0, lastY = 0, active = true, raf = 0;
   const mouse = { x: 10, y: 10, dx: 0, dy: 0, energy: 0, inside: false };
   function sync() {
@@ -153,7 +154,7 @@ async function main() {
   }
   function toggle() { transition(phase === 'falling' || phase === 'ground' ? 'rising' : 'falling'); }
   button.onclick = toggle;
-  document.querySelector('#reset').onclick = () => { yaw = -.2; pitch = .08; zoom = 1; mouse.energy = 0; transition('rising'); };
+  document.querySelector('#reset').onclick = () => { yaw = -.2; pitch = .08; mouse.energy = 0; transition('rising'); };
   canvas.onpointerdown = event => {
     dragging = true; moved = false; lastX = event.clientX; lastY = event.clientY;
     canvas.setPointerCapture(event.pointerId);
@@ -179,7 +180,6 @@ async function main() {
   canvas.onpointerleave = () => { mouse.inside = false; mouse.energy = 0; };
   canvas.onpointerup = () => { dragging = false; if (!moved) toggle(); };
   canvas.onpointercancel = () => { dragging = false; mouse.inside = false; };
-  canvas.addEventListener('wheel', event => { event.preventDefault(); zoom = Math.max(.6, Math.min(1.5, zoom - event.deltaY * .0006)); }, { passive: false });
   document.addEventListener('keydown', event => {
     if (/^(BUTTON|A|INPUT)$/.test(event.target.tagName)) return;
     if (event.code === 'Space') { event.preventDefault(); toggle(); }
