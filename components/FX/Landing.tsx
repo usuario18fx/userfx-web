@@ -3,6 +3,7 @@
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { ScrollProgress, SmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
+import CrownPrelude from "./CrownPrelude";
 import {
   SectionFaq,
   SectionMethod,
@@ -24,6 +25,7 @@ export default function Landing() {
       <MenuOverlay />
       <div className="fx-landing">
         <main>
+          <CrownPrelude />
           <ScrollStory />
           <SectionMethod />
           <SectionTrainers />
