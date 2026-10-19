@@ -159,7 +159,7 @@ export default function App() {
 
   const directAccess = new URLSearchParams(window.location.search);
   if (!coverDismissed && (route === "#/" || route === "#/corona") && !directAccess.has("code") && !directAccess.has("handoff")) {
-    return <CrownLanding onEnter={() => { setCoverDismissed(true); window.scrollTo(0, 0); }} />;
+    return <CrownLanding onEnter={() => { setCoverDismissed(true); window.location.hash = "#/private-room"; setRoute("#/private-room"); window.scrollTo(0, 0); }} />;
   }
   return <VaultHome />;
 }
