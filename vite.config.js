@@ -14,25 +14,16 @@
                   res.end(JSON.stringify({ ok: true, local: true }));
                 });
 
+                // Vite has no backend session validation: deny access instead of granting a test membership.
                 server.middlewares.use("/api/access-session", (req, res, next) => {
                   if (req.method !== "GET") return next();
-
-                  res.statusCode = 200;
+                  res.statusCode = 401;
                   res.setHeader("Content-Type", "application/json; charset=utf-8");
                   res.setHeader("Cache-Control", "no-store");
-                  res.end(
-                    JSON.stringify({
-                      authenticated: true,
-                      planId: "vip",
-                      accessMode: "telegram_identity",
-                      accessLabel: "SPCL",
-                      memberAccess: true,
-                      features: { oncam: true, rec: true, chat: true, multimedia: true },
-                      unlimitedAccess: true,
-                      remainingAccesses: null,
-                      expiresAt: "2099-12-31T23:59:59.000Z",
-                    }),
-                  );
+                  res.end(JSON.stringify({
+                    authenticated: false,
+                    features: { oncam: false, rec: false, chat: false, multimedia: false },
+                  }));
                 });
               },
             };
