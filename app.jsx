@@ -1,3 +1,4 @@
+import VaultAccessOptions from "./components/VaultAccessOptions/VaultAccessOptions";
 import CrownLanding from "./components/CrownLanding/CrownLanding";
 import { PrivatePermissionsProvider, PrivateFeatureGate } from "./components/PrivateRoom/PR-Permissions";
           import { useEffect, useState } from "react";
@@ -161,5 +162,8 @@ export default function App() {
   if (!coverDismissed && (route === "#/" || route === "#/corona") && !directAccess.has("code") && !directAccess.has("handoff")) {
     return <CrownLanding onEnter={() => { setCoverDismissed(true); window.location.hash = "#/vault"; setRoute("#/vault"); window.scrollTo(0, 0); }} />;
   }
-  return <VaultHome />;
+  return <>
+    {route === "#/vault" && <VaultAccessOptions />}
+    <VaultHome />
+  </>;
 }
