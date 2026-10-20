@@ -1,8 +1,951 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070b12"><meta name="description" content="CORONA DARK — una corona azul que se transforma en miles de partículas. Una experiencia interactiva de FX."><title>FX · CORONA DARK</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#070b12;color:#dee7f2;font:14px Arial,sans-serif;overflow:hidden;height:100dvh}body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 30% 37%,#25303b 0%,#121c27 28%,#080e16 60%,#04070c 100%);pointer-events:none}.floor{position:absolute;inset:52% 0 0;background:radial-gradient(ellipse at 28% 62%,#5e79901c,transparent 58%);pointer-events:none}.shadow{position:absolute;width:40vw;height:9vh;left:7%;top:73%;border-radius:50%;background:#0009;filter:blur(22px);transform:rotate(-7deg);pointer-events:none}canvas{position:absolute;inset:0;width:100vw;height:100dvh;display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}header{position:absolute;top:34px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{font-size:24px;font-style:italic;font-weight:700;letter-spacing:-3px}.edition,#status{font-size:9px;letter-spacing:.21em;color:#8193a3}.title{position:absolute;left:59%;top:43%;pointer-events:none;animation:arrive 1.8s ease both}.title small{display:block;color:#698bad;font-size:9px;letter-spacing:.4em;margin-bottom:19px}h1{font-size:clamp(28px,4.3vw,68px);font-weight:200;letter-spacing:.13em;margin:0;color:#c6d2df;line-height:1.05}.subtitle{font-size:clamp(11px,1.1vw,16px);letter-spacing:.65em;color:#5e7388;margin:13px 0 24px 4px}.line{width:36px;height:1px;background:#587d9b;margin:28px 0}.caption{font-size:11px;line-height:1.8;color:#718397;letter-spacing:.07em}.controls{position:absolute;bottom:40px;left:40px;right:40px;display:flex;align-items:end;justify-content:space-between;gap:20px}button{font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid #50678070;color:#bccbdc;padding:13px 18px;cursor:pointer;transition:background .2s,border-color .2s}button:hover{background:#719cc01a;border-color:#85b4db}button:focus-visible{outline:2px solid #9bd0ff;outline-offset:5px}#reset{border-color:transparent;color:#6e8399;margin-left:8px}.hint{font-size:9px;line-height:1.8;letter-spacing:.1em;color:#687d91;text-align:right;margin:0}#status{position:absolute;left:40px;bottom:107px;max-width:70%;line-height:1.5}@keyframes arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@media(max-width:700px),(max-aspect-ratio:115/100){header{left:24px;right:24px;top:24px}.edition{font-size:8px}.title{top:68%;left:0;width:100%;text-align:center}.title small,.line,.caption{display:none}h1{font-size:32px;letter-spacing:.2em}.subtitle{font-size:10px;letter-spacing:.55em;margin:10px 0}.shadow{left:15%;width:70vw;top:57%;height:6vh}.controls{left:20px;right:20px;bottom:24px;justify-content:center}.hint{display:none}#status{left:0;bottom:85px;max-width:100%;width:100%;text-align:center;font-size:8px}button{font-size:9px;padding:12px}#reset{margin-left:0}}@media(prefers-reduced-motion:reduce){.title{animation:none}button{transition:none}}
 
-.enter-vault{display:inline-block;margin-top:26px;padding:15px 23px;border:1px solid #85b4db80;background:#29435c30;color:#dcefff;pointer-events:auto;text-decoration:none;font:11px Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;cursor:pointer}.enter-vault:hover{background:#456c9140}.enter-vault:focus-visible{outline:2px solid #9bd0ff;outline-offset:5px}.title{pointer-events:none}.enter-vault{pointer-events:auto}@media(max-width:700px),(max-aspect-ratio:115/100){.title{top:64%}.enter-vault{margin-top:14px;padding:12px 20px}.controls{bottom:16px}#status{bottom:68px}}
-.userfx-logo{position:absolute;left:0;bottom:100%;width:220px;height:140px;object-fit:contain;margin-bottom:24px;filter:drop-shadow(0 0 16px #1863dc55)}@media(max-width:700px),(max-aspect-ratio:115/100){.userfx-logo{left:50%;transform:translateX(-50%);width:150px;height:90px;margin-bottom:16px}}
-</style></head><body><div class="floor"></div><div class="shadow"></div><canvas aria-label="Corona azul y rosa en partículas. Arrastra para girarlas; pulsa para dejar caer las partículas. Usa espacio para deshacer y Escape para restablecer." id="c" tabindex="0"></canvas><header><span class="brand">ƒx</span><span class="edition">INTERACTIVE EXPERIENCE / 01</span></header><main class="title"><img class="userfx-logo" src="../assets/userfx-logo-sin.png" alt="USER FX" width="220" height="140" draggable="false"><small>FX · DIGITAL EXPERIMENT</small><h1>CORONA</h1><p class="subtitle">D A R K</p><div class="line"></div><p class="caption">Corona y rosa. Miles de posibilidades.<br>Todo vuelve a su origen.</p><a class="enter-vault" id="enter-vault" href="../../#/vault" target="_top">Entrar al vault ↗</a></main><span id="status" role="status">FORMANDO CORONA…</span><div class="controls"><div><button id="burst" aria-pressed="false">Deshacer corona</button><button id="reset">Restablecer</button></div><p class="hint">ARRASTRA PARA GIRAR · MUEVE EL MOUSE SOBRE LA ARENA</p></div><script src="particles.js?v=fixed-size" defer></script></html>
+<html lang="es">
+
+
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <meta name="theme-color" content="#070b12">
+
+    <meta name="description"
+
+        content="CORONA DARK — una corona azul que se transforma en miles de partículas. Una experiencia interactiva de FX.">
+
+    <title>FX · CORONA DARK</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box
+
+        }
+
+
+
+        body {
+
+            margin: 0;
+
+            background: #070b12;
+
+            color: #dee7f2;
+
+            font: 14px Arial, sans-serif;
+
+            overflow: hidden;
+
+            height: 100dvh
+
+        }
+
+
+
+        body:before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            background: radial-gradient(ellipse at 30% 37%, #25303b 0%, #121c27 28%, #080e16 60%, #04070c 100%);
+
+            pointer-events: none
+
+        }
+
+
+
+        .floor {
+
+            position: absolute;
+
+            inset: 52% 0 0;
+
+            background: radial-gradient(ellipse at 28% 62%, #5e79901c, transparent 58%);
+
+            pointer-events: none
+
+        }
+
+
+
+        .shadow {
+
+            position: absolute;
+
+            width: 40vw;
+
+            height: 9vh;
+
+            left: 7%;
+
+            top: 73%;
+
+            border-radius: 50%;
+
+            background: #0009;
+
+            filter: blur(22px);
+
+            transform: rotate(-7deg);
+
+            pointer-events: none
+
+        }
+
+
+
+        canvas {
+
+            position: absolute;
+
+            inset: 0;
+
+            width: 100vw;
+
+            height: 100dvh;
+
+            display: block;
+
+            touch-action: none;
+
+            cursor: grab
+
+        }
+
+
+
+        canvas:active {
+
+            cursor: grabbing
+
+        }
+
+
+
+        header {
+
+            position: absolute;
+
+            top: 34px;
+
+            left: 40px;
+
+            right: 40px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            pointer-events: none
+
+        }
+
+
+
+        .brand {
+
+            font-size: 24px;
+
+            font-style: italic;
+
+            font-weight: 700;
+
+            letter-spacing: -3px
+
+        }
+
+
+
+        .edition,
+
+        #status {
+
+            font-size: 9px;
+
+            letter-spacing: .21em;
+
+            color: #8193a3
+
+        }
+
+
+
+        .title {
+
+            position: absolute;
+
+            left: 59%;
+
+            top: 43%;
+
+            pointer-events: none;
+
+            animation: arrive 1.8s ease both
+
+        }
+
+
+
+        .title small {
+
+            display: block;
+
+            color: #698bad;
+
+            font-size: 9px;
+
+            letter-spacing: .4em;
+
+            margin-bottom: 19px
+
+        }
+
+
+
+        h1 {
+
+            font-size: clamp(28px, 4.3vw, 68px);
+
+            font-weight: 200;
+
+            letter-spacing: .13em;
+
+            margin: 0;
+
+            color: #c6d2df;
+
+            line-height: 1.05
+
+        }
+
+
+
+        .subtitle {
+
+            font-size: clamp(11px, 1.1vw, 16px);
+
+            letter-spacing: .65em;
+
+            color: #5e7388;
+
+            margin: 13px 0 24px 4px
+
+        }
+
+
+
+        .line {
+
+            width: 36px;
+
+            height: 1px;
+
+            background: #587d9b;
+
+            margin: 28px 0
+
+        }
+
+
+
+        .caption {
+
+            font-size: 11px;
+
+            line-height: 1.8;
+
+            color: #718397;
+
+            letter-spacing: .07em
+
+        }
+
+
+
+        .controls {
+
+            position: absolute;
+
+            bottom: 40px;
+
+            left: 40px;
+
+            right: 40px;
+
+            display: flex;
+
+            align-items: end;
+
+            justify-content: space-between;
+
+            gap: 20px
+
+        }
+
+
+
+        button {
+
+            font: 10px Arial, sans-serif;
+
+            letter-spacing: .12em;
+
+            text-transform: uppercase;
+
+            background: transparent;
+
+            border: 1px solid #50678070;
+
+            color: #bccbdc;
+
+            padding: 13px 18px;
+
+            cursor: pointer;
+
+            transition: background .2s, border-color .2s
+
+        }
+
+
+
+        button:hover {
+
+            background: #719cc01a;
+
+            border-color: #85b4db
+
+        }
+
+
+
+        button:focus-visible {
+
+            outline: 2px solid #9bd0ff;
+
+            outline-offset: 5px
+
+        }
+
+
+
+        #reset {
+
+            border-color: transparent;
+
+            color: #6e8399;
+
+            margin-left: 8px
+
+        }
+
+
+
+        .hint {
+
+            font-size: 9px;
+
+            line-height: 1.8;
+
+            letter-spacing: .1em;
+
+            color: #687d91;
+
+            text-align: right;
+
+            margin: 0
+
+        }
+
+
+
+        #status {
+
+            position: absolute;
+
+            left: 40px;
+
+            bottom: 107px;
+
+            max-width: 70%;
+
+            line-height: 1.5
+
+        }
+
+
+
+        @keyframes arrive {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(12px)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: none
+
+            }
+
+        }
+
+
+
+        @media(max-width:700px), (max-aspect-ratio:115/100) {
+
+            header {
+
+                left: 24px;
+
+                right: 24px;
+
+                top: 24px
+
+            }
+
+
+
+            .edition {
+
+                font-size: 8px
+
+            }
+
+
+
+            .title {
+
+                top: 68%;
+
+                left: 0;
+
+                width: 100%;
+
+                text-align: center
+
+            }
+
+
+
+            .title small,
+
+            .line,
+
+            .caption {
+
+                display: none
+
+            }
+
+
+
+            h1 {
+
+                font-size: 32px;
+
+                letter-spacing: .2em
+
+            }
+
+
+
+            .subtitle {
+
+                font-size: 10px;
+
+                letter-spacing: .55em;
+
+                margin: 10px 0
+
+            }
+
+
+
+            .shadow {
+
+                left: 15%;
+
+                width: 70vw;
+
+                top: 57%;
+
+                height: 6vh
+
+            }
+
+
+
+            .controls {
+
+                left: 20px;
+
+                right: 20px;
+
+                bottom: 24px;
+
+                justify-content: center
+
+            }
+
+
+
+            .hint {
+
+                display: none
+
+            }
+
+
+
+            #status {
+
+                left: 0;
+
+                bottom: 85px;
+
+                max-width: 100%;
+
+                width: 100%;
+
+                text-align: center;
+
+                font-size: 8px
+
+            }
+
+
+
+            button {
+
+                font-size: 9px;
+
+                padding: 12px
+
+            }
+
+
+
+            #reset {
+
+                margin-left: 0
+
+            }
+
+        }
+
+
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .title {
+
+                animation: none
+
+            }
+
+
+
+            button {
+
+                transition: none
+
+            }
+
+        }
+
+
+
+        .enter-vault {
+
+            display: inline-block;
+
+            margin-top: 26px;
+
+            padding: 15px 23px;
+
+            border: 1px solid #85b4db80;
+
+            background: #29435c30;
+
+            color: #dcefff;
+
+            pointer-events: auto;
+
+            text-decoration: none;
+
+            font: 11px Arial, sans-serif;
+
+            letter-spacing: .2em;
+
+            text-transform: uppercase;
+
+            cursor: pointer
+
+        }
+
+
+
+        .enter-vault:hover {
+
+            background: #456c9140
+
+        }
+
+
+
+        .enter-vault:focus-visible {
+
+            outline: 2px solid #9bd0ff;
+
+            outline-offset: 5px
+
+        }
+
+
+
+        .title {
+
+            pointer-events: none
+
+        }
+
+
+
+        .enter-vault {
+
+            pointer-events: auto
+
+        }
+
+        .logo img{
+
+  position:absolute;
+
+  width:48px;
+
+  height:48px;
+
+  object-fit:contain;
+
+  transition:
+
+    opacity 220ms ease,
+
+    transform 280ms ease;
+
+}
+
+        @media(max-width:700px), (max-aspect-ratio:115/100) {
+
+            .title { top: 64%
+
+            }
+
+            .enter-vault { margin-top: 14px; padding: 12px 20px
+
+            }
+
+            .controls { bottom: 16px
+
+            }
+
+            #status { bottom: 68px
+
+            }        }
+
+    
+#icon-particles{position:fixed;inset:0;z-index:3;pointer-events:none;cursor:default}
+header .brand{visibility:hidden;width:110px;height:65px}
+.controls{z-index:5}.controls>div{display:flex;flex-wrap:wrap;gap:5px}.title{z-index:4}
+@media(max-width:700px){.controls{bottom:12px}.controls button{padding:9px 8px;font-size:8px}#status{bottom:100px}.edition{max-width:55%;text-align:right}}
+
+/* POSICIONAMIENTO: editar estas clases. No cambia el tamaño de la corona. */
+.fx-rosa { position:fixed; left:20vw; top:16vh; width:min(30vw,420px); height:1px; visibility:hidden; pointer-events:none; }
+.fx-logo { position:fixed; left:40px; top:34px; width:110px; height:65px; visibility:hidden; pointer-events:none; }
+/* Suelo compartido: top = altura; --profundidad = dispersión vertical. */
+.fx-suelo { position:fixed; top:82vh; left:0; width:0; height:0; --profundidad:35px; visibility:hidden; pointer-events:none; }
+@media(max-width:700px),(max-aspect-ratio:115/100){
+ .fx-rosa { left:20vw; top:12vh; width:60vw; }
+ .fx-logo { left:24px; top:24px; }
+}
+
+/* CONTROLES SIEMPRE DENTRO DE LA VENTANA */
+.controls { position:fixed; left:24px; right:24px; bottom:max(18px,env(safe-area-inset-bottom)); align-items:center; gap:12px; flex-wrap:wrap; }
+.controls>div { display:flex; flex-wrap:wrap; gap:6px; max-width:100%; }
+.controls button { margin:0; padding:11px 13px; }
+.hint { flex:1; min-width:180px; font-size:8px; }
+#status { position:fixed; left:24px; bottom:110px; max-width:calc(100vw - 48px); font-size:9px; }
+.fx-suelo { top:76vh; }
+@media(max-height:650px){
+ .controls { bottom:12px; }
+ .hint { display:none; }
+ .controls button { padding:9px 11px; font-size:9px; }
+ #status { bottom:72px; }
+ .fx-suelo { top:calc(100dvh - 100px); }
+ .title { top:32%; }
+ .title .caption { margin:12px 0; }
+ .title .line { margin:16px 0; }
+ .enter-vault { margin-top:12px; padding:11px 16px; }
+}
+@media(max-width:700px),(max-aspect-ratio:115/100){
+ .controls { left:12px; right:12px; justify-content:center; }
+ .controls button { padding:9px 8px; font-size:8px; }
+ .hint { display:none; }
+ #status { left:12px; width:calc(100% - 24px); max-width:none; bottom:110px; text-align:center; }
+ .fx-suelo { top:calc(100dvh - 145px); }
+}
+
+/* AJUSTES: menos X = izquierda; menos Y = arriba. */
+:root {
+ --rosa-x:16vw; --rosa-y:10vh; --rosa-tamano:36vw;
+ --rosa-brillo:1.4; --rosa-contraste:1.15; --rosa-saturacion:1.3;
+ --rosa-tono:0deg; --rosa-desenfoque:0px; --rosa-opacidad:1;
+ --logo-x:40px; --logo-y:34px; --logo-tamano:110px;
+ --logo-brillo:1; --logo-contraste:1; --logo-saturacion:1;
+ --logo-tono:0deg; --logo-desenfoque:0px; --logo-opacidad:1;
+}
+#fx-rosa-position {left:var(--rosa-x);top:var(--rosa-y);width:var(--rosa-tamano);}
+#fx-logo-position {left:var(--logo-x);top:var(--logo-y);width:var(--logo-tamano);}
+#fx-shared-floor {--profundidad:35px;}
+@media(max-width:700px){
+ :root {--rosa-x:15vw;--rosa-y:12vh;--rosa-tamano:70vw;--logo-x:24px;--logo-y:24px;}
+ #fx-shared-floor {--profundidad:25px;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+    <div class="floor">
+
+    </div>
+
+    <div class="shadow">
+
+    </div><canvas aria-label="Corona azul 3D. Arrastra para girarla; pulsa para dejar caer las partículas. Usa espacio para deshacer y Escape para restablecer." id="c" tabindex="0"></canvas>
+
+    <header><span class="brand" aria-hidden="true"></span><span class="edition">
+
+    INTERACTIVE EXPERIENCE / 01
+
+    </span>
+
+    </header>
+
+    <main class="title">
+
+      
+
+        <small>
+
+            FX · DIGITAL EXPERIMENT
+
+        </small>
+
+        <h1>
+
+        CORONA
+
+        </h1>
+
+        <p class="subtitle">
+
+        D A R K
+
+        </p>
+
+        <div class="line">
+
+        </div>
+
+        <p class="caption">
+
+        Una forma. Miles de posibilidades.
+
+        <br>
+
+        Todo vuelve a su origen.
+
+        </p>
+
+        <a class="enter-vault" id="enter-vault" href="/experience" target="_top">
+
+        Entrar al vault ↗
+
+      </a>
+
+    </main><span id="status" role="status">
+
+    FORMANDO CORONA…
+
+    </span>
+
+    <div class="controls">
+
+        <div>
+
+        <button id="burst" aria-pressed="false">
+
+        Deshacer corona
+
+        </button>
+
+        <button id="rose-burst" type="button">Deshacer rosa</button><button id="logo-burst" type="button">Deshacer logo</button><button id="reset">
+
+        Restablecer
+
+        </button>
+
+        </div>
+
+        <p class="hint">
+
+        MUEVE EL MOUSE SOBRE LA ARENA · CLIC PARA REGENERAR
+
+        <br>
+
+        CLIC INDEPENDIENTE EN CADA ICONO
+
+        </p>
+
+    </div>
+
+    <div class="fx-rosa" id="fx-rosa-position" aria-hidden="true"></div>
+<div class="fx-logo" id="fx-logo-position" aria-hidden="true"></div>
+<div class="fx-suelo" id="fx-shared-floor" aria-hidden="true"></div>
+<script>
+let fxFloorCache=null;window.fxParticleFloor=()=>{if(!fxFloorCache){const e=document.getElementById('fx-shared-floor');fxFloorCache={y:e.getBoundingClientRect().top,spread:parseFloat(getComputedStyle(e).getPropertyValue('--profundidad'))||32};}return fxFloorCache;};window.addEventListener('resize',()=>{fxFloorCache=null;});
+document.querySelector('#enter-vault').addEventListener('click',e=>{if(parent!==window){e.preventDefault();parent.postMessage({type:'userfx:enter-vault'},location.origin)}});
+(async()=>{
+const canvas=document.querySelector('#c'),status=document.querySelector('#status'),gl=canvas.getContext('webgl',{alpha:true,antialias:true});if(!gl)throw Error('WebGL no disponible');
+const vs=`precision mediump float;attribute vec3 a;uniform float aspect;varying mediump float light;void main(){float d=4.7-a.z;float shift=aspect>1.15?-.32:0.;gl_Position=vec4(a.x*2.7/aspect+shift*d,a.y*2.7+(aspect>1.15?0.:.15)*d,d-.2,d);gl_PointSize=clamp(7.5/d,1.,3.5);light=clamp(.35+(a.z+1.5)*.28,0.,1.);}`;
+const fs=`precision mediump float;varying mediump float light;void main(){float r=length(gl_PointCoord-.5);if(r>.5)discard;gl_FragColor=vec4(mix(vec3(.025,.10,.22),vec3(.25,.69,1.),light),(.45+light*.4)*(1.-r));}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);
+const response=await fetch('corona.bin');if(!response.ok)throw Error('Falta corona.bin');const home=new Float32Array(await response.arrayBuffer());const pos=new Float32Array(home.length),vel=new Float32Array(home.length),rest=new Float32Array(home.length/3);const count=rest.length;
+const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,pos,gl.DYNAMIC_DRAW);const attr=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,3,gl.FLOAT,false,0,0);const aspectUniform=gl.getUniformLocation(program,'aspect');gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);gl.clearColor(0,0,0,0);
+let cachedYaw=NaN,cachedPitch=NaN;let yaw=-.2,pitch=.08,mode='idle',elapsed=0,last=0,drag=null,raf=0;const mouse={x:-10000,y:-10000};const btn=document.querySelector('#burst');const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const tmp=new Float32Array(3);function target(i,cy,sy,cp,sp){const x=home[i],y=home[i+1],z=home[i+2],rx=cy*x+sy*z,rz=-sy*x+cy*z;tmp[0]=rx;tmp[1]=cp*y-sp*rz;tmp[2]=sp*y+cp*rz;return tmp}
+function reset(){yaw=-.2;pitch=.08;mode='rising';elapsed=0;sync()}
+function sync(){btn.textContent=mode==='falling'||mode==='ground'?'Regenerar corona':'Deshacer corona';btn.setAttribute('aria-pressed',String(mode==='falling'||mode==='ground'))}
+function toggle(){mode=mode==='falling'||mode==='ground'?'rising':'falling';elapsed=0;if(mode==='falling')for(let n=0;n<count;n++){const i=n*3;vel[i]=(Math.random()-.5)*1.3;vel[i+1]=Math.random()*.8;vel[i+2]=(Math.random()-.5)*1.1;rest[n]=Math.random()-.5;}sync()}
+function projected(i){const d=4.7-pos[i+2],aspect=innerWidth/innerHeight;return [(pos[i]*2.7/aspect/d+(aspect>1.15?-.32:0)+1)*innerWidth/2,(1-pos[i+1]*2.7/d-(aspect>1.15?0:.15))*innerHeight/2]}
+function hit(x,y){for(let i=0;i<pos.length;i+=36){const p=projected(i);if((p[0]-x)**2+(p[1]-y)**2<196)return true;}return false}
+btn.onclick=toggle;document.querySelector('#reset').onclick=reset;
+canvas.onpointerdown=e=>{if(!hit(e.clientX,e.clientY))return;drag={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};canvas.setPointerCapture(e.pointerId)};
+canvas.onpointermove=e=>{mouse.x=e.clientX;mouse.y=e.clientY;if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>5)drag.moved=true;if(mode==='idle'){yaw+=dx*.008;pitch=Math.max(-1.4,Math.min(1.4,pitch+dy*.008))}drag.x=e.clientX;drag.y=e.clientY};
+canvas.onpointerup=()=>{if(!drag)return;const click=!drag.moved;drag=null;if(click)toggle()};canvas.onpointercancel=()=>drag=null;
+document.addEventListener('pointermove',e=>{mouse.x=e.clientX;mouse.y=e.clientY},{passive:true});document.documentElement.addEventListener('pointerleave',()=>{mouse.x=mouse.y=-10000});
+document.addEventListener('keydown',e=>{if(e.target.closest('button,a,input'))return;if(e.code==='Space'){e.preventDefault();toggle()}if(e.key==='Escape')reset()});
+for(let i=0;i<home.length;i+=3)pos.set(target(i,Math.cos(yaw),Math.sin(yaw),Math.cos(pitch),Math.sin(pitch)),i);
+status.textContent=new Intl.NumberFormat('es').format(count)+' PARTÍCULAS · CALIDAD ORIGINAL';
+function frame(ms){const frameDt=last?Math.min((ms-last)/1000,.1):1/60;last=ms;elapsed+=frameDt;const steps=Math.max(1,Math.ceil(frameDt/(1/30)));const viewWidth=innerWidth,viewHeight=innerHeight;const dirty=mode!=='idle'||yaw!==cachedYaw||pitch!==cachedPitch;const ratio=Math.min(devicePixelRatio,2),w=Math.round(viewWidth*ratio),h=Math.round(viewHeight*ratio);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}const aspect=w/h,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);let error=0;
+const ground=window.fxParticleFloor(),halfW=viewWidth/2,halfH=viewHeight/2,projectionX=2.7/aspect,shift=aspect>1.15?-.32:0,shiftY=aspect>1.15?0:.15,baseFloor=1-2*ground.y/viewHeight-shiftY,floorSpread=2*ground.spread/viewHeight;
+if(dirty){for(let tick=0;tick<steps;tick++){const dt=frameDt/steps,floorDrag=Math.exp(-3.8*dt),returnDrag=Math.exp(-8*dt);error=0;
+for(let n=0;n<count;n++){const i=n*3;
+ if(mode==='idle'){const t=target(i,cy,sy,cp,sp);pos.set(t,i);}
+ else if(mode==='falling'||mode==='ground'){
+  vel[i+1]-=3.8*dt;
+  const d=4.7-pos[i+2],sx=(pos[i]*projectionX/d+shift+1)*halfW,screenY=(1-pos[i+1]*2.7/d-shiftY)*halfH,dx=sx-mouse.x,dy=screenY-mouse.y,dist=Math.abs(dx)<85&&Math.abs(dy)<85?Math.sqrt(dx*dx+dy*dy):1000;
+  if(dist<85&&dist>.1){const f=(1-dist/85)*13*dt;vel[i]+=dx/dist*f;vel[i+1]-=dy/dist*f;vel[i+2]+=Math.sin(n*1.7)*f*.4;}
+  pos[i]+=vel[i]*dt;pos[i+1]+=vel[i+1]*dt;pos[i+2]+=vel[i+2]*dt;
+  const floorY=(baseFloor-rest[n]*floorSpread)*(4.7-pos[i+2])/2.7;
+  if(pos[i+1]<floorY){pos[i+1]=floorY;vel[i+1]=Math.abs(vel[i+1])*.34;if(vel[i+1]<.045)vel[i+1]=0;vel[i]*=floorDrag;vel[i+2]*=floorDrag;}
+  const edgeLeft=(-.96-shift)*(4.7-pos[i+2])/projectionX,edgeRight=(.96-shift)*(4.7-pos[i+2])/projectionX;if(pos[i]<edgeLeft||pos[i]>edgeRight){pos[i]=Math.max(edgeLeft,Math.min(edgeRight,pos[i]));vel[i]*=-.4;}if(Math.abs(pos[i+2])>1.8){pos[i+2]=Math.sign(pos[i+2])*1.8;vel[i+2]*=-.4;}
+ }else{const t=target(i,cy,sy,cp,sp),damp=returnDrag;for(let k=0;k<3;k++){vel[i+k]=(vel[i+k]+(t[k]-pos[i+k])*23*dt)*damp;pos[i+k]+=vel[i+k]*dt;error=Math.max(error,Math.abs(t[k]-pos[i+k]));}}
+}
+}
+cachedYaw=yaw;cachedPitch=pitch;}
+if(mode==='falling'&&elapsed>3){mode='ground';sync()}if(mode==='rising'&&error<.004){mode='idle';vel.fill(0);sync()}
+if(dirty){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferSubData(gl.ARRAY_BUFFER,0,pos);}gl.clear(gl.COLOR_BUFFER_BIT);gl.uniform1f(aspectUniform,aspect);gl.drawArrays(gl.POINTS,0,count);raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);document.addEventListener('visibilitychange',()=>{last=0;});window.addEventListener('pagehide',()=>cancelAnimationFrame(raf),{once:true});
+})().catch(e=>{document.querySelector('#status').textContent=e.message;console.error(e)});
+</script>
+
+
+
+<script>
+(() => {
+  'use strict';
+  const layer=document.createElement('canvas');layer.id='icon-particles';layer.setAttribute('aria-hidden','true');document.body.append(layer);
+  const ctx=layer.getContext('2d');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pointer={x:-1000,y:-1000};const groups=[];let width=innerWidth,height=innerHeight,down=null,last=0,raf=0;
+  const layout={};
+  function refreshLayout(){const styles=getComputedStyle(document.documentElement);for(const kind of ['rose','logo']){const el=document.getElementById(kind==='rose'?'fx-rosa-position':'fx-logo-position'),r=el.getBoundingClientRect();const prefix=kind==='rose'?'rosa':'logo',get=(name,fallback)=>styles.getPropertyValue('--'+prefix+'-'+name).trim()||fallback;layout[kind]={x:r.left,y:r.top,w:r.width,h:r.height,filter:'brightness('+get('brillo','1')+') contrast('+get('contraste','1')+') saturate('+get('saturacion','1')+') hue-rotate('+get('tono','0deg')+') blur('+get('desenfoque','0px')+')',opacity:Math.max(0,Math.min(1,parseFloat(get('opacidad','1'))))};}}
+  refreshLayout();
+  function rect(kind){return layout[kind];}
+  function home(g,p){const r=rect(g.kind);return {x:r.x+p.u*r.w,y:r.y+p.v*r.w/g.aspect};}
+  function toggle(g){g.mode=g.mode==='falling'||g.mode==='ground'?'rising':'falling';g.elapsed=0;if(g.mode==='falling'){for(const p of g.points){p.vx=(Math.random()-.5)*240;p.vy=-Math.random()*80;}}sync(g);}
+  function sync(g){g.button.textContent=(g.mode==='falling'||g.mode==='ground'?'Regenerar ':'Deshacer ')+(g.kind==='rose'?'rosa':'logo');g.button.setAttribute('aria-pressed',String(g.mode==='falling'||g.mode==='ground'));}
+  async function load(kind,paths){
+    let img;
+    for(const path of paths){try{img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=path;});break;}catch{}}
+    if(!img){const b=document.getElementById(kind==='rose'?'rose-burst':'logo-burst');b.textContent='Falta '+(kind==='rose'?'rosa1.png':'logo.png');b.disabled=true;return;}
+    const sample=document.createElement('canvas');sample.width=kind==='rose'?300:220;sample.height=Math.max(1,Math.round(sample.width*img.naturalHeight/img.naturalWidth));const sc=sample.getContext('2d',{willReadFrequently:true});sc.drawImage(img,0,0,sample.width,sample.height);const data=sc.getImageData(0,0,sample.width,sample.height).data;
+    const g={batches:new Map(),kind,aspect:img.naturalWidth/img.naturalHeight,points:[],mode:'idle',elapsed:0,button:document.getElementById(kind==='rose'?'rose-burst':'logo-burst')};
+    let opaque=0;for(let i=3;i<data.length;i+=4)if(data[i]>60)opaque++;
+    const step=Math.max(2,Math.sqrt(opaque/(kind==='rose'?5200:2300)));
+    for(let y=0;y<sample.height;y+=step)for(let x=0;x<sample.width;x+=step){const ix=Math.floor(x),iy=Math.floor(y),i=(iy*sample.width+ix)*4;if(data[i+3]<60)continue;const p={u:x/sample.width,v:y/sample.height,x:0,y:0,vx:0,vy:0,floorOffset:Math.random()-.5,color:`rgba(${data[i]},${data[i+1]},${data[i+2]},${(data[i+3]/255).toFixed(2)})`};Object.assign(p,home(g,p));g.points.push(p);const key=[data[i]>>5,data[i+1]>>5,data[i+2]>>5,data[i+3]>>6].join(',');let batch=g.batches.get(key);if(!batch){batch={color:p.color,points:[]};g.batches.set(key,batch);}batch.points.push(p);}
+    g.button.addEventListener('click',()=>toggle(g));groups.push(g);sync(g);
+  }
+  function pick(x,y){let nearest=null,best=144;for(const g of groups)for(let i=0;i<g.points.length;i+=2){const p=g.points[i],d=(p.x-x)**2+(p.y-y)**2;if(d<best){best=d;nearest=g;}}return nearest;}
+  document.addEventListener('pointermove',e=>{pointer.x=e.clientX;pointer.y=e.clientY;}, {passive:true});
+  document.addEventListener('pointerleave',()=>{pointer.x=-1000;pointer.y=-1000;});
+  document.addEventListener('pointerdown',e=>{if(e.target.closest('button,a'))return;const g=pick(e.clientX,e.clientY);if(!g)return;down={g,x:e.clientX,y:e.clientY};e.preventDefault();e.stopImmediatePropagation();},true);
+  document.addEventListener('pointerup',e=>{if(!down)return;const d=down;down=null;e.stopImmediatePropagation();if(Math.hypot(e.clientX-d.x,e.clientY-d.y)<9)toggle(d.g);},true);
+  document.addEventListener('pointercancel',()=>{down=null;});
+  document.getElementById('reset').addEventListener('click',()=>{for(const g of groups){g.mode='rising';g.elapsed=0;sync(g);}});
+  window.addEventListener('resize',()=>{width=innerWidth;height=innerHeight;refreshLayout();for(const g of groups)for(const p of g.points){Object.assign(p,home(g,p));p.vx=p.vy=0;} });
+  function frame(ms){const frameDt=last?Math.min((ms-last)/1000,.1):1/60;last=ms;const steps=Math.max(1,Math.ceil(frameDt/(1/30)));const dpr=Math.min(devicePixelRatio,2);if(layer.width!==Math.round(width*dpr)||layer.height!==Math.round(height*dpr)){layer.width=Math.round(width*dpr);layer.height=Math.round(height*dpr);}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+    const ground=window.fxParticleFloor();
+    const airDrag=Math.exp(-.7*frameDt/steps),returnDrag=Math.exp(-9*frameDt/steps);for(const g of groups){g.elapsed+=frameDt;const floor=ground.y;
+      if(g.mode==='falling'&&g.elapsed>2.4){g.mode='ground';g.elapsed=0;sync(g);}
+      
+      let maxDistance=0;
+      for(const p of g.points){const h=home(g,p);
+        for(let tick=0;tick<steps;tick++){const dt=frameDt/steps;
+        if(reduced){p.x=h.x;p.y=h.y;}
+        else if(g.mode==='falling'||g.mode==='ground'){
+          p.vy+=600*dt;p.vx*=airDrag;
+          const dx=p.x-pointer.x,dy=p.y-pointer.y,d=Math.abs(dx)<75&&Math.abs(dy)<75?Math.sqrt(dx*dx+dy*dy):1000;if(d<75&&d>0){const force=(1-d/75)*1800;p.vx+=dx/d*force*dt;p.vy+=dy/d*force*dt;}
+          p.x+=p.vx*dt;p.y+=p.vy*dt;
+          if(p.y>floor+p.floorOffset*ground.spread){p.y=floor+p.floorOffset*ground.spread;p.vy=-Math.abs(p.vy)*.3;p.vx*=.65;if(Math.abs(p.vy)<9)p.vy=0;}
+          if(p.x<2||p.x>width-2){p.x=Math.max(2,Math.min(width-2,p.x));p.vx*=-.3;}
+        }else{
+          const k=g.mode==='rising'?22:65;p.vx+=(h.x-p.x)*k*dt;p.vy+=(h.y-p.y)*k*dt;const drag=returnDrag;p.vx*=drag;p.vy*=drag;
+          const dx=p.x-pointer.x,dy=p.y-pointer.y,d=Math.abs(dx)<75&&Math.abs(dy)<75?Math.sqrt(dx*dx+dy*dy):1000;if(g.mode==='idle'&&d<28&&d>0){p.vx+=dx/d*(28-d)*dt*8;p.vy+=dy/d*(28-d)*dt*8;}
+          p.x+=p.vx*dt;p.y+=p.vy*dt;maxDistance=Math.max(maxDistance,Math.abs(h.x-p.x)+Math.abs(h.y-p.y));
+        }
+        }
+
+      }
+      ctx.filter=layout[g.kind].filter;ctx.globalAlpha=layout[g.kind].opacity;for(const batch of g.batches.values()){ctx.fillStyle=batch.color;ctx.beginPath();for(const p of batch.points)ctx.rect(p.x,p.y,.8,.8);ctx.fill();}
+      ctx.filter='none';ctx.globalAlpha=1;
+      if(g.mode==='rising'&&(maxDistance<.8||reduced)){g.mode='idle';g.elapsed=0;sync(g);}
+    }
+    raf=requestAnimationFrame(frame);
+  }
+  Promise.all([load('rose',['/assets/iconos/rosa1.png','/assets/icons/rosa1.png','/icons/rosa1.png','/rosa1.png']),load('logo',['/assets/logo.png','/logo.png','/iconLogo.png'])]).then(()=>{raf=requestAnimationFrame(frame);});
+  document.addEventListener('visibilitychange',()=>{last=0;});window.addEventListener('pagehide',()=>cancelAnimationFrame(raf),{once:true});
+})();
+</script>
+</body></html>
