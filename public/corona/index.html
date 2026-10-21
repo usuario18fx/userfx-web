@@ -442,48 +442,50 @@
             window.__fxPhysics = physics;
         })();
     </script>
-    <!-- CONTROL USER FX: movimiento SOLO horizontal, sin cambiar altura ni rotación. -->
+    <!-- CONTROL USER FX: girar modelo GLB sobre eje Y, SIN moverlo en pantalla. -->
     <script>
         (() => {
             'use strict';
             const logo = document.getElementById('userfx-logo');
             const model = document.getElementById('userfx-model');
             const button = document.getElementById('move-userfx');
-            const storageKey = 'userfx-room-posicion-horizontal-v1';
-            const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
-            let offsetX = 0;
+            if (!logo || !model || !button) return;
+            // AJUSTE: sensibilidad del giro lateral (grados por pixel).
+            const DEGREES_PER_PIXEL = 0.65;
+            const storageKey = 'userfx-room-rotacion-lateral-modelo-v3';
+            const clamp = (n,min,max) => Math.min(max, Math.max(min,n));
+            let angleY = 0;
             let active = null;
             try {
-                const stored = Number(localStorage.getItem(storageKey));
-                if (Number.isFinite(stored)) offsetX = stored;
+                const previous = Number(localStorage.getItem(storageKey));
+                if (Number.isFinite(previous)) angleY = previous;
             } catch {}
             function locateControl() {
                 const r = logo.getBoundingClientRect();
-                button.style.left = clamp(r.left + r.width / 2, 32, innerWidth - 32) + 'px';
-                button.style.top = clamp(r.bottom + 12, 15, innerHeight - 74) + 'px';
+                button.style.left = clamp(r.left + r.width / 2, 32, innerWidth-32) + 'px';
+                button.style.top = clamp(r.bottom + 12, 15, innerHeight-74) + 'px';
             }
             function apply() {
-                logo.style.marginLeft = offsetX + 'px';
+                // Es el modelo lo que gira, no el contenedor ni su posición.
+                model.setAttribute('orientation', '0deg ' + angleY + 'deg 0deg');
                 locateControl();
             }
             function save() {
-                try { localStorage.setItem(storageKey, String(offsetX)); } catch {}
+                try { localStorage.setItem(storageKey, String(angleY)); } catch {}
             }
-            if (model) {
-                model.setAttribute('orientation','0deg 0deg 0deg');
-                model.addEventListener('load', () => logo.classList.add('model-ready'));
-                model.addEventListener('error', e => console.warn('USER FX GLB no disponible',e));
-            }
+            model.addEventListener('load', () => logo.classList.add('model-ready'));
+            model.addEventListener('error', e => console.warn('No se pudo cargar USER FX GLB',e));
             button.addEventListener('pointerdown', e => {
                 if (e.button !== 0) return;
                 e.preventDefault();
-                active = { id:e.pointerId, x:e.clientX, start:offsetX };
+                active = { id:e.pointerId, pointerX:e.clientX, startY:angleY };
                 button.setPointerCapture(e.pointerId);
             });
             button.addEventListener('pointermove', e => {
                 if (!active || e.pointerId !== active.id) return;
-                // EJE HORIZONTAL ÚNICAMENTE: clientX, NUNCA clientY.
-                offsetX = active.start + e.clientX - active.x;
+                // Movimiento IZQUIERDA/DERECHA = GIRO REAL EN Y.
+                // La altura, la ubicación y los otros ángulos no cambian.
+                angleY = active.startY + (e.clientX - active.pointerX) * DEGREES_PER_PIXEL;
                 apply();
             });
             function release(e) {
@@ -493,16 +495,22 @@
             }
             button.addEventListener('pointerup',release);
             button.addEventListener('pointercancel',release);
-            button.addEventListener('dblclick',e => { e.preventDefault();offsetX=0;apply();save(); });
-            button.addEventListener('keydown',e => {
+            button.addEventListener('dblclick', e => {
+                e.preventDefault();
+                angleY = 0;
+                apply();
+                save();
+            });
+            button.addEventListener('keydown', e => {
                 if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
                 e.preventDefault();
-                offsetX += e.key === 'ArrowLeft' ? -10 : 10;
-                apply();save();
+                angleY += e.key === 'ArrowLeft' ? -10 : 10;
+                apply();
+                save();
             });
-            addEventListener('resize',locateControl,{passive:true});
-            button.setAttribute('aria-label','Mover USER FX a izquierda y derecha');
-            button.title='Arrastrar horizontalmente para mover USER FX. Doble clic para centrarlo.';
+            addEventListener('resize', locateControl, {passive:true});
+            button.setAttribute('aria-label','Girar USER FX hacia izquierda y derecha en 3D');
+            button.title='Arrastra izquierda/derecha: girar USER FX en 3D. Doble clic: frente.';
             apply();
         })();
     </script>
