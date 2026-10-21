@@ -18,6 +18,8 @@ export default function CrownPrelude() {
     const sceneOpacity = useTransform(scrollYProgress, [0, 0.28, 0.76, 1], [1, 1, 0.68, 0]);
     const emblemScale = useTransform(scrollYProgress, [0, 0.32, 1], [1, 1.04, 1.68]);
     const copyY = useTransform(scrollYProgress, [0, 1], [0, -76]);
+    const sceneBlur = useTransform(scrollYProgress, [0, 0.62, 1], ["blur(0px)", "blur(0px)", "blur(16px)"]);
+    const emblemRotate = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, -7]);
 
     const moveCrown = (event: PointerEvent<HTMLElement>) => {
         if (reduced || event.pointerType === "touch") return;
@@ -36,11 +38,11 @@ export default function CrownPrelude() {
     return (
         <section ref={sectionRef} className="fx-crown-prelude" aria-label="UserFX introduction" onPointerMove={moveCrown} onPointerLeave={resetCrown}>
             <div className="fx-crown-prelude-sticky">
-                <motion.div className="fx-crown-prelude-stage" style={reduced ? undefined : { opacity: sceneOpacity }}>
+                <motion.div className="fx-crown-prelude-stage" style={reduced ? undefined : { opacity: sceneOpacity, filter: sceneBlur }}>
                     <span className="fx-crown-prelude-eyebrow">
                         USER FX — THE PRIVATE EXPERIENCE
                     </span>
-                    <motion.div className="fx-crown-prelude-emblem" style={reduced ? undefined : { scale: emblemScale }}>
+                    <motion.div className="fx-crown-prelude-emblem" style={reduced ? undefined : { scale: emblemScale, rotate: emblemRotate }}>
                         <span className="fx-crown-prelude-aura" aria-hidden="true">
                         </span>
                         <img src="/iconLogo.png" alt="" className="fx-crown-prelude-logo" draggable={false} />
