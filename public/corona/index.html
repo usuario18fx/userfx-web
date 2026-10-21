@@ -1014,3 +1014,295 @@
             function sync(g) {
                 const falling = g.mode === 'falling' || g.mode === 'ground';
                 g.button.textContent = (falling ? 'Regenerar ' : 'Deshacer ') + 'rosa';
+                g.button.setAttribute('aria-pressed', String(falling));
+            }
+            function toggle(g) {
+                g.mode = g.mode === 'falling' || g.mode === 'ground' ? 'rising' : 'falling';
+                g.elapsed = 0;
+                if (g.mode === 'falling') {
+                    for (const p of g.points) {
+                        p.vx = (Math.random() - .5) * 240;
+                        p.vy = -Math.random() * 80;
+                    }
+                }
+                sync(g);
+            }
+            async function load(kind, paths) {
+                let img = null;
+                for (const path of paths) {
+                    try {
+                        img = await new Promise((resolve, reject) => {
+                            const i = new Image();
+                            i.onload = () => resolve(i);
+                            i.onerror = reject;
+                            i.src = path;
+                        });
+                        break;
+                    } catch { /* siguiente ruta */ }
+                }
+                const button = document.getElementById('rose-burst');
+                if (!img) {
+                    button.textContent = 'Falta rosa1.png';
+                    button.disabled = true;
+                    return;
+                }
+                const sample = document.createElement('canvas');
+                sample.width = innerWidth <= 700 ? (kind === 'rose' ? 210 : 160) : (kind === 'rose' ? 300 : 220);
+                sample.height = Math.max(1, Math.round(sample.width * img.naturalHeight / img.naturalWidth));
+                const sc = sample.getContext('2d', { willReadFrequently: true });
+                sc.drawImage(img, 0, 0, sample.width, sample.height);
+                const data = sc.getImageData(0, 0, sample.width, sample.height).data;
+                const g = {
+                    batches: new Map(),
+                    kind,
+                    aspect: img.naturalWidth / img.naturalHeight,
+                    points: [],
+                    mode: 'idle',
+                    elapsed: 0,
+                    button
+                };
+                let opaque = 0;
+                for (let i = 3; i < data.length; i += 4) if (data[i] > 60) opaque++;
+                // 🔧 DENSIDAD: sube el 9000 para más puntos (más lento); bájalo para menos (más rápido)
+                const step = Math.max(1.5, Math.sqrt(opaque / (kind === 'rose' ? 9000 : 2300)));
+                // Filtro normal: no alterar brillo, saturación ni contraste
+                for (let y = 0; y < sample.height; y += step) {
+                    for (let x = 0; x < sample.width; x += step) {
+                        const ix = Math.floor(x);
+                        const iy = Math.floor(y);
+                        const idx = (iy * sample.width + ix) * 4;
+                        if (data[idx + 3] < 60) continue;
+                        const [cr, cg, cb] = [data[idx], data[idx + 1], data[idx + 2]]; // Filtro normal: RGB original
+                        const p = {
+                            u: x / sample.width,
+                            v: y / sample.height,
+                            x: 0,
+                            y: 0,
+                            vx: 0,
+                            vy: 0,
+                            floorOffset: Math.random() - .5,
+                            floorDepth: 0.95,
+                            color: `rgba(${cr},${cg},${cb},${(data[idx + 3] / 255).toFixed(2)})`
+                        };
+                        Object.assign(p, home(g, p));
+                        g.points.push(p);
+                        const key = [cr >> 5, cg >> 5, cb >> 5, data[idx + 3] >> 6].join(',');
+                        let batch = g.batches.get(key);
+                        if (!batch) {
+                            batch = { color: p.color, points: [] };
+                            g.batches.set(key, batch);
+                        }
+                        batch.points.push(p);
+                    }
+                }
+                button.addEventListener('click', () => toggle(g));
+                groups.push(g);
+                sync(g);
+            }
+            function pick(x, y) {
+                let nearest = null;
+                let best = 144;
+                for (const g of groups) {
+                    const stride = Math.max(1, Math.floor(g.points.length / 400));
+                    for (let i = 0; i < g.points.length; i += stride) {
+                        const p = g.points[i];
+                        const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+                        if (d < best) {
+                            best = d;
+                            nearest = g;
+                        }
+                    }
+                }
+                return nearest;
+            }
+            document.addEventListener('pointermove', (e) => {
+                pointer.x = e.clientX;
+                pointer.y = e.clientY;
+            }, { passive: true });
+            document.addEventListener('pointerleave', () => {
+                pointer.x = -1000;
+                pointer.y = -1000;
+            });
+            document.addEventListener('pointerdown', (e) => {
+                if (e.target.closest('button, a, input, #physics-panel')) return;
+                const g = pick(e.clientX, e.clientY);
+                if (!g) return;
+                down = { g, x: e.clientX, y: e.clientY };
+            }, true);
+            document.addEventListener('pointerup', (e) => {
+                if (!down) return;
+                const d = down;
+                down = null;
+                if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 9) toggle(d.g);
+            }, true);
+            document.addEventListener('pointercancel', () => { down = null; });
+            document.getElementById('reset').addEventListener('click', () => {
+                for (const g of groups) {
+                    g.mode = 'rising';
+                    g.elapsed = 0;
+                    sync(g);
+                }
+            });
+            addEventListener('resize', () => {
+                width = innerWidth;
+                height = innerHeight;
+                refreshLayout();
+                for (const g of groups) {
+                    for (const p of g.points) {
+                        Object.assign(p, home(g, p));
+                        p.vx = p.vy = 0;
+                    }
+                }
+                drawn = false;
+            }, { passive: true });
+            function start() {
+                if (running) return;
+                running = true;
+                last = 0;
+                drawn = false;
+                raf = requestAnimationFrame(frame);
+            }
+            function stop() {
+                running = false;
+                cancelAnimationFrame(raf);
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) stop();
+                else start();
+            });
+            addEventListener('pagehide', stop, { once: true });
+            // Dibuja un grupo: un solo recorrido por lotes (antes había un bucle anidado que lo repetía)
+            function drawGroup(g) {
+                if (g.kind === 'rose' && GLOW_ALPHA > 0) {
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.globalAlpha = GLOW_ALPHA;
+                    for (const batch of g.batches.values()) {
+                        ctx.fillStyle = batch.color;
+                        ctx.beginPath();
+                        for (const p of batch.points) ctx.rect(p.x - GLOW_SIZE / 2, p.y - GLOW_SIZE / 2, GLOW_SIZE, GLOW_SIZE);
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
+                }
+                for (const batch of g.batches.values()) {
+                    ctx.fillStyle = batch.color;
+                    ctx.beginPath();
+                    for (const p of batch.points) ctx.rect(p.x - PARTICLE_SIZE / 2, p.y - PARTICLE_SIZE / 2, PARTICLE_SIZE, PARTICLE_SIZE);
+                    ctx.fill();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            function frame(ms) {
+                if (!running) return;
+                const frameDt = last ? Math.min((ms - last) / 1000, 0.1) : 1 / 60;
+                last = ms;
+                // ⚡ Si todo está en reposo, ya se dibujó y el puntero no está cerca, no se hace nada.
+                let allIdle = groups.length > 0;
+                for (const g of groups) if (g.mode !== 'idle') { allIdle = false; break; }
+                if (allIdle && drawn) {
+                    let near = false;
+                    for (const g of groups) {
+                        const r = layout[g.kind];
+                        const hh = r.w / g.aspect;
+                        if (pointer.x > r.x - 80 && pointer.x < r.x + r.w + 80 &&
+                            pointer.y > r.y - 80 && pointer.y < r.y + hh + 80) { near = true; break; }
+                    }
+                    if (!near) { raf = requestAnimationFrame(frame); return; }
+                }
+                const steps = Math.max(1, Math.ceil(frameDt / (1 / 30)));
+                const dpr = Math.min(devicePixelRatio, 2);
+                const w = Math.round(width * dpr);
+                const h = Math.round(height * dpr);
+                if (layer.width !== w || layer.height !== h) {
+                    layer.width = w;
+                    layer.height = h;
+                }
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                ctx.clearRect(0, 0, width, height);
+                const ground = window.fxParticleFloor();
+                const airDrag = Math.exp(-.7 * frameDt / steps);
+                const returnDrag = Math.exp(-9 * frameDt / steps);
+                for (const g of groups) {
+                    g.elapsed += frameDt;
+                    const floor = ground.y;
+                    if (g.mode === 'falling' && g.elapsed > 2.4) {
+                        g.mode = 'ground';
+                        g.elapsed = 0;
+                        sync(g);
+                    }
+                    // ⚡ posición "home" calculada sin crear objetos por partícula
+                    const r = layout[g.kind];
+                    const rScale = r.w / g.aspect;
+                    let maxDistance = 0;
+                    for (const p of g.points) {
+                        const hx = r.x + p.u * r.w;
+                        const hy = r.y + p.v * rScale;
+                        for (let tick = 0; tick < steps; tick++) {
+                            const dt = frameDt / steps;
+                            if (reduced) {
+                                p.x = hx;
+                                p.y = hy;
+                            } else if (g.mode === 'falling' || g.mode === 'ground') {
+                                p.vy += 600 * dt;
+                                p.vx *= airDrag;
+                                const dx = p.x - pointer.x;
+                                const dy = p.y - pointer.y;
+                                const withinX = Math.abs(dx) < 75;
+                                const withinY = Math.abs(dy) < 75;
+                                const d = (withinX && withinY) ? Math.sqrt(dx * dx + dy * dy) : 1000;
+                                if (d < 75 && d > 0) {
+                                    const force = (1 - d / 75) * 1800;
+                                    p.vx += dx / d * force * dt;
+                                    p.vy += dy / d * force * dt;
+                                }
+                                p.x += p.vx * dt;
+                                p.y += p.vy * dt;
+                                const floorAtParticle = ground.atDepth(p.floorDepth) + p.floorOffset * ground.spread;
+                                if (p.y > floorAtParticle) {
+                                    p.y = floorAtParticle;
+                                    p.vy = -Math.abs(p.vy) * .3;
+                                    p.vx *= .65;
+                                    if (Math.abs(p.vy) < 9) p.vy = 0;
+                                }
+                                if (p.x < 2 || p.x > width - 2) {
+                                    p.x = Math.max(2, Math.min(width - 2, p.x));
+                                    p.vx *= -.3;
+                                }
+                            } else {
+                                const k = g.mode === 'rising' ? 22 : 65;
+                                p.vx += (hx - p.x) * k * dt;
+                                p.vy += (hy - p.y) * k * dt;
+                                p.vx *= returnDrag;
+                                p.vy *= returnDrag;
+                                const dx = p.x - pointer.x;
+                                const dy = p.y - pointer.y;
+                                const withinX = Math.abs(dx) < 75;
+                                const withinY = Math.abs(dy) < 75;
+                                const d = (withinX && withinY) ? Math.sqrt(dx * dx + dy * dy) : 1000;
+                                if (g.mode === 'idle' && d < 28 && d > 0) {
+                                    p.vx += dx / d * (28 - d) * dt * 8;
+                                    p.vy += dy / d * (28 - d) * dt * 8;
+                                }
+                                p.x += p.vx * dt;
+                                p.y += p.vy * dt;
+                                maxDistance = Math.max(maxDistance, Math.abs(hx - p.x) + Math.abs(hy - p.y));
+                            }
+                        }
+                    }
+                    drawGroup(g);
+                    if (g.mode === 'rising' && (maxDistance < .8 || reduced)) {
+                        g.mode = 'idle';
+                        g.elapsed = 0;
+                        sync(g);
+                    }
+                }
+                drawn = groups.every(g => g.mode === 'idle');
+                if (running) raf = requestAnimationFrame(frame);
+            }
+            Promise.all([
+                load('rose', ['/assets/iconos/rosa1.png', '/assets/icons/rosa1.png', '/icons/rosa1.png', '/rosa1.png'])
+            ]).then(() => start());
+        })();
+    </script>
+</body>
+</html>
