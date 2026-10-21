@@ -1,5 +1,9 @@
 /* UserFX photographic story. Scoped so room, stage, gallery and modal CSS stay unchanged. */
 .fx-scroll-story {
+  position: relative;
+  z-index: 2;
+  margin-top: -12svh;
+  box-shadow: 0 -36px 100px rgba(3, 4, 9, .64);
   --fx-story-gold: #ceb67b;
   --fx-story-rose: #bb5b74;
   --fx-story-paper: #f5ede1;
@@ -2057,3 +2061,4 @@
     transform: none;
   }
 }
+\n/* Crown cover dissolves into the photographic chapter without hiding its four-space navigation. */\n@media (max-width: 700px) {\n  .fx-scroll-story { margin-top: -8svh; }\n}\n@media (prefers-reduced-motion: reduce) {\n  .fx-scroll-story { margin-top: 0; }\n}\n
