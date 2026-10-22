@@ -10,13 +10,13 @@ LOADING USER FX ROOM…
 )});
 // Story pacing: give each camera view a stable reading pause before moving on.
 const STAGES=[
-{title:"WELCOME",accent:"INSIDE",sub:"A PRIVATE WORLD AWAITS",body:"Comienza el recorrido. Cada paso revela una parte de USER FX."},
-{title:"STEP",accent:"INSIDE",sub:"FOLLOW THE LIGHT",body:"Entra despacio. El ambiente y sus detalles marcan el camino."},
-{title:"THE",accent:"CORRIDOR",sub:"THE JOURNEY CONTINUES",body:"Un pasillo de arte, reflejos y luz cálida conduce a tu habitación."},
-{title:"ENTER",accent:"MY ROOM",sub:"WELCOME TO YOUR SPACE",body:"Deja atrás el pasillo y descubre el interior de MY ROOM."},
-{title:"MY",accent:"GALLERY",sub:"A DIFFERENT PERSPECTIVE",body:"Desde una vista elevada, descubre la habitación y sus piezas de arte."},
-{title:"VIDEO",accent:"CALLS",sub:"CONNECT IN PRIVATE",body:"Un lugar para conversar, compartir y encontrarse."},
-{title:"STAGE",accent:"",sub:"THE ROOM IS YOUR STAGE",body:"Una perspectiva amplia, iluminación íntima y tu propio escenario."},
+{title:"WELCOME",accent:"INSIDE",sub:"A PRIVATE WORLD AWAITS",body:"This experience runs on scroll. Take your time and move through the space."},
+{title:"STEP",accent:"INSIDE",sub:"FOLLOW THE LIGHT",body:"Take it easy. Follow the light and see where it takes you."},
+{title:"THE",accent:"CORRIDOR",sub:"THE JOURNEY CONTINUES",body:"A little further in. Your room is just ahead."},
+{title:"ENTER",accent:"MY ROOM",sub:"WELCOME TO YOUR SPACE",body:"Your space. Make yourself at home."},
+{title:"MY",accent:"GALLERY",sub:"A DIFFERENT PERSPECTIVE",body:"A fresh angle on the room and everything in it."},
+{title:"VIDEO",accent:"CALLS",sub:"CONNECT IN PRIVATE",body:"One-on-one time, just the way you like it."},
+{title:"STAGE",accent:"",sub:"THE ROOM IS YOUR STAGE",body:"Your scene, your pace."},
 {title:"USER",accent:"FX",sub:"YOUR WORLD, YOUR EXPERIENCE",body:"Explora lo que sigue a tu manera."}
 ];
 // Use one synchronized timeline for eight captions and eight 3D camera poses.
@@ -41,6 +41,7 @@ useMotionValueEvent(scrollYProgress,"change",v=>setProgress(Math.max(0,Math.min(
 const index=Math.min(Math.floor(progress*STAGES.length),STAGES.length-1);
 const cameraProgress=tourCameraProgress(progress);
 const current=STAGES[index];
+const atStart=index===0;
 return (
 <section className="fx-room-intro" ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour">
 <div className="fx-room-intro-sticky">
@@ -53,6 +54,7 @@ GALLERY / STAGE / CALLS / PROTOCOL
 </nav>
 </div>
 <div className="fx-room-intro-copy" key={index}>
+{atStart && <p className="fx-scroll-start-hint">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></p>}
 <small>{String(index+1).padStart(2,"0")} / CINEMATIC JOURNEY</small>
 <h1>
 {current.title} <strong>{current.accent}</strong>
