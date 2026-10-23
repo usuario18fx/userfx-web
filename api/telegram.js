@@ -551,8 +551,8 @@ const PLAN_CONFIG = {
     prefix: "BSIC",
     stars: BASIC_STARS_PRICE,
     maxAccesses: null,
-    days: 7,
-    features: { oncam: true, rec: false, chat: true, multimedia: false },
+    days: 3,
+    features: { oncam: true, rec: false, chat: true, multimedia: false, stage: false },
     tier: TIER_BASIC,
   },
   pro: {
@@ -561,8 +561,8 @@ const PLAN_CONFIG = {
     prefix: "PRX0",
     stars: PRO_STARS_PRICE,
     maxAccesses: null,
-    days: 30,
-    features: { oncam: true, rec: true, chat: true, multimedia: true },
+    days: 15,
+    features: { oncam: true, rec: true, chat: true, multimedia: true, stage: true },
     tier: TIER_PRO,
   },
   vip: {
@@ -570,15 +570,15 @@ const PLAN_CONFIG = {
     name: "VIP",
     prefix: "VIPX",
     stars: VIP_STARS_PRICE,
-    days: 90,
-    features: { oncam: true, rec: true, chat: true, multimedia: true },
+    days: 30,
+    features: { oncam: true, rec: true, chat: true, multimedia: true, stage: true },
     maxAccesses: null,
     tier: TIER_VIP,
   },
   special: {
     id: "special", name: "SPECIAL", prefix: "SPCL", stars: 0,
     days: null, maxAccesses: null,
-    features: { oncam: true, rec: true, chat: false, multimedia: true },
+    features: { oncam: false, rec: false, chat: false, multimedia: true, stage: true },
   },
 };
 // ======================================================
@@ -2362,10 +2362,11 @@ async function handleManualAccess(ctx) {
     await ctx.editMessageText(`${record.code}
 
 ONCAM · MYROOM: ${flag(features.oncam)}
-REC · STAGE: ${flag(features.rec)}
+GRABACIÓN: ${flag(features.rec)}
+STAGE: ${flag(features.stage)}
 CHAT: ${flag(features.chat)}
 MULTIMEDIA: ${flag(features.multimedia)}
-Duración: ${record.unlimited ? "Ilimitada" : `${record.days} días`}
+Duración: ${record.unlimited ? "Ilimitada" : record.planId === "vip" ? "1 mes (30 días)" : `${record.days} días` }
 
 Usa /access para generar otro código.`, manualAccessKeyboard(planId));
 }
