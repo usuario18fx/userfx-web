@@ -159,7 +159,18 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
   const token = crypto.randomBytes(32).toString("base64url");
   const sessionHash = hashValue(token);
   const sessionKey = `${CODE_ENGINE_NAMESPACE}:access-session:${sessionHash}`;
-  const remainingSeconds = record.expiresAt ? Math.floor((Date.parse(record.expiresAt) - Date.now()) / 1000) : Infinity;
+  // New codes start their validity at first successful redemption.
+  // Legacy codes without activationPending retain their original expiry.
+  const firstActivation = record.activationPending === true;
+  const activationDays = Number(record.days);
+  if (firstActivation && (!Number.isFinite(activationDays) || activationDays <= 0)) {
+    throw new Error("Invalid activation duration");
+  }
+  const activatedAt = firstActivation ? new Date().toISOString() : (record.activatedAt || null);
+  const effectiveExpiresAt = firstActivation
+    ? new Date(Date.now() + activationDays * 86400000).toISOString()
+    : record.expiresAt;
+  const remainingSeconds = effectiveExpiresAt ? Math.floor((Date.parse(effectiveExpiresAt) - Date.now()) / 1000) : Infinity;
   const sessionSeconds = Math.max(1, Math.min(getSessionSeconds(planId), remainingSeconds));
   const sessionExpiresAt = Date.now() + sessionSeconds * 1000;
   const accessMode = PLAN_TO_ACCESS_MODE[planId];
@@ -170,6 +181,9 @@ async function createAccessSession({ redis, req, res, redisKey, rawRecord, recor
 
   const updatedRecord = {
     ...record,
+    activationPending: false,
+    activatedAt,
+    expiresAt: effectiveExpiresAt,
     status: remainingAccesses === 0 && accessState.maxAccesses !== null ? "consumed" : "active",
     watermarkId,
     maxAccesses: accessState.maxAccesses,
