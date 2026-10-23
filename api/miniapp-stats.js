@@ -20,8 +20,10 @@ function getSupabase() {
   return globalThis.__userfxStatsSupabase;
 }
 
-async function countUniqueTelegramUsers(supabase) {
+async function countVisibleVisitors(supabase) {
+  let visitors = 0;
   const uniqueUsers = new Set();
+  const ownerId = String(process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || '').trim();
   const pageSize = 1000;
   let from = 0;
 
@@ -37,6 +39,9 @@ async function countUniqueTelegramUsers(supabase) {
     for (const row of data || []) {
       const telegram = row?.telegram;
       const userId = telegram && typeof telegram === "object" ? telegram.id : null;
+      const username = String(telegram?.username || '').replace(/^@/, '').toLowerCase();
+      if ((ownerId && String(userId || '') === ownerId) || username === 'user18fx') continue;
+      visitors++;
 
       if (userId !== null && userId !== undefined && String(userId).trim()) {
         uniqueUsers.add(String(userId));
@@ -47,7 +52,7 @@ async function countUniqueTelegramUsers(supabase) {
     from += pageSize;
   }
 
-  return uniqueUsers.size;
+  return { visitors, unique: uniqueUsers.size };
 }
 
 export default async function handler(req, res) {
@@ -64,25 +69,11 @@ export default async function handler(req, res) {
   try {
     const supabase = getSupabase();
 
-    const [{ count, error }, unique] = await Promise.all([
-      supabase
-        .from("track_events")
-        .select("*", { count: "exact", head: true })
-        .eq("event", "miniapp_open"),
-      countUniqueTelegramUsers(supabase),
-    ]);
-
-    if (error) {
-      console.error("[miniapp-stats/count]", error);
-      return res.status(500).json({
-        ok: false,
-        error: "server_error",
-      });
-    }
+    const { visitors, unique } = await countVisibleVisitors(supabase);
 
     return res.status(200).json({
       ok: true,
-      visitors: count ?? 0,
+      visitors,
       unique,
     });
   } catch (error) {
