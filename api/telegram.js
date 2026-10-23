@@ -839,6 +839,7 @@ async function trackButtonClick(ctx, buttonName) {
     if (!client) return;
     const user = getUserMeta(ctx.from);
     if (!user.id) return;
+    if (isAdmin(ctx) || String(user.username || "").replace(/^@/, "").toLowerCase() === "user18fx") return;
     const data = {
       fullName: user.fullName,
       username: user.username,
@@ -2023,7 +2024,7 @@ bot.command("report", async (ctx) => {
           return null;
         }
       })
-      .filter(Boolean)
+      .filter((click) => click && String(click.id) !== String(ADMIN_USER_ID) && String(click.username || "").replace(/^@/, "").toLowerCase() !== "user18fx")
       .sort((a, b) => new Date(b.clickedAt).getTime() - new Date(a.clickedAt).getTime());
     let report = "📊 ʙᴜᴛᴛᴏɴ ᴄʟɪᴄᴋ ʀᴇᴘᴏʀᴛ\n\n";
     clicks.forEach((click, index) => {
@@ -2075,8 +2076,12 @@ bot.command("visitors", async (ctx) => {
     }
 
     const lines = ["USER FX · VISITORS", ""];
+    const visibleVisitors = data.filter((row) => {
+      const tg = row?.telegram || {};
+      return String(tg.id || "") !== String(ADMIN_USER_ID) && String(tg.username || "").replace(/^@/, "").toLowerCase() !== "user18fx";
+    });
 
-    data.forEach((row, index) => {
+    visibleVisitors.forEach((row, index) => {
       const telegram = row?.telegram && typeof row.telegram === "object" ? row.telegram : {};
       const geo = row?.geo && typeof row.geo === "object" ? row.geo : {};
 
@@ -2148,14 +2153,14 @@ bot.command("visitorstats", async (ctx) => {
   try {
     const supabase = getVisitorsSupabase();
 
-    const { count, error } = await supabase
-      .from("track_events")
-      .select("*", { count: "exact", head: true })
-      .eq("event", "miniapp_open");
-
-    if (error) throw error;
-
-    await ctx.reply(`VIEW-${String(count ?? 0).padStart(5, "0")}`);
+    let visible = 0;
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await supabase.from("track_events").select("telegram").eq("event", "miniapp_open").range(from, from + 999);
+      if (error) throw error;
+      visible += (data || []).filter(({ telegram: tg }) => String(tg?.id || "") !== String(ADMIN_USER_ID) && String(tg?.username || "").replace(/^@/, "").toLowerCase() !== "user18fx").length;
+      if (!data || data.length < 1000) break;
+    }
+    await ctx.reply(`VIEW-${String(visible).padStart(5, "0")}`);
   } catch (error) {
     logger.error("VISITORSTATS COMMAND ERROR", {
       message: error?.message || null,
