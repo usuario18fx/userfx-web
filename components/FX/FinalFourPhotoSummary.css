@@ -1,0 +1,53 @@
+/* USER FX photo story: one original photograph per scroll screen. */
+.fx-scroll-story .fx-final-four-grid {
+  display: block;
+  width: 100%;
+  background: #07090d;
+}
+.fx-final-four-panel {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 540px;
+  overflow: hidden;
+  background: #10141a;
+  isolation: isolate;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.fx-final-four-panel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  filter: brightness(.9) contrast(1.04);
+  transition: transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease;
+}
+.fx-final-four-panel:is(a):hover img,
+.fx-final-four-panel:is(a):focus-visible img {
+  transform: scale(1.015);
+  filter: brightness(1) contrast(1.03);
+}
+.fx-final-four-panel:is(a):focus-visible {
+  outline: 2px solid #d8b677;
+  outline-offset: -3px;
+}
+.fx-final-four-index {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  font: 600 12px/1 system-ui,sans-serif;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.78);
+  text-shadow: 0 1px 8px #000;
+}
+@media (max-width: 700px) {
+  .fx-final-four-panel { height: 100svh; min-height: 0; }
+  .fx-final-four-index { left: 16px; bottom: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-final-four-panel img { transition: none; }
+}
