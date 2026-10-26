@@ -1,1 +1,179 @@
-.fx-cinematic-canvas{touch-action:pan-y}
+.fx-cinematic-canvas {
+  touch-action: pan-y;
+}
+/* ─── Contenedor de scroll: su altura define la duración del recorrido ─── */
+.tour-scroll {
+  position: relative;
+  height: 600vh; /* 500vh–800vh: más alto = recorrido más lento */
+  background: #035bff;
+}
+/* ─── Escenario fijo mientras dura el recorrido ─── */
+.tour-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+/* ─── Canvas 3D ─── */
+.cinematic-tour {
+  position: absolute;
+  inset: 0;
+  background: #14121c;
+}
+.cinematic-tour canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ─── Degradado solo detrás del texto (el 3D se ve a la derecha) ─── */
+.tour-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+  #08041ee0 0%,#08041e8c 35%,
+  transparent 65%);
+  }
+/* ─── Textos: sin fondo propio y sin bloquear clics al canvas ─── */
+.tour-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 clamp(24px, 5vw, 72px) clamp(48px, 9vh, 96px);
+  background: none;
+  color: #fff;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.tour-copy a,
+.tour-copy button {
+  pointer-events: auto;
+}
+.tour-eyebrow {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: #f0b97d;
+}
+.tour-title {
+  margin: 0;
+  font-size: clamp(56px, 11vw, 150px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-shadow: 0 8px 40px #00000080;
+}
+.tour-title b {
+  font-weight: 700;
+  color: #2ea17f;
+}
+.tour-kicker {
+  margin: 28px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+.tour-text {
+  margin: 0;
+  max-width: 460px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #e8e4f2;
+}
+.tour-number {
+  position: absolute;
+  right: clamp(24px, 5vw, 72px);
+  bottom: clamp(48px, 9vh, 96px);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 300;
+  color: #2ea17f;
+}
+/* ─── Indicador de scroll ─── */
+.tour-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #fff;
+  pointer-events: none;
+}
+.tour-hint i {
+  display: block;
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(#fff, transparent);
+  animation: tour-hint-pulse 1.8s ease-in-out infinite;
+}
+@keyframes tour-hint-pulse {
+  0%, 100% { opacity: 0.25; transform: scaleY(0.6); transform-origin: top; }
+  50%      { opacity: 1;    transform: scaleY(1);   transform-origin: top; }
+}
+/* ─── Barra de progreso del recorrido ─── */
+.tour-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+.tour-bar span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #2ea17f;
+  transform-origin: left center;
+}
+/* ─── Móvil ─── */
+@media (max-width: 720px) {
+  .tour-shade {
+    background: linear-gradient(0deg, rgba(8, 4, 30, 0.9) 0%, transparent 70%);
+  }
+  .tour-number { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-hint i { animation: none; }
+}
+/* contenedor del scroll: alto = lo que dure el recorrido */
+.tour-scroll { position: relative; height: 600vh; }
+
+/* el canvas queda fijo durante todo el recorrido */
+.tour-stage {
+  position: sticky; top: 0;
+  height: 100vh; width: 100%;
+  overflow: hidden;
+}
+.cinematic-tour { position: absolute; inset: 0; }
+.cinematic-tour canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* los textos van encima, sin fondo propio */
+.tour-copy {
+  position: absolute; inset: 0;
+  z-index: 2;
+  background: none;            /* ← aquí estaba el problema probable */
+  pointer-events: none;        /* para poder hacer clic en laptop y TV */
+}
+.tour-copy a, .tour-copy button { pointer-events: auto; 
+}
+.tour-copy::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #08041ed9 0%, 
+  transparent 55%);
+}
+
