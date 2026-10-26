@@ -98,7 +98,7 @@ export default function RoomIntro() {
         ];
       case "videocall":
         return [
-          { title: "Avanzar", sub: "Continuar hacia Stage", arrow: "→", run: goNext },
+          { title: "Avanzar", sub: "Continuar hacia Multimedia", arrow: "→", run: goNext },
           { title: "Videocall", sub: "Abrir videollamada en mi bot", arrow: "↗", run: openBot },
           { title: "Channels", sub: "Consultar canales en Telegram", arrow: "↗", run: openBot },
         ];
