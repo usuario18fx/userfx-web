@@ -769,7 +769,7 @@ export default function CinematicTour({
         screenMode = mode;
         tvMaterial.map = mode === "stage" ? stage.texture : mode === "multimedia" ? multi.texture : videoCallTexture;
         tvMaterial.needsUpdate = true;
-        tvFace.userData.fxDestination = mode === "stage" ? "#/private-room/stage" : undefined;
+        tvFace.userData.fxDestination = undefined; // La navegacion se controla exclusivamente desde el panel derecho
         onModeChangeRef.current?.(mode);
       }
       for (const item of [multi, stage]) {
@@ -782,7 +782,7 @@ export default function CinematicTour({
     tvFace.position.set(-4.58, 1.72, -2.0);
     tvFace.rotation.y = Math.PI / 2;
     scene.add(tvFace);
-    interactiveTargets.push(tvFace);
+    // La TV reproduce contenido visual; los clics corresponden al panel derecho.
 
     const tvFill = new THREE.PointLight("#003db6", 2.8, 4);
     tvFill.position.set(-3.9, 1.9, -2); scene.add(tvFill);
