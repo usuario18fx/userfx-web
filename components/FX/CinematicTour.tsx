@@ -607,9 +607,28 @@ export default function CinematicTour({
     box(1.26, 0.045, 0.79, -0.40, 0.55, -3.44, laptopMetal);
     box(1.13, 0.011, 0.62, -0.40, 0.578, -3.43, laptopDark);
     box(1.28, 0.83, 0.055, -0.40, 1.01, -3.80, laptopDark);
+    // Fotografía original en la pantalla 3D de la laptop.
+    const laptopImageTexture = canvas((ctx) => {
+      ctx.fillStyle = "#07151e";
+      ctx.fillRect(0, 0, 1024, 640);
+    }, 1024, 640);
+    const laptopImage = new Image();
+    laptopImage.onload = () => {
+      if (abort.signal.aborted || !laptopImage.naturalWidth || !laptopImage.naturalHeight) return;
+      const imageCanvas = laptopImageTexture.image as HTMLCanvasElement;
+      const ctx = imageCanvas.getContext("2d");
+      if (!ctx) return;
+      const scale = Math.max(1024 / laptopImage.naturalWidth, 640 / laptopImage.naturalHeight);
+      const width = laptopImage.naturalWidth * scale;
+      const height = laptopImage.naturalHeight * scale;
+      ctx.drawImage(laptopImage, (1024 - width) / 2, (640 - height) / 2, width, height);
+      laptopImageTexture.needsUpdate = true;
+      wakeRender.current?.();
+    };
+    laptopImage.src = "/assets/videocall.jpg";
     const laptopDisplay = new THREE.Mesh(
       new THREE.PlaneGeometry(1.16, 0.73),
-      interfaceScreen("MY GALLERY", "PRIVATE COLLECTION", "OPEN GALLERY")
+      new THREE.MeshBasicMaterial({ map: laptopImageTexture, toneMapped: false, side: THREE.DoubleSide })
     );
     laptopDisplay.position.set(-0.40, 1.01, -3.768);
     laptopDisplay.userData.fxDestination = "#/private-room/gallery";
