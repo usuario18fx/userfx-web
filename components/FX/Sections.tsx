@@ -260,6 +260,9 @@ Your prefix defines your access. Each collection respects its own code.
                 <p className="fx-identity-card-description">
                   {t.line}
                 </p>
+                <p className="fx-identity-card-feature">
+                  {t.highlight}
+                </p>
               </Spotlight>
             </motion.li>
           ))}
