@@ -1132,7 +1132,7 @@ function publicGalleryKeyboard(index) {
     [{ text: "✕ ᴄʟᴏꜱᴇ", callback_data: "public_gallery:close" }],
   ] };
 }
-bot.action(/^public_gallery:(\\d+|counter|close)$/, async (ctx) => {
+bot.action(/^public_gallery:(\d+|counter|close)$/, async (ctx) => {
   const action = ctx.match[1];
   try {
     if (action === "counter") return await ctx.answerCbQuery();
