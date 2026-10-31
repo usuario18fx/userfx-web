@@ -1911,9 +1911,8 @@ bot.on("text", async (ctx, next) => {
     }
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
-      await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO);
-      return await ctx.reply("​", {
-        reply_markup: { inline_keyboard: [[{ text: "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: SMOKELANDIA_GROUP_LINK }]] },
+      return await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO, {
+        reply_markup: { inline_keyboard: [[{ text: "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
       });
     }
     //// USERFX SITE //
