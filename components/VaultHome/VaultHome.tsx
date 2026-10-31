@@ -576,6 +576,32 @@ export default function VaultHome() {
               ))}
             </div>
           </div>
+          <a
+            href="https://t.me/+Smfuo6ObfVFkOTFh"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir canal de Telegram 𝐔𝐬𝐞𝐫 Ŧҳ 🜲"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "fit-content",
+              maxWidth: "calc(100% - 32px)",
+              margin: "24px auto 0",
+              padding: "12px 28px",
+              border: "1px solid rgba(220, 190, 125, 0.65)",
+              borderRadius: "8px",
+              background: "rgba(10, 12, 19, 0.9)",
+              color: "#f6e6c2",
+              fontSize: "16px",
+              fontWeight: 700,
+              letterSpacing: "0.03em",
+              textDecoration: "none",
+              textAlign: "center",
+            }}
+          >
+            𝐔𝐬𝐞𝐫 Ŧҳ 🜲
+          </a>
         </div>
         {/* ⬆️ .vx-insideZone → INSIDE THE VAULT + CAROUSEL */}
       </section>
