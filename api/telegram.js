@@ -604,6 +604,8 @@ const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
 const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
 const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
+const BTN_GALLERY = "📸 ɢᴀʟʟᴇʀʏ";
+const PUBLIC_GALLERY_PHOTOS = Array.from({ length: 7 }, (_, i) => `${ASSETS_BASE_URL}/album/PRVW/PRVW-${String(i + 1).padStart(2, "0")}.jpg`);
 const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
 const BTN_PENDING_REQUEST = "ʀᴇǫᴜᴇꜱᴛ";
@@ -1087,6 +1089,7 @@ function getMainKeyboard() {
   return Markup.keyboard([
     [BTN_VIDEOCALL, BTN_GET_CODE],
     [BTN_CHANNELS, BTN_REFRESH],
+    [BTN_GALLERY],
   ]).resize();
 }
 function getAccessKeyboard() {
@@ -1120,6 +1123,32 @@ function getStarsProKeyboard() {
 function getChannelsKeyboard() {
   return Markup.keyboard([[BTN_SMOKELANDIA, BTN_USERFX_SITE], [BTN_BACK_MENU]]).resize();
 }
+function publicGalleryKeyboard(index) {
+  const total = PUBLIC_GALLERY_PHOTOS.length;
+  return { inline_keyboard: [
+    [{ text: "❮ ᴘʀᴇᴠ", callback_data: `public_gallery:${(index - 1 + total) % total}` },
+     { text: `${index + 1} / ${total}`, callback_data: "public_gallery:counter" },
+     { text: "ɴᴇxᴛ ❯", callback_data: `public_gallery:${(index + 1) % total}` }],
+    [{ text: "✕ ᴄʟᴏꜱᴇ", callback_data: "public_gallery:close" }],
+  ] };
+}
+bot.action(/^public_gallery:(\\d+|counter|close)$/, async (ctx) => {
+  const action = ctx.match[1];
+  try {
+    if (action === "counter") return await ctx.answerCbQuery();
+    if (action === "close") {
+      await ctx.answerCbQuery();
+      return await ctx.deleteMessage().catch(() => {});
+    }
+    const index = Number(action);
+    if (!Number.isInteger(index) || index < 0 || index >= PUBLIC_GALLERY_PHOTOS.length) return await ctx.answerCbQuery("Invalid photo");
+    await ctx.editMessageMedia({ type: "photo", media: PUBLIC_GALLERY_PHOTOS[index], caption: `📸 USER FX · PUBLIC GALLERY · ${index + 1}/${PUBLIC_GALLERY_PHOTOS.length}` }, { reply_markup: publicGalleryKeyboard(index) });
+    await ctx.answerCbQuery();
+  } catch (error) {
+    logger.error("PUBLIC GALLERY ERROR", getTelegramError(error));
+    await ctx.answerCbQuery("Please try again").catch(() => {});
+  }
+});
 //// ACCESS STATE //
 function tierRank(tier) {
   if (tier === TIER_VIP) return 3;
@@ -1875,6 +1904,14 @@ bot.on("text", async (ctx, next) => {
     if (text === BTN_PRO) {
       await trackButtonClick(ctx, "ᴘʀᴏ");
       return await sendProPanel(ctx);
+    }
+    //// PUBLIC GALLERY //
+    if (text === BTN_GALLERY) {
+      await trackButtonClick(ctx, "public_gallery");
+      return await ctx.replyWithPhoto(PUBLIC_GALLERY_PHOTOS[0], {
+        caption: `📸 USER FX · PUBLIC GALLERY · 1/${PUBLIC_GALLERY_PHOTOS.length}`,
+        reply_markup: publicGalleryKeyboard(0),
+      });
     }
     //// CHANNELS //
     if (text === BTN_CHANNELS) {
