@@ -1918,10 +1918,9 @@ bot.on("text", async (ctx, next) => {
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
-      await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO);
-      return await ctx.reply("​", {
+      return await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO, {
         reply_markup: {
-          inline_keyboard: [[{ text: "𝐔𝐬ᴇʀ 🜲∓ҳ", web_app: { url: USERFX_SITE_URL } }]],
+          inline_keyboard: [[{ text: "𝐔𝐬𝐞𝐫 Ŧҳ 🜲", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
         },
       });
     }
