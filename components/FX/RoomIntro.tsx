@@ -16,7 +16,6 @@ type Action = { title: string; sub: string; arrow: string; run: () => void };
 const BOT_URL = "https://t.me/User18Fx_bot";
 const STAGES = [
   { key: "welcome",    title: "WELCOME",   accent: "MY ROOM",   sub: "A PRIVATE WORLD AWAITS",        body: "Comienza el recorrido. Cada paso revela una parte de USER FX." },
-  { key: "inside",     title: "STEP",      accent: "INSIDE",    sub: "FOLLOW THE LIGHT",              body: "Entra despacio. El ambiente y sus detalles marcan el camino." },
   { key: "corridor",   title: "THE",       accent: "CORRIDOR",  sub: "THE JOURNEY CONTINUES",         body: "Un pasillo de arte, reflejos y luz cálida conduce a tu habitación." },
   { key: "enter-room", title: "ENTER",     accent: "MY ROOM",   sub: "WELCOME TO YOUR SPACE",         body: "Deja atrás el pasillo y descubre el interior de MY ROOM." },
   { key: "gallery",    title: "MY",        accent: "GALLERY",   sub: "YOUR PRIVATE COLLECTION",       body: "Descubre tus fotos desde la laptop y recorre la selección." },
@@ -243,9 +242,9 @@ export default function RoomIntro() {
         </span>
         </div>
         <div className="fx-nav-center">
-        <button className={`nav-item ${stage.key === "gallery" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[4])}>01 Gallery</button>
-        <button className={`nav-item ${stage.key === "videocall" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[5])}>02 Videopriv</button>
-        <button className={`nav-item ${stage.key === "stage" || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[7])}>03 Stage</button>
+        <button className={`nav-item ${stage.key === "gallery" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[3])}>01 Gallery</button>
+        <button className={`nav-item ${stage.key === "videocall" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[4])}>02 Videopriv</button>
+        <button className={`nav-item ${stage.key === "stage" || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[6])}>03 Stage</button>
         </div>
         <div className="fx-nav-right">
         <button className="nav-icon" onClick={openBot}>
