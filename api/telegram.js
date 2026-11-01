@@ -2470,18 +2470,28 @@ async function handleManualAccess(ctx) {
   }
 }
 function manualPrivilegeKeyboard(record) {
-  const rows = ["oncam", "rec", "stage", "chat", "multimedia"].map(field => [
-    Markup.button.callback(`${field.toUpperCase()} ${record.features?.[field] ? "✔️" : "✖️"}`, `manual_manage:toggle_${field}:${record.code}`)
+  const toggle = (label, field) => Markup.button.callback(
+    `${label} ${record.features?.[field] ? "✔️" : "✖️"}`,
+    `manual_manage:toggle_${field}:${record.code}`
+  );
+  return Markup.inlineKeyboard([
+    [toggle("ONCAM", "oncam"), toggle("REC", "rec"), toggle("STAGE", "stage")],
+    [toggle("CHAT", "chat"), toggle("GALLERY", "multimedia"), Markup.button.callback("CODE", `manual_manage:code:${record.code}`)],
+    [Markup.button.callback("←", `manual_manage:view:${record.code}`), Markup.button.callback("EXIT", `manual_manage:exit:${record.code}`)],
   ]);
-  rows.push([Markup.button.callback("CODE · Cambiar código", `manual_manage:code:${record.code}`)]);
-  rows.push([Markup.button.callback("VOLVER", `manual_manage:view:${record.code}`)]);
-  return Markup.inlineKeyboard(rows);
 }
 async function handleManualManage(ctx) {
   if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized");
   await ctx.answerCbQuery();
   const [, action, code] = ctx.match;
   const client = await ensureRedis();
+  if (action === "exit") {
+    if (!client) return ctx.reply("No se pudo cerrar el panel. Intenta de nuevo.");
+    const botId = ctx.state?.accessEntryMode === accessEntryModes.get(adminBot) ? "admin" : "user";
+    await client.del(`${CODE_ENGINE_NAMESPACE}:add-users:${botId}:${ctx.chat.id}:${ctx.from.id}`);
+    await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
+    return ctx.reply("Modo agregar usuarios cerrado.", { reply_markup: { remove_keyboard: true } });
+  }
   let record = await getAccessCode(code);
   if (!client || record?.source !== "admin_manual" || record.status !== "active") return ctx.reply("Código inactivo. Abre /access para consultar el estado.");
   const username = String(record.telegramUsername || "").toLowerCase();
@@ -2537,7 +2547,7 @@ async function manualTextMiddleware(ctx, next) {
 for (const targetBot of [bot, adminBot]) {
   targetBot.command("access", showManualAccess);
   targetBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
-  targetBot.action(/^manual_manage:(view|edit|code|text|delete|confirm_delete|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
+  targetBot.action(/^manual_manage:(view|edit|code|text|delete|confirm_delete|exit|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
 }
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           async function showTelegramPermissions(ctx) {
