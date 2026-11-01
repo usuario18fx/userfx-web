@@ -263,7 +263,7 @@ export default function RoomIntro() {
         <p className="fx-subtitle">
           {SUBTITLES[stage.key]}
         </p>
-        {stage.key !== "multimedia" && (
+        {stage.key !== "multimedia" && stage.key !== "stage" && (
           <button className="fx-btn-primary" onClick={primaryAction}>
             {PRIMARY_LABEL[stage.key]}
           </button>
@@ -295,7 +295,7 @@ export default function RoomIntro() {
         ))}
         </div>
         </aside>
-        {stage.key !== "multimedia" && (
+        {stage.key !== "multimedia" && stage.key !== "stage" && (
         <>
         <div className="fx-footer-angles">
         <div className="angles-header">
