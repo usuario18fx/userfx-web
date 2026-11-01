@@ -414,7 +414,7 @@ export default function CinematicTour({
         const isLastLeft = side === -1 && z === 6.65;
         const isSecondRight = side === 1 && z === 9.55;
         const portraitUrl = isSecondRight
-          ? "/assets/my-room/userfx-right-portrait.png"
+          ? "/assets/my-room/fx-ia.png"
           : isLastLeft
             ? "/portrait-pasillo.jpg"
             : z === 12.45
