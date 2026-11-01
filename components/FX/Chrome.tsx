@@ -220,7 +220,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
             <MenuButton width="25px" gap="6px" />
           </div>
           <nav
-            className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center py-12"
+            className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]"
             aria-label="Site menu navigation">
             {NAV.map((item, i) => (
               <motion.a
@@ -228,11 +228,11 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
                 variants={row}
                 href={`#${item.id}`}
                 onClick={close}
-                className="group flex items-center justify-between border-b border-white/15 py-5 md:py-7">
-                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white transition-colors duration-300 group-hover:text-[#0370ff] md:text-[7vw]">
+                className="group flex items-center justify-between border-b border-white/15 py-[20px] md:py-[24px]">
+                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white/60 transition-colors duration-300 group-hover:text-[#0370ff] md:text-[7vw]">
                   {item.label}
                 </span>
-                <span className="select-none text-[100px] font-light leading-none tracking-[-.08em] text-[#0370ff]/[.09] transition-colors duration-300 group-hover:text-white md:text-[170px]">0{i + 1}</span>
+                <span className="select-none text-[100px] font-light leading-none tracking-[-.08em] text-[#0370ff]/40 transition-colors duration-300 group-hover:text-white/90 md:text-[140px]">0{i + 1}</span>
               </motion.a>
             ))}
           </nav>
