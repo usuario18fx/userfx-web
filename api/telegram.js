@@ -148,6 +148,7 @@ for (const [targetBot, botId] of [[bot, "user"], [adminBot, "admin"]]) {
     exitText: "SALIR", styledExitText: "ꜱᴀʟɪʀ",
   });
   accessEntryModes.set(targetBot, mode);
+  targetBot.use(manualTextMiddleware);
   targetBot.use((ctx, next) => {
     ctx.state.accessEntryMode = mode;
     return mode.middleware(ctx, next);
@@ -2384,72 +2385,160 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
           });
 // ADMIN MANUAL ACCESS — codes are delivered here for manual distribution.
 function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "") {
-    const button = (label, plan) => Markup.button.callback(
-        label + (selectedPlan === plan ? " ✔️" : ""), `manual_access:${plan}${username ? ":" + username : ""}`
-    );
-    return Markup.inlineKeyboard([
-        [button("SPCL", "special"), button("BSIC", "basic")],
-        [button("PRX0", "pro"), button("VIPX", "vip")],
-        ...(username && issuedCode ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
-    ]);
+  const button = (label, plan) => Markup.button.callback(label, `manual_access:${plan}${username ? ":" + username : ""}`);
+  if (issuedCode) return Markup.inlineKeyboard([
+    [Markup.button.callback(`${PLAN_CONFIG[selectedPlan]?.prefix || "SPCL"} ✔️`, `manual_manage:view:${issuedCode}`), Markup.button.callback("EDITAR ✏️", `manual_manage:edit:${issuedCode}`)],
+    [Markup.button.callback("SEND TEXT 💬", `manual_manage:text:${issuedCode}`), Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
+    ...(username ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
+  ]);
+  return Markup.inlineKeyboard([[button("SPCL", "special"), button("BSIC", "basic")], [button("PRX0", "pro"), button("VIPX", "vip")]]);
+}
+function manualAccessText(record) {
+  const f = record.features || {};
+  const mark = v => v ? "✔️" : "✖️";
+  return [record.code, record.telegramUsername ? `Usuario: @${record.telegramUsername}` : "", "Código ya asignado.", "",
+    `ONCAM · MYROOM: ${mark(f.oncam)}`, `GRABACIÓN: ${mark(f.rec)}`, `STAGE: ${mark(f.stage)}`,
+    `CHAT: ${mark(f.chat)}`, `MULTIMEDIA: ${mark(f.multimedia)}`,
+    `Duración: ${record.unlimited ? "Ilimitada" : record.days + " días"}`].filter(v => v !== "").join("\n");
+}
+async function findManualAccess(username) {
+  const client = await ensureRedis();
+  if (!client) throw new Error("Redis unavailable");
+  const keys = await scanKeys(`${CODE_ENGINE_NAMESPACE}:code:*`);
+  let latest = null;
+  for (let i = 0; i < keys.length; i += 100) {
+    const values = await client.mget(keys.slice(i, i + 100));
+    for (const raw of values) {
+      let r; try { r = JSON.parse(raw); } catch { continue; }
+      if (r?.source !== "admin_manual" || String(r.telegramUsername || "").toLowerCase() !== username || r.status !== "active") continue;
+      if (r.expiresAt && Date.parse(r.expiresAt) <= Date.now()) continue;
+      if (!latest || String(r.createdAt) > String(latest.createdAt)) latest = r;
+    }
+  }
+  return latest;
 }
 async function showManualAccess(ctx, inputUsername) {
-    if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
-    const arg = typeof inputUsername === "string" ? inputUsername : getCommandArg(ctx);
-    if (typeof inputUsername !== "string") {
-      if (ctx.chat?.type !== "private") return ctx.reply("Abre el chat privado del bot para agregar usuarios.");
-      const mode = ctx.state?.accessEntryMode;
-      if (!mode) return ctx.reply("No se pudo abrir Agregar usuarios. Intenta /access de nuevo.");
-      await mode.enter(ctx);
-      if (!arg) return;
-    }
-    const target = arg ? normalizeTelegramFxUsername(arg) : null;
-    if (arg && !target) return ctx.reply("Uso: /access @username");
-    return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
+  if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
+  const arg = typeof inputUsername === "string" ? inputUsername : getCommandArg(ctx);
+  if (typeof inputUsername !== "string") {
+    if (ctx.chat?.type !== "private") return ctx.reply("Abre el chat privado del bot para agregar usuarios.");
+    const mode = ctx.state?.accessEntryMode;
+    if (!mode) return ctx.reply("No se pudo abrir Agregar usuarios. Intenta /access de nuevo.");
+    await mode.enter(ctx);
+    if (!arg) return;
+  }
+  const target = arg ? normalizeTelegramFxUsername(arg) : null;
+  if (arg && !target) return ctx.reply("Uso: /access @username");
+  const existing = target ? await findManualAccess(target.normalized) : null;
+  if (existing) return ctx.reply(manualAccessText(existing), manualAccessKeyboard(existing.planId, target.normalized, existing.code));
+  return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
 }
 async function handleManualAccess(ctx) {
-    if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
-    await ctx.answerCbQuery();
-    const planId = ctx.match[1];
-    const username = String(ctx.match[2] || "").toLowerCase();
-    const message = ctx.callbackQuery.message;
-    if (!message) return;
-    const client = await ensureRedis();
-    if (!client) return ctx.reply("No se pudo conectar a Redis. Intenta de nuevo.");
-    // One issuance per panel, including concurrent and repeated callbacks.
-    const requestKey = `${CODE_ENGINE_NAMESPACE}:manual:${message.chat.id}:${message.message_id}`;
-    const locked = await client.set(requestKey, "pending", "NX");
-    if (locked !== "OK") {
-        const previous = await client.get(requestKey);
-        return ctx.reply(previous === "pending" ? "Generación en proceso." : `Código ya generado: ${previous}`);
+  if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
+  await ctx.answerCbQuery();
+  const planId = ctx.match[1];
+  const username = String(ctx.match[2] || "").toLowerCase();
+  const message = ctx.callbackQuery.message;
+  if (!message) return;
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("No se pudo conectar a Redis.");
+  const requestKey = `${CODE_ENGINE_NAMESPACE}:manual:${message.chat.id}:${message.message_id}`;
+  const token = crypto.randomUUID();
+  const lockKey = username ? `${CODE_ENGINE_NAMESPACE}:manual-lock:${username}` : requestKey + ":lock";
+  if (await client.set(lockKey, token, "EX", 30, "NX") !== "OK") return ctx.reply("Cambio en proceso. Intenta de nuevo.");
+  try {
+    const previous = await client.get(requestKey);
+    const replacing = previous?.startsWith("replace:") ? previous.slice(8) : "";
+    const existing = username ? await findManualAccess(username) : null;
+    if (existing && (!replacing || existing.code !== replacing)) {
+      return ctx.editMessageText(manualAccessText(existing), manualAccessKeyboard(existing.planId, username, existing.code));
     }
-    let record;
-    try {
-        // Empty userId: bearer code, manually distributed by the administrator.
-        record = await generateAccessCode(planId, "admin_manual", "", null, username || null);
-    } catch (error) {
-        await client.del(requestKey);
-        logger.error("MANUAL ACCESS ERROR", { message: String(error?.message || error) });
-        return ctx.reply("No se pudo generar el código. Intenta de nuevo.");
+    if (previous && !replacing) return ctx.reply(`Código ya generado: ${previous}`);
+    if (replacing && !existing) return ctx.reply("El código anterior cambió. Abre /access de nuevo.");
+    const record = await generateAccessCode(planId, "admin_manual", "", null, username || null);
+    if (existing) {
+      // Revoke the old bearer credential after its replacement exists.
+      await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(existing.code));
     }
     await client.set(requestKey, record.code);
-    const features = record.features;
-    const flag = (value) => value ? "✔️" : "✖️";
-    await ctx.editMessageText(`${record.code}${username ? "\nUsuario: @" + username : ""}
-
-ONCAM · MYROOM: ${flag(features.oncam)}
-GRABACIÓN: ${flag(features.rec)}
-STAGE: ${flag(features.stage)}
-CHAT: ${flag(features.chat)}
-MULTIMEDIA: ${flag(features.multimedia)}
-Duración: ${record.unlimited ? "Ilimitada" : record.planId === "vip" ? "1 mes (30 días)" : `${record.days} días` }
-
-Usa /access para generar otro código.`, manualAccessKeyboard(planId, username, record.code));
+    return ctx.editMessageText(manualAccessText(record), manualAccessKeyboard(planId, username, record.code));
+  } catch (error) {
+    logger.error("MANUAL ACCESS ERROR", { message: error?.message });
+    return ctx.reply("No se pudo completar el cambio. Abre /access para comprobar el estado.");
+  } finally {
+    await client.eval("if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) end return 0", 1, lockKey, token);
+  }
 }
-adminBot.command("access", showManualAccess);
-bot.command("access", showManualAccess);
-adminBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
-bot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
+function manualPrivilegeKeyboard(record) {
+  const rows = ["oncam", "rec", "stage", "chat", "multimedia"].map(field => [
+    Markup.button.callback(`${field.toUpperCase()} ${record.features?.[field] ? "✔️" : "✖️"}`, `manual_manage:toggle_${field}:${record.code}`)
+  ]);
+  rows.push([Markup.button.callback("CODE · Cambiar código", `manual_manage:code:${record.code}`)]);
+  rows.push([Markup.button.callback("VOLVER", `manual_manage:view:${record.code}`)]);
+  return Markup.inlineKeyboard(rows);
+}
+async function handleManualManage(ctx) {
+  if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized");
+  await ctx.answerCbQuery();
+  const [, action, code] = ctx.match;
+  const client = await ensureRedis();
+  let record = await getAccessCode(code);
+  if (!client || record?.source !== "admin_manual" || record.status !== "active") return ctx.reply("Código inactivo. Abre /access para consultar el estado.");
+  const username = String(record.telegramUsername || "").toLowerCase();
+  if (action.startsWith("toggle_")) {
+    const field = action.slice(7);
+    await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); if r.status~='active' then return 0 end; r.features=r.features or {}; r.features[ARGV[1]]=not r.features[ARGV[1]]; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(code), field);
+    record = await getAccessCode(code);
+  }
+  if (action === "code") {
+    const m = ctx.callbackQuery.message;
+    await client.set(`${CODE_ENGINE_NAMESPACE}:manual:${m.chat.id}:${m.message_id}`, `replace:${code}`);
+    return ctx.editMessageText(`@${username} · Código actual: ${code}\nSelecciona el nuevo código:`, manualAccessKeyboard("", username));
+  }
+  if (action === "delete") return ctx.editMessageText(`¿Eliminar el acceso ${code} de @${username}?`, Markup.inlineKeyboard([
+    [Markup.button.callback("ELIMINAR ❌", `manual_manage:confirm_delete:${code}`), Markup.button.callback("CANCELAR", `manual_manage:view:${code}`)]
+  ]));
+  if (action === "confirm_delete") {
+    await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(code));
+    return ctx.editMessageText(`Acceso eliminado: ${code}\n@${username}`, manualAccessKeyboard("", username));
+  }
+  if (action === "text") {
+    if (!username) return ctx.reply("Este código no tiene un usuario asignado.");
+    const prompt = await ctx.reply(`Escribe el mensaje para @${username}. Responde a este mensaje; /cancel para cancelar.`, {reply_markup:{force_reply:true,selective:true}});
+    await client.set(`${CODE_ENGINE_NAMESPACE}:manual-text:${ctx.botInfo.id}:${ctx.chat.id}:${ctx.from.id}:${prompt.message_id}`, code, "EX", 600);
+    return;
+  }
+  const editing = action === "edit" || action.startsWith("toggle_");
+  return ctx.editMessageText(manualAccessText(record), editing ? manualPrivilegeKeyboard(record) : manualAccessKeyboard(record.planId, username, code));
+}
+async function manualTextMiddleware(ctx, next) {
+  const replyId = ctx.message?.reply_to_message?.message_id;
+  if (!replyId || !ctx.message?.text || !isAdmin(ctx) || ctx.chat?.type !== "private") return next();
+  const client = await ensureRedis();
+  if (!client) return next();
+  const key = `${CODE_ENGINE_NAMESPACE}:manual-text:${ctx.botInfo.id}:${ctx.chat.id}:${ctx.from.id}:${replyId}`;
+  const code = await client.get(key);
+  if (!code) return next();
+  if (ctx.message.text === "/cancel") { await client.del(key); return ctx.reply("Envío cancelado."); }
+  const record = await getAccessCode(code);
+  if (record?.status !== "active") return ctx.reply("El acceso ya no está activo.");
+  const recipient = await resolveNoticeRecipient(record.telegramUsername, client);
+  if (!recipient) return ctx.reply(NOTICE_RESULTS.unreachable);
+  if (await client.set(key + ":sending", "1", "EX", 600, "NX") !== "OK") return ctx.reply("Este mensaje ya fue procesado.");
+  try {
+    await bot.telegram.sendMessage(recipient, ctx.message.text);
+    await client.del(key);
+    return ctx.reply("Mensaje enviado.");
+  } catch (error) {
+    logger.error("MANUAL TEXT ERROR", { message: error?.message });
+    return ctx.reply("No se confirmó la entrega. Revisa el chat antes de intentar otro envío.");
+  }
+}
+for (const targetBot of [bot, adminBot]) {
+  targetBot.command("access", showManualAccess);
+  targetBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
+  targetBot.action(/^manual_manage:(view|edit|code|text|delete|confirm_delete|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
+}
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           async function showTelegramPermissions(ctx) {
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
