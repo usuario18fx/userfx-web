@@ -38,7 +38,7 @@ const STEPS = [
   { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
 ];
 const PROTOCOL_ORNAMENTS = [
-  { src: "/icon-fx.png", className: "vx-Icon-fx" },
+  { src: "/iconFX.png", className: "vx-IconFX" },
   { src: "/icon7.png", className: "vx-Icon7" },
 ];
 const FAQS = [
@@ -106,8 +106,12 @@ function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean
   return (
     <div className={`vx-ticker ${reverse ? "is-rev" : ""}`}>
       <div className="vx-tickerTrack">
-        <span>{line.repeat(4)}</span>
-        <span>{line.repeat(4)}</span>
+        <span>
+{line.repeat(4)}
+</span>
+        <span>
+{line.repeat(4)}
+</span>
       </div>
     </div>
   );
@@ -320,12 +324,18 @@ export default function VaultHome() {
         <AdminModeSwitch />
         <div className="vx-hudRight">
           <VisitorCounter />
-          <time>{clock}</time>
+          <time>
+{clock}
+</time>
           <b onClick={() => !unlocked && setCodeModal(true)} className={unlocked ? "vx-unlockedBadge" : ""} aria-live="polite" aria-label={unlocked ? `${activeAccessPrefix} ${activeAccessState.toLowerCase()}` : "Vault locked"}>
             {unlocked ? (
               <>
-                <span className="vx-unlockedPrefix">{activeAccessPrefix}</span>
-                <span className="vx-unlockedState">{activeAccessState}</span>
+                <span className="vx-unlockedPrefix">
+{activeAccessPrefix}
+</span>
+                <span className="vx-unlockedState">
+{activeAccessState}
+</span>
               </>
             ) : (
               "🜲 LOCKED"
@@ -423,7 +433,8 @@ export default function VaultHome() {
               <p className="vx-privateAlbumDescription">
                 {memberAccess ? (
               <>
-              SPCL identity opens the club. Private albums require their own access code.</>
+              SPCL identity opens the club. Private albums require their own access code.
+</>
                ) : (
               <>
                Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
@@ -546,7 +557,9 @@ export default function VaultHome() {
               <p>
                   DROP IN
               </p>
-              <strong>{countdown}</strong>
+              <strong>
+{countdown}
+</strong>
               <p>
                   FRIDAY · 22:00 UTC
               </p>
@@ -587,11 +600,19 @@ export default function VaultHome() {
               <Reveal key={f.q} delay={i * 50}>
               <div className="vx-faqItem">
               <button type="button" onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
-              <b>{String(i + 1).padStart(2, "0")}</b>
-              <span>{f.q}</span>
-              <i>{open ? "–" : "+"}</i>
+              <b>
+{String(i + 1).padStart(2, "0")}
+</b>
+              <span>
+{f.q}
+</span>
+              <i>
+{open ? "–" : "+"}
+</i>
               </button>
-              {open ? <p>{f.a}</p> : null}
+              {open ? <p>
+{f.a}
+</p> : null}
               </div>
               </Reveal>
                );
@@ -630,7 +651,7 @@ export default function VaultHome() {
               <Scramble text="SUPPORT" hover />
               </button>
               <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
-              <img src="/assets/icon-fx.png" alt="USER FX" className="vx-LogoFx" draggable={false} />
+              <img src="/iconFX.png" alt="USER FX" className="vx-LogoFx" draggable={false} />
               <Scramble text="CHANNEL" hover />
               </button>
               </nav>
@@ -713,7 +734,9 @@ export default function VaultHome() {
               <button type="submit" className="vx-gold" disabled={verifyLoading || attempts >= MAX_ATTEMPTS}>
                 {verifyLoading ? "VERIFYING..." : "UNLOCK"}
               </button>
-              {verifyError ? <p className="vx-modalError">{verifyError}</p> : null}
+              {verifyError ? <p className="vx-modalError">
+{verifyError}
+</p> : null}
             </form>
             <p className="vx-modalFooter">
             Don&apos;t have a code? Use GET MY CODE or contact @User18Fx_bot.

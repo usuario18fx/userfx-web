@@ -513,7 +513,7 @@ export default function CinematicTour({
 
     const abort = new AbortController();
     new THREE.TextureLoader().load(
-      "/assets/my-room/zebra.jpg",
+      "/assets/my-room/zebra.png",
       (texture) => {
         if (abort.signal.aborted) { texture.dispose(); return; }
         texture.colorSpace = THREE.SRGBColorSpace;
