@@ -172,7 +172,7 @@ const row = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
   exit: { opacity: 0, y: 12, transition: { duration: 0.2, ease: EASE } },
 };
-export function MenuOverlay() {
+export function MenuOverlay({ children }: { children?: ReactNode }) {
   const { open, close } = useMenu();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -220,7 +220,7 @@ export function MenuOverlay() {
             <MenuButton width="25px" gap="6px" />
           </div>
           <nav
-            className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center"
+            className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center py-12"
             aria-label="Site menu navigation">
             {NAV.map((item, i) => (
               <motion.a
@@ -228,24 +228,15 @@ export function MenuOverlay() {
                 variants={row}
                 href={`#${item.id}`}
                 onClick={close}
-                className="group flex items-baseline justify-between border-b border-ink/12 py-5 md:py-7">
-                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] transition-opacity group-hover:opacity-55 md:text-[7vw]">
+                className="group flex items-center justify-between border-b border-white/15 py-5 md:py-7">
+                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white transition-colors duration-300 group-hover:text-[#0370ff] md:text-[7vw]">
                   {item.label}
                 </span>
-                <span className="text-xs tracking-[.2em] text-gold">0{i + 1}</span>
+                <span className="select-none text-[100px] font-light leading-none tracking-[-.08em] text-[#0370ff]/[.09] transition-colors duration-300 group-hover:text-white md:text-[170px]">0{i + 1}</span>
               </motion.a>
             ))}
           </nav>
-          <motion.div
-            variants={row}
-            className="mx-auto flex w-full max-w-[1200px] justify-between gap-8 py-10">
-            <p className="max-w-[34ch] text-sm leading-relaxed text-ink/60">
-              Your room, the shared stage, your private collection. One verified identity.
-            </p>
-            <a href="#contact" onClick={close} className="text-xs uppercase tracking-widest">
-              Contact us
-            </a>
-          </motion.div>
+          {children ? <div className="w-full pt-10">{children}</div> : null}
         </motion.div>
       )}
     </AnimatePresence>
