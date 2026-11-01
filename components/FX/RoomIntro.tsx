@@ -296,6 +296,7 @@ export default function RoomIntro() {
         </div>
         </aside>
         {stage.key !== "multimedia" && (
+        <>
         <div className="fx-footer-angles">
         <div className="angles-header">
         <span>
@@ -346,6 +347,7 @@ export default function RoomIntro() {
         <button className="fx-btn-exit" onClick={() => scrollToProgress(0)}>
           SALIR
         </button>
+        </>
         )}
         </div>
         )}
