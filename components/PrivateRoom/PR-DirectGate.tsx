@@ -1,3 +1,4 @@
+import { PLAN_DAYS } from "../../lib/access-plans.js";
 import { usePrivatePermissions } from "./PR-Permissions";
           import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
@@ -1427,7 +1428,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
                   <span className="pvr-direct-plan-info">
                     <strong>{plan.name}</strong>
 
-                    <small className="pvr-direct-plan-prefix">{plan.prefix}</small>
+                    <small className="pvr-direct-plan-prefix">{plan.prefix} · {PLAN_DAYS[plan.id]} DAYS</small>
 
                     <small className="pvr-direct-plan-price">✦ {plan.stars}</small>
                   </span>
