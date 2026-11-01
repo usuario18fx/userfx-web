@@ -849,10 +849,33 @@ export default function CinematicTour({
     const tvFill = new THREE.PointLight("#003db6", 2.8, 4);
     tvFill.position.set(-3.9, 1.9, -2); scene.add(tvFill);
 
-    // Cuadro sobre la cama: corona de partículas en formato vertical 9:16.
-    // Conserva el cuadro FX original hasta que exista el nuevo archivo PNG.
-    const crownPoster = print("FX", "ROOM", "#0075fc");
-    applyImage(crownPoster, "/assets/my-room/crown-wall-portrait.png");
+    // Cuadro detrás de la cama: corona completa, centrada y con margen negro.
+    // Composición vertical 2:3; no estirar ni recortar la imagen original.
+    const crownTexture = canvas((ctx) => {
+      ctx.fillStyle = "#02040a";
+      ctx.fillRect(0, 0, 640, 960);
+    }, 640, 960);
+    const crownPoster = new THREE.MeshBasicMaterial({
+      map: crownTexture, side: THREE.DoubleSide, toneMapped: false
+    });
+    const crownImage = new Image();
+    crownImage.onload = () => {
+      if (abort.signal.aborted || !crownImage.naturalWidth || !crownImage.naturalHeight) return;
+      const board = crownTexture.image as HTMLCanvasElement;
+      const ctx = board.getContext("2d");
+      if (!ctx) return;
+      ctx.fillStyle = "#02040a";
+      ctx.fillRect(0, 0, board.width, board.height);
+      const maxWidth = board.width * 0.78;
+      const maxHeight = board.height * 0.70;
+      const scale = Math.min(maxWidth / crownImage.naturalWidth, maxHeight / crownImage.naturalHeight);
+      const w = crownImage.naturalWidth * scale;
+      const h = crownImage.naturalHeight * scale;
+      ctx.drawImage(crownImage, (board.width - w) / 2, (board.height - h) / 2, w, h);
+      crownTexture.needsUpdate = true;
+      wakeRender.current?.();
+    };
+    crownImage.src = "/assets/my-room/crown-wall-portrait.png";
     pic(4.87, 2.65, -3.22, -Math.PI / 2, crownPoster, 1.6, 2.4);
     const neonPink = new THREE.PointLight("#2b66a8", 7, 3.9);
     neonPink.position.set(4.14, 2.85, -3.2); scene.add(neonPink);
