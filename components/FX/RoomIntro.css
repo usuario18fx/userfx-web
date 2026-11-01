@@ -118,12 +118,17 @@
 
 .fx-room-intro-index {
   position: absolute;
-  right: 52px;
-  bottom: 70px;
-  z-index: 4;
-  font-size: 56px;
+  right: clamp(24px, 7vw, 150px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: clamp(150px, 26vw, 440px);
+  line-height: 1;
   font-weight: 300;
-  color: #0370ff;
+  letter-spacing: -0.08em;
+  color: rgba(3, 112, 255, 0.16);
+  text-shadow: none;
+  user-select: none;
   pointer-events: none;
 }
 
@@ -499,7 +504,11 @@
     right: 24px;
   }
   .fx-room-intro-index {
-    display: none;
+    display: block;
+    left: auto;
+    right: 3%;
+    font-size: clamp(110px, 28vw, 260px);
+    color: rgba(3, 112, 255, 0.12);
   }
   .fx-content-left {
     left: 3%;
