@@ -415,14 +415,14 @@ export default function CinematicTour({
         const portraitUrl = isLastLeft
           ? "/portrait-pasillo.jpg"
           : z === 12.45
-            ? (side === -1 ? "/wallpaper2.png" : "/wallpaperVertical.png")
+            ? (side === -1 ? "/wallpaper2.png" : "/wallpaperGeneral.png")
             : "/wallpaperGeneral.png";
         applyImage(portrait, portraitUrl);
         pic(side * 1.81, 2.06, z, side === -1 ? Math.PI / 2 : -Math.PI / 2,
           portrait, 1.13, 1.65);
         if (z === 12.45 && side === 1) {
           const iconMaterial = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide });
-          applyImage(iconMaterial, "/iconFoot.png");
+          applyImage(iconMaterial, "/iconFX.png");
           const emblem = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.68), iconMaterial);
           emblem.rotation.y = -Math.PI / 2;
           emblem.position.set(1.73, 2.10, z);
