@@ -36,9 +36,9 @@ const BADGES: Record<string, string> = {
 const COUNTERS: Record<string, string> = { gallery: "01", videocall: "02", multimedia: "03", stage: "04" };
 const TITLES: Record<string, ReactNode> = {
   gallery: <>Mis fotos<br />públicas.</>,
-  videocall: <>Solo tú<br />y yo.</>,
-  multimedia: <>COMMUNITY<br />MEDIA</>,
-  stage: <>The room<br />is your stage.</>,
+  videocall: <>ᴊᴜsᴛ 𝕐𝕆𝕌<br />🜲ᴀɴᴅ 𝕄𝔼</>,
+  multimedia: <>ᴄᴏᴍᴍᴜɴɪᴛʏ<br />𝕄𝔼𝔻𝕀𝔸</>,
+  stage: <>The room<br />is your 𝕊𝕋𝔸𝔾𝔼.</>,
 };
 const SUBTITLES: Record<string, string> = {
   gallery: "Una selección editorial abierta. Cambia de fotografía, amplía la imagen o continúa hacia la siguiente habitación.",
@@ -215,7 +215,8 @@ export default function RoomIntro() {
           / CINEMATIC JOURNEY
         </small>
         <h1>
-          {stage.title} <strong>{stage.accent}
+          {stage.title} <strong>
+{stage.accent}
         </strong>
         </h1>
         <p>
@@ -242,15 +243,23 @@ export default function RoomIntro() {
         </span>
         </div>
         <div className="fx-nav-center">
-        <button className={`nav-item ${stage.key === "gallery" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[3])}>01 Gallery</button>
-        <button className={`nav-item ${stage.key === "videocall" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[4])}>02 Videopriv</button>
-        <button className={`nav-item ${stage.key === "stage" || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[6])}>03 Stage</button>
+        <button className={`nav-item ${stage.key === "gallery" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[3])}>
+01 Gallery
+</button>
+        <button className={`nav-item ${stage.key === "videocall" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[4])}>
+02 Videopriv
+</button>
+        <button className={`nav-item ${stage.key === "stage" || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[6])}>
+03 Stage
+</button>
         </div>
         <div className="fx-nav-right">
         <button className="nav-icon" onClick={openBot}>
           Ayuda
         </button>
-        <button className="nav-icon" onClick={toggleFullscreen}>Pantalla completa</button>
+        <button className="nav-icon" onClick={toggleFullscreen}>
+Pantalla completa
+</button>
         </div>
         </header>
         <div className="fx-content-left" key={stage.key}>
@@ -286,7 +295,9 @@ export default function RoomIntro() {
         <strong>
           {a.title}
         </strong>
-        <small>{a.sub}</small>
+        <small>
+{a.sub}
+</small>
         </span>
         <span className="menu-arrow">
           {a.arrow}
@@ -324,7 +335,9 @@ export default function RoomIntro() {
         </div>
         </div>
         <div className="fx-footer-controls">
-        <span>SCROLL PARA AVANZAR</span>
+        <span>
+SCROLL PARA AVANZAR
+</span>
         <span>
         <kbd>
           1

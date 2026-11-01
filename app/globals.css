@@ -11,9 +11,9 @@
   --color-sky: #08090d;
   --color-sky-lit: #0d1119;
   --color-haze: #b45b69;
-  --color-orb: #c8ac70;
+  --color-orb: #3ad1d4;
   --color-trend: #aaffc6;
-  --color-gold: #c8ac70;
+  --color-gold: #3ad1d4;
   --color-rose: #b45b69;
   --font-display: var(--font-funnel-display), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-funnel-sans), ui-sans-serif, system-ui, sans-serif;
@@ -37,11 +37,11 @@ body[data-locked="true"] {
   overflow: hidden;
 }
 ::selection {
-  background: #c8ac70;
+  background: #3ad1d4;
   color: #08090d;
 }
 :focus-visible {
-  outline: 1.5px solid #c8ac70;
+  outline: 1.5px solid #3ad1d4;
   outline-offset: 4px;
 }
 button,
@@ -88,9 +88,9 @@ button:disabled {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(90deg, #08090d50, #08090d96),
-    url("/wallpaperGeneral.png") center/cover;
+  background:linear-gradient(90deg, 
+  #08090d50, #08090d96),
+  url("/wallpaperGeneral.png") center/cover;
   opacity: 0.55;
 }
 .fx-ring {
@@ -128,14 +128,15 @@ button:disabled {
   transform: scale(1.6) rotate(180deg) translateX(-19%) translateY(-12%);
 }
 .fx-plan-featured {
-  background: linear-gradient(135deg, #c8ac70, #99804c);
+  background: linear-gradient(135deg, 
+  #3ab3d4, #1aa0a3a6);
   box-shadow: 0 0 80px #c8ac700c;
   border: 1px solid #e6d4aa55;
 }
 .fx-footer {
-  background:
-    linear-gradient(180deg, #08090df5, #08090dcc),
-    url("/wallpaperGeneral.png") center bottom/cover;
+  background:linear-gradient(180deg, 
+  #08090df5, #08090dcc),
+  url("/wallpaperGeneral.png") center bottom/cover;
 }
 .fx-footer-emblem {
     width: 112px;
@@ -152,7 +153,7 @@ button:disabled {
 }
 html {
   scrollbar-width: thin;
-  scrollbar-color: #9b875e #08090d;
+  scrollbar-color: #3ad1d4 #08090d;
 }
 ::-webkit-scrollbar {
   width: 8px;
@@ -163,20 +164,16 @@ html {
 }
 ::-webkit-scrollbar-thumb {
   border: 2px solid #08090d;
-  border-radius: 12px;
-  background: linear-gradient(#789bfa, #c8ac70);
+  border-radius: 8px;
+  background: linear-gradient(#789bfa, #3ad1d4);
 }
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  html { scroll-behavior: auto;
   }
   .fx-landing *,
   .fx-landing *::before,
-  .fx-landing *::after {
-    transition-duration: 0s !important;
-    animation: none !important;
-  }
-}
+  .fx-landing *::after { transition-duration: 0s !important;animation: none !important;
+  }}
 
 .fx-landing .vx-visitorCount {
   display: inline-flex;
@@ -184,10 +181,10 @@ html {
   gap: 8px;
   border: 1px solid #c8ac7026;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 9px;
   font-size: 12px;
-  color: #c8ac70;
-}
+  color: #3ad1d4;
+  }
 .fx-landing .vx-visitorIcon {
   width: 16px;
   height: 16px;

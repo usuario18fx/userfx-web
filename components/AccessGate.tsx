@@ -103,7 +103,9 @@
 
             return (
               <div className="access-gate">
-                <style>{GATE_CSS}</style>
+                <style>
+{GATE_CSS}
+</style>
                 <form onSubmit={handleSubmit}>
                   <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
                   <p className="access-gate__kicker">
@@ -187,7 +189,7 @@
 .access-gate button{
   width:100%;
   height:44px;
-  border:1px solid #d4a83a;
+  border:1px solid #3ad1d4;
   background:linear-gradient(180deg, #2a2a2a, #111);
   color:#f6d77a;
   font-family:inherit;

@@ -473,7 +473,6 @@
   color: var(--fx-story-gold);
   font-style: italic;
 }
-
 .fx-scroll-code-line {
   display: flex;
   align-items: center;
@@ -481,38 +480,33 @@
   gap: clamp(14px, 2vw, 34px);
   margin-top: clamp(40px, 8vw, 102px);
   padding: 25px 0;
-  border-top: 1px solid #d5c08b6d;
-  border-bottom: 1px solid #d5c08b36;
+  border-top: 1px solid #8bcbd56d;
+  border-bottom: 1px solid #8bccd536;
   white-space: nowrap;
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: #ceb67b80 transparent;
+  scrollbar-color: #5897ac80 transparent;
 }
-
 .fx-scroll-code-line > span {
   font-size: clamp(11px, 1.15vw, 17px);
   font-weight: 500;
   letter-spacing: .08em;
 }
-
 .fx-scroll-code-line b {
-  color: var(--fx-story-gold);
+  color: #13b0e57b;
   font-weight: 500;
 }
-
 .fx-scroll-code-line .fx-scroll-code-label {
   font: 400 clamp(9px, .95vw, 12px) var(--font-wide), monospace;
   letter-spacing: .25em;
-  color: #b9b0a4;
+  color:#13b0e57a;
 }
-
 .fx-scroll-access-links {
   display: flex;
   flex-wrap: wrap;
   gap: clamp(25px, 6vw, 110px);
   margin-top: 34px;
 }
-
 .fx-scroll-access-links a {
   display: inline-flex;
   gap: 25px;
@@ -522,16 +516,13 @@
   letter-spacing: .14em;
   transition: color .25s;
 }
-
 .fx-scroll-access-links a:hover {
-  color: var(--fx-story-gold);
+  color:#13b0e58c;
 }
-
 .fx-scroll-access-links a span {
   font-size: 20px;
-  color: var(--fx-story-gold);
+  color: #13b0e59e;
 }
-
 .fx-scroll-footer {
   display: grid;
   gap: clamp(30px, 5vw, 65px);
@@ -541,7 +532,6 @@
     linear-gradient(0deg, #07090ef7, #07090ee7),
     url("/wallpaperGeneral.png") center/cover;
 }
-
 .fx-scroll-footer-mark {
   display: flex;
   align-items: center;
@@ -550,28 +540,23 @@
   font-size: 11px;
   letter-spacing: .28em;
 }
-
 .fx-scroll-footer-mark img {
   object-fit: contain;
 }
-
 .fx-scroll-footer-links {
   display: flex;
   flex-wrap: wrap;
   gap: 20px clamp(18px, 4vw, 75px);
 }
-
 .fx-scroll-footer-links a {
   font: 400 clamp(14px, 1.7vw, 24px) Georgia, serif;
   letter-spacing: .035em;
   transition: color .25s, transform .25s;
 }
-
 .fx-scroll-footer-links a:hover {
   color: var(--fx-story-gold);
   transform: translateY(-3px);
 }
-
 .fx-scroll-footer > p {
   border-top: 1px solid #d1ba8429;
   padding-top: 20px;
@@ -579,205 +564,162 @@
   font-size: 10px;
   letter-spacing: .17em;
 }
-
 @keyframes fx-scroll-hero-breathe {
   from { transform: scale(1.07); }
   to { transform: scale(1.17) translate(-1%, -1%); }
 }
-
 @keyframes fx-scroll-emblem {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
-
 @keyframes fx-scroll-arrow {
   0%, 100% { transform: translateY(0); opacity: .65; }
   50% { transform: translateY(8px); opacity: 1; }
 }
-
 @media (min-width: 1120px) {
   .fx-scroll-hero-media img {
     object-position: center 44%;
   }
-
   .fx-scroll-scene--stage .fx-scroll-scene-image {
     object-position: center 59%;
-  }
-}
-
+  }}
 @media (max-width: 700px) {
   .fx-scroll-hero {
     min-height: 100svh;
     padding: 105px 23px 102px;
     align-items: center;
   }
-
   .fx-scroll-topline {
     min-height: 73px;
     padding: 12px 23px;
   }
-
   .fx-scroll-brand img {
     width: 34px;
     height: 34px;
   }
-
   .fx-scroll-brand {
     font-size: 13px;
     gap: 8px;
   }
-
   .fx-scroll-quick-nav {
     gap: 17px;
   }
-
   .fx-scroll-quick-nav > a {
     font-size: 9px;
     letter-spacing: .07em;
   }
-
   .fx-scroll-hero-media img {
     width: 100%;
     object-position: 66% 30%;
     filter: grayscale(.22) sepia(.13) saturate(.82) brightness(.90) contrast(1.08);
   }
-
   .fx-scroll-hero-veil {
     background:
       linear-gradient(90deg, #05070bdf 0%, #05070b98 44%, #05070b22 90%),
       linear-gradient(0deg, #05070beb 0%, #05070b08 70%),
       linear-gradient(180deg, #05070b95 0%, transparent 28%);
   }
-
   .fx-scroll-hero-title h1 {
     font-size: clamp(43px, 11.9vw, 83px);
     letter-spacing: -.075em;
   }
-
   .fx-scroll-hero-title h1 .fx-scroll-accent {
     font-size: .8em;
   }
-
   .fx-scroll-hero-subtitle {
     margin-top: 19px;
     font-size: 9px;
     line-height: 1.6;
     letter-spacing: .18em;
   }
-
   .fx-scroll-emblem {
     margin: 18px 0;
   }
-
   .fx-scroll-emblem img {
     width: 84px;
   }
-
   .fx-scroll-cue {
     right: 22px;
     bottom: 24px;
     writing-mode: horizontal-tb;
     font-size: 8px;
   }
-
   .fx-scroll-scene,
   .fx-scroll-scene-link {
     min-height: 68svh;
   }
-
   .fx-scroll-scene-link {
     align-items: end;
     padding: 75px 25px 67px;
   }
-
   .fx-scroll-scene-image {
     object-position: center;
   }
-
   .fx-scroll-scene-shade,
   .fx-scroll-scene--stage .fx-scroll-scene-shade,
   .fx-scroll-scene--gallery .fx-scroll-scene-shade {
     background: linear-gradient(0deg, #04060bed 0%, #04060b5b 57%, #04060b1f 100%);
   }
-
   .fx-scroll-scene-index {
     top: 29px;
     left: 25px;
   }
-
   .fx-scroll-scene-content {
     margin-top: 0;
     width: 100%;
   }
-
   .fx-scroll-scene-content strong {
     font-size: clamp(58px, 12.5vw, 90px);
   }
-
   .fx-scroll-scene-watermark {
     font-size: 160px;
     right: 10px;
     bottom: -20px;
   }
-
   .fx-scroll-scene-subtitle {
     font-size: 12px;
   }
-
   .fx-scroll-code-line {
     gap: 25px;
     margin-right: -22px;
     padding-right: 30px;
     -webkit-overflow-scrolling: touch;
   }
-
   .fx-scroll-code-line > span {
     font-size: 12px;
   }
-
   .fx-scroll-code-line .fx-scroll-code-label {
     font-size: 9px;
   }
-
   .fx-scroll-footer {
     gap: 34px;
     padding-top: 50px;
   }
-
   .fx-scroll-footer-links {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px 10px;
-  }
-}
-
+  }}
 @media (max-width: 370px) {
   .fx-scroll-quick-nav > a {
     display: none;
   }
-
   .fx-scroll-hero-title h1 {
     font-size: 12vw;
   }
-
   .fx-scroll-scene-content strong {
     font-size: 16vw;
-  }
-}
-
+  }}
 @media (prefers-reduced-motion: reduce) {
   .fx-scroll-hero-media img,
   .fx-scroll-emblem img,
   .fx-scroll-cue span:last-child {
     animation: none !important;
   }
-
   .fx-scroll-scene-image,
   .fx-scroll-scene-content {
     will-change: auto;
-  }
-}
-
+  }}
 /* Responsive desktop: keep the CTA, title and portrait visible on laptop landscape windows. */
 @media (min-width: 701px) and (max-height: 820px) {
   .fx-scroll-hero {
@@ -785,45 +727,34 @@
     padding-top: clamp(85px, 12svh, 105px);
     padding-bottom: 37px;
   }
-
   .fx-scroll-hero-title h1 {
     font-size: clamp(55px, min(6.8vw, 12.5svh), 105px);
     margin-top: 10px;
     line-height: .84;
   }
-
   .fx-scroll-hero-subtitle {
     margin-top: 13px;
     font-size: 11px;
   }
-
   .fx-scroll-emblem {
     margin: 7px 0;
   }
-
   .fx-scroll-emblem img {
     width: 67px;
   }
-
   .fx-scroll-hero-enter {
     padding: 10px 7px 10px 0;
   }
-
   .fx-scroll-cue {
     bottom: 18px;
   }
-
   .fx-scroll-scene,
   .fx-scroll-scene-link {
     min-height: max(420px, 72svh);
   }
-
   .fx-scroll-scene-content strong {
     font-size: clamp(57px, 8.3vw, 122px);
-  }
-}
-
-
+  }}
 /* USERFX_SCENE_DISCLOSURE_V1 — Accordion below each photo, not a page redirect */
 .fx-scroll-story button.fx-scroll-scene-link {
   box-sizing: border-box;
@@ -933,8 +864,6 @@
   .fx-scroll-scene-panel-description { font-size: 15px; }
   .fx-scroll-story a.fx-scroll-scene-panel-enter { width: 100%; justify-content: space-between; }
 }
-
-
 /* USERFX_COMPACT_INTERACTIVE_SCENES_V2 */
 .fx-scroll-story button.fx-scroll-scene-link {
   isolation: isolate;
@@ -1001,7 +930,7 @@
 }
 .fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-icon {
   transform: scale(1.08);
-  border-color: #f2d18e;
+  border-color: #13b1e5f8;
   box-shadow: 0 0 22px #eac67a48;
 }
 .fx-scroll-scene-icon--videocall .fx-icon-live-light {
@@ -1040,7 +969,6 @@
   0%, 100% { opacity: 1; transform: translateY(0); }
   50% { opacity: .55; transform: translateY(-2px); }
 }
-
 /* FX emblem has a restrained halo; status represents this visitor's connectivity. */
 .fx-scroll-emblem {
   display: flex;
@@ -1125,7 +1053,6 @@
 .fx-scroll-scene-panel-facts dd {
   font-size: clamp(19px, 1.6vw, 26px);
 }
-
 @media (max-width: 700px) {
   .fx-scroll-story button.fx-scroll-scene-link {
     min-height: clamp(280px, 46svh, 470px) !important;
@@ -1174,25 +1101,23 @@
   .fx-scroll-connection-dot {
     animation: none !important;
     transition: none !important;
-  }
-}
-
+  }}
 /* USERFX_SCENE_DISCOVER_HINT_V1 */
 .fx-scroll-scene-discover {
   display: inline-flex;
   align-items: center;
   font-size: 10px;
-  color: #ead4a4;
+  color: #13b0e57c;
   font-weight: 600;
   letter-spacing: .22em;
   margin-top: 4px;
-  border-bottom: 1px solid #d3b7768a;
+  border-bottom: 1px solid #13b0e5a6;
   padding-bottom: 8px;
 }
 .fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-discover,
 .fx-scroll-scene.is-expanded .fx-scroll-scene-discover {
   color: #fff2d3;
-  border-color: #e4c68d;
+  border-color: #13b0e5f8;
 }
 .fx-scroll-scene-panel { scroll-margin-top: 100px; }
 .fx-scroll-scene-panel-heading h3 { white-space: nowrap; }
