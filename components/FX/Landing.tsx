@@ -14,7 +14,7 @@ export default function Landing(){
  <SmoothScroll />
  <ScrollProgress />
  <StickyHeader active={active} />
- <MenuOverlay />
+ <MenuOverlay><SiteFooter /></MenuOverlay>
  <div className="fx-landing">
  <main>
  <RoomIntro />
@@ -24,7 +24,6 @@ export default function Landing(){
  <SectionPricing />
  <SectionFaq />
  </main>
- <SiteFooter />
  </div>
  </MenuProvider>
  );
