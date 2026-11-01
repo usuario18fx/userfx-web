@@ -412,11 +412,14 @@ export default function CinematicTour({
         // Último cuadro izquierdo, junto a la entrada de MY ROOM:
         // selfie original con filtro mate y oscuro aplicado al archivo.
         const isLastLeft = side === -1 && z === 6.65;
-        const portraitUrl = isLastLeft
-          ? "/portrait-pasillo.jpg"
-          : z === 12.45
-            ? (side === -1 ? "/wallpaper2.png" : "/wallpaperGeneral.png")
-            : "/wallpaperGeneral.png";
+        const isSecondRight = side === 1 && z === 9.55;
+        const portraitUrl = isSecondRight
+          ? "/assets/my-room/fx-ia.png"
+          : isLastLeft
+            ? "/portrait-pasillo.jpg"
+            : z === 12.45
+              ? (side === -1 ? "/wallpaper2.png" : "/wallpaperGeneral.png")
+              : "/wallpaperGeneral.png";
         applyImage(portrait, portraitUrl);
         pic(side * 1.81, 2.06, z, side === -1 ? Math.PI / 2 : -Math.PI / 2,
           portrait, 1.13, 1.65);
