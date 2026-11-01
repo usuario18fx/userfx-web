@@ -37,7 +37,7 @@ const COUNTERS: Record<string, string> = { gallery: "01", videocall: "02", multi
 const TITLES: Record<string, ReactNode> = {
   gallery: <>Mis fotos<br />públicas.</>,
   videocall: <>Solo tú<br />y yo.</>,
-  multimedia: <>Contenido<br />multimedia.</>,
+  multimedia: <>COMMUNITY<br />MEDIA</>,
   stage: <>The room<br />is your stage.</>,
 };
 const SUBTITLES: Record<string, string> = {
@@ -257,15 +257,17 @@ export default function RoomIntro() {
         <span className="fx-badge">
           {BADGES[stage.key]}
         </span>
-        <h2 className="fx-title">
+        <h2 className={`fx-title ${stage.key === "multimedia" ? "fx-title-multimedia" : ""}`}>
           {TITLES[stage.key]}
         </h2>
         <p className="fx-subtitle">
           {SUBTITLES[stage.key]}
         </p>
-        <button className="fx-btn-primary" onClick={primaryAction}>
-        {PRIMARY_LABEL[stage.key]}
-        </button>
+        {stage.key !== "multimedia" && (
+          <button className="fx-btn-primary" onClick={primaryAction}>
+            {PRIMARY_LABEL[stage.key]}
+          </button>
+        )}
         </div>
         <aside className="fx-menu-right" key={`menu-${stage.key}`}>
         <div className="fx-menu-header">
@@ -293,6 +295,7 @@ export default function RoomIntro() {
         ))}
         </div>
         </aside>
+        {stage.key !== "multimedia" && (
         <div className="fx-footer-angles">
         <div className="angles-header">
         <span>
@@ -343,6 +346,7 @@ export default function RoomIntro() {
         <button className="fx-btn-exit" onClick={() => scrollToProgress(0)}>
           SALIR
         </button>
+        )}
         </div>
         )}
         <div className="fx-room-intro-progress" aria-hidden="true">
