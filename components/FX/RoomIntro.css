@@ -65,7 +65,7 @@
   justify-content: space-between;
   font-size: 12px;
   letter-spacing: .22em;
-  color: #f0d5b0;
+  color: #0370ff;
   text-shadow: 0 2px 12px #000;
   pointer-events: none;
 }
@@ -84,7 +84,7 @@
 .fx-room-intro-copy small {
   font-size: 12px;
   letter-spacing: .2em;
-  color: #f1c89a;
+  color: #0370ff;
 }
 
 .fx-room-intro-copy h1 {
@@ -98,7 +98,7 @@
 
 .fx-room-intro-copy h1 strong {
   font-weight: 700;
-  color: #efb676;
+  color: #0370ff;
 }
 
 .fx-room-intro-copy p {
@@ -123,7 +123,7 @@
   z-index: 4;
   font-size: 56px;
   font-weight: 300;
-  color: #efb676;
+  color: #0370ff;
   pointer-events: none;
 }
 
@@ -142,7 +142,7 @@
 .fx-room-intro-progress > div {
   width: 100%;
   height: 100%;
-  background: #efb676;
+  background: #0370ff;
   transform-origin: 0 50%;
   will-change: transform;
 }
@@ -186,7 +186,7 @@
 }
 
 .fx-room-ui button:focus-visible {
-  outline: 2px solid #efb676;
+  outline: 2px solid #0370ff;
   outline-offset: 3px;
 }
 
@@ -297,7 +297,7 @@
   transition: border-color .2s, letter-spacing .2s;
 }
 .fx-btn-primary:hover {
-  border-bottom-color: #efb676;
+  border-bottom-color: #0370ff;
   letter-spacing: .02em;
 }
 
