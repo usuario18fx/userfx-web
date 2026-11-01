@@ -353,6 +353,17 @@ export default function CinematicTour({
       group.add(art);
     };
 
+    // Texturas originales del directorio public, con fallback al material existente.
+    const applyImage = (material: THREE.MeshBasicMaterial, url: string) => {
+      new THREE.TextureLoader().load(url, (texture) => {
+        if (abort.signal.aborted) { texture.dispose(); return; }
+        texture.colorSpace = THREE.SRGBColorSpace;
+        material.map = texture;
+        material.needsUpdate = true;
+        wakeRender.current?.();
+      }, undefined, () => {});
+    };
+
     // ── Corredor ──
     const bronze = mat("#8b6038", 0.32, 0.68);
     const lacquer = mat("#0c120f", 0.27, 0.34);
@@ -397,8 +408,21 @@ export default function CinematicTour({
       box(0.15, 0.13, 13.35, x, 3.56, 8.75, lacquer);
       box(0.17, 0.06, 13.35, x, 3.4, 8.75, bronze);
       for (const z of [12.45, 9.55, 6.65]) {
+        const portrait = print(z === 12.45 ? "FX" : "USER", "ROOM");
+        const portraitUrl = z === 12.45
+          ? (side === -1 ? "/wallpaper2.png" : "/wallpaperVertical.png")
+          : "/wallpaperGeneral.png";
+        applyImage(portrait, portraitUrl);
         pic(side * 1.81, 2.06, z, side === -1 ? Math.PI / 2 : -Math.PI / 2,
-          print(z === 12.45 ? "FX" : "USER", "ROOM"), 1.13, 1.65);
+          portrait, 1.13, 1.65);
+        if (z === 12.45 && side === 1) {
+          const iconMaterial = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide });
+          applyImage(iconMaterial, "/iconFoot.png");
+          const emblem = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.68), iconMaterial);
+          emblem.rotation.y = -Math.PI / 2;
+          emblem.position.set(1.73, 2.10, z);
+          scene.add(emblem);
+        }
         const sconce = new THREE.PointLight("#3c5757", 2.6, 3.7);
         sconce.position.set(side * 1.48, 2.97, z);
         scene.add(sconce);
@@ -428,6 +452,15 @@ export default function CinematicTour({
     box(10, 0.2, 9.8, 0, 4.6, -2.1, mat("#101b31"));
     box(10, 4.6, 0.15, 0, 2.2, -6.95, mat("#162742"));
     box(2.4, 0.1, 2.0, -2.9, 0.03, -2.7, carpet);
+    // Espejo vertical grande en la esquina izquierda, sin reemplazar la geometría.
+    const mirrorFrame = mat("#1c2a40", 0.3, 0.5);
+    const mirrorSurface = new THREE.MeshPhysicalMaterial({
+      color: "#7c98ba", metalness: 0.82, roughness: 0.12,
+      transparent: true, opacity: 0.78, side: THREE.DoubleSide
+    });
+    box(0.12, 3.25, 1.62, -4.84, 1.7, -5.52, mirrorFrame);
+    box(0.014, 3.04, 1.43, -4.765, 1.7, -5.52, mirrorSurface);
+
     const zebraCanvas = canvas((ctx) => {
       ctx.fillStyle = "#0e1011"; ctx.fillRect(0, 0, 512, 512);
       ctx.fillStyle = "#3c5757"; ctx.beginPath(); ctx.ellipse(230, 270, 150, 195, -0.36, 0, Math.PI * 2); ctx.fill();
@@ -520,7 +553,7 @@ export default function CinematicTour({
       }, undefined, () => {});
     };
     const upholstery = fabricTexture("#3c795fa1", "#198b6f40");
-    const duvet = fabricTexture("#183a3a", "#2191911a");
+    const duvet = fabricTexture("#891427", "#ba24391a");
     const sofaFabric = fabricTexture("#262e30", "#708b9029");
     const rugFabric = fabricTexture("#111616", "#52605f1a", 260);
     polyHavenNormal(duvet, "velour_velvet", 3, 3, 0.17);
