@@ -368,10 +368,10 @@ export default function CinematicTour({
     const bronze = mat("#8b6038", 0.32, 0.68);
     const lacquer = mat("#0c120f", 0.27, 0.34);
     const wallPattern = canvas((ctx) => {
-      ctx.fillStyle = "#153231"; ctx.fillRect(0, 0, 512, 512);
+      ctx.fillStyle = "#101720"; ctx.fillRect(0, 0, 512, 512);
       for (let y = 15; y < 512; y += 76)
         for (let x = 16; x < 512; x += 76) {
-          ctx.strokeStyle = "#5fd7cd38"; ctx.lineWidth = 2.2;
+          ctx.strokeStyle = "#28445428"; ctx.lineWidth = 2.2;
           ctx.beginPath(); ctx.ellipse(x, y + 20, 17, 26, 0, 0, Math.PI * 2); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(x, y - 10);
           ctx.bezierCurveTo(x - 25, y + 13, x - 24, y + 40, x, y + 55);
@@ -382,7 +382,7 @@ export default function CinematicTour({
     wallPattern.wrapS = THREE.RepeatWrapping;
     wallPattern.wrapT = THREE.RepeatWrapping;
     wallPattern.repeat.set(10, 2.8);
-    const wallpaper = new THREE.MeshStandardMaterial({ map: wallPattern, roughness: 0.88 });
+    const wallpaper = new THREE.MeshStandardMaterial({ map: wallPattern, color: "#71818c", roughness: 0.98, metalness: 0 });
     const marbleTexture = canvas((ctx) => {
       ctx.fillStyle = "#090e0d"; ctx.fillRect(0, 0, 512, 512);
       for (let k = 0; k < 90; k++) {
@@ -400,7 +400,7 @@ export default function CinematicTour({
     box(3.7, 0.14, 14.7, 0, -0.1, 8.4, marble);
     box(0.18, 3.8, 13.35, -1.91, 1.83, 8.75, wallpaper);
     box(0.18, 3.8, 13.35, 1.91, 1.83, 8.75, wallpaper);
-    box(3.85, 0.16, 13.35, 0, 3.77, 8.75, mat("#112c28", 0.66));
+    box(3.85, 0.16, 13.35, 0, 3.77, 8.75, mat("#080f18", 0.95));
     for (const side of [-1, 1]) {
       const x = side * 1.78;
       box(0.13, 0.72, 13.35, x, 0.36, 8.75, lacquer);
@@ -431,7 +431,7 @@ export default function CinematicTour({
           emblem.position.set(1.73, 2.10, z);
           scene.add(emblem);
         }
-        const sconce = new THREE.PointLight("#3c5757", 2.6, 3.7);
+        const sconce = new THREE.PointLight("#237e99", 0.9, 2.8);
         sconce.position.set(side * 1.48, 2.97, z);
         scene.add(sconce);
         box(0.15, 0.065, 0.38, side * 1.66, 2.97, z, bronze);
@@ -447,7 +447,7 @@ export default function CinematicTour({
     box(0.08, 3.45, 1.65, 0, 1.7, 0, lacquer, door).rotation.y = Math.PI / 2;
     box(0.1, 0.13, 0.2, -0.12, 1.65, -0.7, bronze, door);
     for (const z of [12.7, 8.5, 4.7]) {
-      const light = new THREE.PointLight("#2a7777", 7, 6);
+      const light = new THREE.PointLight("#146d89", 2.5, 5);
       light.position.set(0, 3.32, z); scene.add(light);
       box(0.3, 0.05, 0.3, 0, 3.69, z,
         new THREE.MeshStandardMaterial({ color: "#517a7a", emissive: "#44afaf", emissiveIntensity: 1.4 }));
