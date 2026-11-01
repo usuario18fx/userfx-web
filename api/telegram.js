@@ -1,3 +1,4 @@
+import { accessEntryMode } from "../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../lib/access-notices.js";
 import { PLAN_DAYS } from "../lib/access-plans.js";
 ﻿          import { Telegraf, Markup } from "telegraf";
@@ -138,6 +139,21 @@ bot.use(async (ctx, next) => {
   return next();
 });
 // ======================================================
+const accessEntryModes = new Map();
+for (const [targetBot, botId] of [[bot, "user"], [adminBot, "admin"]]) {
+  const mode = accessEntryMode({
+    redis: ensureRedis, namespace: CODE_ENGINE_NAMESPACE, botId, isAdmin,
+    normalizeUsername: normalizeTelegramFxUsername,
+    showPanel: (ctx, username) => showManualAccess(ctx, username),
+    exitText: "SALIR", styledExitText: "ꜱᴀʟɪʀ",
+  });
+  accessEntryModes.set(targetBot, mode);
+  targetBot.use((ctx, next) => {
+    ctx.state.accessEntryMode = mode;
+    return mode.middleware(ctx, next);
+  });
+}
+
 // USER BOT VOICE · NATIVE GEN-Z ENGLISH + SMALL CAPS
 // Applies to every outgoing USER-bot message/caption/button.
 // Preserves HTML, URLs, @usernames and private access codes.
@@ -2377,9 +2393,16 @@ function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "")
         ...(username && issuedCode ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
     ]);
 }
-async function showManualAccess(ctx) {
+async function showManualAccess(ctx, inputUsername) {
     if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
-    const arg = getCommandArg(ctx);
+    const arg = typeof inputUsername === "string" ? inputUsername : getCommandArg(ctx);
+    if (typeof inputUsername !== "string") {
+      if (ctx.chat?.type !== "private") return ctx.reply("Abre el chat privado del bot para agregar usuarios.");
+      const mode = ctx.state?.accessEntryMode;
+      if (!mode) return ctx.reply("No se pudo abrir Agregar usuarios. Intenta /access de nuevo.");
+      await mode.enter(ctx);
+      if (!arg) return;
+    }
     const target = arg ? normalizeTelegramFxUsername(arg) : null;
     if (arg && !target) return ctx.reply("Uso: /access @username");
     return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));

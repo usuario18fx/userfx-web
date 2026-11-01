@@ -7,7 +7,7 @@ let generated=[],sent=[],stored=new Map();
 const redis={async set(k,v,...o){if(o.includes("NX")&&stored.has(k))return null;stored.set(k,v);return "OK";},async get(k){return stored.get(k);},async del(k){stored.delete(k);}};
 const ctx=vm.createContext({bot:{command(){},action(){}},adminBot:{command(){},action(){}},Markup:{button:{callback:(text,callback_data)=>({text,callback_data})},inlineKeyboard:inline_keyboard=>({reply_markup:{inline_keyboard}})},isAdmin:c=>c.admin, getCommandArg:c=>c.arg||"",normalizeTelegramFxUsername:v=>({display:"@"+v.replace("@",""),normalized:v.replace("@","").toLowerCase()}),ensureRedis:async()=>redis,CODE_ENGINE_NAMESPACE:"test",logger:{error(){}},generateAccessCode:async(...args)=>{generated.push(args);return {code:"SPCL-AB23",features:{stage:true,multimedia:true},unlimited:true};}});
 vm.runInContext(block,ctx);
-const event={admin:true,arg:"@VersToronto",reply:async(...x)=>sent.push(x)};
+const event={admin:true,chat:{type:"private"},state:{accessEntryMode:{enter:async()=>{}}},arg:"@VersToronto",reply:async(...x)=>sent.push(x)};
 await ctx.showManualAccess(event);
 let keyboard=sent[0][1].reply_markup.inline_keyboard;
 assert.deepEqual(Array.from(keyboard.flat(),b=>b.text),["SPCL","BSIC","PRX0","VIPX"]);

@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {accessEntryMode} from "../lib/access-entry-mode.js";
+const records=new Map();let nexts=0,panels=[],replies=[];
+const client={async set(k,v){records.set(k,v);},async get(k){return records.get(k);},async del(k){records.delete(k);}};
+const mode=accessEntryMode({redis:async()=>client,namespace:"test",botId:"user",isAdmin:c=>c.admin,normalizeUsername:t=>/^@?[A-Za-z0-9_]{3,32}$/.test(t)?{normalized:t.replace("@","").toLowerCase()}:null,showPanel:async(c,u)=>panels.push(u)});
+const ctx={admin:true,chat:{id:1,type:"private"},from:{id:2},message:{text:"@FirstUser"},reply:async(...a)=>replies.push(a)};
+const next=async()=>nexts++;
+await mode.middleware(ctx,next);assert.equal(nexts,1);assert.equal(panels.length,0);
+await mode.enter(ctx);assert.equal(replies[0][1].reply_markup.input_field_placeholder,"@usuario");
+await mode.middleware(ctx,next);ctx.message.text="@SecondUser";await mode.middleware(ctx,next);
+assert.deepEqual(panels,["firstuser","seconduser"]);
+ctx.message.text="/users";await mode.middleware(ctx,next);assert.equal(nexts,2);
+ctx.message.text="not a username";await mode.middleware(ctx,next);assert.equal(panels.length,2);
+ctx.admin=false;ctx.message.text="@OtherUser";await mode.middleware(ctx,next);assert.equal(nexts,3);ctx.admin=true;
+ctx.message.text="SALIR";await mode.middleware(ctx,next);assert.equal(records.size,0);assert.equal(replies.at(-1)[1].reply_markup.remove_keyboard,true);
+ctx.message.text="@ThirdUser";await mode.middleware(ctx,next);assert.equal(nexts,4);assert.equal(panels.length,2);
+console.log("PASS: repeated usernames without commands, private admin isolation, invalid input, other commands, placeholder and exit.");
