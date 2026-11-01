@@ -11,11 +11,11 @@ const mediaSource = (await readFile(new URL("../api/private-media.js", import.me
 function response() {
   return { setHeader() {}, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; }, send(body) { this.body = body; return this; } };
 }
-for (const [planId, rec, chat, multimedia] of [["basic", false, true, false], ["pro", true, true, true], ["vip", true, true, true], ["special", true, false, true]]) {
+for (const [planId, rec, chat, multimedia, stage] of [["basic", false, true, false, false], ["pro", true, true, true, false], ["vip", true, true, true, true], ["special", true, false, true, true]]) {
   const features = getAccessFeatures({ planId });
-  assert.deepEqual(features, { oncam: true, rec, chat, multimedia });
+  assert.deepEqual(features, { oncam: true, rec, chat, multimedia, stage });
   assert.equal(getAccessFeatures({ planId, features: { rec: true, chat: true, multimedia: true } }).chat, chat);
-  for (const [action, allowed] of [["stage-heartbeat", rec], ["gallery-heartbeat", multimedia]]) {
+  for (const [action, allowed] of [["stage-heartbeat", stage], ["gallery-heartbeat", multimedia]]) {
     const writes = [];
     const redis = { set: async (...args) => writes.push(args), get: async () => null, scan: async () => ["0", []] };
     const context = vm.createContext({ crypto, console, process: { env: { REDIS_URL: "mock" } }, globalThis: { __userfxRedis: redis }, readVaultSession: async () => ({ planId, features, accountId: "test" }) });
@@ -34,10 +34,14 @@ for (const [planId, rec, chat, multimedia] of [["basic", false, true, false], ["
   assert.equal(res.code, multimedia ? 404 : 403);
   assert.equal(blobReads, multimedia ? 1 : 0);
 }
-assert.deepEqual(getAccessFeatures(null), { oncam: false, rec: false, chat: false, multimedia: false });
+assert.deepEqual(getAccessFeatures(null), { oncam: false, rec: false, chat: false, multimedia: false, stage: false });
 assert.equal(getAccessFeatures({ planId: "unknown", features: { chat: true } }).chat, false);
 assert.equal(getAccessFeatures({ planId: "vip", accessMode: "telegram_identity" }).chat, false);
 assert.equal(getAccessFeatures({ planId: "pro", features: { chat: false } }).chat, false);
 assert.equal(sessionFeatures({ planId: "special", userId: "42" }, "42").chat, true);
 assert.equal(sessionFeatures({ planId: "special", userId: "41" }, "42").chat, false);
 console.log("PASS: plan matrix, legacy sessions, denied overrides, owner identity, runtime actions and private-media authorization");
+
+assert.equal(getAccessFeatures({ planId: "pro", features: { stage: true, rec: true } }).stage, false);
+assert.equal(getAccessFeatures({ planId: "pro", features: { stage: true, rec: true } }).rec, true);
+assert.equal(getAccessFeatures({ planId: "vip", features: { stage: false } }).stage, false);

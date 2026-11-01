@@ -82,7 +82,7 @@ import { usePrivatePermissions } from "./PR-Permissions";
 
           export default function PrivateRoomTopNav() {
             const { features } = usePrivatePermissions();
-            const planLocked = (label: string) => label === "STAGE" ? !features.rec : label === "GALLERY" ? !features.multimedia : label === "BUZON" ? !features.chat : false;
+            const planLocked = (label: string) => label === "STAGE" ? !features.stage : label === "GALLERY" ? !features.multimedia : label === "BUZON" ? !features.chat : false;
             const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
             const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
             const [cameraLive, setCameraLive] = useState(false);

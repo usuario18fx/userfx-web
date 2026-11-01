@@ -28,7 +28,7 @@ function hasVerifiedSpecialCode() {
 }
 function PrivateRoomRoute({ route }) {
   if (route === "#/private-room/stage") return (
-<PrivateFeatureGate feature="rec">
+<PrivateFeatureGate feature="stage">
 <PrivateRoomStage />
 </PrivateFeatureGate>
 );

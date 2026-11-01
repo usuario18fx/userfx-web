@@ -121,11 +121,11 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                       text: "Multimedia access",
                       sub: "Open the multimedia collection",
                     },
-                    { icon: "💎", text: "Stage access", sub: "Join the Stage experience" },
+                    { icon: "💎", text: "Recording and multimedia", sub: "Save ONLIVE sessions and explore the collection" },
                     {
                       icon: ICONS.vipcard,
                       text: "Extended privileges",
-                      sub: "Camera, chat, recording, multimedia and Stage",
+                      sub: "Camera, chat, recording and multimedia",
                     },
                   ],
                 },
@@ -145,8 +145,8 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                     { icon: ICONS.limit, text: "Unlimited entries", sub: "Enter as many times as you want" },
                     {
                       icon: ICONS.calendario,
-                      text: "Recording and Stage",
-                      sub: "Record ONLIVE sessions and join Stage",
+                      text: "Exclusive Stage access",
+                      sub: "All PRO privileges, plus the VIP Stage experience",
                     },
                     { icon: ICONS.quality, text: "Longest access period", sub: "Keep all included privileges for the full VIP period" },
                     { icon: ICONS.candado2, text: "Any device", sub: "Keep your access active" },
@@ -298,7 +298,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
           <div className="vd-sheet-handle">
             <div className="vd-sheet-handle-bar" />
           </div>
-          <div className="vd-sheet-header" data-validity={activeSheet ? `VALID · ${PLAN_DAYS[activeSheet]} DAYS` : ""} data-privileges={activeSheet === "basic" ? "CAMERA + CHAT" : activeSheet ? "REC + MEDIA + STAGE" : ""}>
+          <div className="vd-sheet-header" data-validity={activeSheet ? `VALID · ${PLAN_DAYS[activeSheet]} DAYS` : ""} data-privileges={activeSheet === "basic" ? "CAMERA + CHAT" : activeSheet === "vip" ? "VIP · STAGE INCLUDED" : activeSheet ? "REC + MEDIA" : ""}>
             <div className="vd-sheet-title-area">
               <div className="vd-sheet-title">
                 <span className={`vd-sheet-title-name vd-title-${activeSheet}`}>{currentPlan?.title}</span>

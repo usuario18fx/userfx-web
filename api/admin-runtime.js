@@ -165,7 +165,7 @@ export default async function handler(req, res) {
       const action = String(body.action || "");
       const accountKey = String(session.accountId || session.telegramUserId || "anonymous");
 
-      if ((action === "gallery-heartbeat" && !session.features.multimedia) || (action === "stage-heartbeat" && !session.features.rec)) {
+      if ((action === "gallery-heartbeat" && !session.features.multimedia) || (action === "stage-heartbeat" && !session.features.stage)) {
         return res.status(403).json({ ok: false, error: "feature_not_allowed" });
       }
 
@@ -202,7 +202,7 @@ export default async function handler(req, res) {
 
     const runtime = await readRuntime(redis);
     if (!session.features.multimedia) { runtime.galleryVisible = false; runtime.viewingGallery = 0; }
-    if (!session.features.rec) { runtime.stage = { live: false, startedAt: null }; runtime.viewingStage = 0; }
+    if (!session.features.stage) { runtime.stage = { live: false, startedAt: null }; runtime.viewingStage = 0; }
 
     return res.status(200).json({
       ok: true,

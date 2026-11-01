@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-type Feature = "oncam" | "rec" | "chat" | "multimedia";
+type Feature = "oncam" | "rec" | "chat" | "multimedia" | "stage";
 type Permissions = Record<Feature, boolean>;
 type Access = { ready: boolean; authenticated: boolean; features: Permissions };
-const NONE: Permissions = { oncam: false, rec: false, chat: false, multimedia: false };
+const NONE: Permissions = { oncam: false, rec: false, chat: false, multimedia: false, stage: false };
 const AccessContext = createContext<Access>({ ready: false, authenticated: false, features: NONE });
 
 export function usePrivatePermissions() {
@@ -71,7 +71,7 @@ export function PrivateFeatureGate({ feature, children, quiet = false }: { featu
         ACCESS RESTRICTED
         </h2>
         <p>
-        {feature === "chat" ? "CHAT is not included in your access." : "Available with PRX0, VIPX or SPCL access."}
+        {feature === "stage" ? "STAGE is exclusive to VIP access." : feature === "chat" ? "CHAT is not included in your access." : "Available with PRX0, VIPX or SPCL access."}
         </p>
         <a href="#/private-room">
         BACK TO MYROOM

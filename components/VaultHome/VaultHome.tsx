@@ -49,7 +49,7 @@ const STEPS = [
 
 const FAQS = [
   { q: "How do I get a code?", a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest." },
-  { q: "How many times can I enter?", a: `Enter as often as you want while your code is active. BASIC includes camera and chat for ${PLAN_DAYS.basic} days. PRO adds recording, multimedia and Stage for ${PLAN_DAYS.pro} days. VIP includes those extended privileges for ${PLAN_DAYS.vip} days. Validity starts at first activation.` },
+  { q: "How many times can I enter?", a: `Enter as often as you want while your code is active. BASIC includes camera and chat for ${PLAN_DAYS.basic} days. PRO adds recording and multimedia for ${PLAN_DAYS.pro} days. VIP adds exclusive Stage access for ${PLAN_DAYS.vip} days. Validity starts at first activation.` },
   { q: "Can I share my code?", a: "Your key is personal and non-transferable." },
   { q: "What happens if I don't receive my code?", a: "Contact @User18Fx_bot and we'll review your request." },
   { q: "Are refunds available?", a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures." },

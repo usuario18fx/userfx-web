@@ -563,7 +563,7 @@ const PLAN_CONFIG = {
     stars: PRO_STARS_PRICE,
     maxAccesses: null,
     days: PLAN_DAYS.pro,
-    features: { oncam: true, rec: true, chat: true, multimedia: true, stage: true },
+    features: { oncam: true, rec: true, chat: true, multimedia: true, stage: false },
     tier: TIER_PRO,
   },
   vip: {
@@ -1227,7 +1227,7 @@ async function sendBasicPanel(ctx) {
 async function sendProPanel(ctx) {
   try {
     await ctx.reply(
-      `🔥 PRO ACCESS\nCamera · Private chat · Recording · Multimedia · Stage\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} days from first activation`,
+      `🔥 PRO ACCESS\nCamera · Private chat · Recording · Multimedia\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} days from first activation`,
       getStarsProKeyboard(),
     );
   } catch (error) {
@@ -1445,7 +1445,7 @@ async function sendProInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝐏𝐑𝐎 ᴀᴄᴄᴇss",
-    description: `Camera, chat, recording, multimedia and stage. ${PLAN_DAYS.pro} days from first activation.`,
+    description: `Camera, chat, recording and multimedia. ${PLAN_DAYS.pro} days from first activation.`,
     payload: PRO_PAYLOAD,
     label: "ᴘʀᴏ ᴀᴄᴄᴇss",
     amount: PRO_STARS_PRICE,
