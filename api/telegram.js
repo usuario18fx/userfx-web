@@ -1015,7 +1015,7 @@ function getCodeKey(code) {
 function getUserCodeIndexKey(userId) {
   return `${CODE_ENGINE_NAMESPACE}:user:${userId}:codes`;
 }
-async function generateAccessCode(planId, source, userId, chargeId = null) {
+async function generateAccessCode(planId, source, userId, chargeId = null, recipientUsername = null) {
   const client = await ensureRedis();
   if (!client) {
     throw new Error("Redis is required for code generation");
@@ -1044,6 +1044,7 @@ async function generateAccessCode(planId, source, userId, chargeId = null) {
       unlimitedAccess: plan.maxAccesses === null,
       source,
       userId: String(userId),
+      telegramUsername: recipientUsername,
       chargeId,
       status: "active",
       createdAt: new Date().toISOString(),
@@ -2366,23 +2367,28 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
             }
           });
 // ADMIN MANUAL ACCESS — codes are delivered here for manual distribution.
-function manualAccessKeyboard(selectedPlan = "") {
+function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "") {
     const button = (label, plan) => Markup.button.callback(
-        label + (selectedPlan === plan ? " ✔️" : ""), `manual_access:${plan}`
+        label + (selectedPlan === plan ? " ✔️" : ""), `manual_access:${plan}${username ? ":" + username : ""}`
     );
     return Markup.inlineKeyboard([
         [button("SPCL", "special"), button("BSIC", "basic")],
         [button("PRX0", "pro"), button("VIPX", "vip")],
+        ...(username && issuedCode ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
     ]);
 }
 async function showManualAccess(ctx) {
-    if (isAdmin(ctx) && getCommandArg(ctx)) return showTelegramPermissions(ctx);
     if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
-    return ctx.reply("Selecciona el código que deseas otorgar:", manualAccessKeyboard());}
+    const arg = getCommandArg(ctx);
+    const target = arg ? normalizeTelegramFxUsername(arg) : null;
+    if (arg && !target) return ctx.reply("Uso: /access @username");
+    return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
+}
 async function handleManualAccess(ctx) {
     if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
     await ctx.answerCbQuery();
     const planId = ctx.match[1];
+    const username = String(ctx.match[2] || "").toLowerCase();
     const message = ctx.callbackQuery.message;
     if (!message) return;
     const client = await ensureRedis();
@@ -2397,7 +2403,7 @@ async function handleManualAccess(ctx) {
     let record;
     try {
         // Empty userId: bearer code, manually distributed by the administrator.
-        record = await generateAccessCode(planId, "admin_manual", "");
+        record = await generateAccessCode(planId, "admin_manual", "", null, username || null);
     } catch (error) {
         await client.del(requestKey);
         logger.error("MANUAL ACCESS ERROR", { message: String(error?.message || error) });
@@ -2406,7 +2412,7 @@ async function handleManualAccess(ctx) {
     await client.set(requestKey, record.code);
     const features = record.features;
     const flag = (value) => value ? "✔️" : "✖️";
-    await ctx.editMessageText(`${record.code}
+    await ctx.editMessageText(`${record.code}${username ? "\nUsuario: @" + username : ""}
 
 ONCAM · MYROOM: ${flag(features.oncam)}
 GRABACIÓN: ${flag(features.rec)}
@@ -2415,12 +2421,12 @@ CHAT: ${flag(features.chat)}
 MULTIMEDIA: ${flag(features.multimedia)}
 Duración: ${record.unlimited ? "Ilimitada" : record.planId === "vip" ? "1 mes (30 días)" : `${record.days} días` }
 
-Usa /access para generar otro código.`, manualAccessKeyboard(planId));
+Usa /access para generar otro código.`, manualAccessKeyboard(planId, username, record.code));
 }
 adminBot.command("access", showManualAccess);
 bot.command("access", showManualAccess);
-adminBot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
-bot.action(/^manual_access:(special|basic|pro|vip)$/, handleManualAccess);
+adminBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
+bot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           async function showTelegramPermissions(ctx) {
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
@@ -2652,6 +2658,36 @@ for (const targetBot of [bot, adminBot]) {
   targetBot.action(/^tfx_notify_([A-Za-z0-9_]{3,32})$/, handleAccessNotice);
   targetBot.action(/^tfx_notify_batch:(0|[A-Za-z0-9_]{3,32})$/, handleAccessNoticeBatch);
   targetBot.command("notify_access", showAccessNotices);
+}
+
+
+async function handleManualNotice(ctx) {
+  if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized");
+  await ctx.answerCbQuery();
+  try {
+    const client = await ensureRedis();
+    const code = ctx.match[1];
+    const record = await getAccessCode(code);
+    const username = normalizeTelegramFxUsername(record?.telegramUsername || "")?.normalized;
+    if (!client || record?.source !== "admin_manual" || record.status !== "active" || !username) {
+      return ctx.reply("No hay un destinatario válido para este código.");
+    }
+    const result = await sendAccessNotice({
+      redis: client, telegram: bot.telegram, namespace: CODE_ENGINE_NAMESPACE,
+      username, access: { enabled: true, telegramfx_access: true },
+      siteUrl: USERFX_SITE_URL, noticeId: code,
+      text: `You've been granted ${record.plan} access to USER FX. Your personal access code is ${record.code}. Open the website and choose ALREADY GOT CODE to enter.`,
+      identityKey: false,
+      resolveRecipient: (target) => resolveNoticeRecipient(target, client),
+    });
+    return ctx.reply(`@${username}: ${NOTICE_RESULTS[result]}`);
+  } catch (error) {
+    logger.error("MANUAL NOTICE ERROR", { message: error?.message });
+    return ctx.reply("No se pudo confirmar el aviso.");
+  }
+}
+for (const targetBot of [bot, adminBot]) {
+  targetBot.action(/^manual_notify:((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualNotice);
 }
 
 //// ADMIN CODE LOOKUP //
