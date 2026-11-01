@@ -37,8 +37,7 @@ export function MenuProvider({ children }: { children: ReactNode }) {
     };
   }, [open]);
   return (
-    <Context.Provider
-      value={{ open, toggle: () => setOpen((v) => !v), close: () => setOpen(false) }}>
+    <Context.Provider value={{ open, toggle: () => setOpen((v) => !v), close: () => setOpen(false) }}>
       {children}
     </Context.Provider>
   );
@@ -47,15 +46,11 @@ export function Brand({ style }: { style?: CSSProperties }) {
   const admin = useAdminMode();
   return (
     <div className="flex items-center gap-3" style={style}>
-      <button
-        type="button"
-        className="fx-brand flex items-center gap-2"
-        aria-label="UserFX · PRIV Vault · User/Admin"
-        onClick={() => {
-          if (!admin.revealSwitch()) window.location.hash = "#/";
-        }}>
+      <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV Vault · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
         <img src={FX.logo} alt="" width={32} height={26} className="object-contain" />
-        <span className="font-wide text-[10px] uppercase tracking-[-.06em]">USER FX</span>
+        <span className="font-wide text-[10px] uppercase tracking-[-.06em]">
+USER FX
+</span>
       </button>
       <AdminModeSwitch />
     </div>
@@ -81,16 +76,7 @@ export function MenuButton({
       aria-controls="site-menu"
       aria-label={open ? "Close menu" : "Open menu"}>
       {[0, 1].map((i) => (
-        <motion.span
-          key={i}
-          className="block h-px w-full origin-center bg-ink"
-          animate={
-            open
-              ? { rotate: i === 0 ? 45 : -45, y: i === 0 ? "50%" : "-50%" }
-              : { rotate: 0, y: "0%" }
-          }
-          transition={{ duration: 0.4, ease: EASE }}
-        />
+        <motion.span key={i} className="block h-px w-full origin-center bg-ink" animate={ open ? { rotate: i === 0 ? 45 : -45, y: i === 0 ? "50%" : "-50%" } : { rotate: 0, y: "0%" } } transition={{ duration: 0.4, ease: EASE }} />
       ))}
     </button>
   );
@@ -118,6 +104,7 @@ export function useActiveSection(ids: readonly string[]) {
   }, [ids]);
   return active;
 }
+/* Altura del header fijo: h-16 = 64px. Debe coincidir con --fx-nav-h en ScrollStory.css */
 export function StickyHeader({ active }: { active: string }) {
   const { open } = useMenu(),
     { scrollY } = useScroll();
@@ -126,12 +113,7 @@ export function StickyHeader({ active }: { active: string }) {
   return (
     <AnimatePresence>
       {shown && !open && (
-        <motion.header
-          initial={{ y: "-100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "-100%" }}
-          transition={{ duration: 0.5, ease: EASE }}
-          className="fixed inset-x-0 top-0 z-40 border-b border-ink/10 bg-sky/85 backdrop-blur-xl">
+        <motion.header initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ duration: 0.5, ease: EASE }} className="fixed inset-x-0 top-0 z-40 border-b border-ink/10 bg-sky/85 backdrop-blur-xl">
           <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-6 md:px-10">
             <Brand />
             <nav aria-label="Main navigation" className="hidden items-center gap-10 md:flex">
@@ -140,15 +122,17 @@ export function StickyHeader({ active }: { active: string }) {
                   key={item.id}
                   href={`#${item.id}`}
                   aria-current={active === item.id ? "page" : undefined}
-                  className={`font-display text-xs transition-opacity hover:opacity-100 ${active === item.id ? "opacity-100" : "opacity-40"}`}>
+                  className={`group relative py-1 font-display text-xs transition-all duration-300 hover:opacity-100 ${active === item.id ? "text-gold opacity-100" : "opacity-40"}`}>
                   {item.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 -bottom-0.5 h-px origin-left bg-gold transition-transform duration-300 ease-out group-hover:scale-x-100 ${active === item.id ? "scale-x-100" : "scale-x-0"}`}
+                  />
                 </a>
               ))}
             </nav>
             <div className="flex items-center gap-6">
-              <a
-                href={ENTER_URL}
-                className="hidden rounded-full bg-gold px-5 py-2 text-xs font-semibold text-sky sm:block">
+              <a href={ENTER_URL} className="hidden rounded-full bg-gold px-5 py-2 text-xs font-semibold text-sky transition-transform duration-300 hover:scale-[1.04] sm:block">
                 Enter the Vault
               </a>
               <MenuButton width="22.76px" gap="4.56px" />
@@ -189,54 +173,34 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          ref={ref}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site menu"
-          id="site-menu"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sky/98 px-6 backdrop-blur-2xl md:px-10"
-          variants={panel}
-          initial="hidden"
-          animate="show"
-          exit="exit"
-          onKeyDown={(e) => {
-            if (e.key !== "Tab") return;
-            const nodes = Array.from(
-              ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [],
-            );
-            const first = nodes[0],
-              last = nodes.at(-1);
-            if (e.shiftKey && document.activeElement === first) {
-              e.preventDefault();
-              last?.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-              e.preventDefault();
-              first?.focus();
-            }
-          }}>
+        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
           <div className="flex min-h-24 items-center justify-between">
             <Brand />
             <MenuButton width="25px" gap="6px" />
           </div>
-          <nav
-            className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]"
-            aria-label="Site menu navigation">
+          <nav className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]" aria-label="Site menu navigation">
             {NAV.map((item, i) => (
               <motion.a
                 key={item.id}
                 variants={row}
                 href={`#${item.id}`}
                 onClick={close}
-                className="group flex items-center justify-between border-b border-white/15 py-[20px] md:py-[24px]">
-                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white/60 transition-colors duration-300 group-hover:text-[#0370ff] md:text-[7vw]">
+                className="group relative flex items-center justify-between overflow-hidden border-b border-white/15 py-[20px] md:py-[24px]">
+                {/* línea dorada que barre la fila en hover / foco */}
+                <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
+                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white/60 transition-all duration-300 group-hover:translate-x-3 group-hover:text-gold group-focus-visible:text-gold md:text-[7vw]">
                   {item.label}
                 </span>
-                <span className="select-none text-[100px] font-light leading-none tracking-[-.08em] text-[#0370ff]/40 transition-colors duration-300 group-hover:text-white/90 md:text-[140px]">0{i + 1}</span>
+                {/* número grande: contorno dorado, se rellena en hover */}
+                <span aria-hidden="true" className="select-none text-[72px] font-light leading-none tracking-[-.08em] text-transparent transition-all duration-300 [-webkit-text-stroke:1px_rgba(206,182,123,.55)] group-hover:-translate-y-1 group-hover:text-gold/90 group-focus-visible:text-gold/90 md:text-[140px]">
+                  0{i + 1}
+                </span>
               </motion.a>
             ))}
           </nav>
-          {children ? <div className="w-full pt-10">{children}</div> : null}
+          {children ? <div className="w-full pt-10">
+{children}
+</div> : null}
         </motion.div>
       )}
     </AnimatePresence>

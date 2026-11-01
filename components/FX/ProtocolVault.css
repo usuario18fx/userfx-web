@@ -1,0 +1,143 @@
+/* ProtocolVault — texto fijo a la izquierda, tambor de caja fuerte a la derecha */
+.pv {
+  --pv-accent: #3fd8d0;               /* el turquesa de tu "Enter the Vault" */
+  --pv-accent-dim: rgba(63, 216, 208, .32);
+  --pv-nav: var(--fx-nav-h, 64px);    /* altura del StickyHeader */
+  position: relative;
+  color: #f4efe6;
+}
+
+.pv-stage {
+  position: sticky;
+  top: var(--pv-nav);
+  height: calc(100svh - var(--pv-nav));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  gap: clamp(24px, 5vw, 90px);
+  align-items: center;
+  padding: 0 clamp(22px, 6vw, 100px);
+}
+
+/* ---------- Izquierda (fija) ---------- */
+.pv-left { display: grid; gap: clamp(14px, 2.4svh, 26px); align-content: center; min-width: 0; }
+
+.pv-eyebrow {
+  display: flex; align-items: center; gap: 22px; margin: 0;
+  font-size: clamp(11px, 1vw, 14px); letter-spacing: .3em;
+  color: rgba(244, 239, 230, .55);
+}
+.pv-eyebrow b { font-weight: 500; letter-spacing: .04em; font-size: 1.5em; color: var(--pv-accent); }
+.pv-eyebrow i { width: clamp(30px, 4vw, 66px); height: 1px; background: var(--pv-accent); opacity: .7; }
+
+.pv-title {
+  margin: 0;
+  font-size: clamp(40px, 5.6vw, 92px);
+  line-height: .98; font-weight: 700; letter-spacing: -.045em; text-transform: uppercase;
+  color: #f6f0e4;
+}
+.pv-intro { margin: 0; max-width: 34ch; font-size: clamp(15px, 1.5vw, 21px); line-height: 1.6; color: rgba(244, 239, 230, .62); }
+
+.pv-counter {
+  margin: 0; font-size: 12px; letter-spacing: .26em; color: rgba(244, 239, 230, .5);
+  font-variant-numeric: tabular-nums;
+}
+.pv-counter b { color: var(--pv-accent); font-weight: 600; }
+
+.pv-extra { max-height: 22svh; overflow: hidden; }
+
+/* ---------- Derecha (tambor) ---------- */
+.pv-right { position: relative; height: min(80svh, 740px); min-width: 0; }
+
+.pv-viewport {
+  position: absolute; inset: 0;
+  perspective: 1700px;
+  perspective-origin: 50% 50%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 17%, #000 83%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 17%, #000 83%, transparent 100%);
+}
+.pv-drum { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.pv-slot {
+  position: absolute; left: 0; right: 0; top: 50%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+
+.pv-card {
+  height: 100%; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: clamp(10px, 1.6svh, 18px);
+  padding: clamp(22px, 2.6vw, 44px);
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: clamp(24px, 2.6vw, 36px);
+  background: linear-gradient(135deg, rgba(26, 29, 33, .96), rgba(12, 14, 17, .97));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
+  transition: border-color .4s, box-shadow .4s;
+}
+.pv-card.is-active { border-color: var(--pv-accent-dim); box-shadow: 0 24px 70px rgba(0, 0, 0, .4), 0 0 40px rgba(63, 216, 208, .08); }
+
+.pv-card-head { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); }
+.pv-card-num {
+  font-size: clamp(44px, 4.6vw, 72px); line-height: 1; font-weight: 500; letter-spacing: -.04em;
+  color: var(--pv-accent-dim); transition: color .4s;
+  font-variant-numeric: tabular-nums;
+}
+.pv-card.is-active .pv-card-num { color: var(--pv-accent); }
+.pv-card-rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--pv-accent-dim), transparent); }
+
+.pv-card-title {
+  margin: 0; font-size: clamp(20px, 2.3vw, 34px); line-height: 1.05;
+  font-weight: 700; letter-spacing: -.03em; text-transform: uppercase; color: #f6f0e4;
+}
+.pv-card-text { margin: 0; font-size: clamp(14px, 1.3vw, 19px); line-height: 1.6; color: rgba(244, 239, 230, .66); }
+
+.pv-card-cta {
+  margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  color: var(--pv-accent); font-size: clamp(14px, 1.2vw, 18px); text-decoration: none;
+}
+.pv-card-cta svg { transition: transform .25s; }
+.pv-card-cta:hover svg { transform: translateX(5px); }
+.pv-card-cta:focus-visible { outline: 2px solid var(--pv-accent); outline-offset: 6px; border-radius: 6px; }
+
+/* Marcador fijo: apunta a la tarjeta que "marca" la combinación */
+.pv-pointer {
+  position: absolute; left: -14px; top: 50%; z-index: 3; width: 0; height: 0; transform: translateY(-50%);
+  border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid var(--pv-accent);
+  filter: drop-shadow(0 0 8px rgba(63, 216, 208, .6));
+}
+
+/* Disco de combinación, detrás del tambor */
+.pv-dial {
+  position: absolute; z-index: 0; right: -22%; top: 50%;
+  width: min(62vw, 760px); aspect-ratio: 1; transform: translateY(-50%);
+  opacity: .34; pointer-events: none;
+}
+.pv-dial svg { width: 100%; height: 100%; overflow: visible; }
+.pv-dial-ring { fill: none; stroke: var(--pv-accent); stroke-width: 1; opacity: .5; }
+.pv-dial-ring--inner { opacity: .25; }
+.pv-dial-tick { stroke: var(--pv-accent); stroke-width: 1; opacity: .45; }
+.pv-dial-tick--major { stroke-width: 2; opacity: .9; }
+.pv-dial-num { fill: var(--pv-accent); font-size: 13px; letter-spacing: .1em; opacity: .85; }
+.pv-dial-pointer { display: none; }
+.pv-viewport { z-index: 1; }
+
+/* ---------- Sin movimiento reducido: lista simple ---------- */
+.pv--flat .pv-stage { position: static; height: auto; padding-block: clamp(60px, 8vw, 120px); align-items: start; }
+.pv-flat-list { display: grid; gap: 20px; }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 900px) {
+  .pv-stage { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: 10px; align-items: start; padding-top: 14px; }
+  .pv-left { gap: 8px; }
+  .pv-title { font-size: clamp(32px, 9vw, 52px); }
+  .pv-intro, .pv-extra { display: none; }
+  .pv-eyebrow { gap: 12px; letter-spacing: .22em; }
+  .pv-right { height: 100%; min-height: 330px; }
+  .pv-pointer { left: -8px; border-top-width: 6px; border-bottom-width: 6px; border-left-width: 9px; }
+  .pv-dial { right: -35%; width: 120vw; opacity: .22; }
+  .pv-card { padding: 20px; gap: 8px; }
+  .pv-card-num { font-size: 38px; }
+  .pv-card-title { font-size: 20px; }
+  .pv-card-text { font-size: 13px; line-height: 1.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-card, .pv-card-num, .pv-card-cta svg { transition: none; }
+}

@@ -1912,3 +1912,251 @@
   }
   .fx-scroll-scene-tab-copy { flex-basis: 100%; }
 }
+/* ==========================================================================
+   USERFX_SCROLL_BANDS_V1
+   PEGAR AL FINAL de ScrollStory.css (después de todo lo existente).
+   4 bandas de 1/4 de pantalla reveladas una por una con el scroll.
+   ========================================================================== */
+.fx-scroll-story .fx-scroll-scenes {
+  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
+  height: 400svh;                /* recorrido de scroll de toda la sección */
+  background: #08090c;
+}
+.fx-scroll-story .fx-scroll-stage {
+  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
+  top: var(--fx-nav-h);
+  height: calc(100svh - var(--fx-nav-h));
+  display: flex;
+  flex-direction: column;
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
+  flex: 0 0 25%;
+  height: 25%;
+  min-height: 0 !important;
+  overflow: visible;
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded {
+  z-index: 30;
+}
+.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
+  height: 100%;
+  min-height: 0 !important;
+  padding: 0 clamp(20px, 6vw, 100px);
+  align-items: center;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
+  inset: 0;
+  height: 100%;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-kicker {
+  display: none;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index {
+  top: 10px;
+  left: clamp(20px, 6vw, 100px);
+  font-size: 11px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon {
+  top: 10px;
+  width: 36px;
+  height: 36px;
+}
+.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
+  margin-top: 0;
+  gap: 4px;
+  width: calc(100% - 110px);
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
+  font-size: clamp(26px, min(5.2vw, 8svh), 84px) !important;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
+  font-size: clamp(10px, 1.1vw, 15px);
+  padding-bottom: 4px;
+  gap: 12px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
+  margin-top: 0;
+  padding-bottom: 4px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
+  font-size: clamp(80px, 22svh, 240px);
+  bottom: -.2em;
+}
+/* El acordeón se abre como pestaña flotante sobre la banda siguiente */
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+}
+/* La última banda se abre sobre sí misma (no hay banda debajo) */
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:last-child .fx-scroll-scene-panel {
+  top: auto;
+  bottom: 0;
+}
+@media (max-height: 760px) {
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
+    display: none;
+  }}
+@media (max-width: 700px) {
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
+    font-size: clamp(24px, 8vw, 40px) !important;
+  }
+  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
+    width: calc(100% - 20px);
+  }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
+    font-size: 90px;
+  }}
+/* ==========================================================================
+   USERFX_SCROLL_BANDS_V2 — 4 franjas VERTICALES (1/4 del ancho, alto completo)
+   PEGAR AL FINAL de ScrollStory.css. Si ya pegaste la V1, BÓRRALA y usa esta.
+========================================================================== */
+.fx-scroll-story .fx-scroll-scenes {
+  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
+  height: 400svh;                /* recorrido de scroll de toda la sección */
+  background: #08090c;
+}
+.fx-scroll-story .fx-scroll-stage {
+  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
+  top: var(--fx-nav-h);
+  height: calc(100svh - var(--fx-nav-h));
+  display: flex;
+  flex-direction: row;           /* 1 - 2 - 3 - 4 de izquierda a derecha */
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
+  flex: 0 0 25%;
+  width: 25%;
+  height: 100%;
+  min-height: 0 !important;
+  overflow: visible;
+  border-top: 0;
+  border-left: 1px solid #f6ead01a;
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-left: 0;
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded { z-index: 30;
+}
+/* Foto vertical: cubre toda la franja, texto abajo */
+.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
+  height: 100%;
+  min-height: 0 !important;
+  padding: 0 clamp(16px, 1.8vw, 30px) clamp(24px, 4svh, 48px);
+  align-items: flex-end;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
+  inset: 0;
+  height: 100%;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
+  background: linear-gradient(0deg, #05070bee 0%, #05070b66 45%, #05070b1a 100%);
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index {
+  top: 16px;
+  left: clamp(16px, 1.8vw, 30px);
+  font-size: 12px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index::after { width: 40px; }
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon {
+  top: 12px;
+  right: clamp(14px, 1.6vw, 26px);
+  width: 40px;
+  height: 40px;
+}
+/* Número grande arriba de cada franja */
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
+  top: 64px;
+  bottom: auto;
+  right: clamp(10px, 1.4vw, 24px);
+  font-size: clamp(90px, 11vw, 190px);
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-kicker { display: none; }
+.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
+  margin-top: 0;
+  gap: 8px;
+  width: 100%;
+  max-width: none;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
+  font-size: clamp(26px, 2.9vw, 52px) !important;
+  white-space: normal;
+  line-height: .98;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
+  font-size: clamp(10px, .9vw, 14px);
+  gap: 10px;
+  padding-bottom: 6px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: .16em;
+}
+/* El acordeón se abre como pestaña en la base de su propia franja */
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 0;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding: 18px clamp(16px, 1.8vw, 30px) 20px;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-tab-copy { flex: 0 0 auto;
+}
+/* Móvil (≤700px): 4 bandas HORIZONTALES de 1/4 de alto, entran 1 → 2 → 3 → 4 */
+@media (max-width: 700px) {
+  .fx-scroll-story .fx-scroll-stage { flex-direction: column; }
+  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
+    flex: 0 0 25%;
+    width: 100%;
+    height: 25%;
+    border-left: 0;
+    border-top: 1px solid #f6ead01a;
+  }
+  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-top: 0; }
+  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
+    padding: 0 20px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
+    background: linear-gradient(90deg, #05070bdd 0%, #05070b88 55%, #05070b22 100%);
+  }
+  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
+    width: calc(100% - 70px);
+    gap: 4px;
+    margin-top: 6px;
+  }
+/* título horizontal normal */
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
+    writing-mode: horizontal-tb;
+    transform: none;
+    white-space: nowrap;
+    font-size: clamp(26px, 8.4vw, 40px) !important;
+  }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
+    display: inline-flex;
+    font-size: 11px;
+    gap: 8px;
+    padding-bottom: 3px;
+  }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover { display: none; }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index { display: block; top: 8px; left: 20px; font-size: 10px; }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index::after { display: none; }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon { display: grid; top: 8px; right: 14px; width: 32px; height: 32px; }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
+    top: auto; bottom: -.18em; right: 10px; font-size: clamp(70px, 19svh, 120px);
+  }
+/* acordeón: pestaña inferior a todo el ancho */
+  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded .fx-scroll-scene-panel {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60;
+  }
+  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
+    padding: 16px 20px 22px;
+  }}
