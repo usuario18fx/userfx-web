@@ -805,7 +805,7 @@ export default function CinematicTour({
     videoCallImg.onload = () => {
       if (!abort.signal.aborted) { drawVideoCall(videoCallImg); wakeRender.current?.(); }
     };
-    videoCallImg.src = "/assets/my-room/videocall.png";
+    videoCallImg.src = "/assets/videocall.jpg";
 
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
@@ -821,8 +821,8 @@ export default function CinematicTour({
       texture.generateMipmaps = false;
       return { video, texture };
     };
-    const multi = makeVideo("/assets/my-room/multimedia.mp4");
-    const stage = makeVideo("/assets/my-room/pasarella2.mp4");
+    const multi = makeVideo("/assets/video01.mp4");
+    const stage = makeVideo("/assets/FX-Y24V01.mp4");
     const tvMaterial = new THREE.MeshBasicMaterial({ map: videoCallTexture, toneMapped: false, side: THREE.DoubleSide });
     const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.71, 1.64), tvMaterial);
     let screenMode: TvMode = "videocall";
