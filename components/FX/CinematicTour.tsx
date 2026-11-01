@@ -39,29 +39,28 @@ type Frame = {
  *  1 inside    · cuadro DERECHO del pasillo
  *  2 corridor  · cuadro IZQUIERDO del pasillo
  *  3 enter     · hero del dormitorio
- *  4 gallery   · LAPTOP (pantalla "MY GALLERY", clicable)
- *  5 videocall · TV mostrando la videollamada, vista desde la CAMA
- *  6 multimedia· TV mostrando multimedia (acercándose)
- *  7 stage     · TV con la pasarela (push-in)
+ *  3 gallery   · LAPTOP (pantalla "MY GALLERY", clicable)
+ *  4 videocall · TV mostrando la videollamada, vista desde la CAMA
+ *  5 multimedia· TV mostrando multimedia (acercándose)
+ *  6 stage     · TV con la pasarela (push-in)
  * Los frames "via-*" no son stops: solo reparten velocidad.
  */
 const S = (i: number) => ({ t: STOP_T[i], hold: STOP_HOLD[i] || undefined });
 const frames: Frame[] = [
   { id: "welcome",   ...S(0),              fov: 58, p: P( 0.00, 1.62, 14.50), l: P( 0.00, 1.78,  6.00) },
-  { id: "inside",    ...S(1), drift: 0.06, fov: 56, p: P(-0.14, 1.64, 12.60), l: P( 0.95, 1.96,  8.90) },
-  { id: "corridor",  ...S(2), drift: 0.06, fov: 56, p: P( 0.14, 1.66,  9.10), l: P(-0.95, 1.96,  5.60) },
-  { id: "via-exit",  t: 0.357,             fov: 58, p: P( 0.00, 1.74,  5.60), l: P( 0.00, 1.62, -0.80) },
-  { id: "enter",     ...S(3), drift: 0.03, fov: 60, p: P( 0.30, 1.82,  2.10), l: P(-0.30, 1.48, -3.60) },
+  { id: "corridor",  ...S(1), drift: 0.06, fov: 56, p: P( 0.14, 1.66,  9.10), l: P(-0.95, 1.96,  5.60) },
+  { id: "via-exit",  t: 0.27,             fov: 58, p: P( 0.00, 1.74,  5.60), l: P( 0.00, 1.62, -0.80) },
+  { id: "enter",     ...S(2), drift: 0.03, fov: 60, p: P( 0.30, 1.82,  2.10), l: P(-0.30, 1.48, -3.60) },
   // LAPTOP centrada en el encuadre (pantalla en -0.40, 1.01, -3.77)
-  { id: "gallery",   ...S(4), drift: 0.03, fov: 46, p: P(-0.40, 1.52, -1.15), l: P(-0.40, 1.03, -3.77) },
+  { id: "gallery",   ...S(3), drift: 0.03, fov: 46, p: P(-0.40, 1.52, -1.15), l: P(-0.40, 1.03, -3.77) },
   // Desde la cama (cabecera al este) mirando la TV en la pared oeste
-  { id: "videocall", ...S(5), drift: 0.03, fov: 34, p: P( 3.35, 1.48, -1.00), l: P(-4.58, 1.72, -2.00) },
-  { id: "tv",        ...S(6),              fov: 48, p: P(-1.15, 1.72, -1.60), l: P(-4.58, 1.72, -2.00) },
-  { id: "stage",     ...S(7),              fov: 44, p: P(-1.80, 1.72, -1.82), l: P(-4.58, 1.72, -2.00) },
+  { id: "videocall", ...S(4), drift: 0.03, fov: 34, p: P( 3.35, 1.48, -1.00), l: P(-4.58, 1.72, -2.00) },
+  { id: "tv",        ...S(5),              fov: 48, p: P(-1.15, 1.72, -1.60), l: P(-4.58, 1.72, -2.00) },
+  { id: "stage",     ...S(6),              fov: 44, p: P(-1.80, 1.72, -1.82), l: P(-4.58, 1.72, -2.00) },
 ];
 
-const TV_MULTIMEDIA_AT = ENTER_AT[6]; // la TV cambia exactamente cuando cambia el texto
-const TV_STAGE_AT = ENTER_AT[7];
+const TV_MULTIMEDIA_AT = ENTER_AT[5]; // la TV cambia exactamente cuando cambia el texto
+const TV_STAGE_AT = ENTER_AT[6];
 
 // Ángulos alternativos dentro de la habitación (selector "ÁNGULO")
 const angleCfg = {
