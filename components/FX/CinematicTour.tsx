@@ -479,7 +479,13 @@ export default function CinematicTour({
       }
       ctx.fillStyle = "#171217"; ctx.beginPath(); ctx.arc(338, 208, 12, 0, Math.PI * 2); ctx.fill();
     });
-    const zebraMaterial = new THREE.MeshBasicMaterial({ map: zebraCanvas, side: THREE.DoubleSide });
+    // Atenuar el blanco de la cebra sin oscurecer el resto de la habitación.
+    const zebraMaterial = new THREE.MeshBasicMaterial({
+      map: zebraCanvas,
+      color: "#a0a0a0",
+      side: THREE.DoubleSide,
+      toneMapped: false
+    });
     pic(1.55, 2.62, -6.83, 0, zebraMaterial, 2.4, 2.5);
     const sunset = canvas((ctx) => {
       const grad = ctx.createLinearGradient(0, 0, 0, 512);
@@ -843,7 +849,11 @@ export default function CinematicTour({
     const tvFill = new THREE.PointLight("#003db6", 2.8, 4);
     tvFill.position.set(-3.9, 1.9, -2); scene.add(tvFill);
 
-    pic(4.87, 2.65, -3.22, -Math.PI / 2, print("FX", "ROOM", "#0075fc"), 1.6, 1.6);
+    // Cuadro sobre la cama: corona de partículas en formato vertical 9:16.
+    // Conserva el cuadro FX original hasta que exista el nuevo archivo PNG.
+    const crownPoster = print("FX", "ROOM", "#0075fc");
+    applyImage(crownPoster, "/assets/my-room/crown-wall-portrait.png");
+    pic(4.87, 2.65, -3.22, -Math.PI / 2, crownPoster, 1.6, 2.4);
     const neonPink = new THREE.PointLight("#2b66a8", 7, 3.9);
     neonPink.position.set(4.14, 2.85, -3.2); scene.add(neonPink);
     const neonBlue = new THREE.PointLight("#003db6", 5, 3.9);
