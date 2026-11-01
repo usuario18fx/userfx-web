@@ -145,7 +145,7 @@ for (const [targetBot, botId] of [[bot, "user"], [adminBot, "admin"]]) {
     redis: ensureRedis, namespace: CODE_ENGINE_NAMESPACE, botId, isAdmin,
     normalizeUsername: normalizeTelegramFxUsername,
     showPanel: (ctx, username) => showManualAccess(ctx, username),
-    exitText: "SALIR", styledExitText: "ꜱᴀʟɪʀ",
+    exitText: "EXIT", styledExitText: "ᴇxɪᴛ",
   });
   accessEntryModes.set(targetBot, mode);
   targetBot.use(manualTextMiddleware);
@@ -2429,6 +2429,7 @@ async function showManualAccess(ctx, inputUsername) {
   }
   const target = arg ? normalizeTelegramFxUsername(arg) : null;
   if (arg && !target) return ctx.reply("Uso: /access @username");
+  if (target) await ctx.state?.accessEntryMode?.remember?.(ctx, target.normalized);
   const existing = target ? await findManualAccess(target.normalized) : null;
   if (existing) return ctx.reply(manualAccessText(existing), manualAccessKeyboard(existing.planId, target.normalized, existing.code));
   return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
@@ -2477,7 +2478,6 @@ function manualPrivilegeKeyboard(record) {
   return Markup.inlineKeyboard([
     [toggle("ONCAM", "oncam"), toggle("REC", "rec"), toggle("STAGE", "stage")],
     [toggle("CHAT", "chat"), toggle("GALLERY", "multimedia"), Markup.button.callback("CODE", `manual_manage:code:${record.code}`)],
-    [Markup.button.callback("←", `manual_manage:view:${record.code}`), Markup.button.callback("EXIT", `manual_manage:exit:${record.code}`)],
   ]);
 }
 async function handleManualManage(ctx) {
@@ -2522,6 +2522,7 @@ async function handleManualManage(ctx) {
   return ctx.editMessageText(manualAccessText(record), editing ? manualPrivilegeKeyboard(record) : manualAccessKeyboard(record.planId, username, code));
 }
 async function manualTextMiddleware(ctx, next) {
+  if (["←", "EXIT", "ᴇxɪᴛ", "SALIR", "ꜱᴀʟɪʀ"].includes(ctx.message?.text?.trim())) return next();
   const replyId = ctx.message?.reply_to_message?.message_id;
   if (!replyId || !ctx.message?.text || !isAdmin(ctx) || ctx.chat?.type !== "private") return next();
   const client = await ensureRedis();
