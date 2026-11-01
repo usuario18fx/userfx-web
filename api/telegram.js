@@ -1088,8 +1088,8 @@ function getOpenVaultKeyboard(code = "") {
 function getMainKeyboard() {
   return Markup.keyboard([
     [BTN_VIDEOCALL, BTN_GET_CODE],
-    [BTN_CHANNELS, BTN_REFRESH],
-    [BTN_GALLERY],
+    [BTN_CHANNELS, BTN_GALLERY],
+    [BTN_REFRESH],
   ]).resize();
 }
 function getAccessKeyboard() {
@@ -1123,6 +1123,13 @@ function getStarsProKeyboard() {
 function getChannelsKeyboard() {
   return Markup.keyboard([[BTN_SMOKELANDIA, BTN_USERFX_SITE], [BTN_BACK_MENU]]).resize();
 }
+function getPublicGalleryCaption(index) {
+  return [
+    `📸 USER FX · PUBLIC GALLERY · ${index + 1}/${PUBLIC_GALLERY_PHOTOS.length}`,
+    "Toronto, Canada",
+    "Official page: User18fx.com",
+  ].join("\n");
+}
 function publicGalleryKeyboard(index) {
   const total = PUBLIC_GALLERY_PHOTOS.length;
   return { inline_keyboard: [
@@ -1142,7 +1149,7 @@ bot.action(/^public_gallery:(\d+|counter|close)$/, async (ctx) => {
     }
     const index = Number(action);
     if (!Number.isInteger(index) || index < 0 || index >= PUBLIC_GALLERY_PHOTOS.length) return await ctx.answerCbQuery("Invalid photo");
-    await ctx.editMessageMedia({ type: "photo", media: PUBLIC_GALLERY_PHOTOS[index], caption: `📸 USER FX · PUBLIC GALLERY · ${index + 1}/${PUBLIC_GALLERY_PHOTOS.length}` }, { reply_markup: publicGalleryKeyboard(index) });
+    await ctx.editMessageMedia({ type: "photo", media: PUBLIC_GALLERY_PHOTOS[index], caption: getPublicGalleryCaption(index) }, { reply_markup: publicGalleryKeyboard(index) });
     await ctx.answerCbQuery();
   } catch (error) {
     logger.error("PUBLIC GALLERY ERROR", getTelegramError(error));
@@ -1909,7 +1916,7 @@ bot.on("text", async (ctx, next) => {
     if (text === BTN_GALLERY) {
       await trackButtonClick(ctx, "public_gallery");
       return await ctx.replyWithPhoto(PUBLIC_GALLERY_PHOTOS[0], {
-        caption: `📸 USER FX · PUBLIC GALLERY · 1/${PUBLIC_GALLERY_PHOTOS.length}`,
+        caption: getPublicGalleryCaption(0),
         reply_markup: publicGalleryKeyboard(0),
       });
     }
