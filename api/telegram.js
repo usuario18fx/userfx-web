@@ -1,3 +1,4 @@
+import { PLAN_DAYS } from "../lib/access-plans.js";
 ﻿          import { Telegraf, Markup } from "telegraf";
           import Redis from "ioredis";
           import winston from "winston";
@@ -551,7 +552,7 @@ const PLAN_CONFIG = {
     prefix: "BSIC",
     stars: BASIC_STARS_PRICE,
     maxAccesses: null,
-    days: 3,
+    days: PLAN_DAYS.basic,
     features: { oncam: true, rec: false, chat: true, multimedia: false, stage: false },
     tier: TIER_BASIC,
   },
@@ -561,7 +562,7 @@ const PLAN_CONFIG = {
     prefix: "PRX0",
     stars: PRO_STARS_PRICE,
     maxAccesses: null,
-    days: 15,
+    days: PLAN_DAYS.pro,
     features: { oncam: true, rec: true, chat: true, multimedia: true, stage: true },
     tier: TIER_PRO,
   },
@@ -570,7 +571,7 @@ const PLAN_CONFIG = {
     name: "VIP",
     prefix: "VIPX",
     stars: VIP_STARS_PRICE,
-    days: 30,
+    days: PLAN_DAYS.vip,
     features: { oncam: true, rec: true, chat: true, multimedia: true, stage: true },
     maxAccesses: null,
     tier: TIER_VIP,
@@ -1206,12 +1207,7 @@ async function sendMembershipPanel(ctx) {
 async function sendVipPanel(ctx) {
   try {
     await ctx.reply(
-      `👑ᴄᴏᴅᴇ ᴠɪᴘ
-          ——————————
-          ⇀ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇꜱꜱ
-          ⇀ ʙᴇɴᴇғɪᴛs
-          ⇀ ᴘʀᴇᴍɪᴜᴍ ꜱᴇᴄᴛɪᴏɴꜱ
-          ⇀ ᴡᴇᴇᴋꜱ³ / ᴀʟʙᴜᴍꜱ³`,
+      `👑 VIP ACCESS\nCamera · Private chat · Recording · Multimedia · Stage\nUnlimited entries while active\nValid for ${PLAN_DAYS.vip} days from first activation`,
       getStarsVipKeyboard(),
     );
   } catch (error) {
@@ -1221,11 +1217,7 @@ async function sendVipPanel(ctx) {
 async function sendBasicPanel(ctx) {
   try {
     await ctx.reply(
-      `🌹ᴄᴏᴅᴇ ʙᴀꜱɪᴄ
-          —————————
-          ⇀ ᴘʀɪᴠᴀᴛᴇ ʀᴏᴏᴍ
-          ⇀ ʙᴇɴᴇғɪᴛs
-          ⇀ ᴡᴇᴇᴋ¹ / ᴀʟʙᴜᴍ¹`,
+      `🌹 BASIC ACCESS\nCamera access · Private chat\nUnlimited entries while active\nValid for ${PLAN_DAYS.basic} days from first activation`,
       getStarsBasicKeyboard(),
     );
   } catch (error) {
@@ -1235,12 +1227,7 @@ async function sendBasicPanel(ctx) {
 async function sendProPanel(ctx) {
   try {
     await ctx.reply(
-      `🔥ᴄᴏᴅᴇ ᴘʀᴏ
-          ——————————
-          ⇀ ꜰᴜʟʟ ᴠᴀᴜʟᴛ ᴀᴄᴄᴇꜱꜱ
-          ⇀ ᴠɪᴅᴇᴏ ᴄᴀʟʟꜱ
-          ⇀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀɴɴᴇʟꜱ
-          ⇀ ᴡᴇᴇᴋ⁹ / ᴀʟʙᴜᴍ⁹`,
+      `🔥 PRO ACCESS\nCamera · Private chat · Recording · Multimedia · Stage\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} days from first activation`,
       getStarsProKeyboard(),
     );
   } catch (error) {
@@ -1436,7 +1423,7 @@ async function sendVipInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝓥ɪᴘ ᴀᴄᴄᴇss",
-    description: "ᴠɪᴘ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+    description: `Camera, chat, recording, multimedia and stage. ${PLAN_DAYS.vip} days from first activation.`,
     payload: VIP_PAYLOAD,
     label: "ᴠɪᴘ ᴀᴄᴄᴇss",
     amount: VIP_STARS_PRICE,
@@ -1447,7 +1434,7 @@ async function sendBasicInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝐁𝐀𝐒𝐈𝐂 ᴀᴄᴄᴇss",
-    description: "ʙᴀꜱɪᴄ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+    description: `Camera and private chat. ${PLAN_DAYS.basic} days from first activation.`,
     payload: BASIC_PAYLOAD,
     label: "ʙᴀꜱɪᴄ ᴀᴄᴄᴇss",
     amount: BASIC_STARS_PRICE,
@@ -1458,7 +1445,7 @@ async function sendProInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝐏𝐑𝐎 ᴀᴄᴄᴇss",
-    description: "ᴍᴇɴꜱᴜᴀʟ ᴀᴄᴄᴇꜱꜱ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ.",
+    description: `Camera, chat, recording, multimedia and stage. ${PLAN_DAYS.pro} days from first activation.`,
     payload: PRO_PAYLOAD,
     label: "ᴘʀᴏ ᴀᴄᴄᴇss",
     amount: PRO_STARS_PRICE,

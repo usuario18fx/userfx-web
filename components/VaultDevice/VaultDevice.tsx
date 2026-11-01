@@ -1,3 +1,4 @@
+import { PLAN_DAYS } from "../../lib/access-plans.js";
           import { useState, useEffect } from "react";
           import "./VaultDevice.css";
 
@@ -51,7 +52,7 @@
               title: "Basic",
               emoji: ICONS.rosa,
               stars: 350,
-              entries: 1,
+              entries: null,
               ctaClass: "cta-basic",
               groups: [
                 {
@@ -59,8 +60,8 @@
                   items: [
                     {
                       icon: ICONS.fotos,
-                      text: "Private session access",
-                      sub: "Unlock one selected session from the vault",
+                      text: "Camera access",
+                      sub: "Use ONCAM in your private room",
                     },
                     {
                       icon: ICONS.getin,
@@ -74,14 +75,14 @@
                     },
                     {
                       icon: ICONS.preview,
-                      text: "Full session view",
-                      sub: "Enjoy the complete unlocked session, not just a preview",
+                      text: "Private chat",
+                      sub: "Chat during your private experience",
                     },
                   ],
                 },
                 {
                   label: "Best for",
-                  items: [{ icon: ICONS.candado2, text: "One premium drop", sub: "One-time access only." }],
+                  items: [{ icon: ICONS.candado2, text: "Core privileges", sub: "Camera and chat while your BASIC code is active." }],
                 },
               ],
             },
@@ -89,7 +90,7 @@
               title: "Pro",
               emoji: ICONS.fuego,
               stars: 750,
-              entries: 10,
+              entries: null,
               ctaClass: "cta-pro",
               groups: [
                 {
@@ -97,13 +98,13 @@
                   items: [
                     {
                       icon: ICONS.choose,
-                      text: "Choose your sessions",
-                      sub: "Pick from available premium sessions in the vault",
+                      text: "Camera and private chat",
+                      sub: "Connect through ONCAM and chat",
                     },
                     {
                       icon: ICONS.quality,
-                      text: "Enhanced quality",
-                      sub: "Higher-quality streaming for a smoother viewing experience",
+                      text: "Recording",
+                      sub: "Record your ONLIVE sessions",
                     },
                     {
                       icon: ICONS.quickly,
@@ -117,14 +118,14 @@
                   items: [
                     {
                       icon: ICONS.fuego,
-                      text: "Regular viewers",
-                      sub: "Made for people who want more than one session",
+                      text: "Multimedia access",
+                      sub: "Open the multimedia collection",
                     },
-                    { icon: "💎", text: "More value per entry", sub: "Code saved. Access secured." },
+                    { icon: "💎", text: "Stage access", sub: "Join the Stage experience" },
                     {
                       icon: ICONS.vipcard,
-                      text: "VIP-ready",
-                      sub: "A natural step up before going all-access",
+                      text: "Extended privileges",
+                      sub: "Camera, chat, recording, multimedia and Stage",
                     },
                   ],
                 },
@@ -140,20 +141,20 @@
                 {
                   label: "What you get",
                   items: [
-                    { icon: ICONS.fotos, text: "Full vault entry", sub: "Every session, no restrictions" },
-                    { icon: ICONS.limit, text: "Unlimited sessions", sub: "Enter as many times as you want" },
+                    { icon: ICONS.fotos, text: "Camera, chat and multimedia", sub: "Connect and explore the private collection" },
+                    { icon: ICONS.limit, text: "Unlimited entries", sub: "Enter as many times as you want" },
                     {
                       icon: ICONS.calendario,
-                      text: "No day limit",
-                      sub: "Unlimited entries while your VIP code remains active",
+                      text: "Recording and Stage",
+                      sub: "Record ONLIVE sessions and join Stage",
                     },
-                    { icon: ICONS.quality, text: "HD quality", sub: "Highest available resolution" },
+                    { icon: ICONS.quality, text: "Longest access period", sub: "Keep all included privileges for the full VIP period" },
                     { icon: ICONS.candado2, text: "Any device", sub: "Keep your access active" },
                   ],
                 },
                 {
                   label: "",
-                  items: [{ icon: ICONS.telegram, text: "Chat Experience", sub: "Direct DM for anything" }],
+                  items: [{ icon: ICONS.telegram, text: "Chat Experience", sub: "Private chat while your VIP code is active" }],
                 },
               ],
             },
@@ -297,7 +298,7 @@
           <div className="vd-sheet-handle">
             <div className="vd-sheet-handle-bar" />
           </div>
-          <div className="vd-sheet-header">
+          <div className="vd-sheet-header" data-validity={activeSheet ? `VALID · ${PLAN_DAYS[activeSheet]} DAYS` : ""} data-privileges={activeSheet === "basic" ? "CAMERA + CHAT" : activeSheet ? "REC + MEDIA + STAGE" : ""}>
             <div className="vd-sheet-title-area">
               <div className="vd-sheet-title">
                 <span className={`vd-sheet-title-name vd-title-${activeSheet}`}>{currentPlan?.title}</span>

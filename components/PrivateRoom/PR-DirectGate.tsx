@@ -1024,7 +1024,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
         <div className="pvr-direct-copy">
           <h1>
-            ᴇɴᴛᴇʀ ᴡʜɪᴛ
+            ᴇɴᴛᴇʀ ᴡɪᴛʜ
             <br />
             <em>
             𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌
