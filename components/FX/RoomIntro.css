@@ -283,6 +283,10 @@
   letter-spacing: -.05em;
 }
 
+.fx-title-multimedia {
+  color: #0370ff;
+}
+
 .fx-subtitle {
   margin: 0 0 24px;
   font-size: 15px;
