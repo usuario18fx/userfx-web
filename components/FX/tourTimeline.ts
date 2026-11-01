@@ -1,11 +1,11 @@
 /**
- * Fuente unica de los ocho stops del recorrido.
+ * Fuente unica de los siete stops del recorrido.
  * Compartida por CinematicTour (camara y TV) y RoomIntro (texto, overlay y snap).
- * 0 welcome; 1 inside; 2 corridor; 3 enter-room;
- * 4 gallery; 5 videocall; 6 multimedia; 7 stage.
+ * 0 welcome; 1 corridor; 2 enter-room;
+ * 3 gallery; 4 videocall; 5 multimedia; 6 stage.
  */
-export const STOP_T = [0, 0.143, 0.286, 0.429, 0.571, 0.714, 0.857, 1] as const;
-export const STOP_HOLD = [0.028, 0.022, 0.022, 0.034, 0.040, 0.040, 0.030, 0] as const;
+export const STOP_T = [0, 0.18, 0.36, 0.52, 0.68, 0.84, 1] as const;
+export const STOP_HOLD = [0.028, 0.03, 0.034, 0.040, 0.040, 0.030, 0] as const;
 
 /** Momento en que se activa la etapa, al entrar en la pausa del stop. */
 export const ENTER_AT: number[] = STOP_T.map((t, i) =>
