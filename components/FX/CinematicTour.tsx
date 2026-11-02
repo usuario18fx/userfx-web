@@ -824,7 +824,16 @@ export default function CinematicTour({
     const multi = makeVideo("/assets/video01.mp4");
     const stage = makeVideo("/assets/FX-Y24V01.mp4");
     const tvMaterial = new THREE.MeshBasicMaterial({ map: videoCallTexture, toneMapped: false, side: THREE.DoubleSide });
-    const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.71, 1.64), tvMaterial);
+    // Pantalla panorámica 16:9, sin deformar videos.
+    const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.70, 1.51875), tvMaterial);
+    // Bisel delgado negro mate, ligeramente detrás del panel.
+    const tvBezel = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.82, 1.64),
+      new THREE.MeshBasicMaterial({ color: "#05080d", toneMapped: false, side: THREE.DoubleSide })
+    );
+    tvBezel.position.set(-4.595, 1.72, -2.0);
+    tvBezel.rotation.y = Math.PI / 2;
+    scene.add(tvBezel);
     let screenMode: TvMode = "videocall";
     const updateTv = (p: number) => {
       const mode: TvMode =
