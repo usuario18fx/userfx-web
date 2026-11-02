@@ -783,50 +783,33 @@ export default function CinematicTour({
     }
     box(0.1, 1.76, 2.82, -4.66, 1.72, -2.0, black);
 
-    // TV + pantalla
+    // TV 16:9: video completo, sin recortes, con transición de fundido.
     const tvCanvas = document.createElement("canvas");
     tvCanvas.width = 1280;
     tvCanvas.height = 720;
     const tvCtx = tvCanvas.getContext("2d");
-    const videoCallTexture = new THREE.CanvasTexture(tvCanvas);
-    videoCallTexture.colorSpace = THREE.SRGBColorSpace;
-    const drawVideoCall = (picture?: HTMLImageElement) => {
-      if (!tvCtx) return;
-      tvCtx.fillStyle = "#07142b";
-      tvCtx.fillRect(0, 0, 1280, 720);
-      if (picture && picture.naturalWidth > 0) {
-        const cropWidth = Math.floor(picture.naturalWidth * 0.62);
-        tvCtx.drawImage(picture, 0, 0, cropWidth, picture.naturalHeight, 0, 0, 1280, 720);
-      }
-      videoCallTexture.needsUpdate = true;
-    };
-    drawVideoCall();
-    const videoCallImg = new Image();
-    videoCallImg.onload = () => {
-      if (!abort.signal.aborted) { drawVideoCall(videoCallImg); wakeRender.current?.(); }
-    };
-    videoCallImg.src = "/assets/videocall.jpg";
-
+    const tvTexture = new THREE.CanvasTexture(tvCanvas);
+    tvTexture.colorSpace = THREE.SRGBColorSpace;
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
       video.src = src;
       video.muted = true;
+      video.defaultMuted = true;
       video.loop = true;
       video.playsInline = true;
-      video.preload = "metadata";
-      const texture = new THREE.VideoTexture(video);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.generateMipmaps = false;
-      return { video, texture };
+      video.preload = "auto";
+      video.addEventListener("loadeddata", () => wakeRender.current?.(), { signal: abort.signal });
+      return video;
     };
-    const multi = makeVideo("/assets/video01.mp4");
-    const stage = makeVideo("/assets/FX-Y24V01.mp4");
-    const tvMaterial = new THREE.MeshBasicMaterial({ map: videoCallTexture, toneMapped: false, side: THREE.DoubleSide });
-    // Pantalla panorámica 16:9, sin deformar videos.
+    const tvVideos: Record<TvMode, HTMLVideoElement> = {
+      videocall: makeVideo("/assets/my-room/Fx-2026-08-ROOM.mp4"),
+      multimedia: makeVideo("/assets/video01.mp4"),
+      stage: makeVideo("/assets/my-room/pasarela2.mp4"),
+    };
+    const tvMaterial = new THREE.MeshBasicMaterial({
+      map: tvTexture, toneMapped: false, side: THREE.DoubleSide,
+    });
     const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.70, 1.51875), tvMaterial);
-    // Bisel delgado negro mate, ligeramente detrás del panel.
     const tvBezel = new THREE.Mesh(
       new THREE.PlaneGeometry(2.82, 1.64),
       new THREE.MeshBasicMaterial({ color: "#05080d", toneMapped: false, side: THREE.DoubleSide })
@@ -834,28 +817,63 @@ export default function CinematicTour({
     tvBezel.position.set(-4.595, 1.72, -2.0);
     tvBezel.rotation.y = Math.PI / 2;
     scene.add(tvBezel);
-    let screenMode: TvMode = "videocall";
-    const updateTv = (p: number) => {
-      const mode: TvMode =
-        p >= TV_STAGE_AT ? "stage" :
-        p >= TV_MULTIMEDIA_AT ? "multimedia" : "videocall";
-      if (screenMode !== mode) {
-        screenMode = mode;
-        tvMaterial.map = mode === "stage" ? stage.texture : mode === "multimedia" ? multi.texture : videoCallTexture;
-        tvMaterial.needsUpdate = true;
-        tvFace.userData.fxDestination = undefined; // La navegacion se controla exclusivamente desde el panel derecho
-        onModeChangeRef.current?.(mode);
-      }
-      for (const item of [multi, stage]) {
-        const active = (item === multi && mode === "multimedia") || (item === stage && mode === "stage");
-        if (active && item.video.paused) void item.video.play().catch(() => {});
-        else if (!active && !item.video.paused) item.video.pause();
-      }
-    };
-    tvFace.userData.fxDestination = undefined;
     tvFace.position.set(-4.58, 1.72, -2.0);
     tvFace.rotation.y = Math.PI / 2;
+    tvFace.userData.fxDestination = undefined;
     scene.add(tvFace);
+
+    let screenMode: TvMode = "videocall";
+    let transitionStart = -1;
+    const previousFrame = document.createElement("canvas");
+    previousFrame.width = 1280;
+    previousFrame.height = 720;
+    const previousCtx = previousFrame.getContext("2d");
+    const drawTv = (now: number) => {
+      if (!tvCtx) return;
+      tvCtx.fillStyle = "#05080d";
+      tvCtx.fillRect(0, 0, 1280, 720);
+      const video = tvVideos[screenMode];
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        const factor = Math.min(1280 / video.videoWidth, 720 / video.videoHeight);
+        const w = video.videoWidth * factor;
+        const h = video.videoHeight * factor;
+        tvCtx.drawImage(video, (1280 - w) / 2, (720 - h) / 2, w, h);
+      }
+      if (transitionStart >= 0 && previousCtx) {
+        const alpha = Math.max(0, 1 - (now - transitionStart) / 450);
+        if (alpha > 0) {
+          tvCtx.globalAlpha = alpha;
+          tvCtx.drawImage(previousFrame, 0, 0);
+          tvCtx.globalAlpha = 1;
+        } else transitionStart = -1;
+      }
+      tvTexture.needsUpdate = true;
+    };
+    const updateTv = (p: number, now: number) => {
+      const mode: TvMode = p >= TV_STAGE_AT ? "stage"
+        : p >= TV_MULTIMEDIA_AT ? "multimedia" : "videocall";
+      if (screenMode !== mode) {
+        if (previousCtx) previousCtx.drawImage(tvCanvas, 0, 0);
+        transitionStart = now;
+        tvVideos[screenMode].pause();
+        screenMode = mode;
+        onModeChangeRef.current?.(mode);
+      }
+      for (const [key, video] of Object.entries(tvVideos)) {
+        if (key === screenMode) {
+          if (video.paused) void video.play().catch(() => {});
+        } else if (!video.paused) video.pause();
+      }
+      drawTv(now);
+    };
+    abort.signal.addEventListener("abort", () => {
+      for (const video of Object.values(tvVideos)) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+      tvTexture.dispose();
+    }, { once: true });
     // La TV reproduce contenido visual; los clics corresponden al panel derecho.
 
     const tvFill = new THREE.PointLight("#003db6", 2.8, 4);
@@ -1031,11 +1049,11 @@ export default function CinematicTour({
         camera.updateProjectionMatrix();
       }
 
-      updateTv(current.current);
+      updateTv(current.current, now);
       renderer.render(scene, camera);
 
       const lookSettled = lookSmooth.distanceToSquared(look) < 1e-6;
-      const videoPlaying = screenMode !== "videocall";
+      const videoPlaying = !tvVideos[screenMode].paused || transitionStart >= 0;
       if (!scrollSettled || !lookSettled || !angleSettled || videoPlaying) raf = requestAnimationFrame(tick);
     };
     const wake = () => {
