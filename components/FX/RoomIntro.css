@@ -596,3 +596,11 @@
   .fx-room-ui {
     animation: none;
   }}
+/* USERFX: center left angle controls */
+@media (min-width: 901px) {
+  .fx-footer-angles { left: clamp(84px, 9vw, 158px); }
+}
+
+/* USERFX: extra stage scroll */
+@media (min-width: 681px) and (prefers-reduced-motion: no-preference) { .fx-room-intro { height: 900svh; } }
+@media (max-width: 680px) and (prefers-reduced-motion: no-preference) { .fx-room-intro { height: 540svh; } }

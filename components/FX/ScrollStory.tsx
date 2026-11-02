@@ -2,195 +2,56 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  AnimatePresence,
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { COURSES, ENTER_URL } from "@/lib/content";
+import { ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
-import { Glyph } from "./Glyph";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
+import { SCENES, type Scene } from "./fxScenes";
 import "./ScrollStory.css";
 
-type Scene = {
-  index: string;
-  id: string;
-  kicker: string;
-  title: string;
-  subtitle: string;
-  href: string;
-  image: string;
-  imageAlt: string;
-  position?: string;
-};
-
-const SCENES: Scene[] = [
-  {
-    index: "01",
-    id: "videocall",
-    kicker: "ONE TO ONE",
-    title: "VIDEO CALLS",
-    subtitle: "MyRoom · your private space",
-    href: "#/private-room",
-    image: "/assets/videocall.jpg",
-    imageAlt: "UserFX original videocall preview",
-    position: "center 48%",
-  },
-  {
-    index: "02",
-    id: "stage",
-    kicker: "THE SHARED MOMENT",
-    title: "STAGE",
-    subtitle: "Live sessions · come as you are",
-    href: "#/private-room/stage",
-    image: "/assets/album/PRVW/PRVW-03.jpg",
-    imageAlt: "UserFX original outdoor portrait",
-    position: "center 62%",
-  },
-  {
-    index: "03",
-    id: "gallery",
-    kicker: "YOUR PRIVATE COLLECTION",
-    title: "GALLERY",
-    subtitle: "Photography · private albums",
-    href: "#/private-room/gallery",
-    image: "/assets/album/PRVW/PRVW-01.jpg",
-    imageAlt: "UserFX original photograph",
-    position: "center 39%",
-  },
-  {
-    index: "04",
-    id: "buzon",
-    kicker: "KEEP THE CONVERSATION",
-    title: "BUZÓN",
-    subtitle: "Private messages · get in touch",
-    href: "#/private-room/buzon",
-    image: "/assets/album/PRVW/PRVW-02.jpg",
-    imageAlt: "UserFX original sunset portrait",
-    position: "center 40%",
-  },
-];
-
-function SceneIcon({ id }: { id: string }) {
-  return (
-    <span className={"fx-scroll-scene-icon fx-scroll-scene-icon--" + id} aria-hidden="true">
-      {id === "videocall" && (
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="8" y="15" width="23" height="18" rx="4" />
-          <path d="m31 20 9-5v18l-9-5" />
-          <circle className="fx-icon-live-light" cx="14" cy="20" r="2.4" fill="#82d99e" stroke="none" />
-        </svg>
-      )}
-      {id === "stage" && (
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-          <circle cx="24" cy="24" r="5" />
-          <path className="fx-icon-spotlight" d="M24 5v11 M24 32v11 M5 24h11 M32 24h11 M10.5 10.5l8 8 M29.5 29.5l8 8 M37.5 10.5l-8 8 M18.5 29.5l-8 8" />
-        </svg>
-      )}
-      {id === "gallery" && (
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="8" y="11" width="32" height="26" rx="3" />
-          <circle cx="17" cy="19" r="3" />
-          <path className="fx-icon-gallery-hill" d="m12 32 9-9 6 6 5-5 5 8" />
-        </svg>
-      )}
-      {id === "buzon" && (
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="8" y="14" width="32" height="22" rx="3" />
-          <path className="fx-icon-envelope" d="m9 17 15 11 15-11" />
-          <path d="m9 34 11-10 M39 34 28 24" />
-        </svg>
-      )}
-    </span>
-  );
-}
-
+/* Franja de imagen / video: SIN texto, números ni íconos.
+   Sigue siendo un enlace (con el control de admin de siempre). */
 function ScrollScene({
   scene,
   i,
   progress,
-  expanded,
-  onToggle,
 }: {
   scene: Scene;
   i: number;
   progress: MotionValue<number>;
-  expanded: boolean;
-  onToggle: () => void;
 }) {
-  const section = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const admin = useAdminMode();
-  const course = COURSES.find((item) => item.id === (scene.id === "videocall" ? "myroom" : scene.id));
-  const panelId = "fx-scene-panel-" + scene.id;
+  const featureId = (scene.id === "videocall" ? "myroom" : scene.id) as Parameters<
+    typeof admin.requestFeature
+  >[0];
 
   // Cada banda se revela en su propio tramo del scroll: 01 → 02 → 03 → 04.
-  // La primera ya está visible al llegar a la sección.
   const start = i * 0.22;
   const end = start + 0.12;
   const clip = useTransform(progress, [start, end], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
   const fade = useTransform(progress, [start, end], [0, 1]);
-  const imageScale = useTransform(progress, [start, end], [1.18, 1.02]);
+  const mediaScale = useTransform(progress, [start, end], [1.18, 1.02]);
   const revealStyle = reduced || i === 0 ? undefined : { clipPath: clip, opacity: fade };
+  const mediaStyle = reduced
+    ? { objectPosition: scene.position }
+    : { scale: mediaScale, objectPosition: scene.position };
 
   return (
-    <section ref={section} className={"fx-scroll-scene fx-scroll-scene--" + scene.id + (expanded ? " is-expanded" : "")} aria-labelledby={"fx-scene-" + scene.id} >
-      <motion.button type="button" className="fx-scroll-scene-link" aria-expanded={expanded} aria-controls={panelId} aria-label={(expanded ? "Close " : "Read about ") + scene.title} onClick={onToggle} style={revealStyle} >
-        <motion.img src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} className="fx-scroll-scene-image" style={ reduced ? { objectPosition: scene.position } : { scale: imageScale, objectPosition: scene.position } } />
-        <span className="fx-scroll-scene-shade" aria-hidden="true" />
-        <span className="fx-scroll-scene-index" aria-hidden="true">
-          {scene.index}
-        </span>
-        <SceneIcon id={scene.id} />
-        <motion.span className="fx-scroll-scene-content" initial={reduced ? false : { opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} >
-          <span className="fx-scroll-scene-kicker">
-            {scene.index} / {scene.kicker}
-          </span>
-          <strong id={"fx-scene-" + scene.id}>
-{scene.title}
-</strong>
-          <span className="fx-scroll-scene-subtitle">
-            {scene.subtitle}
-            <motion.span aria-hidden="true" animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: reduced ? 0 : 0.3 }} >
-              ↓
-            </motion.span>
-          </span>
-          <span className="fx-scroll-scene-discover" aria-hidden="true">
-            {expanded ? "CLOSE DETAILS −" : "DISCOVER THE SPACE +"}
-          </span>
-        </motion.span>
-        <span className="fx-scroll-scene-watermark" aria-hidden="true">
-          {scene.index}
-        </span>
-      </motion.button>
-
-      <AnimatePresence initial={false}>
-        {expanded && course && (
-          <motion.div key={scene.id} id={panelId} role="region" aria-label={"About " + scene.title} className="fx-scroll-scene-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : 0.46, ease: [0.22, 1, 0.36, 1] }} >
-            <div className="fx-scroll-scene-panel-inner fx-scroll-scene-tab">
-              <span className="fx-scroll-scene-tab-index">
-                {scene.index} / {course.level}
-              </span>
-              <div className="fx-scroll-scene-tab-copy">
-                <strong>
-{course.name}
-</strong>
-                <p>
-{course.blurb}
-</p>
-              </div>
-              <a href={scene.href} className="fx-scroll-scene-tab-link" onClick={(event) => { if (admin.requestFeature(course.id)) event.preventDefault(); }} >
-                OPEN {course.name.toUpperCase()} <span aria-hidden="true">
-↗
-</span>
-              </a>
-            </div>
-          </motion.div>
+    <section className={"fx-scroll-scene fx-scroll-scene--" + scene.id}>
+      <motion.a href={scene.href} className="fx-scroll-scene-link" aria-label={scene.title + " · " + scene.subtitle} onClick={(event) => { if (admin.requestFeature(featureId)) event.preventDefault(); }} style={revealStyle} >
+        {scene.video ? (
+          <motion.video className="fx-scroll-scene-image" src={scene.video} poster={scene.image} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1} style={mediaStyle} />
+        ) : (
+          <motion.img className="fx-scroll-scene-image" src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} style={mediaStyle} />
         )}
-      </AnimatePresence>
+        <span className="fx-scroll-scene-shade" aria-hidden="true" />
+      </motion.a>
     </section>
   );
 }
@@ -199,7 +60,6 @@ export default function ScrollStory() {
   const menu = useMenu();
   const admin = useAdminMode();
   const reduced = useReducedMotion();
-  const [expandedScene, setExpandedScene] = useState<string | null>(null);
   const [online, setOnline] = useState(false);
 
   // Progreso de scroll de la sección de bandas (0 → 1)
@@ -299,8 +159,8 @@ SCROLL TO DISCOVER
 
       <div id="spaces" ref={spacesRef} className="fx-scroll-scenes" aria-label="Explore UserFX spaces" >
         <div className="fx-scroll-stage">
-          {SCENES.map((scene, i) => (
-            <ScrollScene key={scene.id} scene={scene} i={i} progress={scrollYProgress} expanded={expandedScene === scene.id} onToggle={() => setExpandedScene((current) => (current === scene.id ? null : scene.id)) } />
+          {SCENES.map((scene: Scene, i) => (
+            <ScrollScene key={scene.id} scene={scene} i={i} progress={scrollYProgress} />
           ))}
         </div>
       </div>

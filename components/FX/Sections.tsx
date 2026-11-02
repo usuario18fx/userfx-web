@@ -10,7 +10,6 @@ import {
   FOOTER,
   HERO,
   METHOD,
-  METRICS,
   PLANS,
   TRAINERS,
 } from "@/lib/content";
@@ -21,15 +20,19 @@ import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
 import { RollLabel } from "./Hero";
 import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
+import ProtocolVault, { type VaultStep, type VaultQuad } from "./ProtocolVault";
+import { SCENES } from "./fxScenes";
+
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <section id={id} className="fx-section relative w-full scroll-mt-24 border-t border-ink/10 py-20 md:py-28 lg:py-36">
+    <section id={id} className="fx-section relative w-full scroll-mt-24 border-t border-ink/10 py-20 md:py-28 lg:py-36" >
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-10">
-        {children}
-      </div>
+{children}
+</div>
     </section>
   );
 }
+
 function SectionIndex({ index, label }: { index: string; label: string }) {
   return (
     <Reveal className="flex items-center gap-5">
@@ -43,6 +46,7 @@ function SectionIndex({ index, label }: { index: string; label: string }) {
     </Reveal>
   );
 }
+
 function Title({ children }: { children: string }) {
   return (
     <h2 className="max-w-[18ch] font-display text-[10vw] font-semibold uppercase leading-[.9] tracking-[-.03em] sm:text-[7vw] lg:text-[4.4vw]">
@@ -50,6 +54,7 @@ function Title({ children }: { children: string }) {
     </h2>
   );
 }
+
 function Lede({ children }: { children: string }) {
   return (
     <Reveal>
@@ -59,6 +64,7 @@ function Lede({ children }: { children: string }) {
     </Reveal>
   );
 }
+
 export function SectionCourses() {
   const [selected, setSelected] = useState<string>(COURSES[0].id);
   const course = COURSES.find((c) => c.id === selected)!;
@@ -81,17 +87,19 @@ Four spaces. One identity.
           <ul className="flex flex-col">
             {COURSES.map((c, i) => (
               <li key={c.id} className="relative">
-                <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left">
+                <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left" >
                   <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
                   <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
-                    <span className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
+                    <span
+                      className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}
+                    >
                       {c.name}
                     </span>
                   </span>
                   <span className="hidden text-xs uppercase tracking-[.16em] text-ink/40 sm:block">
-                    {c.level}              
-</span>
-                  <motion.span animate={{ rotate: selected === c.id ? 90 : 0, opacity: selected === c.id ? 1 : 0.35, }} transition={{ duration: 0.4, ease: EASE }}>
+                    {c.level}
+                  </span>
+                  <motion.span animate={{ rotate: selected === c.id ? 90 : 0, opacity: selected === c.id ? 1 : 0.35, }} transition={{ duration: 0.4, ease: EASE }} >
                     <Glyph name="caret" className="h-5 w-5" />
                   </motion.span>
                 </button>
@@ -106,7 +114,7 @@ Four spaces. One identity.
           <Spotlight className="glass flex h-full min-h-[24rem] flex-col justify-between overflow-hidden rounded-[40px] p-8 sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/8 blur-2xl" />
             <AnimatePresence mode="wait">
-              <motion.div key={course.id} className="relative flex flex-1 flex-col gap-7" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.35, ease: EASE }}>
+              <motion.div key={course.id} className="relative flex flex-1 flex-col gap-7" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.35, ease: EASE }} >
                 <div className="grid h-14 w-14 place-items-center rounded-full bg-orb text-sky">
                   <Glyph name={course.glyph} className="h-6 w-6" />
                 </div>
@@ -118,7 +126,7 @@ Four spaces. One identity.
 </p>
                 <dl className="mt-auto flex flex-wrap gap-3">
                   {course.metrics.map((m) => (
-                    <div key={m.label} className="glass-tile flex min-w-[9.5rem] flex-1 flex-col gap-1 rounded-2xl px-5 py-4">
+                    <div key={m.label} className="glass-tile flex min-w-[9.5rem] flex-1 flex-col gap-1 rounded-2xl px-5 py-4" >
                       <dt className="order-2 text-xs font-light text-ink/50">
 {m.label}
 </dt>
@@ -128,7 +136,7 @@ Four spaces. One identity.
                     </div>
                   ))}
                 </dl>
-                <a href={course.route} onClick={(e) => { if (admin.requestFeature(course.id)) e.preventDefault(); }} className="flex items-center justify-between border-t border-ink/10 pt-5 text-sm text-gold">
+                <a href={course.route} onClick={(e) => { if (admin.requestFeature(course.id)) e.preventDefault(); }} className="flex items-center justify-between border-t border-ink/10 pt-5 text-sm text-gold" >
                   Open {course.name}
                   <Glyph name="caret" className="h-4 w-4" />
                 </a>
@@ -140,97 +148,53 @@ Four spaces. One identity.
     </Shell>
   );
 }
+
+/* ---------------------------------------------------------------------------
+   PROTOCOL (una sola secuencia por scroll):
+   1) texto fijo a la izquierda + tambor de caja fuerte a la derecha
+   2) corona de partículas (public/corona/corona.bin) que gira con el scroll
+   3) en el último paso la corona se deshace
+   4) se abren 4 cuadrantes de 1/4 de pantalla: ↖ ↗ ↙ ↘
+--------------------------------------------------------------------------- */
 export function SectionMethod() {
+  const steps: VaultStep[] = METHOD.map((step) => ({
+    title: step.title,
+    text:
+      step.step === "01" ? (
+        <>
+          {step.body.split("@User18Fx_bot")[0]}
+          <a href={BOT_URL} target="_blank" rel="noreferrer" className="text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold" >
+            @User18Fx_bot
+          </a>
+          {step.body.split("@User18Fx_bot")[1]}
+        </>
+      ) : (
+        step.body
+      ),
+    cta: step.cta,
+    href: step.step === "01" ? BOT_URL : step.link,
+    external: step.step === "01" || step.link.startsWith("https:"),
+  }));
+
+  // Los 4 cuadrantes = las 4 escenas, ahora CON el texto que se quitó de las franjas.
+  // Cuadrante 1 = video FX-Y24V01.mp4 (definido en fxScenes.ts).
+  const quads: VaultQuad[] = SCENES.map((sc): VaultQuad => {
+    const course = COURSES.find((c) => c.id === (sc.id === "videocall" ? "myroom" : sc.id));
+    return {
+      src: sc.video ?? sc.image,
+      kind: sc.video ? "video" : "image",
+      label: sc.title,
+      sub: sc.subtitle,
+      position: sc.position,
+      icon: course ? <Glyph name={course.glyph} /> : undefined,
+    };
+  });
+
   return (
-    <Shell id="protocol">
-      <Drift className="-left-[6%] top-[30%] h-[30rem] w-[30rem]" distance={130} />
-      <RevealGroup className="grid gap-14 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)] lg:gap-16">
-        <div className="space-y-7 lg:sticky lg:top-28 lg:self-start">
-          <SectionIndex index="02" label="Access protocol" />
-          <Title>
-How to unlock the Vault.
-</Title>
-          <Lede>
-Start in Telegram. Choose your code. Enter your own world.
-</Lede>
-          <Reveal>
-            <img src={FX.foliage} alt="" loading="lazy" className="fx-protocol-ornament" />
-          </Reveal>
-        </div>
-        <ol className="flex flex-col gap-4">
-          {METHOD.map((step) => (
-            <motion.li key={step.step} variants={wipe(32)}>
-              <Spotlight className="glass flex flex-col gap-5 overflow-hidden rounded-[32px] p-8 sm:p-10">
-                <div className="relative flex items-center gap-5">
-                  <span className="font-display text-5xl font-semibold leading-none text-gold/35">
-                    {step.step}
-                  </span>
-                  <span className="h-px flex-1 bg-gold/15" />
-                </div>
-                <h3 className="relative font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em]">
-                  {step.step === "01" ? (
-                    <a href={BOT_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-gold">
-                      {step.title}
-                    </a>
-                  ) : step.title}
-                </h3>
-                <p className="relative max-w-[52ch] text-base leading-[1.6] text-ink/65">
-                  {step.step === "01" ? (
-                    <>
-                      {step.body.split("@User18Fx_bot")[0]}
-                      <a href={BOT_URL} target="_blank" rel="noreferrer" className="text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
-                        @User18Fx_bot
-                      </a>
-                      {step.body.split("@User18Fx_bot")[1]}
-                    </>
-                  ) : step.body}
-                </p>
-                <a href={step.link} target={step.link.startsWith("https:") ? "_blank" : undefined} rel={step.link.startsWith("https:") ? "noreferrer" : undefined} className="relative mt-2 flex items-center justify-between text-sm text-gold">
-                  {step.cta}
-                  <Glyph name="caret" className="h-4 w-4" />
-                </a>
-              </Spotlight>
-            </motion.li>
-          ))}
-        </ol>
-      </RevealGroup>
-      <RevealGroup className="fx-protocol-stats-wrap mt-9 lg:mt-12" step={0.08}>
-        <div className="fx-protocol-stats-grid" aria-label="UserFX spaces and access overview">
-          {METRICS.map((m, index) => (
-            <Reveal key={m.label} className={"fx-protocol-stat fx-protocol-stat--" + index}>
-              {index === 0 || index === 1 ? (
-                <img src={index === 0 ? "/room1.png" : "/room2.png"} alt="" loading="lazy" className="fx-protocol-stat-media" />
-              ) : (
-                <video className="fx-protocol-stat-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1}>
-                  <source src={index === 2 ? "/room3.mp4" : "/room4.mp4"} type="video/mp4" />
-                </video>
-              )}
-              <div className="fx-protocol-stat-shade" aria-hidden="true">
-              </div>
-              <div className="fx-protocol-stat-content">
-                <div className="fx-protocol-stat-head">
-                  <span className="fx-protocol-stat-index">
-                    {"0" + (index + 1)}
-                  </span>
-                  <span className="fx-protocol-stat-line" aria-hidden="true">
-                  </span>
-                  <span className="fx-protocol-stat-icon" aria-hidden="true">
-                    <Glyph name={index === 0 ? "stage" : index === 1 ? "camera" : index === 2 ? "lock" : "crown"} />
-                  </span>
-                </div>
-                <div className="fx-protocol-stat-bottom">
-                  <p className="fx-protocol-stat-label">
-                    {m.label}
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </RevealGroup>
-    </Shell>
+    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title="How to unlock the Vault." intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={quads} crownSrc="/corona/corona.bin" />
   );
 }
+
 export function SectionTrainers() {
   return (
     <Shell id="identity">
@@ -247,22 +211,27 @@ Your prefix defines your access. Each collection respects its own code.
       <RevealGroup>
         <ul className="fx-identity-grid">
           {TRAINERS.map((t) => (
-            <motion.li key={t.name} variants={wipe(24)} whileHover={{ y: -4 }} transition={{ duration: 0.35, ease: EASE }}>
+            <motion.li key={t.name} variants={wipe(24)} whileHover={{ y: -4 }} transition={{ duration: 0.35, ease: EASE }} >
               <Spotlight className={"glass fx-identity-card fx-identity-card--" + t.name.toLowerCase()}>
                 <div className="fx-identity-icon" aria-hidden="true">
-                  <img src={t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-identity-icon-image" />
+                  <img src={ t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip } alt="" loading="lazy" className="fx-identity-icon-image" />
                 </div>
                 <h3 className="fx-identity-card-title">
-                  {t.name === "SPCL" ? "SPCL / IDENTITY" : t.name === "BSIC" ? "BASIC / BSIC" : t.name === "PRX0" ? "PRO / PRX0" : "VIP / VIPX"}
+                  {t.name === "SPCL"
+                    ? "SPCL / IDENTITY"
+                    : t.name === "BSIC"
+                      ? "BASIC / BSIC"
+                      : t.name === "PRX0"
+                        ? "PRO / PRX0"
+                        : "VIP / VIPX"}
                 </h3>
-                <span className="fx-identity-card-rule" aria-hidden="true">
-                </span>
+                <span className="fx-identity-card-rule" aria-hidden="true" />
                 <p className="fx-identity-card-description">
-                  {t.line}
-                </p>
+{t.line}
+</p>
                 <p className="fx-identity-card-feature">
-                  {t.highlight}
-                </p>
+{t.highlight}
+</p>
               </Spotlight>
             </motion.li>
           ))}
@@ -271,6 +240,7 @@ Your prefix defines your access. Each collection respects its own code.
     </Shell>
   );
 }
+
 export function SectionPricing() {
   // Existing FX pricing is Stars per access, not a fictitious monthly subscription.
   const [view, setView] = useState<"stars" | "window">("stars");
@@ -284,9 +254,9 @@ export function SectionPricing() {
 Your access. Your level.
 </Title>
         <Reveal>
-          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1">
+          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1" >
             {(["stars", "window"] as const).map((value, i) => (
-              <button key={value} ref={(el) => { radios.current[i] = el; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(e) => { if ( !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes( e.key, ) ) return; e.preventDefault(); const next = e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - i; setView(next === 0 ? "stars" : "window"); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold">
+              <button key={value} ref={(el) => { radios.current[i] = el; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(e) => { if ( !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key) ) return; e.preventDefault(); const next = e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - i; setView(next === 0 ? "stars" : "window"); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold" >
                 {view === value && (
                   <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-gold text-sky" transition={{ duration: 0.4, ease: EASE }} />
                 )}
@@ -304,9 +274,12 @@ Your access. Your level.
             const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
               <motion.li
-                key={plan.id} variants={wipe(40)} whileHover={{ y: -10 }}
+                key={plan.id}
+                variants={wipe(40)}
+                whileHover={{ y: -10 }}
                 transition={{ duration: 0.5, ease: EASE }}
-                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}>
+                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
+              >
                 {plan.featured && (
                   <span className="absolute right-8 top-8 rounded-full bg-sky/10 px-3 py-1 text-[.65rem] uppercase tracking-[.16em]">
                     PRO ACCESS
@@ -329,7 +302,8 @@ Your access. Your level.
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, ease: EASE }}
-                    className="inline-block font-display text-4xl font-semibold leading-none tracking-[-.03em] tabular-nums sm:text-5xl">
+                    className="inline-block font-display text-4xl font-semibold leading-none tracking-[-.03em] tabular-nums sm:text-5xl"
+                  >
                     {price}
                   </motion.span>
                   <p className="mt-3 text-sm opacity-55">
@@ -354,7 +328,8 @@ Your access. Your level.
                     href={`https://t.me/User18Fx_bot?start=${plan.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}>
+                    className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
+                  >
                     <RollLabel>
 {plan.cta}
 </RollLabel>
@@ -377,6 +352,7 @@ Need identity access? Start with SPCL.
     </Shell>
   );
 }
+
 export function SectionFaq() {
   const [expanded, setExpanded] = useState<number | null>(0);
   return (
@@ -399,7 +375,8 @@ Good questions. Clear answers.
                   aria-expanded={expanded === i}
                   aria-controls={`faq-panel-${i}`}
                   className="flex w-full items-start justify-between gap-8 py-6 text-left"
-                  onClick={() => setExpanded((current) => (current === i ? null : i))}>
+                  onClick={() => setExpanded((current) => (current === i ? null : i))}
+                >
                   <span className="mt-1.5 text-xs tabular-nums text-gold/50">0{i + 1}</span>
                   <span className="flex-1 font-display text-lg font-semibold uppercase leading-tight tracking-[-.02em] transition-transform duration-500 group-hover:translate-x-2 sm:text-xl">
                     {item.q}
@@ -419,7 +396,8 @@ Good questions. Clear answers.
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.4, ease: EASE }}
-                      className="overflow-hidden">
+                      className="overflow-hidden"
+                    >
                       <p className="max-w-[62ch] pb-7 pl-10 text-base leading-[1.65] text-ink/60">
                         {item.a}
                       </p>
@@ -434,6 +412,7 @@ Good questions. Clear answers.
     </Shell>
   );
 }
+
 export function SiteFooter() {
   const reduced = useReducedMotion();
   const [email, setEmail] = useState(""),
@@ -478,9 +457,7 @@ export function SiteFooter() {
     <footer id="contact" className="fx-footer relative scroll-mt-20 border-t border-ink/10">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-10">
         <RevealGroup className="flex flex-col gap-10 py-20 md:py-28 lg:flex-row lg:items-end lg:justify-between">
-          <motion.p
-            variants={stagger(0.1, 0)}
-            className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]">
+          <motion.p variants={stagger(0.1, 0)} className="font-display text-[13vw] font-semibold uppercase leading-[.88] tracking-[-.03em] sm:text-[8vw] lg:text-[5.4vw]" >
             {HERO.headline.map((line) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span variants={maskWord} className="block whitespace-nowrap will-change-transform">
@@ -492,7 +469,7 @@ export function SiteFooter() {
           <Reveal className="flex flex-col items-start gap-6 lg:items-end">
             <motion.img src={FX.emblem} alt="" className="h-28 w-28 object-contain" animate={{ y: reduced ? 0 : [0, -10, 0] }} transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }} />
             <Magnetic strength={0.3}>
-              <a href={ENTER_URL} className="group flex items-center gap-5 rounded-full bg-gold py-4 pl-7 pr-5 text-sm font-semibold text-sky">
+              <a href={ENTER_URL} className="group flex items-center gap-5 rounded-full bg-gold py-4 pl-7 pr-5 text-sm font-semibold text-sky" >
                 <RollLabel>
 Enter the Vault
 </RollLabel>
@@ -504,18 +481,19 @@ Enter the Vault
         <RevealGroup className="grid gap-10 border-t border-gold/15 py-10 md:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,.65fr))] lg:gap-8">
           <Reveal className="space-y-5">
             <form onSubmit={submit} noValidate className="flex w-full max-w-md flex-col gap-3">
-              <label htmlFor="newsletter-email" className="text-xs uppercase tracking-[.18em] text-gold/60">
+              <label htmlFor="newsletter-email" className="text-xs uppercase tracking-[.18em] text-gold/60" >
                 Inside UserFX
               </label>
               <div
-                className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}>
+                className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}
+              >
                 <input id="newsletter-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="you@domain.com" value={email} disabled={state === "sending"} aria-invalid={state === "invalid"} aria-describedby="newsletter-note" onChange={(e) => { setEmail(e.target.value); setState("idle"); }} className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-ink/40" />
-                <button type="submit" disabled={state === "sending"} aria-label="Subscribe" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40">
+                <button type="submit" disabled={state === "sending"} aria-label="Subscribe" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40" >
                   <Glyph name="caret" className="h-4 w-4" />
                 </button>
               </div>
               <AnimatePresence mode="wait">
-                <motion.p key={note} id="newsletter-note" role={state === "invalid" || state === "error" ? "alert" : "status"} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25, ease: EASE }} className="text-xs leading-relaxed text-ink/50">
+                <motion.p key={note} id="newsletter-note" role={state === "invalid" || state === "error" ? "alert" : "status"} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25, ease: EASE }} className="text-xs leading-relaxed text-ink/50" >
                   {note}
                 </motion.p>
               </AnimatePresence>
@@ -529,7 +507,7 @@ Enter the Vault
               <ul className="flex flex-col gap-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a className="group inline-flex items-center border-b border-transparent py-1 text-sm text-ink/65 transition-colors hover:border-gold/40 hover:text-gold focus-visible:text-gold" href={link.href} target={link.href.startsWith("https:") ? "_blank" : undefined} rel={link.href.startsWith("https:") ? "noreferrer" : undefined}>
+                    <a className="group inline-flex items-center border-b border-transparent py-1 text-sm text-ink/65 transition-colors hover:border-gold/40 hover:text-gold focus-visible:text-gold" href={link.href} target={link.href.startsWith("https:") ? "_blank" : undefined} rel={link.href.startsWith("https:") ? "noreferrer" : undefined} >
                       <RollLabel>
 {link.label}
 </RollLabel>

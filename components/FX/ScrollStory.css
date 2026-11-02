@@ -185,24 +185,20 @@
   text-transform: uppercase;
   text-shadow: 0 7px 30px #0009;
 }
-
 .fx-scroll-hero-title h1 > span {
   display: block;
 }
-
 .fx-scroll-hero-title h1 > .fx-scroll-accent {
   padding-top: .1em;
   font-size: .82em;
-  color: var(--fx-story-rose);
+  color: #0277a9e2;
 }
-
 .fx-scroll-hero-subtitle {
   margin-top: 19px;
   color: #e8dfe0dd;
   font-size: clamp(10px, 1.1vw, 14px);
   letter-spacing: .31em;
 }
-
 .fx-scroll-emblem {
   width: fit-content;
   margin: clamp(12px, 2.4vh, 25px) 0 13px;
@@ -216,7 +212,6 @@
   object-fit: contain;
   animation: fx-scroll-emblem 7s ease-in-out infinite;
 }
-
 .fx-scroll-hero-enter {
   display: inline-flex;
   align-items: center;
@@ -230,18 +225,15 @@
   letter-spacing: .13em;
   transition: gap .35s, color .35s;
 }
-
 .fx-scroll-hero-enter > span:last-child {
   font-size: 27px;
-  color: var(--fx-story-gold);
+  color: #2fd5ff;
   font-weight: 300;
 }
-
 .fx-scroll-hero-enter:hover {
   gap: clamp(45px, 11vw, 130px);
-  color: var(--fx-story-gold);
+  color: #2fd5ff;
 }
-
 .fx-scroll-cue {
   position: absolute;
   right: clamp(22px, 6vw, 100px);
@@ -255,16 +247,14 @@
   letter-spacing: .23em;
   color: #ffffffb3 !important;
 }
-
 .fx-scroll-cue span:last-child {
-  color: var(--fx-story-gold);
+  color: #2fd5ff;
   font-size: 20px;
   animation: fx-scroll-arrow 2s ease-in-out infinite;
 }
-
 .fx-scroll-scenes {
   position: relative;
-  background: #08090c;
+  background: #192934;
 }
 
 .fx-scroll-scene {
@@ -272,7 +262,7 @@
   min-height: clamp(420px, 76svh, 960px);
   overflow: hidden;
   isolation: isolate;
-  border-top: 1px solid #f6ead013;
+  border-top: 1px solid #d0edf613;
 }
 
 .fx-scroll-scene-link {
@@ -306,11 +296,10 @@
   z-index: -2;
   inset: 0;
   background:
-    linear-gradient(90deg, #07080fd9 0%, #07080f9c 31%, #07080f00 80%),
-    linear-gradient(0deg, #06070cb8, transparent 45%),
-    linear-gradient(180deg, #06070c72, transparent 25%);
+    linear-gradient(90deg, #0c1926d9 0%, #07080f9c 31%, #07080f00 80%),
+    linear-gradient(0deg, #234563b8, transparent 45%),
+    linear-gradient(180deg, #164f7272, transparent 25%);
 }
-
 .fx-scroll-scene-index {
   position: absolute;
   top: clamp(25px, 4vw, 66px);
@@ -338,13 +327,11 @@
   width: min(90%, 900px);
   margin-top: clamp(30px, 6vw, 90px);
 }
-
 .fx-scroll-scene-kicker {
-  color: #e8d0b5ba;
+  color: #7eb7c6;
   font-size: clamp(9px, 1vw, 12px);
   letter-spacing: .26em;
 }
-
 .fx-scroll-scene-content strong {
   display: block;
   font-family: Georgia, "Times New Roman", serif;
@@ -354,7 +341,6 @@
   font-size: clamp(64px, 11.4vw, 170px);
   text-shadow: 0 8px 35px #0009;
 }
-
 .fx-scroll-scene-subtitle {
   display: inline-flex;
   align-items: center;
@@ -363,12 +349,11 @@
   font-size: clamp(12px, 1.5vw, 19px);
   line-height: 1.5;
   letter-spacing: .13em;
-  border-bottom: 1px solid #d9c18e82;
+  border-bottom: 1px solid #8ec9d982;
   padding-bottom: 14px;
 }
-
 .fx-scroll-scene-subtitle span {
-  color: var(--fx-story-gold);
+  color: #2fd5ff;
   font-size: 24px;
   transition: transform .2s;
 }
@@ -376,7 +361,6 @@
 .fx-scroll-scene-link:hover .fx-scroll-scene-subtitle span {
   transform: translate(4px, -4px);
 }
-
 .fx-scroll-scene-watermark {
   position: absolute;
   right: clamp(25px, 6vw, 100px);
@@ -387,19 +371,16 @@
   line-height: 1;
   pointer-events: none;
 }
-
 .fx-scroll-scene--stage .fx-scroll-scene-shade {
   background:
     linear-gradient(90deg, #071017dc 0%, #07101786 37%, #07080f03 90%),
     linear-gradient(0deg, #06090cdf, transparent 50%);
 }
-
 .fx-scroll-scene--gallery .fx-scroll-scene-shade {
   background:
     linear-gradient(90deg, #0a0815dc 0%, #0a081582 39%, #0a081506 91%),
     linear-gradient(0deg, #06070cdf, transparent 50%);
 }
-
 .fx-scroll-interlude {
   position: relative;
   text-align: center;
@@ -412,7 +393,6 @@
     linear-gradient(#08090de8, #08090df5),
     url("/wallpaperGeneral.png") center/cover;
 }
-
 .fx-scroll-interlude-line {
   width: 1px;
   height: 70px;
@@ -421,7 +401,6 @@
   top: 0;
   background: linear-gradient(0deg, var(--fx-story-gold), transparent);
 }
-
 .fx-scroll-interlude h2 {
   display: grid;
   gap: 5px;
@@ -429,46 +408,39 @@
   font: 400 clamp(45px, 7.3vw, 108px)/.98 Georgia, serif;
   letter-spacing: -.04em;
 }
-
 .fx-scroll-interlude h2 em {
   font-style: italic;
-  color: var(--fx-story-gold);
+  color: #cddde0c9;
 }
-
 .fx-scroll-interlude > p:not(.fx-scroll-overline) {
-  color: #e0d9cdc9;
+  color: #cde0e0c9;
   max-width: 560px;
   line-height: 1.8;
   font-size: clamp(13px, 1.4vw, 17px);
 }
-
 .fx-scroll-text-link {
   margin-top: 25px;
-  border-bottom: 1px solid #ceb67b6b;
+  border-bottom: 1px solid #7bb7ce6b;
   padding-bottom: 12px;
   font-size: 11px;
   letter-spacing: .18em;
   transition: color .2s;
 }
-
 .fx-scroll-text-link:hover {
-  color: var(--fx-story-gold);
+  color: #059fffc9;
 }
-
 .fx-scroll-access {
   position: relative;
   padding: clamp(90px, 11vw, 165px) clamp(22px, 7vw, 118px);
-  border-top: 1px solid #d5c08b36;
-  background: #080a0f;
+  border-top: 1px solid #8bb4d536;
+  background: #080c0f;
 }
-
 .fx-scroll-access-intro h2 {
   display: grid;
   margin-top: 20px;
   font: 400 clamp(48px, 8vw, 122px)/.91 Georgia, serif;
   letter-spacing: -.055em;
 }
-
 .fx-scroll-access-intro h2 > span {
   color: var(--fx-story-gold);
   font-style: italic;
@@ -527,16 +499,16 @@
   display: grid;
   gap: clamp(30px, 5vw, 65px);
   padding: 70px clamp(22px, 7vw, 118px) 33px;
-  border-top: 1px solid #ceb67b3b;
+  border-top: 1px solid #7bb0ce3b;
   background:
-    linear-gradient(0deg, #07090ef7, #07090ee7),
+    linear-gradient(0deg, #070d0ef7, #07090ee7),
     url("/wallpaperGeneral.png") center/cover;
 }
 .fx-scroll-footer-mark {
   display: flex;
   align-items: center;
   gap: 18px;
-  color: var(--fx-story-gold);
+  color:#059fffc9;
   font-size: 11px;
   letter-spacing: .28em;
 }
@@ -554,13 +526,13 @@
   transition: color .25s, transform .25s;
 }
 .fx-scroll-footer-links a:hover {
-  color: var(--fx-story-gold);
+  color: #2fd5ff;
   transform: translateY(-3px);
 }
 .fx-scroll-footer > p {
   border-top: 1px solid #d1ba8429;
   padding-top: 20px;
-  color: #b6b0a6;
+  color: #689cbcc9;
   font-size: 10px;
   letter-spacing: .17em;
 }
@@ -808,11 +780,11 @@
   font: 400 clamp(32px,4vw,61px)/1.1 Georgia,"Times New Roman",serif;
   letter-spacing: -.04em;
 }
-.fx-scroll-scene-panel-level { color: #c2b7ae; }
+.fx-scroll-scene-panel-level { color: #82a0a9; }
 .fx-scroll-scene-panel-description {
   max-width: 780px;
   margin: 0;
-  color: #e6dcd0cc;
+  color: #d0dbe6cc;
   font-size: clamp(15px,1.4vw,21px);
   line-height: 1.72;
 }
@@ -823,7 +795,7 @@
   gap: 28px;
   flex-wrap: wrap;
   padding-top: 19px;
-  border-top: 1px solid #d2c39c2f;
+  border-top: 1px solid #9cc5d22f;
 }
 .fx-scroll-scene-panel-facts {
   display: flex;
@@ -831,7 +803,7 @@
   margin: 0;
 }
 .fx-scroll-scene-panel-facts > div { display: flex; flex-direction: column; gap: 5px; }
-.fx-scroll-scene-panel-facts dt { color: #beb9b8; font-size: 12px; letter-spacing: .08em; order: 2; }
+.fx-scroll-scene-panel-facts dt { color: #b8bcbe; font-size: 12px; letter-spacing: .08em; order: 2; }
 .fx-scroll-scene-panel-facts dd {
   color: var(--fx-story-paper);
   font-size: clamp(21px,2.3vw,34px);
@@ -915,11 +887,11 @@
   place-items: center;
   width: clamp(44px, 4.1vw, 60px);
   height: clamp(44px, 4.1vw, 60px);
-  border: 1px solid #dfc7909b;
+  border: 1px solid #90bcdf9b;
   border-radius: 50%;
-  color: #f5dca3;
+  color: #a3e7f5;
   background: #090b0f99;
-  box-shadow: 0 0 24px #d0b47515, inset 0 0 14px #d8ba7b13;
+  box-shadow: 0 0 24px #75b2d015, inset 0 0 14px #7bbcd813;
   backdrop-filter: blur(8px);
   pointer-events: none;
   transition: box-shadow .3s, border-color .3s, transform .3s;
@@ -931,7 +903,7 @@
 .fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-icon {
   transform: scale(1.08);
   border-color: #13b1e5f8;
-  box-shadow: 0 0 22px #eac67a48;
+  box-shadow: 0 0 22px #7abfea48;
 }
 .fx-scroll-scene-icon--videocall .fx-icon-live-light {
   animation: fx-icon-breath 1.9s ease-in-out infinite;
@@ -977,7 +949,7 @@
   gap: 7px;
 }
 .fx-scroll-emblem img {
-  filter: drop-shadow(0 0 12px #e5d2ab33);
+  filter: drop-shadow(0 0 12px #abd0e533);
 }
 .fx-scroll-connection {
   display: inline-flex;
@@ -985,7 +957,7 @@
   gap: 5px;
   width: max-content;
   padding: 0;
-  color: #e3e3e0bc;
+  color: #e0e2e3bc;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: .17em;
@@ -1002,8 +974,8 @@
   background: #8b8d92;
 }
 .fx-scroll-connection.is-online .fx-scroll-connection-dot {
-  background: #75d59b;
-  box-shadow: 0 0 8px #75d59b9c;
+  background: #75bfd5;
+  box-shadow: 0 0 8px #a1e4ff9c;
   animation: fx-icon-breath 2s ease-in-out infinite;
 }
 
@@ -1130,7 +1102,7 @@
 /* USERFX_PROTOCOL_ACCORDION_STYLE_V1 */
 /* The same Spotlight, glass and glass-tile components used by SectionMethod. */
 .fx-scroll-scene-panel {
-  border-top: 1px solid rgba(211, 180, 106, .25);
+  border-top: 1px solid #1691b440;
 }
 .fx-scroll-protocol-reveal {
   width: 100%;
@@ -1142,11 +1114,11 @@
   align-items: stretch;
   gap: clamp(13px, 1.8vw, 23px);
   overflow: hidden;
-  border: 1px solid rgba(211, 180, 106, .25);
+  border: 1px solid #6ab7d340;
   border-radius: clamp(18px, 2.5vw, 32px);
   padding: clamp(23px, 3.6vw, 43px);
-  background: linear-gradient(135deg, rgba(24, 27, 38, .91), rgba(10, 13, 24, .88));
-  box-shadow: 0 20px 65px rgba(0, 0, 0, .15);
+  background: linear-gradient(135deg, #181f26e8, rgba(10, 13, 24, .88));
+  box-shadow: 0 20px 65px #00000026;
   backdrop-filter: blur(18px);
 }
 .fx-scroll-protocol-card-heading {
@@ -1159,19 +1131,19 @@
   font-size: clamp(34px, 4vw, 52px);
   line-height: 1;
   font-weight: 600;
-  color: rgba(211, 180, 106, .65);
+  color: #6ac3d3a6;
 }
 .fx-scroll-protocol-rule {
   height: 1px;
   flex: 1;
   min-width: 18px;
-  background: linear-gradient(90deg, rgba(211, 180, 106, .36), transparent);
+  background: linear-gradient(90deg, #6ad3d35c, transparent);
 }
 .fx-scroll-protocol-level {
   font-size: 10px;
   letter-spacing: .15em;
   text-transform: uppercase;
-  color: rgba(245, 236, 213, .7);
+  color: #d5f2f5b3;
 }
 .fx-scroll-protocol-glyph {
   display: grid;
@@ -1180,9 +1152,9 @@
   height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 1px solid rgba(211, 180, 106, .24);
-  color: #e4c788;
-  background: rgba(211, 180, 106, .08);
+  border: 1px solid #6a9bd33d;
+  color: #88aae4;
+  background: #6ac5d314;
 }
 .fx-scroll-protocol-glyph svg {
   width: 24px;
@@ -2160,3 +2132,69 @@
   .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
     padding: 16px 20px 22px;
   }}
+  .fx-scroll-left-panel {
+  left: clamp(56px, 7vw, 110px);
+  max-width: 520px;
+}
+.fx-scroll-left-panel .fx-angle-panel,
+.fx-scroll-left-panel .fx-left-actions {
+  transform: translateX(28px);
+}
+/*==========================================================================
+   USERFX_SCROLL_BANDS_V3 — 4 franjas SOLO imagen/video (sin texto)
+   PEGAR AL FINAL de ScrollStory.css. BORRA antes la V1 / V2 si ya las pegaste.
+   Escritorio: 4 franjas verticales (1/4 del ancho) · Móvil: 4 bandas horizontales (1/4 del alto)
+========================================================================== */
+.fx-scroll-story .fx-scroll-scenes {
+  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
+  height: 400svh;                /* recorrido de scroll de toda la sección */
+  background: #08090c;
+}
+.fx-scroll-story .fx-scroll-stage {
+  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
+  top: var(--fx-nav-h);
+  height: calc(100svh - var(--fx-nav-h));
+  display: flex;
+  flex-direction: row;           /* 1 - 2 - 3 - 4 de izquierda a derecha */
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
+  flex: 0 0 25%;
+  width: 25%;
+  height: 100%;
+  min-height: 0 !important;
+  overflow: hidden;
+  border-top: 0;
+  border-left: 1px solid #f6ead01a;
+}
+.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-left: 0; 
+}
+/* La franja es solo la imagen / el video a todo el alto */
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+  padding: 0;
+  cursor: pointer;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
+  background: linear-gradient(0deg, #05070b55 0%, transparent 40%);
+}
+/* Móvil (≤700px): 4 bandas horizontales, entran 1 → 2 → 3 → 4 */
+@media (max-width: 700px) {
+  .fx-scroll-story .fx-scroll-stage { flex-direction: column; }
+  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
+    flex: 0 0 25%;
+    width: 100%;
+    height: 25%;
+    border-left: 0;
+    border-top: 1px solid #f6ead01a;
+  }
+  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-top: 0; }
+}

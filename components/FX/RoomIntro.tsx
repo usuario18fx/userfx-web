@@ -22,6 +22,8 @@ const STAGES = [
   { key: "videocall",  title: "VIDEO",     accent: "CALLS",     sub: "CONNECT IN PRIVATE",            body: "Un lugar para conversar, compartir y encontrarse." },
   { key: "multimedia", title: "MULTI",     accent: "MEDIA",     sub: "ANOTHER EXPERIENCE",            body: "Contenido visual y una experiencia más inmersiva." },
   { key: "stage",      title: "STAGE",     accent: "",          sub: "THE ROOM IS YOUR STAGE",        body: "Una perspectiva amplia, iluminación íntima y tu propio escenario." },
+  { key: "stage-side",  title: "STAGE", accent: "LATERAL", sub: "LIVE STAGE / ANGLE 02", body: "Otra perspectiva del video con mayor profundidad y luz lateral." },
+  { key: "stage-close", title: "STAGE", accent: "DETAIL",  sub: "LIVE STAGE / ANGLE 03", body: "Acercamiento cinematográfico a la pantalla: la pasarela ocupa el encuadre." },
 ] as const;
 
 const SNAP_RANGE = 0.035;
@@ -32,25 +34,36 @@ const BADGES: Record<string, string> = {
   videocall: "02  ONE TO ONE / FROM THE BED",
   multimedia: "03  OTRA EXPERIENCIA",
   stage: "04  LIVE STAGE / TV 01",
+  "stage-side": "05  LIVE STAGE / ANGLE 02",
+  "stage-close": "06  LIVE STAGE / ANGLE 03",
 };
-const COUNTERS: Record<string, string> = { gallery: "01", videocall: "02", multimedia: "03", stage: "04" };
+const COUNTERS: Record<string, string> = { gallery: "01", videocall: "02", multimedia: "03", stage: "04",
+  "stage-side": "05",
+  "stage-close": "06",
+};
 const TITLES: Record<string, ReactNode> = {
   gallery: <>Mis fotos<br />públicas.</>,
   videocall: <>ᴊᴜsᴛ 𝕐𝕆𝕌<br />🜲ᴀɴᴅ 𝕄𝔼</>,
   multimedia: <>ᴄᴏᴍᴍᴜɴɪᴛʏ<br />𝕄𝔼𝔻𝕀𝔸</>,
   stage: <>The room<br />is your 𝕊𝕋𝔸𝔾𝔼.</>,
+  "stage-side": <>Stage<br />lateral.</>,
+  "stage-close": <>Stage<br />detail.</>,
 };
 const SUBTITLES: Record<string, string> = {
   gallery: "Una selección editorial abierta. Cambia de fotografía, amplía la imagen o continúa hacia la siguiente habitación.",
   videocall: "La cámara se traslada a la cama y mira hacia la pantalla. Las videollamadas y los canales se gestionan directamente desde Telegram.",
   multimedia: "Otra experiencia inmersiva para explorar contenido adicional dentro del recorrido.",
   stage: "El recorrido termina frente a la pantalla principal, donde la pasarela se vuelve el foco.",
+  "stage-side": "Perspectiva lateral para apreciar la pasarela.",
+  "stage-close": "Vista cercana de la pantalla y del video.",
 };
 const PRIMARY_LABEL: Record<string, string> = {
   gallery: "Abrir colección",
   videocall: "Abrir acceso privado",
   multimedia: "Abrir multimedia",
   stage: "Entrar a Stage",
+  "stage-side": "Siguiente angulo",
+  "stage-close": "Entrar a Stage",
 };
 export default function RoomIntro() {
   const section = useRef<HTMLElement>(null);
@@ -70,7 +83,7 @@ export default function RoomIntro() {
   // El texto cambia cuando la camara llega al hold del stop (misma fuente que la cámara).
   const index = stageIndexAt(progress);
   const stage = STAGES[index];
-  const showRoomOverlay = ["gallery", "videocall", "multimedia", "stage"].includes(stage.key);
+  const showRoomOverlay = ["gallery", "videocall", "multimedia", "stage", "stage-side", "stage-close"].includes(stage.key);
   // ── Scroll programático a un punto del recorrido ──
   const scrollToProgress = useCallback((t: number) => {
     const el = section.current;
@@ -109,14 +122,26 @@ export default function RoomIntro() {
         ];
       case "stage":
         return [
+          { title: "Avanzar", sub: "Ver ángulo lateral", arrow: "→", run: goNext },
+          { title: "Pasarela", sub: "Abrir Stage", arrow: "↗", run: () => goHash("#/private-room/stage") },
+          { title: "Telegram", sub: "Ir al bot", arrow: "↗", run: openBot },
+        ];
+      case "stage-side":
+        return [
+          { title: "Avanzar", sub: "Acercar la cámara", arrow: "→", run: goNext },
+          { title: "Pasarela", sub: "Abrir Stage", arrow: "↗", run: () => goHash("#/private-room/stage") },
+          { title: "Telegram", sub: "Ir al bot", arrow: "↗", run: openBot },
+        ];
+      case "stage-close":
+        return [
           { title: "Entrar", sub: "Abrir Stage", arrow: "→", run: () => goHash("#/private-room/stage") },
-          { title: "Pasarela", sub: "Reproducir preview", arrow: "↗", run: () => goHash("#/private-room/stage") },
+          { title: "Repetir", sub: "Volver al ángulo anterior", arrow: "↗", run: () => scrollToProgress(STOPS[7]) },
           { title: "Telegram", sub: "Ir al bot", arrow: "↗", run: openBot },
         ];
       default:
         return [];
     }
-  }, [stage.key, goNext, goHash, openBot]);
+  }, [stage.key, goNext, goHash, openBot, scrollToProgress]);
 
   const primaryAction = useMemo(() => {
     switch (stage.key) {
@@ -249,7 +274,7 @@ export default function RoomIntro() {
         <button className={`nav-item ${stage.key === "videocall" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[4])}>
 02 Videopriv
 </button>
-        <button className={`nav-item ${stage.key === "stage" || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[6])}>
+        <button className={`nav-item ${stage.key.startsWith("stage") || stage.key === "multimedia" ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[6])}>
 03 Stage
 </button>
         </div>
@@ -272,7 +297,7 @@ Pantalla completa
         <p className="fx-subtitle">
           {SUBTITLES[stage.key]}
         </p>
-        {stage.key !== "multimedia" && stage.key !== "stage" && (
+        {stage.key !== "multimedia" && !stage.key.startsWith("stage") && (
           <button className="fx-btn-primary" onClick={primaryAction}>
             {PRIMARY_LABEL[stage.key]}
           </button>
@@ -283,7 +308,7 @@ Pantalla completa
         <span>
           SELECCIONA UNA OPCIÓN
         </span>
-        <span className="fx-menu-counter">{COUNTERS[stage.key]} / 04</span>
+        <span className="fx-menu-counter">{COUNTERS[stage.key]} / 06</span>
         </div>
         <div className="fx-menu-list">
           {actions.map((a, i) => (
@@ -306,7 +331,7 @@ Pantalla completa
         ))}
         </div>
         </aside>
-        {stage.key !== "multimedia" && stage.key !== "stage" && (
+        {stage.key !== "multimedia" && !stage.key.startsWith("stage") && (
         <>
         <div className="fx-footer-angles">
         <div className="angles-header">

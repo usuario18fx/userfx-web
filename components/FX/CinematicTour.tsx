@@ -1,9 +1,71 @@
 "use client";
+/**
+ * CinematicTour — recorrido cinemático por scroll (versión mejorada).
+ *
+ * MEJORAS RESPECTO A LA VERSIÓN ANTERIOR
+ * ──────────────────────────────────────
+ * 1. SCROLL → CÁMARA: el damping exponencial se sustituye por un muelle
+ *    crítico con memoria de velocidad (port de SmoothDamp de Unity).
+ *    - El movimiento acumula y cede velocidad de forma continua: los scrolls
+ *      bruscos no producen latigazos ni cambios de dirección secos.
+ *    - Las llegadas al stop tienen ease-out natural (antes el "snap" final
+ *      era pegajoso y dependía de un epsilon).
+ *    - Velocidad máxima adaptativa: los saltos grandes de scroll alcanzan
+ *      antes su destino sin perder la elegancia en los pequeños.
+ * 2. STOPS / PAUSAS:
+ *    - Hold asimétrico: la cámara FRENA al entrar al stop y sale con
+ *      impulso (antes el drift dentro del hold era a velocidad constante).
+ *    - "Vida" en las pausas: cuando el scroll se detiene sobre un stop, la
+ *      cámara respira (bob vertical + balanceo lateral + micro-roll) y
+ *      responde al puntero con un parallax sutil. Todo se desvanece a cero
+ *      en cuanto se vuelve a hacer scroll.
+ *    - El render bajo demanda se mantiene: el loop solo queda vivo mientras
+ *      hay movimiento, hay vídeo en marcha o la respiración está visible.
+ * 3. CÁMARA:
+ *    - Anticipación de la mirada (look-ahead proporcional a la velocidad):
+ *      la cámara mira hacia donde va y se asienta exactamente en el sujeto
+ *      del stop al frenar.
+ *    - FOV suavizado, sin overshoot de la spline y con un ligero "kick" de
+ *      velocidad que ensancha el encuadre al acelerar.
+ *    - Micro-roll sincronizado con la respiración (~0.15°).
+ *    - Arranque coherente: si el componente monta con progreso ≠ 0
+ *      (deep-link), la cámara nace ya en su pose.
+ *    - prefers-reduced-motion ahora es reactivo (escucha cambios) y apaga
+ *      respiración/parallax además de acortar las transiciones.
+ *
+ * Todos los valores finos están en TUNING, al final de este bloque.
+ */
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ENTER_AT, STOP_HOLD, STOP_T } from "./tourTimeline";
 import "./CinematicTour.css";
+
+// ─── AJUSTES FINOS DE CÁMARA (afinar aquí, no hay que tocar el resto) ──────
+const TUNING = {
+  // Llegada del scroll (muelle amortiguado)
+  smoothTime: 0.32,        // s: menor = más directo, mayor = más cinematográfico
+  smoothTimeReduced: 0.06, // s: con prefers-reduced-motion (casi inmediato)
+  baseSpeed: 0.6,          // progreso/s: velocidad base de crucero
+  catchUp: 2.6,            // aceleración extra por unidad de distancia restante
+  speedCap: 1.8,           // progreso/s: red de seguridad (no debería activarse)
+
+  // Anticipación de la mirada (en unidades de keyframe, segmento = 1)
+  lookAhead: 0.09,         // keyframes de adelanto por (u/s) de velocidad
+  lookAheadMax: 0.22,      // tope de adelanto
+
+  // FOV dinámico
+  fovKick: 0.8,            // grados de ensanchamiento por (u/s)
+  fovKickMax: 1.8,         // tope del kick
+
+  // Vida en los stops (respiración + parallax); todo en metros salvo roll
+  fadeIn: 2.2,             // lambda de aparición/desaparición al parar/mover
+  breathSide: 0.006,       // bob lateral de la posición
+  breathUp: 0.005,         // bob vertical de la posición
+  lookSway: 0.035,         // balanceo del punto de mirada
+  parallax: 0.09,          // desplazamiento del punto de mirada con el puntero
+  roll: 0.0022,            // micro-roll (~0.13°) sincronizado con la respiración
+} as const;
 
 type RoomAngle = "bed" | "laptop" | "tv";
 type TvMode = "videocall" | "multimedia" | "stage";
@@ -19,6 +81,42 @@ const clamp = (v: number) => Math.max(0, Math.min(1, v));
 const smooth = (a: number, b: number, x: number) => {
   const t = clamp((x - a) / (b - a));
   return t * t * (3 - 2 * t);
+};
+const damp = (cur: number, target: number, lambda: number, dt: number) =>
+  THREE.MathUtils.lerp(cur, target, 1 - Math.exp(-lambda * dt));
+
+/**
+ * Muelle amortiguado crítico con memoria de velocidad (port de SmoothDamp).
+ * A diferencia del damping exponencial, la velocidad NO se reinicia con cada
+ * cambio del objetivo: se acumula y se cede de forma continua. Resultado:
+ * sin latigazos en cambios bruscos de dirección y con llegadas ease-out.
+ */
+const smoothDamp = (
+  current: number,
+  target: number,
+  vel: { v: number },
+  smoothTime: number,
+  maxSpeed: number,
+  dt: number
+) => {
+  smoothTime = Math.max(0.0001, smoothTime);
+  const omega = 2 / smoothTime;
+  const x = omega * dt;
+  const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+  const toTarget = target;
+  let change = current - toTarget;
+  const maxChange = maxSpeed * smoothTime;
+  change = THREE.MathUtils.clamp(change, -maxChange, maxChange);
+  target = current - change;
+  const temp = (vel.v + omega * change) * dt;
+  vel.v = (vel.v - omega * temp) * exp;
+  let output = target + (change + temp) * exp;
+  // Evitar overshoot alrededor del objetivo
+  if ((toTarget - current > 0) === output > toTarget) {
+    output = toTarget;
+    vel.v = (output - toTarget) / Math.max(dt, 1e-4);
+  }
+  return output;
 };
 
 type Frame = {
@@ -57,6 +155,8 @@ const frames: Frame[] = [
   { id: "videocall", ...S(4), drift: 0.03, fov: 34, p: P( 3.35, 1.48, -1.00), l: P(-4.58, 1.72, -2.00) },
   { id: "tv",        ...S(5),              fov: 48, p: P(-1.15, 1.72, -1.60), l: P(-4.58, 1.72, -2.00) },
   { id: "stage",     ...S(6),              fov: 44, p: P(-1.80, 1.72, -1.82), l: P(-4.58, 1.72, -2.00) },
+  { id: "stage-side",  ...S(7), drift: 0.018, fov: 47, p: P(-2.20, 2.35, -0.68), l: P(-4.58, 1.72, -2.00) },
+  { id: "stage-close", ...S(8),              fov: 41, p: P(-3.25, 1.76, -1.75), l: P(-4.58, 1.72, -2.00) },
 ];
 
 const TV_MULTIMEDIA_AT = ENTER_AT[5]; // la TV cambia exactamente cuando cambia el texto
@@ -71,6 +171,11 @@ const angleWindow = (p: number) => smooth(0.52, 0.57, p) * (1 - smooth(0.8, 0.85
 
 // ─── TIMELINE: scroll → u (índice de keyframe), monótona y C1 ──────────────
 type Knot = { t: number; u: number; d: number | null };
+// Perfil del hold: se entra frenando (HOLD_IN < 1) y se sale con impulso
+// (HOLD_OUT > 1). Ambos quedan dentro del margen [0..3] de Fritsch–Carlson,
+// así que la curva sigue siendo monótona (sin overshoot) y C1.
+const HOLD_IN = 0.62;
+const HOLD_OUT = 1.38;
 const knots: Knot[] = [];
 const LAST = frames.length - 1;
 frames.forEach((f, i) => {
@@ -78,8 +183,8 @@ frames.forEach((f, i) => {
   if (half > 0) {
     const dr = i === 0 || i === LAST ? 0 : f.drift ?? 0;
     const slope = dr / half;
-    knots.push({ t: Math.max(0, f.t - half), u: i - dr, d: slope });
-    knots.push({ t: Math.min(1, f.t + half), u: i + dr, d: slope });
+    knots.push({ t: Math.max(0, f.t - half), u: i - dr, d: slope * HOLD_IN });
+    knots.push({ t: Math.min(1, f.t + half), u: i + dr, d: slope * HOLD_OUT });
   } else {
     knots.push({ t: f.t, u: i, d: i === LAST ? 0 : null });
   }
@@ -122,24 +227,50 @@ const fovAt = (u: number) => {
   const w = u - i;
   const f = (k: number) => frames[THREE.MathUtils.clamp(k, 0, frames.length - 1)].fov;
   const p0 = f(i - 1), p1 = f(i), p2 = f(i + 1), p3 = f(i + 2);
-  return 0.5 * (
+  const value = 0.5 * (
     2 * p1 + (-p0 + p2) * w +
     (2 * p0 - 5 * p1 + 4 * p2 - p3) * w * w +
     (-p0 + 3 * p1 - 3 * p2 + p3) * w * w * w
   );
+  // Sin overshoot: la spline no inventa FOVs fuera del rango de los vecinos.
+  const lo = Math.min(p0, p1, p2, p3);
+  const hi = Math.max(p0, p1, p2, p3);
+  return THREE.MathUtils.clamp(value, lo, hi);
 };
 
-const samplePath = (prog: number, position: THREE.Vector3, look: THREE.Vector3) => {
-  const u = timeToU(clamp(prog));
-  posCurve.getPoint(u / SEGMENTS, position);
-  lookCurve.getPoint(u / SEGMENTS, look);
-  return fovAt(u);
+/**
+ * Muestrea la trayectoria en u. La MIRADA se muestrea `lead` keyframes por
+ * delante: mientras la cámara recorre la ruta mira hacia donde va y, al
+ * frenar en un stop (lead → 0), se asienta exactamente en el sujeto.
+ */
+const samplePath = (
+  u: number,
+  lead: number,
+  position: THREE.Vector3,
+  look: THREE.Vector3
+) => {
+  posCurve.getPoint(THREE.MathUtils.clamp(u / SEGMENTS, 0, 1), position);
+  lookCurve.getPoint(THREE.MathUtils.clamp((u + lead) / SEGMENTS, 0, 1), look);
 };
 
-const damp = (cur: number, target: number, lambda: number, dt: number) =>
-  THREE.MathUtils.lerp(cur, target, 1 - Math.exp(-lambda * dt));
-
-const MAX_SPEED = 0.6; // progreso/seg: un scroll brusco no produce latigazos
+/**
+ * 1 cerca de un stop (dentro de su hold, con un pequeño feather), 0 entre
+ * stops. Gobierna la "vida" (respiración/parallax): solo respira donde hay
+ * una pausa real, nunca en mitad de un travelling.
+ */
+const stopEnvelope = (p: number) => {
+  let env = 0;
+  const pad = 0.012;
+  for (const f of frames) {
+    const half = (f.hold ?? 0) / 2;
+    if (half <= 0) continue;
+    const e =
+      smooth(f.t - half - pad, f.t - half + pad * 0.5, p) *
+      (1 - smooth(f.t + half - pad * 0.5, f.t + half + pad, p));
+    if (e > env) env = e;
+  }
+  return env;
+};
 
 // ─── COMPONENTE ────────────────────────────────────────────────────────────
 export default function CinematicTour({
@@ -150,6 +281,14 @@ export default function CinematicTour({
   const host = useRef<HTMLDivElement>(null);
   const target = useRef(0);
   const current = useRef(0);
+  const progressVel = useRef({ v: 0 });   // memoria de velocidad del muelle
+  const uPrev = useRef(0);                // u del frame anterior
+  const uSpeed = useRef(0);               // velocidad suavizada en u (keyframes/s)
+  const fovSmooth = useRef(frames[0].fov);
+  const life = useRef(0);                 // 0..1: intensidad de la respiración
+  const clock = useRef(0);                // reloj acumulado (fases de respiración)
+  const pointerTarget = useRef({ x: 0, y: 0 });
+  const pointer = useRef({ x: 0, y: 0 });
   const angleRef = useRef<RoomAngle>(roomAngle);
   const wakeRender = useRef<(() => void) | null>(null);
   const onModeChangeRef = useRef(onModeChange);
@@ -169,7 +308,15 @@ export default function CinematicTour({
     const el = host.current;
     if (!el) return;
 
-    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    // prefers-reduced-motion reactivo: si el usuario cambia la preferencia
+    // en vivo, la cámara se adapta sin recargar.
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    let reducedMotion = mql?.matches ?? false;
+    const onReducedMotionChange = () => {
+      reducedMotion = mql?.matches ?? false;
+      wakeRender.current?.();
+    };
+    mql?.addEventListener?.("change", onReducedMotionChange);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#14121c");
@@ -212,11 +359,24 @@ export default function CinematicTour({
         window.location.hash = destination;
       }
     };
+    // El pointermove ahora también alimenta el parallax de las pausas.
     const onInteractiveMove = (event: PointerEvent) => {
+      const bounds = renderer.domElement.getBoundingClientRect();
+      if (bounds.width && bounds.height) {
+        pointerTarget.current.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+        pointerTarget.current.y = ((event.clientY - bounds.top) / bounds.height) * 2 - 1;
+        if (life.current > 0.002) wakeRender.current?.();
+      }
       renderer.domElement.style.cursor = visitInteractive(event) ? "pointer" : "";
+    };
+    const onPointerLeave = () => {
+      pointerTarget.current.x = 0;
+      pointerTarget.current.y = 0;
+      wakeRender.current?.();
     };
     renderer.domElement.addEventListener("click", onInteractiveClick);
     renderer.domElement.addEventListener("pointermove", onInteractiveMove);
+    renderer.domElement.addEventListener("pointerleave", onPointerLeave);
 
     const mat = (color: string, roughness = 0.8, metalness = 0) =>
       new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -337,8 +497,8 @@ export default function CinematicTour({
         }, 512, 768),
         side: THREE.DoubleSide,
         toneMapped: false,
-      });
-    // Sin PointLight por cuadro: los materiales son Basic y los apliques ya iluminan el marco.
+    });
+// Sin PointLight por cuadro: los materiales son Basic y los apliques ya iluminan el marco.
     const pic = (
       x: number, y: number, z: number, rotate: number,
       material: THREE.Material, width = 1.05, height = 1.55
@@ -352,8 +512,7 @@ export default function CinematicTour({
       art.position.z = 0.044;
       group.add(art);
     };
-
-    // Texturas originales del directorio public, con fallback al material existente.
+// Texturas originales del directorio public, con fallback al material existente.
     const applyImage = (material: THREE.MeshBasicMaterial, url: string) => {
       new THREE.TextureLoader().load(url, (texture) => {
         if (abort.signal.aborted) { texture.dispose(); return; }
@@ -361,24 +520,22 @@ export default function CinematicTour({
         material.map = texture;
         material.needsUpdate = true;
         wakeRender.current?.();
-      }, undefined, () => {});
+    }, undefined, () => {});
     };
-
-    // ── Corredor ──
-    const bronze = mat("#8b6038", 0.32, 0.68);
-    const lacquer = mat("#0c120f", 0.27, 0.34);
+// ── Corredor ──
+    const bronze = mat("#15bcef", 0.32, 0.68);
+    const lacquer = mat("#00aebb", 0.27, 0.34);
     const wallPattern = canvas((ctx) => {
-      ctx.fillStyle = "#153231"; ctx.fillRect(0, 0, 512, 512);
+      ctx.fillStyle = "#0b1320"; ctx.fillRect(0, 0, 512, 512);
       for (let y = 15; y < 512; y += 76)
         for (let x = 16; x < 512; x += 76) {
-          ctx.strokeStyle = "#5fd7cd38"; ctx.lineWidth = 2.2;
+          ctx.strokeStyle = "#e0e9e838"; ctx.lineWidth = 2.2;
           ctx.beginPath(); ctx.ellipse(x, y + 20, 17, 26, 0, 0, Math.PI * 2); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(x, y - 10);
           ctx.bezierCurveTo(x - 25, y + 13, x - 24, y + 40, x, y + 55);
           ctx.bezierCurveTo(x + 24, y + 40, x + 25, y + 13, x, y - 10); ctx.stroke();
           ctx.beginPath(); ctx.ellipse(x, y + 20, 5, 18, 0, 0, Math.PI * 2); ctx.stroke();
-        }
-    });
+    }});
     wallPattern.wrapS = THREE.RepeatWrapping;
     wallPattern.wrapT = THREE.RepeatWrapping;
     wallPattern.repeat.set(10, 2.8);
@@ -391,8 +548,7 @@ export default function CinematicTour({
         ctx.lineWidth = k % 7 === 0 ? 1.6 : 0.6;
         ctx.beginPath(); ctx.moveTo(x - 75, y + 42);
         ctx.bezierCurveTo(x - 10, y - 25, x + 25, y + 40, x + 135, y - 32); ctx.stroke();
-      }
-    });
+    }});
     marbleTexture.wrapS = THREE.RepeatWrapping;
     marbleTexture.wrapT = THREE.RepeatWrapping;
     marbleTexture.repeat.set(2, 7);
@@ -409,8 +565,8 @@ export default function CinematicTour({
       box(0.17, 0.06, 13.35, x, 3.4, 8.75, bronze);
       for (const z of [12.45, 9.55, 6.65]) {
         const portrait = print(z === 12.45 ? "FX" : "USER", "ROOM");
-        // Último cuadro izquierdo, junto a la entrada de MY ROOM:
-        // selfie original con filtro mate y oscuro aplicado al archivo.
+// Último cuadro izquierdo, junto a la entrada de MY ROOM:
+// selfie original con filtro mate y oscuro aplicado al archivo.
         const isLastLeft = side === -1 && z === 6.65;
         const isSecondRight = side === 1 && z === 9.55;
         const portraitUrl = isSecondRight
@@ -430,13 +586,12 @@ export default function CinematicTour({
           emblem.rotation.y = -Math.PI / 2;
           emblem.position.set(1.73, 2.10, z);
           scene.add(emblem);
-        }
+    }
         const sconce = new THREE.PointLight("#3c5757", 2.6, 3.7);
         sconce.position.set(side * 1.48, 2.97, z);
         scene.add(sconce);
         box(0.15, 0.065, 0.38, side * 1.66, 2.97, z, bronze);
-      }
-    }
+    }}
     for (const z of [3.95, 7.55, 11.15, 14.65]) {
       for (const x of [-1.79, 1.79]) box(0.1, 3.54, 0.1, x, 1.8, z, lacquer);
       box(3.63, 0.12, 0.12, 0, 3.49, z, lacquer);
@@ -452,8 +607,7 @@ export default function CinematicTour({
       box(0.3, 0.05, 0.3, 0, 3.69, z,
         new THREE.MeshStandardMaterial({ color: "#517a7a", emissive: "#44afaf", emissiveIntensity: 1.4 }));
     }
-
-    // ── Dormitorio ──
+// ── Dormitorio ──
     box(10, 0.13, 9.8, 0, -0.11, -2.1, carpet);
     box(0.2, 4.6, 9.8, -5, 2.25, -2.1, mat("#172947"));
     box(0.2, 4.6, 9.8, 5, 2.25, -2.1, mat("#172947"));
@@ -468,7 +622,6 @@ export default function CinematicTour({
     });
     box(0.12, 3.25, 1.62, -4.84, 1.7, -5.52, mirrorFrame);
     box(0.014, 3.04, 1.43, -4.765, 1.7, -5.52, mirrorSurface);
-
     const zebraCanvas = canvas((ctx) => {
       ctx.fillStyle = "#0e1011"; ctx.fillRect(0, 0, 512, 512);
       ctx.fillStyle = "#3c5757"; ctx.beginPath(); ctx.ellipse(230, 270, 150, 195, -0.36, 0, Math.PI * 2); ctx.fill();
@@ -479,10 +632,10 @@ export default function CinematicTour({
         ctx.rotate(-0.38 + i * 0.055);
         ctx.beginPath(); ctx.ellipse(0, 0, 12, 113, 0, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
-      }
+    }
       ctx.fillStyle = "#171217"; ctx.beginPath(); ctx.arc(338, 208, 12, 0, Math.PI * 2); ctx.fill();
     });
-    // Atenuar el blanco de la cebra sin oscurecer el resto de la habitación.
+// Atenuar el blanco de la cebra sin oscurecer el resto de la habitación.
     const zebraMaterial = new THREE.MeshBasicMaterial({
       map: zebraCanvas,
       color: "#a0a0a0",
@@ -502,7 +655,7 @@ export default function CinematicTour({
         ctx.fillStyle = "#223d39"; ctx.fillRect(x, top, 16, 512 - top);
         ctx.fillStyle = "#3c5757";
         for (let yy = top + 12; yy < 490; yy += 22) ctx.fillRect(x + 5, yy, 3, 4);
-      }
+    }
     });
     const sunsetPane = new THREE.Mesh(
       new THREE.PlaneGeometry(2.4, 2.25),
@@ -513,7 +666,6 @@ export default function CinematicTour({
     for (const y of [1.48, 3.89]) box(2.57, 0.075, 0.09, -2.3, y, -6.74, dark);
     const windowGlow = new THREE.PointLight("#003db6", 3.8, 5.5);
     windowGlow.position.set(-2.35, 2.6, -5.9); scene.add(windowGlow);
-
     const abort = new AbortController();
     new THREE.TextureLoader().load(
       "/assets/my-room/zebra.png",
@@ -523,11 +675,10 @@ export default function CinematicTour({
         zebraMaterial.map = texture;
         zebraMaterial.needsUpdate = true;
         wakeRender.current?.();
-      },
+    },
       undefined,
       () => {}
     );
-
     const pink = new THREE.PointLight("#003db6", 16, 9);
     pink.position.set(-3.1, 3.1, -3.1); scene.add(pink);
     const amber = new THREE.PointLight("#186370", 20, 11);
@@ -541,8 +692,7 @@ export default function CinematicTour({
           const x = (i * 97.83) % 512, y = (i * 71.31) % 512;
           ctx.fillStyle = i % 3 === 0 ? accent : "#ffffff08";
           ctx.fillRect(x, y, 0.8 + (i % 3), 1 + (i % 4));
-        }
-      });
+    }});
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.RepeatWrapping;
       tex.repeat.set(2, 2);
@@ -564,7 +714,7 @@ export default function CinematicTour({
         material.normalScale.set(strength, strength);
         material.needsUpdate = true;
         wakeRender.current?.();
-      }, undefined, () => {});
+    }, undefined, () => {});
     };
     const upholstery = fabricTexture("#3c795fa1", "#198b6f40");
     const duvet = fabricTexture("#891427", "#ba24391a");
@@ -599,7 +749,6 @@ export default function CinematicTour({
       scene.add(mesh);
       return mesh;
     };
-
     box(9.7, 0.022, 9.5, 0, 0.017, -2.08, rugFabric);
     box(3.75, 0.045, 2.55, -0.55, 0.045, -3.23, sofaFabric);
     const sofaObjectsStart = scene.children.length;
@@ -626,7 +775,6 @@ export default function CinematicTour({
       item.position.x += 0.55;
       item.position.z += 5.2;
     }
-
     const marbleMap = canvas((ctx) => {
       ctx.fillStyle = "#111017"; ctx.fillRect(0, 0, 512, 512);
       for (let k = 0; k < 35; k++) {
@@ -637,7 +785,7 @@ export default function CinematicTour({
         ctx.moveTo(x, y);
         ctx.bezierCurveTo(x + 32, y - 24, x + 80, y + 32, x + 135, y - 25);
         ctx.stroke();
-      }
+    }
     });
     marbleMap.wrapS = THREE.RepeatWrapping;
     marbleMap.wrapT = THREE.RepeatWrapping;
@@ -646,40 +794,61 @@ export default function CinematicTour({
     for (const x of [-1.33, 0.5])
       for (const z of [-3.97, -3.12])
         box(0.042, 0.4, 0.042, x, 0.23, z, mat("#111018", 0.3, 0.5));
-
-    // Laptop
+// Laptop
     const laptopDark = mat("#0b1020", 0.33, 0.12);
     const laptopMetal = mat("#68718c", 0.38, 0.45);
     box(1.26, 0.045, 0.79, -0.40, 0.55, -3.44, laptopMetal);
     box(1.13, 0.011, 0.62, -0.40, 0.578, -3.43, laptopDark);
     box(1.28, 0.83, 0.055, -0.40, 1.01, -3.80, laptopDark);
-    // Fotografía original en la pantalla 3D de la laptop.
-    const laptopImageTexture = canvas((ctx) => {
-      ctx.fillStyle = "#07151e";
-      ctx.fillRect(0, 0, 1024, 640);
-    }, 1024, 640);
-    const laptopImage = new Image();
-    laptopImage.onload = () => {
-      if (abort.signal.aborted || !laptopImage.naturalWidth || !laptopImage.naturalHeight) return;
-      const imageCanvas = laptopImageTexture.image as HTMLCanvasElement;
-      const ctx = imageCanvas.getContext("2d");
-      if (!ctx) return;
-      const scale = Math.max(1024 / laptopImage.naturalWidth, 640 / laptopImage.naturalHeight);
-      const width = laptopImage.naturalWidth * scale;
-      const height = laptopImage.naturalHeight * scale;
-      ctx.drawImage(laptopImage, (1024 - width) / 2, (640 - height) / 2, width, height);
-      laptopImageTexture.needsUpdate = true;
-      wakeRender.current?.();
-    };
-    laptopImage.src = "/assets/videocall.jpg";
+// Video de la pantalla 3D
+    const laptopVideo = document.createElement("video");
+    laptopVideo.src = "/assets/introFX.mp4";
+    laptopVideo.muted = true;
+    laptopVideo.defaultMuted = true;
+    laptopVideo.autoplay = true;
+    laptopVideo.loop = true;
+    laptopVideo.playsInline = true;
+    laptopVideo.preload = "auto";
+    const laptopVideoTexture = new THREE.VideoTexture(laptopVideo);
+    laptopVideoTexture.colorSpace = THREE.SRGBColorSpace;
+    laptopVideoTexture.minFilter = THREE.LinearFilter;
+    laptopVideoTexture.magFilter = THREE.LinearFilter;
+    laptopVideoTexture.generateMipmaps = false;
     const laptopDisplay = new THREE.Mesh(
       new THREE.PlaneGeometry(1.16, 0.73),
-      new THREE.MeshBasicMaterial({ map: laptopImageTexture, toneMapped: false, side: THREE.DoubleSide })
-    );
+      new THREE.MeshBasicMaterial({
+        map: laptopVideoTexture,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+    }));
     laptopDisplay.position.set(-0.40, 1.01, -3.768);
     laptopDisplay.userData.fxDestination = "#/private-room/gallery";
     interactiveTargets.push(laptopDisplay);
     scene.add(laptopDisplay);
+// Actualizar Three.js cuando cambien los fotogramas
+    laptopVideo.addEventListener(
+      "loadeddata",
+    () => wakeRender.current?.(),
+    { signal: abort.signal }
+    );
+
+    if ("requestVideoFrameCallback" in laptopVideo) {
+      const refreshFrame = () => {
+        if (abort.signal.aborted) return;
+        wakeRender.current?.();
+        laptopVideo.requestVideoFrameCallback(refreshFrame);
+    };
+      laptopVideo.requestVideoFrameCallback(refreshFrame);
+    }
+// Reproducción automática
+    void laptopVideo.play().catch(() => {});
+// Limpieza al desmontar la escena
+    abort.signal.addEventListener("abort", () => {
+      laptopVideo.pause();
+      laptopVideo.removeAttribute("src");
+      laptopVideo.load();
+      laptopVideoTexture.dispose();
+    }, { once: true });
 
     const softSurface = (
       w: number, d: number, x: number, y: number, z: number,
@@ -783,77 +952,115 @@ export default function CinematicTour({
     }
     box(0.1, 1.76, 2.82, -4.66, 1.72, -2.0, black);
 
-    // TV + pantalla
+    // TV 16:9: video completo, sin recortes, con transici├│n de fundido.
     const tvCanvas = document.createElement("canvas");
     tvCanvas.width = 1280;
     tvCanvas.height = 720;
     const tvCtx = tvCanvas.getContext("2d");
-    const videoCallTexture = new THREE.CanvasTexture(tvCanvas);
-    videoCallTexture.colorSpace = THREE.SRGBColorSpace;
-    const drawVideoCall = (picture?: HTMLImageElement) => {
-      if (!tvCtx) return;
-      tvCtx.fillStyle = "#07142b";
-      tvCtx.fillRect(0, 0, 1280, 720);
-      if (picture && picture.naturalWidth > 0) {
-        const cropWidth = Math.floor(picture.naturalWidth * 0.62);
-        tvCtx.drawImage(picture, 0, 0, cropWidth, picture.naturalHeight, 0, 0, 1280, 720);
-      }
-      videoCallTexture.needsUpdate = true;
-    };
-    drawVideoCall();
-    const videoCallImg = new Image();
-    videoCallImg.onload = () => {
-      if (!abort.signal.aborted) { drawVideoCall(videoCallImg); wakeRender.current?.(); }
-    };
-    videoCallImg.src = "/assets/my-room/videocall.png";
-
+    const tvTexture = new THREE.CanvasTexture(tvCanvas);
+    tvTexture.colorSpace = THREE.SRGBColorSpace;
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
       video.src = src;
       video.muted = true;
+      video.defaultMuted = true;
       video.loop = true;
       video.playsInline = true;
-      video.preload = "metadata";
-      const texture = new THREE.VideoTexture(video);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.generateMipmaps = false;
-      return { video, texture };
+      video.preload = "auto";
+      video.addEventListener("loadeddata", () => wakeRender.current?.(), { signal: abort.signal });
+      return video;
     };
-    const multi = makeVideo("/assets/my-room/multimedia.mp4");
-    const stage = makeVideo("/assets/my-room/pasarella2.mp4");
-    const tvMaterial = new THREE.MeshBasicMaterial({ map: videoCallTexture, toneMapped: false, side: THREE.DoubleSide });
-    const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.71, 1.64), tvMaterial);
-    let screenMode: TvMode = "videocall";
-    const updateTv = (p: number) => {
-      const mode: TvMode =
-        p >= TV_STAGE_AT ? "stage" :
-        p >= TV_MULTIMEDIA_AT ? "multimedia" : "videocall";
-      if (screenMode !== mode) {
-        screenMode = mode;
-        tvMaterial.map = mode === "stage" ? stage.texture : mode === "multimedia" ? multi.texture : videoCallTexture;
-        tvMaterial.needsUpdate = true;
-        tvFace.userData.fxDestination = undefined; // La navegacion se controla exclusivamente desde el panel derecho
-        onModeChangeRef.current?.(mode);
-      }
-      for (const item of [multi, stage]) {
-        const active = (item === multi && mode === "multimedia") || (item === stage && mode === "stage");
-        if (active && item.video.paused) void item.video.play().catch(() => {});
-        else if (!active && !item.video.paused) item.video.pause();
-      }
+    const tvVideos: Record<TvMode, HTMLVideoElement> = {
+      videocall: makeVideo("/assets/my-room/Fx-2026-08-ROOM.mp4"),
+      multimedia: makeVideo("/assets/my-room/multimedia.mp4"),
+      stage: makeVideo("/assets/my-room/pasarella2.mp4"),
     };
-    tvFace.userData.fxDestination = undefined;
+    const tvMaterial = new THREE.MeshBasicMaterial({
+      map: tvTexture, toneMapped: false, side: THREE.DoubleSide,
+    });
+    const tvFace = new THREE.Mesh(new THREE.PlaneGeometry(2.70, 1.51875), tvMaterial);
+    const tvBezel = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.82, 1.64),
+      new THREE.MeshBasicMaterial({ color: "#05080d", toneMapped: false, side: THREE.DoubleSide })
+    );
+    tvBezel.position.set(-4.595, 1.72, -2.0);
+    tvBezel.rotation.y = Math.PI / 2;
+    scene.add(tvBezel);
     tvFace.position.set(-4.58, 1.72, -2.0);
     tvFace.rotation.y = Math.PI / 2;
+    tvFace.userData.fxDestination = undefined;
     scene.add(tvFace);
-    // La TV reproduce contenido visual; los clics corresponden al panel derecho.
 
+    let screenMode: TvMode = "videocall";
+    let transitionStart = -1;
+    const previousFrame = document.createElement("canvas");
+    previousFrame.width = 1280;
+    previousFrame.height = 720;
+    const previousCtx = previousFrame.getContext("2d");
+    const drawTv = (now: number) => {
+      if (!tvCtx) return;
+      tvCtx.fillStyle = "#05080d";
+      tvCtx.fillRect(0, 0, 1280, 720);
+      const video = tvVideos[screenMode];
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        const factor = Math.min(1280 / video.videoWidth, 720 / video.videoHeight);
+        const w = video.videoWidth * factor;
+        const h = video.videoHeight * factor;
+        tvCtx.drawImage(video, (1280 - w) / 2, (720 - h) / 2, w, h);
+      }
+      if (transitionStart >= 0 && previousCtx) {
+        const alpha = Math.max(0, 1 - (now - transitionStart) / 450);
+        if (alpha > 0) {
+          tvCtx.globalAlpha = alpha;
+          tvCtx.drawImage(previousFrame, 0, 0);
+          tvCtx.globalAlpha = 1;
+        } else transitionStart = -1;
+      }
+      tvTexture.needsUpdate = true;
+    };
+    const updateTv = (p: number, now: number) => {
+      const mode: TvMode = p >= TV_STAGE_AT ? "stage"
+        : p >= TV_MULTIMEDIA_AT ? "multimedia" : "videocall";
+      if (screenMode !== mode) {
+        if (previousCtx) previousCtx.drawImage(tvCanvas, 0, 0);
+        transitionStart = now;
+        tvVideos[screenMode].pause();
+        screenMode = mode;
+        onModeChangeRef.current?.(mode);
+      }
+      for (const [key, video] of Object.entries(tvVideos)) {
+        if (key === screenMode) {
+          if (video.paused) void video.play().catch(() => {});
+        } else if (!video.paused) video.pause();
+      }
+      drawTv(now);
+    };
+    abort.signal.addEventListener("abort", () => {
+      for (const video of Object.values(tvVideos)) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+      tvTexture.dispose();
+      }, { once: true });
+// La TV reproduce contenido visual; los clics corresponden al panel derecho.
     const tvFill = new THREE.PointLight("#003db6", 2.8, 4);
     tvFill.position.set(-3.9, 1.9, -2); scene.add(tvFill);
-
-    // Cuadro detrás de la cama: corona completa, centrada y con margen negro.
-    // Composición vertical 2:3; no estirar ni recortar la imagen original.
+    // Luz de relleno del lateral izquierdo, dirigida a la TV sin blanquear las paredes.
+    const leftRoomFill = new THREE.PointLight("#75dfff", 4.3, 7.5);
+    leftRoomFill.position.set(-3.3, 2.6, 0.25); scene.add(leftRoomFill);
+    const leftRoomBounce = new THREE.PointLight("#246aca", 2.6, 6.0);
+    leftRoomBounce.position.set(-3.7, 1.45, -3.5); scene.add(leftRoomBounce);
+    const leftFill = new THREE.PointLight("#33d9ff", 5.5, 8);
+    leftFill.position.set(-7.2, 2.15, -1.4);
+    scene.add(leftFill);
+    const leftRim = new THREE.SpotLight("#1dcfff", 2.2, 11, Math.PI / 5, 0.45, 1.15);
+    leftRim.position.set(-8.1, 3.0, -0.5);  
+    leftRim.target.position.set(-4.6, 1.7, -2.0);
+    scene.add(leftRim);
+    scene.add(leftRim.target);
+// Cuadro detrás de la cama: corona completa, centrada y con margen negro.
+// Composición vertical 2:3; no estirar ni recortar la imagen original.
     const crownTexture = canvas((ctx) => {
       ctx.fillStyle = "#02040a";
       ctx.fillRect(0, 0, 640, 960);
@@ -878,7 +1085,7 @@ export default function CinematicTour({
       crownTexture.needsUpdate = true;
       wakeRender.current?.();
     };
-    crownImage.src = "/assets/my-room/crown-wall-portrait.png";
+    crownImage.src = "/assets/my-room/crownCyan.png";
     pic(4.87, 2.65, -3.22, -Math.PI / 2, crownPoster, 1.6, 2.4);
     const neonPink = new THREE.PointLight("#2b66a8", 7, 3.9);
     neonPink.position.set(4.14, 2.85, -3.2); scene.add(neonPink);
@@ -954,6 +1161,10 @@ export default function CinematicTour({
     const position = frames[0].p.clone();
     const look = frames[0].l.clone();
     const lookSmooth = frames[0].l.clone();
+    const camFwd = new THREE.Vector3();
+    const camRight = new THREE.Vector3();
+    const camUp = new THREE.Vector3();
+    const worldUp = new THREE.Vector3(0, 1, 0);
 
     // Override por ángulo (selector de ángulo de RoomIntro)
     const angP = angleCfg.laptop.p.clone();
@@ -974,27 +1185,61 @@ export default function CinematicTour({
     resizeObserver.observe(el);
     window.addEventListener("resize", resize);
 
+    // Arranque coherente: si el componente monta con progreso ≠ 0 (deep-link,
+    // restauración de scroll), la cámara nace YA en su pose en lugar de viajar
+    // desde el pasillo hasta la habitación.
+    current.current = clamp(target.current);
+    const u0 = timeToU(current.current);
+    samplePath(u0, 0, position, look);
+    lookSmooth.copy(look);
+    fovSmooth.current = fovAt(u0);
+    uPrev.current = u0;
+    camera.position.copy(position);
+    camera.lookAt(lookSmooth);
+    camera.fov = fovSmooth.current;
+    camera.updateProjectionMatrix();
+
     // ── Loop de render bajo demanda ──
+    // El loop queda vivo mientras: hay scroll en curso, la mirada aún se
+    // está asentando, hay vídeo en pantalla O la respiración del stop es
+    // visible (life > 0). Fuera de eso, se apaga como antes.
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
       raf = 0;
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const dt = THREE.MathUtils.clamp((now - last) / 1000, 1e-4, 0.05);
       last = now;
+      clock.current += dt;
 
-      // Damping suave (sin salto de lambda) + límite de velocidad.
-      const dist = Math.abs(target.current - current.current);
-      const lambda = reducedMotion ? 22 : THREE.MathUtils.lerp(14, 8, clamp(dist / 0.03));
-      let next = damp(current.current, target.current, lambda, dt);
-      const maxStep = MAX_SPEED * dt;
-      next = current.current + THREE.MathUtils.clamp(next - current.current, -maxStep, maxStep);
+      // 1) PROGRESO — muelle con memoria de velocidad + aceleración adaptativa.
+      //    Salto pequeño → llegada elegante; salto grande → alcanza antes
+      //    sin perder el ease-out de llegada.
+      const gap = target.current - current.current;
+      const dist = Math.abs(gap);
+      const smoothTime = reducedMotion ? TUNING.smoothTimeReduced : TUNING.smoothTime;
+      const maxSpeed = reducedMotion ? 5 : Math.min(2.6, TUNING.baseSpeed + dist * TUNING.catchUp);
+      let next = smoothDamp(current.current, target.current, progressVel.current, smoothTime, maxSpeed, dt);
+      const capStep = TUNING.speedCap * dt; // red de seguridad
+      next = current.current + THREE.MathUtils.clamp(next - current.current, -capStep, capStep);
       current.current = next;
-      const scrollSettled = Math.abs(target.current - current.current) < 0.0002;
-      if (scrollSettled) current.current = target.current;
-
-      let fov = samplePath(current.current, position, look);
-
-      // Ángulo alternativo (laptop / tv) solo dentro de la habitación
+      const scrollSettled = dist < 0.0004 && Math.abs(progressVel.current.v) < 0.003;
+      if (scrollSettled) {
+        current.current = target.current;
+        progressVel.current.v = 0;
+      }
+// 2) RUTA — anticipación de la mirada proporcional a la velocidad.
+      const u = timeToU(current.current);
+      const rawUSpeed = (u - uPrev.current) / dt;
+      uPrev.current = u;
+      uSpeed.current = damp(uSpeed.current, scrollSettled ? 0 : rawUSpeed, 7, dt);
+      const lead = THREE.MathUtils.clamp(
+        uSpeed.current * TUNING.lookAhead,
+        -TUNING.lookAheadMax,
+        TUNING.lookAheadMax
+      );
+      let fov = fovAt(u) + Math.min(TUNING.fovKickMax, Math.abs(uSpeed.current) * TUNING.fovKick);
+      samplePath(u, lead, position, look);
+// 3) Ángulo alternativo (laptop / tv) solo dentro de la habitación
       const cfg = angleRef.current === "bed" ? null : angleCfg[angleRef.current];
       const mixTarget = cfg ? 1 : 0;
       if (cfg) {
@@ -1013,46 +1258,65 @@ export default function CinematicTour({
       const angleSettled =
         Math.abs(angMix - mixTarget) < 0.002 &&
         (!cfg || (angP.distanceToSquared(cfg.p) < 1e-5 && Math.abs(angFov - cfg.fov) < 0.01));
-
-      lookSmooth.lerp(look, 1 - Math.exp(-11 * dt));
+// 4) VIDA EN LOS STOPS — respiración + parallax del puntero.
+//    Solo cuando el scroll está parado sobre un stop (stopEnvelope ≈ 1)
+//    y se desvanece a cero en cuanto se vuelve a mover.
+      const settled = scrollSettled && angleSettled;
+      const lifeTarget = reducedMotion ? 0 : settled ? stopEnvelope(current.current) : 0;
+      life.current = damp(life.current, lifeTarget, TUNING.fadeIn, dt);
+      pointer.current.x = damp(pointer.current.x, pointerTarget.current.x, 4, dt);
+      pointer.current.y = damp(pointer.current.y, pointerTarget.current.y, 4, dt);
+      const alive = life.current > 0.0015;
+      if (alive) {
+        const T = clock.current;
+        camFwd.subVectors(look, position).normalize();
+        camRight.crossVectors(camFwd, worldUp).normalize();
+        camUp.crossVectors(camRight, camFwd);
+        const b = life.current;
+        position
+          .addScaledVector(camRight, Math.sin(T * 0.9) * TUNING.breathSide * b)
+          .addScaledVector(camUp, Math.sin(T * 1.7 + 1.3) * TUNING.breathUp * b);
+        look
+          .addScaledVector(camRight, (Math.sin(T * 0.63 + 0.6) * TUNING.lookSway + pointer.current.x * TUNING.parallax) * b)
+          .addScaledVector(camUp, (Math.sin(T * 0.81) * TUNING.lookSway * 0.6 - pointer.current.y * TUNING.parallax * 0.6) * b);
+      }
+      lookSmooth.lerp(look, 1 - Math.exp(-12 * dt));
       camera.position.copy(position);
       camera.lookAt(lookSmooth);
-      if (Math.abs(camera.fov - fov) > 0.005) {
-        camera.fov = fov;
+      if (alive) {
+// Micro-roll sincronizado con la respiración (~0.15°): da vida sin marear.
+        camera.rotateZ((Math.sin(clock.current * 0.47) * TUNING.roll + pointer.current.x * 0.004) * life.current);
+      }
+// 5) FOV — suavizado (sin saltos al mezclar ángulos ni al frenar).
+      fovSmooth.current = damp(fovSmooth.current, fov, 9, dt);
+      if (Math.abs(camera.fov - fovSmooth.current) > 0.004) {
+        camera.fov = fovSmooth.current;
         camera.updateProjectionMatrix();
       }
-
-      updateTv(current.current);
+      updateTv(current.current, now);
       renderer.render(scene, camera);
-
       const lookSettled = lookSmooth.distanceToSquared(look) < 1e-6;
-      const videoPlaying = screenMode !== "videocall";
-      if (!scrollSettled || !lookSettled || !angleSettled || videoPlaying) raf = requestAnimationFrame(tick);
-    };
+      const videoPlaying = !tvVideos[screenMode].paused || transitionStart >= 0;
+      if (!scrollSettled || !lookSettled || !angleSettled || videoPlaying || life.current > 0.002) {
+        raf = requestAnimationFrame(tick);
+      }};
     const wake = () => {
       if (raf) return;
       last = performance.now();
       raf = requestAnimationFrame(tick);
-    };
+      };
     wakeRender.current = wake;
     wake();
-
     return () => {
       abort.abort();
       wakeRender.current = null;
       if (raf) cancelAnimationFrame(raf);
+      mql?.removeEventListener?.("change", onReducedMotionChange);
       window.removeEventListener("resize", resize);
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener("click", onInteractiveClick);
       renderer.domElement.removeEventListener("pointermove", onInteractiveMove);
-
-      for (const item of [multi, stage]) {
-        item.video.pause();
-        item.video.removeAttribute("src");
-        item.video.load();
-        item.texture.dispose();
-      }
-      videoCallTexture.dispose();
+      renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
       const textureKeys = ["map", "normalMap", "emissiveMap", "roughnessMap", "metalnessMap"] as const;
       scene.traverse((node) => {
         if (!(node instanceof THREE.Mesh)) return;
@@ -1062,14 +1326,13 @@ export default function CinematicTour({
           for (const key of textureKeys) {
             const tex = (material as THREE.MeshStandardMaterial)[key];
             if (tex) tex.dispose();
-          }
+      }
           material.dispose();
-        }
+      }
       });
       renderer.dispose();
       if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
-    };
-  }, []);
-
+      };
+      }, []);
   return <div ref={host} className="cinematic-tour" />;
-}
+      }

@@ -1,16 +1,36 @@
-/* ProtocolVault — texto fijo a la izquierda, tambor de caja fuerte a la derecha */
+/* Protocolvault — texto fijo + tambor + corona de partículas + 4 cuadrantes */
 .pv {
-  --pv-accent: #3fd8d0;               /* el turquesa de tu "Enter the Vault" */
+  --pv-accent: #3fd8d0;               /* turquesa de "Enter the Vault" */
   --pv-accent-dim: rgba(63, 216, 208, .32);
   --pv-nav: var(--fx-nav-h, 64px);    /* altura del StickyHeader */
   position: relative;
   color: #f4efe6;
 }
 
+/* Escenario fijo: todo ocurre aquí mientras haces scroll */
 .pv-stage {
   position: sticky;
   top: var(--pv-nav);
   height: calc(100svh - var(--pv-nav));
+  overflow: hidden;
+}
+
+/* Corona de partículas (canvas a todo el escenario, detrás del contenido) */
+.pv-crown {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Texto fijo (izquierda) + tambor (derecha) */
+.pv-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
   gap: clamp(24px, 5vw, 90px);
@@ -43,13 +63,11 @@
 }
 .pv-counter b { color: var(--pv-accent); font-weight: 600; }
 
-.pv-extra { max-height: 22svh; overflow: hidden; }
-
 /* ---------- Derecha (tambor) ---------- */
 .pv-right { position: relative; height: min(80svh, 740px); min-width: 0; }
 
 .pv-viewport {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 1;
   perspective: 1700px;
   perspective-origin: 50% 50%;
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 17%, #000 83%, transparent 100%);
@@ -96,14 +114,14 @@
 .pv-card-cta:hover svg { transform: translateX(5px); }
 .pv-card-cta:focus-visible { outline: 2px solid var(--pv-accent); outline-offset: 6px; border-radius: 6px; }
 
-/* Marcador fijo: apunta a la tarjeta que "marca" la combinación */
+/* Marcador fijo */
 .pv-pointer {
   position: absolute; left: -14px; top: 50%; z-index: 3; width: 0; height: 0; transform: translateY(-50%);
   border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid var(--pv-accent);
   filter: drop-shadow(0 0 8px rgba(63, 216, 208, .6));
 }
 
-/* Disco de combinación, detrás del tambor */
+/* Disco de combinación detrás del tambor */
 .pv-dial {
   position: absolute; z-index: 0; right: -22%; top: 50%;
   width: min(62vw, 760px); aspect-ratio: 1; transform: translateY(-50%);
@@ -115,19 +133,96 @@
 .pv-dial-tick { stroke: var(--pv-accent); stroke-width: 1; opacity: .45; }
 .pv-dial-tick--major { stroke-width: 2; opacity: .9; }
 .pv-dial-num { fill: var(--pv-accent); font-size: 13px; letter-spacing: .1em; opacity: .85; }
-.pv-dial-pointer { display: none; }
-.pv-viewport { z-index: 1; }
 
-/* ---------- Sin movimiento reducido: lista simple ---------- */
-.pv--flat .pv-stage { position: static; height: auto; padding-block: clamp(60px, 8vw, 120px); align-items: start; }
+/* ==========================================================================
+   4 cuadrantes de 1/4 de pantalla: ↖ ↗ ↙ ↘ (cada uno se abre desde su esquina)
+   ========================================================================== */
+.pv-quads {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  pointer-events: none;
+}
+.pv-quad {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  background: #05070b;
+  outline: 1px solid rgba(255, 255, 255, .06);
+  outline-offset: -1px;
+}
+.pv-quad-media { position: absolute; inset: 0; will-change: transform; }
+.pv-quad-media > video,
+.pv-quad-media > img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(.92) brightness(.9);
+}
+.pv-quad-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(0deg, rgba(5, 7, 13, .74) 0%, rgba(5, 7, 13, .18) 55%, rgba(5, 7, 13, .28) 100%);
+}
+
+/* Texto que antes estaba sobre las imágenes: ahora entra con cada cuadrante */
+.pv-quad-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(14px, 2vw, 32px);
+}
+.pv-quad-head { display: flex; align-items: center; gap: 13px; }
+.pv-quad-index {
+  flex-shrink: 0; color: rgba(217, 185, 126, .85);
+  font-size: 11px; font-weight: 600; letter-spacing: .2em;
+}
+.pv-quad-line {
+  flex: 1; min-width: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(215, 185, 129, .5), transparent);
+}
+.pv-quad-icon {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: clamp(32px, 3vw, 46px); height: clamp(32px, 3vw, 46px);
+  color: #ddc395; border: 1px solid rgba(212, 187, 138, .4); border-radius: 50%;
+  background: rgba(6, 8, 13, .55);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.pv-quad-icon svg { display: block; width: 56%; height: 56%; stroke: currentColor; }
+.pv-quad-label {
+  align-self: flex-start; max-width: 100%;
+  display: grid; gap: 6px;
+  padding: 14px 20px;
+  border: 1px solid rgba(245, 229, 203, .14); border-radius: 18px;
+  background: rgba(9, 11, 18, .42);
+  backdrop-filter: blur(11px); -webkit-backdrop-filter: blur(11px);
+  color: #fff8ef;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .7);
+}
+.pv-quad-label strong {
+  font: 400 clamp(22px, 3vw, 52px)/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -.04em; text-transform: uppercase;
+}
+.pv-quad-label small {
+  font-size: clamp(10px, 1vw, 15px); letter-spacing: .13em; color: rgba(255, 248, 239, .82);
+}
+
+/* ---------- Sin movimiento (prefers-reduced-motion): lista simple ---------- */
+.pv--flat .pv-stage { position: static; height: auto; overflow: visible; }
+.pv--flat .pv-content { height: auto; padding-block: clamp(60px, 8vw, 120px); align-items: start; }
 .pv-flat-list { display: grid; gap: 20px; }
+.pv-quads--flat {
+  position: static; inset: auto; z-index: auto; pointer-events: auto;
+  gap: 10px; padding: 0 clamp(22px, 6vw, 100px) clamp(40px, 6vw, 80px);
+}
+.pv-quads--flat .pv-quad { aspect-ratio: 16 / 10; border-radius: 18px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 900px) {
-  .pv-stage { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: 10px; align-items: start; padding-top: 14px; }
+  .pv-content { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: 10px; align-items: start; padding-top: 14px; }
   .pv-left { gap: 8px; }
   .pv-title { font-size: clamp(32px, 9vw, 52px); }
-  .pv-intro, .pv-extra { display: none; }
+  .pv-intro { display: none; }
   .pv-eyebrow { gap: 12px; letter-spacing: .22em; }
   .pv-right { height: 100%; min-height: 330px; }
   .pv-pointer { left: -8px; border-top-width: 6px; border-bottom-width: 6px; border-left-width: 9px; }
@@ -136,8 +231,22 @@
   .pv-card-num { font-size: 38px; }
   .pv-card-title { font-size: 20px; }
   .pv-card-text { font-size: 13px; line-height: 1.5; }
+
+  .pv-quad-text { padding: 12px; }
+  .pv-quad-icon { width: 30px; height: 30px; }
+  .pv-quad-index { font-size: 10px; }
+  .pv-quad-label { padding: 8px 11px; border-radius: 12px; gap: 3px; }
+  .pv-quad-label strong { font-size: clamp(18px, 6vw, 26px); }
+  .pv-quad-label small { font-size: 9px; letter-spacing: .08em; }
+  .pv--flat .pv-quads--flat { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pv-card, .pv-card-num, .pv-card-cta svg { transition: none; }
+}
+
+/* Indicador de carga de la corona (solo en desarrollo) */
+.pv-crown-status {
+  position: absolute; left: 12px; bottom: 10px; z-index: 2;
+  font: 11px/1.4 ui-monospace, monospace; color: #8fe6df; opacity: .85; pointer-events: none;
 }
