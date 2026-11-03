@@ -1805,6 +1805,7 @@ async function sendCommandsPanel(ctx) {
     "/access @usuario — Editar permisos",
     "/find @usuario — Consultar permisos",
     "/users — Usuarios",
+    "/online — Usuarios con chat directo",
     "/revoke @usuario — Revocar acceso",
     "/visitors — Visitas",
     "/visitorstats — Estadísticas",
@@ -1815,6 +1816,35 @@ async function sendCommandsPanel(ctx) {
   return ctx.reply(["Menú de comandos", ...commands].join("\n"), { reply_markup: { remove_keyboard: true } });
 }
 bot.command("commands", sendCommandsPanel);
+
+bot.command("online", async (ctx) => {
+  if (!isAdmin(ctx) || ctx.chat?.type !== "private") return ctx.reply("Solo administrador, en privado.");
+  const arg = getCommandArg(ctx) || "1";
+  if (!/^[1-9]\d{0,5}$/.test(arg)) return ctx.reply("Uso: /online o /online 2");
+  const page = Number(arg);
+  try {
+    const rows = await telegramFxRequest("telegramfx_access?select=username&enabled=eq.true&private_chat_access=eq.true&order=username.asc&limit=21&offset=" + ((page - 1) * 20));
+    if (!Array.isArray(rows)) throw new Error("Invalid chat access response");
+    const visible = rows.slice(0, 20);
+    const lines = visible.map((row, i) => {
+      const username = normalizeTelegramFxUsername(row.username);
+      return ((page - 1) * 20 + i + 1) + ". " + (username?.display || "Usuario sin @");
+    });
+    return ctx.reply([
+      "CHAT DIRECTO · Página " + page,
+      "Usuarios con permiso habilitado; no indica conexión en tiempo real.",
+      "",
+      ...(lines.length ? lines : ["No hay usuarios en esta página."]),
+      ...(rows.length > 20 ? ["", "Siguiente: /online " + (page + 1)] : []),
+      "",
+      "← /commands",
+    ].join("\n"));
+  } catch (error) {
+    logger.error("ONLINE COMMAND ERROR", { message: error?.message });
+    return ctx.reply("No se pudo consultar el chat directo. Intenta /online otra vez.");
+  }
+});
+
 
 //// USER TEXT ROUTER //
 bot.on("text", async (ctx, next) => {
