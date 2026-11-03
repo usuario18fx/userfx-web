@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -11,7 +11,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import ProtocolCrown from "./ProtocolCrown";
-import "./Protocolvault.css";
+import "./ProtocolVault.css";
 
 export type VaultStep = {
   title: string;
@@ -157,65 +157,13 @@ function Dial({ active }: { active: MotionValue<number> }) {
 }
 
 /* ---------- Cuadrante (1/4 de pantalla) ---------- */
-function QuadMedia({ quad, videoRef }: { quad: VaultQuad; videoRef?: Ref<HTMLVideoElement> }) {
-  return quad.kind === "video" ? (
-    <video ref={videoRef} src={quad.src} muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1} style={{ objectPosition: quad.position }} />
-  ) : (
-    <img src={quad.src} alt="" loading="lazy" draggable={false} style={{ objectPosition: quad.position }} />
-  );
-}
-
-function QuadTile({
-  quad, k, progress, start, end,
-}: {
+function QuadTile({ quad, k, progress, start, end }: {
   quad: VaultQuad; k: number; progress: MotionValue<number>; start: number; end: number;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const clip = useTransform(progress, [start, end], [CORNER_CLIP[k] ?? CORNER_CLIP[0], OPEN_CLIP]);
-  const reveal = useTransform(progress, [start, end], [0, 1]);
-  const mediaScale = useTransform(progress, [start, end], [1.25, 1.03]);
-  const textFrom = start + (end - start) * 0.55;
-  const textOpacity = useTransform(progress, [textFrom, end], [0, 1]);
-  const textY = useTransform(progress, [textFrom, end], [18, 0]);
-
-  // El video solo corre mientras su cuadrante está abierto
-  useMotionValueEvent(reveal, "change", (v) => {
-    const el = videoRef.current;
-    if (!el) return;
-    if (v > 0.01) {
-      if (el.paused) el.play().catch(() => {});
-    } else if (!el.paused) {
-      el.pause();
-    }
-  });
-
-  return (
-    <motion.figure className="pv-quad" style={{ clipPath: clip }}>
-      <motion.div className="pv-quad-media" style={{ scale: mediaScale }}>
-        <QuadMedia quad={quad} videoRef={videoRef} />
-      </motion.div>
-      <span className="pv-quad-shade" aria-hidden="true" />
-      <motion.figcaption className="pv-quad-text" style={{ opacity: textOpacity, y: textY }}>
-        <span className="pv-quad-head">
-          <span className="pv-quad-index">
-{String(k + 1).padStart(2, "0")}
-</span>
-          <span className="pv-quad-line" aria-hidden="true" />
-          {quad.icon ? <span className="pv-quad-icon" aria-hidden="true">
-{quad.icon}
-</span> : null}
-        </span>
-        <span className="pv-quad-label">
-          <strong>
-{quad.label}
-</strong>
-          {quad.sub ? <small>
-{quad.sub}
-</small> : null}
-        </span>
-      </motion.figcaption>
-    </motion.figure>
-  );
+  return <motion.figure className="pv-quad" style={{ clipPath: clip, background: "transparent" }}>
+    <figcaption className="pv-quad-text"><strong className="pv-quad-label">{quad.label}</strong></figcaption>
+  </motion.figure>;
 }
 
 /* ---------- Sección completa ---------- */
@@ -242,7 +190,7 @@ export default function ProtocolVault({
   const a = stepSpan / total;                       // termina el último paso
   const b = (stepSpan + DISSOLVE_SVH) / total;      // la corona ya cayó → empiezan los cuadrantes
   const q = QUAD_SVH / total;
-  const dissolveAt = a * 0.93;                      // la corona se deshace al llegar al último paso
+  const dissolveAt = a * (n - 1.5) / Math.max(1, n - 1);                      // la corona se deshace al llegar al último paso
 
   const h = mobile ? 300 : 400;
   const radius = Math.round(h / 2 / Math.tan((STEP / 2) * (Math.PI / 180)));
@@ -308,29 +256,7 @@ export default function ProtocolVault({
           <div className="pv-quads pv-quads--flat">
             {quads.slice(0, nq).map((qd, i) => (
               <figure key={i} className="pv-quad">
-                <div className="pv-quad-media">
-<QuadMedia quad={qd} />
-</div>
-                <span className="pv-quad-shade" aria-hidden="true" />
-                <figcaption className="pv-quad-text">
-                  <span className="pv-quad-head">
-                    <span className="pv-quad-index">
-{String(i + 1).padStart(2, "0")}
-</span>
-                    <span className="pv-quad-line" aria-hidden="true" />
-                    {qd.icon ? <span className="pv-quad-icon" aria-hidden="true">
-{qd.icon}
-</span> : null}
-                  </span>
-                  <span className="pv-quad-label">
-                    <strong>
-{qd.label}
-</strong>
-                    {qd.sub ? <small>
-{qd.sub}
-</small> : null}
-                  </span>
-                </figcaption>
+                <figcaption className="pv-quad-text"><strong className="pv-quad-label">{qd.label}</strong></figcaption>
               </figure>
             ))}
           </div>
@@ -343,7 +269,7 @@ export default function ProtocolVault({
     <section id={id} ref={wrap} className="pv" style={{ height: `calc(100svh + ${total}svh)` }}>
       <div className="pv-stage">
         {/* Corona de partículas: gira con el scroll y se deshace en el último paso */}
-        <ProtocolCrown progress={smooth} dissolveAt={dissolveAt} src={crownSrc} />
+        <ProtocolCrown progress={smooth} dissolveAt={dissolveAt} rebuildAt={b + 2 * q} src={crownSrc} />
 
         {/* Texto fijo + tambor */}
         <motion.div ref={contentRef} className="pv-content" style={{ opacity: contentOpacity }} aria-hidden={gone} >
