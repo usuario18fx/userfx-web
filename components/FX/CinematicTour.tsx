@@ -974,8 +974,9 @@ export default function CinematicTour({
       video.playsInline = true;
       video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
-      video.preload = "metadata";
-      for (const event of ["loadeddata", "canplay", "playing", "timeupdate", "seeked"]) {
+      // Preload the source shown on the TV; keep the two other 3D clips lazy.
+      video.preload = src.includes("Fx-2026-08-ROOM.mp4") ? "auto" : "metadata";
+      for (const event of ["loadeddata", "canplay", "playing", "timeupdate", "seeked", "waiting", "stalled", "suspend"]) {
         video.addEventListener(event, () => wakeRender.current?.(), { signal: abort.signal });
       }
       if ("requestVideoFrameCallback" in video) {
@@ -986,6 +987,13 @@ export default function CinematicTour({
         };
         video.requestVideoFrameCallback(onVideoFrame);
       }
+      video.addEventListener("error", () => {
+        const code = video.error?.code;
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("[CinematicTour] Video could not be decoded or loaded:", src, code);
+        }
+        wakeRender.current?.();
+      }, { signal: abort.signal });
       return video;
     };
     const tvVideos: Record<TvMode, HTMLVideoElement> = {
@@ -1011,6 +1019,10 @@ export default function CinematicTour({
     scene.add(tvFace);
 
     let screenMode: TvMode = "videocall";
+    let lastFrameTime = 0;
+    let lastAdvanceAt = 0;
+    let streamRetryCount = 0;
+    let lastVideoMode: TvMode = "videocall";
     const pendingTvPlayback = new WeakSet<HTMLVideoElement>();
     const blockedTvPlayback = new WeakSet<HTMLVideoElement>();
     const playTv = (video: HTMLVideoElement, userGesture = false) => {
@@ -1093,41 +1105,41 @@ export default function CinematicTour({
       tvCtx.lineCap = "round";
       tvCtx.lineJoin = "round";
       tvCtx.strokeStyle = "#fafafa";
-      corner(142, 144, 1, 1);
-      corner(1138, 144, -1, 1);
+      corner(142, 112, 1, 1);
+      corner(1138, 112, -1, 1);
       corner(142, 563, 1, -1);
       corner(1138, 563, -1, -1);
 
       // Top-left blinking record marker and live video timecode.
       tvCtx.beginPath();
-      tvCtx.arc(70, 83, 12, 0, Math.PI * 2);
+      tvCtx.arc(70, 55, 12, 0, Math.PI * 2);
       tvCtx.fillStyle = `rgba(255, 62, 80, ${pulse})`;
       tvCtx.fill();
       tvCtx.fillStyle = "#ffffff";
       tvCtx.beginPath();
-      tvCtx.roundRect(93, 60, 86, 46, 10);
+      tvCtx.roundRect(93, 32, 86, 46, 10);
       tvCtx.fill();
       tvCtx.textBaseline = "middle";
       tvCtx.textAlign = "left";
       tvCtx.fillStyle = "#25252a";
       tvCtx.font = "bold 32px monospace";
-      tvCtx.fillText("REC", 105, 83);
+      tvCtx.fillText("REC", 105, 55);
       tvCtx.fillStyle = "#ffffff";
       tvCtx.font = "bold 32px monospace";
-      tvCtx.fillText(timer, 205, 84);
+      tvCtx.fillText(timer, 205, 56);
 
       // Camera-control labels match the reference; they are decorative.
       tvCtx.fillStyle = "#ffffff";
       tvCtx.font = "bold 29px monospace";
-      tvCtx.fillText("FPS60", 896, 84);
-      tvCtx.fillText("HD", 1030, 84);
+      tvCtx.fillText("FPS60", 896, 56);
+      tvCtx.fillText("HD", 1030, 56);
       tvCtx.beginPath();
-      tvCtx.roundRect(1098, 59, 62, 48, 9);
+      tvCtx.roundRect(1098, 31, 62, 48, 9);
       tvCtx.fill();
       tvCtx.fillStyle = "#24242a";
-      tvCtx.fillText("4K", 1107, 84);
+      tvCtx.fillText("4K", 1107, 56);
       tvCtx.fillStyle = "#ffffff";
-      tvCtx.fillText("8K", 1175, 84);
+      tvCtx.fillText("8K", 1175, 56);
 
       // Center focus reticle.
       tvCtx.beginPath();
@@ -1193,6 +1205,28 @@ export default function CinematicTour({
           if (video.paused) playTv(video);
         } else if (!video.paused) {
           video.pause();
+        }
+      }
+      const activeVideo = tvVideos[screenMode];
+      if (screenMode !== lastVideoMode) {
+        lastVideoMode = screenMode;
+        lastFrameTime = activeVideo.currentTime;
+        lastAdvanceAt = now;
+        streamRetryCount = 0;
+      }
+      if (tvVisible && !document.hidden && activeVideo.readyState >= 2) {
+        const advanced = Math.abs(activeVideo.currentTime - lastFrameTime) >= 0.06;
+        if (advanced) {
+          lastFrameTime = activeVideo.currentTime;
+          lastAdvanceAt = now;
+          streamRetryCount = 0;
+        } else if (!activeVideo.paused && activeVideo.currentTime > 0 && now - lastAdvanceAt > 3500 && streamRetryCount < 2) {
+          // Recover a stalled MP4 stream; never restart continuously.
+          streamRetryCount += 1;
+          lastAdvanceAt = now;
+          activeVideo.pause();
+          blockedTvPlayback.delete(activeVideo);
+          playTv(activeVideo, true);
         }
       }
       drawTv(now);
