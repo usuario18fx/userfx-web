@@ -7,6 +7,7 @@ type Props = {
   progress: MotionValue<number>;
   dissolveAt: number;
   spinEnd?: number;
+  rebuildAt?: number;
   src?: string;
 };
 
@@ -16,35 +17,37 @@ const VERT = `
 precision highp float;
 attribute vec3 position;
 attribute float grain;
+uniform float roll;
 uniform float aspect, scale, persp, size;
 uniform vec2 offset;
 varying float light;
 void main() {
   float p = 1.0 / (1.0 - position.z * persp);
-  gl_Position = vec4(position.xy * scale * vec2(1.0 / aspect, 1.0) * p + offset, -position.z * 0.2, 1.0);
+  gl_Position = vec4((mat2(cos(roll),sin(roll),-sin(roll),cos(roll))*position.xy) * scale * vec2(1.0 / aspect, 1.0) * p + offset, -position.z * 0.2, 1.0);
   gl_PointSize = clamp((1.2 + grain * 1.4) * size * p, 1.0, 5.0 * size);
   light = clamp(0.38 + (position.z + 0.5) * 0.5 + grain * 0.38, 0.15, 1.0);
 }`;
 
 const FRAG = `
 precision mediump float;
+uniform vec3 tint;
 varying float light;
 void main() {
   float r = length(gl_PointCoord - 0.5);
   if (r > 0.48) discard;
-  gl_FragColor = vec4(vec3(0.22, 0.60, 1.0) * (0.5 + light * 0.8), 0.7 * (1.0 - r));
+  gl_FragColor = vec4(tint * (0.5 + light * 0.8), 0.7 * (1.0 - r));
 }`;
 
 /** Dónde se dibuja la corona dentro del escenario (coordenadas NDC) */
 function layout(w: number, h: number) {
   const aspect = w / h;
   // Escritorio: abajo a la izquierda, donde estaba el logo de FX
-  if (aspect > 1.15) return { scale: 0.5, ox: -0.57, oy: -0.68 };
+  if (aspect > 1.15) return { scale: 0.72, ox: 0.48, oy: -0.45 };
   // Móvil: arriba a la derecha, pequeña
   return { scale: 0.3, ox: 0.66, oy: 0.78 };
 }
 
-export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/corona/corona.bin" }: Props) {
+export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt = 1, src = "/corona/corona.bin" }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
   const reducedRef = useRef(!!reduced);
@@ -149,6 +152,18 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
           positions[i * 3 + 2] = Math.sin(a) * r * 0.7;
         }
 
+        const sand = positions.slice();
+        const assembled = new Float32Array(positions.length);
+        const rose = new Float32Array(Math.floor(count/2)*3);
+        for (let j=0; j<rose.length; j+=3) {
+          const angle = random()*Math.PI*2;
+          const layer = random();
+          const petal = (1 + Math.cos(5*angle - layer*8))/2;
+          const radius = 0.52*Math.sqrt(layer)*(0.66 + 0.34*petal);
+          rose[j] = radius*Math.cos(angle);
+          rose[j+1] = radius*Math.sin(angle)*0.8 + 0.15*layer*petal;
+          rose[j+2] = 0.28*(1-layer) + 0.16*petal;
+        }
         say("corona: OK · " + count.toLocaleString("es") + " partículas");
         const clearSay = window.setTimeout(() => say(""), 4000);
         cleanups.push(() => window.clearTimeout(clearSay));
@@ -172,6 +187,7 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
         });
 
         const u = {
+          roll: gl.getUniformLocation(program, 'roll'), tint: gl.getUniformLocation(program, 'tint'),
           aspect: gl.getUniformLocation(program, "aspect"),
           scale: gl.getUniformLocation(program, "scale"),
           persp: gl.getUniformLocation(program, "persp"),
@@ -291,7 +307,8 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
           elapsed += dt;
 
           const p = progressRef.current;
-          const dissolved = p >= dissolveAt;
+          const dissolved = p >= dissolveAt && p < rebuildAt;
+          const assembly = Math.min(1, Math.max(0, (p-rebuildAt)/Math.max(0.001, 1-rebuildAt)));
           const isReduced = reducedRef.current;
 
           if (!isReduced) {
@@ -315,6 +332,9 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
             const lay = layout(cw, ch);
             // La corona gira con el scroll
             const spin = Math.min(1, p / Math.max(spinTo, 1e-6));
+            lay.ox *= 1-spin;
+            lay.oy += (0.16-lay.oy)*spin;
+            lay.ox -= 0.32*assembly;
             const yaw = -0.3 + spin * Math.PI * 2 * 1.1;
 
             const steps = Math.max(1, Math.ceil(dt / 0.012));
@@ -328,8 +348,26 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
               gl.uniform1f(u.scale, lay.scale);
               gl.uniform1f(u.persp, PERSP);
               gl.uniform1f(u.size, ratio * Math.min(1.3, Math.max(0.7, ch / 800)));
+              gl.uniform1f(u.roll, spin * 0.32);
+              gl.uniform3f(u.tint, 0.22, 0.60, 1);
               gl.uniform2f(u.offset, lay.ox, lay.oy);
+              if (assembly > 0) {
+                for (let i = 0; i < count; i++) {
+                  const j = i * 3;
+                  assembled[j] = sand[j] + (positions[j]-sand[j])*assembly;
+                  assembled[j+1] = sand[j+1] + (positions[j+1]-sand[j+1])*assembly;
+                  assembled[j+2] = sand[j+2] + (positions[j+2]-sand[j+2])*assembly;
+                }
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, assembled);
+              }
               gl.drawArrays(gl.POINTS, 0, count);
+              if (assembly > 0) {
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, rose);
+                gl.uniform3f(u.tint, 0.85, 0.04, 0.16);
+                gl.uniform1f(u.scale, lay.scale * assembly * Math.min(1, aspect));
+                gl.uniform2f(u.offset, 0.46, -0.93 + assembly*1.09);
+                gl.drawArrays(gl.POINTS, 0, rose.length/3);
+              }
             }
           }
           raf = requestAnimationFrame(frame);
@@ -347,7 +385,7 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, src = "/c
       cancelAnimationFrame(raf);
       cleanups.forEach((fn) => fn());
     };
-  }, [dissolveAt, spinEnd, src]);
+  }, [dissolveAt, spinEnd, rebuildAt, src]);
 
   return (
     <>
