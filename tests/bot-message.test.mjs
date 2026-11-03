@@ -8,8 +8,10 @@ test('message requires admin, previews before sending and prevents duplicate sen
   const sent = [];
   installMessages({ use: fn => middleware = fn }, { redis: async () => client, isAdmin: ctx => ctx.from.id === 111111, resolveRecipient: async () => '222222', sender: { sendMessage: async (...args) => sent.push(args) }, siteUrl: 'https://user18fx.com', secret: 'test-secret', botId: 'user' });
   const replies = [];
+  let deleted = 0;
   const ctx = { chat: { id: 111111, type: 'private' }, from: { id: 111111 }, message: { text: '/message @testuser' }, reply: async (...args) => replies.push(args), answerCbQuery: async () => {} };
   await middleware(ctx, () => assert.fail('Unexpected next'));
+  ctx.deleteMessage = async () => { deleted++; };
   assert.equal(sent.length, 0);
   const pick = replies.at(-1)[1].reply_markup.inline_keyboard[0][0].callback_data;
   delete ctx.message; ctx.callbackQuery = { data: pick };
@@ -20,6 +22,7 @@ test('message requires admin, previews before sending and prevents duplicate sen
   await middleware(ctx, () => {});
   await middleware(ctx, () => {});
   assert.equal(sent.length, 1);
+  assert.equal(deleted, 1);
   assert.equal(sent[0][0], '222222');
   assert.match(sent[0][2].reply_markup.inline_keyboard[1][0].url, /fx_rating=/);
   ctx.from.id = 333333;
