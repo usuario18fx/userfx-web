@@ -183,7 +183,7 @@ export function SectionMethod() {
     return {
       src: sc.video ?? sc.image,
       kind: sc.video ? "video" : "image",
-      label: sc.title,
+      label: sc.id === "gallery" ? "MULTIMEDIA" : sc.title,
       sub: sc.subtitle,
       position: sc.position,
       icon: course ? <Glyph name={course.glyph} /> : undefined,
@@ -210,9 +210,10 @@ Your prefix defines your access. Each collection respects its own code.
       </RevealGroup>
       <RevealGroup>
         <ul className="fx-identity-grid">
-          {TRAINERS.map((t) => (
+          {TRAINERS.map((t, index) => (
             <motion.li key={t.name} variants={wipe(24)} whileHover={{ y: -4 }} transition={{ duration: 0.35, ease: EASE }} >
               <Spotlight className={"glass fx-identity-card fx-identity-card--" + t.name.toLowerCase()}>
+                <video controls playsInline preload="metadata" aria-label={t.name + " preview"} src={"/assets/FX-Y24V0" + (index + 1) + ".mp4"} onError={event => { event.currentTarget.hidden = true; }} style={{ width: "100%", maxHeight: "26svh", objectFit: "cover" }} />
                 <div className="fx-identity-icon" aria-hidden="true">
                   <img src={ t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip } alt="" loading="lazy" className="fx-identity-icon-image" />
                 </div>
