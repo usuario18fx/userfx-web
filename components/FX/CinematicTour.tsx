@@ -348,11 +348,16 @@ export default function CinematicTour({
       if (!hit) return undefined;
       return hit.object.userData.fxDestination as string | undefined;
     };
+    let retryTvPlayback = () => {};
     const onInteractiveClick = (event: MouseEvent) => {
       const destination = visitInteractive(event);
       if (!destination) return;
       event.preventDefault();
       event.stopPropagation();
+      if (destination === "fx:play-tv") {
+        retryTvPlayback();
+        return;
+      }
       if (destination.startsWith("https://")) {
         window.open(destination, "_blank", "noopener,noreferrer");
       } else {
@@ -964,10 +969,23 @@ export default function CinematicTour({
       video.src = src;
       video.muted = true;
       video.defaultMuted = true;
+      video.autoplay = true;
       video.loop = true;
       video.playsInline = true;
-      video.preload = "auto";
-      video.addEventListener("loadeddata", () => wakeRender.current?.(), { signal: abort.signal });
+      video.setAttribute("muted", "");
+      video.setAttribute("playsinline", "");
+      video.preload = "metadata";
+      for (const event of ["loadeddata", "canplay", "playing", "timeupdate", "seeked"]) {
+        video.addEventListener(event, () => wakeRender.current?.(), { signal: abort.signal });
+      }
+      if ("requestVideoFrameCallback" in video) {
+        const onVideoFrame = () => {
+          if (abort.signal.aborted) return;
+          wakeRender.current?.();
+          video.requestVideoFrameCallback(onVideoFrame);
+        };
+        video.requestVideoFrameCallback(onVideoFrame);
+      }
       return video;
     };
     const tvVideos: Record<TvMode, HTMLVideoElement> = {
@@ -988,10 +1006,49 @@ export default function CinematicTour({
     scene.add(tvBezel);
     tvFace.position.set(-4.58, 1.72, -2.0);
     tvFace.rotation.y = Math.PI / 2;
-    tvFace.userData.fxDestination = undefined;
+    tvFace.userData.fxDestination = "fx:play-tv";
+    interactiveTargets.push(tvFace);
     scene.add(tvFace);
 
     let screenMode: TvMode = "videocall";
+    const pendingTvPlayback = new WeakSet<HTMLVideoElement>();
+    const blockedTvPlayback = new WeakSet<HTMLVideoElement>();
+    const playTv = (video: HTMLVideoElement, userGesture = false) => {
+      if (abort.signal.aborted || document.hidden || !video.paused || pendingTvPlayback.has(video)) return;
+      if (blockedTvPlayback.has(video) && !userGesture) return;
+      pendingTvPlayback.add(video);
+      void video.play().then(() => {
+        blockedTvPlayback.delete(video);
+        wakeRender.current?.();
+      }).catch((error: unknown) => {
+        if ((error as Error)?.name !== "AbortError") {
+          blockedTvPlayback.add(video);
+          if (process.env.NODE_ENV !== "production") {
+            console.warn("[CinematicTour] TV playback could not start:", error);
+          }
+        }
+      }).finally(() => {
+        pendingTvPlayback.delete(video);
+        wakeRender.current?.();
+      });
+    };
+    retryTvPlayback = () => {
+      blockedTvPlayback.delete(tvVideos[screenMode]);
+      playTv(tvVideos[screenMode], true);
+    };
+    const resumeTvOnGesture = () => {
+      if (tvVideos[screenMode].paused) retryTvPlayback();
+    };
+    window.addEventListener("pointerdown", resumeTvOnGesture, { signal: abort.signal });
+    window.addEventListener("keydown", resumeTvOnGesture, { signal: abort.signal });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        for (const video of Object.values(tvVideos)) video.pause();
+      } else {
+        retryTvPlayback();
+      }
+      wakeRender.current?.();
+    }, { signal: abort.signal });
     let transitionStart = -1;
     const previousFrame = document.createElement("canvas");
     previousFrame.width = 1280;
@@ -1030,8 +1087,10 @@ export default function CinematicTour({
       }
       for (const [key, video] of Object.entries(tvVideos)) {
         if (key === screenMode) {
-          if (video.paused) void video.play().catch(() => {});
-        } else if (!video.paused) video.pause();
+          if (video.paused) playTv(video);
+        } else if (!video.paused) {
+          video.pause();
+        }
       }
       drawTv(now);
     };
