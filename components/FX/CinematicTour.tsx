@@ -969,7 +969,7 @@ export default function CinematicTour({
       video.src = src;
       video.muted = true;
       video.defaultMuted = true;
-      video.autoplay = true;
+      video.autoplay = false;
       video.loop = true;
       video.playsInline = true;
       video.setAttribute("muted", "");
@@ -1033,6 +1033,7 @@ export default function CinematicTour({
       });
     };
     retryTvPlayback = () => {
+      if (current.current < ENTER_AT[4] - 0.025) return;
       blockedTvPlayback.delete(tvVideos[screenMode]);
       playTv(tvVideos[screenMode], true);
     };
@@ -1085,8 +1086,9 @@ export default function CinematicTour({
         screenMode = mode;
         onModeChangeRef.current?.(mode);
       }
+      const tvVisible = p >= ENTER_AT[4] - 0.025;
       for (const [key, video] of Object.entries(tvVideos)) {
-        if (key === screenMode) {
+        if (key === screenMode && tvVisible) {
           if (video.paused) playTv(video);
         } else if (!video.paused) {
           video.pause();
