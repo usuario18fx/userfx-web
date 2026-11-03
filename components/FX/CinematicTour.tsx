@@ -1074,23 +1074,106 @@ export default function CinematicTour({
           tvCtx.globalAlpha = 1;
         } else transitionStart = -1;
       }
-      // Visual recording frame on the 3D television; the source video remains unchanged.
+      // Camera-style HUD drawn on top of the playing video (not a real recording).
       tvCtx.save();
-      const inset = 14;
-      const pulse = 0.7 + 0.3 * Math.sin(now * 0.004);
-      tvCtx.strokeStyle = "#ff354f";
+      const pulse = 0.7 + 0.3 * Math.sin(now * 0.005);
+      const elapsed = Number.isFinite(video.currentTime) ? Math.floor(video.currentTime) : 0;
+      const padTime = (value: number) => String(value).padStart(2, "0");
+      const timer = `${padTime(Math.floor(elapsed / 3600))}:${padTime(Math.floor(elapsed / 60) % 60)}:${padTime(elapsed % 60)}`;
+
+      // Four white corner markers, matching the supplied camera reference.
+      const corner = (x: number, y: number, dx: number, dy: number) => {
+        tvCtx.beginPath();
+        tvCtx.moveTo(x + dx * 96, y);
+        tvCtx.lineTo(x, y);
+        tvCtx.lineTo(x, y + dy * 98);
+        tvCtx.stroke();
+      };
       tvCtx.lineWidth = 7;
-      tvCtx.strokeRect(inset, inset, 1280 - inset * 2, 720 - inset * 2);
-      tvCtx.fillStyle = "rgba(4, 6, 12, 0.78)";
-      tvCtx.fillRect(35, 34, 147, 60);
+      tvCtx.lineCap = "round";
+      tvCtx.lineJoin = "round";
+      tvCtx.strokeStyle = "#fafafa";
+      corner(142, 144, 1, 1);
+      corner(1138, 144, -1, 1);
+      corner(142, 563, 1, -1);
+      corner(1138, 563, -1, -1);
+
+      // Top-left blinking record marker and live video timecode.
       tvCtx.beginPath();
-      tvCtx.arc(62, 65, 11, 0, Math.PI * 2);
-      tvCtx.fillStyle = `rgba(255, 53, 79, ${pulse})`;
+      tvCtx.arc(70, 83, 12, 0, Math.PI * 2);
+      tvCtx.fillStyle = `rgba(255, 62, 80, ${pulse})`;
       tvCtx.fill();
-      tvCtx.font = "bold 31px Arial, sans-serif";
-      tvCtx.fillStyle = "#fff7f7";
+      tvCtx.fillStyle = "#ffffff";
+      tvCtx.beginPath();
+      tvCtx.roundRect(93, 60, 86, 46, 10);
+      tvCtx.fill();
       tvCtx.textBaseline = "middle";
-      tvCtx.fillText("REC", 84, 66);
+      tvCtx.textAlign = "left";
+      tvCtx.fillStyle = "#25252a";
+      tvCtx.font = "bold 32px monospace";
+      tvCtx.fillText("REC", 105, 83);
+      tvCtx.fillStyle = "#ffffff";
+      tvCtx.font = "bold 32px monospace";
+      tvCtx.fillText(timer, 205, 84);
+
+      // Camera-control labels match the reference; they are decorative.
+      tvCtx.fillStyle = "#ffffff";
+      tvCtx.font = "bold 29px monospace";
+      tvCtx.fillText("FPS60", 896, 84);
+      tvCtx.fillText("HD", 1030, 84);
+      tvCtx.beginPath();
+      tvCtx.roundRect(1098, 59, 62, 48, 9);
+      tvCtx.fill();
+      tvCtx.fillStyle = "#24242a";
+      tvCtx.fillText("4K", 1107, 84);
+      tvCtx.fillStyle = "#ffffff";
+      tvCtx.fillText("8K", 1175, 84);
+
+      // Center focus reticle.
+      tvCtx.beginPath();
+      tvCtx.moveTo(618, 333);
+      tvCtx.lineTo(667, 333);
+      tvCtx.moveTo(642, 307);
+      tvCtx.lineTo(642, 369);
+      tvCtx.strokeStyle = "rgba(255,255,255,0.95)";
+      tvCtx.lineWidth = 3;
+      tvCtx.stroke();
+
+      // Bottom exposure labels and level markings.
+      tvCtx.fillStyle = "#ffffff";
+      tvCtx.font = "bold 30px monospace";
+      tvCtx.fillText("ISO100", 84, 630);
+      tvCtx.fillText("F3.5", 253, 630);
+      tvCtx.lineWidth = 3;
+      tvCtx.strokeStyle = "#ffffff";
+      tvCtx.beginPath();
+      for (let i = 0; i <= 40; i++) {
+        const x = 467 + i * 8;
+        const height = i % 5 === 0 ? 23 : i % 2 === 0 ? 16 : 9;
+        tvCtx.moveTo(x, 635);
+        tvCtx.lineTo(x, 635 - height);
+      }
+      tvCtx.stroke();
+      tvCtx.beginPath();
+      tvCtx.moveTo(626, 656);
+      tvCtx.lineTo(640, 643);
+      tvCtx.lineTo(654, 656);
+      tvCtx.closePath();
+      tvCtx.fill();
+
+      tvCtx.font = "bold 28px monospace";
+      tvCtx.fillText("L", 861, 631);
+      tvCtx.fillText("R", 1055, 631);
+      tvCtx.beginPath();
+      for (let i = 0; i < 11; i++) {
+        const xL = 894 + i * 12;
+        const xR = 1087 + i * 12;
+        tvCtx.moveTo(xL, 611);
+        tvCtx.lineTo(xL, 633);
+        tvCtx.moveTo(xR, 611);
+        tvCtx.lineTo(xR, 633);
+      }
+      tvCtx.stroke();
       tvCtx.restore();
       tvTexture.needsUpdate = true;
     };
