@@ -10,7 +10,109 @@
 
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
-.fx-landing #identity .fx-identity-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+/* Four room videos, two per row. Prefix cards stay compact and separate. */
+.fx-landing #identity {
+  padding-block: clamp(28px, 6vh, 72px);
+}
+.fx-landing #identity .fx-room-video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2.2vw, 28px);
+  width: min(100%, 1220px);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.fx-landing #identity .fx-room-video-item,
+.fx-landing #identity .fx-room-video-figure {
+  min-width: 0;
+  margin: 0;
+}
+.fx-landing #identity .fx-room-video-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.fx-landing #identity .fx-room-video-player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: 370px;
+  object-fit: contain;
+  background: #05070b;
+  border: 1px solid rgba(83, 189, 203, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .2);
+}
+.fx-landing #identity .fx-room-code-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  width: min(100%, 216px);
+  padding: 8px 12px;
+  border: 1px solid rgba(231, 219, 203, .18);
+  border-radius: 12px;
+  background: rgba(15, 18, 25, .85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+}
+.fx-landing #identity .fx-room-code-icon {
+  display: block;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  object-fit: contain;
+}
+.fx-landing #identity .fx-room-code-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.1;
+}
+.fx-landing #identity .fx-room-code-prefix {
+  color: #f0eadf;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+.fx-landing #identity .fx-room-code-level {
+  color: rgba(236, 228, 216, .62);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+@media (max-width: 600px) {
+  .fx-landing #identity .fx-room-video-grid {
+    gap: 18px 10px;
+  }
+  .fx-landing #identity .fx-room-video-figure {
+    gap: 8px;
+  }
+  .fx-landing #identity .fx-room-video-player {
+    border-radius: 9px;
+  }
+  .fx-landing #identity .fx-room-code-card {
+    width: min(100%, 155px);
+    min-height: 42px;
+    padding: 6px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+  .fx-landing #identity .fx-room-code-icon {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+  .fx-landing #identity .fx-room-code-prefix {
+    font-size: 12px;
+  }
+  .fx-landing #identity .fx-room-code-level {
+    font-size: 9px;
+  }
+}
 @media(min-width:768px) {
  .fx-landing #access { scroll-margin-top:5rem; padding-block:clamp(.8rem,2vh,2rem); }
  .fx-landing #access h2 { font-size:clamp(2rem,6vh,4rem); max-width:none; line-height:1; }
