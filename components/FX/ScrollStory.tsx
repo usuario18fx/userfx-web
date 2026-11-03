@@ -1,73 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   motion,
   useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
 } from "framer-motion";
 import { ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
-import { SCENES, type Scene } from "./fxScenes";
+import MediaScrollPanel from "./MediaScrollPanel";
 import "./ScrollStory.css";
-
-/* Franja de imagen / video: SIN texto, números ni íconos.
-   Sigue siendo un enlace (con el control de admin de siempre). */
-function ScrollScene({
-  scene,
-  i,
-  progress,
-}: {
-  scene: Scene;
-  i: number;
-  progress: MotionValue<number>;
-}) {
-  const reduced = useReducedMotion();
-  const admin = useAdminMode();
-  const featureId = (scene.id === "videocall" ? "myroom" : scene.id) as Parameters<
-    typeof admin.requestFeature
-  >[0];
-
-  // Cada banda se revela en su propio tramo del scroll: 01 → 02 → 03 → 04.
-  const start = i * 0.22;
-  const end = start + 0.12;
-  const clip = useTransform(progress, [start, end], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
-  const fade = useTransform(progress, [start, end], [0, 1]);
-  const mediaScale = useTransform(progress, [start, end], [1.18, 1.02]);
-  const revealStyle = reduced || i === 0 ? undefined : { clipPath: clip, opacity: fade };
-  const mediaStyle = reduced
-    ? { objectPosition: scene.position }
-    : { scale: mediaScale, objectPosition: scene.position };
-
-  return (
-    <section className={"fx-scroll-scene fx-scroll-scene--" + scene.id}>
-      <motion.a href={scene.href} className="fx-scroll-scene-link" aria-label={scene.title + " · " + scene.subtitle} onClick={(event) => { if (admin.requestFeature(featureId)) event.preventDefault(); }} style={revealStyle} >
-        {scene.video ? (
-          <motion.video className="fx-scroll-scene-image" src={scene.video} poster={scene.image} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1} style={mediaStyle} />
-        ) : (
-          <motion.img className="fx-scroll-scene-image" src={scene.image} alt={scene.imageAlt} loading="lazy" decoding="async" draggable={false} style={mediaStyle} />
-        )}
-        <span className="fx-scroll-scene-shade" aria-hidden="true" />
-      </motion.a>
-    </section>
-  );
-}
 
 export default function ScrollStory() {
   const menu = useMenu();
   const admin = useAdminMode();
   const reduced = useReducedMotion();
   const [online, setOnline] = useState(false);
-
-  // Progreso de scroll de la sección de bandas (0 → 1)
-  const spacesRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: spacesRef,
-    offset: ["start start", "end end"],
-  });
 
   useEffect(() => {
     const refresh = () => setOnline(navigator.onLine);
@@ -157,13 +105,7 @@ SCROLL TO DISCOVER
         </a>
       </section>
 
-      <div id="spaces" ref={spacesRef} className="fx-scroll-scenes" aria-label="Explore UserFX spaces" >
-        <div className="fx-scroll-stage">
-          {SCENES.map((scene: Scene, i) => (
-            <ScrollScene key={scene.id} scene={scene} i={i} progress={scrollYProgress} />
-          ))}
-        </div>
-      </div>
+      <MediaScrollPanel id="spaces" mode="photos" />
     </div>
   );
 }

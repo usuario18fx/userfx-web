@@ -20,8 +20,8 @@ import VisitorCounter from "@/components/VisitorCounter";
 import { Glyph } from "./Glyph";
 import { RollLabel } from "./Hero";
 import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
-import ProtocolVault, { type VaultStep, type VaultQuad } from "./ProtocolVault";
-import { SCENES } from "./fxScenes";
+import ProtocolVault, { type VaultStep } from "./ProtocolVault";
+import MediaScrollPanel from "./MediaScrollPanel";
 
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
@@ -176,23 +176,13 @@ export function SectionMethod() {
     external: step.step === "01" || step.link.startsWith("https:"),
   }));
 
-  // Los 4 cuadrantes = las 4 escenas, ahora CON el texto que se quitó de las franjas.
-  // Cuadrante 1 = video FX-Y24V01.mp4 (definido en fxScenes.ts).
-  const quads: VaultQuad[] = SCENES.map((sc): VaultQuad => {
-    const course = COURSES.find((c) => c.id === (sc.id === "videocall" ? "myroom" : sc.id));
-    return {
-      src: sc.video ?? sc.image,
-      kind: sc.video ? "video" : "image",
-      label: sc.id === "gallery" ? "MULTIMEDIA" : sc.title,
-      sub: sc.subtitle,
-      position: sc.position,
-      icon: course ? <Glyph name={course.glyph} /> : undefined,
-    };
-  });
-
   return (
-    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title="How to unlock the Vault." intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={quads} crownSrc="/corona/corona.bin" />
+    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title="How to unlock the Vault." intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={[]} crownSrc="/corona/corona.bin" />
   );
+}
+
+export function SectionRoomVideos() {
+  return <MediaScrollPanel id="room-videos" mode="videos" />;
 }
 
 export function SectionTrainers() {
