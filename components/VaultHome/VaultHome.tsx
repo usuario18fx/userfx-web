@@ -118,6 +118,23 @@ function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean
     </div>
   );
 }
+function HoldShot({ src }: { src: string }) {
+  const [hold, setHold] = useState(false);
+  const isVideo = src.endsWith(".mp4") || src.endsWith(".webm");
+  return (
+    <div className={`vx-shot ${hold ? "is-open" : ""}`} onContextMenu={(e) => e.preventDefault()} onPointerDown={() => setHold(true)} onPointerUp={() => setHold(false)} onPointerLeave={() => setHold(false)} onPointerCancel={() => setHold(false)}>
+      {isVideo ? <video src={src} className="vx-shotMedia" muted loop playsInline preload="metadata" width={300} height={400} /> : <img src={src} alt="" draggable={false} className="vx-shotMedia" width={300} height={400} />}
+      <div className="vx-shotMask" aria-hidden>
+        <span>
+        🜲
+        </span>
+        <span>
+        HOLD TO REVEAL
+        </span>
+      </div>
+    </div>
+  );
+}
 const SAVED_CODE_KEY = "vault_saved_code";
 const MAX_ATTEMPTS = 5;
 type AccessPlanId = "basic" | "pro" | "vip";
@@ -551,14 +568,14 @@ export default function VaultHome() {
               </div>
             </div>
           </Reveal>
-          <div className="vx-photoSequence" aria-label="Inside the Vault photo gallery">
-            {visiblePhotos.map((src, index) => (
-              <Reveal key={src} className="vx-photoSequenceReveal">
-                <figure className="vx-photoSequenceFrame" onContextMenu={(event) => event.preventDefault()}>
-                  <img src={src} alt={`USER FX photograph ${index + 1} of ${visiblePhotos.length}`} className="vx-photoSequenceImage" loading={index === 0 ? "eager" : "lazy"} decoding="async" draggable={false} />
-                </figure>
-              </Reveal>
-            ))}
+          <div className="vx-carousel">
+            <div className="vx-carouselTrack">
+              {[...visiblePhotos, ...visiblePhotos].map((src, i) => (
+                <div className="vx-carouselSlide" key={`${src}-${i}`}>
+                  <HoldShot src={src} />
+                </div>
+              ))}
+            </div>
           </div>
           <a
             href="https://t.me/+Smfuo6ObfVFkOTFh"
