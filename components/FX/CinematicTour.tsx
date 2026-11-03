@@ -1074,6 +1074,24 @@ export default function CinematicTour({
           tvCtx.globalAlpha = 1;
         } else transitionStart = -1;
       }
+      // Visual recording frame on the 3D television; the source video remains unchanged.
+      tvCtx.save();
+      const inset = 14;
+      const pulse = 0.7 + 0.3 * Math.sin(now * 0.004);
+      tvCtx.strokeStyle = "#ff354f";
+      tvCtx.lineWidth = 7;
+      tvCtx.strokeRect(inset, inset, 1280 - inset * 2, 720 - inset * 2);
+      tvCtx.fillStyle = "rgba(4, 6, 12, 0.78)";
+      tvCtx.fillRect(35, 34, 147, 60);
+      tvCtx.beginPath();
+      tvCtx.arc(62, 65, 11, 0, Math.PI * 2);
+      tvCtx.fillStyle = `rgba(255, 53, 79, ${pulse})`;
+      tvCtx.fill();
+      tvCtx.font = "bold 31px Arial, sans-serif";
+      tvCtx.fillStyle = "#fff7f7";
+      tvCtx.textBaseline = "middle";
+      tvCtx.fillText("REC", 84, 66);
+      tvCtx.restore();
       tvTexture.needsUpdate = true;
     };
     const updateTv = (p: number, now: number) => {
