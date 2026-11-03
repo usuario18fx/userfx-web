@@ -87,11 +87,11 @@ Four spaces. One identity.
             {COURSES.map((c, i) => (
               <li key={c.id} className="relative">
                 <button type="button" aria-pressed={selected === c.id} onClick={() => setSelected(c.id)} className="group flex w-full items-center justify-between gap-6 border-b border-ink/10 py-6 text-left" >
-                  <span className="text-xs tabular-nums text-gold/60">0{i + 1}</span>
+                  <span className="text-xs tabular-nums text-gold/60">
+0{i + 1}
+</span>
                   <span className="flex flex-1 items-center gap-5 transition-transform duration-500 ease-out group-hover:translate-x-2">
-                    <span
-                      className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}
-                    >
+                    <span className={`font-display text-2xl font-semibold uppercase leading-none tracking-[-.03em] transition-opacity sm:text-3xl ${selected === c.id ? "opacity-100" : "opacity-40 group-hover:opacity-75"}`}>
                       {c.name}
                     </span>
                   </span>
@@ -251,13 +251,7 @@ Your access. Your level.
           {PLANS.map((plan) => {
             const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
-              <motion.li
-                key={plan.id}
-                variants={wipe(40)}
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.5, ease: EASE }}
-                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
-              >
+              <motion.li key={plan.id} variants={wipe(40)} whileHover={{ y: -10 }} transition={{ duration: 0.5, ease: EASE }} className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}>
                 {plan.featured && (
                   <span className="absolute right-8 top-8 rounded-full bg-sky/10 px-3 py-1 text-[.65rem] uppercase tracking-[.16em]">
                     PRO ACCESS
@@ -275,13 +269,7 @@ Your access. Your level.
 </p>
                 </div>
                 <div>
-                  <motion.span
-                    key={`${plan.id}-${price}`}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: EASE }}
-                    className="inline-block font-display text-4xl font-semibold leading-none tracking-[-.03em] tabular-nums sm:text-5xl"
-                  >
+                  <motion.span key={`${plan.id}-${price}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: EASE }} className="inline-block font-display text-4xl font-semibold leading-none tracking-[-.03em] tabular-nums sm:text-5xl">
                     {price}
                   </motion.span>
                   <p className="mt-3 text-sm opacity-55">
@@ -293,21 +281,13 @@ Your access. Your level.
                 <ul className="flex flex-1 flex-col gap-[7px]">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-3 text-[11px] leading-relaxed">
-                      <span
-                        aria-hidden
-                        className={`mt-2 h-1 w-1 shrink-0 rounded-full ${plan.featured ? "bg-sky/50" : "bg-gold/60"}`}
-                      />
+                      <span aria-hidden className={`mt-2 h-1 w-1 shrink-0 rounded-full ${plan.featured ? "bg-sky/50" : "bg-gold/60"}`} />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 <Magnetic strength={0.22}>
-                  <a
-                    href={`https://t.me/User18Fx_bot?start=${plan.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
-                  >
+                  <a href={`https://t.me/User18Fx_bot?start=${plan.id}`} target="_blank" rel="noreferrer" className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}>
                     <RollLabel>
 {plan.cta}
 </RollLabel>
@@ -347,15 +327,10 @@ Good questions. Clear answers.
           <ul className="fx-faq relative">
             {FAQS.map((item, i) => (
               <li key={item.q} className="group border-b border-ink/12 first:border-t">
-                <button
-                  id={`faq-trigger-${i}`}
-                  type="button"
-                  aria-expanded={expanded === i}
-                  aria-controls={`faq-panel-${i}`}
-                  className="flex w-full items-start justify-between gap-8 py-6 text-left"
-                  onClick={() => setExpanded((current) => (current === i ? null : i))}
-                >
-                  <span className="mt-1.5 text-xs tabular-nums text-gold/50">0{i + 1}</span>
+                <button id={`faq-trigger-${i}`} type="button" aria-expanded={expanded === i} aria-controls={`faq-panel-${i}`} className="flex w-full items-start justify-between gap-8 py-6 text-left" onClick={() => setExpanded((current) => (current === i ? null : i))}>
+                  <span className="mt-1.5 text-xs tabular-nums text-gold/50">
+0{i + 1}
+</span>
                   <span className="flex-1 font-display text-lg font-semibold uppercase leading-tight tracking-[-.02em] transition-transform duration-500 group-hover:translate-x-2 sm:text-xl">
                     {item.q}
                   </span>
@@ -366,16 +341,7 @@ Good questions. Clear answers.
                 </button>
                 <AnimatePresence initial={false}>
                   {expanded === i && (
-                    <motion.div
-                      id={`faq-panel-${i}`}
-                      role="region"
-                      aria-labelledby={`faq-trigger-${i}`}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: EASE }}
-                      className="overflow-hidden"
-                    >
+                    <motion.div id={`faq-panel-${i}`} role="region" aria-labelledby={`faq-trigger-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: EASE }} className="overflow-hidden">
                       <p className="max-w-[62ch] pb-7 pl-10 text-base leading-[1.65] text-ink/60">
                         {item.a}
                       </p>
@@ -462,9 +428,7 @@ Enter the Vault
               <label htmlFor="newsletter-email" className="text-xs uppercase tracking-[.18em] text-gold/60" >
                 Inside UserFX
               </label>
-              <div
-                className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}
-              >
+              <div className={`flex items-center gap-3 rounded-full border bg-white/[0.035] py-1.5 pl-5 pr-1.5 transition-colors focus-within:border-gold/60 ${state === "invalid" ? "border-rose" : "border-gold/20"}`}>
                 <input id="newsletter-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="you@domain.com" value={email} disabled={state === "sending"} aria-invalid={state === "invalid"} aria-describedby="newsletter-note" onChange={(e) => { setEmail(e.target.value); setState("idle"); }} className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-ink/40" />
                 <button type="submit" disabled={state === "sending"} aria-label="Subscribe" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-sky transition-transform hover:scale-105 disabled:opacity-40" >
                   <Glyph name="caret" className="h-4 w-4" />
