@@ -181,10 +181,6 @@ export function SectionMethod() {
   );
 }
 
-export function SectionRoomVideos() {
-  return <MediaScrollPanel id="room-videos" mode="videos" />;
-}
-
 const ROOM_PREVIEWS = [
   { src: "/assets/video01.mp4", poster: "/room1.png" },
   { src: "/assets/video02.mp4", poster: "/room2.png" },
