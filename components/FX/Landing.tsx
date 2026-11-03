@@ -14,7 +14,9 @@ export default function Landing(){
  <SmoothScroll />
  <ScrollProgress />
  <StickyHeader active={active} />
- <MenuOverlay><SiteFooter /></MenuOverlay>
+ <MenuOverlay>
+<SiteFooter />
+</MenuOverlay>
  <div className="fx-landing">
  <main>
  <RoomIntro />
