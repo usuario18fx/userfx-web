@@ -23,6 +23,10 @@ export default function Landing(){
  <SectionTrainers />
  <SectionPricing />
  <SectionFaq />
+ <form className="fx-telegram-entry" action="https://t.me/User18Fx_bot">
+   <input type="hidden" name="startapp" value="vault" />
+   <input type="submit" value="Enter with Telegram" />
+ </form>
  </main>
  </div>
  </MenuProvider>
