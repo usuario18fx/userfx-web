@@ -592,6 +592,7 @@ const BTN_REFRESH = "↻ ʀᴇꜰʀᴇꜱʜ";
 const BTN_ZOOM = "🟦 ᴢᴏᴏᴍ";
 const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
+const BTN_COMMANDS = "← ᴄᴏᴍᴍᴀɴᴅꜱ";
 const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
 const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
@@ -1082,7 +1083,7 @@ function getMainKeyboard() {
   ]).resize();
 }
 function getAccessKeyboard() {
-  return Markup.keyboard([[BTN_BASIC, BTN_VIP], [BTN_PRO], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
+  return Markup.keyboard([[BTN_BASIC, BTN_VIP], [BTN_PRO], [BTN_COMMANDS], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
 }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([[BTN_PENDING_REQUEST], [BTN_CANCEL]]).resize();
@@ -1790,6 +1791,31 @@ async function handleMedia(ctx) {
 bot.on("photo", handleMedia);
 bot.on("video", handleMedia);
 bot.on("document", handleMedia);
+
+async function sendCommandsPanel(ctx) {
+  const commands = [
+    "/start — Inicio",
+    "/getcode — Códigos de acceso",
+    "/identity — Identidad",
+    "/paysupport — Soporte de pagos",
+    "/commands — Menú de comandos",
+  ];
+  if (isAdmin(ctx)) commands.push(
+    "/message @usuario — Mensajes",
+    "/access @usuario — Editar permisos",
+    "/find @usuario — Consultar permisos",
+    "/users — Usuarios",
+    "/revoke @usuario — Revocar acceso",
+    "/visitors — Visitas",
+    "/visitorstats — Estadísticas",
+    "/report — Reporte de clics",
+    "/clearvideo ID — Limpiar solicitud",
+    "/resetvc ID — Reiniciar videollamada",
+  );
+  return ctx.reply(["Menú de comandos", ...commands].join("\n"), { reply_markup: { remove_keyboard: true } });
+}
+bot.command("commands", sendCommandsPanel);
+
 //// USER TEXT ROUTER //
 bot.on("text", async (ctx, next) => {
   const text = String(ctx.message?.text || "").trim();
@@ -1838,6 +1864,7 @@ bot.on("text", async (ctx, next) => {
       await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
       return;
     }
+    if (text === BTN_COMMANDS || text === "←") return await sendCommandsPanel(ctx);
     //// GET CODE //
     if (text === BTN_GET_CODE) {
       return await openGetCodePanel(ctx, "ʙᴜᴛᴛᴏɴ");
