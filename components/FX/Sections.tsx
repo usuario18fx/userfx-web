@@ -181,10 +181,10 @@ export function SectionMethod() {
 }
 
 const ROOM_PREVIEWS = [
-  { src: "/assets/my-room/Fx-2026-08-ROOM.mp4", poster: "/room1.png" },
-  { src: "/assets/my-room/comprimido-d63c84233d104a44a8117aa135b55368.mp4", poster: "/room2.png" },
-  { src: "/room3.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
-  { src: "/room4.mp4", poster: "/assets/album/PRVW/PRVW-04.jpg" },
+  { src: "/assets/my-room/room1.mp4", poster: "/room1.png" },
+  { src: "/assets/my-room/room2.mp4", poster: "/room2.png" },
+  { src: "/assets/my-room/room3D.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
+  { src: "/assets/my-room/room4.mp4", poster: "/assets/album/PRVW/PRVW-04.jpg" },
 ] as const;
 
 export function SectionTrainers() {
