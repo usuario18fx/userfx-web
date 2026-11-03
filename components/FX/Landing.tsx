@@ -2,7 +2,7 @@
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { ScrollProgress, SmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
-import { SectionFaq, SectionMethod, SectionPricing, SectionTrainers, SectionRoomVideos } from "./Sections";
+import { SectionFaq, SectionMethod, SectionPricing, SectionTrainers } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import RoomIntro from "./RoomIntro";
 import "./LandingWidthFix.css";
@@ -22,7 +22,7 @@ export default function Landing(){
  <SectionMethod />
  <SectionTrainers />
  <SectionPricing />
- <SectionRoomVideos />
+
  <SectionFaq />
  <form className="fx-telegram-entry" action="https://t.me/User18Fx_bot">
    <input type="hidden" name="startapp" value="vault" />
