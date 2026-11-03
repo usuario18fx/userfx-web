@@ -21,7 +21,6 @@ import { Glyph } from "./Glyph";
 import { RollLabel } from "./Hero";
 import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 import ProtocolVault, { type VaultStep } from "./ProtocolVault";
-import MediaScrollPanel from "./MediaScrollPanel";
 
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
