@@ -185,45 +185,37 @@ export function SectionRoomVideos() {
   return <MediaScrollPanel id="room-videos" mode="videos" />;
 }
 
+const ROOM_PREVIEWS = [
+  { src: "/assets/video01.mp4", poster: "/room1.png" },
+  { src: "/assets/video02.mp4", poster: "/room2.png" },
+  { src: "/room3.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
+  { src: "/room4.mp4", poster: "/assets/album/PRVW/PRVW-04.jpg" },
+] as const;
+
 export function SectionTrainers() {
   return (
     <Shell id="identity">
-      <Drift className="right-[2%] bottom-[10%] h-[24rem] w-[24rem]" distance={70} />
-      <RevealGroup className="fx-identity-intro mb-8 space-y-5">
-        <SectionIndex index="03" label="Your prefix" />
-        <Title>
-Every code has its place.
-</Title>
-        <Lede>
-Your prefix defines your access. Each collection respects its own code.
-</Lede>
-      </RevealGroup>
+      <h2 className="sr-only">
+        Your prefix
+      </h2>
       <RevealGroup>
-        <ul className="fx-identity-grid">
+        <ul className="fx-room-video-grid">
           {TRAINERS.map((t, index) => (
-            <motion.li key={t.name} variants={wipe(24)} whileHover={{ y: -4 }} transition={{ duration: 0.35, ease: EASE }} >
-              <Spotlight className={"glass fx-identity-card fx-identity-card--" + t.name.toLowerCase()}>
-                <video controls playsInline preload="metadata" aria-label={t.name + " preview"} src={"/assets/FX-Y24V0" + (index + 1) + ".mp4"} onError={event => { event.currentTarget.hidden = true; }} style={{ width: "100%", maxHeight: "26svh", objectFit: "cover" }} />
-                <div className="fx-identity-icon" aria-hidden="true">
-                  <img src={ t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip } alt="" loading="lazy" className="fx-identity-icon-image" />
-                </div>
-                <h3 className="fx-identity-card-title">
-                  {t.name === "SPCL"
-                    ? "SPCL / IDENTITY"
-                    : t.name === "BSIC"
-                      ? "BASIC / BSIC"
-                      : t.name === "PRX0"
-                        ? "PRO / PRX0"
-                        : "VIP / VIPX"}
-                </h3>
-                <span className="fx-identity-card-rule" aria-hidden="true" />
-                <p className="fx-identity-card-description">
-{t.line}
-</p>
-                <p className="fx-identity-card-feature">
-{t.highlight}
-</p>
-              </Spotlight>
+            <motion.li key={t.name} variants={wipe(24)} className="fx-room-video-item">
+              <figure className="fx-room-video-figure">
+                <video src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} controls playsInline preload="metadata" aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
+                <figcaption className={`fx-room-code-card fx-room-code-card--${t.name.toLowerCase()}`}>
+                  <img src={t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
+                  <span className="fx-room-code-text">
+                    <strong className="fx-room-code-prefix">
+                      {t.name}
+                    </strong>
+                    <small className="fx-room-code-level">
+                      {t.role}
+                    </small>
+                  </span>
+                </figcaption>
+              </figure>
             </motion.li>
           ))}
         </ul>
