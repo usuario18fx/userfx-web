@@ -86,8 +86,12 @@ export default function MediaScrollPanel({ id }: { id: string }) {
           <CrownRose progress={scrollYProgress} dissolveAt={2} />
         </div>
         <div className="fx-media-photos">
-          {PHOTOS.map((src, index) => (
-            <PhotoScene key={src} src={src} index={index} progress={scrollYProgress} compact={compact} reduced={reduced} />
+          {[0, 2].map((start) => (
+            <div key={start} className="fx-media-photo-pair">
+              {PHOTOS.slice(start, start + 2).map((src, offset) => (
+                <PhotoScene key={src} src={src} index={start + offset} progress={scrollYProgress} compact={compact} reduced={reduced} />
+              ))}
+            </div>
           ))}
         </div>
       </div>
