@@ -1082,7 +1082,13 @@ function getMainKeyboard() {
   ]).resize();
 }
 function getAccessKeyboard() {
-  return Markup.keyboard([[BTN_BASIC, BTN_VIP], [BTN_PRO], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
+  return Markup.keyboard([[BTN_BASIC, BTN_PRO], [BTN_VIP], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
+}
+function getAccessEntryKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback("🔐 ᴄᴏᴅᴇ", "access_choose_code"), Markup.button.callback("✈️ ᴛᴇʟᴇɢʀᴀᴍ", "access_choose_telegram")],
+    [Markup.button.callback(BTN_BACK_MENU, "access_back_to_menu")],
+  ]);
 }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([[BTN_PENDING_REQUEST], [BTN_CANCEL]]).resize();
@@ -2315,9 +2321,14 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
           });
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           bot.command("access", async (ctx) => {
+            let accessTarget = getCommandArg(ctx);
+            // Without arguments /access is the public access menu.
+            // Admin permission management remains available via /access @username.
+            if (!accessTarget) {
+              return await ctx.reply("🔐 ᴀᴄᴄᴇꜱꜱ · ᴄʜᴏᴏꜱᴇ ᴀ ᴍᴇᴛʜᴏᴅ", getAccessEntryKeyboard());
+            }
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
             try {
-              let accessTarget = getCommandArg(ctx);
               if (/^\d{5,20}$/.test(accessTarget)) {
                 try {
                   const chat = await ctx.telegram.getChat(accessTarget);
@@ -2338,6 +2349,18 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
               logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ᴀᴄᴄᴇꜱꜱ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", { ...getTelegramError(error), stack: getErrorStack(error) });
               await ctx.reply("✘ ᴛʜᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴꜱ ᴘᴀɴᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴏᴘᴇɴᴇᴅ.");
             }
+          });
+          bot.action("access_choose_code", async (ctx) => {
+            await ctx.answerCbQuery();
+            await sendMembershipPanel(ctx);
+          });
+          bot.action("access_choose_telegram", async (ctx) => {
+            await ctx.answerCbQuery();
+            await sendIdentityCode(ctx);
+          });
+          bot.action("access_back_to_menu", async (ctx) => {
+            await ctx.answerCbQuery();
+            await ctx.reply("↽ ᴍᴀɪɴ ᴍᴇɴᴜ", getMainKeyboard());
           });
           bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
             if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
