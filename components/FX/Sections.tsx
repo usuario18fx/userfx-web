@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
-import dynamic from "next/dynamic";
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FX } from "@/lib/assets";
 import {
   BOT_URL,
@@ -149,156 +148,46 @@ Four spaces. One identity.
   );
 }
 
-/* ---------------------------------------------------------------------------
-   PROTOCOL (una sola secuencia por scroll):
-   1) texto fijo a la izquierda + tambor de caja fuerte a la derecha
-   2) corona de partículas (public/corona/corona.bin) que gira con el scroll
-   3) en el último paso la corona se deshace
-   4) se abren 4 cuadrantes de 1/4 de pantalla: ↖ ↗ ↙ ↘
---------------------------------------------------------------------------- */
+/* Single reference-matched scroll: protocol -> four photos -> 2x2 video rooms. */
 export function SectionMethod() {
   const steps: VaultStep[] = METHOD.map((step) => ({
     title: step.title,
-    text:
-      step.step === "01" ? (
-        <>
-          {step.body.split("@User18Fx_bot")[0]}
-          <a href={BOT_URL} target="_blank" rel="noreferrer" className="text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold" >
-            @User18Fx_bot
-          </a>
-          {step.body.split("@User18Fx_bot")[1]}
-        </>
-      ) : (
-        step.body
-      ),
-    cta: step.cta,
+    text: step.body,
+    cta: step.cta || "Continue",
     href: step.step === "01" ? BOT_URL : step.link,
     external: step.step === "01" || step.link.startsWith("https:"),
   }));
 
-  const anchoredTitle = (
-    <>
-      How to unlock{" "}
-      <span data-pv-crown-target="the">
-      the
-      </span>{" "}Vault.
-    </>
-  );
-
-  return (
-    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title={anchoredTitle} intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={[]} crownSrc="/corona/corona.bin" />
-  );
-}
-
-const RoomCrownDebris = dynamic(() => import("./ProtocolCrown3D"), { ssr: false });
-
-const ROOM_PREVIEWS = [
-  { src: "/assets/my-room/room1.mp4" },
-  { src: "/assets/my-room/room2.mp4" },
-  { src: "/assets/my-room/room3.mp4" },
-  { src: "/assets/my-room/room4.mp4" },
-] as const;
-
-const easeRoom = (value: number) => {
-  const t = Math.max(0, Math.min(1, value));
-  return t * t * (3 - 2 * t);
-};
-
-function RoomVideoTile({ trainer, index, progress, reduced }: {
-  trainer: (typeof TRAINERS)[number];
-  index: number;
-  progress: MotionValue<number>;
-  reduced: boolean;
-}) {
-  const start = 0.025 + index * 0.205;
-  const finish = start + 0.105;
-  const amount = (value: number) => easeRoom((value - start) / (finish - start));
-  const opacity = useTransform(progress, amount);
-  const y = useTransform(progress, (value) => (1 - amount(value)) * 36);
-  const scale = useTransform(progress, (value) => 0.93 + amount(value) * 0.07);
-  const rotateX = useTransform(progress, (value) => (1 - amount(value)) * 7);
-  // Reference ZIP: each video expands out of its own corner (TL, TR, BL, BR).
-  const clipPath = useTransform(progress, (value) => {
-    const hidden = ((1 - amount(value)) * 100).toFixed(2);
-    switch (index) {
-      case 0: return `inset(0 ${hidden}% ${hidden}% 0)`;
-      case 1: return `inset(0 0 ${hidden}% ${hidden}%)`;
-      case 2: return `inset(${hidden}% ${hidden}% 0 0)`;
-      default: return `inset(${hidden}% 0 0 ${hidden}%)`;
-    }
+  steps.push({
+    title: "Unlock",
+    text: "Enter your personal code to unlock the USER FX private vault.",
+    cta: "Enter the Vault",
+    href: ENTER_URL,
+    external: false,
   });
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [revealed, setRevealed] = useState(reduced);
-  useMotionValueEvent(progress, "change", (value) => {
-    const next = reduced || value >= start + 0.008;
-    setRevealed((current) => current === next ? current : next);
-  });
-
-  // Muted autoplay starts only as each tile is revealed. Pause outside the viewport.
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = true;
-
-    const stage = video.closest(".fx-room-video-stage");
-    if (!stage) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting || (!reduced && !revealed)) {
-        video.pause();
-        return;
-      }
-      void video.play().catch(() => {});
-    }, { threshold: 0.05 });
-
-    observer.observe(stage);
-    return () => {
-      observer.disconnect();
-      video.pause();
-    };
-  }, [revealed, reduced]);
-
   return (
-    <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, scale, rotateX, clipPath }}>
-      <figure className="fx-room-video-figure">
-        <video ref={videoRef} src={ROOM_PREVIEWS[index].src} autoPlay muted loop playsInline preload="auto" disablePictureInPicture aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
-        <figcaption className={`fx-room-code-card fx-room-code-card--${trainer.name.toLowerCase()}`}>
-          <img src={trainer.name === "SPCL" ? FX.special : trainer.name === "BSIC" ? FX.basic : trainer.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
-          <span className="fx-room-code-text">
-            <strong className="fx-room-code-prefix">
-              {trainer.name}
-            </strong>
-            <small className="fx-room-code-level">
-              {trainer.role}
-            </small>
+    <ProtocolVault
+      id="protocol"
+      eyebrowIndex="02"
+      eyebrow="ACCESS PROTOCOL"
+      title={
+        <>
+          <span className="pv-title-line">
+            ENTER
           </span>
-        </figcaption>
-      </figure>
-    </motion.li>
-  );
-}
-
-export function SectionTrainers() {
-  const section = useRef<HTMLElement>(null);
-  const reduced = Boolean(useReducedMotion());
-  const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
-
-  return (
-    <section id="identity" ref={section} className={`fx-room-video-section${reduced ? " is-reduced" : ""}`} aria-label="Room videos revealed one by one while scrolling">
-      <div className="fx-room-video-stage">
-        <ul className="fx-room-video-grid">
-          {TRAINERS.map((trainer, index) => (
-            <RoomVideoTile key={trainer.name} trainer={trainer} index={index} progress={scrollYProgress} reduced={reduced} />
-          ))}
-        </ul>
-        {!reduced && (
-          <div className="fx-room-crown-debris" aria-hidden="true">
-            <RoomCrownDebris progress={scrollYProgress} dissolveAt={0.04} variant="debris" />
-          </div>
-        )}
-      </div>
-    </section>
+          <span className="pv-title-line">
+            THE
+          </span>
+          <span className="pv-title-line">
+            VAULT
+          </span>
+        </>
+      }
+      intro="Four steps. Four photographs. The crown turns behind everything and falls into the four private rooms."
+      steps={steps}
+      roomTags={["SPCL", "BSIC", "PRX0", "VIPX"]}
+    />
   );
 }
 
