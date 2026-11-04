@@ -1,2200 +1,253 @@
-/* UserFX photographic story. Scoped so room, stage, gallery and modal CSS stay unchanged. */
+/* USER FX · Editorial opening from the supplied cinematic reference. */
 .fx-scroll-story {
-  --fx-story-gold: #ceb67b;
-  --fx-story-rose: #bb5b74;
-  --fx-story-paper: #f5ede1;
-  --fx-story-black: #06080d;
-  color: var(--fx-story-paper);
-  background: var(--fx-story-black);
+  color: #f4efe6;
+  background: #05070b;
   isolation: isolate;
-  overflow: clip;
 }
-
-.fx-scroll-story a {
-  color: inherit;
-  text-decoration: none;
+.fx-scroll-story * {
+  box-sizing: border-box;
 }
-
-.fx-scroll-story a:focus-visible,
-.fx-scroll-story button:focus-visible {
-  outline: 2px solid var(--fx-story-gold);
-  outline-offset: 5px;
-}
-
-.fx-scroll-story .fx-scroll-overline {
-  font-family: var(--font-wide), ui-monospace, monospace;
-  font-size: clamp(9px, 1vw, 12px);
-  line-height: 1.5;
-  font-weight: 400;
-  letter-spacing: .32em;
-  color: var(--fx-story-gold);
-}
-
 .fx-scroll-hero {
   position: relative;
-  isolation: isolate;
-  min-height: max(620px, 100svh);
-  display: flex;
+  min-height: 100svh;
+  display: grid;
   align-items: center;
-  padding: clamp(90px, 11svh, 120px) clamp(22px, 6vw, 100px) 70px;
-  background: #090a0d;
-}
-
-.fx-scroll-hero-media,
-.fx-scroll-hero-veil {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.fx-scroll-hero-media {
-  z-index: -3;
   overflow: hidden;
-  background: url("/wallpaperGeneral.png") center / cover;
+  isolation: isolate;
+  background: radial-gradient(90% 60% at 18% 30%,rgba(63,216,208,.07),transparent 65%),radial-gradient(75% 75% at 88% 78%,rgba(215,185,129,.07),transparent 70%),#05070b;
 }
-
-.fx-scroll-hero-media img {
-  display: block;
+.fx-scroll-axis {
   position: absolute;
-  right: 0;
-  top: 0;
-  width: min(68%, 920px);
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 32%;
-  opacity: .98;
-  filter: grayscale(.38) sepia(.20) saturate(.90) contrast(1.08) brightness(.91);
-  transform: scale(1.02);
-  animation: fx-scroll-hero-breathe 17s ease-in-out infinite alternate;
+  inset-block: 0;
+  left: 50%;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(180deg,transparent,rgba(63,216,208,.46) 25%,rgba(63,216,208,.46) 78%,transparent);
 }
-
-.fx-scroll-hero-veil {
-  z-index: -2;
-  background:
-    linear-gradient(90deg, #07080bf5 0%, #07080bd6 28%, #07080b68 52%, #07080b0d 81%),
-    linear-gradient(0deg, #07080cdb 0%, transparent 37%),
-    linear-gradient(180deg, #06070bb8 0%, transparent 25%),
-    radial-gradient(ellipse at 70% 70%, #ba556a12, transparent 48%);
-}
-
 .fx-scroll-topline {
   position: absolute;
+  z-index: 3;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 5;
+  inset-inline: 0;
+  height: var(--fx-nav-h, 64px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  min-height: 93px;
-  padding: 16px clamp(22px, 6vw, 100px);
-  border-bottom: 1px solid #e9d1a425;
+  gap: 25px;
+  padding-inline: clamp(18px,4vw,76px);
+  border-bottom: 1px solid rgba(255,255,255,.09);
+  background: rgba(5,7,11,.91);
 }
-
-.fx-scroll-brand-wrap {
+.fx-scroll-brand-wrap,.fx-scroll-brand,.fx-scroll-quick-nav {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
-
+.fx-scroll-brand-wrap {
+  gap: 16px;
+}
 .fx-scroll-brand {
+  gap: 10px;
   padding: 0;
   border: 0;
   background: transparent;
-  color: inherit;
+  color: #f4efe6;
+  font-family: "Syne","Funnel Display",system-ui,sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .26em;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-wide), sans-serif;
-  font-size: clamp(13px, 1.35vw, 20px);
-  letter-spacing: .075em;
-  white-space: nowrap;
 }
-
 .fx-scroll-brand img {
-  width: 46px;
-  height: 46px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
-
 .fx-scroll-quick-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(23px, 4vw, 68px);
+  gap: clamp(13px,2vw,42px);
 }
-
-.fx-scroll-quick-nav > a {
+.fx-scroll-quick-nav a {
+  color: rgba(244,239,230,.58);
+  font-family: "IBM Plex Mono",ui-monospace,monospace;
   font-size: 11px;
-  letter-spacing: .16em;
-  transition: color .25s;
+  letter-spacing: .18em;
+  text-decoration: none;
+  transition: color .2s ease;
 }
-
-.fx-scroll-quick-nav > a:hover {
-  color: var(--fx-story-gold);
+.fx-scroll-quick-nav a:hover,.fx-scroll-quick-nav a:focus-visible {
+  color: #3fd8d0;
 }
-
 .fx-scroll-quick-nav button {
   display: grid;
   align-content: center;
-  gap: 7px;
-  width: 37px;
-  height: 37px;
-  padding: 6px;
+  gap: 6px;
+  width: 28px;
+  height: 32px;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: inherit;
   cursor: pointer;
 }
-
 .fx-scroll-quick-nav button span {
-  display: block;
-  width: 100%;
+  width: 25px;
   height: 1px;
-  background: currentColor;
+  background: #f4efe6;
 }
-
 .fx-scroll-quick-nav button span:last-child {
-  width: 65%;
+  width: 17px;
   justify-self: end;
-  transition: width .2s;
 }
-
-.fx-scroll-quick-nav button:hover span:last-child {
-  width: 100%;
-}
-
-.fx-scroll-hero-title {
+.fx-scroll-hero-grid {
   position: relative;
-  z-index: 2;
-  width: min(100%, 990px);
-  margin: 0 auto 0 0;
-}
-
-.fx-scroll-hero-title h1 {
+  z-index: 1;
   display: grid;
-  width: max-content;
-  max-width: 100%;
-  margin: clamp(17px, 3vw, 34px) 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(60px, 8.1vw, 124px);
-  line-height: .86;
-  font-weight: 500;
-  letter-spacing: -.075em;
-  text-transform: uppercase;
-  text-shadow: 0 7px 30px #0009;
+  grid-template-columns: minmax(0,1.07fr) minmax(0,.93fr);
+  align-items: center;
+  gap: clamp(30px,4vw,80px);
+  width: min(100%,1500px);
+  min-height: calc(100svh - var(--fx-nav-h,64px));
+  margin: var(--fx-nav-h,64px) auto 0;
+  padding: clamp(30px,5vw,80px) clamp(22px,4vw,75px);
 }
-.fx-scroll-hero-title h1 > span {
+.fx-scroll-hero-title {
+  min-width: 0;
+}
+.fx-scroll-overline {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 clamp(22px,4.6svh,50px);
+  color: rgba(244,239,230,.57);
+  font-family: "IBM Plex Mono",ui-monospace,monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .28em;
+}
+.fx-scroll-overline b {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3fd8d0;
+}
+.fx-scroll-overline i {
+  width: clamp(28px,3vw,50px);
+  height: 1px;
+  background: rgba(63,216,208,.7);
+}
+.fx-scroll-hero-title h1 {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: #f6f0e4;
+  font-family: "Syne","Funnel Display",system-ui,sans-serif;
+  font-size: clamp(62px,8.5vw,148px);
+  font-weight: 800;
+  line-height: .85;
+  letter-spacing: -.06em;
+  text-transform: uppercase;
+}
+.fx-scroll-hero-title h1 span {
   display: block;
 }
-.fx-scroll-hero-title h1 > .fx-scroll-accent {
-  padding-top: .1em;
-  font-size: .82em;
-  color: #0277a9e2;
+.fx-scroll-hero-title h1 .fx-scroll-accent {
+  color: #3fd8d0;
 }
 .fx-scroll-hero-subtitle {
-  margin-top: 19px;
-  color: #e8dfe0dd;
-  font-size: clamp(10px, 1.1vw, 14px);
-  letter-spacing: .31em;
-}
-.fx-scroll-emblem {
-  width: fit-content;
-  margin: clamp(12px, 2.4vh, 25px) 0 13px;
-  filter: drop-shadow(0 7px 25px #000e);
-}
-
-.fx-scroll-emblem img {
-  display: block;
-  width: clamp(66px, 7.4vw, 108px);
-  height: auto;
-  object-fit: contain;
-  animation: fx-scroll-emblem 7s ease-in-out infinite;
+  max-width: 46ch;
+  margin: 30px 0 20px;
+  font-size: clamp(13px,1.1vw,17px);
+  line-height: 1.62;
+  color: rgba(244,239,230,.65);
 }
 .fx-scroll-hero-enter {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: clamp(30px, 8vw, 95px);
-  border-bottom: 1px solid var(--fx-story-gold);
-  padding: 15px 8px 15px 0;
-  font-family: var(--font-sans), sans-serif;
-  font-size: clamp(12px, 1.15vw, 15px);
-  font-weight: 600;
-  letter-spacing: .13em;
-  transition: gap .35s, color .35s;
-}
-.fx-scroll-hero-enter > span:last-child {
-  font-size: 27px;
-  color: #2fd5ff;
-  font-weight: 300;
+  gap: 24px;
+  padding-block: 14px;
+  border-bottom: 1px solid rgba(63,216,208,.65);
+  color: #3fd8d0;
+  font-family: "IBM Plex Mono",monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-decoration: none;
+  transition: gap .3s ease;
 }
 .fx-scroll-hero-enter:hover {
-  gap: clamp(45px, 11vw, 130px);
-  color: #2fd5ff;
+  gap: 40px;
+}
+.fx-scroll-hero-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 15px;
+  color: rgba(244,239,230,.54);
+  font-family: "IBM Plex Mono",ui-monospace,monospace;
+  text-align: right;
+}
+.fx-scroll-hero-aside strong {
+  font-size: clamp(92px,15vw,232px);
+  font-weight: 400;
+  line-height: .9;
+  letter-spacing: -.065em;
+  color: rgba(63,216,208,.20);
+}
+.fx-scroll-hero-aside p {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: .24em;
+  text-transform: uppercase;
 }
 .fx-scroll-cue {
-  position: absolute;
-  right: clamp(22px, 6vw, 100px);
-  bottom: clamp(42px, 7vh, 90px);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 17px;
-  writing-mode: vertical-rl;
-  font-size: 10px;
-  letter-spacing: .23em;
-  color: #ffffffb3 !important;
-}
-.fx-scroll-cue span:last-child {
-  color: #2fd5ff;
-  font-size: 20px;
-  animation: fx-scroll-arrow 2s ease-in-out infinite;
-}
-.fx-scroll-scenes {
-  position: relative;
-  background: #192934;
-}
-
-.fx-scroll-scene {
-  position: relative;
-  min-height: clamp(420px, 76svh, 960px);
-  overflow: hidden;
-  isolation: isolate;
-  border-top: 1px solid #d0edf613;
-}
-
-.fx-scroll-scene-link {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: inherit;
-  position: relative;
-  padding: 75px clamp(25px, 7vw, 125px);
-  overflow: hidden;
-}
-
-.fx-scroll-scene-image {
-  position: absolute;
-  z-index: -3;
-  inset: -9% 0;
-  width: 100%;
-  height: 118%;
-  object-fit: cover;
-  filter: brightness(.94) saturate(.85) contrast(1.09);
-  will-change: transform;
-  transition: filter .5s;
-}
-
-.fx-scroll-scene-link:hover .fx-scroll-scene-image {
-  filter: brightness(1) saturate(1) contrast(1.05);
-}
-
-.fx-scroll-scene-shade {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background:
-    linear-gradient(90deg, #0c1926d9 0%, #07080f9c 31%, #07080f00 80%),
-    linear-gradient(0deg, #234563b8, transparent 45%),
-    linear-gradient(180deg, #164f7272, transparent 25%);
-}
-.fx-scroll-scene-index {
-  position: absolute;
-  top: clamp(25px, 4vw, 66px);
-  left: clamp(25px, 7vw, 125px);
-  font-family: Georgia, serif;
-  font-size: 16px;
-  letter-spacing: .18em;
-  color: var(--fx-story-gold);
-}
-
-.fx-scroll-scene-index::after {
-  content: "";
-  display: inline-block;
-  width: clamp(42px, 11vw, 155px);
-  height: 1px;
-  margin-left: 17px;
-  vertical-align: middle;
-  background: linear-gradient(90deg, var(--fx-story-gold), transparent);
-}
-
-.fx-scroll-scene-content {
-  display: grid;
-  justify-items: start;
-  gap: clamp(10px, 2vh, 20px);
-  width: min(90%, 900px);
-  margin-top: clamp(30px, 6vw, 90px);
-}
-.fx-scroll-scene-kicker {
-  color: #7eb7c6;
-  font-size: clamp(9px, 1vw, 12px);
-  letter-spacing: .26em;
-}
-.fx-scroll-scene-content strong {
-  display: block;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  letter-spacing: -.05em;
-  line-height: .94;
-  font-size: clamp(64px, 11.4vw, 170px);
-  text-shadow: 0 8px 35px #0009;
-}
-.fx-scroll-scene-subtitle {
   display: inline-flex;
   align-items: center;
-  gap: 30px;
-  color: #f4eee0cb;
-  font-size: clamp(12px, 1.5vw, 19px);
-  line-height: 1.5;
-  letter-spacing: .13em;
-  border-bottom: 1px solid #8ec9d982;
-  padding-bottom: 14px;
-}
-.fx-scroll-scene-subtitle span {
-  color: #2fd5ff;
-  font-size: 24px;
-  transition: transform .2s;
-}
-
-.fx-scroll-scene-link:hover .fx-scroll-scene-subtitle span {
-  transform: translate(4px, -4px);
-}
-.fx-scroll-scene-watermark {
-  position: absolute;
-  right: clamp(25px, 6vw, 100px);
-  bottom: -35px;
-  color: #f9eacc20;
-  font-family: Georgia, serif;
-  font-size: clamp(170px, 25vw, 370px);
-  line-height: 1;
-  pointer-events: none;
-}
-.fx-scroll-scene--stage .fx-scroll-scene-shade {
-  background:
-    linear-gradient(90deg, #071017dc 0%, #07101786 37%, #07080f03 90%),
-    linear-gradient(0deg, #06090cdf, transparent 50%);
-}
-.fx-scroll-scene--gallery .fx-scroll-scene-shade {
-  background:
-    linear-gradient(90deg, #0a0815dc 0%, #0a081582 39%, #0a081506 91%),
-    linear-gradient(0deg, #06070cdf, transparent 50%);
-}
-.fx-scroll-interlude {
-  position: relative;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: clamp(92px, 15vw, 175px) 24px;
-  background:
-    radial-gradient(ellipse at 50% 25%, #8f5f8f19, transparent 63%),
-    linear-gradient(#08090de8, #08090df5),
-    url("/wallpaperGeneral.png") center/cover;
-}
-.fx-scroll-interlude-line {
-  width: 1px;
-  height: 70px;
-  position: absolute;
-  left: 50%;
-  top: 0;
-  background: linear-gradient(0deg, var(--fx-story-gold), transparent);
-}
-.fx-scroll-interlude h2 {
-  display: grid;
-  gap: 5px;
-  margin: 25px auto;
-  font: 400 clamp(45px, 7.3vw, 108px)/.98 Georgia, serif;
-  letter-spacing: -.04em;
-}
-.fx-scroll-interlude h2 em {
-  font-style: italic;
-  color: #cddde0c9;
-}
-.fx-scroll-interlude > p:not(.fx-scroll-overline) {
-  color: #cde0e0c9;
-  max-width: 560px;
-  line-height: 1.8;
-  font-size: clamp(13px, 1.4vw, 17px);
-}
-.fx-scroll-text-link {
-  margin-top: 25px;
-  border-bottom: 1px solid #7bb7ce6b;
-  padding-bottom: 12px;
-  font-size: 11px;
-  letter-spacing: .18em;
-  transition: color .2s;
-}
-.fx-scroll-text-link:hover {
-  color: #059fffc9;
-}
-.fx-scroll-access {
-  position: relative;
-  padding: clamp(90px, 11vw, 165px) clamp(22px, 7vw, 118px);
-  border-top: 1px solid #8bb4d536;
-  background: #080c0f;
-}
-.fx-scroll-access-intro h2 {
-  display: grid;
-  margin-top: 20px;
-  font: 400 clamp(48px, 8vw, 122px)/.91 Georgia, serif;
-  letter-spacing: -.055em;
-}
-.fx-scroll-access-intro h2 > span {
-  color: var(--fx-story-gold);
-  font-style: italic;
-}
-.fx-scroll-code-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: clamp(14px, 2vw, 34px);
-  margin-top: clamp(40px, 8vw, 102px);
-  padding: 25px 0;
-  border-top: 1px solid #8bcbd56d;
-  border-bottom: 1px solid #8bccd536;
-  white-space: nowrap;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #5897ac80 transparent;
-}
-.fx-scroll-code-line > span {
-  font-size: clamp(11px, 1.15vw, 17px);
-  font-weight: 500;
-  letter-spacing: .08em;
-}
-.fx-scroll-code-line b {
-  color: #13b0e57b;
-  font-weight: 500;
-}
-.fx-scroll-code-line .fx-scroll-code-label {
-  font: 400 clamp(9px, .95vw, 12px) var(--font-wide), monospace;
-  letter-spacing: .25em;
-  color:#13b0e57a;
-}
-.fx-scroll-access-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(25px, 6vw, 110px);
-  margin-top: 34px;
-}
-.fx-scroll-access-links a {
-  display: inline-flex;
-  gap: 25px;
-  align-items: center;
-  padding: 10px 0;
-  font-size: clamp(12px, 1.2vw, 15px);
-  letter-spacing: .14em;
-  transition: color .25s;
-}
-.fx-scroll-access-links a:hover {
-  color:#13b0e58c;
-}
-.fx-scroll-access-links a span {
-  font-size: 20px;
-  color: #13b0e59e;
-}
-.fx-scroll-footer {
-  display: grid;
-  gap: clamp(30px, 5vw, 65px);
-  padding: 70px clamp(22px, 7vw, 118px) 33px;
-  border-top: 1px solid #7bb0ce3b;
-  background:
-    linear-gradient(0deg, #070d0ef7, #07090ee7),
-    url("/wallpaperGeneral.png") center/cover;
-}
-.fx-scroll-footer-mark {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  color:#059fffc9;
+  gap: 12px;
+  margin-top: 24px;
+  color: #d7b981;
   font-size: 11px;
   letter-spacing: .28em;
-}
-.fx-scroll-footer-mark img {
-  object-fit: contain;
-}
-.fx-scroll-footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px clamp(18px, 4vw, 75px);
-}
-.fx-scroll-footer-links a {
-  font: 400 clamp(14px, 1.7vw, 24px) Georgia, serif;
-  letter-spacing: .035em;
-  transition: color .25s, transform .25s;
-}
-.fx-scroll-footer-links a:hover {
-  color: #2fd5ff;
-  transform: translateY(-3px);
-}
-.fx-scroll-footer > p {
-  border-top: 1px solid #d1ba8429;
-  padding-top: 20px;
-  color: #689cbcc9;
-  font-size: 10px;
-  letter-spacing: .17em;
-}
-@keyframes fx-scroll-hero-breathe {
-  from { transform: scale(1.07); }
-  to { transform: scale(1.17) translate(-1%, -1%); }
-}
-@keyframes fx-scroll-emblem {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-@keyframes fx-scroll-arrow {
-  0%, 100% { transform: translateY(0); opacity: .65; }
-  50% { transform: translateY(8px); opacity: 1; }
-}
-@media (min-width: 1120px) {
-  .fx-scroll-hero-media img {
-    object-position: center 44%;
-  }
-  .fx-scroll-scene--stage .fx-scroll-scene-image {
-    object-position: center 59%;
-  }}
-@media (max-width: 700px) {
-  .fx-scroll-hero {
-    min-height: 100svh;
-    padding: 105px 23px 102px;
-    align-items: center;
-  }
-  .fx-scroll-topline {
-    min-height: 73px;
-    padding: 12px 23px;
-  }
-  .fx-scroll-brand img {
-    width: 34px;
-    height: 34px;
-  }
-  .fx-scroll-brand {
-    font-size: 13px;
-    gap: 8px;
-  }
-  .fx-scroll-quick-nav {
-    gap: 17px;
-  }
-  .fx-scroll-quick-nav > a {
-    font-size: 9px;
-    letter-spacing: .07em;
-  }
-  .fx-scroll-hero-media img {
-    width: 100%;
-    object-position: 66% 30%;
-    filter: grayscale(.22) sepia(.13) saturate(.82) brightness(.90) contrast(1.08);
-  }
-  .fx-scroll-hero-veil {
-    background:
-      linear-gradient(90deg, #05070bdf 0%, #05070b98 44%, #05070b22 90%),
-      linear-gradient(0deg, #05070beb 0%, #05070b08 70%),
-      linear-gradient(180deg, #05070b95 0%, transparent 28%);
-  }
-  .fx-scroll-hero-title h1 {
-    font-size: clamp(43px, 11.9vw, 83px);
-    letter-spacing: -.075em;
-  }
-  .fx-scroll-hero-title h1 .fx-scroll-accent {
-    font-size: .8em;
-  }
-  .fx-scroll-hero-subtitle {
-    margin-top: 19px;
-    font-size: 9px;
-    line-height: 1.6;
-    letter-spacing: .18em;
-  }
-  .fx-scroll-emblem {
-    margin: 18px 0;
-  }
-  .fx-scroll-emblem img {
-    width: 84px;
-  }
-  .fx-scroll-cue {
-    right: 22px;
-    bottom: 24px;
-    writing-mode: horizontal-tb;
-    font-size: 8px;
-  }
-  .fx-scroll-scene,
-  .fx-scroll-scene-link {
-    min-height: 68svh;
-  }
-  .fx-scroll-scene-link {
-    align-items: end;
-    padding: 75px 25px 67px;
-  }
-  .fx-scroll-scene-image {
-    object-position: center;
-  }
-  .fx-scroll-scene-shade,
-  .fx-scroll-scene--stage .fx-scroll-scene-shade,
-  .fx-scroll-scene--gallery .fx-scroll-scene-shade {
-    background: linear-gradient(0deg, #04060bed 0%, #04060b5b 57%, #04060b1f 100%);
-  }
-  .fx-scroll-scene-index {
-    top: 29px;
-    left: 25px;
-  }
-  .fx-scroll-scene-content {
-    margin-top: 0;
-    width: 100%;
-  }
-  .fx-scroll-scene-content strong {
-    font-size: clamp(58px, 12.5vw, 90px);
-  }
-  .fx-scroll-scene-watermark {
-    font-size: 160px;
-    right: 10px;
-    bottom: -20px;
-  }
-  .fx-scroll-scene-subtitle {
-    font-size: 12px;
-  }
-  .fx-scroll-code-line {
-    gap: 25px;
-    margin-right: -22px;
-    padding-right: 30px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .fx-scroll-code-line > span {
-    font-size: 12px;
-  }
-  .fx-scroll-code-line .fx-scroll-code-label {
-    font-size: 9px;
-  }
-  .fx-scroll-footer {
-    gap: 34px;
-    padding-top: 50px;
-  }
-  .fx-scroll-footer-links {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px 10px;
-  }}
-@media (max-width: 370px) {
-  .fx-scroll-quick-nav > a {
-    display: none;
-  }
-  .fx-scroll-hero-title h1 {
-    font-size: 12vw;
-  }
-  .fx-scroll-scene-content strong {
-    font-size: 16vw;
-  }}
-@media (prefers-reduced-motion: reduce) {
-  .fx-scroll-hero-media img,
-  .fx-scroll-emblem img,
-  .fx-scroll-cue span:last-child {
-    animation: none !important;
-  }
-  .fx-scroll-scene-image,
-  .fx-scroll-scene-content {
-    will-change: auto;
-  }}
-/* Responsive desktop: keep the CTA, title and portrait visible on laptop landscape windows. */
-@media (min-width: 701px) and (max-height: 820px) {
-  .fx-scroll-hero {
-    min-height: max(550px, 100svh);
-    padding-top: clamp(85px, 12svh, 105px);
-    padding-bottom: 37px;
-  }
-  .fx-scroll-hero-title h1 {
-    font-size: clamp(55px, min(6.8vw, 12.5svh), 105px);
-    margin-top: 10px;
-    line-height: .84;
-  }
-  .fx-scroll-hero-subtitle {
-    margin-top: 13px;
-    font-size: 11px;
-  }
-  .fx-scroll-emblem {
-    margin: 7px 0;
-  }
-  .fx-scroll-emblem img {
-    width: 67px;
-  }
-  .fx-scroll-hero-enter {
-    padding: 10px 7px 10px 0;
-  }
-  .fx-scroll-cue {
-    bottom: 18px;
-  }
-  .fx-scroll-scene,
-  .fx-scroll-scene-link {
-    min-height: max(420px, 72svh);
-  }
-  .fx-scroll-scene-content strong {
-    font-size: clamp(57px, 8.3vw, 122px);
-  }}
-/* USERFX_SCENE_DISCLOSURE_V1 — Accordion below each photo, not a page redirect */
-.fx-scroll-story button.fx-scroll-scene-link {
-  box-sizing: border-box;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  appearance: none;
-  background: #090b10;
-  color: var(--fx-story-paper);
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-  touch-action: pan-y;
-}
-.fx-scroll-story button.fx-scroll-scene-link:focus-visible {
-  outline: 2px solid var(--fx-story-gold);
-  outline-offset: -3px;
-}
-.fx-scroll-scene-subtitle > span { display: inline-block; transform-origin: center; }
-.fx-scroll-scene.is-expanded .fx-scroll-scene-subtitle { color: #fff5df; }
-.fx-scroll-scene-panel {
-  position: relative;
-  z-index: 3;
-  overflow: hidden;
-  background: radial-gradient(ellipse at 96% 0%, #b45b6920, transparent 56%), linear-gradient(110deg,#15151b,#090b11);
-  border-bottom: 1px solid #ceb67b52;
-}
-.fx-scroll-scene-panel-inner {
-  width: 100%;
-  max-width: 1440px;
-  display: grid;
-  gap: clamp(18px, 3vw, 38px);
-  margin: 0 auto;
-  padding: clamp(28px, 4vw, 66px) clamp(25px, 7vw, 125px) clamp(32px, 5vw, 75px);
-  box-sizing: border-box;
-}
-.fx-scroll-scene-panel-heading {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 14px clamp(16px, 3vw, 44px);
-}
-.fx-scroll-scene-panel-index, .fx-scroll-scene-panel-level {
-  color: var(--fx-story-gold);
-  font-size: clamp(10px,.95vw,12px);
-  letter-spacing: .19em;
-  text-transform: uppercase;
-}
-.fx-scroll-scene-panel-heading h3 {
-  margin: 0;
-  font: 400 clamp(32px,4vw,61px)/1.1 Georgia,"Times New Roman",serif;
-  letter-spacing: -.04em;
-}
-.fx-scroll-scene-panel-level { color: #82a0a9; }
-.fx-scroll-scene-panel-description {
-  max-width: 780px;
-  margin: 0;
-  color: #d0dbe6cc;
-  font-size: clamp(15px,1.4vw,21px);
-  line-height: 1.72;
-}
-.fx-scroll-scene-panel-bottom {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 28px;
-  flex-wrap: wrap;
-  padding-top: 19px;
-  border-top: 1px solid #9cc5d22f;
-}
-.fx-scroll-scene-panel-facts {
-  display: flex;
-  gap: clamp(26px,5vw,74px);
-  margin: 0;
-}
-.fx-scroll-scene-panel-facts > div { display: flex; flex-direction: column; gap: 5px; }
-.fx-scroll-scene-panel-facts dt { color: #b8bcbe; font-size: 12px; letter-spacing: .08em; order: 2; }
-.fx-scroll-scene-panel-facts dd {
-  color: var(--fx-story-paper);
-  font-size: clamp(21px,2.3vw,34px);
-  font-weight: 600;
-  line-height: 1.1;
-  order: 1;
-  margin: 0;
-}
-.fx-scroll-story a.fx-scroll-scene-panel-enter {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(18px,4vw,75px);
-  padding: 14px 3px;
-  border-bottom: 1px solid var(--fx-story-gold);
-  font-size: clamp(11px,1.1vw,15px);
-  font-weight: 600;
-  letter-spacing: .14em;
-  white-space: nowrap;
-  transition: color .2s, gap .2s;
-}
-.fx-scroll-story a.fx-scroll-scene-panel-enter:hover { gap: clamp(24px,5vw,88px); color: var(--fx-story-gold); }
-.fx-scroll-scene-panel-enter span:last-child { color: var(--fx-story-gold); font-size: 23px; }
-@media (max-width: 700px) {
-  .fx-scroll-scene-panel-inner { padding: 28px 25px 36px; gap: 22px; }
-  .fx-scroll-scene-panel-heading { gap: 8px 18px; }
-  .fx-scroll-scene-panel-index { flex-basis: 100%; }
-  .fx-scroll-scene-panel-heading h3 { font-size: 37px; }
-  .fx-scroll-scene-panel-bottom { align-items: start; }
-  .fx-scroll-scene-panel-facts { width: 100%; justify-content: space-between; }
-  .fx-scroll-scene-panel-description { font-size: 15px; }
-  .fx-scroll-story a.fx-scroll-scene-panel-enter { width: 100%; justify-content: space-between; }
-}
-/* USERFX_COMPACT_INTERACTIVE_SCENES_V2 */
-.fx-scroll-story button.fx-scroll-scene-link {
-  isolation: isolate;
-  position: relative;
-  min-height: clamp(310px, 54svh, 555px) !important;
-  padding-block: clamp(34px, 4svh, 52px);
-}
-.fx-scroll-story .fx-scroll-scene {
-  min-height: 0 !important;
-}
-.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-image {
-  z-index: 0;
-}
-.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-shade {
-  z-index: 1;
-}
-.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-index,
-.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-watermark {
-  z-index: 2;
-}
-.fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-content {
-  position: relative;
-  z-index: 2;
-  width: calc(100% - 65px);
-  max-width: 900px;
-  margin-top: 4px;
-  gap: 12px;
-}
-.fx-scroll-story .fx-scroll-scene-content strong {
-  font-size: clamp(39px, 7.2vw, 112px);
-  line-height: 1;
-  letter-spacing: -.05em;
-  white-space: nowrap;
-}
-.fx-scroll-story .fx-scroll-scene-subtitle {
-  font-size: clamp(11px, 1.12vw, 16px);
-  gap: 18px;
-  padding-bottom: 8px;
-}
-.fx-scroll-story .fx-scroll-scene-index {
-  top: 20px;
-}
-.fx-scroll-scene-icon {
-  position: absolute;
-  right: clamp(23px, 7vw, 125px);
-  top: 22px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: clamp(44px, 4.1vw, 60px);
-  height: clamp(44px, 4.1vw, 60px);
-  border: 1px solid #90bcdf9b;
-  border-radius: 50%;
-  color: #a3e7f5;
-  background: #090b0f99;
-  box-shadow: 0 0 24px #75b2d015, inset 0 0 14px #7bbcd813;
-  backdrop-filter: blur(8px);
-  pointer-events: none;
-  transition: box-shadow .3s, border-color .3s, transform .3s;
-}
-.fx-scroll-scene-icon svg {
-  width: 61%;
-  height: 61%;
-}
-.fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-icon {
-  transform: scale(1.08);
-  border-color: #13b1e5f8;
-  box-shadow: 0 0 22px #7abfea48;
-}
-.fx-scroll-scene-icon--videocall .fx-icon-live-light {
-  animation: fx-icon-breath 1.9s ease-in-out infinite;
-}
-.fx-scroll-scene-icon--videocall {
-  animation: fx-icon-cam 3.6s ease-in-out infinite;
-}
-.fx-scroll-scene-icon--stage .fx-icon-spotlight {
-  transform-origin: 50% 50%;
-  animation: fx-icon-stage 9s linear infinite;
-}
-.fx-scroll-scene-icon--gallery .fx-icon-gallery-hill {
-  animation: fx-icon-slide 2.8s ease-in-out infinite;
-}
-.fx-scroll-scene-icon--buzon .fx-icon-envelope {
-  animation: fx-icon-mail 2.1s ease-in-out infinite;
-}
-@keyframes fx-icon-breath {
-  0%, 100% { opacity: .35; }
-  50% { opacity: 1; }
-}
-@keyframes fx-icon-cam {
-  0%, 100% { box-shadow: 0 0 5px #ceb67b11; }
-  50% { box-shadow: 0 0 18px #ceb67b50; }
-}
-@keyframes fx-icon-stage {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes fx-icon-slide {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(3px); }
-}
-@keyframes fx-icon-mail {
-  0%, 100% { opacity: 1; transform: translateY(0); }
-  50% { opacity: .55; transform: translateY(-2px); }
-}
-/* FX emblem has a restrained halo; status represents this visitor's connectivity. */
-.fx-scroll-emblem {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 7px;
-}
-.fx-scroll-emblem img {
-  filter: drop-shadow(0 0 12px #abd0e533);
-}
-.fx-scroll-connection {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  width: max-content;
-  padding: 0;
-  color: #e0e2e3bc;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .17em;
-}
-.fx-scroll-connection svg {
-  width: 14px;
-  height: 14px;
-}
-.fx-scroll-connection-dot {
-  display: block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #8b8d92;
-}
-.fx-scroll-connection.is-online .fx-scroll-connection-dot {
-  background: #75bfd5;
-  box-shadow: 0 0 8px #a1e4ff9c;
-  animation: fx-icon-breath 2s ease-in-out infinite;
-}
-
-/* Compact the original lower sections and membership panels without rewriting them. */
-.fx-landing .fx-section {
-  padding-top: clamp(44px, 6vw, 100px) !important;
-  padding-bottom: clamp(44px, 6vw, 100px) !important;
-}
-.fx-landing .fx-plan {
-  padding: 15px !important;
-  gap: 9px !important;
-  border-radius: 17px !important;
-}
-.fx-landing .fx-plan h3 {
-  white-space: nowrap;
-  display: flex;
-  align-items: baseline;
-  gap: 3px;
-}
-.fx-landing .fx-plan h3 span {
-  font-size: .76em !important;
-  opacity: .74 !important;
-}
-.fx-landing .fx-plan h3 span::before {
-  content: "/ ";
-  color: var(--fx-story-gold);
-}
-.fx-landing .fx-plan .fx-prefix-illustration {
-  width: 30px !important;
-  height: 30px !important;
-}
-.fx-scroll-scene-panel-inner {
-  gap: 15px !important;
-  padding-top: 25px !important;
-  padding-bottom: 28px !important;
-}
-.fx-scroll-scene-panel-heading h3 {
-  font-size: clamp(27px, 3vw, 43px);
-}
-.fx-scroll-scene-panel-description {
-  font-size: clamp(14px, 1.05vw, 17px);
-  line-height: 1.58;
-}
-.fx-scroll-scene-panel-bottom {
-  padding-top: 12px;
-}
-.fx-scroll-scene-panel-facts dd {
-  font-size: clamp(19px, 1.6vw, 26px);
-}
-@media (max-width: 700px) {
-  .fx-scroll-story button.fx-scroll-scene-link {
-    min-height: clamp(280px, 46svh, 470px) !important;
-    padding: 44px 23px 25px;
-  }
-  .fx-scroll-story button.fx-scroll-scene-link .fx-scroll-scene-content {
-    width: calc(100% - 10px);
-    gap: 8px;
-    margin-top: 0;
-  }
-  .fx-scroll-story .fx-scroll-scene-content strong {
-    font-size: clamp(31px, 8.7vw, 62px) !important;
-    white-space: nowrap;
-  }
-  .fx-scroll-story .fx-scroll-scene-subtitle {
-    font-size: 11px;
-    gap: 12px;
-  }
-  .fx-scroll-scene-icon {
-    right: 23px;
-    top: 17px;
-    width: 40px;
-    height: 40px;
-  }
-  .fx-scroll-scene-panel-inner {
-    gap: 13px !important;
-    padding: 22px 23px 26px !important;
-  }
-  .fx-scroll-scene-panel-heading h3 {
-    font-size: 31px;
-  }
-  .fx-scroll-scene-panel-description {
-    font-size: 14px;
-  }
-  .fx-landing .fx-section {
-    padding-top: 38px !important;
-    padding-bottom: 38px !important;
-  }
-  .fx-landing .fx-plan {
-    padding: 14px !important;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-scroll-scene-icon *,
-  .fx-scroll-scene-icon,
-  .fx-scroll-connection-dot {
-    animation: none !important;
-    transition: none !important;
-  }}
-/* USERFX_SCENE_DISCOVER_HINT_V1 */
-.fx-scroll-scene-discover {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  color: #13b0e57c;
-  font-weight: 600;
-  letter-spacing: .22em;
-  margin-top: 4px;
-  border-bottom: 1px solid #13b0e5a6;
-  padding-bottom: 8px;
-}
-.fx-scroll-story button.fx-scroll-scene-link:hover .fx-scroll-scene-discover,
-.fx-scroll-scene.is-expanded .fx-scroll-scene-discover {
-  color: #fff2d3;
-  border-color: #13b0e5f8;
-}
-.fx-scroll-scene-panel { scroll-margin-top: 100px; }
-.fx-scroll-scene-panel-heading h3 { white-space: nowrap; }
-@media (max-width: 700px) {
-  .fx-scroll-scene-discover { font-size: 9px; letter-spacing: .16em; }
-  .fx-scroll-scene-panel { scroll-margin-top: 76px; }
-}
-
-
-/* USERFX_PROTOCOL_ACCORDION_STYLE_V1 */
-/* The same Spotlight, glass and glass-tile components used by SectionMethod. */
-.fx-scroll-scene-panel {
-  border-top: 1px solid #1691b440;
-}
-.fx-scroll-protocol-reveal {
-  width: 100%;
-}
-.fx-scroll-story .fx-scroll-protocol-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: clamp(13px, 1.8vw, 23px);
-  overflow: hidden;
-  border: 1px solid #6ab7d340;
-  border-radius: clamp(18px, 2.5vw, 32px);
-  padding: clamp(23px, 3.6vw, 43px);
-  background: linear-gradient(135deg, #181f26e8, rgba(10, 13, 24, .88));
-  box-shadow: 0 20px 65px #00000026;
-  backdrop-filter: blur(18px);
-}
-.fx-scroll-protocol-card-heading {
-  display: flex;
-  align-items: center;
-  gap: clamp(11px, 2vw, 20px);
-}
-.fx-scroll-protocol-step {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(34px, 4vw, 52px);
-  line-height: 1;
-  font-weight: 600;
-  color: #6ac3d3a6;
-}
-.fx-scroll-protocol-rule {
-  height: 1px;
-  flex: 1;
-  min-width: 18px;
-  background: linear-gradient(90deg, #6ad3d35c, transparent);
-}
-.fx-scroll-protocol-level {
-  font-size: 10px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: #d5f2f5b3;
-}
-.fx-scroll-protocol-glyph {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 1px solid #6a9bd33d;
-  color: #88aae4;
-  background: #6ac5d314;
-}
-.fx-scroll-protocol-glyph svg {
-  width: 24px;
-  height: 24px;
-}
-.fx-scroll-protocol-title {
-  position: relative;
-  margin: 0;
-  color: #faf7f1;
-  font-size: clamp(25px, 3vw, 37px);
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 1;
-  letter-spacing: -.025em;
-  white-space: nowrap;
-}
-.fx-scroll-protocol-description {
-  position: relative;
-  width: min(100%, 60ch);
-  margin: 0;
-  font-size: clamp(14px, 1.25vw, 17px);
-  line-height: 1.65;
-  color: rgba(242, 235, 226, .77);
-}
-.fx-scroll-protocol-metrics {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  width: 100%;
-  max-width: 650px;
-  margin: 0;
-}
-.fx-scroll-story .fx-scroll-protocol-metric {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 7px;
-  padding: 14px 17px;
-  border: 1px solid rgba(232, 216, 182, .10);
-  border-radius: 16px;
-  background: rgba(240, 236, 225, .04);
-}
-.fx-scroll-protocol-metric dt {
-  order: 2;
-  color: rgba(242, 235, 226, .58);
-  font-size: 12px;
-  line-height: 1.25;
-}
-.fx-scroll-protocol-metric dd {
-  order: 1;
-  margin: 0;
-  color: #f7f3ea;
-  font-size: clamp(20px, 2.2vw, 27px);
-  font-weight: 600;
-  line-height: 1.15;
-}
-.fx-scroll-story a.fx-scroll-protocol-enter {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-  padding: 14px 0 0;
-  margin-top: 2px;
-  border-top: 1px solid rgba(211, 180, 106, .24);
-  color: #dfbf7c;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .08em;
   text-decoration: none;
 }
-.fx-scroll-protocol-enter svg {
-  width: 19px;
-  height: 19px;
-  transition: transform .25s ease;
+.fx-scroll-cue span:last-child {
+  font-size: 24px;
+  transition: transform .3s ease;
 }
-.fx-scroll-protocol-enter:hover svg {
-  transform: translateX(4px);
+.fx-scroll-cue:hover span:last-child {
+  transform: translateY(8px);
 }
-@media (max-width: 700px) {
-  .fx-scroll-story .fx-scroll-protocol-card {
-    gap: 14px;
-    padding: 22px;
+@media (max-width: 900px) {
+  .fx-scroll-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-block: 50px;
   }
-  .fx-scroll-protocol-step {
-    font-size: 33px;
+  .fx-scroll-hero-title h1 {
+    font-size: clamp(48px,11.5vw,104px);
   }
-  .fx-scroll-protocol-glyph {
-    width: 39px;
-    height: 39px;
+  .fx-scroll-hero-aside {
+    align-items: flex-start;
+    margin-top: 24px;
+    text-align: left;
   }
-  .fx-scroll-protocol-title {
-    font-size: 29px;
+  .fx-scroll-hero-aside strong {
+    display: none;
   }
-  .fx-scroll-protocol-metrics {
-    gap: 8px;
-  }
-  .fx-scroll-story .fx-scroll-protocol-metric {
-    padding: 12px;
-  }
-  .fx-scroll-protocol-description {
-    font-size: 14px;
+  .fx-scroll-hero-aside p {
+    display: none;
   }
 }
-
-
-/* USERFX_IDENTITY_COMPACT_V1 — Compact access-prefix cards with individual motion */
-.fx-landing .fx-identity-intro {
-  margin-bottom: clamp(18px, 2.5vw, 36px) !important;
-}
-.fx-identity-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 28px);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.fx-identity-grid > li {
-  display: flex;
-  min-width: 0;
-}
-.fx-landing .fx-identity-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(11px, 1.1vw, 16px);
-  width: 100%;
-  min-width: 0;
-  min-height: clamp(270px, 23vw, 325px);
-  padding: clamp(24px, 2.7vw, 40px) !important;
-  overflow: hidden;
-  border-radius: 24px;
-  transition: border-color .3s, box-shadow .3s;
-}
-.fx-landing .fx-identity-card:hover {
-  border-color: rgba(208, 185, 141, .38);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .15);
-}
-.fx-identity-icon {
-  display: grid;
-  place-items: center;
-  position: relative;
-  width: 66px;
-  height: 66px;
-  flex: 0 0 auto;
-  border: 1px solid rgba(211, 180, 106, .18);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, .43);
-  isolation: isolate;
-}
-.fx-identity-icon::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: -1px;
-  border: 1px solid rgba(216, 196, 149, .20);
-  border-radius: 50%;
-  animation: fx-id-halo 4s ease-in-out infinite;
-}
-.fx-identity-icon-image {
-  display: block;
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  filter: grayscale(.92) brightness(1.05);
-  transform-origin: 50% 55%;
-  transition: filter .35s ease;
-  will-change: transform;
-}
-.fx-identity-card:hover .fx-identity-icon-image {
-  filter: grayscale(.25) brightness(1.08);
-}
-.fx-identity-card--spcl .fx-identity-icon-image {
-  animation: fx-id-presence 5.5s ease-in-out infinite;
-}
-.fx-identity-card--bsic .fx-identity-icon-image {
-  animation: fx-id-bloom 5.2s ease-in-out infinite;
-}
-.fx-identity-card--prx0 .fx-identity-icon-image {
-  animation: fx-id-flame 2.65s ease-in-out infinite;
-}
-.fx-identity-card--vipx .fx-identity-icon-image {
-  animation: fx-id-crown 4.2s ease-in-out infinite;
-}
-.fx-identity-card-title {
-  display: block;
-  margin: 1px 0 0;
-  color: #eeeae4;
-  font-size: clamp(18px, 1.65vw, 24px);
-  font-weight: 700;
-  line-height: 1.25;
-  white-space: nowrap;
-  letter-spacing: -.02em;
-}
-.fx-identity-card-rule {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(211, 180, 106, .32), transparent);
-}
-.fx-identity-card-description {
-  flex-grow: 1;
-  margin: 0;
-  color: rgba(240, 235, 225, .64);
-  font-size: clamp(14px, 1.15vw, 17px);
-  line-height: 1.6;
-}
-.fx-identity-card-feature {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 30px;
-  margin: auto 0 0;
-  padding-top: 13px;
-  border-top: 1px solid rgba(211, 180, 106, .18);
-  color: rgba(232, 204, 150, .93);
-  font-size: clamp(10px, .82vw, 12px);
-  font-weight: 650;
-  line-height: 1.4;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-}
-.fx-identity-card-feature::before {
-  content: "";
-  display: block;
-  width: 5px;
-  height: 5px;
-  flex: 0 0 5px;
-  border-radius: 50%;
-  background: #d3b46a;
-}
-@media (max-width: 550px) {
-  .fx-identity-card-feature {
-    gap: 7px;
-    min-height: 26px;
-    padding-top: 11px;
-    font-size: 10px;
-    letter-spacing: .04em;
+@media (max-width: 600px) {
+  .fx-scroll-quick-nav a {
+    display: none;
   }
-}
-@keyframes fx-id-halo {
-  0%,100% { box-shadow: 0 0 0 rgba(212, 189, 148, 0); border-color: rgba(212, 189, 148, .12); }
-  50% { box-shadow: 0 0 17px rgba(212, 189, 148, .12); border-color: rgba(212, 189, 148, .36); }
-}
-@keyframes fx-id-presence {
-  0%,100% { opacity: .79; filter: grayscale(1) brightness(.84); transform: scale(.97); }
-  50% { opacity: 1; filter: grayscale(.88) brightness(1.18); transform: scale(1.055); }
-}
-@keyframes fx-id-bloom {
-  0%,100% { transform: scale(.96) rotate(-3deg); }
-  50% { transform: scale(1.075) rotate(3deg); }
-}
-@keyframes fx-id-flame {
-  0%,100% { transform: scale(.96) rotate(-3deg) translateY(1px); }
-  35% { transform: scale(1.08, 1.13) rotate(2deg) translateY(-3px); }
-  70% { transform: scale(1.01, 1.055) rotate(-1deg) translateY(-1px); }
-}
-@keyframes fx-id-crown {
-  0%,100% { transform: translateY(1px) rotate(-2deg); }
-  50% { transform: translateY(-3px) rotate(2deg); }
-}
-@media (max-width: 1030px) {
-  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fx-landing .fx-identity-card { min-height: 255px; }
-  .fx-identity-card-title { font-size: clamp(17px, 2vw, 22px); }
-}
-@media (max-width: 550px) {
-  .fx-identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .fx-landing .fx-identity-card { min-height: 235px; padding: 18px !important; gap: 13px; border-radius: 20px; }
-  .fx-identity-icon { width: 53px; height: 53px; }
-  .fx-identity-icon-image { width: 39px; height: 39px; }
-  .fx-identity-card-title { font-size: clamp(12px, 3vw, 16px); }
-  .fx-identity-card-description { font-size: 12px; line-height: 1.53; }
+  .fx-scroll-hero-title h1 {
+    font-size: clamp(50px,12.2vw,78px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fx-identity-icon::before, .fx-identity-icon-image { animation: none !important; transition: none !important; will-change: auto; }
-}
-
-
-/* USERFX_PROTOCOL_STATS_2X2_V1 — Four styled counters in two rows / two columns. */
-.fx-landing .fx-protocol-stats-wrap {
-  max-width: 1150px;
-  margin-inline: auto;
-}
-.fx-landing .fx-protocol-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(10px, 1.6vw, 22px);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow: visible;
-}
-.fx-landing .fx-protocol-stat {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: clamp(10px, 1.4vw, 17px);
-  min-width: 0;
-  min-height: clamp(162px, 17vw, 223px);
-  padding: clamp(17px, 2.3vw, 30px);
-  overflow: hidden;
-  border: 1px solid rgba(218, 193, 143, .25);
-  border-radius: clamp(18px, 2.2vw, 28px);
-  color: #f6f0e7;
-  background:
-    radial-gradient(ellipse at 99% 2%, rgba(199, 174, 126, .10), transparent 55%),
-    linear-gradient(135deg, rgba(25, 25, 30, .93), rgba(10, 11, 16, .98));
-  box-shadow: inset 0 1px rgba(255, 255, 255, .045), 0 12px 34px rgba(0, 0, 0, .15);
-  transition: border-color .28s ease, box-shadow .28s ease, transform .28s ease;
-}
-.fx-landing .fx-protocol-stat::after {
-  content: "";
-  position: absolute;
-  inset: auto -14% -45% 25%;
-  height: 115px;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(ellipse, rgba(191, 150, 92, .09), transparent 68%);
-  transition: opacity .3s ease;
-}
-.fx-landing .fx-protocol-stat:hover {
-  border-color: rgba(231, 201, 150, .65);
-  box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 18px 36px rgba(0, 0, 0, .25);
-  transform: translateY(-3px);
-}
-.fx-protocol-stat-head {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  height: 32px;
-}
-.fx-protocol-stat-index {
-  flex-shrink: 0;
-  color: rgba(217, 185, 126, .77);
-  font-size: 10px;
-  letter-spacing: .2em;
-  font-weight: 600;
-}
-.fx-protocol-stat-line {
-  display: block;
-  height: 1px;
-  min-width: 0;
-  flex: 1;
-  background: linear-gradient(90deg, rgba(215, 185, 129, .43), transparent);
-}
-.fx-protocol-stat-icon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: clamp(31px, 3vw, 44px);
-  height: clamp(31px, 3vw, 44px);
-  color: #ddc395;
-  border: 1px solid rgba(212, 187, 138, .4);
-  border-radius: 50%;
-  background: rgba(6, 8, 13, .72);
-  box-shadow: 0 0 18px rgba(203, 169, 104, .12);
-}
-.fx-protocol-stat-icon svg {
-  display: block;
-  width: 58%;
-  height: 58%;
-  stroke: currentColor;
-}
-.fx-protocol-stat--0 .fx-protocol-stat-icon svg {
-  animation: fx-stat-space 6s ease-in-out infinite;
-}
-.fx-protocol-stat--1 .fx-protocol-stat-icon {
-  animation: fx-stat-camera 3s ease-in-out infinite;
-}
-.fx-protocol-stat--2 .fx-protocol-stat-icon svg {
-  animation: fx-stat-unlock 5s ease-in-out infinite;
-}
-.fx-protocol-stat--3 .fx-protocol-stat-icon svg {
-  animation: fx-stat-crown 4.3s ease-in-out infinite;
-}
-.fx-protocol-stat-value {
-  margin: 0;
-  color: #f9f4ec;
-  font: 400 clamp(44px, 5.2vw, 76px)/.95 Georgia, "Times New Roman", serif;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -.06em;
-}
-.fx-protocol-stat-label {
-  margin-top: auto;
-  color: rgba(225, 217, 207, .65);
-  font-size: clamp(12px, 1.12vw, 16px);
-  line-height: 1.3;
-  letter-spacing: .025em;
-}
-@keyframes fx-stat-space {
-  0%,100% { transform: scale(.96); opacity: .78; }
-  50% { transform: scale(1.1); opacity: 1; }
-}
-@keyframes fx-stat-camera {
-  0%,100% { box-shadow: 0 0 8px rgba(203, 169, 104, .12); }
-  50% { box-shadow: 0 0 21px rgba(203, 169, 104, .45); }
-}
-@keyframes fx-stat-unlock {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-@keyframes fx-stat-crown {
-  0%,100% { transform: rotate(-2deg) translateY(1px); }
-  50% { transform: rotate(2deg) translateY(-2px); }
-}
-/* Floating ornamental icon in Protocol, with a restrained light pulse. */
-.fx-landing .fx-protocol-ornament {
-  animation: fx-protocol-emblem-motion 7s ease-in-out infinite;
-  transform-origin: center;
-  will-change: transform, filter;
-}
-@keyframes fx-protocol-emblem-motion {
-  0%,100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 7px rgba(211, 180, 106, .09)); }
-  50% { transform: translateY(-9px) scale(1.02); filter: drop-shadow(0 0 17px rgba(211, 180, 106, .18)); }
-}
-@media (max-width: 700px) {
-  .fx-landing .fx-protocol-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-  .fx-landing .fx-protocol-stat {
-    padding: 14px;
-    min-height: 144px;
-    border-radius: 19px;
-    gap: 8px;
-  }
-  .fx-protocol-stat-head { gap: 8px; height: 29px; }
-  .fx-protocol-stat-value { font-size: clamp(38px, 9vw, 56px); }
-  .fx-protocol-stat-index { font-size: 9px; }
-  .fx-protocol-stat-icon { width: 31px; height: 31px; }
-  .fx-protocol-stat-label { font-size: clamp(10px, 2.5vw, 13px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-landing .fx-protocol-ornament,
-  .fx-protocol-stat-icon,
-  .fx-protocol-stat-icon svg { animation: none !important; will-change: auto; }
-  .fx-landing .fx-protocol-stat { transition: none !important; }
-}
-
-
-/* USERFX_PROTOCOL_WEBGL_FLUID_V1 — GPU flowing pigment, beneath accessible text */
-.fx-landing .fx-protocol-stat {
-  background:
-    radial-gradient(ellipse at 84% 10%, rgba(64, 45, 90, .20), transparent 65%),
-    linear-gradient(135deg, rgba(19, 19, 30, .97), rgba(7, 8, 15, .98));
-}
-.fx-landing .fx-protocol-stat > *:not(.fx-protocol-fluid) {
-  position: relative;
-  z-index: 2;
-}
-.fx-protocol-fluid {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: .93;
-  mix-blend-mode: screen;
-  filter: saturate(1.45);
-}
-.fx-landing .fx-protocol-stat::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(110deg, rgba(4, 5, 11, .42), transparent 65%);
-}
-.fx-landing .fx-protocol-stat--0 {
-  box-shadow: inset 0 1px rgba(115, 211, 234, .12), 0 15px 40px rgba(0,0,0,.16);
-}
-.fx-landing .fx-protocol-stat--1 {
-  box-shadow: inset 0 1px rgba(129, 149, 246, .12), 0 15px 40px rgba(0,0,0,.16);
-}
-.fx-landing .fx-protocol-stat--2 {
-  box-shadow: inset 0 1px rgba(184, 115, 222, .12), 0 15px 40px rgba(0,0,0,.16);
-}
-.fx-landing .fx-protocol-stat--3 {
-  box-shadow: inset 0 1px rgba(228, 194, 126, .12), 0 15px 40px rgba(0,0,0,.16);
-}
-.fx-landing .fx-protocol-stat-value,
-.fx-landing .fx-protocol-stat-label {
-  text-shadow: 0 1px 10px rgba(0, 0, 0, .65);
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-protocol-fluid { display: none; }
-}
-
-/* USERFX_PROTOCOL_ROOM_MEDIA_V1 — 4 backgrounds: room1.png / room2.mp4 / room3.png / room4.mp4 */
-.fx-landing .fx-protocol-stat {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: #090a0f;
-}
-.fx-landing .fx-protocol-stat > .fx-protocol-stat-media {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  border-radius: inherit;
-  object-fit: cover;
-  object-position: center;
-  pointer-events: none;
-  filter: saturate(.88) brightness(.85);
-  transition: transform .6s ease, filter .6s ease;
-}
-.fx-landing .fx-protocol-stat:hover > .fx-protocol-stat-media {
-  transform: scale(1.055);
-  filter: saturate(1) brightness(.95);
-}
-.fx-landing .fx-protocol-stat::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(7, 8, 13, .85), rgba(7, 8, 13, .42) 76%),
-    linear-gradient(0deg, rgba(7, 8, 13, .66), transparent 80%);
-}
-.fx-landing .fx-protocol-stat > :not(.fx-protocol-stat-media) {
-  position: relative;
-  z-index: 2;
-}
-.fx-landing .fx-protocol-stat-value,
-.fx-landing .fx-protocol-stat-label {
-  text-shadow: 0 2px 12px rgba(0, 0, 0, .8);
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-landing .fx-protocol-stat > .fx-protocol-stat-media {
+  .fx-scroll-hero-enter,.fx-scroll-cue span:last-child {
     transition: none;
   }
-  .fx-landing .fx-protocol-stat:hover > .fx-protocol-stat-media {
-    transform: none;
-  }
-}
-
-
-/* USERFX_PROTOCOL_OVERLAY_GLASS_V2 — Media always behind translucent readable content. */
-/* The original card dimensions and 2x2 responsive grid are preserved. */
-.fx-landing .fx-protocol-stat {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-.fx-landing .fx-protocol-stat > .fx-protocol-stat-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
-  object-position: center;
-  pointer-events: none;
-}
-.fx-landing .fx-protocol-stat::before {
-  content: none;
-}
-.fx-landing .fx-protocol-stat > .fx-protocol-stat-shade {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background:
-    linear-gradient(to top,
-      rgba(5, 7, 13, .77) 0%,
-      rgba(5, 7, 13, .38) 53%,
-      rgba(5, 7, 13, .16) 100%),
-    linear-gradient(to right,
-      rgba(5, 7, 13, .10),
-      transparent 74%);
-}
-.fx-landing .fx-protocol-stat > .fx-protocol-stat-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-}
-.fx-landing .fx-protocol-stat-content .fx-protocol-stat-head {
-  position: relative;
-  z-index: 2;
-  flex: 0 0 auto;
-}
-.fx-landing .fx-protocol-stat-content .fx-protocol-stat-icon {
-  background: rgba(6, 8, 13, .55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.fx-landing .fx-protocol-stat-bottom {
-  align-self: flex-start;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-width: 100%;
-  margin-top: auto;
-  padding: 12px 16px;
-  border: 1px solid rgba(245, 229, 203, .12);
-  border-radius: 16px;
-  color: #f6f1e8;
-  background: rgba(9, 11, 18, .38);
-  backdrop-filter: blur(11px);
-  -webkit-backdrop-filter: blur(11px);
-  box-shadow: inset 0 1px rgba(255, 255, 255, .04);
-}
-.fx-landing .fx-protocol-stat-bottom .fx-protocol-stat-value {
-  margin: 0;
-  color: #fff8ef;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, .66);
-}
-.fx-landing .fx-protocol-stat-bottom .fx-protocol-stat-label {
-  margin: 0;
-  color: rgba(251, 247, 239, .86);
-  text-shadow: 0 1px 7px rgba(0, 0, 0, .76);
-}
-@media (max-width: 700px) {
-  .fx-landing .fx-protocol-stat > .fx-protocol-stat-content {
-    gap: 8px;
-  }
-  .fx-landing .fx-protocol-stat-bottom {
-    padding: 8px 9px;
-    gap: 3px;
-    border-radius: 11px;
-  }
-  .fx-landing .fx-protocol-stat-bottom .fx-protocol-stat-value {
-    font-size: clamp(31px, 8vw, 47px);
-    line-height: .96;
-  }
-  .fx-landing .fx-protocol-stat-bottom .fx-protocol-stat-label {
-    font-size: clamp(10px, 2.5vw, 13px);
-    line-height: 1.3;
-  }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .fx-landing .fx-protocol-stat-bottom {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(9, 11, 18, .84);
-  }
-}
-
-/* USERFX compact disclosure — text tab, no nested glass card. */
-.fx-scroll-story .fx-scroll-scene-panel {
-  background: #101116;
-  border-block: 1px solid rgba(206,182,123,.24);
-}
-.fx-scroll-story .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 26px;
-  max-width: 1440px;
-  padding: 17px clamp(25px, 7vw, 118px);
-  margin-inline: auto;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-}
-.fx-scroll-scene-tab-index {
-  color: #ceb67b;
-  font-size: 10px;
-  letter-spacing: .14em;
-  white-space: nowrap;
-}
-.fx-scroll-scene-tab-copy {
-  flex: 1 1 340px;
-  min-width: 0;
-}
-.fx-scroll-scene-tab-copy strong {
-  display: block;
-  margin-bottom: 3px;
-  font-size: 14px;
-  font-weight: 650;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.fx-scroll-scene-tab-copy p {
-  margin: 0;
-  max-width: 78ch;
-  font-size: 12px;
-  line-height: 1.55;
-  color: rgba(245,237,225,.7);
-}
-.fx-scroll-story .fx-scroll-scene-tab-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid #ceb67b88;
-  color: #ceb67b;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  white-space: nowrap;
-}
-@media (max-width: 700px) {
-  .fx-scroll-story .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
-    padding: 14px 24px;
-    gap: 8px 14px;
-  }
-  .fx-scroll-scene-tab-copy { flex-basis: 100%; }
-}
-/* ==========================================================================
-   USERFX_SCROLL_BANDS_V1
-   PEGAR AL FINAL de ScrollStory.css (después de todo lo existente).
-   4 bandas de 1/4 de pantalla reveladas una por una con el scroll.
-   ========================================================================== */
-.fx-scroll-story .fx-scroll-scenes {
-  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
-  height: 400svh;                /* recorrido de scroll de toda la sección */
-  background: #08090c;
-}
-.fx-scroll-story .fx-scroll-stage {
-  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
-  top: var(--fx-nav-h);
-  height: calc(100svh - var(--fx-nav-h));
-  display: flex;
-  flex-direction: column;
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
-  flex: 0 0 25%;
-  height: 25%;
-  min-height: 0 !important;
-  overflow: visible;
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded {
-  z-index: 30;
-}
-.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
-  height: 100%;
-  min-height: 0 !important;
-  padding: 0 clamp(20px, 6vw, 100px);
-  align-items: center;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
-  inset: 0;
-  height: 100%;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-kicker {
-  display: none;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index {
-  top: 10px;
-  left: clamp(20px, 6vw, 100px);
-  font-size: 11px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon {
-  top: 10px;
-  width: 36px;
-  height: 36px;
-}
-.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
-  margin-top: 0;
-  gap: 4px;
-  width: calc(100% - 110px);
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
-  font-size: clamp(26px, min(5.2vw, 8svh), 84px) !important;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
-  font-size: clamp(10px, 1.1vw, 15px);
-  padding-bottom: 4px;
-  gap: 12px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
-  margin-top: 0;
-  padding-bottom: 4px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
-  font-size: clamp(80px, 22svh, 240px);
-  bottom: -.2em;
-}
-/* El acordeón se abre como pestaña flotante sobre la banda siguiente */
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-}
-/* La última banda se abre sobre sí misma (no hay banda debajo) */
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:last-child .fx-scroll-scene-panel {
-  top: auto;
-  bottom: 0;
-}
-@media (max-height: 760px) {
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
-    display: none;
-  }}
-@media (max-width: 700px) {
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
-    font-size: clamp(24px, 8vw, 40px) !important;
-  }
-  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
-    width: calc(100% - 20px);
-  }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
-    font-size: 90px;
-  }}
-/* ==========================================================================
-   USERFX_SCROLL_BANDS_V2 — 4 franjas VERTICALES (1/4 del ancho, alto completo)
-   PEGAR AL FINAL de ScrollStory.css. Si ya pegaste la V1, BÓRRALA y usa esta.
-========================================================================== */
-.fx-scroll-story .fx-scroll-scenes {
-  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
-  height: 400svh;                /* recorrido de scroll de toda la sección */
-  background: #08090c;
-}
-.fx-scroll-story .fx-scroll-stage {
-  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
-  top: var(--fx-nav-h);
-  height: calc(100svh - var(--fx-nav-h));
-  display: flex;
-  flex-direction: row;           /* 1 - 2 - 3 - 4 de izquierda a derecha */
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
-  flex: 0 0 25%;
-  width: 25%;
-  height: 100%;
-  min-height: 0 !important;
-  overflow: visible;
-  border-top: 0;
-  border-left: 1px solid #f6ead01a;
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-left: 0;
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded { z-index: 30;
-}
-/* Foto vertical: cubre toda la franja, texto abajo */
-.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
-  height: 100%;
-  min-height: 0 !important;
-  padding: 0 clamp(16px, 1.8vw, 30px) clamp(24px, 4svh, 48px);
-  align-items: flex-end;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
-  inset: 0;
-  height: 100%;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
-  background: linear-gradient(0deg, #05070bee 0%, #05070b66 45%, #05070b1a 100%);
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index {
-  top: 16px;
-  left: clamp(16px, 1.8vw, 30px);
-  font-size: 12px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index::after { width: 40px; }
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon {
-  top: 12px;
-  right: clamp(14px, 1.6vw, 26px);
-  width: 40px;
-  height: 40px;
-}
-/* Número grande arriba de cada franja */
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
-  top: 64px;
-  bottom: auto;
-  right: clamp(10px, 1.4vw, 24px);
-  font-size: clamp(90px, 11vw, 190px);
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-kicker { display: none; }
-.fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
-  margin-top: 0;
-  gap: 8px;
-  width: 100%;
-  max-width: none;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
-  font-size: clamp(26px, 2.9vw, 52px) !important;
-  white-space: normal;
-  line-height: .98;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
-  font-size: clamp(10px, .9vw, 14px);
-  gap: 10px;
-  padding-bottom: 6px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover {
-  margin-top: 2px;
-  font-size: 9px;
-  letter-spacing: .16em;
-}
-/* El acordeón se abre como pestaña en la base de su propia franja */
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: auto;
-  bottom: 0;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
-  flex-direction: column;
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  gap: 10px;
-  padding: 18px clamp(16px, 1.8vw, 30px) 20px;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-tab-copy { flex: 0 0 auto;
-}
-/* Móvil (≤700px): 4 bandas HORIZONTALES de 1/4 de alto, entran 1 → 2 → 3 → 4 */
-@media (max-width: 700px) {
-  .fx-scroll-story .fx-scroll-stage { flex-direction: column; }
-  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
-    flex: 0 0 25%;
-    width: 100%;
-    height: 25%;
-    border-left: 0;
-    border-top: 1px solid #f6ead01a;
-  }
-  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-top: 0; }
-  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link {
-    padding: 0 20px;
-    align-items: center;
-    justify-content: flex-start;
-  }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
-    background: linear-gradient(90deg, #05070bdd 0%, #05070b88 55%, #05070b22 100%);
-  }
-  .fx-scroll-story .fx-scroll-stage button.fx-scroll-scene-link .fx-scroll-scene-content {
-    width: calc(100% - 70px);
-    gap: 4px;
-    margin-top: 6px;
-  }
-/* título horizontal normal */
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-content strong {
-    writing-mode: horizontal-tb;
-    transform: none;
-    white-space: nowrap;
-    font-size: clamp(26px, 8.4vw, 40px) !important;
-  }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-subtitle {
-    display: inline-flex;
-    font-size: 11px;
-    gap: 8px;
-    padding-bottom: 3px;
-  }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-discover { display: none; }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index { display: block; top: 8px; left: 20px; font-size: 10px; }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-index::after { display: none; }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-icon { display: grid; top: 8px; right: 14px; width: 32px; height: 32px; }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-watermark {
-    top: auto; bottom: -.18em; right: 10px; font-size: clamp(70px, 19svh, 120px);
-  }
-/* acordeón: pestaña inferior a todo el ancho */
-  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene.is-expanded .fx-scroll-scene-panel {
-    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60;
-  }
-  .fx-scroll-story .fx-scroll-stage .fx-scroll-scene-panel-inner.fx-scroll-scene-tab {
-    padding: 16px 20px 22px;
-  }}
-  .fx-scroll-left-panel {
-  left: clamp(56px, 7vw, 110px);
-  max-width: 520px;
-}
-.fx-scroll-left-panel .fx-angle-panel,
-.fx-scroll-left-panel .fx-left-actions {
-  transform: translateX(28px);
-}
-/*==========================================================================
-   USERFX_SCROLL_BANDS_V3 — 4 franjas SOLO imagen/video (sin texto)
-   PEGAR AL FINAL de ScrollStory.css. BORRA antes la V1 / V2 si ya las pegaste.
-   Escritorio: 4 franjas verticales (1/4 del ancho) · Móvil: 4 bandas horizontales (1/4 del alto)
-========================================================================== */
-.fx-scroll-story .fx-scroll-scenes {
-  --fx-nav-h: 64px;              /* = StickyHeader (h-16) de Chrome.tsx */
-  height: 400svh;                /* recorrido de scroll de toda la sección */
-  background: #08090c;
-}
-.fx-scroll-story .fx-scroll-stage {
-  position: sticky;              /* funciona porque .fx-scroll-story usa overflow: clip */
-  top: var(--fx-nav-h);
-  height: calc(100svh - var(--fx-nav-h));
-  display: flex;
-  flex-direction: row;           /* 1 - 2 - 3 - 4 de izquierda a derecha */
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
-  flex: 0 0 25%;
-  width: 25%;
-  height: 100%;
-  min-height: 0 !important;
-  overflow: hidden;
-  border-top: 0;
-  border-left: 1px solid #f6ead01a;
-}
-.fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-left: 0; 
-}
-/* La franja es solo la imagen / el video a todo el alto */
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 0 !important;
-  padding: 0;
-  cursor: pointer;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-image {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.fx-scroll-story .fx-scroll-stage .fx-scroll-scene-shade {
-  background: linear-gradient(0deg, #05070b55 0%, transparent 40%);
-}
-/* Móvil (≤700px): 4 bandas horizontales, entran 1 → 2 → 3 → 4 */
-@media (max-width: 700px) {
-  .fx-scroll-story .fx-scroll-stage { flex-direction: column; }
-  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene {
-    flex: 0 0 25%;
-    width: 100%;
-    height: 25%;
-    border-left: 0;
-    border-top: 1px solid #f6ead01a;
-  }
-  .fx-scroll-story .fx-scroll-stage > .fx-scroll-scene:first-child { border-top: 0; }
 }
