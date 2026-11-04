@@ -10,61 +10,108 @@
 
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
-/* Four room videos, two per row. Prefix cards stay compact and separate. */
-.fx-landing #identity {
-  padding-block: clamp(28px, 6vh, 72px);
+/* Room videos: a single 2x2 surface, zero space between tiles.
+   Individual tiles are revealed in order by the section's scroll timeline. */
+.fx-landing #identity.fx-room-video-section {
+  position: relative;
+  height: 455svh;
+  padding: 0;
+  margin: 0;
+  scroll-margin-top: var(--fx-nav-h, 64px);
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(9, 31, 54, .46), transparent 72%),
+    #05080d;
 }
+
+.fx-landing #identity .fx-room-video-stage {
+  position: sticky;
+  top: var(--fx-nav-h, 64px);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: calc(100svh - var(--fx-nav-h, 64px));
+  overflow: hidden;
+}
+
 .fx-landing #identity .fx-room-video-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(14px, 2.2vw, 28px);
-  width: min(100%, 1220px);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  width: min(100%, 1440px, calc((100svh - var(--fx-nav-h, 64px) - 16px) * 1.77778));
+  aspect-ratio: 16 / 9;
   margin: 0 auto;
   padding: 0;
+  overflow: hidden;
   list-style: none;
 }
-.fx-landing #identity .fx-room-video-item,
-.fx-landing #identity .fx-room-video-figure {
+
+.fx-landing #identity .fx-room-video-item {
+  position: relative;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   margin: 0;
+  border: 0;
+  outline: 1px solid rgba(83, 189, 203, .25);
+  outline-offset: -1px;
+  will-change: opacity, transform, clip-path;
 }
+
 .fx-landing #identity .fx-room-video-figure {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #02050a;
 }
+
 .fx-landing #identity .fx-room-video-player {
   display: block;
   width: 100%;
+  height: 100%;
+  max-height: none;
   aspect-ratio: 16 / 9;
-  height: auto;
-  max-height: 370px;
   object-fit: contain;
-  background: #05070b;
-  border: 1px solid rgba(83, 189, 203, 0.28);
-  border-radius: 14px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, .2);
+  background: #02050a;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
+
 .fx-landing #identity .fx-room-code-card {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 54px;
-  width: min(100%, 216px);
-  padding: 8px 12px;
-  border: 1px solid rgba(231, 219, 203, .18);
-  border-radius: 12px;
-  background: rgba(15, 18, 25, .85);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+  gap: 8px;
+  width: min(42%, 178px);
+  min-height: 40px;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid rgba(231, 219, 203, .20);
+  border-radius: 9px;
+  color: #f0eadf;
+  background: rgba(7, 12, 19, .82);
+  backdrop-filter: blur(7px);
+  pointer-events: none;
 }
+
 .fx-landing #identity .fx-room-code-icon {
   display: block;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
   object-fit: contain;
 }
+
 .fx-landing #identity .fx-room-code-text {
   display: flex;
   flex-direction: column;
@@ -72,47 +119,66 @@
   min-width: 0;
   line-height: 1.1;
 }
+
 .fx-landing #identity .fx-room-code-prefix {
   color: #f0eadf;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
 }
+
 .fx-landing #identity .fx-room-code-level {
-  color: rgba(236, 228, 216, .62);
-  font-size: 10px;
-  letter-spacing: .12em;
+  color: rgba(236, 228, 216, .72);
+  font-size: 9px;
+  letter-spacing: .09em;
   text-transform: uppercase;
 }
+
+.fx-landing #identity.is-reduced {
+  height: auto;
+  padding: 28px 0;
+}
+
+.fx-landing #identity.is-reduced .fx-room-video-stage {
+  position: relative;
+  top: auto;
+  height: auto;
+}
+
+.fx-landing #identity.is-reduced .fx-room-video-item {
+  will-change: auto;
+}
+
 @media (max-width: 600px) {
   .fx-landing #identity .fx-room-video-grid {
-    gap: 18px 10px;
+    width: 100%;
   }
-  .fx-landing #identity .fx-room-video-figure {
-    gap: 8px;
-  }
-  .fx-landing #identity .fx-room-video-player {
-    border-radius: 9px;
-  }
+
   .fx-landing #identity .fx-room-code-card {
-    width: min(100%, 155px);
-    min-height: 42px;
-    padding: 6px;
-    gap: 6px;
-    border-radius: 8px;
+    top: 3px;
+    left: 3px;
+    gap: 3px;
+    width: min(63%, 115px);
+    min-height: 26px;
+    padding: 3px 4px;
+    border-radius: 5px;
   }
+
   .fx-landing #identity .fx-room-code-icon {
-    width: 26px;
-    height: 26px;
-    flex-basis: 26px;
+    width: 19px;
+    height: 19px;
+    flex-basis: 19px;
   }
+
   .fx-landing #identity .fx-room-code-prefix {
-    font-size: 12px;
+    font-size: 10px;
   }
+
   .fx-landing #identity .fx-room-code-level {
-    font-size: 9px;
+    font-size: 7px;
   }
 }
+
 @media(min-width:768px) {
  .fx-landing #access { scroll-margin-top:5rem; padding-block:clamp(.8rem,2vh,2rem); }
  .fx-landing #access h2 { font-size:clamp(2rem,6vh,4rem); max-width:none; line-height:1; }
