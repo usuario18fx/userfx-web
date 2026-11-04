@@ -41,10 +41,27 @@ void main() {
 /** Dónde se dibuja la corona dentro del escenario (coordenadas NDC) */
 function layout(w: number, h: number) {
   const aspect = w / h;
-  // Escritorio: abajo a la izquierda, donde estaba el logo de FX
-  if (aspect > 1.15) return { scale: 0.72, ox: 0.48, oy: -0.45 };
-  // Móvil: arriba a la derecha, pequeña
-  return { scale: 0.3, ox: 0.66, oy: 0.78 };
+  // The crown starts on the right, then travels to the word "THE".
+  if (aspect > 1.15) return { scale: 0.61, ox: 0.48, oy: -0.42 };
+  return { scale: 0.30, ox: 0.66, oy: 0.67 };
+}
+
+/* Anchor in viewport coordinates, based on the actual text position.
+   The crown's lower edge remains above the word, on every screen size. */
+function crownDestination(canvas: HTMLCanvasElement, scale: number) {
+  const word = canvas.parentElement?.querySelector<HTMLElement>('[data-pv-crown-target="the"]');
+  if (!word) return null;
+  const viewport = canvas.getBoundingClientRect();
+  const target = word.getBoundingClientRect();
+  if (!viewport.width || !viewport.height || !target.width) return null;
+
+  const visualHeight = viewport.height * scale * 0.5;
+  const x = (target.left + target.width * 0.5 - viewport.left) / viewport.width;
+  const y = Math.max(
+    visualHeight * 0.65 + 14,
+    Math.min(viewport.height - visualHeight, target.top - viewport.top - visualHeight * 0.85),
+  );
+  return { ox: x * 2 - 1, oy: 1 - (y / viewport.height) * 2 };
 }
 
 export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt = 1, src = "/corona/corona.bin" }: Props) {
@@ -255,7 +272,20 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt
             const hy = home[j + 1] * cp - hz * sp + bob;
             const tz = home[j + 1] * sp + hz * cp;
 
-            if (phase === "idle" || (phase === "falling" && elapsed < release[i])) {
+            if (phase === "falling" || phase === "ground") {
+              // Deterministic breakup, directly controlled by scroll; reversing scroll reverses it.
+              const amount = Math.max(0, Math.min(1,
+                (progressRef.current - dissolveAt) / Math.max(0.04, Math.min(0.24, rebuildAt - dissolveAt))));
+              const delay = release[i] * 0.38;
+              const t = Math.max(0, Math.min(1, (amount - delay) / (1 - delay)));
+              const e = t * t * (3 - 2 * t);
+              const theta = i * 2.39996 + grains[i] * 4;
+              positions[j] = hx + Math.cos(theta) * e * (0.5 + grains[i] * 1.1);
+              positions[j + 1] = Math.max(floorBase + grains[i] * 0.02, hy - e * e * 3.5);
+              positions[j + 2] = tz + Math.sin(theta) * e * (0.25 + grains[i] * 0.6);
+              continue;
+            }
+            if (phase === "idle") {
               positions[j] = hx; positions[j + 1] = hy; positions[j + 2] = tz;
               continue;
             }
@@ -332,9 +362,18 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt
             const lay = layout(cw, ch);
             // La corona gira con el scroll
             const spin = Math.min(1, p / Math.max(spinTo, 1e-6));
-            lay.ox *= 1-spin;
-            lay.oy += (0.16-lay.oy)*spin;
-            lay.ox -= 0.32*assembly;
+            const travel = spin * spin * (3 - 2 * spin);
+            const destinationScale = aspect > 1.15 ? 0.47 : 0.27;
+            lay.scale += (destinationScale - lay.scale) * travel;
+            const destination = crownDestination(canvas, lay.scale);
+            if (destination) {
+              lay.ox += (destination.ox - lay.ox) * travel;
+              lay.oy += (destination.oy - lay.oy) * travel;
+            } else {
+              lay.ox *= 1 - travel;
+              lay.oy += (0.16 - lay.oy) * travel;
+            }
+            if (assembly > 0) lay.ox -= 0.32 * assembly;
             const yaw = -0.3 + spin * Math.PI * 2 * 1.1;
 
             const steps = Math.max(1, Math.ceil(dt / 0.012));
