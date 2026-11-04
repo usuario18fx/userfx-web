@@ -1,7 +1,7 @@
-/* Inside: four complete photographs, centered and controlled only by scrolling. */
+/* INSIDE: centered half-page photos; each cinematic reveal follows only the scroll. */
 .fx-media-sequence {
   position: relative;
-  height: 420svh;
+  height: 440svh;
   isolation: isolate;
   background: #050911;
   scroll-margin-top: var(--fx-nav-h, 64px);
@@ -14,15 +14,15 @@
   height: calc(100svh - var(--fx-nav-h, 64px));
   overflow: hidden;
   isolation: isolate;
-  background: radial-gradient(ellipse at 50% 50%, #0c1c39 0%, #070d19 50%, #03060b 100%);
+  background: radial-gradient(ellipse at 50% 52%, #0c1c39 0%, #070d19 55%, #03060b 100%);
 }
 
 .fx-media-backdrop {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: grid;
   place-items: center;
-  z-index: 0;
   pointer-events: none;
 }
 
@@ -50,25 +50,26 @@
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: clamp(20px, 4svh, 52px) 18px;
+  justify-content: center;
   margin: 0;
+  padding: clamp(16px, 4svh, 50px) 18px;
   pointer-events: none;
+  will-change: transform, opacity, filter;
 }
 
 .fx-media-photo-frame {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(56vw, 680px);
-  height: min(64svh, 640px);
-  padding: clamp(6px, 0.8vw, 12px);
+  width: min(50vw, 720px);
+  height: min(71svh, 690px);
+  padding: clamp(6px, .8vw, 12px);
   overflow: hidden;
-  border: 1px solid rgba(52, 204, 209, 0.38);
+  border: 1px solid rgba(57, 211, 221, 0.45);
   border-radius: 16px;
-  background: rgba(3, 8, 16, 0.72);
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.24);
+  background: rgba(3, 8, 16, 0.56);
+  box-shadow: 0 26px 75px rgba(0, 0, 0, .34), 0 0 40px rgba(22, 153, 205, .08);
 }
 
 .fx-media-photo-image {
@@ -96,7 +97,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 30px;
   padding: 32px 12px;
 }
 
@@ -105,6 +106,7 @@
   inset: auto;
   width: 100%;
   padding: 0;
+  will-change: auto;
 }
 
 @media (max-width: 700px) {
@@ -113,13 +115,19 @@
   }
 
   .fx-media-photo-frame {
-    width: min(90vw, 430px);
-    height: min(68svh, 620px);
+    width: min(89vw, 430px);
+    height: min(70svh, 620px);
     padding: 5px;
-    border-radius: 11px;
+    border-radius: 12px;
   }
 
   .fx-media-photo-image {
-    border-radius: 7px;
+    border-radius: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-media-photo {
+    will-change: auto;
   }
 }
