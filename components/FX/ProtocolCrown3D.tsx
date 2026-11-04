@@ -7,6 +7,7 @@ import * as THREE from "three";
 type Props = {
   progress: MotionValue<number> | number;
   dissolveAt: number;
+  variant?: "inside" | "debris";
 };
 
 type Cloud = {
@@ -19,7 +20,7 @@ type Cloud = {
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
 /** Original USER FX point-cloud geometry, embedded with a genuinely transparent canvas. */
-export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
+export default function ProtocolCrown3D({ progress, dissolveAt, variant = "inside" }: Props) {
   const host = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,15 +87,19 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
     const draw = () => {
       if (destroyed) return;
       const p = currentProgress;
-      const fall = easeScroll((p - dissolveAt) / Math.max(0.06, 1 - dissolveAt));
-      const descent = easeScroll((p - 0.70) / 0.25);
+      const fall = variant === "debris"
+        ? easeScroll((p - dissolveAt) / 0.25)
+        : easeScroll((p - dissolveAt) / Math.max(0.06, 1 - dissolveAt));
+      const descent = variant === "debris"
+        ? easeScroll(p / 0.29)
+        : easeScroll((p - 0.70) / 0.25);
       const orbit = easeScroll((p - 0.10) / 0.65);
 
       // Two independently moving shapes. The crown remains behind every photograph,
       // turns with the scroll, then follows a gentle arc down to the stage floor.
       crownGroup.position.set(
-        0.72 - 0.93 * descent + Math.sin(orbit * Math.PI) * 0.16,
-        0.20 - descent * 1.18,
+        variant === "debris" ? -1.10 - 0.32 * descent : 0.72 - 0.93 * descent + Math.sin(orbit * Math.PI) * 0.16,
+        variant === "debris" ? 0.56 - descent * 1.82 : 0.20 - descent * 1.18,
         0,
       );
       crownGroup.rotation.y = -0.2 + p * Math.PI * 4.2;
@@ -109,6 +114,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
       );
       roseGroup.rotation.y = p * Math.PI * -2.1;
       roseGroup.rotation.z = p * 0.22;
+      roseGroup.visible = variant !== "debris";
 
       for (const cloud of clouds) {
         const position = cloud.geometry.getAttribute("position") as THREE.BufferAttribute;
@@ -125,7 +131,10 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
           coords[j + 2] = original[j + 2] + (isCrown ? Math.cos(i * 4.31) * fall * 0.5 : 0);
         }
         position.needsUpdate = true;
-        cloud.material.opacity = (cloud.points.userData.baseOpacity as number) * (1 - (cloud.points.parent === crownGroup ? fall * 0.35 : 0));
+        const fade = variant === "debris" ? easeScroll((p - 0.20) / 0.18) : 0;
+        cloud.material.opacity = (cloud.points.userData.baseOpacity as number)
+          * (1 - (cloud.points.parent === crownGroup ? fall * 0.35 : 0))
+          * (1 - fade);
       }
       renderer.render(scene, camera);
     };
@@ -141,9 +150,10 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
 
     const resize = () => {
       if (destroyed) return;
-      const size = Math.max(1, Math.round(el.clientWidth));
-      renderer.setSize(size, size, false);
-      camera.aspect = 1;
+      const width = Math.max(1, Math.round(el.clientWidth));
+      const height = Math.max(1, Math.round(el.clientHeight || el.clientWidth));
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
       requestDraw(currentProgress);
     };
@@ -158,7 +168,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
     const load = async () => {
       const [res, rose] = await Promise.all([
         fetch("/corona/corona.bin", { signal: abort.signal }),
-        new Promise<HTMLImageElement>((resolve, reject) => {
+        variant === "debris" ? Promise.resolve(null) : new Promise<HTMLImageElement>((resolve, reject) => {
           const image = new Image();
           image.onload = () => resolve(image);
           image.onerror = () => reject(new Error("No se pudo cargar rosa1.png"));
@@ -186,7 +196,8 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
       addCloud(crown, blues, 0.015, 0.80, crownGroup);
       clouds[clouds.length - 1].points.userData.baseOpacity = 0.8;
 
-      // Real transparent rose pixels, no flat white disc or backdrop.
+      // The debris continuation uses only the original cyan crown geometry.
+      if (rose) {
       const c = document.createElement("canvas");
       c.width = 220;
       c.height = Math.max(1, Math.round(220 * rose.naturalHeight / rose.naturalWidth));
@@ -222,6 +233,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
           clouds[clouds.length - 1].points.userData.baseOpacity = 0.9;
         }
       }
+      }
       requestDraw(currentProgress);
     };
 
@@ -242,7 +254,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [progress, dissolveAt]);
+  }, [progress, dissolveAt, variant]);
 
   return <div ref={host} className="fx-crown3d-stage" aria-hidden="true" />;
 }
