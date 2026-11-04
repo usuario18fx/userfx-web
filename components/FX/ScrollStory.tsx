@@ -105,7 +105,7 @@ SCROLL TO DISCOVER
         </a>
       </section>
 
-      <MediaScrollPanel id="spaces" mode="photos" />
+      <MediaScrollPanel id="spaces" />
     </div>
   );
 }
