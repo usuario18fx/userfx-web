@@ -1,7 +1,7 @@
-/* INSIDE: centered half-page photos; each cinematic reveal follows only the scroll. */
+/* INSIDE: a scroll-driven, staggered two-column photo story. No empty picture cards. */
 .fx-media-sequence {
   position: relative;
-  height: 440svh;
+  height: 455svh;
   isolation: isolate;
   background: #050911;
   scroll-margin-top: var(--fx-nav-h, 64px);
@@ -10,11 +10,11 @@
 .fx-media-stage {
   position: sticky;
   top: var(--fx-nav-h, 64px);
-  width: 100%;
   height: calc(100svh - var(--fx-nav-h, 64px));
+  width: 100%;
   overflow: hidden;
   isolation: isolate;
-  background: radial-gradient(ellipse at 50% 52%, #0c1c39 0%, #070d19 55%, #03060b 100%);
+  background: radial-gradient(ellipse at 50% 52%, #0b1e3b 0%, #070d19 58%, #03060b 100%);
 }
 
 .fx-media-backdrop {
@@ -42,34 +42,50 @@
 .fx-media-photos {
   position: relative;
   z-index: 1;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: clamp(12px, 2.2vw, 32px);
+  align-items: center;
+  justify-items: center;
+  width: min(100%, 1480px);
   height: 100%;
+  margin-inline: auto;
+  padding: clamp(18px, 4svh, 44px) clamp(14px, 3vw, 44px);
 }
 
 .fx-media-photo {
-  position: absolute;
-  inset: 0;
+  grid-row: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  padding: clamp(16px, 4svh, 50px) 18px;
   pointer-events: none;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity, clip-path;
+}
+
+.fx-media-photo--left {
+  grid-column: 1;
+}
+
+.fx-media-photo--right {
+  grid-column: 2;
 }
 
 .fx-media-photo-frame {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: min(50vw, 720px);
-  height: min(71svh, 690px);
-  padding: clamp(6px, .8vw, 12px);
+  max-width: 100%;
+  max-height: 100%;
   overflow: hidden;
-  border: 1px solid rgba(57, 211, 221, 0.45);
-  border-radius: 16px;
-  background: rgba(3, 8, 16, 0.56);
-  box-shadow: 0 26px 75px rgba(0, 0, 0, .34), 0 0 40px rgba(22, 153, 205, .08);
+  border: 1px solid rgba(57, 211, 221, 0.34);
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: 0 22px 64px rgba(0, 0, 0, .36), 0 0 35px rgba(22, 153, 205, .07);
 }
 
 .fx-media-photo-image {
@@ -77,10 +93,34 @@
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: 100%;
+  max-height: min(78svh, 760px);
   object-fit: contain;
   object-position: center;
-  border-radius: 9px;
+}
+
+@media (max-width: 700px) {
+  .fx-media-sequence {
+    height: 445svh;
+  }
+
+  .fx-media-photos {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 14px 12px;
+  }
+
+  .fx-media-photo--left,
+  .fx-media-photo--right {
+    grid-column: 1;
+  }
+
+  .fx-media-photo-image {
+    max-height: min(76svh, 640px);
+  }
+
+  .fx-media-photo-frame {
+    border-radius: 10px;
+  }
 }
 
 .fx-media-sequence.is-reduced {
@@ -94,40 +134,20 @@
 }
 
 .fx-media-sequence.is-reduced .fx-media-photos {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  padding: 32px 12px;
+  grid-template-rows: repeat(2, auto);
+  gap: 24px;
+  padding-block: 34px;
 }
 
 .fx-media-sequence.is-reduced .fx-media-photo {
-  position: relative;
-  inset: auto;
-  width: 100%;
-  padding: 0;
+  grid-row: auto;
+  grid-column: auto;
+  height: auto;
   will-change: auto;
 }
 
 @media (max-width: 700px) {
-  .fx-media-photo {
-    padding: 12px 8px;
-  }
-
-  .fx-media-photo-frame {
-    width: min(89vw, 430px);
-    height: min(70svh, 620px);
-    padding: 5px;
-    border-radius: 12px;
-  }
-
-  .fx-media-photo-image {
-    border-radius: 8px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fx-media-photo {
-    will-change: auto;
+  .fx-media-sequence.is-reduced .fx-media-photos {
+    grid-template-rows: repeat(4, auto);
   }
 }
