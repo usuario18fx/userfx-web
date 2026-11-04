@@ -7,7 +7,6 @@ import { ScrollProgress, SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
-import RoomIntro from "./RoomIntro";
 import { ENTER_URL } from "@/lib/content";
 import "./LandingWidthFix.css";
 
@@ -75,7 +74,6 @@ export default function Landing() {
       </MenuOverlay>
       <div className="fx-landing">
         <main>
-          <RoomIntro />
           <ScrollStory />
           <SectionMethod />
           <SectionPricing />
