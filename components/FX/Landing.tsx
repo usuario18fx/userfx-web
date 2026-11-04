@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { ScrollProgress, SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
+import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import RoomIntro from "./RoomIntro";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
@@ -80,10 +81,7 @@ export default function Landing() {
           <SectionMethod />
           <SectionPricing />
           <SectionFaq />
-          <form className="fx-telegram-entry" action="https://t.me/User18Fx_bot">
-            <input type="hidden" name="startapp" value="vault" />
-            <input type="submit" value="Enter with Telegram" />
-          </form>
+          <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
         </main>
       </div>
       {accessOpen && (
