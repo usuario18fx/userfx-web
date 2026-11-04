@@ -1,20 +1,20 @@
-/* INSIDE: a scroll-driven, staggered two-column photo story. No empty picture cards. */
+/* USER FX — original photo pairs, scroll-controlled, with the crown behind them. */
 .fx-media-sequence {
   position: relative;
-  height: 455svh;
+  height: 550svh;
   isolation: isolate;
-  background: #050911;
+  background: #030712;
   scroll-margin-top: var(--fx-nav-h, 64px);
 }
 
 .fx-media-stage {
   position: sticky;
   top: var(--fx-nav-h, 64px);
-  height: calc(100svh - var(--fx-nav-h, 64px));
   width: 100%;
+  height: calc(100svh - var(--fx-nav-h, 64px));
   overflow: hidden;
   isolation: isolate;
-  background: radial-gradient(ellipse at 50% 52%, #0b1e3b 0%, #070d19 58%, #03060b 100%);
+  background: radial-gradient(ellipse at 48% 56%, #0b1b37 0%, #060c1a 55%, #03060c 100%);
 }
 
 .fx-media-backdrop {
@@ -27,8 +27,8 @@
 }
 
 .fx-media-backdrop > div {
-  width: min(90vw, 90svh);
-  height: min(90vw, 90svh);
+  width: min(94vw, 94svh);
+  height: min(94vw, 94svh);
   max-width: 100%;
   max-height: 100%;
 }
@@ -44,14 +44,13 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: minmax(0, 1fr);
-  gap: clamp(12px, 2.2vw, 32px);
   align-items: center;
-  justify-items: center;
-  width: min(100%, 1480px);
+  justify-items: stretch;
+  column-gap: 0;
+  width: min(100%, 1160px);
   height: 100%;
-  margin-inline: auto;
-  padding: clamp(18px, 4svh, 44px) clamp(14px, 3vw, 44px);
+  margin: 0 auto;
+  padding: clamp(12px, 2svh, 26px) 0;
 }
 
 .fx-media-photo {
@@ -59,12 +58,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 0;
   width: 100%;
-  height: 100%;
+  min-width: 0;
+  height: min(82svh, 800px);
   margin: 0;
+  overflow: hidden;
   pointer-events: none;
-  will-change: transform, opacity, clip-path;
+  will-change: opacity, transform, clip-path;
 }
 
 .fx-media-photo--left {
@@ -75,38 +75,24 @@
   grid-column: 2;
 }
 
-.fx-media-photo-frame {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-  max-height: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(57, 211, 221, 0.34);
-  border-radius: 14px;
-  background: transparent;
-  box-shadow: 0 22px 64px rgba(0, 0, 0, .36), 0 0 35px rgba(22, 153, 205, .07);
-}
-
 .fx-media-photo-image {
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: min(78svh, 760px);
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center;
 }
 
+/* Mobile is still controlled by scroll, with one full photo per stage. */
 @media (max-width: 700px) {
   .fx-media-sequence {
-    height: 445svh;
+    height: 570svh;
   }
 
   .fx-media-photos {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    padding: 14px 12px;
+    width: min(100%, 540px);
+    padding: 12px 8px;
   }
 
   .fx-media-photo--left,
@@ -114,15 +100,12 @@
     grid-column: 1;
   }
 
-  .fx-media-photo-image {
-    max-height: min(76svh, 640px);
-  }
-
-  .fx-media-photo-frame {
-    border-radius: 10px;
+  .fx-media-photo {
+    height: min(76svh, 680px);
   }
 }
 
+/* Accessibility: no sticky traps or animated transitions for reduced-motion users. */
 .fx-media-sequence.is-reduced {
   height: auto;
 }
@@ -135,15 +118,19 @@
 
 .fx-media-sequence.is-reduced .fx-media-photos {
   grid-template-rows: repeat(2, auto);
-  gap: 24px;
-  padding-block: 34px;
+  gap: 0;
+  padding-block: 24px;
 }
 
 .fx-media-sequence.is-reduced .fx-media-photo {
   grid-row: auto;
-  grid-column: auto;
   height: auto;
   will-change: auto;
+}
+
+.fx-media-sequence.is-reduced .fx-media-photo-image {
+  height: auto;
+  max-height: 74svh;
 }
 
 @media (max-width: 700px) {
