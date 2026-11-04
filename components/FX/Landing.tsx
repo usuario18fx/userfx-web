@@ -83,9 +83,9 @@ export default function Landing() {
           <SectionPricing />
           <SectionFaq />
           <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
-          <FooterBar />
         </main>
       </div>
+      <FooterBar />
       {accessOpen && (
         <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="Vault access">
           <AccessGate forceOpen onRequestClose={() => setAccessOpen(false)}>
