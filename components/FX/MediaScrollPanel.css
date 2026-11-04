@@ -53,8 +53,8 @@
   justify-content: center;
   align-items: center;
   padding: clamp(20px, 4svh, 52px) 18px;
-  color: inherit;
-  text-decoration: none;
+  margin: 0;
+  pointer-events: none;
 }
 
 .fx-media-photo-frame {
@@ -80,11 +80,6 @@
   object-fit: contain;
   object-position: center;
   border-radius: 9px;
-}
-
-.fx-media-photo:focus-visible .fx-media-photo-frame {
-  outline: 3px solid #34ccd1;
-  outline-offset: 4px;
 }
 
 .fx-media-sequence.is-reduced {
