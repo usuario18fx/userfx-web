@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./FooterBar.css";
 
 const RATING_STORAGE_KEY = "userfx_landing_crown_rating";
@@ -16,7 +16,8 @@ function CrownIcon({ className = "" }: { className?: string }) {
 }
 
 export default function FooterBar() {
-  const [hidden, setHidden] = useState(false);
+  const revealRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
   const [ratingOpen, setRatingOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -29,31 +30,30 @@ export default function FooterBar() {
       // Browsers with disabled storage can still use the rating control.
     }
 
-    let lastY = window.scrollY;
-    let frame = 0;
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const movement = y - lastY;
-        if (Math.abs(movement) > 3) {
-          // Show on downward scroll, tuck behind the bottom on upward scroll.
-          setHidden(movement < 0 && y > 80);
-          lastY = y;
-        }
-        frame = 0;
-      });
+    const stage = revealRef.current;
+    const footer = footerRef.current;
+    if (!stage || !footer) return;
+
+    // The footer stays behind the scrolling page, creating a real
+    // curtain/reveal at the end instead of toggling with scroll direction.
+    const updateSpace = () => {
+      const height = footer.getBoundingClientRect().height;
+      const brakingDistance = Math.min(130, Math.round(window.innerHeight * 0.16));
+      stage.style.height = `${Math.ceil(height + brakingDistance)}px`;
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const observer = new ResizeObserver(updateSpace);
+    observer.observe(footer);
+    window.addEventListener("resize", updateSpace, { passive: true });
+    updateSpace();
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", updateSpace);
     };
   }, []);
 
   function backToBeginning() {
     setRatingOpen(false);
-    setHidden(false);
     const beginning = document.getElementById("home");
     if (beginning) {
       beginning.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -72,7 +72,8 @@ export default function FooterBar() {
   }
 
   return (
-    <footer className={`fx-footer-bar${hidden ? " is-hidden" : ""}`} aria-label="USER FX footer">
+    <div className="fx-footer-reveal" ref={revealRef}>
+      <footer ref={footerRef} className="fx-footer-bar" aria-label="USER FX footer">
       <div className="fx-footer-bar-inner">
         <a className="fx-footer-bar-brand" href="#home" aria-label="USER FX, back to beginning">
           <CrownIcon className="fx-footer-bar-crown" />
@@ -124,6 +125,7 @@ export default function FooterBar() {
           </button>
         </div>
       </div>
-    </footer>
+      </footer>
+    </div>
   );
 }
