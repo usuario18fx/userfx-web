@@ -190,7 +190,8 @@ export default function ProtocolVault({
   const a = stepSpan / total;                       // termina el último paso
   const b = (stepSpan + DISSOLVE_SVH) / total;      // la corona ya cayó → empiezan los cuadrantes
   const q = QUAD_SVH / total;
-  const dissolveAt = a * (n - 1.5) / Math.max(1, n - 1);                      // la corona se deshace al llegar al último paso
+  // The crown arrives above "THE" at the final card, then breaks apart on further scroll.
+  const dissolveAt = a + (b - a) * 0.15;
 
   const h = mobile ? 300 : 400;
   const radius = Math.round(h / 2 / Math.tan((STEP / 2) * (Math.PI / 180)));
@@ -269,7 +270,7 @@ export default function ProtocolVault({
     <section id={id} ref={wrap} className="pv" style={{ height: `calc(100svh + ${total}svh)` }}>
       <div className="pv-stage">
         {/* Corona de partículas: gira con el scroll y se deshace en el último paso */}
-        <ProtocolCrown progress={smooth} dissolveAt={dissolveAt} rebuildAt={b + 2 * q} src={crownSrc} />
+        <ProtocolCrown progress={smooth} spinEnd={a} dissolveAt={dissolveAt} rebuildAt={nq ? b + 2 * q : 1.1} src={crownSrc} />
 
         {/* Texto fijo + tambor */}
         <motion.div ref={contentRef} className="pv-content" style={{ opacity: contentOpacity }} aria-hidden={gone} >
