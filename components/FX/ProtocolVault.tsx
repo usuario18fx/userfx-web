@@ -73,6 +73,7 @@ function timeline(steps: number) {
   const segment = (a: number, b: number): [number, number] => [a / D, b / D];
   return {
     D,
+    videoStart,
     stepEnd: textEnd / D,
     photosStart: textEnd / D,
     contentOut: segment(textEnd - 30, textEnd + 12),
@@ -358,7 +359,7 @@ export default function ProtocolVault({
           </div>
         </motion.div>
       </div>
-      <section id="rooms" className="pv-rooms" aria-label="USER FX private room previews">
+      <section id="rooms" className="pv-rooms" style={flat ? undefined : { marginTop: "calc(" + (config.videoStart - 100) + "svh)" }} aria-label="USER FX private room previews">
         <div className="pv-rooms-inner">
           {rooms.slice(0, 4).map((src, index) => (
             <VideoQuadrant key={src} src={src} index={index} tag={roomTags[index] || ""} progress={smooth} range={config.rooms[index]} enabled={flat || (inView && revealed > index)} flat={flat} />
