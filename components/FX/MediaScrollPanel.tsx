@@ -24,8 +24,8 @@ const TIMELINE = {
   desktop: [
     { enter: [0.05, 0.14], leave: [0.47, 0.59] },
     { enter: [0.21, 0.31], leave: [0.61, 0.72] },
-    { enter: [0.49, 0.59], leave: [0.82, 0.90] },
-    { enter: [0.65, 0.74], leave: [0.82, 0.90] },
+    { enter: [0.49, 0.59], leave: [0.96, 1.00] },
+    { enter: [0.65, 0.74], leave: [0.96, 1.00] },
   ],
   mobile: [
     { enter: [0.05, 0.15], leave: [0.21, 0.27] },
@@ -51,6 +51,12 @@ function PhotoScene({ src, index, progress, compact, reduced }: {
   const opacity = useTransform(progress, (value) => appear(value) * (1 - depart(value)));
   const translateY = useTransform(progress, (value) => (1 - appear(value)) * 58 - depart(value) * 27);
   const scale = useTransform(progress, (value) => 0.94 + appear(value) * 0.06 - depart(value) * 0.025);
+  // Reference ZIP: once the fourth photo settles, the two halves slide apart
+  // to reveal the still-rotating crown underneath.
+  const split = useTransform(progress, (value) => {
+    if (index < 2) return 0;
+    return smooth((value - 0.84) / 0.13) * (index % 2 === 0 ? -1 : 1) * 112;
+  });
   const clipPath = useTransform(progress, (value) => {
     const hidden = (1 - appear(value)) * 100;
     return index % 2 === 0
@@ -59,7 +65,7 @@ function PhotoScene({ src, index, progress, compact, reduced }: {
   });
 
   return (
-    <motion.figure className={`fx-media-photo fx-media-photo--${index % 2 === 0 ? "left" : "right"}`} style={reduced ? undefined : { opacity, y: translateY, scale, clipPath }}>
+    <motion.figure className={`fx-media-photo fx-media-photo--${index % 2 === 0 ? "left" : "right"}`} style={reduced ? undefined : { opacity, y: translateY, scale, x: split, clipPath }}>
       <img src={src} alt={`UserFX original photograph ${index + 1}`} className="fx-media-photo-image" loading={index < 2 ? "eager" : "lazy"} decoding="async" draggable={false} />
     </motion.figure>
   );
