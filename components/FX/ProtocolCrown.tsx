@@ -379,8 +379,13 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt
             const arc = Math.min(1, Math.max(0,
               (p - fallStart) / Math.max(0.001, dissolveAt - fallStart)));
             const arcEase = arc * arc * (3 - 2 * arc);
-            lay.ox += Math.sin(Math.PI * arcEase) * 0.30 - arcEase * 0.17;
-            lay.oy -= 0.76 * arcEase;
+            // Finish beneath the third room's eventual lower-left quadrant.
+            // The arc adds a short horizontal sweep before gravity pulls the
+            // cyan particles to the bottom edge.
+            const targetX = aspect > 1.15 ? -0.55 : -0.47;
+            const targetY = -0.78;
+            lay.ox += (targetX - lay.ox) * arcEase + Math.sin(Math.PI * arcEase) * 0.20;
+            lay.oy += (targetY - lay.oy) * arcEase;
             if (assembly > 0) lay.ox -= 0.32 * assembly;
             const yaw = -0.3 + spin * Math.PI * 2 * 1.1;
 
