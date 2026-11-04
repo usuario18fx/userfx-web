@@ -960,7 +960,10 @@ async function sendIdentityCode(ctx, options = {}) {
 
     const username = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
     const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1&username=${encodeURIComponent(username?.display || "")}#/private-room-access`;
-    const keyboard = Markup.inlineKeyboard([[Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)]]);
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)],
+      [Markup.button.url("✉️ ꜱᴇɴᴅ ᴍᴇꜱꜱᴀɢᴇ", "https://t.me/User18fx")],
+    ]);
     const message = [
       `<b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b> 🔐`,
       `👤${escapeHtml(username?.display || "")}`,
