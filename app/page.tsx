@@ -1,7 +1,7 @@
-import Landing from "@/components/FX/Landing";
+import Experience from "@/components/FX/Experience";
 
 export default function Page() {
   return (
-    <Landing />
+    <Experience />
   );
 }
