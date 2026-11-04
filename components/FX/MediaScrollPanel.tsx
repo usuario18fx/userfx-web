@@ -55,7 +55,7 @@ function PhotoScene({ src, index, progress, compact, reduced }: {
   // to reveal the still-rotating crown underneath.
   const split = useTransform(progress, (value) => {
     if (index < 2) return 0;
-    return smooth((value - 0.84) / 0.13) * (index % 2 === 0 ? -1 : 1) * 112;
+    return `${(smooth((value - 0.84) / 0.13) * (index % 2 === 0 ? -1 : 1) * 112).toFixed(2)}%`;
   });
   const clipPath = useTransform(progress, (value) => {
     const hidden = (1 - appear(value)) * 100;
