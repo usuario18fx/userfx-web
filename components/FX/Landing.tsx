@@ -13,7 +13,7 @@ import "./LandingWidthFix.css";
 
 const AccessGate = dynamic(() => import("@/components/PrivateRoom/PR-DirectGate"), { ssr: false });
 
-const SECTION_IDS = ["home", "spaces", "protocol", "access"] as const;
+const SECTION_IDS = ["home", "protocol", "spaces", "access"] as const;
 
 function EnterAuthorizedRoom() {
   useEffect(() => {
