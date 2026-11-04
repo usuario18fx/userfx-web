@@ -34,21 +34,40 @@ export default function FooterBar() {
     const footer = footerRef.current;
     if (!stage || !footer) return;
 
-    // The footer stays behind the scrolling page, creating a real
-    // curtain/reveal at the end instead of toggling with scroll direction.
-    const updateSpace = () => {
-      const height = footer.getBoundingClientRect().height;
-      const brakingDistance = Math.min(130, Math.round(window.innerHeight * 0.16));
-      stage.style.height = `${Math.ceil(height + brakingDistance)}px`;
+    // Reserve a real scrolling track. The footer begins entirely below the
+    // viewport and reveals only as the final track is scrolled through.
+    // This produces the reference's slowed "brake" instead of a static footer.
+    let travel = 1;
+    let frame = 0;
+    const measure = () => {
+      const footerHeight = footer.getBoundingClientRect().height;
+      travel = Math.max(360, Math.round(window.innerHeight * 0.68));
+      stage.style.height = `${Math.ceil(footerHeight + travel)}px`;
+      update();
     };
-    const observer = new ResizeObserver(updateSpace);
+    const update = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const top = stage.getBoundingClientRect().top;
+        const raw = Math.max(0, Math.min(1, (window.innerHeight - top) / travel));
+        // Ease-out gives the final part of the reveal a visible braking effect.
+        const eased = 1 - Math.pow(1 - raw, 3);
+        footer.style.transform = `translate3d(0, ${((1 - eased) * 102).toFixed(3)}%, 0)`;
+        footer.style.pointerEvents = raw > 0.9 ? "auto" : "none";
+        footer.style.visibility = raw <= 0 ? "hidden" : "visible";
+      });
+    };
+    const observer = new ResizeObserver(measure);
     observer.observe(footer);
-    window.addEventListener("resize", updateSpace, { passive: true });
-    updateSpace();
-
+    window.addEventListener("resize", measure, { passive: true });
+    window.addEventListener("scroll", update, { passive: true });
+    measure();
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", updateSpace);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", update);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
