@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { FX } from "@/lib/assets";
 import {
@@ -189,11 +190,13 @@ export function SectionMethod() {
   );
 }
 
+const RoomCrownDebris = dynamic(() => import("./ProtocolCrown3D"), { ssr: false });
+
 const ROOM_PREVIEWS = [
-  { src: "/assets/my-room/room2.mp4", poster: "/room2.png" },
-  { src: "/assets/my-room/room1.mp4", poster: "/room1.png" },
-  { src: "/assets/my-room/room4.mp4", poster: "/assets/album/PRVW/PRVW-04.jpg" },
-  { src: "/assets/my-room/room3.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
+  { src: "/assets/my-room/room1.mp4" },
+  { src: "/assets/my-room/room2.mp4" },
+  { src: "/assets/my-room/room3.mp4" },
+  { src: "/assets/my-room/room4.mp4" },
 ] as const;
 
 const easeRoom = (value: number) => {
@@ -253,7 +256,7 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
   return (
     <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, clipPath }}>
       <figure className="fx-room-video-figure">
-        <video ref={videoRef} src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} muted loop playsInline preload="metadata" disablePictureInPicture aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
+        <video ref={videoRef} src={ROOM_PREVIEWS[index].src} autoPlay muted loop playsInline preload="auto" disablePictureInPicture aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
         <figcaption className={`fx-room-code-card fx-room-code-card--${trainer.name.toLowerCase()}`}>
           <img src={trainer.name === "SPCL" ? FX.special : trainer.name === "BSIC" ? FX.basic : trainer.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
           <span className="fx-room-code-text">
@@ -283,6 +286,11 @@ export function SectionTrainers() {
             <RoomVideoTile key={trainer.name} trainer={trainer} index={index} progress={scrollYProgress} reduced={reduced} />
           ))}
         </ul>
+        {!reduced && (
+          <div className="fx-room-crown-debris" aria-hidden="true">
+            <RoomCrownDebris progress={scrollYProgress} dissolveAt={0.04} variant="debris" />
+          </div>
+        )}
       </div>
     </section>
   );
