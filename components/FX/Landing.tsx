@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { ScrollProgress, SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
-import { SectionFaq, SectionMethod, SectionPricing, SectionTrainers } from "./Sections";
+import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import RoomIntro from "./RoomIntro";
 import { ENTER_URL } from "@/lib/content";
@@ -78,7 +78,6 @@ export default function Landing() {
           <RoomIntro />
           <ScrollStory />
           <SectionMethod />
-          <SectionTrainers />
           <SectionPricing />
           <SectionFaq />
           <form className="fx-telegram-entry" action="https://t.me/User18Fx_bot">
