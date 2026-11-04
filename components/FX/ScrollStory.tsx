@@ -13,7 +13,7 @@ export default function ScrollStory() {
 
   return (
     <div className="fx-scroll-story">
-      <section id="home" className="fx-scroll-hero" aria-labelledby="fx-scroll-title">
+      <section id="landing" className="fx-scroll-hero" aria-labelledby="fx-scroll-title">
         <span className="fx-scroll-axis" aria-hidden="true" />
         <header className="fx-scroll-topline">
           <div className="fx-scroll-brand-wrap">
