@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import { SCENES, type Scene } from "./fxScenes";
 import "./MediaScrollPanel.css";
 
@@ -17,7 +16,6 @@ function PhotoSlide({ scene, index, count, progress, active, reduced }: {
   active: boolean;
   reduced: boolean;
 }) {
-  const admin = useAdminMode();
   const opacity = useTransform(progress, (value) => {
     const from = index / count;
     const to = (index + 1) / count;
@@ -26,14 +24,13 @@ function PhotoSlide({ scene, index, count, progress, active, reduced }: {
     const leaving = index === count - 1 ? 1 : Math.max(0, Math.min(1, (to + transition - value) / (transition * 2)));
     return Math.min(entering, leaving);
   });
-  const feature = (scene.id === "videocall" ? "myroom" : scene.id) as Parameters<typeof admin.requestFeature>[0];
 
   return (
-    <motion.a href={scene.href} className="fx-media-photo" aria-label={scene.title} aria-hidden={!reduced && !active} tabIndex={reduced || active ? 0 : -1} style={reduced ? undefined : { opacity, pointerEvents: active ? "auto" : "none" }} onClick={(event) => { if (admin.requestFeature(feature)) event.preventDefault(); }}>
+    <motion.figure className="fx-media-photo" aria-hidden={!reduced && !active} style={reduced ? undefined : { opacity }}>
       <span className="fx-media-photo-frame">
         <img src={scene.image} alt={scene.imageAlt} className="fx-media-photo-image" loading={index === 0 ? "eager" : "lazy"} decoding="async" draggable={false} />
       </span>
-    </motion.a>
+    </motion.figure>
   );
 }
 
