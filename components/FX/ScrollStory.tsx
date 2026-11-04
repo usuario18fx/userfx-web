@@ -8,7 +8,6 @@ import {
 import { ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
-import MediaScrollPanel from "./MediaScrollPanel";
 import "./ScrollStory.css";
 
 export default function ScrollStory() {
@@ -105,7 +104,6 @@ SCROLL TO DISCOVER
         </a>
       </section>
 
-      <MediaScrollPanel id="spaces" />
     </div>
   );
 }
