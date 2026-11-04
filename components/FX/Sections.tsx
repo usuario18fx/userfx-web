@@ -219,16 +219,41 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
       : `inset(0 0 0 ${hidden.toFixed(2)}%)`;
   });
 
-  const [revealed, setRevealed] = useState(index === 0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [revealed, setRevealed] = useState(reduced);
   useMotionValueEvent(progress, "change", (value) => {
-    const next = value >= start + 0.008;
+    const next = reduced || value >= start + 0.008;
     setRevealed((current) => current === next ? current : next);
   });
+
+  // Muted autoplay starts only as each tile is revealed. Pause outside the viewport.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+
+    const stage = video.closest(".fx-room-video-stage");
+    if (!stage) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting || !revealed) {
+        video.pause();
+        return;
+      }
+      void video.play().catch(() => {});
+    }, { threshold: 0.05 });
+
+    observer.observe(stage);
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [revealed]);
 
   return (
     <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, clipPath }}>
       <figure className="fx-room-video-figure">
-        <video src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} controls={reduced || revealed} playsInline preload="metadata" aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" onPlay={(event) => { const current = event.currentTarget; current.closest("#identity")?.querySelectorAll<HTMLVideoElement>(".fx-room-video-player").forEach((other) => { if (other !== current) other.pause(); }); }} />
+        <video ref={videoRef} src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} muted loop playsInline preload="metadata" disablePictureInPicture aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
         <figcaption className={`fx-room-code-card fx-room-code-card--${trainer.name.toLowerCase()}`}>
           <img src={trainer.name === "SPCL" ? FX.special : trainer.name === "BSIC" ? FX.basic : trainer.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
           <span className="fx-room-code-text">
