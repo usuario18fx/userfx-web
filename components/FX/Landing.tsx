@@ -9,6 +9,7 @@ import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import RoomIntro from "./RoomIntro";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
+import FooterBar from "./FooterBar";
 import { ENTER_URL } from "@/lib/content";
 import "./LandingWidthFix.css";
 
@@ -82,6 +83,7 @@ export default function Landing() {
           <SectionPricing />
           <SectionFaq />
           <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
+          <FooterBar />
         </main>
       </div>
       {accessOpen && (
