@@ -2322,35 +2322,10 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
           });
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           bot.command("access", async (ctx) => {
-            let accessTarget = getCommandArg(ctx);
-            // Without arguments /access is the public access menu.
-            // Admin permission management remains available via /access @username.
-            if (!accessTarget) {
-              return await ctx.reply("🔐 ᴀᴄᴄᴇꜱꜱ · ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ: SPCL / BSIC / PRX0 / VIPX", getAccessEntryKeyboard());
-            }
-            if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
-            try {
-              if (/^\d{5,20}$/.test(accessTarget)) {
-                try {
-                  const chat = await ctx.telegram.getChat(accessTarget);
-                  accessTarget = String(chat?.username || syntheticUsernameForId(accessTarget));
-                } catch {
-                  accessTarget = syntheticUsernameForId(accessTarget);
-                }
-              }
-              const parsed = normalizeTelegramFxUsername(accessTarget);
-              if (!parsed) return await ctx.reply("Uso: /access @username");
-              const record = await getTelegramFxAccess(parsed.normalized);
-               const mask = telegramFxMask(record);
-              await ctx.reply(telegramFxPanelText(parsed.display, mask, true), {
-                parse_mode: "HTML",
-                reply_markup: telegramFxPanelKeyboard(parsed.normalized, mask).reply_markup,
-              });
-            } catch (error) {
-              logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ᴀᴄᴄᴇꜱꜱ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", { ...getTelegramError(error), stack: getErrorStack(error) });
-              await ctx.reply("✘ ᴛʜᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴꜱ ᴘᴀɴᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴏᴘᴇɴᴇᴅ.");
-            }
-          });
+  // /access and /access @username share the same public four-code menu.
+  // No TelegramFX permission panel is exposed from this command.
+  await ctx.reply("🔐 ᴀᴄᴄᴇꜱꜱ · SPCL / BSIC / PRX0 / VIPX", getAccessEntryKeyboard());
+});
           bot.action("access_select_spcl", async (ctx) => {
             await ctx.answerCbQuery();
             await sendIdentityCode(ctx);
@@ -2371,61 +2346,14 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
             await ctx.answerCbQuery();
             await ctx.reply("↽ ᴍᴀɪɴ ᴍᴇɴᴜ", getMainKeyboard());
           });
-          bot.action(/^tfx_toggle_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
-            if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
-            const username = String(ctx.match[1]).toLowerCase();
-            const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
-            await ctx.answerCbQuery("ᴄʜᴀɴɢᴇ ᴘʀᴇᴘᴀʀᴇᴅ");
-            await ctx
-              .editMessageText(telegramFxPanelText(`@${username}`, mask, false), {
-      parse_mode: "HTML",
-      reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
-    })
-    .catch(() => {});
-});
-bot.action(/^tfx_save_([A-Za-z0-9_]{3,32})_(\d{1,2})$/, async (ctx) => {
-  if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ");
-  const username = String(ctx.match[1]).toLowerCase();
-  const mask = Math.max(0, Math.min(31, Number(ctx.match[2]) || 0));
-  try {
-    await saveTelegramFxAccess(username, mask, ctx.from);
-    await ctx.answerCbQuery("✔ ꜱᴀᴠᴇ");
-    await ctx
-      .editMessageText(telegramFxPanelText(`@${username}`, mask, true), {
-        parse_mode: "HTML",
-        reply_markup: telegramFxPanelKeyboard(username, mask).reply_markup,
-      })
-      .catch(() => {});
-  } catch (error) {
-    logger.error("ᴛᴇʟᴇɢʀᴀᴍꜰx ꜱᴀᴠᴇ ᴇʀʀᴏʀ", {
-      username,
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-    });
-    await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ꜱᴀᴠɪɴɢ", { show_alert: true });
-  }
-});
-bot.action(/^tfx_revoke_([A-Za-z0-9_]{3,32})_0$/, async (ctx) => {
-  if (!isAdmin(ctx)) return await ctx.answerCbQuery("✘ Unauthorized");
-  const username = String(ctx.match[1]).toLowerCase();
-  try {
-    await revokeTelegramFxAccess(username, ctx.from);
-    await ctx.answerCbQuery("⛔ ᴀᴄᴄᴇꜱꜱ ʀᴇᴠᴏᴋᴇᴅ");
-    await ctx
-      .editMessageText(telegramFxPanelText(`@${username}`, 0, true), {
-        parse_mode: "HTML",
-        reply_markup: telegramFxPanelKeyboard(username, 0).reply_markup,
-      })
-      .catch(() => {});
-  } catch (error) {
-    logger.error("TELEGRAMFX REVOKE ERROR", {
-      username,
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-    });
-    await ctx.answerCbQuery("✘ ᴇʀʀᴏʀ ʀᴇᴠᴏᴋɪɴɢ", { show_alert: true });
-  }
-});
+          // Retire old inline permission keyboards from previously sent messages.
+          // Never write or revoke permissions from a legacy access panel.
+          bot.action(/^tfx_(?:toggle|save|revoke)_[A-Za-z0-9_]{3,32}_(?:\\d{1,2})$/, async (ctx) => {
+            await ctx.answerCbQuery("This menu has been retired. Use /access.", { show_alert: true });
+            await ctx.editMessageText("🔐 ᴀᴄᴄᴇꜱꜱ · SPCL / BSIC / PRX0 / VIPX", {
+              reply_markup: getAccessEntryKeyboard().reply_markup,
+            }).catch(() => {});
+          });
 bot.command("find", async (ctx) => {
   if (!isAdmin(ctx)) return await ctx.reply("✘ Unauthorized.");
   try {
@@ -2473,7 +2401,7 @@ bot.command("users", async (ctx) => {
         return `${index + 1}. ${row.username || "@unknown"} · ${mask ? "✅" : "⛔"} · ${mask.toString(2).padStart(5, "0")}`;
       })
       .join("\n");
-    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUsa /access @username para editar.`);
+    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nConsulta disponible mediante /find @username.`);
   } catch (error) {
     logger.error("TELEGRAMFX USERS ERROR", {
       ...getTelegramError(error),
