@@ -23,7 +23,7 @@ export const SCENES: Scene[] = [
     title: "VIDEO CALLS",
     subtitle: "MyRoom · your private space",
     href: "#/private-room",
-    image: "/assets/album/PRVW/PRVW-04.jpg",
+    image: "/assets/album/PRVW/PRVW-00.jpg",
     video: "/assets/FX-Y24V01.mp4",
     imageAlt: "UserFX original preview photograph",
     position: "center 48%",
