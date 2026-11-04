@@ -373,6 +373,14 @@ export default function ProtocolCrown({ progress, dissolveAt, spinEnd, rebuildAt
               lay.ox *= 1 - travel;
               lay.oy += (0.16 - lay.oy) * travel;
             }
+            // After arriving above "THE", trace a curved path to the lower
+            // part of the scene, then shatter: rightward arc, descent, floor.
+            const fallStart = spinTo;
+            const arc = Math.min(1, Math.max(0,
+              (p - fallStart) / Math.max(0.001, dissolveAt - fallStart)));
+            const arcEase = arc * arc * (3 - 2 * arc);
+            lay.ox += Math.sin(Math.PI * arcEase) * 0.30 - arcEase * 0.17;
+            lay.oy -= 0.76 * arcEase;
             if (assembly > 0) lay.ox -= 0.32 * assembly;
             const yaw = -0.3 + spin * Math.PI * 2 * 1.1;
 
