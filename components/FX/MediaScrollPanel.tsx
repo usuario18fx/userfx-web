@@ -28,7 +28,7 @@ function PhotoSlide({ scene, index, count, progress, active, reduced }: {
   return (
     <motion.figure className="fx-media-photo" aria-hidden={!reduced && !active} style={reduced ? undefined : { opacity }}>
       <span className="fx-media-photo-frame">
-        <img src={scene.image} alt={scene.imageAlt} className="fx-media-photo-image" loading={index === 0 ? "eager" : "lazy"} decoding="async" draggable={false} />
+        <img src={scene.image} alt={scene.imageAlt} className="fx-media-photo-image" loading={index === 0 ? "eager" : "lazy"} decoding="async" draggable={false} onError={(event) => { if (index === 0 && !event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = "/assets/album/PRVW/PRVW-04.jpg"; } }} />
       </span>
     </motion.figure>
   );
