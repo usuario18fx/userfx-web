@@ -236,7 +236,7 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
     if (!stage) return;
 
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting || !revealed) {
+      if (!entry?.isIntersecting || (!reduced && !revealed)) {
         video.pause();
         return;
       }
@@ -248,7 +248,7 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
       observer.disconnect();
       video.pause();
     };
-  }, [revealed]);
+  }, [revealed, reduced]);
 
   return (
     <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, clipPath }}>
