@@ -1086,7 +1086,8 @@ function getAccessKeyboard() {
 }
 function getAccessEntryKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.callback("🔐 ᴄᴏᴅᴇ", "access_choose_code"), Markup.button.callback("✈️ ᴛᴇʟᴇɢʀᴀᴍ", "access_choose_telegram")],
+    [Markup.button.callback("✦ SPCL", "access_select_spcl"), Markup.button.callback("🌹 BSIC", "access_select_bsic")],
+    [Markup.button.callback("🔥 PRX0", "access_select_prx0"), Markup.button.callback("👑 VIPX", "access_select_vipx")],
     [Markup.button.callback(BTN_BACK_MENU, "access_back_to_menu")],
   ]);
 }
@@ -2325,7 +2326,7 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
             // Without arguments /access is the public access menu.
             // Admin permission management remains available via /access @username.
             if (!accessTarget) {
-              return await ctx.reply("🔐 ᴀᴄᴄᴇꜱꜱ · ᴄʜᴏᴏꜱᴇ ᴀ ᴍᴇᴛʜᴏᴅ", getAccessEntryKeyboard());
+              return await ctx.reply("🔐 ᴀᴄᴄᴇꜱꜱ · ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ: SPCL / BSIC / PRX0 / VIPX", getAccessEntryKeyboard());
             }
             if (!isAdmin(ctx)) return await ctx.reply("✘ ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ.");
             try {
@@ -2350,13 +2351,21 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
               await ctx.reply("✘ ᴛʜᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴꜱ ᴘᴀɴᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴏᴘᴇɴᴇᴅ.");
             }
           });
-          bot.action("access_choose_code", async (ctx) => {
-            await ctx.answerCbQuery();
-            await sendMembershipPanel(ctx);
-          });
-          bot.action("access_choose_telegram", async (ctx) => {
+          bot.action("access_select_spcl", async (ctx) => {
             await ctx.answerCbQuery();
             await sendIdentityCode(ctx);
+          });
+          bot.action("access_select_bsic", async (ctx) => {
+            await ctx.answerCbQuery();
+            await sendBasicPanel(ctx);
+          });
+          bot.action("access_select_prx0", async (ctx) => {
+            await ctx.answerCbQuery();
+            await sendProPanel(ctx);
+          });
+          bot.action("access_select_vipx", async (ctx) => {
+            await ctx.answerCbQuery();
+            await sendVipPanel(ctx);
           });
           bot.action("access_back_to_menu", async (ctx) => {
             await ctx.answerCbQuery();
