@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { ScrollProgress, SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStory from "./ScrollStory";
+import RoomIntro from "./RoomIntro";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import { ENTER_URL } from "@/lib/content";
@@ -74,6 +75,7 @@ export default function Landing() {
       </MenuOverlay>
       <div className="fx-landing">
         <main>
+          <RoomIntro />
           <ScrollStory />
           <SectionMethod />
           <SectionPricing />
