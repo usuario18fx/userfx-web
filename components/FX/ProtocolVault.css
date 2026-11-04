@@ -134,6 +134,9 @@
   line-height: .95;
   text-transform: uppercase;
 }
+.pv-title-line {
+  display: block;
+}
 .pv-intro {
   max-width: 34ch;
   margin: 0;
