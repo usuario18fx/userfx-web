@@ -214,12 +214,18 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
   const finish = start + 0.105;
   const amount = (value: number) => easeRoom((value - start) / (finish - start));
   const opacity = useTransform(progress, amount);
-  const y = useTransform(progress, (value) => (1 - amount(value)) * 58);
+  const y = useTransform(progress, (value) => (1 - amount(value)) * 36);
+  const scale = useTransform(progress, (value) => 0.93 + amount(value) * 0.07);
+  const rotateX = useTransform(progress, (value) => (1 - amount(value)) * 7);
+  // Reference ZIP: each video expands out of its own corner (TL, TR, BL, BR).
   const clipPath = useTransform(progress, (value) => {
-    const hidden = (1 - amount(value)) * 100;
-    return index % 2 === 0
-      ? `inset(0 ${hidden.toFixed(2)}% 0 0)`
-      : `inset(0 0 0 ${hidden.toFixed(2)}%)`;
+    const hidden = ((1 - amount(value)) * 100).toFixed(2);
+    switch (index) {
+      case 0: return `inset(0 ${hidden}% ${hidden}% 0)`;
+      case 1: return `inset(0 0 ${hidden}% ${hidden}%)`;
+      case 2: return `inset(${hidden}% ${hidden}% 0 0)`;
+      default: return `inset(${hidden}% 0 0 ${hidden}%)`;
+    }
   });
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -254,7 +260,7 @@ function RoomVideoTile({ trainer, index, progress, reduced }: {
   }, [revealed, reduced]);
 
   return (
-    <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, clipPath }}>
+    <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, scale, rotateX, clipPath }}>
       <figure className="fx-room-video-figure">
         <video ref={videoRef} src={ROOM_PREVIEWS[index].src} autoPlay muted loop playsInline preload="auto" disablePictureInPicture aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
         <figcaption className={`fx-room-code-card fx-room-code-card--${trainer.name.toLowerCase()}`}>
