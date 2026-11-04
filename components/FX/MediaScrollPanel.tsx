@@ -1,97 +1,86 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { SCENES, type Scene } from "./fxScenes";
 import "./MediaScrollPanel.css";
 
 const CrownRose = dynamic(() => import("./ProtocolCrown3D"), { ssr: false });
 
-const smooth = (value: number) => {
-  const t = Math.max(0, Math.min(1, value));
-  return t * t * (3 - 2 * t);
+const ease = (value: number) => {
+  const progress = Math.max(0, Math.min(1, value));
+  return progress * progress * (3 - 2 * progress);
 };
 
-function PhotoSlide({ scene, index, count, progress, active, reduced }: {
+function PhotoSlide({ scene, index, progress, compact, reduced }: {
   scene: Scene;
   index: number;
-  count: number;
   progress: MotionValue<number>;
-  active: boolean;
+  compact: boolean;
   reduced: boolean;
 }) {
-  const start = index / count;
-  const end = (index + 1) / count;
-  const span = end - start;
-  const blend = span * 0.2;
+  // Desktop: reveal left, then right; transition to the second pair.
+  // Mobile: reveal all four individually in one centered column.
+  const start = compact
+    ? [0, 0.18, 0.43, 0.68][index]
+    : [0, 0.17, 0.51, 0.72][index];
+  const finish = compact
+    ? [0.02, 0.28, 0.53, 0.78][index]
+    : [0.02, 0.29, 0.64, 0.84][index];
+  const leaveStart = compact ? (index + 1) / SCENES.length - 0.05 : 0.46;
+  const leaveEnd = compact ? (index + 1) / SCENES.length + 0.055 : 0.60;
+  const leaves = compact ? index < SCENES.length - 1 : index < 2;
 
-  // All transitions are derived from scroll position. No timer or autoplay.
-  const opacity = useTransform(progress, (position) => {
-    const entering = index === 0 ? 1 : smooth((position - start + blend) / (blend * 2));
-    const leaving = index === count - 1 ? 1 : 1 - smooth((position - end + blend) / (blend * 2));
-    return entering * leaving;
+  const entering = (value: number) => index === 0 ? 1 : ease((value - start) / (finish - start));
+  const leaving = (value: number) => leaves ? 1 - ease((value - leaveStart) / (leaveEnd - leaveStart)) : 1;
+
+  const opacity = useTransform(progress, (value) => entering(value) * leaving(value));
+  const y = useTransform(progress, (value) => {
+    const reveal = entering(value);
+    const exit = leaving(value);
+    return (1 - reveal) * 52 - (1 - exit) * 36;
   });
-
-  const y = useTransform(progress, (position) => {
-    const phase = (position - start) / span;
-    const incoming = index === 0 ? 0 : (1 - smooth(phase / 0.3)) * 35;
-    const outgoing = index === count - 1 ? 0 : smooth((phase - 0.7) / 0.3) * -26;
-    return incoming + outgoing;
-  });
-
-  const scale = useTransform(progress, (position) => {
-    const phase = (position - start) / span;
-    const incoming = index === 0 ? 0 : (1 - smooth(phase / 0.3)) * 0.055;
-    const outgoing = index === count - 1 ? 0 : smooth((phase - 0.75) / 0.25) * 0.025;
-    return 1 - incoming - outgoing;
-  });
-
-  const rotate = useTransform(progress, (position) => {
-    const phase = (position - start) / span;
-    const direction = index % 2 === 0 ? -1 : 1;
-    const incoming = index === 0 ? 0 : (1 - smooth(phase / 0.35)) * direction * 1.2;
-    const outgoing = index === count - 1 ? 0 : smooth((phase - 0.7) / 0.3) * direction * -0.65;
-    return incoming + outgoing;
-  });
-
-  const blur = useTransform(progress, (position) => {
-    const phase = (position - start) / span;
-    const incoming = index === 0 ? 0 : (1 - smooth(phase / 0.3)) * 4;
-    const outgoing = index === count - 1 ? 0 : smooth((phase - 0.75) / 0.25) * 3;
-    return `blur(${(incoming + outgoing).toFixed(2)}px)`;
+  const scale = useTransform(progress, (value) => 0.94 + entering(value) * 0.06 - (1 - leaving(value)) * 0.025);
+  const clipPath = useTransform(progress, (value) => {
+    const hidden = (1 - entering(value)) * 100;
+    return index % 2 === 0
+      ? `inset(0 ${hidden.toFixed(2)}% 0 0 round 14px)`
+      : `inset(0 0 0 ${hidden.toFixed(2)}% round 14px)`;
   });
 
   return (
-    <motion.figure className="fx-media-photo" aria-hidden={!reduced && !active} style={reduced ? undefined : { opacity, y, scale, rotate, filter: blur }}>
+    <motion.figure className={`fx-media-photo fx-media-photo--${index % 2 === 0 ? "left" : "right"}`} style={reduced ? undefined : { opacity, y, scale, clipPath }}>
       <span className="fx-media-photo-frame">
-        <img src={scene.image} alt={scene.imageAlt} className="fx-media-photo-image" loading={index === 0 ? "eager" : "lazy"} decoding="async" draggable={false} onError={(event) => { if (index === 0 && !event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = "/assets/album/PRVW/PRVW-04.jpg"; } }} />
+        <img src={scene.image} alt={scene.imageAlt} className="fx-media-photo-image" loading={index < 2 ? "eager" : "lazy"} decoding="async" draggable={false} onError={(event) => { if (index === 0 && !event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = "/assets/album/PRVW/PRVW-04.jpg"; } }} />
       </span>
     </motion.figure>
   );
 }
 
 export default function MediaScrollPanel({ id }: { id: string }) {
-  const reduced = useReducedMotion();
   const section = useRef<HTMLElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const reduced = Boolean(useReducedMotion());
+  const [compact, setCompact] = useState(false);
   const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
 
-  useMotionValueEvent(scrollYProgress, "change", (value) => {
-    const position = Math.min(0.999999, Math.max(0, value));
-    const next = Math.floor(position * SCENES.length);
-    setActiveIndex((current) => current === next ? current : next);
-  });
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 700px)");
+    const sync = () => setCompact(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   return (
-    <section id={id} ref={section} className={`fx-media-sequence${reduced ? " is-reduced" : ""}`} aria-label="Original USER FX photographs, revealed by scrolling">
+    <section id={id} ref={section} className={`fx-media-sequence${reduced ? " is-reduced" : ""}`} aria-label="USER FX photographs revealed by scrolling">
       <div className="fx-media-stage">
         <div className="fx-media-backdrop" aria-hidden="true">
           <CrownRose progress={scrollYProgress} dissolveAt={2} />
         </div>
         <div className="fx-media-photos">
           {SCENES.map((scene, index) => (
-            <PhotoSlide key={scene.id} scene={scene} index={index} count={SCENES.length} progress={scrollYProgress} active={activeIndex === index} reduced={Boolean(reduced)} />
+            <PhotoSlide key={scene.id} scene={scene} index={index} progress={scrollYProgress} compact={compact} reduced={reduced} />
           ))}
         </div>
       </div>
