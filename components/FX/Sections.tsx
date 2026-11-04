@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { FX } from "@/lib/assets";
 import {
   BOT_URL,
@@ -196,35 +196,70 @@ const ROOM_PREVIEWS = [
   { src: "/assets/my-room/room3D.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
 ] as const;
 
-export function SectionTrainers() {
+const easeRoom = (value: number) => {
+  const t = Math.max(0, Math.min(1, value));
+  return t * t * (3 - 2 * t);
+};
+
+function RoomVideoTile({ trainer, index, progress, reduced }: {
+  trainer: (typeof TRAINERS)[number];
+  index: number;
+  progress: MotionValue<number>;
+  reduced: boolean;
+}) {
+  const start = 0.025 + index * 0.205;
+  const finish = start + 0.105;
+  const amount = (value: number) => easeRoom((value - start) / (finish - start));
+  const opacity = useTransform(progress, amount);
+  const y = useTransform(progress, (value) => (1 - amount(value)) * 58);
+  const clipPath = useTransform(progress, (value) => {
+    const hidden = (1 - amount(value)) * 100;
+    return index % 2 === 0
+      ? `inset(0 ${hidden.toFixed(2)}% 0 0)`
+      : `inset(0 0 0 ${hidden.toFixed(2)}%)`;
+  });
+
+  const [revealed, setRevealed] = useState(index === 0);
+  useMotionValueEvent(progress, "change", (value) => {
+    const next = value >= start + 0.008;
+    setRevealed((current) => current === next ? current : next);
+  });
+
   return (
-    <Shell id="identity">
-      <h2 className="sr-only">
-        Your prefix
-      </h2>
-      <RevealGroup>
+    <motion.li className="fx-room-video-item" aria-hidden={!reduced && !revealed} style={reduced ? undefined : { opacity, y, clipPath }}>
+      <figure className="fx-room-video-figure">
+        <video src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} controls={reduced || revealed} playsInline preload="metadata" aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" onPlay={(event) => { const current = event.currentTarget; current.closest("#identity")?.querySelectorAll<HTMLVideoElement>(".fx-room-video-player").forEach((other) => { if (other !== current) other.pause(); }); }} />
+        <figcaption className={`fx-room-code-card fx-room-code-card--${trainer.name.toLowerCase()}`}>
+          <img src={trainer.name === "SPCL" ? FX.special : trainer.name === "BSIC" ? FX.basic : trainer.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
+          <span className="fx-room-code-text">
+            <strong className="fx-room-code-prefix">
+              {trainer.name}
+            </strong>
+            <small className="fx-room-code-level">
+              {trainer.role}
+            </small>
+          </span>
+        </figcaption>
+      </figure>
+    </motion.li>
+  );
+}
+
+export function SectionTrainers() {
+  const section = useRef<HTMLElement>(null);
+  const reduced = Boolean(useReducedMotion());
+  const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
+
+  return (
+    <section id="identity" ref={section} className={`fx-room-video-section${reduced ? " is-reduced" : ""}`} aria-label="Room videos revealed one by one while scrolling">
+      <div className="fx-room-video-stage">
         <ul className="fx-room-video-grid">
-          {TRAINERS.map((t, index) => (
-            <motion.li key={t.name} variants={wipe(24)} className="fx-room-video-item">
-              <figure className="fx-room-video-figure">
-                <video src={ROOM_PREVIEWS[index].src} poster={ROOM_PREVIEWS[index].poster} controls playsInline preload="metadata" aria-label={`Room ${index + 1} preview`} className="fx-room-video-player" />
-                <figcaption className={`fx-room-code-card fx-room-code-card--${t.name.toLowerCase()}`}>
-                  <img src={t.name === "SPCL" ? FX.special : t.name === "BSIC" ? FX.basic : t.name === "PRX0" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-room-code-icon" />
-                  <span className="fx-room-code-text">
-                    <strong className="fx-room-code-prefix">
-                      {t.name}
-                    </strong>
-                    <small className="fx-room-code-level">
-                      {t.role}
-                    </small>
-                  </span>
-                </figcaption>
-              </figure>
-            </motion.li>
+          {TRAINERS.map((trainer, index) => (
+            <RoomVideoTile key={trainer.name} trainer={trainer} index={index} progress={scrollYProgress} reduced={reduced} />
           ))}
         </ul>
-      </RevealGroup>
-    </Shell>
+      </div>
+    </section>
   );
 }
 
