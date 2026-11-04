@@ -175,8 +175,17 @@ export function SectionMethod() {
     external: step.step === "01" || step.link.startsWith("https:"),
   }));
 
+  const anchoredTitle = (
+    <>
+      How to unlock{" "}
+      <span data-pv-crown-target="the">
+      the
+      </span>{" "}Vault.
+    </>
+  );
+
   return (
-    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title="How to unlock the Vault." intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={[]} crownSrc="/corona/corona.bin" />
+    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title={anchoredTitle} intro="Start in Telegram. Choose your code. Enter your own world." steps={steps} quads={[]} crownSrc="/corona/corona.bin" />
   );
 }
 
