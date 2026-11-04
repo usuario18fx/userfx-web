@@ -1,5 +1,16 @@
-.fx-footer-bar {
+/* Curtain reveal: page content slides over the fixed footer.
+   The stage is sized by ResizeObserver, independently of viewport width. */
+.fx-footer-reveal {
   position: relative;
+  z-index: 0;
+  height: 280px;
+  width: 100%;
+}
+.fx-footer-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 0;
   isolation: isolate;
   width: 100%;
   min-height: 182px;
@@ -10,14 +21,7 @@
   border-radius: 0 0 14px 14px;
   background: #020c0b;
   color: #f2eee2;
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform .46s cubic-bezier(.22,1,.36,1), opacity .32s ease;
-}
-.fx-footer-bar.is-hidden {
-  transform: translateY(100%);
-  opacity: 0;
-  pointer-events: none;
+  box-shadow: 0 -20px 38px rgba(0, 0, 0, .16);
 }
 .fx-footer-bar-actions {
   display: flex;
@@ -257,7 +261,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fx-footer-bar,
   .fx-footer-bar-return svg,
   .fx-footer-rating-crown {
     transition: none;
