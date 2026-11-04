@@ -193,7 +193,7 @@ const ROOM_PREVIEWS = [
   { src: "/assets/my-room/room2.mp4", poster: "/room2.png" },
   { src: "/assets/my-room/room1.mp4", poster: "/room1.png" },
   { src: "/assets/my-room/room4.mp4", poster: "/assets/album/PRVW/PRVW-04.jpg" },
-  { src: "/assets/my-room/room3D.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
+  { src: "/assets/my-room/room3.mp4", poster: "/assets/album/PRVW/PRVW-03.jpg" },
 ] as const;
 
 const easeRoom = (value: number) => {
