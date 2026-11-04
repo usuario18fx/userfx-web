@@ -1,0 +1,136 @@
+.fx-footer-bar {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 182px;
+  border-top: 1px solid rgba(179, 210, 191, 0.64);
+  border-right: 1px solid rgba(179, 210, 191, 0.22);
+  border-bottom: 1px solid rgba(179, 210, 191, 0.32);
+  border-left: 1px solid rgba(179, 210, 191, 0.22);
+  border-radius: 0 0 14px 14px;
+  background: #020c0b;
+  color: #f2eee2;
+}
+.fx-footer-bar-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 28px;
+  width: 100%;
+  min-height: 180px;
+  padding: 36px clamp(22px, 5.2vw, 105px);
+}
+.fx-footer-bar-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 19px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.fx-footer-bar-crown {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  color: #bfab81;
+}
+.fx-footer-bar-name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px;
+  font-family: "Syne", system-ui, sans-serif;
+  font-size: clamp(11px, 1vw, 15px);
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+.fx-footer-bar-name strong {
+  font-weight: 800;
+}
+.fx-footer-bar-name > span {
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+.fx-footer-bar-motto {
+  justify-self: center;
+  margin: 0;
+  color: #a9a58f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 1.35vw, 25px);
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+}
+.fx-footer-bar-return {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 25px;
+  padding: 12px 0 12px 10px;
+  border: 0;
+  background: transparent;
+  color: #e1d5bd;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(12px, .95vw, 16px);
+  cursor: pointer;
+}
+.fx-footer-bar-return svg {
+  flex: none;
+  color: #84e0bc;
+  transition: transform .2s ease;
+}
+.fx-footer-bar-return:hover svg,
+.fx-footer-bar-return:focus-visible svg {
+  transform: translateY(-4px);
+}
+.fx-footer-bar-brand:focus-visible,
+.fx-footer-bar-return:focus-visible {
+  outline: 2px solid #84e0bc;
+  outline-offset: 6px;
+}
+@media (max-width: 850px) {
+  .fx-footer-bar-inner {
+    grid-template-columns: 1fr auto;
+    row-gap: 24px;
+    min-height: 165px;
+    padding: 28px 25px;
+  }
+  .fx-footer-bar-motto {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    white-space: normal;
+  }
+  .fx-footer-bar-return {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 10px;
+  }
+}
+@media (max-width: 460px) {
+  .fx-footer-bar-name {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 10px;
+  }
+  .fx-footer-bar-crown {
+    width: 33px;
+    height: 33px;
+  }
+  .fx-footer-bar-brand {
+    gap: 10px;
+  }
+  .fx-footer-bar-return {
+    font-size: 11px;
+  }
+  .fx-footer-bar-motto {
+    font-size: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-footer-bar-return svg {
+    transition: none;
+  }
+}
