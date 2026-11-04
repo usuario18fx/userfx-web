@@ -28,8 +28,10 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
 
     const abort = new AbortController();
     const scene = new THREE.Scene();
-    const group = new THREE.Group();
-    scene.add(group);
+    const crownGroup = new THREE.Group();
+    const roseGroup = new THREE.Group();
+    scene.add(crownGroup);
+    scene.add(roseGroup);
 
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 20);
     camera.position.set(0, 0, 4.7);
@@ -54,7 +56,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
     let currentProgress =
       typeof progress === "number" ? clamp(progress) : clamp(progress.get());
 
-    const addCloud = (coordinates: Float32Array, colors: Float32Array, size: number, opacity: number) => {
+    const addCloud = (coordinates: Float32Array, colors: Float32Array, size: number, opacity: number, target: THREE.Group) => {
       const geometry = new THREE.BufferGeometry();
       const positions = new Float32Array(coordinates);
       geometry.setAttribute("position",
@@ -72,18 +74,41 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
       });
       const points = new THREE.Points(geometry, material);
       points.frustumCulled = false;
-      group.add(points);
+      target.add(points);
       clouds.push({ geometry, points, material, original: coordinates });
+    };
+
+    const easeScroll = (value: number) => {
+      const t = clamp(value);
+      return t * t * (3 - 2 * t);
     };
 
     const draw = () => {
       if (destroyed) return;
       const p = currentProgress;
-      const fall = clamp((p - dissolveAt) / Math.max(0.06, 1 - dissolveAt));
-      const ease = fall * fall * (3 - 2 * fall);
+      const fall = easeScroll((p - dissolveAt) / Math.max(0.06, 1 - dissolveAt));
+      const descent = easeScroll((p - 0.70) / 0.25);
+      const orbit = easeScroll((p - 0.10) / 0.65);
 
-      group.rotation.y = -0.2 + p * Math.PI * 2.6;
-      group.rotation.x = 0.04 + Math.sin(p * Math.PI * 2) * 0.13;
+      // Two independently moving shapes. The crown remains behind every photograph,
+      // turns with the scroll, then follows a gentle arc down to the stage floor.
+      crownGroup.position.set(
+        0.72 - 0.93 * descent + Math.sin(orbit * Math.PI) * 0.16,
+        0.20 - descent * 1.18,
+        0,
+      );
+      crownGroup.rotation.y = -0.2 + p * Math.PI * 4.2;
+      crownGroup.rotation.x = 0.04 + Math.sin(p * Math.PI * 2) * 0.13;
+      crownGroup.rotation.z = -0.08 - descent * 0.28;
+
+      // The rose is a separate particle object, not part of the crown geometry.
+      roseGroup.position.set(
+        -0.82 + Math.sin(p * Math.PI * 2) * 0.07,
+        0.10 + Math.cos(p * Math.PI * 2) * 0.06,
+        -0.20,
+      );
+      roseGroup.rotation.y = p * Math.PI * -2.1;
+      roseGroup.rotation.z = p * 0.22;
 
       for (const cloud of clouds) {
         const position = cloud.geometry.getAttribute("position") as THREE.BufferAttribute;
@@ -92,12 +117,15 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
         for (let i = 0; i < coords.length / 3; i++) {
           const j = i * 3;
           const grain = Math.sin(i * 12.9898 + 8.2);
-          coords[j] = original[j] + grain * ease * 0.7;
-          coords[j + 1] = original[j + 1] - ease * (1.35 + (i % 23) * 0.065);
-          coords[j + 2] = original[j + 2] + Math.cos(i * 4.31) * ease * 0.5;
+          const isCrown = cloud.points.parent === crownGroup;
+          coords[j] = original[j] + (isCrown ? grain * fall * 0.7 : 0);
+          coords[j + 1] = isCrown
+            ? Math.max(-1.48 - crownGroup.position.y, original[j + 1] - fall * fall * (2.8 + (i % 23) * 0.045))
+            : original[j + 1];
+          coords[j + 2] = original[j + 2] + (isCrown ? Math.cos(i * 4.31) * fall * 0.5 : 0);
         }
         position.needsUpdate = true;
-        cloud.material.opacity = (cloud.points.userData.baseOpacity as number) * (1 - ease * 0.85);
+        cloud.material.opacity = (cloud.points.userData.baseOpacity as number) * (1 - (cloud.points.parent === crownGroup ? fall * 0.35 : 0));
       }
       renderer.render(scene, camera);
     };
@@ -155,7 +183,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
         blues[j + 1] = 0.64 + (i % 7) * 0.035;
         blues[j + 2] = 1;
       }
-      addCloud(crown, blues, 0.015, 0.80);
+      addCloud(crown, blues, 0.015, 0.80, crownGroup);
       clouds[clouds.length - 1].points.userData.baseOpacity = 0.8;
 
       // Real transparent rose pixels, no flat white disc or backdrop.
@@ -190,7 +218,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt }: Props) {
           colors[j + 2] = pixels[k + 2] / 255;
         }
         if (n) {
-          addCloud(red, colors, 0.018, 0.9);
+          addCloud(red, colors, 0.018, 0.9, roseGroup);
           clouds[clouds.length - 1].points.userData.baseOpacity = 0.9;
         }
       }
