@@ -91,7 +91,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt, variant = "insid
         ? easeScroll((p - dissolveAt) / 0.25)
         : easeScroll((p - dissolveAt) / Math.max(0.06, 1 - dissolveAt));
       const descent = variant === "debris"
-        ? easeScroll(p / 0.29)
+        ? easeScroll(p / 0.54)
         : easeScroll((p - 0.70) / 0.25);
       const orbit = easeScroll((p - 0.10) / 0.65);
 
@@ -99,7 +99,7 @@ export default function ProtocolCrown3D({ progress, dissolveAt, variant = "insid
       // turns with the scroll, then follows a gentle arc down to the stage floor.
       crownGroup.position.set(
         variant === "debris" ? -1.10 - 0.32 * descent : 0.72 - 0.93 * descent + Math.sin(orbit * Math.PI) * 0.16,
-        variant === "debris" ? 0.56 - descent * 1.82 : 0.20 - descent * 1.18,
+        variant === "debris" ? 0.55 - descent * 1.86 : 0.20 - descent * 1.18,
         0,
       );
       crownGroup.rotation.y = -0.2 + p * Math.PI * 4.2;
@@ -131,7 +131,8 @@ export default function ProtocolCrown3D({ progress, dissolveAt, variant = "insid
           coords[j + 2] = original[j + 2] + (isCrown ? Math.cos(i * 4.31) * fall * 0.5 : 0);
         }
         position.needsUpdate = true;
-        const fade = variant === "debris" ? easeScroll((p - 0.20) / 0.18) : 0;
+        // Keep cyan dust visible until the lower-left room3 tile opens.
+        const fade = variant === "debris" ? easeScroll((p - 0.48) / 0.22) : 0;
         cloud.material.opacity = (cloud.points.userData.baseOpacity as number)
           * (1 - (cloud.points.parent === crownGroup ? fall * 0.35 : 0))
           * (1 - fade);
