@@ -191,7 +191,7 @@ export default function ProtocolVault({
   const b = (stepSpan + DISSOLVE_SVH) / total;      // la corona ya cayó → empiezan los cuadrantes
   const q = QUAD_SVH / total;
   // The crown arrives above "THE" at the final card, then breaks apart on further scroll.
-  const dissolveAt = a + (b - a) * 0.15;
+  const dissolveAt = a + (b - a) * 0.65;
 
   const h = mobile ? 300 : 400;
   const radius = Math.round(h / 2 / Math.tan((STEP / 2) * (Math.PI / 180)));
