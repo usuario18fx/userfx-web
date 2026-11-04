@@ -1,5 +1,5 @@
 /* Only the landing preview: prevent transforms / 3D canvases from growing document width. */
-.fx-landing{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.fx-landing{position:relative;z-index:1;width:100%;max-width:100%;min-width:0;overflow-x:clip;background:#05070b;box-shadow:0 14px 38px rgba(0,0,0,.42)}
 .fx-landing>main{width:100%;max-width:100%;min-width:0}
 .fx-landing .ufx-footer,.fx-landing .ufx-footer-frame,.fx-landing .ufx-footer-hero{max-width:100%;min-width:0}
 .fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr) minmax(0,.8fr)}
