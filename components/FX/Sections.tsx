@@ -219,7 +219,7 @@ Your access. Your level.
         </Reveal>
       </RevealGroup>
       <RevealGroup>
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <ul className="fx-pricing-grid grid grid-cols-1 gap-3 md:grid-cols-3">
           {PLANS.map((plan) => {
             const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
@@ -228,7 +228,7 @@ Your access. Your level.
                 variants={wipe(40)}
                 whileHover={{ y: -10 }}
                 transition={{ duration: 0.5, ease: EASE }}
-                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[22px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
+                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[18px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
               >
                 {plan.featured && (
                   <span className="absolute right-8 top-8 rounded-full bg-sky/10 px-3 py-1 text-[.65rem] uppercase tracking-[.16em]">
