@@ -10,7 +10,6 @@ import {
 } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { FX } from "@/lib/assets";
-import LogoFX3D from "./LogoFX3D";
 import { NAV, ENTER_URL } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
@@ -48,7 +47,7 @@ export function Brand({ style }: { style?: CSSProperties }) {
   return (
     <div className="flex items-center gap-3" style={style}>
       <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV Vault · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
-        <LogoFX3D fallback={FX.logo} />
+        <img src={FX.logo} alt="" width={32} height={26} className="object-contain" />
         <span className="font-wide text-[10px] uppercase tracking-[-.06em]">
 USER FX
 </span>
