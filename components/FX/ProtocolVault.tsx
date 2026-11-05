@@ -242,6 +242,7 @@ export default function ProtocolVault({
   const [selected, setSelected] = useState(0);
   const [revealed, setRevealed] = useState(0);
   const [inView, setInView] = useState(false);
+  const [chapter, setChapter] = useState(1);
   const revealedRef = useRef(0);
 
   useMotionValueEvent(active, "change", (value) => {
@@ -250,6 +251,8 @@ export default function ProtocolVault({
   });
 
   useMotionValueEvent(smooth, "change", (value) => {
+    const nextChapter = value < config.photosStart ? 1 : value < config.rise[0] ? 2 : value < config.rooms[0][0] ? 3 : 4;
+    setChapter((previous) => previous === nextChapter ? previous : nextChapter);
     let count = 0;
     for (const range of config.rooms) if (value >= range[0]) count++;
     if (count !== revealedRef.current) {
@@ -358,6 +361,17 @@ export default function ProtocolVault({
             <PhotoPanel src={photos[3]} index={3} progress={smooth} range={config.photos[3]} flat={flat} />
           </div>
         </motion.div>
+        <div className="pv-chapter-hud" aria-label="Scroll chapter">
+          <div className="pv-chapter-count">
+            {String(chapter).padStart(2, "0")} <span>/ 04</span>
+          </div>
+          <div className="pv-chapter-cue">
+            <span>
+              {chapter === 1 ? "SCROLL TO DECONSTRUCT" : chapter === 2 ? "SCROLL TO EXPLORE" : chapter === 3 ? "WATCH THE CROWN FALL" : "EXPLORE THE ROOMS"}
+            </span>
+            <i aria-hidden="true" />
+          </div>
+        </div>
       </div>
       <section id="rooms" className="pv-rooms" style={flat ? undefined : { marginTop: "calc(" + (config.videoStart - 100) + "svh)" }} aria-label="USER FX private room previews">
         <div className="pv-rooms-inner">
