@@ -807,6 +807,7 @@ export default function CinematicTour({
     box(1.28, 0.83, 0.055, -0.40, 1.01, -3.80, laptopDark);
 // Video de la pantalla 3D
     const laptopVideo = document.createElement("video");
+    laptopVideo.crossOrigin = "anonymous";
     laptopVideo.src = "/assets/introFX.mp4";
     laptopVideo.muted = true;
     laptopVideo.defaultMuted = true;
@@ -966,6 +967,7 @@ export default function CinematicTour({
     tvTexture.colorSpace = THREE.SRGBColorSpace;
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
+      video.crossOrigin = "anonymous";
       video.src = src;
       video.muted = true;
       video.defaultMuted = true;
@@ -1265,6 +1267,7 @@ export default function CinematicTour({
       map: crownTexture, side: THREE.DoubleSide, toneMapped: false
     });
     const crownImage = new Image();
+    crownImage.crossOrigin = "anonymous";
     crownImage.onload = () => {
       if (abort.signal.aborted || !crownImage.naturalWidth || !crownImage.naturalHeight) return;
       const board = crownTexture.image as HTMLCanvasElement;
