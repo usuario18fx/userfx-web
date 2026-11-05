@@ -410,7 +410,7 @@ export default function PrivateRoomAccount() {
 
   /* ─────   LOCAL DEV ACCOUNT ─────── */
   const loadDevAccount = useCallback(() => {
-    if (!import.meta.env.DEV) return false;
+    if (process.env.NODE_ENV !== "development") return false;
     const devAccount = createDevAccount();
     setAccount(devAccount);
     setProfile(devAccount.profile);
@@ -588,7 +588,7 @@ export default function PrivateRoomAccount() {
         setSaving(true);
         setMessage("");
 
-        if (import.meta.env.DEV && account?.accountId === "usr_DEV_USER18FX") {
+        if (process.env.NODE_ENV === "development" && account?.accountId === "usr_DEV_USER18FX") {
           localStorage.setItem(DEV_PROFILE_KEY, JSON.stringify(profile));
           setAccount((current) => (current ? { ...current, profile } : current));
           setMessage("PROFILE SAVED");
