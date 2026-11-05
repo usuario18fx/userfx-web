@@ -562,6 +562,7 @@ export default function CinematicTour({
     box(0.18, 3.8, 13.35, -1.91, 1.83, 8.75, wallpaper);
     box(0.18, 3.8, 13.35, 1.91, 1.83, 8.75, wallpaper);
     box(3.85, 0.16, 13.35, 0, 3.77, 8.75, mat("#112c28", 0.66));
+    const wallLogoLoader = new GLTFLoader();
     for (const side of [-1, 1]) {
       const x = side * 1.78;
       box(0.13, 0.72, 13.35, x, 0.36, 8.75, lacquer);
@@ -569,29 +570,64 @@ export default function CinematicTour({
       box(0.15, 0.13, 13.35, x, 3.56, 8.75, lacquer);
       box(0.17, 0.06, 13.35, x, 3.4, 8.75, bronze);
       for (const z of [12.45, 9.55, 6.65]) {
-        const portrait = print(z === 12.45 ? "FX" : "USER", "ROOM");
-// Último cuadro izquierdo, junto a la entrada de MY ROOM:
-// selfie original con filtro mate y oscuro aplicado al archivo.
-        const isLastLeft = side === -1 && z === 6.65;
-        const isSecondRight = side === 1 && z === 9.55;
-        const portraitUrl = isSecondRight
-          ? "/assets/my-room/fx-ia.png"
-          : isLastLeft
-            ? "/portrait-pasillo.jpg"
-            : z === 12.45
-              ? (side === -1 ? "/wallpaper2.png" : "/wallpaperGeneral.png")
-              : "/wallpaperGeneral.png";
-        applyImage(portrait, portraitUrl);
-        pic(side * 1.81, 2.06, z, side === -1 ? Math.PI / 2 : -Math.PI / 2,
-          portrait, 1.13, 1.65);
-        if (z === 12.45 && side === 1) {
-          const iconMaterial = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide });
-          applyImage(iconMaterial, "/iconFX.png");
-          const emblem = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.68), iconMaterial);
-          emblem.rotation.y = -Math.PI / 2;
-          emblem.position.set(1.73, 2.10, z);
-          scene.add(emblem);
-    }
+        const isRightWallLogo = side === 1 && z === 12.45;
+
+        if (isRightWallLogo) {
+          // The right-wall brand is the actual GLB; do not paint /iconFX.png
+          // or the old framed image behind it.
+          wallLogoLoader.load(
+            "/logoFX.glb",
+            (gltf) => {
+              if (abort.signal.aborted) return;
+              const root = gltf.scene;
+              root.updateMatrixWorld(true);
+              const box3 = new THREE.Box3().setFromObject(root);
+              if (box3.isEmpty()) return;
+
+              const size = box3.getSize(new THREE.Vector3());
+              const center = box3.getCenter(new THREE.Vector3());
+              const fit = Math.min(
+                1.18 / Math.max(size.x, 0.001),
+                0.90 / Math.max(size.y, 0.001),
+                0.30 / Math.max(size.z, 0.001),
+              );
+
+              // Normalize first, then rotate the facade toward the corridor.
+              root.position.sub(center);
+              const logo = new THREE.Group();
+              logo.add(root);
+              logo.scale.setScalar(fit);
+              logo.rotation.y = -Math.PI / 2;
+              logo.position.set(1.70, 2.12, z);
+              scene.add(logo);
+              wakeRender.current?.();
+            },
+            undefined,
+            () => {},
+          );
+        } else {
+          const portrait = print(z === 12.45 ? "FX" : "USER", "ROOM");
+          // Last left print: portrait; second right print: user photo.
+          const isLastLeft = side === -1 && z === 6.65;
+          const isSecondRight = side === 1 && z === 9.55;
+          const portraitUrl = isSecondRight
+            ? "/assets/my-room/fx-ia.png"
+            : isLastLeft
+              ? "/portrait-pasillo.jpg"
+              : z === 12.45
+                ? "/wallpaper2.png"
+                : "/wallpaperGeneral.png";
+          applyImage(portrait, portraitUrl);
+          pic(
+            side * 1.81,
+            2.06,
+            z,
+            side === -1 ? Math.PI / 2 : -Math.PI / 2,
+            portrait,
+            1.13,
+            1.65,
+          );
+        }
         const sconce = new THREE.PointLight("#3c5757", 2.6, 3.7);
         sconce.position.set(side * 1.48, 2.97, z);
         scene.add(sconce);
