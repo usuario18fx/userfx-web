@@ -414,13 +414,6 @@
   display: block;
   width: 100%;
   height: 100%;
-  cursor: crosshair;
+  pointer-events: none;
 }
 .fx-crown-halo { pointer-events: none; }
-@media (max-width: 680px) {
-  .fx-crown-crown { width: min(100vw, 540px); height: 46svh; }
-  .fx-crown-webgl canvas { touch-action: pan-y; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-crown-crown { will-change: auto; }
-}
