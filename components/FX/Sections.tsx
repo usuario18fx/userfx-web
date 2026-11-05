@@ -192,23 +192,41 @@ export function SectionMethod() {
 }
 
 export function SectionPricing() {
-  // Existing FX pricing is Stars per access, not a fictitious monthly subscription.
   const [view, setView] = useState<"stars" | "window">("stars");
   const radios = useRef<(HTMLButtonElement | null)[]>([]);
+
   return (
     <Shell id="access">
       <Drift className="left-[30%] top-[6%] h-[28rem] w-[28rem]" distance={110} />
-      <RevealGroup className="mb-14 space-y-7">
+      <RevealGroup className="mb-8 space-y-5">
         <SectionIndex index="04" label="Choose your code" />
-        <Title>
-Your access. Your level.
-</Title>
+        <Title>Your access. Your level.</Title>
         <Reveal>
-          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1" >
+          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1">
             {(["stars", "window"] as const).map((value, i) => (
-              <button key={value} ref={(el) => { radios.current[i] = el; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(e) => { if ( !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key) ) return; e.preventDefault(); const next = e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - i; setView(next === 0 ? "stars" : "window"); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold" >
+              <button
+                key={value}
+                ref={(element) => { radios.current[i] = element; }}
+                type="button"
+                role="radio"
+                aria-checked={view === value}
+                tabIndex={view === value ? 0 : -1}
+                onClick={() => setView(value)}
+                onKeyDown={(event) => {
+                  if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+                  event.preventDefault();
+                  const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - i;
+                  setView(next === 0 ? "stars" : "window");
+                  radios.current[next]?.focus();
+                }}
+                className="relative rounded-full px-6 py-2.5 text-sm font-semibold"
+              >
                 {view === value && (
-                  <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-gold text-sky" transition={{ duration: 0.4, ease: EASE }} />
+                  <motion.span
+                    layoutId="cycle-pill"
+                    className="absolute inset-0 rounded-full bg-gold text-sky"
+                    transition={{ duration: 0.4, ease: EASE }}
+                  />
                 )}
                 <span className={`relative ${view === value ? "text-sky" : "opacity-50"}`}>
                   {value === "stars" ? "Telegram Stars" : "Access window"}
@@ -218,72 +236,114 @@ Your access. Your level.
           </div>
         </Reveal>
       </RevealGroup>
+
       <RevealGroup>
-        <ul className="fx-pricing-grid grid grid-cols-1 gap-3 md:grid-cols-3">
+        <ul
+          className="fx-pricing-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            alignItems: "stretch",
+            width: "100%",
+            maxWidth: "960px",
+            gap: "clamp(6px, 1.15vw, 14px)",
+            marginInline: "auto",
+            padding: 0,
+            listStyle: "none",
+          }}
+        >
           {PLANS.map((plan) => {
             const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
               <motion.li
                 key={plan.id}
                 variants={wipe(40)}
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.5, ease: EASE }}
-                className={`fx-plan relative flex min-w-0 flex-col gap-3 rounded-[18px] p-[18px] ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.25, ease: EASE }}
+                className={`fx-plan relative flex min-w-0 flex-col ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
+                style={{
+                  boxSizing: "border-box",
+                  width: "100%",
+                  maxWidth: "100%",
+                  minWidth: 0,
+                  minHeight: 0,
+                  alignSelf: "stretch",
+                  padding: "clamp(9px, 1.2vw, 17px)",
+                  gap: "clamp(6px, 0.9vw, 11px)",
+                  borderRadius: "clamp(10px, 1.2vw, 16px)",
+                }}
               >
-                {plan.featured && (
-                  <span className="absolute right-8 top-8 rounded-full bg-sky/10 px-3 py-1 text-[.65rem] uppercase tracking-[.16em]">
-                    PRO ACCESS
-                  </span>
-                )}
-                <div className="space-y-3">
-                  <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-prefix-illustration h-[34px] w-[34px] object-contain" />
-                  <h3 className="font-display text-base font-semibold uppercase tracking-[-.03em]">
-                    {plan.name} <span className="text-[11px] opacity-50">
-{plan.prefix}
-</span>
+                <div className="flex min-w-0 flex-col gap-2">
+                  <img
+                    src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip}
+                    alt=""
+                    loading="lazy"
+                    className="fx-prefix-illustration object-contain"
+                    style={{ width: "clamp(22px, 2.3vw, 30px)", height: "clamp(22px, 2.3vw, 30px)" }}
+                  />
+                  <h3
+                    className="min-w-0 font-display font-semibold uppercase"
+                    style={{ fontSize: "clamp(12px, 1.45vw, 20px)", lineHeight: 1.1, overflowWrap: "anywhere" }}
+                  >
+                    {plan.name}{" "}
+                    <span style={{ fontSize: "clamp(8px, 0.75vw, 10px)", opacity: 0.55 }}>{plan.prefix}</span>
                   </h3>
-                  <p className="text-sm opacity-65">
-{plan.tagline}
-</p>
+                  <p
+                    className="opacity-65"
+                    style={{
+                      fontSize: "clamp(9px, 0.95vw, 12px)",
+                      lineHeight: 1.35,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {plan.tagline}
+                  </p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <motion.span
                     key={`${plan.id}-${price}`}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, ease: EASE }}
-                    className="inline-block font-display text-4xl font-semibold leading-none tracking-[-.03em] tabular-nums sm:text-5xl"
+                    className="inline-block font-display font-semibold leading-none tabular-nums"
+                    style={{ fontSize: "clamp(23px, 3.2vw, 42px)", letterSpacing: "-.04em" }}
                   >
                     {price}
                   </motion.span>
-                  <p className="mt-3 text-sm opacity-55">
-                    {view === "stars"
-                      ? `${plan.window} active access`
-                      : `✪ ${plan.stars} Telegram Stars`}
+                  <p className="opacity-55" style={{ marginTop: 6, fontSize: "clamp(9px, 0.9vw, 12px)", lineHeight: 1.25 }}>
+                    {view === "stars" ? `${plan.window} active access` : `✪ ${plan.stars} Telegram Stars`}
                   </p>
                 </div>
-                <ul className="flex flex-1 flex-col gap-[7px]">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-[11px] leading-relaxed">
-                      <span
-                        aria-hidden
-                        className={`mt-2 h-1 w-1 shrink-0 rounded-full ${plan.featured ? "bg-sky/50" : "bg-gold/60"}`}
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Magnetic strength={0.22}>
+                <details className="group min-w-0" style={{ fontSize: "clamp(9px, 0.85vw, 11px)" }}>
+                  <summary
+                    className="flex cursor-pointer items-center justify-between gap-1 border-t border-ink/20 pt-2 opacity-75"
+                    style={{ listStyle: "none", userSelect: "none" }}
+                  >
+                    <span>BENEFITS</span>
+                    <span aria-hidden="true">+</span>
+                  </summary>
+                  <ul className="mt-2 flex flex-col gap-2">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex min-w-0 items-start gap-1.5 leading-snug">
+                        <span className="shrink-0 opacity-50" aria-hidden="true">•</span>
+                        <span style={{ overflowWrap: "anywhere" }}>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <Magnetic strength={0.14}>
                   <a
                     href={`https://t.me/User18Fx_bot?start=${plan.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className={`group flex items-center justify-between gap-4 rounded-full px-[14px] py-[10px] text-xs font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
+                    className={`group flex min-w-0 items-center justify-between gap-1 rounded-full font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
+                    style={{ minHeight: 32, padding: "8px clamp(6px, 1vw, 12px)", fontSize: "clamp(9px, .9vw, 11px)" }}
                   >
-                    <RollLabel>
-{plan.cta}
-</RollLabel>
-                    <Glyph name="caret" className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+                    <RollLabel>{plan.cta}</RollLabel>
+                    <Glyph name="caret" className="h-3 w-3 shrink-0 transition-transform duration-500 group-hover:translate-x-1" />
                   </a>
                 </Magnetic>
               </motion.li>
@@ -291,12 +351,8 @@ Your access. Your level.
           })}
         </ul>
         <Reveal className="mt-7 flex flex-wrap items-center justify-between gap-4 text-sm text-ink/55">
-          <span>
-Need identity access? Start with SPCL.
-</span>
-          <a className="text-gold" href={BOT_URL} target="_blank" rel="noreferrer">
-            Get my code ↗
-          </a>
+          <span>Need identity access? Start with SPCL.</span>
+          <a className="text-gold" href={BOT_URL} target="_blank" rel="noreferrer">Get my code ↗</a>
         </Reveal>
       </RevealGroup>
     </Shell>
