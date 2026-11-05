@@ -39,14 +39,14 @@ const launch=ease((progress-.29)/.23);
 const reveal=ease((progress-.36)/.18);
 const gallery=ease((progress-.58)/.18);
 const active=Math.min(2,Math.floor(clamp((progress-.72)/.28)*3));
-const crownOpacity=1-ease((progress-.47)/.12);
+const crownOpacity=1-ease((progress-.75)/.13);
 return (
 <main className="fx-crown-scroll-page" ref={page}>
 <div className="fx-crown-fixed">
 <div className="fx-crown-backdrop" aria-hidden="true" />
 <div className="fx-crown-beam" aria-hidden="true" />
 <div className="fx-crown-mist" aria-hidden="true" />
-<div className="fx-crown-floor" style={{opacity:1-launch}} aria-hidden="true" />
+<div className="fx-crown-floor" style={{opacity:1-ease((progress-.72)/.14)}} aria-hidden="true" />
 <header className="fx-crown-navigation" style={{opacity:reveal,pointerEvents:reveal>.9?"auto":"none"}}>
 <a href="/crown" className="fx-crown-logo">USER <strong>
 FX
@@ -66,7 +66,7 @@ MOMENTS
 ↗
 </span></a>
 </header>
-<div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*27}vh),0) scale(${1+launch*3.7})`}}>
+<div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*16}vh),0) scale(${1+launch*.18})`}}>
 <CrownModel progress={progress} />
 <div className="fx-crown-halo" />
 </div>
