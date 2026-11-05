@@ -882,7 +882,8 @@ function getIdentityUserKey(userId) {
 async function generateIdentityCode(ctx, options = {}) {
   const userId = String(ctx.from?.id || "");
   const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
-  const replaceExisting = Boolean(options.replaceExisting);
+  // Every explicit SPCL request creates a fresh one-time code; old codes are invalidated.
+  const replaceExisting = options.replaceExisting !== false;
 
   if (!userId) {
     throw new Error("ᴛᴇʟᴇɢʀᴀᴍ ᴜꜱᴇʀ ɪᴅ ᴍɪꜱꜱɪɴɢ");
@@ -910,7 +911,7 @@ async function generateIdentityCode(ctx, options = {}) {
     if (previousRaw) {
       try {
         const previousRecord = JSON.parse(previousRaw);
-        if (previousRecord.status === "consumed") {
+        if (previousRecord.status === "consumed" && !replaceExisting) {
           await ctx.reply("✔ ʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ʜᴀꜱ ᴀʟʀᴇᴀᴅʏ ʙᴇᴇɴ ᴜꜱᴇᴅ.");
           return null;
         }
@@ -2331,7 +2332,16 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
 });
           bot.action("access_select_spcl", async (ctx) => {
             await ctx.answerCbQuery();
-            await sendIdentityCode(ctx);
+            // Clicking SPCL as an admin must not replay the admin's identity key
+            // after granting someone else's permissions. The recipient requests
+            // their own key from their own Telegram identity.
+            if (isAdmin(ctx)) {
+              await ctx.reply(
+                "🔐 SPCL ACCESS\n\nTo activate a newly approved user, send them:\nhttps://t.me/User18Fx_bot?start=identity\n\nThey must request the code in their own Telegram account. To get your personal SPCL code, use /identity.",
+              );
+              return;
+            }
+            await sendIdentityCode(ctx, { replaceExisting: true });
           });
           bot.action("access_select_bsic", async (ctx) => {
             await ctx.answerCbQuery();
