@@ -646,7 +646,7 @@ function CrownIcon({ className = "" }: { className?: string }) {
 const FOOTER_EXPERIMENTS = [
   { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer1.mp4" },
   { id: 2, title: "EXPERIMENT 02", poster: "/assets/footer/footer2.png", video: "/assets/footer/footer2.mp4" },
-  { id: 3, title: "EXPERIMENT 03", poster: "/assets/footer/footer3.png", video: "/assets/footer/footer3.mp4" },
+  { id: 3, title: "EXPERIMENT 03", posterVideo: "/assets/footer/footer3.mp4", video: "/assets/footer/footer3b.mp4" },
   { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/footer/footer4.mp4" },
 ] as const;
 
@@ -669,7 +669,8 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
 
   return (
     <button type="button" className={`fx-footer-experiment${playing ? " is-playing" : ""}`} aria-label={`Preview ${item.title}`} aria-pressed={playing} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={() => playing ? stop() : start()}>
-      <img className="fx-footer-experiment-poster" src={item.poster} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.opacity = "0"; }} />
+      {"poster" in item && <img className="fx-footer-experiment-poster" src={item.poster} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.opacity = "0"; }} />}
+      {"posterVideo" in item && <video className="fx-footer-experiment-poster fx-footer-experiment-poster-video" src={item.posterVideo} muted autoPlay loop playsInline preload="metadata" aria-hidden="true" />}
       <video ref={videoRef} className={`fx-footer-experiment-video${ready ? " is-ready" : ""}`} src={item.video} muted loop playsInline preload="none" aria-hidden="true" onCanPlay={() => setReady(true)} onError={() => { setReady(false); setPlaying(false); }} />
       <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
