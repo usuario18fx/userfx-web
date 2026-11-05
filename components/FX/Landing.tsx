@@ -502,6 +502,126 @@ const LANDING_STYLES = String.raw`
     font-size: 20px;
   }
 }
+/* Four experiments: editorial still images with video-on-hover / tap. */
+.fx-footer-experiments {
+  width: 100%;
+  max-width: 1540px;
+  margin: 0 auto;
+  padding: 26px clamp(22px, 5.2vw, 105px) 8px;
+}
+.fx-footer-experiments-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+  color: #e1d5bd;
+}
+.fx-footer-experiments-heading strong {
+  font: 500 clamp(17px, 1.6vw, 24px)/1.2 "Syne", sans-serif;
+  letter-spacing: .025em;
+}
+.fx-footer-experiments-heading span {
+  color: #87aaa6;
+  font: 10px/1.4 "IBM Plex Mono", monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.fx-footer-experiments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 1.2vw, 18px);
+}
+.fx-footer-experiment {
+  position: relative;
+  display: block;
+  aspect-ratio: 1.32;
+  min-width: 0;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 0;
+  border: 1px solid rgba(165, 215, 215, .22);
+  border-radius: 2px;
+  background: radial-gradient(circle at 55% 38%, #153b49 0%, #111a25 44%, #05090d 100%);
+  color: #e8f6f6;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .3s, transform .3s;
+}
+.fx-footer-experiment:nth-child(2) { background: radial-gradient(circle at 60% 45%, #30343d, #080a0e 78%); }
+.fx-footer-experiment:nth-child(3) { background: radial-gradient(circle at 52% 42%, #3b202b, #0b0b10 78%); }
+.fx-footer-experiment:nth-child(4) { background: radial-gradient(circle at 52% 42%, #10565b, #061012 78%); }
+.fx-footer-experiment:hover,
+.fx-footer-experiment:focus-visible,
+.fx-footer-experiment.is-playing {
+  border-color: rgba(69, 213, 219, .8);
+  transform: translateY(-3px);
+}
+.fx-footer-experiment:focus-visible { outline: 2px solid #47d7de; outline-offset: 3px; }
+.fx-footer-experiment-poster,
+.fx-footer-experiment-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fx-footer-experiment-poster { z-index: 1; transition: opacity .35s, transform .5s; }
+.fx-footer-experiment-video { z-index: 2; opacity: 0; transition: opacity .35s; pointer-events: none; }
+.fx-footer-experiment.is-playing .fx-footer-experiment-video.is-ready { opacity: 1; }
+.fx-footer-experiment:hover .fx-footer-experiment-poster { transform: scale(1.055); }
+.fx-footer-experiment::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 45% 0 0;
+  background: linear-gradient(transparent, rgba(0,0,0,.68));
+  pointer-events: none;
+}
+.fx-footer-experiment-index,
+.fx-footer-experiment-title,
+.fx-footer-experiment-action {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+}
+.fx-footer-experiment-index {
+  top: 13px;
+  left: 14px;
+  font: 10px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .08em;
+  color: #b5e4e2;
+}
+.fx-footer-experiment-title {
+  bottom: 15px;
+  left: 15px;
+  font: 700 clamp(12px, 1.05vw, 15px)/1.2 "Syne", sans-serif;
+  letter-spacing: .04em;
+}
+.fx-footer-experiment-action {
+  bottom: 15px;
+  right: 15px;
+  font: 10px/1.3 "IBM Plex Mono", monospace;
+  color: #9fdfdf;
+}
+@media (max-width: 760px) {
+  .fx-footer-experiments { padding: 17px 20px 8px; }
+  .fx-footer-experiments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .fx-footer-experiment { aspect-ratio: 1.35; }
+  .fx-footer-experiments-heading span { font-size: 9px; }
+}
+@media (max-width: 400px) {
+  .fx-footer-experiments { padding-inline: 13px; }
+  .fx-footer-experiment-title { font-size: 11px; left: 9px; bottom: 10px; }
+  .fx-footer-experiment-action { font-size: 9px; right: 8px; bottom: 10px; }
+  .fx-footer-experiment-index { top: 9px; left: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-footer-experiment,
+  .fx-footer-experiment-poster,
+  .fx-footer-experiment-video { transition: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .fx-footer-bar-return svg,
   .fx-footer-rating-crown {
@@ -520,6 +640,47 @@ function CrownIcon({ className = "" }: { className?: string }) {
       <path d="M7 38h32M6 42h34" />
       <path d="M23 2v1M2 12v1M44 12v1" />
     </svg>
+  );
+}
+
+const FOOTER_EXPERIMENTS = [
+  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer1.mp4" },
+  { id: 2, title: "EXPERIMENT 02", poster: "/assets/footer/footer2.png", video: "/assets/footer/footer2.mp4" },
+  { id: 3, title: "EXPERIMENT 03", poster: "/assets/footer/footer3.png", video: "/assets/footer/footer3.mp4" },
+  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/footer/footer4.mp4" },
+] as const;
+
+function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const start = () => {
+    const video = videoRef.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setPlaying(true);
+    void video.play().catch(() => setPlaying(false));
+  };
+  const stop = () => {
+    videoRef.current?.pause();
+    if (videoRef.current) videoRef.current.currentTime = 0;
+    setPlaying(false);
+  };
+
+  return (
+    <button type="button" className={`fx-footer-experiment${playing ? " is-playing" : ""}`} aria-label={`Preview ${item.title}`} aria-pressed={playing} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={() => playing ? stop() : start()}>
+      <img className="fx-footer-experiment-poster" src={item.poster} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.opacity = "0"; }} />
+      <video ref={videoRef} className={`fx-footer-experiment-video${ready ? " is-ready" : ""}`} src={item.video} muted loop playsInline preload="none" aria-hidden="true" onCanPlay={() => setReady(true)} onError={() => { setReady(false); setPlaying(false); }} />
+      <span className="fx-footer-experiment-index">
+        {String(item.id).padStart(2, "0")} / 04
+      </span>
+      <span className="fx-footer-experiment-title">
+        {item.title}
+      </span>
+      <span className="fx-footer-experiment-action">
+        {playing ? "PAUSE" : "PREVIEW"} ↗
+      </span>
+    </button>
   );
 }
 
@@ -601,6 +762,21 @@ function FooterBar() {
   return (
     <div className="fx-footer-reveal" ref={revealRef}>
       <footer ref={footerRef} className="fx-footer-bar" aria-label="USER FX footer">
+      <section className="fx-footer-experiments" aria-label="USER FX experiments">
+        <div className="fx-footer-experiments-heading">
+          <strong>
+            Experiments
+          </strong>
+          <span>
+            HOVER OR TAP TO PREVIEW
+          </span>
+        </div>
+        <div className="fx-footer-experiments-grid">
+          {FOOTER_EXPERIMENTS.map((item) => (
+            <FooterExperiment key={item.id} item={item} />
+          ))}
+        </div>
+      </section>
       <div className="fx-footer-bar-inner">
         <a className="fx-footer-bar-brand" href="#home" aria-label="USER FX, back to beginning">
           <CrownIcon className="fx-footer-bar-crown" />
