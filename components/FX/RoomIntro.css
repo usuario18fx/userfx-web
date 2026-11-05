@@ -95,17 +95,17 @@
   font-weight: 900;
   letter-spacing: -.055em;
   color: #ffffff;
-  /* 3D extrusion, kept on the actual headline rather than the whole overlay. */
+  /* Reverse-facing extrusion: text remains readable, the 3D depth goes left. */
   text-shadow:
-    1px 1px 0 #868383,
-    3px 3px 0 #868383,
-    4px 4px 0 #868383,
-    6px 6px 0 #868383,
-    7px 7px 0 #868383,
-    8px 8px 0 #868383,
-    10px 10px 0 #868383,
-    11px 11px 0 #868383,
-    14px 18px 24px rgba(0, 0, 0, .45);
+    -1px 1px 0 #868383,
+    -3px 3px 0 #868383,
+    -4px 4px 0 #868383,
+    -6px 6px 0 #868383,
+    -7px 7px 0 #868383,
+    -8px 8px 0 #868383,
+    -10px 10px 0 #868383,
+    -11px 11px 0 #868383,
+    -14px 18px 24px rgba(0, 0, 0, .45);
 }
 
 .fx-room-intro-copy h1.fx-room-title-welcome::first-letter {
@@ -118,34 +118,34 @@
   font-weight: 900;
   color: #0370ff;
   text-shadow:
-    1px 1px 0 #08477f,
-    3px 3px 0 #08477f,
-    4px 4px 0 #08477f,
-    6px 6px 0 #08477f,
-    7px 7px 0 #08477f,
-    8px 8px 0 #08477f,
-    10px 10px 0 #08477f,
-    11px 11px 0 #08477f,
-    14px 18px 24px rgba(0, 0, 0, .45);
+    -1px 1px 0 #08477f,
+    -3px 3px 0 #08477f,
+    -4px 4px 0 #08477f,
+    -6px 6px 0 #08477f,
+    -7px 7px 0 #08477f,
+    -8px 8px 0 #08477f,
+    -10px 10px 0 #08477f,
+    -11px 11px 0 #08477f,
+    -14px 18px 24px rgba(0, 0, 0, .45);
 }
 
 @media (max-width: 680px) {
   .fx-room-intro-copy h1,
   .fx-room-intro-copy h1 strong {
     text-shadow:
-      1px 1px 0 #868383,
-      2px 2px 0 #868383,
-      3px 3px 0 #868383,
-      5px 5px 0 #868383,
-      8px 10px 16px rgba(0, 0, 0, .45);
+      -1px 1px 0 #868383,
+      -2px 2px 0 #868383,
+      -3px 3px 0 #868383,
+      -5px 5px 0 #868383,
+      -8px 10px 16px rgba(0, 0, 0, .45);
   }
   .fx-room-intro-copy h1 strong {
     text-shadow:
-      1px 1px 0 #08477f,
-      2px 2px 0 #08477f,
-      3px 3px 0 #08477f,
-      5px 5px 0 #08477f,
-      8px 10px 16px rgba(0, 0, 0, .45);
+      -1px 1px 0 #08477f,
+      -2px 2px 0 #08477f,
+      -3px 3px 0 #08477f,
+      -5px 5px 0 #08477f,
+      -8px 10px 16px rgba(0, 0, 0, .45);
   }
 }
 
