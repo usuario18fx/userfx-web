@@ -239,7 +239,7 @@ export default function RoomIntro() {
           {String(index + 1).padStart(2, "0")}
           / CINEMATIC JOURNEY
         </small>
-        <h1>
+        <h1 className={stage.key === "welcome" ? "fx-room-title-welcome" : undefined}>
           {stage.title} <strong>
 {stage.accent}
         </strong>
