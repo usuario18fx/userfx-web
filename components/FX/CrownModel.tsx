@@ -85,17 +85,18 @@ function buildCrownParticles(
       varying float vTone;
       varying float vAlpha;
       void main() {
-        float delay = smoothstep(0.0, 1.0, uSmash * 1.22 - aSeed * 0.22);
-        float burst = max(delay, uHit * (0.5 + aSeed * 0.5));
-        vec3 transformed = position + aVelocity * burst * (1.0 + aSeed);
-        transformed.x += sin(uTime * 1.8 + aSeed * 40.0) * 0.085 * burst;
-        transformed.z += cos(uTime * 1.5 + aSeed * 27.0) * 0.085 * burst;
-        transformed.y -= uFall * uFall * (3.4 + aSeed * 2.6);
+        // Only the particle cloud moves, not the original GLB geometry.
+        float pulse = 0.5 + 0.5 * sin(uTime * 2.2 + aSeed * 28.0);
+        float spread = 0.05 + uSmash * 0.22;
+        vec3 transformed = position + aVelocity * spread * (0.3 + aSeed);
+        transformed.x += sin(uTime * (0.65 + aSeed) + aSeed * 40.0) * (0.07 + uSmash * 0.08);
+        transformed.y += cos(uTime * (0.8 + aSeed) + aSeed * 29.0) * 0.10;
+        transformed.z += sin(uTime * 0.7 + aSeed * 21.0) * 0.08;
         vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
         gl_Position = projectionMatrix * mvPosition;
         gl_PointSize = clamp((2.0 + aSeed * 2.2) * uDpr * (6.5 / max(0.5, -mvPosition.z)), 1.1, 8.0);
         vTone = aTone;
-        vAlpha = 0.66 + 0.34 * aSeed;
+        vAlpha = (0.28 + 0.72 * pulse) * (0.55 + 0.45 * aSeed);
       }
     `,
     fragmentShader: `
@@ -137,9 +138,7 @@ export default function CrownModel({ progress }: Props) {
     let animation = 0;
     let renderer: THREE.WebGLRenderer | null = null;
     let pivot: THREE.Group | null = null;
-    let materialCopies: THREE.Material[] = [];
     let particleField: ReturnType<typeof buildCrownParticles> = null;
-    let flash = 0;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 100);
@@ -178,8 +177,6 @@ export default function CrownModel({ progress }: Props) {
     observer.observe(element);
     resize();
 
-    const onPointerDown = () => { flash = 1; };
-    element.addEventListener("pointerdown", onPointerDown);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const particleCount = reduceMotion ? 0 : window.innerWidth <= 680 ? 6500 : 24000;
 
@@ -207,16 +204,6 @@ export default function CrownModel({ progress }: Props) {
         if (maxSize < 0.0001) return;
 
         if (particleCount) particleField = buildCrownParticles(crown, center, particleCount);
-        materialCopies = (Array.isArray(crown.material) ? crown.material : [crown.material])
-          .map((original) => {
-            const copied = original.clone();
-            copied.transparent = true;
-            copied.depthWrite = true;
-            copied.opacity = 1;
-            return copied;
-          });
-        crown.material = Array.isArray(crown.material) ? materialCopies : materialCopies[0];
-
         source.position.sub(center);
         const upright = new THREE.Group();
         upright.rotation.x = -Math.PI / 2;
@@ -233,14 +220,10 @@ export default function CrownModel({ progress }: Props) {
       () => {},
     );
 
-    let lastTime = 0;
     const draw = (timestamp: number) => {
       if (disposed) return;
       animation = requestAnimationFrame(draw);
       const t = clamp(latest.current);
-      const delta = Math.min(0.05, lastTime ? (timestamp - lastTime) / 1000 : 0.016);
-      lastTime = timestamp;
-      flash = Math.max(0, flash - delta * 1.35);
 
       if (pivot) {
         const spin = clamp(t / 0.4);
@@ -248,21 +231,14 @@ export default function CrownModel({ progress }: Props) {
         pivot.rotation.z = Math.sin(t * Math.PI * 2) * 0.04;
         pivot.position.y = t * 0.65 + Math.sin(timestamp * 0.0014) * 0.04;
 
-        const smash = reduceMotion ? 0 : smoothstep(0.28, 0.51, t);
-        const fall = reduceMotion ? 0 : smoothstep(0.44, 0.75, t);
-        const dissolve = Math.max(smoothstep(0.29, 0.44, t), flash * 0.62);
-        for (const material of materialCopies) {
-          material.opacity = 1 - dissolve;
-          material.depthWrite = dissolve < 0.95;
-        }
         if (particleField) {
           const uniforms = particleField.material.uniforms;
-          uniforms.uSmash.value = smash;
-          uniforms.uFall.value = fall;
-          uniforms.uHit.value = flash;
+          uniforms.uSmash.value = smoothstep(0.10, 0.40, t);
+          uniforms.uFall.value = 0;
+          uniforms.uHit.value = 0;
           uniforms.uTime.value = timestamp * 0.001;
           uniforms.uDpr.value = Math.min(window.devicePixelRatio || 1, 1.8);
-          uniforms.uOpacity.value = Math.max(smoothstep(0.27, 0.40, t) * (1 - smoothstep(0.72, 0.83, t)), flash * 0.85);
+          uniforms.uOpacity.value = 0.22 + smoothstep(0.12, 0.42, t) * 0.36;
         }
       }
       webgl.render(scene, camera);
@@ -273,25 +249,23 @@ export default function CrownModel({ progress }: Props) {
       disposed = true;
       cancelAnimationFrame(animation);
       observer.disconnect();
-      element.removeEventListener("pointerdown", onPointerDown);
       webgl.dispose();
       webgl.domElement.remove();
       if (particleField) {
         particleField.particles.geometry.dispose();
         particleField.material.dispose();
       }
-      for (const material of materialCopies) material.dispose();
       scene.traverse((object) => {
         if (!(object instanceof THREE.Mesh)) return;
         object.geometry.dispose();
         const mats = Array.isArray(object.material) ? object.material : [object.material];
-        for (const material of mats) if (!materialCopies.includes(material)) material.dispose();
+        for (const material of mats) material.dispose();
       });
     };
   }, []);
 
   return (
-    <div className="fx-crown-model-host" aria-label="Corona 3D con fragmentos de partículas interactivos">
+    <div className="fx-crown-model-host" aria-label="Corona original 3D con partículas brillantes">
       <div className="fx-crown-webgl" ref={host} style={{ opacity: ready ? 1 : 0 }} />
       {!ready && (
         <video autoPlay muted loop playsInline preload="metadata" aria-label="Animated blue USER FX crown">
