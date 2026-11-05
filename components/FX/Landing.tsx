@@ -544,7 +544,6 @@ const LANDING_STYLES = String.raw`
   border-radius: 2px;
   background: radial-gradient(circle at 55% 38%, #153b49 0%, #111a25 44%, #05090d 100%);
   color: #e8f6f6;
-  cursor: pointer;
   text-align: left;
   transition: border-color .3s, transform .3s;
 }
@@ -552,8 +551,7 @@ const LANDING_STYLES = String.raw`
 .fx-footer-experiment:nth-child(3) { background: radial-gradient(circle at 52% 42%, #3b202b, #0b0b10 78%); }
 .fx-footer-experiment:nth-child(4) { background: radial-gradient(circle at 52% 42%, #10565b, #061012 78%); }
 .fx-footer-experiment:hover,
-.fx-footer-experiment:focus-visible,
-.fx-footer-experiment.is-playing {
+.fx-footer-experiment:focus-within {
   border-color: rgba(69, 213, 219, .8);
   transform: translateY(-3px);
 }
@@ -567,10 +565,25 @@ const LANDING_STYLES = String.raw`
   height: 100%;
   object-fit: cover;
 }
-.fx-footer-experiment-poster { z-index: 1; transition: opacity .35s, transform .5s; }
+.fx-footer-experiment-poster { z-index: 1; }
 .fx-footer-experiment-video { z-index: 2; opacity: 0; transition: opacity .35s; pointer-events: none; }
-.fx-footer-experiment.is-playing .fx-footer-experiment-video.is-ready { opacity: 1; }
-.fx-footer-experiment:hover .fx-footer-experiment-poster { transform: scale(1.055); }
+.fx-footer-experiment-video.is-primary.is-ready { opacity: 1; }
+.fx-footer-experiment-video.is-secondary-video { z-index: 3; }
+.fx-footer-experiment.is-secondary .fx-footer-experiment-video.is-secondary-video.is-ready { opacity: 1; }
+.fx-footer-experiment-switch {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.fx-footer-experiment-switch:focus-visible { outline: 2px solid #47d7de; outline-offset: -4px; }
+.fx-footer-experiment-switch .fx-footer-experiment-index,
+.fx-footer-experiment-switch .fx-footer-experiment-action { z-index: 7; }
 .fx-footer-experiment::after {
   content: "";
   position: absolute;
@@ -651,37 +664,33 @@ const FOOTER_EXPERIMENTS = [
 ] as const;
 
 function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  const start = () => {
-    const video = videoRef.current;
-    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setPlaying(true);
-    void video.play().catch(() => setPlaying(false));
-  };
-  const stop = () => {
-    videoRef.current?.pause();
-    if (videoRef.current) videoRef.current.currentTime = 0;
-    setPlaying(false);
-  };
+  const [secondaryVisible, setSecondaryVisible] = useState(false);
+  const [primaryReady, setPrimaryReady] = useState(false);
+  const [secondaryReady, setSecondaryReady] = useState(false);
+  const hasSecondary = item.id === 3;
+  const primaryVideo = "posterVideo" in item ? item.posterVideo : item.video;
+  const secondaryVideo = hasSecondary ? item.video : null;
 
   return (
-    <button type="button" className={`fx-footer-experiment${playing ? " is-playing" : ""}`} aria-label={`Preview ${item.title}`} aria-pressed={playing} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={() => playing ? stop() : start()}>
+    <div className={`fx-footer-experiment${secondaryVisible && secondaryReady ? " is-secondary" : ""}`}>
       {"poster" in item && <img className="fx-footer-experiment-poster" src={item.poster} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.opacity = "0"; }} />}
-      {"posterVideo" in item && <video className="fx-footer-experiment-poster fx-footer-experiment-poster-video" src={item.posterVideo} muted autoPlay loop playsInline preload="metadata" aria-hidden="true" />}
-      <video ref={videoRef} className={`fx-footer-experiment-video${ready ? " is-ready" : ""}`} src={item.video} muted loop playsInline preload="none" aria-hidden="true" onCanPlay={() => setReady(true)} onError={() => { setReady(false); setPlaying(false); }} />
-      <span className="fx-footer-experiment-index">
+      <video className={`fx-footer-experiment-video is-primary${primaryReady ? " is-ready" : ""}`} src={primaryVideo} muted autoPlay loop playsInline preload="auto" aria-hidden="true" onCanPlay={() => setPrimaryReady(true)} onError={() => setPrimaryReady(false)} />
+      {secondaryVideo && <video className={`fx-footer-experiment-video is-secondary-video${secondaryReady ? " is-ready" : ""}`} src={secondaryVideo} muted autoPlay loop playsInline preload="auto" aria-hidden="true" onCanPlay={() => setSecondaryReady(true)} onError={() => setSecondaryReady(false)} />}
+      {hasSecondary && <button type="button" className="fx-footer-experiment-switch" aria-label={secondaryVisible ? "Mostrar primer video" : "Mostrar segundo video"} onMouseEnter={() => setSecondaryVisible(true)} onMouseLeave={() => setSecondaryVisible(false)} onFocus={() => setSecondaryVisible(true)} onBlur={() => setSecondaryVisible(false)} onClick={() => setSecondaryVisible((value) => !value)}>
+        <span className="fx-footer-experiment-index">
+          {String(item.id).padStart(2, "0")} / 04
+        </span>
+        <span className="fx-footer-experiment-action">
+          {secondaryVisible ? "VIDEO 02" : "VIDEO 01"} ↗
+        </span>
+      </button>}
+      {!hasSecondary && <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
-      </span>
+      </span>}
       <span className="fx-footer-experiment-title">
         {item.title}
       </span>
-      <span className="fx-footer-experiment-action">
-        {playing ? "PAUSE" : "PREVIEW"} ↗
-      </span>
-    </button>
+    </div>
   );
 }
 
