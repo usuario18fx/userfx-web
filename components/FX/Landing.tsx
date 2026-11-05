@@ -24,6 +24,55 @@ const LANDING_STYLES = String.raw`
 .fx-landing .ufx-footer-emblem-ring{max-width:min(100%,450px)}
 @media(max-width:900px){.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr)}.fx-landing .ufx-footer-title{font-size:clamp(38px,8vw,72px)}}
 
+/* Compact pricing: three matching cards in one row. */
+.fx-landing #access .fx-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(10px, 1.2vw, 20px);
+  width: 100%;
+  max-width: 1260px;
+  margin-inline: auto;
+}
+.fx-landing #access .fx-pricing-grid > .fx-plan {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(14px, 1.5vw, 22px);
+  gap: 12px;
+  border-radius: 20px;
+}
+.fx-landing #access .fx-pricing-grid > .fx-plan .fx-prefix-illustration {
+  width: 30px;
+  height: 30px;
+}
+.fx-landing #access .fx-pricing-grid > .fx-plan h3 {
+  font-size: clamp(16px, 1.5vw, 22px);
+}
+.fx-landing #access .fx-pricing-grid > .fx-plan .font-display.text-4xl {
+  font-size: clamp(34px, 3vw, 52px);
+}
+.fx-landing #access .fx-pricing-grid > .fx-plan a {
+  min-height: 42px;
+}
+@media(max-width: 680px) {
+  .fx-landing #access .fx-pricing-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .fx-landing #access .fx-pricing-grid > .fx-plan {
+    padding: 11px 8px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .fx-landing #access .fx-pricing-grid > .fx-plan .fx-prefix-illustration { width: 22px; height: 22px; }
+  .fx-landing #access .fx-pricing-grid > .fx-plan h3 { font-size: 12px; overflow-wrap: anywhere; }
+  .fx-landing #access .fx-pricing-grid > .fx-plan .font-display.text-4xl { font-size: clamp(19px, 5.2vw, 30px); }
+  .fx-landing #access .fx-pricing-grid > .fx-plan .text-sm { font-size: 10px; line-height: 1.35; }
+  .fx-landing #access .fx-pricing-grid > .fx-plan ul li { font-size: 9px; gap: 5px; }
+  .fx-landing #access .fx-pricing-grid > .fx-plan a { padding: 9px 7px; font-size: 10px; gap: 2px; }
+  .fx-landing #access .fx-pricing-grid > .fx-plan .absolute.right-8 { right: 8px; top: 8px; font-size: 8px; padding: 4px; }
+}
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
 /* Room videos: a single 2x2 surface, zero space between tiles.
