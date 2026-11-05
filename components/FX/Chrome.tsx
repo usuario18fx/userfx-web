@@ -174,9 +174,19 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
     <AnimatePresence>
       {open && (
         <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
-          <div className="flex min-h-24 items-center justify-between">
+          <div className="flex min-h-24 items-center justify-between gap-3">
             <Brand />
-            <MenuButton width="25px" gap="6px" />
+            <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+              <a
+                href={ENTER_URL}
+                onClick={close}
+                aria-label="Enter ROOM PRIV"
+                className="inline-flex min-h-10 items-center justify-center rounded-full border border-gold/60 bg-gold px-3 py-2 text-[10px] font-bold uppercase tracking-[.06em] text-sky transition-colors hover:bg-gold/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:px-5 sm:text-xs"
+              >
+                ROOM PRIV
+              </a>
+              <MenuButton width="25px" gap="6px" />
+            </div>
           </div>
           <nav className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]" aria-label="Site menu navigation">
             {NAV.map((item, i) => (
