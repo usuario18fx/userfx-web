@@ -864,11 +864,37 @@ export default function CinematicTour({
     laptopVideo.loop = true;
     laptopVideo.playsInline = true;
     laptopVideo.preload = "auto";
-    const laptopVideoTexture = new THREE.VideoTexture(laptopVideo);
+    // Use an origin-checked canvas rather than uploading the raw video directly.
+    // Cross-origin or redirected media cannot poison the whole WebGL scene.
+    const laptopCanvas = document.createElement("canvas");
+    laptopCanvas.width = 512;
+    laptopCanvas.height = 320;
+    const laptopCtx = laptopCanvas.getContext("2d", { willReadFrequently: true });
+    const laptopVideoTexture = new THREE.CanvasTexture(laptopCanvas);
     laptopVideoTexture.colorSpace = THREE.SRGBColorSpace;
     laptopVideoTexture.minFilter = THREE.LinearFilter;
     laptopVideoTexture.magFilter = THREE.LinearFilter;
     laptopVideoTexture.generateMipmaps = false;
+    let unsafeLaptopVideo = false;
+    const updateLaptopVideo = () => {
+      if (!laptopCtx || unsafeLaptopVideo || laptopVideo.readyState < 2) return;
+      try {
+        laptopCtx.drawImage(laptopVideo, 0, 0, laptopCanvas.width, laptopCanvas.height);
+        laptopCtx.getImageData(0, 0, 1, 1);
+        laptopVideoTexture.needsUpdate = true;
+      } catch (error) {
+        // Resetting dimensions restores origin-clean state after a tainted draw.
+        unsafeLaptopVideo = true;
+        laptopCanvas.width = 512;
+        laptopCanvas.height = 320;
+        laptopCtx.fillStyle = "#05080d";
+        laptopCtx.fillRect(0, 0, 512, 320);
+        laptopVideoTexture.needsUpdate = true;
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("[CinematicTour] Laptop video is not origin-clean:", error);
+        }
+      }
+    };
     const laptopDisplay = new THREE.Mesh(
       new THREE.PlaneGeometry(1.16, 0.73),
       new THREE.MeshBasicMaterial({
@@ -883,13 +909,14 @@ export default function CinematicTour({
 // Actualizar Three.js cuando cambien los fotogramas
     laptopVideo.addEventListener(
       "loadeddata",
-    () => wakeRender.current?.(),
-    { signal: abort.signal }
+      () => { updateLaptopVideo(); wakeRender.current?.(); },
+      { signal: abort.signal },
     );
 
     if ("requestVideoFrameCallback" in laptopVideo) {
       const refreshFrame = () => {
         if (abort.signal.aborted) return;
+        updateLaptopVideo();
         wakeRender.current?.();
         laptopVideo.requestVideoFrameCallback(refreshFrame);
     };
@@ -1011,8 +1038,9 @@ export default function CinematicTour({
     const tvCanvas = document.createElement("canvas");
     tvCanvas.width = 1280;
     tvCanvas.height = 720;
-    const tvCtx = tvCanvas.getContext("2d");
+    const tvCtx = tvCanvas.getContext("2d", { willReadFrequently: true });
     const tvTexture = new THREE.CanvasTexture(tvCanvas);
+    const unsafeTvVideos = new WeakSet<HTMLVideoElement>();
     tvTexture.colorSpace = THREE.SRGBColorSpace;
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
@@ -1124,11 +1152,28 @@ export default function CinematicTour({
       tvCtx.fillStyle = "#05080d";
       tvCtx.fillRect(0, 0, 1280, 720);
       const video = tvVideos[screenMode];
-      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
-        const factor = Math.min(1280 / video.videoWidth, 720 / video.videoHeight);
-        const w = video.videoWidth * factor;
-        const h = video.videoHeight * factor;
-        tvCtx.drawImage(video, (1280 - w) / 2, (720 - h) / 2, w, h);
+      if (!unsafeTvVideos.has(video) && video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        try {
+          const factor = Math.min(1280 / video.videoWidth, 720 / video.videoHeight);
+          const w = video.videoWidth * factor;
+          const h = video.videoHeight * factor;
+          tvCtx.drawImage(video, (1280 - w) / 2, (720 - h) / 2, w, h);
+          // drawImage can succeed while silently tainting the canvas.
+          // Verify it before Three.js ever calls texSubImage2D.
+          tvCtx.getImageData(0, 0, 1, 1);
+        } catch (error) {
+          unsafeTvVideos.add(video);
+          tvCanvas.width = 1280;
+          tvCanvas.height = 720;
+          tvCtx.fillStyle = "#05080d";
+          tvCtx.fillRect(0, 0, 1280, 720);
+          previousFrame.width = 1280;
+          previousFrame.height = 720;
+          transitionStart = -1;
+          if (process.env.NODE_ENV !== "production") {
+            console.warn("[CinematicTour] Skipping unsafe TV video frame:", error);
+          }
+        }
       }
       if (transitionStart >= 0 && previousCtx) {
         const alpha = Math.max(0, 1 - (now - transitionStart) / 450);
@@ -1245,7 +1290,16 @@ export default function CinematicTour({
       const mode: TvMode = p >= TV_STAGE_AT ? "stage"
         : p >= TV_MULTIMEDIA_AT ? "multimedia" : "videocall";
       if (screenMode !== mode) {
-        if (previousCtx) previousCtx.drawImage(tvCanvas, 0, 0);
+        if (previousCtx) {
+          try {
+            // The active TV canvas is verified as origin-clean above.
+            previousCtx.drawImage(tvCanvas, 0, 0);
+            previousCtx.getImageData(0, 0, 1, 1);
+          } catch {
+            previousFrame.width = 1280;
+            previousFrame.height = 720;
+          }
+        }
         transitionStart = now;
         screenMode = mode;
         onModeChangeRef.current?.(mode);
