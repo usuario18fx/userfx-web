@@ -253,7 +253,7 @@ export default function RoomIntro() {
         </p>
         </div>
         )}
-        {stage.key !== "corridor" && (
+        {stage.key !== "corridor" && stage.key !== "welcome" && (
         <div className="fx-room-intro-index" aria-hidden="true">
          {String(index + 1).padStart(2, "0")}
         </div>
