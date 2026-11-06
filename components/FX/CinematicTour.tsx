@@ -857,7 +857,7 @@ export default function CinematicTour({
 // Video de la pantalla 3D
     const laptopVideo = document.createElement("video");
     laptopVideo.crossOrigin = "anonymous";
-    laptopVideo.src = "/assets/introFX.mp4";
+    laptopVideo.src = `/assets/introFX.mp4?v=${encodeURIComponent(process.env.NEXT_PUBLIC_FX_VIDEO_VERSION || "fx-20261105-refresh")}`;
     laptopVideo.muted = true;
     laptopVideo.defaultMuted = true;
     laptopVideo.autoplay = true;
@@ -1017,16 +1017,17 @@ export default function CinematicTour({
     const makeVideo = (src: string) => {
       const video = document.createElement("video");
       video.crossOrigin = "anonymous";
-      video.src = src;
+      // Changing the media version invalidates stale browser/CDN video copies.
+      video.src = `${src}?v=${encodeURIComponent(process.env.NEXT_PUBLIC_FX_VIDEO_VERSION || "fx-20261105-refresh")}`;
       video.muted = true;
       video.defaultMuted = true;
-      video.autoplay = false;
+      video.autoplay = true;
       video.loop = true;
       video.playsInline = true;
       video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
-      // Preload the source shown on the TV; keep the two other 3D clips lazy.
-      video.preload = src.includes("Fx-2026-08-ROOM.mp4") ? "auto" : "metadata";
+      // All three TV sources stay buffered and loop independently.
+      video.preload = "auto";
       for (const event of ["loadeddata", "canplay", "playing", "timeupdate", "seeked", "waiting", "stalled", "suspend"]) {
         video.addEventListener(event, () => wakeRender.current?.(), { signal: abort.signal });
       }
@@ -1077,7 +1078,7 @@ export default function CinematicTour({
     const pendingTvPlayback = new WeakSet<HTMLVideoElement>();
     const blockedTvPlayback = new WeakSet<HTMLVideoElement>();
     const playTv = (video: HTMLVideoElement, userGesture = false) => {
-      if (abort.signal.aborted || document.hidden || !video.paused || pendingTvPlayback.has(video)) return;
+      if (abort.signal.aborted || !video.paused || pendingTvPlayback.has(video)) return;
       if (blockedTvPlayback.has(video) && !userGesture) return;
       pendingTvPlayback.add(video);
       void video.play().then(() => {
@@ -1096,23 +1097,23 @@ export default function CinematicTour({
       });
     };
     retryTvPlayback = () => {
-      if (current.current < ENTER_AT[4] - 0.025) return;
-      blockedTvPlayback.delete(tvVideos[screenMode]);
-      playTv(tvVideos[screenMode], true);
+      for (const video of Object.values(tvVideos)) {
+        blockedTvPlayback.delete(video);
+        if (video.paused) playTv(video, true);
+      }
+      if (laptopVideo.paused) void laptopVideo.play().catch(() => {});
     };
     const resumeTvOnGesture = () => {
-      if (tvVideos[screenMode].paused) retryTvPlayback();
+      retryTvPlayback();
     };
     window.addEventListener("pointerdown", resumeTvOnGesture, { signal: abort.signal });
     window.addEventListener("keydown", resumeTvOnGesture, { signal: abort.signal });
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        for (const video of Object.values(tvVideos)) video.pause();
-      } else {
-        retryTvPlayback();
-      }
+      // Never deliberately pause the players. Browsers may throttle hidden tabs.
+      if (!document.hidden) retryTvPlayback();
       wakeRender.current?.();
     }, { signal: abort.signal });
+    for (const video of Object.values(tvVideos)) playTv(video);
     let transitionStart = -1;
     const previousFrame = document.createElement("canvas");
     previousFrame.width = 1280;
@@ -1246,17 +1247,13 @@ export default function CinematicTour({
       if (screenMode !== mode) {
         if (previousCtx) previousCtx.drawImage(tvCanvas, 0, 0);
         transitionStart = now;
-        tvVideos[screenMode].pause();
         screenMode = mode;
         onModeChangeRef.current?.(mode);
       }
       const tvVisible = p >= ENTER_AT[4] - 0.025;
-      for (const [key, video] of Object.entries(tvVideos)) {
-        if (key === screenMode && tvVisible) {
-          if (video.paused) playTv(video);
-        } else if (!video.paused) {
-          video.pause();
-        }
+      // Keep every TV clip playing, even when a different screen mode is visible.
+      for (const video of Object.values(tvVideos)) {
+        if (video.paused) playTv(video);
       }
       const activeVideo = tvVideos[screenMode];
       if (screenMode !== lastVideoMode) {
@@ -1544,7 +1541,7 @@ export default function CinematicTour({
       updateTv(current.current, now);
       renderer.render(scene, camera);
       const lookSettled = lookSmooth.distanceToSquared(look) < 1e-6;
-      const videoPlaying = !tvVideos[screenMode].paused || transitionStart >= 0;
+      const videoPlaying = Object.values(tvVideos).some((video) => !video.paused) || !laptopVideo.paused || transitionStart >= 0;
       if (!scrollSettled || !lookSettled || !angleSettled || videoPlaying || life.current > 0.002) {
         raf = requestAnimationFrame(tick);
       }};
