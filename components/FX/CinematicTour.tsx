@@ -586,19 +586,32 @@ export default function CinematicTour({
 
               const size = box3.getSize(new THREE.Vector3());
               const center = box3.getCenter(new THREE.Vector3());
-              const fit = Math.min(
-                1.18 / Math.max(size.x, 0.001),
-                0.90 / Math.max(size.y, 0.001),
-                0.30 / Math.max(size.z, 0.001),
-              );
 
-              // Normalize first, then rotate the facade toward the corridor.
+              // Keep the original 3D logo, but align its broad face with the
+              // right wall (YZ plane) and fit its *rotated* bounds, not the
+              // unrotated source bounds. This avoids the giant sideways logo.
               root.position.sub(center);
+              const oriented = new THREE.Group();
+              oriented.add(root);
+              // Models authored Z-up need to be raised before mounting.
+              if (size.y < size.z * 0.55 && size.y < size.x * 0.55) {
+                oriented.rotation.x = -Math.PI / 2;
+              } else if (size.x < size.z * 0.55 && size.x < size.y * 0.55) {
+                oriented.rotation.y = Math.PI / 2;
+              }
               const logo = new THREE.Group();
-              logo.add(root);
-              logo.scale.setScalar(fit);
+              logo.add(oriented);
               logo.rotation.y = -Math.PI / 2;
-              logo.position.set(1.70, 2.12, z);
+              logo.updateMatrixWorld(true);
+              const wallBounds = new THREE.Box3().setFromObject(logo);
+              const wallSize = wallBounds.getSize(new THREE.Vector3());
+              const fit = Math.min(
+                0.14 / Math.max(wallSize.x, 0.001),
+                0.56 / Math.max(wallSize.y, 0.001),
+                0.78 / Math.max(wallSize.z, 0.001),
+              );
+              logo.scale.setScalar(fit);
+              logo.position.set(1.67, 2.12, z);
               scene.add(logo);
               wakeRender.current?.();
             },
