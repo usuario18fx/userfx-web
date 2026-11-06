@@ -234,6 +234,7 @@ export default function RoomIntro() {
           GALLERY / STAGE / CALLS / PROTOCOL
         </nav>
         </div>
+        {stage.key !== "corridor" && (
         <div className="fx-room-intro-copy" key={index}>
         <small>
           {String(index + 1).padStart(2, "0")}
@@ -251,9 +252,12 @@ export default function RoomIntro() {
           {stage.body}
         </p>
         </div>
+        )}
+        {stage.key !== "corridor" && (
         <div className="fx-room-intro-index" aria-hidden="true">
          {String(index + 1).padStart(2, "0")}
         </div>
+        )}
         </>
         )}
         {showRoomOverlay && (
