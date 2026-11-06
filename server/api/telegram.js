@@ -1629,6 +1629,12 @@ async function handleUserStart(ctx) {
       await sendIdentityCode(ctx);
       return;
     }
+    // Direct Telegram deep link: https://t.me/User18Fx_bot?start=videocall
+    if (startPayload === "videocall") {
+      await trackButtonClick(ctx, "ᴡᴇʙꜱɪᴛᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ");
+      await openVideocallFlow(ctx);
+      return;
+    }
     //// WEBSITE DEVICE → BASIC //
     if (startPayload === "getcode_basic") {
       await trackButtonClick(ctx, "ᴡᴇʙꜱɪᴛᴇ ɢᴇᴛ ᴄᴏᴅᴇ ʙᴀꜱɪᴄ");
