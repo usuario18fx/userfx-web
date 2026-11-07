@@ -603,7 +603,7 @@ export default function CinematicTour({
 
         if (isRightWallLogo) {
           // CUADRO DE BIENVENIDA: fondo /wallpaper2.png (recortado tipo "cover")
-          // + logo 3D /logoFX.glb delante, con halo, luces propias y reflejos.
+          // + logo 3D /logoFX.glb delante, con reflejos (sin luces propias).
           const panelMat = print("USER", "ROOM");
           const PANEL_W = 1.13, PANEL_H = 1.65;
           new THREE.TextureLoader().load("/wallpaper2.png", (texture) => {
@@ -625,31 +625,6 @@ export default function CinematicTour({
             wakeRender.current?.();
           }, undefined, () => {});
           pic(side * 1.81, LOGO_Y, z, -Math.PI / 2, panelMat, PANEL_W, PANEL_H);
-
-          // Halo cian/azul detrás del logo (aditivo, solo dentro del cuadro).
-          const glowMat = new THREE.MeshBasicMaterial({
-            map: canvas((ctx) => {
-              const g = ctx.createRadialGradient(256, 256, 8, 256, 256, 250);
-              g.addColorStop(0, "rgba(120,225,255,.62)");
-              g.addColorStop(0.45, "rgba(3,112,255,.26)");
-              g.addColorStop(1, "rgba(3,112,255,0)");
-              ctx.fillStyle = g; ctx.fillRect(0, 0, 512, 512);
-            }),
-            transparent: true, blending: THREE.AdditiveBlending,
-            depthWrite: false, toneMapped: false, side: THREE.DoubleSide,
-          });
-          const glow = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), glowMat);
-          glow.position.set(1.758, LOGO_Y, z);
-          glow.rotation.y = -Math.PI / 2;
-          scene.add(glow);
-
-          // Luces propias (se crean ya, antes del primer render, para no recompilar shaders).
-          const logoKey = new THREE.PointLight("#c4f0ff", 2.4, 2.6);
-          logoKey.position.set(0.95, 2.5, z);
-          scene.add(logoKey);
-          const logoRim = new THREE.PointLight("#0370ff", 1.7, 1.5);
-          logoRim.position.set(1.72, LOGO_Y - 0.1, z);
-          scene.add(logoRim);
 
           wallLogoLoader.load(
             "/logoFX.glb",

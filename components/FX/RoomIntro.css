@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════════════
    USER FX — ROOM INTRO
-══════════════════════════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════════════════════════ */
 .fx-room-intro {
   position: relative;
   width: 100%;
@@ -35,6 +35,7 @@
   width: 100% !important;
   height: 100% !important;
 }
+
 .fx-room-intro-shade {
   position: absolute;
   inset: 0;
@@ -49,6 +50,7 @@
       rgba(3, 5, 9, .45) 0%,
       transparent 35%);
 }
+
 .fx-room-intro-head {
   position: absolute;
   top: 52px;
@@ -63,6 +65,7 @@
   text-shadow: 0 2px 12px #000;
   pointer-events: none;
 }
+
 .fx-room-intro-copy {
   position: absolute;
   left: 52px;
@@ -73,11 +76,13 @@
   text-shadow: 0 4px 25px #000;
   animation: fxCopyIn .7s cubic-bezier(.2, .7, .2, 1) both;
 }
+
 .fx-room-intro-copy small {
   font-size: 12px;
   letter-spacing: .2em;
   color: #0370ff;
 }
+
 .fx-room-intro-copy h1 {
   margin: 12px 0 18px;
   font-family: "Arial Black", Impact, "Helvetica Neue", sans-serif;
@@ -98,11 +103,13 @@
     -11px 11px 0 #868383,
     -14px 18px 24px rgba(0, 0, 0, .45);
 }
+
 .fx-room-intro-copy h1.fx-room-title-welcome::first-letter {
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
   font-weight: 900;
 }
+
 .fx-room-intro-copy h1 strong {
   font-weight: 900;
   color: #0370ff;
@@ -117,6 +124,7 @@
     -11px 11px 0 #08477f,
     -14px 18px 24px rgba(0, 0, 0, .45);
 }
+
 @media (max-width: 680px) {
   .fx-room-intro-copy h1,
   .fx-room-intro-copy h1 strong {
@@ -134,12 +142,15 @@
       -3px 3px 0 #08477f,
       -5px 5px 0 #08477f,
       -8px 10px 16px rgba(0, 0, 0, .45);
-  }}
+  }
+}
+
 .fx-room-intro-copy p {
   margin: 0;
   font-size: 14px;
   letter-spacing: .20em;
 }
+
 .fx-room-intro-description {
   margin-top: 14px !important;
   max-width: 460px;
@@ -148,6 +159,7 @@
   letter-spacing: .02em !important;
   color: #f0edf5;
 }
+
 .fx-room-intro-index {
   position: absolute;
   right: clamp(24px, 7vw, 150px);
@@ -163,6 +175,7 @@
   user-select: none;
   pointer-events: none;
 }
+
 .fx-room-intro-progress {
   position: absolute;
   left: 0;
@@ -174,6 +187,7 @@
   pointer-events: none;
   overflow: hidden;
 }
+
 .fx-room-intro-progress > div {
   width: 100%;
   height: 100%;
@@ -181,6 +195,7 @@
   transform-origin: 0 50%;
   will-change: transform;
 }
+
 .fx-room-intro-loading {
   display: grid;
   place-items: center;
@@ -190,19 +205,25 @@
   font-size: 12px;
   letter-spacing: .22em;
 }
+
 @keyframes fxCopyIn {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
+
 @keyframes fxFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+
 /* Barra de progreso: ámbar mientras el scroll está bloqueado */
 .fx-room-intro.is-locked .fx-room-intro-progress > div {
   background: #ffc857;
 }
+
 /* ── OVERLAY ROOM ───────────────────────────────────────────────────────── */
+
 .fx-room-ui {
   position: absolute;
   inset: 0;
@@ -212,15 +233,18 @@
   pointer-events: none;
   animation: fxFadeIn .45s ease both;
 }
+
 .fx-room-ui button,
 .fx-room-ui a {
   pointer-events: auto;
   font-family: inherit;
 }
+
 .fx-room-ui button:focus-visible {
   outline: 2px solid #0370ff;
   outline-offset: 3px;
 }
+
 .fx-header {
   position: absolute;
   top: 28px;
@@ -231,6 +255,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .fx-logo strong {
   display: block;
   font-size: 18px;
@@ -239,8 +264,9 @@
 .fx-logo span {
   font-size: 10px;
   letter-spacing: .24em;
-  color: #ffffff99;
+  color: rgba(255, 255, 255, .6);
 }
+
 .fx-nav-center {
   display: flex;
   gap: 28px;
@@ -255,12 +281,12 @@
   cursor: pointer;
   transition: color .2s, border-color .2s;
 }
-.nav-item:hover { color: #fff; 
-}
+.nav-item:hover { color: #fff; }
 .nav-item.active {
   color: #fff;
   border-bottom-color: #fff;
 }
+
 .fx-nav-right {
   display: flex;
   gap: 18px;
@@ -272,9 +298,10 @@
   cursor: pointer;
   transition: color .2s;
 }
-.nav-icon:hover { color: #fff; 
-}
+.nav-icon:hover { color: #fff; }
+
 /* ── STEPS VACÍOS / ENFOQUE: etiqueta + riel ────────────────────────────── */
+
 .fx-step-tag {
   position: absolute;
   left: clamp(24px, 3.2vw, 56px);
@@ -288,12 +315,10 @@
   text-shadow: 0 2px 14px rgba(0, 0, 0, .8);
   animation: fxCopyIn .55s cubic-bezier(.2, .7, .2, 1) both;
 }
-.fx-step-tag-block { color: #fff; font-weight: 600; 
-}
-.fx-step-tag-label { color: #0370ff; 
-}
-.fx-step-tag-count { color: rgba(255, 255, 255, .55); 
-}
+.fx-step-tag-block { color: #fff; font-weight: 600; }
+.fx-step-tag-label { color: #0370ff; }
+.fx-step-tag-count { color: rgba(255, 255, 255, .55); }
+
 .fx-step-rail {
   position: absolute;
   right: 14px;
@@ -329,16 +354,16 @@
   position: absolute;
   inset: -7px;
 }
-.fx-rail-dot.is-lock { border-radius: 2px; 
-}
-.fx-rail-dot:hover { border-color: #fff; 
-}
+.fx-rail-dot.is-lock { border-radius: 2px; }
+.fx-rail-dot:hover { border-color: #fff; }
 .fx-rail-dot.is-active {
   background: #fff;
   border-color: #fff;
   transform: scale(1.5);
 }
+
 /* ── PUZZLE (step de botones) ───────────────────────────────────────────── */
+
 .fx-puzzle {
   position: absolute;
   inset: 0;
@@ -347,6 +372,7 @@
   --line: rgba(255, 255, 255, .18);
   --fill: #0b1226;
 }
+
 .fx-pz-left {
   position: absolute;
   left: clamp(24px, 3.2vw, 56px);
@@ -354,6 +380,7 @@
   transform: translateY(-50%);
   width: clamp(320px, 26vw, 440px);
 }
+
 .fx-pz-menu {
   position: absolute;
   right: 3%;
@@ -361,6 +388,7 @@
   transform: translateY(-50%);
   width: min(370px, 31vw);
 }
+
 /* Pieza base */
 .fx-piece {
   position: relative;
@@ -378,8 +406,8 @@
     fxPieceIn .85s cubic-bezier(.22, 1, .36, 1) var(--pd, 0s) both,
     fxClick .6s ease-out calc(var(--pd, 0s) + .6s) both;
 }
-.fx-piece + .fx-piece { margin-top: -1px; 
-}
+.fx-piece + .fx-piece { margin-top: -1px; }
+
 /* Lengüeta: media circunferencia que entra en la pieza de abajo (mismo color que su pieza) */
 .fx-piece--knob::after {
   content: "";
@@ -395,17 +423,18 @@
   clip-path: inset(calc(50% - 2px) 0 0 0);
   pointer-events: none;
 }
-.fx-piece--title { padding: 24px 26px 30px; 
-}
-.fx-piece--sub { padding: 26px 26px 22px; 
-}
+
+.fx-piece--title { padding: 24px 26px 30px; }
+.fx-piece--sub { padding: 26px 26px 22px; }
+
 .fx-badge {
   display: inline-block;
   margin-bottom: 18px;
   font-size: 11px;
   letter-spacing: .18em;
-  color: #ffffffb8;
+  color: rgba(255, 255, 255, .72);
 }
+
 .fx-title {
   margin: 0;
   font-size: clamp(38px, 4.2vw, 62px);
@@ -413,12 +442,14 @@
   font-weight: 600;
   letter-spacing: -.05em;
 }
+
 .fx-subtitle {
   margin: 0;
   font-size: 14px;
   line-height: 1.6;
   color: rgba(255, 255, 255, .72);
 }
+
 /* Cabecera del menú */
 .fx-piece--head {
   display: flex;
@@ -430,8 +461,8 @@
   letter-spacing: .16em;
   color: rgba(255, 255, 255, .62);
 }
-.fx-menu-counter { color: #fff; 
-}
+.fx-menu-counter { color: #fff; }
+
 .fx-lock-chip {
   display: inline-flex;
   align-items: center;
@@ -442,8 +473,8 @@
   color: #ffc857;
   transition: color .3s;
 }
-.fx-puzzle.is-open .fx-lock-chip { color: #7be0a8; 
-}
+.fx-puzzle.is-open .fx-lock-chip { color: #7be0a8; }
+
 /* Botones */
 .fx-piece--item {
   display: flex;
@@ -453,21 +484,20 @@
   cursor: pointer;
   transition: background .2s, color .2s, border-color .2s;
 }
-.fx-piece--item:hover { background: #15213f; 
-}
+.fx-piece--item:hover { background: #15213f; }
 .fx-piece--item.is-primary {
   background: rgba(255, 255, 255, .96);
   color: #111;
 }
-.fx-piece--item.is-primary:hover { background: #fff; 
-}
+.fx-piece--item.is-primary:hover { background: #fff; }
+
 .menu-num {
   width: 22px;
   font-size: 11px;
-  color: #ffffff73;
+  color: rgba(255, 255, 255, .45);
 }
-.is-primary .menu-num { color: #0000006b; 
-}
+.is-primary .menu-num { color: rgba(0, 0, 0, .42); }
+
 .menu-text {
   flex: 1;
   display: flex;
@@ -480,17 +510,17 @@
 }
 .menu-text small {
   font-size: 12px;
-  color: #ffffff94;
+  color: rgba(255, 255, 255, .58);
 }
-.is-primary .menu-text small { color: rgba(0, 0, 0, .56); 
-}
+.is-primary .menu-text small { color: rgba(0, 0, 0, .56); }
+
 .menu-arrow {
   font-size: 20px;
   opacity: .8;
   transition: transform .2s;
 }
-.fx-piece--item:hover .menu-arrow { transform: translateX(3px); 
-}
+.fx-piece--item:hover .menu-arrow { transform: translateX(3px); }
+
 /* Encaje: llega desde fuera, se hunde un poco al "clic" y vuelve */
 @keyframes fxPieceIn {
   0%   { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
@@ -502,9 +532,9 @@
 }
 /* Destello del "clic" al encajar */
 @keyframes fxClick {
-  0%   { box-shadow: 0 0 0 0 #0370ff00, 0 0 0 #0370ff00; }
-  25%  { box-shadow: 0 0 0 0 #0370ffe6, 0 0 26px #0370ff8c; }
-  100% { box-shadow: 0 0 0 12px #0370ff00, 0 0 0 #0370ff00; }
+  0%   { box-shadow: 0 0 0 0 rgba(3, 112, 255, 0), 0 0 0 rgba(3, 112, 255, 0); }
+  25%  { box-shadow: 0 0 0 0 rgba(3, 112, 255, .9), 0 0 26px rgba(3, 112, 255, .55); }
+  100% { box-shadow: 0 0 0 12px rgba(3, 112, 255, 0), 0 0 0 rgba(3, 112, 255, 0); }
 }
 /* Desarme: el mismo movimiento al revés */
 @keyframes fxPieceOut {
@@ -516,6 +546,7 @@
   animation: fxPieceOut .6s cubic-bezier(.55, 0, .85, .35) var(--pdo, 0s) both;
   pointer-events: none;
 }
+
 /* Intento de avanzar con el scroll bloqueado */
 @keyframes fxShake {
   10%, 90% { transform: translateX(-2px); }
@@ -523,8 +554,8 @@
   30%, 50%, 70% { transform: translateX(-7px); }
   40%, 60% { transform: translateX(7px); }
 }
-.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; 
-}
+.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; }
+
 /* Leyenda del bloqueo */
 .fx-lock-hint {
   position: absolute;
@@ -535,8 +566,8 @@
   align-items: center;
   gap: 14px;
   padding: 13px 22px;
-  background: #0b1226f5;
-  border: 1px solid #ffc85799;
+  background: rgba(11, 18, 38, .96);
+  border: 1px solid rgba(255, 200, 87, .6);
   color: #ffc857;
   opacity: 0;
   transform: translate(-50%, 12px);
@@ -551,6 +582,7 @@
 .fx-lock-hint span { display: flex; flex-direction: column; gap: 4px; }
 .fx-lock-hint strong { font-size: 14px; font-weight: 600; color: #fff; }
 .fx-lock-hint small { font-size: 12px; color: rgba(255, 255, 255, .7); }
+
 /* Controles inferiores */
 .fx-footer-controls {
   position: absolute;
@@ -560,14 +592,14 @@
   display: flex;
   gap: 18px;
   font-size: 11px;
-  color: #ffffff8c;
+  color: rgba(255, 255, 255, .55);
   white-space: nowrap;
 }
 .fx-footer-controls .is-locked-text { color: #ffc857; }
 .fx-footer-controls kbd {
   padding: 2px 5px;
   margin-right: 2px;
-  background: #ffffff14;
+  background: rgba(255, 255, 255, .08);
   border-radius: 4px;
   font-family: inherit;
 }
@@ -576,16 +608,17 @@
   right: 44px;
   bottom: 42px;
   padding: 10px 18px;
-  background: #00000073;
-  border: 1px solid #ffffff29;
+  background: rgba(0, 0, 0, .45);
+  border: 1px solid rgba(255, 255, 255, .16);
   color: #fff;
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 .fx-btn-exit:hover {
-  background: #ffffff1f;
-  border-color: #ffffff52;
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .32);
 }
+
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .fx-room-intro-head,
@@ -599,7 +632,7 @@
     left: auto;
     right: 3%;
     font-size: clamp(110px, 28vw, 260px);
-    color: #0370ff1f;
+    color: rgba(3, 112, 255, 0.12);
   }
   .fx-pz-left { left: 3%; width: 32%; }
   .fx-pz-menu { width: min(310px, 35vw); right: 2%; }
@@ -641,6 +674,7 @@
   }
   .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; }
   .fx-step-rail { right: 6px; }
+
   /* Móvil: título arriba, botones abajo, la pantalla queda en medio */
   .fx-pz-left {
     left: 14px;
@@ -677,7 +711,8 @@
     bottom: auto;
     right: 16px;
     padding: 8px 14px;
-  }}
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .fx-room-intro {
     height: 1000svh;
@@ -691,4 +726,14 @@
   .fx-piece { animation: fxFadeIn .2s ease both; }
   .fx-puzzle.is-out .fx-piece { animation: none; opacity: 0; }
   .fx-puzzle.is-shake { animation: none; }
+}
+
+/* Intro: misma fuente y tipo de letra que el título (WELCOME MY ROOM) */
+.fx-room-intro-head,
+.fx-room-intro-head nav,
+.fx-room-intro-copy small,
+.fx-room-intro-copy p,
+.fx-room-intro-description {
+  font-family: "Arial Black", Impact, "Helvetica Neue", sans-serif;
+  font-weight: 900;
 }
