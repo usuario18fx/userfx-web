@@ -2,8 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useMotionValue } from "framer-motion";
+import type { CrownTL } from "./CrownModel";
 const CrownModel=dynamic(()=>import("./CrownModel"),{ssr:false});
 import "./CrownLanding.css";
+
+const CROWN_TIMELINE: CrownTL = {
+  descend: [0, 0.12],
+  rise: [0.12, 0.37],
+  breakStart: 0.44,
+  fade: [0.47, 0.59],
+};
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 const ease=(v:number)=>{const x=clamp(v);return x*x*(3-2*x);};
@@ -16,6 +25,10 @@ const ITEMS=[
 export default function CrownLanding(){
 const page=useRef<HTMLElement>(null);
 const [progress,setProgress]=useState(0);
+const crownProgress = useMotionValue(0);
+useEffect(() => {
+  crownProgress.set(progress);
+}, [crownProgress, progress]);
 useEffect(()=>{
 let request=0;
 const update=()=>{
@@ -67,7 +80,7 @@ MOMENTS
 </span></a>
 </header>
 <div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*27}vh),0) scale(${1+launch*3.7})`}}>
-<CrownModel progress={progress} />
+<CrownModel progress={crownProgress} tl={CROWN_TIMELINE} active={progress < 0.47} />
 <div className="fx-crown-halo" />
 </div>
 <section className="fx-crown-wordmark" id="experience" style={{opacity:reveal*(1-gallery*.9),transform:`translate3d(0,${(1-reveal)*45-gallery*12}px,0) scale(${.87+reveal*.13})`}}>
