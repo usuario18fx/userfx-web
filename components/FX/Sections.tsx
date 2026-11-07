@@ -160,34 +160,14 @@ export function SectionMethod() {
 
   steps.push({
     title: "Unlock",
-    text: "Enter your personal code to unlock the USER FX private vault.",
+    text: "Enter your personal code to unlock the USER FX private ROOM.",
     cta: "Enter the Vault",
     href: ENTER_URL,
     external: false,
   });
 
   return (
-    <ProtocolVault
-      id="protocol"
-      eyebrowIndex="02"
-      eyebrow="ACCESS PROTOCOL"
-      title={
-        <>
-          <span className="pv-title-line">
-            ENTER
-          </span>
-          <span className="pv-title-line">
-            THE
-          </span>
-          <span className="pv-title-line">
-            VAULT
-          </span>
-        </>
-      }
-      intro="Four steps. Four photographs. The crown turns behind everything and falls into the four private rooms."
-      steps={steps}
-      roomTags={["SPCL", "BSIC", "PRX0", "VIPX"]}
-    />
+    <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title={ <> <span className="pv-title-line"> ENTER </span> <span className="pv-title-line"> THE </span> <span className="pv-title-line"> VAULT </span> </> } intro="Four steps. Four photographs. The crown turns behind everything and falls into the four private rooms." steps={steps} roomTags={["SPCL", "BSIC", "PRX0", "VIPX"]} />
   );
 }
 
@@ -200,33 +180,15 @@ export function SectionPricing() {
       <Drift className="left-[30%] top-[6%] h-[28rem] w-[28rem]" distance={110} />
       <RevealGroup className="mb-8 space-y-5">
         <SectionIndex index="04" label="Choose your code" />
-        <Title>Your access. Your level.</Title>
+        <Title>
+Your access. Your level.
+</Title>
         <Reveal>
           <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1">
             {(["stars", "window"] as const).map((value, i) => (
-              <button
-                key={value}
-                ref={(element) => { radios.current[i] = element; }}
-                type="button"
-                role="radio"
-                aria-checked={view === value}
-                tabIndex={view === value ? 0 : -1}
-                onClick={() => setView(value)}
-                onKeyDown={(event) => {
-                  if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-                  event.preventDefault();
-                  const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - i;
-                  setView(next === 0 ? "stars" : "window");
-                  radios.current[next]?.focus();
-                }}
-                className="relative rounded-full px-6 py-2.5 text-sm font-semibold"
-              >
+              <button key={value} ref={(element) => { radios.current[i] = element; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(event) => { if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return; event.preventDefault(); const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - i; setView(next === 0 ? "stars" : "window"); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold" >
                 {view === value && (
-                  <motion.span
-                    layoutId="cycle-pill"
-                    className="absolute inset-0 rounded-full bg-gold text-sky"
-                    transition={{ duration: 0.4, ease: EASE }}
-                  />
+                  <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-gold text-sky" transition={{ duration: 0.4, ease: EASE }} />
                 )}
                 <span className={`relative ${view === value ? "text-sky" : "opacity-50"}`}>
                   {value === "stars" ? "Telegram Stars" : "Access window"}
@@ -238,20 +200,7 @@ export function SectionPricing() {
       </RevealGroup>
 
       <RevealGroup>
-        <ul
-          className="fx-pricing-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            alignItems: "stretch",
-            width: "100%",
-            maxWidth: "960px",
-            gap: "clamp(6px, 1.15vw, 14px)",
-            marginInline: "auto",
-            padding: 0,
-            listStyle: "none",
-          }}
-        >
+        <ul className="fx-pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", alignItems: "stretch", width: "100%", maxWidth: "960px", gap: "clamp(6px, 1.15vw, 14px)", marginInline: "auto", padding: 0, listStyle: "none", }} >
           {PLANS.map((plan) => {
             const price = view === "stars" ? `✪ ${plan.stars}` : plan.window;
             return (
@@ -274,31 +223,14 @@ export function SectionPricing() {
                 }}
               >
                 <div className="flex min-w-0 flex-col gap-2">
-                  <img
-                    src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip}
-                    alt=""
-                    loading="lazy"
-                    className="fx-prefix-illustration object-contain"
-                    style={{ width: "clamp(22px, 2.3vw, 30px)", height: "clamp(22px, 2.3vw, 30px)" }}
-                  />
-                  <h3
-                    className="min-w-0 font-display font-semibold uppercase"
-                    style={{ fontSize: "clamp(12px, 1.45vw, 20px)", lineHeight: 1.1, overflowWrap: "anywhere" }}
-                  >
+                  <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-prefix-illustration object-contain" style={{ width: "clamp(22px, 2.3vw, 30px)", height: "clamp(22px, 2.3vw, 30px)" }} />
+                  <h3 className="min-w-0 font-display font-semibold uppercase" style={{ fontSize: "clamp(12px, 1.45vw, 20px)", lineHeight: 1.1, overflowWrap: "anywhere" }} >
                     {plan.name}{" "}
-                    <span style={{ fontSize: "clamp(8px, 0.75vw, 10px)", opacity: 0.55 }}>{plan.prefix}</span>
+                    <span style={{ fontSize: "clamp(8px, 0.75vw, 10px)", opacity: 0.55 }}>
+{plan.prefix}
+</span>
                   </h3>
-                  <p
-                    className="opacity-65"
-                    style={{
-                      fontSize: "clamp(9px, 0.95vw, 12px)",
-                      lineHeight: 1.35,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
+                  <p className="opacity-65" style={{ fontSize: "clamp(9px, 0.95vw, 12px)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", }} >
                     {plan.tagline}
                   </p>
                 </div>
@@ -318,18 +250,23 @@ export function SectionPricing() {
                   </p>
                 </div>
                 <details className="group min-w-0" style={{ fontSize: "clamp(9px, 0.85vw, 11px)" }}>
-                  <summary
-                    className="flex cursor-pointer items-center justify-between gap-1 border-t border-ink/20 pt-2 opacity-75"
-                    style={{ listStyle: "none", userSelect: "none" }}
-                  >
-                    <span>BENEFITS</span>
-                    <span aria-hidden="true">+</span>
+                  <summary className="flex cursor-pointer items-center justify-between gap-1 border-t border-ink/20 pt-2 opacity-75" style={{ listStyle: "none", userSelect: "none" }} >
+                    <span>
+BENEFITS
+</span>
+                    <span aria-hidden="true">
++
+</span>
                   </summary>
                   <ul className="mt-2 flex flex-col gap-2">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex min-w-0 items-start gap-1.5 leading-snug">
-                        <span className="shrink-0 opacity-50" aria-hidden="true">•</span>
-                        <span style={{ overflowWrap: "anywhere" }}>{feature}</span>
+                        <span className="shrink-0 opacity-50" aria-hidden="true">
+•
+</span>
+                        <span style={{ overflowWrap: "anywhere" }}>
+{feature}
+</span>
                       </li>
                     ))}
                   </ul>
@@ -342,7 +279,9 @@ export function SectionPricing() {
                     className={`group flex min-w-0 items-center justify-between gap-1 rounded-full font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
                     style={{ minHeight: 32, padding: "8px clamp(6px, 1vw, 12px)", fontSize: "clamp(9px, .9vw, 11px)" }}
                   >
-                    <RollLabel>{plan.cta}</RollLabel>
+                    <RollLabel>
+{plan.cta}
+</RollLabel>
                     <Glyph name="caret" className="h-3 w-3 shrink-0 transition-transform duration-500 group-hover:translate-x-1" />
                   </a>
                 </Magnetic>
@@ -351,8 +290,12 @@ export function SectionPricing() {
           })}
         </ul>
         <Reveal className="mt-7 flex flex-wrap items-center justify-between gap-4 text-sm text-ink/55">
-          <span>Need identity access? Start with SPCL.</span>
-          <a className="text-gold" href={BOT_URL} target="_blank" rel="noreferrer">Get my code ↗</a>
+          <span>
+Need identity access? Start with SPCL.
+</span>
+          <a className="text-gold" href={BOT_URL} target="_blank" rel="noreferrer">
+Get my code ↗
+</a>
         </Reveal>
       </RevealGroup>
     </Shell>

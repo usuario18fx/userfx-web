@@ -17,9 +17,15 @@ type Props = {
 };
 
 type Particle = {
+  // posición base (coordenadas normalizadas al viewport)
   x: number;
   y: number;
   z: number;
+  // posición "objetivo" durante la formación de la corona
+  nx: number;
+  ny: number;
+  nz: number;
+  // estado físico
   size: number;
   alpha: number;
   vx: number;
@@ -28,275 +34,268 @@ type Particle = {
   py: number;
   driftX: number;
   driftY: number;
+  dvx: number;
+  dvy: number;
   threshold: number;
   scatterX: number;
   scatterY: number;
   bounce: number;
-  floorOffset: number;
+  floorDepth: number;
   detached: boolean;
 };
 
-const clamp = (value: number) => Math.max(0, Math.min(1, value));
-const ease = (value: number) => {
-  const t = clamp(value);
-  return t * t * (3 - 2 * t);
-};
+const clamp = (v: number, min = 0, max = 1) =>
+  v < min ? min : v > max ? max : v;
 
-// One seed keeps the shape, break and floor arrangement stable on every visit.
-function buildParticles(count: number): Particle[] {
-  let seed = 20261104;
-  const random = () => {
-    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-  const particles: Particle[] = [];
-  const peakCount = 5;
-  const segment = Math.PI * 2 / peakCount;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-  for (let i = 0; i < count; i += 1) {
-    const angle = random() * Math.PI * 2;
-    const distance = Math.abs(((angle / segment + 0.5) % 1) - 0.5) * 2;
-    const tip = 0.34 + Math.pow(1 - distance, 1.55) * 0.91;
-    const outerBand = i % 7 === 0;
-    const radius = outerBand ? 0.79 + random() * 0.08 : 0.73 + random() * 0.29;
-    const high = random() * tip;
-    const size = 0.42 + random() * 1.05;
+/** Progreso normalizado dentro de un rango [a, b] del timeline. */
+const range = (v: number, [a, b]: [number, number]) =>
+  clamp((v - a) / Math.max(1e-6, b - a));
 
-    particles.push({
-      x: Math.cos(angle) * radius,
-      y: outerBand ? 0.05 + random() * 0.19 : high,
-      z: Math.sin(angle) * radius,
-      size,
-      alpha: 0.45 + random() * 0.55,
-      vx: 0,
-      vy: 0,
-      px: 0,
-      py: 0,
-      driftX: 0,
-      driftY: 0,
-      threshold: random(),
-      scatterX: (random() - 0.5) * 2,
-      scatterY: random() - 0.65,
-      bounce: 0.14 + random() * 0.26,
-      floorOffset: random() * 17,
-      detached: false,
-    });
-  }
-  return particles;
-}
-
-export default function ProtocolCrown({ progress, tl, active }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export default function CrownParticles({ progress, tl, active }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rafRef = useRef<number>(0);
   const activeRef = useRef(active);
-  activeRef.current = active;
+  const particlesRef = useRef<Particle[]>([]);
+  const sizeRef = useRef({ w: 0, h: 0, dpr: 1 });
+  const pointerRef = useRef({ x: 0.5, y: 0.5 });
+
+  // Mantener `active` fuera del closure del loop
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  // Inicialización de partículas (una vez)
+  useEffect(() => {
+    const N = 180;
+    const particles: Particle[] = [];
+    for (let i = 0; i < N; i++) {
+      const angle = (i / N) * Math.PI * 2;
+      const r = 0.25 + Math.random() * 0.15;
+      particles.push({
+        x: 0.5 + Math.cos(angle) * r,
+        y: 0.5 + Math.sin(angle) * r,
+        z: Math.random(),
+        nx: 0.5 + Math.cos(angle) * r,
+        ny: 0.5 + Math.sin(angle) * r * 0.4,
+        nz: Math.random(),
+        size: 0.5 + Math.random() * 1.5,
+        alpha: 1,
+        vx: 0,
+        vy: 0,
+        px: 0,
+        py: 0,
+        driftX: (Math.random() - 0.5) * 0.2,
+        driftY: (Math.random() - 0.5) * 0.2,
+        dvx: 0,
+        dvy: 0,
+        threshold: Math.random(),
+        scatterX: (Math.random() - 0.5) * 2,
+        scatterY: (Math.random() - 0.5) * 2,
+        bounce: 0.6 + Math.random() * 0.4,
+        floorDepth: Math.random(),
+        detached: false,
+      });
+    }
+    particlesRef.current = particles;
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d", { alpha: true });
-    if (!canvas || !context) return;
+    if (!canvas) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 700px)").matches;
-    const particles = buildParticles(mobile ? 1900 : 4500);
-    const mouse = { x: -10000, y: -10000, pressed: false, lastX: -10000, lastY: -10000 };
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
-    let width = 1;
-    let height = 1;
-    let pixelRatio = 1;
-    let frame = 0;
-    let previous = 0;
-    let rotation = 0;
-    let settle = 0;
-    let lastBreak = false;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+    // --- Resize con DPR y ResizeObserver ---
     const resize = () => {
-      pixelRatio = Math.min(mobile ? 1.35 : 1.7, window.devicePixelRatio || 1);
-      width = Math.max(1, canvas.clientWidth);
-      height = Math.max(1, canvas.clientHeight);
-      canvas.width = Math.round(width * pixelRatio);
-      canvas.height = Math.round(height * pixelRatio);
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      const parent = canvas.parentElement;
+      const w = parent?.clientWidth ?? window.innerWidth;
+      const h = parent?.clientHeight ?? window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sizeRef.current = { w, h, dpr };
     };
-
-    const pointerMove = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.lastX = mouse.x;
-      mouse.lastY = mouse.y;
-      mouse.x = event.clientX - rect.left;
-      mouse.y = event.clientY - rect.top;
-    };
-    const pointerExit = () => {
-      mouse.pressed = false;
-      mouse.x = -10000;
-      mouse.y = -10000;
-    };
-    const pointerDown = (event: PointerEvent) => {
-      pointerMove(event);
-      mouse.pressed = true;
-    };
-    const pointerUp = () => {
-      mouse.pressed = false;
-    };
-
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
-    window.addEventListener("pointermove", pointerMove, { passive: true });
-    window.addEventListener("pointerdown", pointerDown, { passive: true });
-    window.addEventListener("pointerup", pointerUp, { passive: true });
-    window.addEventListener("blur", pointerExit);
     resize();
 
-    const draw = (now: number) => {
-      frame = requestAnimationFrame(draw);
-      const delta = Math.min(0.04, (now - (previous || now)) / 1000);
-      previous = now;
-      context.clearRect(0, 0, width, height);
-      if (!activeRef.current) return;
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(resize)
+        : null;
+    ro?.observe(canvas.parentElement ?? canvas);
+    window.addEventListener("resize", resize);
 
-      const position = progress.get();
-      const fracture = clamp((position - tl.breakStart) / 0.105);
-      const breaking = fracture > 0.001;
-      const fade = 1 - ease((position - tl.fade[0]) / Math.max(0.001, tl.fade[1] - tl.fade[0]));
+    // --- Pointer ---
+    const onPointerMove = (e: PointerEvent) => {
+      const { w, h } = sizeRef.current;
+      pointerRef.current.x = e.clientX / Math.max(1, w);
+      pointerRef.current.y = e.clientY / Math.max(1, h);
+    };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
 
-      let offset = 0;
-      if (position >= tl.descend[1]) offset = 1;
-      else if (position > tl.descend[0]) {
-        offset = ease((position - tl.descend[0]) / (tl.descend[1] - tl.descend[0]));
-      }
-      if (position > tl.rise[0]) {
-        offset = 1 - ease((position - tl.rise[0]) / (tl.rise[1] - tl.rise[0]));
-      }
+    let lastProgress = -1;
+    let paused = false;
+    const onVisibility = () => {
+      paused = document.hidden;
+      if (!paused) rafRef.current = requestAnimationFrame(frame);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
 
-      if (!breaking && lastBreak) {
-        // Rewind the story: the five-point crown assembles back into place.
-        settle = 1;
-      }
-      lastBreak = breaking;
-      settle += (0 - settle) * Math.min(1, delta * 3.5);
-      if (fade <= 0 && !breaking) return;
+    // --- Loop ---
+    const frame = () => {
+      rafRef.current = requestAnimationFrame(frame);
+      if (paused) return;
 
-      rotation += reducedMotion ? 0 : delta * 0.22;
-      const spin = rotation + Math.min(position, tl.breakStart) * 4.2;
-      const cos = Math.cos(spin);
-      const sin = Math.sin(spin);
-      const radius = Math.min(height * 0.40, width * 0.32);
-      const centerX = width * 0.50;
-      const centerY = height * 0.42 + offset * height * 0.82;
-      const floorY = height - 7;
-      const pointerRadius = mouse.pressed ? 155 : 106;
-      const pointerRadiusSq = pointerRadius * pointerRadius;
-      const step = Math.min(1.7, Math.max(0.4, delta * 60));
+      const { w, h } = sizeRef.current;
+      if (w === 0 || h === 0) return;
 
-      // Lower-glow surface: fragments land at the same ground level.
-      if (breaking && fracture > 0.4) {
-        const opacity = Math.min(0.22, (fracture - 0.4) * 0.18) * fade;
-        context.fillStyle = `rgba(55,196,245,${opacity.toFixed(3)})`;
-        context.fillRect(0, floorY, width, 1);
-      }
+      const p = progress.get();
+      // Evitar redibujar si nada cambia (ahorra batería)
+      const stationary =
+        Math.abs(p - lastProgress) < 1e-5 &&
+        !activeRef.current &&
+        particlesRef.current.every(
+          (pt) => Math.abs(pt.vx) < 0.001 && Math.abs(pt.vy) < 0.001
+        );
+      if (stationary) return;
+      lastProgress = p;
 
-      context.globalCompositeOperation = "lighter";
+      // --- Fases del timeline ---
+      const tDescend = range(p, tl.descend);
+      const tRise = range(p, tl.rise);
+      const tBreak = clamp((p - tl.breakStart) / Math.max(1e-6, 1 - tl.breakStart));
+      const tFade = range(p, tl.fade);
 
-      for (const part of particles) {
-        const rx = part.x * cos + part.z * sin;
-        const rz = part.z * cos - part.x * sin;
-        const perspective = 3.5 / (3.5 + rz * 0.4);
-        const homeX = centerX + rx * radius * perspective;
-        const homeY = centerY - (part.y - 0.43) * radius * perspective;
+      const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+      const easeInOut = (t: number) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-        const dx = homeX + part.driftX - mouse.x;
-        const dy = homeY + part.driftY - mouse.y;
-        const distanceSq = dx * dx + dy * dy;
+      ctx.clearRect(0, 0, w, h);
 
-        if (!breaking || reducedMotion) {
-          // Mouse pushes the intact crown as a springy particle mesh.
-          if (!reducedMotion && distanceSq < pointerRadiusSq) {
-            const force = (1 - Math.sqrt(distanceSq) / pointerRadius) * (mouse.pressed ? 11 : 5.4);
-            const inv = 1 / Math.sqrt(distanceSq + 1);
-            part.driftX += dx * inv * force * step;
-            part.driftY += dy * inv * force * step;
-          }
-          part.driftX *= Math.pow(0.87, step);
-          part.driftY *= Math.pow(0.87, step);
-          part.px = homeX + part.driftX;
-          part.py = homeY + part.driftY;
-          part.vx = 0;
-          part.vy = 0;
-          part.detached = false;
-        } else {
-          // Each fragment has its own activation time, initial impulse,
-          // gravity, collision rebound and floor-rest position.
-          const onset = part.threshold * 0.67;
-          if (!part.detached && fracture >= onset) {
-            part.detached = true;
-            part.px = homeX + part.driftX;
-            part.py = homeY + part.driftY;
-            part.vx = part.scatterX * (1.2 + fracture * 3.5);
-            part.vy = -2.1 - Math.abs(part.scatterY) * 4.8;
-            part.driftX = 0;
-            part.driftY = 0;
-          }
-          if (part.detached) {
-            const px = part.px - mouse.x;
-            const py = part.py - mouse.y;
-            const r2 = px * px + py * py;
-            if (r2 < pointerRadiusSq) {
-              const force = (1 - Math.sqrt(r2) / pointerRadius) * (mouse.pressed ? 3.8 : 1.7) * step;
-              const inv = 1 / Math.sqrt(r2 + 1);
-              part.vx += px * inv * force;
-              part.vy += py * inv * force - force * 0.28;
-            }
-            part.vx += part.scatterX * fracture * 0.03 * step;
-            part.vy += 0.19 * step;
-            part.vx *= Math.pow(0.988, step);
-            part.vy *= Math.pow(0.997, step);
-            part.px += part.vx * step;
-            part.py += part.vy * step;
+      const ptr = pointerRef.current;
+      const isActive = activeRef.current;
 
-            const ground = floorY - part.floorOffset;
-            if (part.py > ground) {
-              part.py = ground;
-              if (part.vy > 0.6) {
-                part.vy = -part.vy * part.bounce;
-                part.vx *= 0.77;
-              } else {
-                part.vy = 0;
-                part.vx *= 0.90;
-              }
-            }
-            if (part.px < 3 || part.px > width - 3) {
-              part.px = Math.max(3, Math.min(width - 3, part.px));
-              part.vx *= -0.35;
-            }
-          } else {
-            part.px = homeX + part.driftX;
-            part.py = homeY + part.driftY;
+      for (const pt of particlesRef.current) {
+        // --- Física / animación ---
+        if (isActive && tBreak < 1) {
+          // Repulsión del puntero
+          const dx = pt.x - ptr.x;
+          const dy = pt.y - ptr.y;
+          const dist2 = dx * dx + dy * dy;
+          const force = 0.0008 / (dist2 + 0.001);
+          pt.dvx += dx * force;
+          pt.dvy += dy * force;
+        }
+
+        // Scatter al romper
+        if (tBreak > 0.05 && !pt.detached) {
+          if (Math.random() < 0.02 * tBreak || pt.threshold < tBreak) {
+            pt.detached = true;
+            pt.vx += pt.scatterX * (0.4 + Math.random() * 0.8);
+            pt.vy += pt.scatterY * (0.4 + Math.random() * 0.8);
           }
         }
 
-        if (part.px < -10 || part.px > width + 10 || part.py < -10 || part.py > height + 10) continue;
-        const alpha = part.alpha * fade;
-        const size = part.size * (0.8 + perspective * 0.2);
-        context.fillStyle = `rgba(38,169,252,${(alpha * 0.16).toFixed(3)})`;
-        context.fillRect(part.px - size * 2, part.py - size * 2, size * 4, size * 4);
-        context.fillStyle = `rgba(115,228,255,${alpha.toFixed(3)})`;
-        context.fillRect(part.px, part.py, size, size);
+        // Caída por gravedad
+        if (pt.detached) {
+          pt.vy += 0.0006 * pt.bounce;
+        }
+
+        // Drift suave
+        pt.dvx += (Math.sin(pt.driftX * 10 + p * 6) * 0.5 - pt.dvx) * 0.02;
+        pt.dvy += (Math.cos(pt.driftY * 10 + p * 6) * 0.5 - pt.dvy) * 0.02;
+
+        pt.vx = (pt.vx + pt.dvx) * 0.98;
+        pt.vy = (pt.vy + pt.dvy) * 0.98;
+
+        pt.px = pt.x;
+        pt.py = pt.y;
+        pt.x += pt.vx * 0.01;
+        pt.y += pt.vy * 0.01;
+
+        // Rebote en el suelo (con perspectiva según floorDepth)
+        const floorY = 0.85 + pt.floorDepth * 0.1;
+        if (pt.detached && pt.y > floorY) {
+          pt.y = floorY;
+          pt.vy *= -0.4;
+          pt.vx *= 0.9;
+        }
+
+        // Re-enganche si está en reposo
+        if (
+          pt.detached &&
+          Math.abs(pt.vx) < 0.01 &&
+          Math.abs(pt.vy) < 0.01
+        ) {
+          pt.vx = pt.vy = pt.dvx = pt.dvy = 0;
+          pt.x = lerp(pt.x, pt.nx, 0.02);
+          pt.y = lerp(pt.y, pt.ny, 0.02);
+        }
+
+        // --- Interpolación por fases ---
+        const descendT = easeOut(tDescend);
+        const riseT = easeInOut(tRise);
+
+        const targetX = lerp(pt.nx, 0.5 + pt.driftX * 0.3, descendT);
+        const targetY = lerp(pt.ny, 0.5 + pt.driftY * 0.3, descendT);
+
+        // Mezcla final según fase
+        const formT = riseT * (1 - tBreak) + tBreak * 0.3;
+        pt.px = pt.x;
+        pt.py = pt.y;
+        pt.x = lerp(targetX, pt.x, formT * 0.1);
+        pt.y = lerp(targetY, pt.y, formT * 0.1);
+
+        // Alpha por fade
+        pt.alpha = 1 - tFade;
+
+        // --- Render ---
+        const screenX = pt.x * w;
+        const screenY = pt.y * h;
+        const size = pt.size * (1 - pt.z * 0.4);
+
+        ctx.globalAlpha = clamp(pt.alpha);
+        ctx.fillStyle = `hsl(${45 + pt.z * 20}, 90%, ${60 + pt.z * 20}%)`;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Estela
+        if (isActive && (Math.abs(pt.vx) > 0.01 || Math.abs(pt.vy) > 0.01)) {
+          ctx.globalAlpha = clamp(pt.alpha * 0.25);
+          ctx.strokeStyle = ctx.fillStyle;
+          ctx.lineWidth = size * 0.6;
+          ctx.beginPath();
+          ctx.moveTo(pt.px * w, pt.py * h);
+          ctx.lineTo(screenX, screenY);
+          ctx.stroke();
+        }
       }
 
-      context.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
     };
 
-    frame = requestAnimationFrame(draw);
+    rafRef.current = requestAnimationFrame(frame);
+
     return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener("pointermove", pointerMove);
-      window.removeEventListener("pointerdown", pointerDown);
-      window.removeEventListener("pointerup", pointerUp);
-      window.removeEventListener("blur", pointerExit);
+      cancelAnimationFrame(rafRef.current);
+      ro?.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [progress, tl]);
 
   return (
-    <canvas ref={canvasRef} className="pv-crown" aria-hidden="true" />
+    <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
   );
 }

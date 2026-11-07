@@ -1,15 +1,13 @@
 /* ══════════════════════════════════════════════════════════════════════════
    USER FX — ROOM INTRO
-   ══════════════════════════════════════════════════════════════════════════ */
-
+══════════════════════════════════════════════════════════════════════════ */
 .fx-room-intro {
   position: relative;
   width: 100%;
-  height: 700svh; /* más recorrido por stop = scroll más pausado */
+  height: 1700svh; /* 15 steps · ~115svh por step */
   background: #05070d;
   color: #fff;
 }
-
 .fx-room-intro-sticky {
   position: sticky;
   top: 0;
@@ -19,7 +17,6 @@
   overflow: hidden;
   isolation: isolate;
 }
-
 /* Contenedor real del canvas (CinematicTour renderiza <div class="cinematic-tour">) */
 .fx-room-intro .cinematic-tour,
 .fx-room-intro .fx-cinematic-canvas {
@@ -32,14 +29,12 @@
   display: block;
   overflow: hidden;
 }
-
 .fx-room-intro .cinematic-tour canvas,
 .fx-room-intro .fx-cinematic-canvas canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
 }
-
 .fx-room-intro-shade {
   position: absolute;
   inset: 0;
@@ -54,7 +49,6 @@
       rgba(3, 5, 9, .45) 0%,
       transparent 35%);
 }
-
 .fx-room-intro-head {
   position: absolute;
   top: 52px;
@@ -69,7 +63,6 @@
   text-shadow: 0 2px 12px #000;
   pointer-events: none;
 }
-
 .fx-room-intro-copy {
   position: absolute;
   left: 52px;
@@ -80,13 +73,11 @@
   text-shadow: 0 4px 25px #000;
   animation: fxCopyIn .7s cubic-bezier(.2, .7, .2, 1) both;
 }
-
 .fx-room-intro-copy small {
   font-size: 12px;
   letter-spacing: .2em;
   color: #0370ff;
 }
-
 .fx-room-intro-copy h1 {
   margin: 12px 0 18px;
   font-family: "Arial Black", Impact, "Helvetica Neue", sans-serif;
@@ -107,13 +98,11 @@
     -11px 11px 0 #868383,
     -14px 18px 24px rgba(0, 0, 0, .45);
 }
-
 .fx-room-intro-copy h1.fx-room-title-welcome::first-letter {
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
   font-weight: 900;
 }
-
 .fx-room-intro-copy h1 strong {
   font-weight: 900;
   color: #0370ff;
@@ -128,7 +117,6 @@
     -11px 11px 0 #08477f,
     -14px 18px 24px rgba(0, 0, 0, .45);
 }
-
 @media (max-width: 680px) {
   .fx-room-intro-copy h1,
   .fx-room-intro-copy h1 strong {
@@ -146,15 +134,12 @@
       -3px 3px 0 #08477f,
       -5px 5px 0 #08477f,
       -8px 10px 16px rgba(0, 0, 0, .45);
-  }
-}
-
+  }}
 .fx-room-intro-copy p {
   margin: 0;
   font-size: 14px;
   letter-spacing: .20em;
 }
-
 .fx-room-intro-description {
   margin-top: 14px !important;
   max-width: 460px;
@@ -163,7 +148,6 @@
   letter-spacing: .02em !important;
   color: #f0edf5;
 }
-
 .fx-room-intro-index {
   position: absolute;
   right: clamp(24px, 7vw, 150px);
@@ -179,7 +163,6 @@
   user-select: none;
   pointer-events: none;
 }
-
 .fx-room-intro-progress {
   position: absolute;
   left: 0;
@@ -191,7 +174,6 @@
   pointer-events: none;
   overflow: hidden;
 }
-
 .fx-room-intro-progress > div {
   width: 100%;
   height: 100%;
@@ -199,7 +181,6 @@
   transform-origin: 0 50%;
   will-change: transform;
 }
-
 .fx-room-intro-loading {
   display: grid;
   place-items: center;
@@ -209,19 +190,19 @@
   font-size: 12px;
   letter-spacing: .22em;
 }
-
 @keyframes fxCopyIn {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
-
 @keyframes fxFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
+/* Barra de progreso: ámbar mientras el scroll está bloqueado */
+.fx-room-intro.is-locked .fx-room-intro-progress > div {
+  background: #ffc857;
+}
 /* ── OVERLAY ROOM ───────────────────────────────────────────────────────── */
-
 .fx-room-ui {
   position: absolute;
   inset: 0;
@@ -231,18 +212,15 @@
   pointer-events: none;
   animation: fxFadeIn .45s ease both;
 }
-
 .fx-room-ui button,
 .fx-room-ui a {
   pointer-events: auto;
   font-family: inherit;
 }
-
 .fx-room-ui button:focus-visible {
   outline: 2px solid #0370ff;
   outline-offset: 3px;
 }
-
 .fx-header {
   position: absolute;
   top: 28px;
@@ -253,7 +231,6 @@
   justify-content: space-between;
   align-items: center;
 }
-
 .fx-logo strong {
   display: block;
   font-size: 18px;
@@ -262,9 +239,8 @@
 .fx-logo span {
   font-size: 10px;
   letter-spacing: .24em;
-  color: rgba(255, 255, 255, .6);
+  color: #ffffff99;
 }
-
 .fx-nav-center {
   display: flex;
   gap: 28px;
@@ -279,12 +255,12 @@
   cursor: pointer;
   transition: color .2s, border-color .2s;
 }
-.nav-item:hover { color: #fff; }
+.nav-item:hover { color: #fff; 
+}
 .nav-item.active {
   color: #fff;
   border-bottom-color: #fff;
 }
-
 .fx-nav-right {
   display: flex;
   gap: 18px;
@@ -296,141 +272,202 @@
   cursor: pointer;
   transition: color .2s;
 }
-.nav-icon:hover { color: #fff; }
-
-.fx-content-left {
+.nav-icon:hover { color: #fff; 
+}
+/* ── STEPS VACÍOS / ENFOQUE: etiqueta + riel ────────────────────────────── */
+.fx-step-tag {
   position: absolute;
-  left: 44px;
-  top: 130px;
-  width: 380px;
-  background: transparent;
-  pointer-events: none;
-  z-index: 4;
-  animation: fxCopyIn .6s cubic-bezier(.2, .7, .2, 1) both;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
-}
-
-.fx-content-left button,
-.fx-content-left a {
-  pointer-events: auto;
-}
-
-.fx-badge {
-  display: inline-block;
-  margin-bottom: 20px;
+  left: clamp(24px, 3.2vw, 56px);
+  bottom: 44px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   font-size: 11px;
-  letter-spacing: .18em;
-  color: rgba(255, 255, 255, .72);
+  letter-spacing: .2em;
+  color: rgba(255, 255, 255, .75);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .8);
+  animation: fxCopyIn .55s cubic-bezier(.2, .7, .2, 1) both;
 }
-
-.fx-title {
-  margin: 0 0 18px;
-  font-size: clamp(54px, 7vw, 88px);
-  line-height: .95;
-  font-weight: 600;
-  letter-spacing: -.05em;
+.fx-step-tag-block { color: #fff; font-weight: 600; 
 }
-
-.fx-title-multimedia {
-  color: #0370ff;
+.fx-step-tag-label { color: #0370ff; 
 }
-
-.fx-subtitle {
-  margin: 0 0 24px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, .72);
+.fx-step-tag-count { color: rgba(255, 255, 255, .55); 
 }
-
-.fx-btn-primary {
-  background: none;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, .35);
-  color: #fff;
-  padding: 0 0 10px;
-  font-size: 15px;
+.fx-step-rail {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  pointer-events: none;
+}
+.fx-rail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+}
+.fx-rail-gap { display: block; height: 10px; }
+.fx-rail-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .55);
+  background: transparent;
   cursor: pointer;
-  text-align: left;
-  transition: border-color .2s, letter-spacing .2s;
+  transition: background .2s, transform .2s, border-color .2s;
 }
-.fx-btn-primary:hover {
-  border-bottom-color: #0370ff;
-  letter-spacing: .02em;
+.fx-rail-dot::before { /* zona de clic más grande */
+  content: "";
+  position: absolute;
+  inset: -7px;
 }
-
-.fx-menu-right {
+.fx-rail-dot.is-lock { border-radius: 2px; 
+}
+.fx-rail-dot:hover { border-color: #fff; 
+}
+.fx-rail-dot.is-active {
+  background: #fff;
+  border-color: #fff;
+  transform: scale(1.5);
+}
+/* ── PUZZLE (step de botones) ───────────────────────────────────────────── */
+.fx-puzzle {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  --line: rgba(255, 255, 255, .18);
+  --fill: #0b1226;
+}
+.fx-pz-left {
+  position: absolute;
+  left: clamp(24px, 3.2vw, 56px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(320px, 26vw, 440px);
+}
+.fx-pz-menu {
   position: absolute;
   right: 3%;
   top: 50%;
   transform: translateY(-50%);
   width: min(370px, 31vw);
-  z-index: 4;
-  background: rgba(5, 10, 22, .62);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, .12);
+}
+/* Pieza base */
+.fx-piece {
+  position: relative;
+  z-index: var(--z, 1);
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  color: #fff;
+  text-align: left;
+  overflow-wrap: anywhere;
+  animation:
+    fxPieceIn .85s cubic-bezier(.22, 1, .36, 1) var(--pd, 0s) both,
+    fxClick .6s ease-out calc(var(--pd, 0s) + .6s) both;
+}
+.fx-piece + .fx-piece { margin-top: -1px; 
+}
+/* Lengüeta: media circunferencia que entra en la pieza de abajo (mismo color que su pieza) */
+.fx-piece--knob::after {
+  content: "";
+  position: absolute;
+  left: var(--kx, 50%);
+  bottom: -13px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: inherit;
+  border: 1px solid var(--line);
+  clip-path: inset(calc(50% - 2px) 0 0 0);
   pointer-events: none;
-  animation: fxFadeIn .5s ease both;
 }
-
-.fx-menu-right button {
-  pointer-events: auto;
+.fx-piece--title { padding: 24px 26px 30px; 
 }
-
-.fx-menu-header {
+.fx-piece--sub { padding: 26px 26px 22px; 
+}
+.fx-badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: #ffffffb8;
+}
+.fx-title {
+  margin: 0;
+  font-size: clamp(38px, 4.2vw, 62px);
+  line-height: .98;
+  font-weight: 600;
+  letter-spacing: -.05em;
+}
+.fx-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .72);
+}
+/* Cabecera del menú */
+.fx-piece--head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  padding: 18px 22px 10px;
+  gap: 10px 12px;
+  padding: 18px 22px 20px;
   font-size: 11px;
   letter-spacing: .16em;
   color: rgba(255, 255, 255, .62);
 }
-
-.fx-menu-counter {
-  color: #fff;
+.fx-menu-counter { color: #fff; 
 }
-
-.fx-menu-list {
-  display: flex;
-  flex-direction: column;
+.fx-lock-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: #ffc857;
+  transition: color .3s;
 }
-
-.fx-menu-item {
+.fx-puzzle.is-open .fx-lock-chip { color: #7be0a8; 
+}
+/* Botones */
+.fx-piece--item {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  width: 100%;
-  padding: 20px 22px;
-  background: transparent;
-  border: none;
-  border-top: 1px solid rgba(255, 255, 255, .08);
-  color: #fff;
-  text-align: left;
+  padding: 20px 22px 22px;
   cursor: pointer;
-  transition: background .2s, color .2s;
+  transition: background .2s, color .2s, border-color .2s;
 }
-
-.fx-menu-item:hover {
-  background: rgba(255, 255, 255, .08);
+.fx-piece--item:hover { background: #15213f; 
 }
-
-.fx-menu-item.active {
+.fx-piece--item.is-primary {
   background: rgba(255, 255, 255, .96);
   color: #111;
 }
-.fx-menu-item.active:hover {
-  background: #fff;
+.fx-piece--item.is-primary:hover { background: #fff; 
 }
-
 .menu-num {
   width: 22px;
   font-size: 11px;
-  color: rgba(255, 255, 255, .45);
+  color: #ffffff73;
 }
-.fx-menu-item.active .menu-num {
-  color: rgba(0, 0, 0, .42);
+.is-primary .menu-num { color: #0000006b; 
 }
-
 .menu-text {
   flex: 1;
   display: flex;
@@ -443,77 +480,78 @@
 }
 .menu-text small {
   font-size: 12px;
-  color: rgba(255, 255, 255, .58);
+  color: #ffffff94;
 }
-.fx-menu-item.active .menu-text small {
-  color: rgba(0, 0, 0, .56);
+.is-primary .menu-text small { color: rgba(0, 0, 0, .56); 
 }
 .menu-arrow {
   font-size: 20px;
   opacity: .8;
   transition: transform .2s;
 }
-.fx-menu-item:hover .menu-arrow {
-  transform: translateX(3px);
+.fx-piece--item:hover .menu-arrow { transform: translateX(3px); 
 }
-
-.fx-footer-angles {
-  position: absolute;
-  left: 44px;
-  bottom: 54px;
-  width: 310px;
-  padding: 14px;
-  background: rgba(0, 0, 0, .40);
-  border: 1px solid rgba(255, 255, 255, .10);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  z-index: 4;
+/* Encaje: llega desde fuera, se hunde un poco al "clic" y vuelve */
+@keyframes fxPieceIn {
+  0%   { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
+  18%  { opacity: 1; }
+  62%  { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.03); }
+  74%  { transform: translate(0, 0) rotate(0deg) scale(.985); }
+  88%  { transform: translate(0, 0) rotate(0deg) scale(1.008); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+/* Destello del "clic" al encajar */
+@keyframes fxClick {
+  0%   { box-shadow: 0 0 0 0 #0370ff00, 0 0 0 #0370ff00; }
+  25%  { box-shadow: 0 0 0 0 #0370ffe6, 0 0 26px #0370ff8c; }
+  100% { box-shadow: 0 0 0 12px #0370ff00, 0 0 0 #0370ff00; }
+}
+/* Desarme: el mismo movimiento al revés */
+@keyframes fxPieceOut {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+  18%  { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.03); }
+  100% { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
+}
+.fx-puzzle.is-out .fx-piece {
+  animation: fxPieceOut .6s cubic-bezier(.55, 0, .85, .35) var(--pdo, 0s) both;
   pointer-events: none;
 }
-
-.fx-footer-angles button {
-  pointer-events: auto;
+/* Intento de avanzar con el scroll bloqueado */
+@keyframes fxShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
 }
-
-.angles-header {
+.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; 
+}
+/* Leyenda del bloqueo */
+.fx-lock-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 76px;
+  z-index: 7;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, .62);
+  align-items: center;
+  gap: 14px;
+  padding: 13px 22px;
+  background: #0b1226f5;
+  border: 1px solid #ffc85799;
+  color: #ffc857;
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
 }
-.key-hint {
-  border: 1px solid rgba(255, 255, 255, .24);
-  padding: 1px 5px;
-  border-radius: 4px;
+.fx-lock-hint.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
-.angles-list {
-  display: flex;
-  gap: 8px;
-}
-.angle-item {
-  flex: 1;
-  padding: 12px 8px;
-  background: rgba(255, 255, 255, .04);
-  border: 1px solid transparent;
-  color: rgba(255, 255, 255, .75);
-  cursor: pointer;
-  transition: background .2s, border-color .2s, color .2s;
-}
-.angle-item:hover {
-  background: rgba(255, 255, 255, .09);
-}
-.angle-item.active {
-  background: rgba(255, 255, 255, .12);
-  border-color: rgba(255, 255, 255, .26);
-  color: #fff;
-}
-.angle-num {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 10px;
-}
-
+.fx-lock-hint svg { width: 16px; height: 16px; flex: none; }
+.fx-lock-hint span { display: flex; flex-direction: column; gap: 4px; }
+.fx-lock-hint strong { font-size: 14px; font-weight: 600; color: #fff; }
+.fx-lock-hint small { font-size: 12px; color: rgba(255, 255, 255, .7); }
+/* Controles inferiores */
 .fx-footer-controls {
   position: absolute;
   left: 50%;
@@ -522,13 +560,14 @@
   display: flex;
   gap: 18px;
   font-size: 11px;
-  color: rgba(255, 255, 255, .55);
+  color: #ffffff8c;
   white-space: nowrap;
 }
+.fx-footer-controls .is-locked-text { color: #ffc857; }
 .fx-footer-controls kbd {
   padding: 2px 5px;
   margin-right: 2px;
-  background: rgba(255, 255, 255, .08);
+  background: #ffffff14;
   border-radius: 4px;
   font-family: inherit;
 }
@@ -537,15 +576,15 @@
   right: 44px;
   bottom: 42px;
   padding: 10px 18px;
-  background: rgba(0, 0, 0, .45);
-  border: 1px solid rgba(255, 255, 255, .16);
+  background: #00000073;
+  border: 1px solid #ffffff29;
   color: #fff;
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 .fx-btn-exit:hover {
-  background: rgba(255, 255, 255, .12);
-  border-color: rgba(255, 255, 255, .32);
+  background: #ffffff1f;
+  border-color: #ffffff52;
 }
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
@@ -560,34 +599,21 @@
     left: auto;
     right: 3%;
     font-size: clamp(110px, 28vw, 260px);
-    color: rgba(3, 112, 255, 0.12);
+    color: #0370ff1f;
   }
-  .fx-content-left {
-    left: 3%;
-    width: 32%;
-    top: 130px;
-  }
-  .fx-title {
-    font-size: clamp(36px, 5vw, 64px);
-  }
-  .fx-menu-right {
-    display: block;
-    width: min(310px, 35vw);
-    right: 2%;
-  }
-  .fx-footer-angles,
-  .fx-footer-controls {
-    display: none;
-  }}
+  .fx-pz-left { left: 3%; width: 32%; }
+  .fx-pz-menu { width: min(310px, 35vw); right: 2%; }
+  .fx-footer-controls { display: none; }
+}
 @media (max-height: 640px) and (min-width: 681px) {
-  .fx-content-left { top: 104px; }
-  .fx-subtitle { font-size: 13px; margin-bottom: 14px; }
-  .fx-menu-item { padding: 14px 22px; }
-  .fx-footer-angles { bottom: 40px; }
+  .fx-subtitle { font-size: 13px; }
+  .fx-piece--sub { padding: 18px 22px 16px; }
+  .fx-piece--item { padding: 14px 22px 16px; }
+  .fx-piece--title { padding: 18px 22px 24px; }
 }
 @media (max-width: 680px) {
   .fx-room-intro {
-    height: 420svh;
+    height: 1000svh;
   }
   .fx-room-intro-head {
     top: 28px;
@@ -613,42 +639,56 @@
   .fx-nav-right {
     display: none;
   }
-  .fx-menu-right {
-    display: none;
-  }
-  .fx-btn-exit {
-    right: 20px;
-    bottom: 24px;
-    padding: 8px 14px;
-  }
-  .fx-content-left {
-    left: 20px;
-    right: 20px;
-    bottom: 90px;
-    top: auto;
+  .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; }
+  .fx-step-rail { right: 6px; }
+  /* Móvil: título arriba, botones abajo, la pantalla queda en medio */
+  .fx-pz-left {
+    left: 14px;
+    right: 14px;
+    top: 72px;
+    transform: none;
     width: auto;
   }
-  .fx-title {
-    font-size: clamp(40px, 13vw, 60px);
+  .fx-piece--sub { display: none; }
+  .fx-piece--title { padding: 14px 16px 18px; }
+  .fx-piece--title.fx-piece--knob::after { display: none; }
+  .fx-badge { margin-bottom: 8px; font-size: 10px; }
+  .fx-title { font-size: clamp(28px, 9vw, 40px); }
+  .fx-pz-menu {
+    left: 14px;
+    right: 14px;
+    top: auto;
+    bottom: 14px;
+    transform: none;
+    width: auto;
   }
-  .fx-subtitle {
-    font-size: 13px;
+  .fx-piece--head { padding: 12px 16px 14px; }
+  .fx-piece--item { padding: 12px 16px 14px; gap: 10px; }
+  .menu-text strong { font-size: 16px; }
+  .menu-text { gap: 3px; }
+  .fx-lock-hint {
+    bottom: 312px;
+    width: calc(100% - 28px);
+    box-sizing: border-box;
+    padding: 11px 16px;
+  }
+  .fx-btn-exit {
+    top: 18px;
+    bottom: auto;
+    right: 16px;
+    padding: 8px 14px;
   }}
 @media (prefers-reduced-motion: reduce) {
   .fx-room-intro {
-    height: 300svh;
+    height: 1000svh;
   }
   .fx-room-intro-copy,
-  .fx-content-left,
-  .fx-menu-right,
-  .fx-room-ui {
+  .fx-room-ui,
+  .fx-step-tag {
     animation: none;
-  }}
-/* USERFX: center left angle controls */
-@media (min-width: 901px) {
-  .fx-footer-angles { left: clamp(84px, 9vw, 158px); }
+  }
+  /* Sin movimiento: las piezas solo aparecen/desaparecen */
+  .fx-piece { animation: fxFadeIn .2s ease both; }
+  .fx-puzzle.is-out .fx-piece { animation: none; opacity: 0; }
+  .fx-puzzle.is-shake { animation: none; }
 }
-
-/* USERFX: extra stage scroll */
-@media (min-width: 681px) and (prefers-reduced-motion: no-preference) { .fx-room-intro { height: 900svh; } }
-@media (max-width: 680px) and (prefers-reduced-motion: no-preference) { .fx-room-intro { height: 540svh; } }

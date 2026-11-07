@@ -1,5 +1,4 @@
-{
-  "compilerOptions": {
+{  "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
     "jsx": "preserve",
@@ -8,37 +7,21 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "noEmit": true,
     "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "lib": [ "dom", "dom.iterable", "esnext"
     ],
     "plugins": [
-      {
-        "name": "next"
-      }
-    ]
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
+      { "name": "next"
+    }]},
+  "include": [ "next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
-}
+  "exclude": [ "node_modules", "dist"
+  ]}

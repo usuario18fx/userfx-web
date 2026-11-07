@@ -657,43 +657,105 @@ function CrownIcon({ className = "" }: { className?: string }) {
 }
 
 const FOOTER_EXPERIMENTS = [
-  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer1.mp4" },
-  { id: 2, title: "EXPERIMENT 02", poster: "/assets/footer/footer2.png", video: "/assets/footer/footer2.mp4" },
-  { id: 3, title: "EXPERIMENT 03", posterVideo: "/assets/footer/footer3.mp4", video: "/assets/footer/footer3b.mp4" },
-  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/footer/footer4.mp4" },
+  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/my-room/room1.mp4" },
+  { id: 2, title: "EXPERIMENT 02", poster: "/assets/footer/footer2.png", video: "/assets/my-room/room2.mp4" },
+  { id: 3, title: "EXPERIMENT 03", poster: "/assets/footer/footer3-3.png", video: "/assets/footer/footer3.mp4" },
+  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/my-room/room2.mp4" },
 ] as const;
 
 function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
-  const [secondaryVisible, setSecondaryVisible] = useState(false);
-  const [primaryReady, setPrimaryReady] = useState(false);
-  const [secondaryReady, setSecondaryReady] = useState(false);
-  const hasSecondary = item.id === 3;
-  const primaryVideo = "posterVideo" in item ? item.posterVideo : item.video;
-  const secondaryVideo = hasSecondary ? item.video : null;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const requestedRef = useRef(false);
+  const [playing, setPlaying] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const start = () => {
+    const video = videoRef.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    requestedRef.current = true;
+    setFailed(false);
+    video.muted = true;
+    video.loop = true;
+    if (video.readyState === 0) video.load();
+    void video.play().catch(() => {
+      // A browser may defer play until the first frame is ready.
+      if (video.error) {
+        setFailed(true);
+        requestedRef.current = false;
+        console.warn("[USER FX] Experiment video unavailable:", item.video, video.error);
+      }
+    });
+  };
+
+  const stop = () => {
+    requestedRef.current = false;
+    const video = videoRef.current;
+    if (video) {
+      video.pause();
+      try { video.currentTime = 0; } catch {}
+    }
+    setPlaying(false);
+  };
 
   return (
-    <div className={`fx-footer-experiment${secondaryVisible && secondaryReady ? " is-secondary" : ""}`}>
-      {"poster" in item && <img className="fx-footer-experiment-poster" src={item.poster} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.opacity = "0"; }} />}
-      <video className={`fx-footer-experiment-video is-primary${primaryReady ? " is-ready" : ""}`} src={primaryVideo} muted autoPlay loop playsInline preload="auto" aria-hidden="true" onCanPlay={() => setPrimaryReady(true)} onError={() => setPrimaryReady(false)} />
-      {secondaryVideo && <video className={`fx-footer-experiment-video is-secondary-video${secondaryReady ? " is-ready" : ""}`} src={secondaryVideo} muted autoPlay loop playsInline preload="auto" aria-hidden="true" onCanPlay={() => setSecondaryReady(true)} onError={() => setSecondaryReady(false)} />}
-      {hasSecondary && <button type="button" className="fx-footer-experiment-switch" aria-label={secondaryVisible ? "Mostrar primer video" : "Mostrar segundo video"} onMouseEnter={() => setSecondaryVisible(true)} onMouseLeave={() => setSecondaryVisible(false)} onFocus={() => setSecondaryVisible(true)} onBlur={() => setSecondaryVisible(false)} onClick={() => setSecondaryVisible((value) => !value)}>
-        <span className="fx-footer-experiment-index">
-          {String(item.id).padStart(2, "0")} / 04
-        </span>
-        <span className="fx-footer-experiment-action">
-          {secondaryVisible ? "VIDEO 02" : "VIDEO 01"} ↗
-        </span>
-      </button>}
-      {!hasSecondary && <span className="fx-footer-experiment-index">
+    <div
+      className="fx-footer-experiment"
+      role="button"
+      tabIndex={0}
+      aria-label={`Preview ${item.title}`}
+      onMouseEnter={start}
+      onMouseLeave={stop}
+      onFocus={start}
+      onBlur={stop}
+      onClick={() => playing ? stop() : start()}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          playing ? stop() : start();
+        }
+      }}
+    >
+      <img
+        className="fx-footer-experiment-poster"
+        src={item.poster}
+        alt={item.title}
+        loading="lazy"
+        style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }}
+      />
+      <video
+        ref={videoRef}
+        className="fx-footer-experiment-video"
+        src={item.video}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        onCanPlay={() => {
+          if (requestedRef.current && videoRef.current?.paused) {
+            void videoRef.current.play().catch(() => {});
+          }
+        }}
+        onPlaying={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onError={() => {
+          requestedRef.current = false;
+          setFailed(true);
+          setPlaying(false);
+          console.warn("[USER FX] Experiment video failed:", item.video);
+        }}
+        style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }}
+      />
+      <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
-      </span>}
-      <span className="fx-footer-experiment-title">
-        {item.title}
+      </span>
+      <span className="fx-footer-experiment-title">{item.title}</span>
+      <span className="fx-footer-experiment-action">
+        {failed ? "VIDEO UNAVAILABLE" : playing ? "PLAYING" : "PREVIEW"}
       </span>
     </div>
   );
 }
-
 function FooterBar() {
   const revealRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
@@ -795,7 +857,7 @@ function FooterBar() {
               USER FX
             </strong>
             <span>
-              PRIVATE VAULT
+              PRIVATE ROOM
             </span>
           </span>
         </a>
@@ -900,7 +962,9 @@ export default function Landing() {
 
   return (
     <MenuProvider>
-      <style>{LANDING_STYLES}</style>
+      <style>
+{LANDING_STYLES}
+</style>
       <SmoothScroll />
       <ScrollProgress />
       <StickyHeader active={active} />

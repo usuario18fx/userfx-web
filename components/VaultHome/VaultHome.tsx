@@ -437,7 +437,7 @@ export default function VaultHome() {
 </>
                ) : (
               <>
-               Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+               Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private ROOM." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
               </>
                 )}
               </p>
@@ -446,7 +446,7 @@ export default function VaultHome() {
               <div className="vx-privateAlbumGrid">
               {unlockedPhotos.map((src, index) => (
               <figure key={`unlocked-${src}`} className="vx-privateAlbumItem" onContextMenu={(event) => event.preventDefault()}>
-              <img src={src} alt={`Private vault image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"} />
+              <img src={src} alt={`PRIV-ROOM image ${index + 1}`} draggable={false} loading={index === 0 ? "eager" : "lazy"} />
               <figcaption>
               <span>
                 USER 🜲 FX
@@ -634,7 +634,7 @@ export default function VaultHome() {
                     FX
               </p>
               <small>
-                  PRIVATE VAULT
+                  PRIVATE ROOM
               </small>
               </div>
               </div>
@@ -684,7 +684,7 @@ export default function VaultHome() {
             </button>
             <div className="vx-modalIcon" />
             <p className="vx-modalKicker">
-            𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE VAULT
+            𝐔𝐒𝐄𝐑🜲𝓕𝐗 · PRIVATE ROOM
             </p>
             <h3 className="vx-modalTitle vx-modalTitleWithCrown">
               <span className="vx-modalTitleShimmer">
