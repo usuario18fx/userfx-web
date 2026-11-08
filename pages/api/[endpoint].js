@@ -8,6 +8,7 @@ const handlers = {
   "create-stars-invoice": () => import("../../server/api/create-stars-invoice"),
   handoff: () => import("../../server/api/handoff.js"),
   identity: () => import("../../server/api/identity.js"),
+  "fx-chat": () => import("../../server/api/fx-chat.js"),
   "miniapp-stats": () => import("../../server/api/miniapp-stats.js"),
   "miniapp-track": () => import("../../server/api/miniapp-track.js"),
   newsletter: () => import("../../server/api/newsletter.js"),
