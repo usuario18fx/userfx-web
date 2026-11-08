@@ -90,6 +90,10 @@
 }
 
 .pvr-direct-card{
+  /* Used by Framer Motion's transformTemplate. Keeping this defined is
+     essential: an undefined CSS variable drops the centering transform
+     and places the card's upper-left corner at 50%/50%. */
+  --fx-gate-base-transform:translate(-50%, -50%) scale(var(--pvr-direct-scale));
   position:absolute;
 
   top:50%;
@@ -115,7 +119,7 @@
     0 0 32px rgba(196, 165, 116, 0.08),
     inset 0 1px 0 rgba(255, 233, 195, 0.09);
 
-  transform:translate(-50%, -50%) scale(var(--pvr-direct-scale));
+  transform:var(--fx-gate-base-transform);
 
   transform-origin:center;
 }
@@ -1796,6 +1800,7 @@
   }
 
   .pvr-direct-card{
+    --fx-gate-base-transform:none;
     position:relative;
 
     top:auto;
