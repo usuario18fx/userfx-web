@@ -341,7 +341,7 @@ export default function CinematicTour({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.82;
+    renderer.toneMappingExposure = 1.55;
     renderer.shadowMap.enabled = false;
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
@@ -880,21 +880,18 @@ scene.add(lampFillLight);
     pink.position.set(-3.1, 3.1, -3.1); scene.add(pink);
     const amber = new THREE.PointLight("#186370", 20, 11);
     amber.position.set(3.1, 2.6, -1); scene.add(amber);
-    // Iluminacion principal: luz blanca suave para paredes, cama y suelo,
-    // conservando los acentos cyan / azul del ambiente USER FX.
-    scene.add(new THREE.AmbientLight("#b8d0ef", 1.65));
-    const roomSky = new THREE.HemisphereLight("#d1e5ff", "#354059", 1.8);
-    roomSky.position.set(0, 4.2, -1.5);
-    scene.add(roomSky);
-    const roomCeilingLight = new THREE.PointLight("#e0edff", 19, 12, 1.4);
-    roomCeilingLight.position.set(0.25, 3.95, -2.4);
+    // El pasillo conserva su iluminacion original; nada de luces globales extra.
+    // Solo el dormitorio recibe luz de relleno con alcance limitado.
+    scene.add(new THREE.AmbientLight("#4c7279", 1.4));
+    const roomCeilingLight = new THREE.PointLight("#d6e7ff", 9, 6.5, 1.8);
+    roomCeilingLight.position.set(0.25, 3.85, -3.35);
     scene.add(roomCeilingLight);
-    const bedSoftLight = new THREE.PointLight("#ffd5e4", 12, 8.5, 1.5);
-    bedSoftLight.position.set(3.25, 3.25, -4.3);
+    const bedSoftLight = new THREE.PointLight("#ffd5e4", 7, 5.5, 1.8);
+    bedSoftLight.position.set(3.25, 2.95, -3.85);
     scene.add(bedSoftLight);
-    const entrySoftLight = new THREE.PointLight("#c9e5ff", 10, 9, 1.5);
-    entrySoftLight.position.set(-0.2, 3.4, 1.3);
-    scene.add(entrySoftLight);
+    const roomDeskLight = new THREE.PointLight("#d3e6ff", 5, 4.5, 2);
+    roomDeskLight.position.set(1.9, 2.0, -1.2);
+    scene.add(roomDeskLight);
 
     const fabricTexture = (base: string, accent: string, frequency = 140) => {
       const tex = canvas((ctx) => {
@@ -1074,11 +1071,11 @@ scene.add(lampFillLight);
 
     // Exterior gris plateado con ligero brillo: no depende solo de la luz ambiental.
     const laptopLidBack = new THREE.MeshStandardMaterial({
-      color: "#b1bfce",
-      metalness: 0.52,
-      roughness: 0.31,
-      emissive: "#66798f",
-      emissiveIntensity: 0.19,
+      color: "#9caaba",
+      metalness: 0.42,
+      roughness: 0.37,
+      emissive: "#526173",
+      emissiveIntensity: 0.07,
     });
     const laptopLidSide = mat("#8d9bae", 0.28, 0.52);
     const laptopLid = new THREE.Mesh(
@@ -1106,7 +1103,7 @@ scene.add(lampFillLight);
     fxBackLogo.position.set(0, 1.035, -0.401);
     fxBackLogo.rotation.y = Math.PI;
     laptopGroup.add(fxBackLogo);
-    const lidAccentLight = new THREE.PointLight("#c7e4ff", 3.6, 2.3);
+    const lidAccentLight = new THREE.PointLight("#d3e3ff", 1.8, 1.8);
     lidAccentLight.position.set(0, 1.3, -0.9);
     laptopGroup.add(lidAccentLight);
 
