@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -17,6 +17,10 @@ const CROWN_TIMELINE: CrownTL = {
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 const ease=(v:number)=>{const x=clamp(v);return x*x*(3-2*x);};
+// Fases de las partÃ­culas de la corona, en el mismo progreso (0..1) que usa esta pÃ¡gina:
+// se juntan (descend), forman el aro mientras sube (rise), se rompen al lanzarse (breakStart)
+// y se desvanecen junto con la opacidad de la corona (.47 â†’ .59).
+const CROWN_TL:CrownTL={descend:[0,.14],rise:[.1,.37],breakStart:.37,fade:[.47,.59]};
 const ITEMS=[
 {n:"01",title:"THE SIGNAL",caption:"Every moment starts somewhere."},
 {n:"02",title:"MY ROOM",caption:"A private world behind the crown."},
@@ -26,10 +30,9 @@ const ITEMS=[
 export default function CrownLanding(){
 const page=useRef<HTMLElement>(null);
 const [progress,setProgress]=useState(0);
-const crownProgress = useMotionValue(0);
-useEffect(() => {
-  crownProgress.set(progress);
-}, [crownProgress, progress]);
+// CrownModel lee el progreso como MotionValue<number>; se mantiene sincronizado con el numÃ©rico.
+const progressValue=useMotionValue(0);
+useEffect(() => { progressValue.set(progress); }, [progressValue, progress]);
 useEffect(()=>{
 let request=0;
 const update=()=>{
@@ -39,7 +42,9 @@ const section=page.current;
 if(!section)return;
 const rect=section.getBoundingClientRect();
 const length=Math.max(1,rect.height-window.innerHeight);
-setProgress(clamp(-rect.top/length));
+const next=clamp(-rect.top/length);
+progressValue.set(next);
+setProgress(next);
 });
 };
 update();
@@ -47,7 +52,7 @@ window.addEventListener("scroll",update,{passive:true});
 window.addEventListener("wheel",update,{passive:true});
 window.addEventListener("resize",update);
 return ()=>{window.removeEventListener("scroll",update);window.removeEventListener("wheel",update);window.removeEventListener("resize",update);cancelAnimationFrame(request);};
-},[]);
+},[progressValue]);
 const rise=ease(progress/.37);
 const launch=ease((progress-.29)/.23);
 const reveal=ease((progress-.36)/.18);
@@ -65,7 +70,7 @@ return (
 <a href="/crown" className="fx-crown-logo">USER <strong>
 FX
 </strong></a>
-<nav aria-label="Navegación principal">
+<nav aria-label="NavegaciÃ³n principal">
 <a href="#experience">
 EXPERIENCE
 </a>
@@ -77,11 +82,11 @@ MOMENTS
 </a>
 </nav>
 <a className="fx-crown-enter" href="/#home">ENTER MY ROOM <span>
-↗
+â†—
 </span></a>
 </header>
 <div className="fx-crown-crown" style={{opacity:crownOpacity,transform:`translate3d(-50%,calc(-50% - ${rise*27}vh),0) scale(${1+launch*3.7})`}}>
-<CrownModel progress={crownProgress} tl={CROWN_TIMELINE} active={progress < 0.47} />
+<CrownModel progress={progressValue} tl={CROWN_TL} active={progress<.6} />
 <div className="fx-crown-halo" />
 </div>
 <section className="fx-crown-wordmark" id="experience" style={{opacity:reveal*(1-gallery*.9),transform:`translate3d(0,${(1-reveal)*45-gallery*12}px,0) scale(${.87+reveal*.13})`}}>
@@ -95,7 +100,7 @@ FX
 UNFILTERED.
 </em></p>
 <a href="#my-room" className="fx-crown-discover">DISCOVER MY ROOM <span>
-↓
+â†“
 </span></a>
 </section>
 <section className="fx-crown-gallery" id="my-room" style={{opacity:gallery,transform:`translateY(${(1-gallery)*12}vh)`,pointerEvents:gallery>.9?"auto":"none"}}>
@@ -109,7 +114,7 @@ ORDINARY.
 </em></h2>
 </div>
 <span className="fx-crown-gallery-sequence">
-001 — 003
+001 â€” 003
 </span>
 </div>
 <div className="fx-crown-triptych" id="moments">
@@ -145,7 +150,7 @@ ORDINARY.
 </p>
 </section>
 {progress<.6&&<div className="fx-crown-hint">SCROLL TO ENTER <span>
-↓
+â†“
 </span></div>}
 </div>
 <FxChat />

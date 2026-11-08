@@ -43,9 +43,12 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { ENTER_AT, STEPS, stepIndex, STOP_T, type StepKey } from "./tourTimeline";
 import "./CinematicTour.css";
 
-// Video de la pantalla de la laptop (bucle 24/7). Para mostrar multimedia en la laptop:
-// "/assets/my-room/multimedia.mp4"
-const LAPTOP_VIDEO_SRC = "/assets/introFX.mp4";
+// Videos de la pantalla de la laptop (bucle 24/7): "gallery" en el bloque 1, "multimedia" en el 3.
+const LAPTOP_VIDEOS = {
+  gallery: "/assets/introFX.mp4",
+  multimedia: "/assets/my-room/multimedia.mp4",
+} as const;
+type LaptopMode = keyof typeof LAPTOP_VIDEOS;
 
 // ─── AJUSTES FINOS DE CÁMARA (afinar aquí, no hay que tocar el resto) ──────
 const TUNING = {
@@ -121,7 +124,6 @@ const smoothDamp = (
   }
   return output;
 };
-
 type Frame = {
   id: string;
   t: number;
@@ -132,14 +134,14 @@ type Frame = {
   /** avance residual durante el hold (unidades de keyframe): el stop "respira" en vez de congelarse */
   drift?: number;
 };
-
 /**
  * CÁMARAS POR STEP — los steps (tiempos y pausas) viven en ./tourTimeline.
  * Aquí solo se define DÓNDE está la cámara en cada uno.
  *
- *  BLOQUE 1 · TV videollamada   videocall-a · -b · -focus · -lock
- *  BLOQUE 2 · Laptop            gallery-a   · -b · -focus · -lock
- *  BLOQUE 3 · TV pasarela       stage-a     · -b · -focus · -lock
+ *  BLOQUE 1 · Laptop My Gallery   gallery-a    · -b · -focus · -lock
+ *  BLOQUE 2 · TV videollamada     videocall-a  · -b · -focus · -lock
+ *  BLOQUE 3 · Laptop multimedia   multimedia-a · -b · -focus · -lock
+ *  BLOQUE 4 · TV pasarela         stage-a      · -b · -focus · -lock
  *
  *  a / b  → dos ángulos distintos, sin interfaz (vacíos)
  *  focus  → encuadre EXACTO de la pantalla (TV o laptop)
@@ -151,42 +153,41 @@ type Frame = {
  * Los frames "via-*" no son stops: solo reparten velocidad.
  */
 type Cam = { p: THREE.Vector3; l: THREE.Vector3; fov: number; drift?: number };
-
 const TV_LOOK = P(-4.58, 1.72, -2.0);        // centro de la pantalla de la TV
-const LAPTOP_LOOK = P(-0.40, 1.02, -3.77);   // centro de la pantalla de la laptop
-
+// El vídeo de la laptop permanece interactivo, ahora sobre la mesa frente al sofá.
+const LAPTOP_LOOK = P(1.76, 0.97, -1.20);    // centro de la pantalla tras girar la laptop
 const CAMERAS: Record<StepKey, Cam> = {
   welcome:           { fov: 58, p: P( 0.00, 1.62, 14.50), l: P( 0.00, 1.78,  6.00) },
   corridor:          { fov: 56, p: P( 0.14, 1.66,  9.10), l: P(-0.95, 1.96,  5.60), drift: 0.06 },
   "enter-room":      { fov: 60, p: P( 0.30, 1.82,  2.10), l: P(-0.30, 1.48, -3.60), drift: 0.03 },
-
-  // BLOQUE 1 · TV videollamada
-  "videocall-a":     { fov: 34, p: P( 3.35, 1.48, -1.00), l: TV_LOOK, drift: 0.02 },   // desde la cama
+  // BLOQUE 1 · Laptop (My Gallery)
+  "gallery-a":       { fov: 44, p: P( 2.82, 1.68, -0.10), l: LAPTOP_LOOK, drift: 0.02 },
+  "gallery-b":       { fov: 42, p: P( 2.75, 1.63, -2.20), l: LAPTOP_LOOK, drift: 0.02 },
+  "gallery-focus":   { fov: 39, p: P( 2.98, 1.10, -1.20), l: LAPTOP_LOOK, drift: 0.01 },
+  "gallery-lock":    { fov: 49, p: P( 3.18, 1.48, -1.20), l: LAPTOP_LOOK, drift: 0.015 },
+  // BLOQUE 2 · TV videollamada
+  "videocall-a":     { fov: 34, p: P( 3.35, 1.48, -4.55), l: TV_LOOK, drift: 0.02 },   // desde la cama, junto a la ventana
   "videocall-b":     { fov: 42, p: P(-0.20, 2.20,  0.90), l: TV_LOOK, drift: 0.02 },   // diagonal alta
   "videocall-focus": { fov: 40, p: P(-1.75, 1.72, -2.00), l: TV_LOOK, drift: 0.01 },   // la TV llena el encuadre
   "videocall-lock":  { fov: 50, p: P(-0.70, 1.72, -2.00), l: TV_LOOK, drift: 0.015 },  // TV centrada, paneles a los lados
-
-  // BLOQUE 2 · Laptop (My Gallery / Multimedia)
-  "gallery-a":       { fov: 42, p: P( 1.90, 1.65, -0.20), l: LAPTOP_LOOK, drift: 0.02 },
-  "gallery-b":       { fov: 40, p: P(-2.20, 1.45, -1.40), l: LAPTOP_LOOK, drift: 0.02 },
-  "gallery-focus":   { fov: 36, p: P(-0.40, 1.18, -2.35), l: LAPTOP_LOOK, drift: 0.01 },
-  "gallery-lock":    { fov: 46, p: P(-0.40, 1.42, -1.35), l: LAPTOP_LOOK, drift: 0.015 },
-
-  // BLOQUE 3 · TV pasarela (Stage)
+  // BLOQUE 3 · Laptop (multimedia): otros ángulos que el bloque 1
+  "multimedia-a":    { fov: 43, p: P( 2.85, 1.55, -0.05), l: LAPTOP_LOOK, drift: 0.02 },
+  "multimedia-b":    { fov: 42, p: P( 2.85, 1.93, -2.23), l: LAPTOP_LOOK, drift: 0.02 },
+  "multimedia-focus":{ fov: 39, p: P( 2.98, 1.10, -1.20), l: LAPTOP_LOOK, drift: 0.01 },
+  "multimedia-lock": { fov: 49, p: P( 3.18, 1.48, -1.20), l: LAPTOP_LOOK, drift: 0.015 },
+  // BLOQUE 4 · TV pasarela (Stage)
   "stage-a":         { fov: 46, p: P(-2.30, 2.40, -0.40), l: TV_LOOK, drift: 0.02 },
   "stage-b":         { fov: 46, p: P(-2.50, 1.55, -3.00), l: TV_LOOK, drift: 0.02 },
   "stage-focus":     { fov: 40, p: P(-1.75, 1.72, -2.00), l: TV_LOOK, drift: 0.01 },
   "stage-lock":      { fov: 50, p: P(-0.70, 1.72, -2.00), l: TV_LOOK },                // último frame: sin drift
-};
-
+  };
 // Frame de paso entre el pasillo y la habitación (recto, sin giros bruscos).
 const ENTER_IDX = stepIndex("enter-room");
 const VIA_EXIT: Frame = {
   id: "via-exit",
   t: STEPS[ENTER_IDX].t - STEPS[ENTER_IDX].hold / 2 - 0.003,
   fov: 58, p: P(0.00, 1.74, 5.60), l: P(0.00, 1.62, -0.80),
-};
-
+  };
 const frames: Frame[] = STEPS.flatMap((s): Frame[] => {
   const cam = CAMERAS[s.key];
   const frame: Frame = {
@@ -194,12 +195,13 @@ const frames: Frame[] = STEPS.flatMap((s): Frame[] => {
     fov: cam.fov, p: cam.p, l: cam.l, drift: cam.drift,
   };
   return s.key === "enter-room" ? [VIA_EXIT, frame] : [frame];
-});
-
-// La TV cambia de video mientras la cámara está sobre la laptop (fuera de cuadro).
-const TV_STAGE_AT = (STOP_T[stepIndex("gallery-focus")] + STOP_T[stepIndex("gallery-lock")]) / 2;
-const TV_ACTIVE_FROM = ENTER_AT[stepIndex("videocall-a")] - 0.025;
-
+  });
+// Cada pantalla cambia de video mientras la cámara está sobre la OTRA (fuera de cuadro):
+//  · TV: videollamada → pasarela, con la cámara sobre la laptop del bloque 3.
+//  · Laptop: gallery → multimedia, con la cámara sobre la TV (bloque 2, step de botones).
+const TV_STAGE_AT = (STOP_T[stepIndex("multimedia-focus")] + STOP_T[stepIndex("multimedia-lock")]) / 2;
+const LAPTOP_MULTIMEDIA_AT = STOP_T[stepIndex("videocall-lock")];
+const TV_ACTIVE_FROM = ENTER_AT[stepIndex("enter-room")];
 // ─── TIMELINE: scroll → u (índice de keyframe), monótona y C1 ──────────────
 type Knot = { t: number; u: number; d: number | null };
 // Perfil del hold: se entra frenando (HOLD_IN < 1) y se sale con impulso
@@ -219,7 +221,7 @@ frames.forEach((f, i) => {
   } else {
     knots.push({ t: f.t, u: i, d: i === LAST ? 0 : null });
   }
-});
+  });
 knots.forEach((k, i) => {
   if (k.d !== null) return;
   const a = knots[i - 1], b = knots[i + 1];
@@ -227,13 +229,12 @@ knots.forEach((k, i) => {
   const s0 = (k.u - a.u) / (k.t - a.t);
   const s1 = (b.u - k.u) / (b.t - k.t);
   k.d = s0 > 0 && s1 > 0 ? (2 * s0 * s1) / (s0 + s1) : 0;
-});
+  });
 if (process.env.NODE_ENV !== "production") {
   knots.forEach((k, i) => {
     if (i && k.t <= knots[i - 1].t) console.warn("[CinematicTour] holds solapados cerca de t =", k.t);
   });
-}
-
+  }
 const timeToU = (t: number) => {
   let i = 0;
   while (i < knots.length - 2 && t > knots[i + 1].t) i++;
@@ -246,13 +247,11 @@ const timeToU = (t: number) => {
     (-2 * s3 + 3 * s2) * b.u +
     (s3 - s2) * h * (b.d as number)
   );
-};
-
+  };
 // ─── TRAYECTORIA: spline centrípeta (sin loops ni overshoot) ───────────────
 const posCurve = new THREE.CatmullRomCurve3(frames.map((f) => f.p), false, "centripetal");
 const lookCurve = new THREE.CatmullRomCurve3(frames.map((f) => f.l), false, "centripetal");
 const SEGMENTS = frames.length - 1;
-
 const fovAt = (u: number) => {
   const i = Math.max(0, Math.min(frames.length - 2, Math.floor(u)));
   const w = u - i;
@@ -268,7 +267,6 @@ const fovAt = (u: number) => {
   const hi = Math.max(p0, p1, p2, p3);
   return THREE.MathUtils.clamp(value, lo, hi);
 };
-
 /**
  * Muestrea la trayectoria en u. La MIRADA se muestrea `lead` keyframes por
  * delante: mientras la cámara recorre la ruta mira hacia donde va y, al
@@ -283,7 +281,6 @@ const samplePath = (
   posCurve.getPoint(THREE.MathUtils.clamp(u / SEGMENTS, 0, 1), position);
   lookCurve.getPoint(THREE.MathUtils.clamp((u + lead) / SEGMENTS, 0, 1), look);
 };
-
 /**
  * 1 cerca de un stop (dentro de su hold, con un pequeño feather), 0 entre
  * stops. Gobierna la "vida" (respiración/parallax): solo respira donde hay
@@ -301,8 +298,7 @@ const stopEnvelope = (p: number) => {
     if (e > env) env = e;
   }
   return env;
-};
-
+  };
 // ─── COMPONENTE ────────────────────────────────────────────────────────────
 export default function CinematicTour({
   progress,
@@ -322,16 +318,13 @@ export default function CinematicTour({
   const wakeRender = useRef<(() => void) | null>(null);
   const onModeChangeRef = useRef(onModeChange);
   onModeChangeRef.current = onModeChange;
-
   useEffect(() => {
     target.current = clamp(progress);
     wakeRender.current?.();
   }, [progress]);
-
   useEffect(() => {
     const el = host.current;
     if (!el) return;
-
     // prefers-reduced-motion reactivo: si el usuario cambia la preferencia
     // en vivo, la cámara se adapta sin recargar.
     const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -341,7 +334,6 @@ export default function CinematicTour({
       wakeRender.current?.();
     };
     mql?.addEventListener?.("change", onReducedMotionChange);
-
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#14121c");
     const camera = new THREE.PerspectiveCamera(frames[0].fov, 1, 0.08, 70);
@@ -587,12 +579,9 @@ export default function CinematicTour({
     box(0.18, 3.8, 13.35, 1.91, 1.83, 8.75, wallpaper);
     box(3.85, 0.16, 13.35, 0, 3.77, 8.75, mat("#112c28", 0.66));
     const wallLogoLoader = new GLTFLoader();
-    // Logo GLB del cuadro del pasillo (se anima en el loop) + entorno de reflejos solo para él.
+    // Logo GLB del cuadro del pasillo (sin modificar; solo flota en el loop).
     let wallLogo: THREE.Group | null = null;
     const LOGO_Y = 2.06; // centro del cuadro
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const wallEnvRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
-    pmrem.dispose();
     for (const side of [-1, 1]) {
       const x = side * 1.78;
       box(0.13, 0.72, 13.35, x, 0.36, 8.75, lacquer);
@@ -604,7 +593,7 @@ export default function CinematicTour({
 
         if (isRightWallLogo) {
           // CUADRO DE BIENVENIDA: fondo /wallpaper2.png (recortado tipo "cover")
-          // + logo 3D /logoFX.glb delante, con reflejos (sin luces propias).
+          // + logo 3D /logoFX.glb delante, tal cual, sin modificar.
           const panelMat = print("USER", "ROOM");
           const PANEL_W = 1.13, PANEL_H = 1.65;
           new THREE.TextureLoader().load("/wallpaper2.png", (texture) => {
@@ -632,28 +621,22 @@ export default function CinematicTour({
             (gltf) => {
               if (abort.signal.aborted) return;
               const root = gltf.scene;
-              // Detalle del GLB: metal pulido con reflejos, autoiluminación suave
-              // (mantiene sus colores/texturas) y mejor filtrado de texturas.
+              // Sin tocar el diseño: las partes con textura se muestran con sus colores
+              // exactos (la textura ya trae el brillo pintado), sin depender de las luces
+              // del pasillo, que dejaban el logo oscuro.
               root.traverse((o) => {
                 const mesh = o as THREE.Mesh;
                 if (!mesh.isMesh) return;
                 const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                const detailed = list.map((m) => {
+                const lit = list.map((m) => {
                   const std = m as THREE.MeshStandardMaterial;
-                  if (!std.isMeshStandardMaterial) return m;
-                  const c = std.clone();
-                  c.metalness = Math.max(c.metalness, 0.55);
-                  c.roughness = Math.min(c.roughness, 0.34);
-                  c.envMap = wallEnvRT.texture;
-                  c.envMapIntensity = 1.4;
-                  if (c.map) { c.emissiveMap = c.map; c.emissive.set("#ffffff"); }
-                  else c.emissive.copy(c.color);
-                  c.emissiveIntensity = 0.2;
-                  if (c.map) c.map.anisotropy = 8;
-                  c.needsUpdate = true;
-                  return c;
+                  if (!std.map) return m;
+                  std.map.anisotropy = 8;
+                  const basic = new THREE.MeshBasicMaterial({ map: std.map, side: std.side, toneMapped: false });
+                  std.dispose();
+                  return basic;
                 });
-                mesh.material = Array.isArray(mesh.material) ? detailed : detailed[0];
+                mesh.material = Array.isArray(mesh.material) ? lit : lit[0];
               });
               root.updateMatrixWorld(true);
               const box3 = new THREE.Box3().setFromObject(root);
@@ -766,6 +749,75 @@ export default function CinematicTour({
     box(1.67, 0.075, 0.08, 0, -1.615, 0.016, mirrorTrim, mirrorAssembly);
     box(0.075, 3.16, 0.08, -0.805, 0, 0.016, mirrorTrim, mirrorAssembly);
     box(0.075, 3.16, 0.08, 0.805, 0, 0.016, mirrorTrim, mirrorAssembly);
+    // Local lamp moved right of the bed.
+    const lampBlack = mat("#11161f", 0.35, 0.45);
+const lampShadeMaterial = new THREE.MeshStandardMaterial({
+  color: "#f1e7d2",
+  emissive: "#ffdca8",
+  emissiveIntensity: 0.9,
+  roughness: 0.9,
+  metalness: 0.02,
+});
+// posición: esquina izquierda, junto al espejo
+const floorLamp = new THREE.Group();
+floorLamp.position.set(4.48, 0, 1.38);
+scene.add(floorLamp);
+// base
+const lampBase = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.22, 0.24, 0.05, 28),
+  lampBlack
+);
+lampBase.position.set(0, 0.025, 0);
+floorLamp.add(lampBase);
+// poste
+const lampPole = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.028, 0.028, 2.25, 18),
+  lampBlack
+);
+lampPole.position.set(0, 1.14, 0);
+floorLamp.add(lampPole);
+// pantalla
+const lampShade = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.34, 0.42, 0.58, 28, 1, true),
+  lampShadeMaterial
+);
+lampShade.position.set(0, 2.28, 0);
+floorLamp.add(lampShade);
+// difusor superior/inferior
+const lampTop = new THREE.Mesh(
+  new THREE.CircleGeometry(0.34, 28),
+  lampShadeMaterial
+);
+lampTop.rotation.x = -Math.PI / 2;
+lampTop.position.set(0, 2.57, 0);
+floorLamp.add(lampTop);
+const lampBottom = new THREE.Mesh(
+  new THREE.CircleGeometry(0.42, 28),
+  lampShadeMaterial
+);
+lampBottom.rotation.x = Math.PI / 2;
+lampBottom.position.set(0, 1.99, 0);
+floorLamp.add(lampBottom);
+// bombilla
+const lampBulb = new THREE.Mesh(
+  new THREE.SphereGeometry(0.09, 18, 14),
+  new THREE.MeshStandardMaterial({
+    color: "#fff5df",
+    emissive: "#ffdca8",
+    emissiveIntensity: 2.4,
+    roughness: 0.2,
+    metalness: 0,
+  })
+);
+lampBulb.position.set(0, 2.25, 0);
+floorLamp.add(lampBulb);
+// luces que iluminan más el cuarto
+const lampRoomLight = new THREE.PointLight("#ffd7a0", 14, 8.5);
+lampRoomLight.position.set(4.48, 2.24, 1.38);
+scene.add(lampRoomLight);
+const lampFillLight = new THREE.PointLight("#fff0cf", 7, 10);
+lampFillLight.position.set(3.1, 2.5, 0.7);
+scene.add(lampFillLight);
     const zebraCanvas = canvas((ctx) => {
       ctx.fillStyle = "#0e1011"; ctx.fillRect(0, 0, 512, 512);
       ctx.fillStyle = "#3c5757"; ctx.beginPath(); ctx.ellipse(230, 270, 150, 195, -0.36, 0, Math.PI * 2); ctx.fill();
@@ -861,9 +913,13 @@ export default function CinematicTour({
         wakeRender.current?.();
     }, undefined, () => {});
     };
-    const upholstery = fabricTexture("#3c795fa1", "#198b6f40");
-    const duvet = fabricTexture("#891427", "#ba24391a");
-    const sofaFabric = fabricTexture("#262e30", "#708b9029");
+    // Mismos materiales en todos los muebles: piel acolchonada negra, edredón rojo y sofá negro.
+    const upholstery = fabricTexture("#111115", "#45424a32");
+    upholstery.roughness = 0.52;
+    const duvet = fabricTexture("#ac112b", "#ef435d25");
+    const sofaFabric = fabricTexture("#101014", "#45404922");
+    sofaFabric.roughness = 0.52;
+    const sofaAccent = fabricTexture("#9e1029", "#ec3c5130");
     const rugFabric = fabricTexture("#111616", "#52605f1a", 260);
     polyHavenNormal(duvet, "velour_velvet", 3, 3, 0.17);
     polyHavenNormal(upholstery, "fabric_leather_01", 2, 2, 0.27);
@@ -894,32 +950,45 @@ export default function CinematicTour({
       scene.add(mesh);
       return mesh;
     };
-    box(9.7, 0.022, 9.5, 0, 0.017, -2.08, rugFabric);
-    box(3.75, 0.045, 2.55, -0.55, 0.045, -3.23, sofaFabric);
-    const sofaObjectsStart = scene.children.length;
-    box(4.06, 0.3, 1.25, -0.55, 0.36, -5.2, dark);
-    roundBox(4.05, 1.02, 0.24, 0.2, -0.55, 0.92, -5.77, sofaFabric);
-    for (const sx of [-2.5, 1.39]) roundBox(0.31, 0.88, 1.28, 0.14, sx, 0.72, -5.2, sofaFabric);
-    for (const sx of [-1.84, -0.57, 0.7]) {
-      roundBox(1.16, 0.19, 0.9, 0.09, sx, 0.65, -5.08, sofaFabric);
-      roundBox(1.1, 0.76, 0.19, 0.13, sx, 1.09, -5.56, sofaFabric);
-    }
-    for (const sx of [-1.58, 0.85]) {
-      const cushion = roundBox(0.62, 0.55, 0.16, 0.13, sx, 1, -5.42,
-        fabricTexture("#0a4c4e", "#9abcbe1f"));
-      cushion.rotation.z = sx < 0 ? -0.18 : 0.19;
-    }
+    // Alfombra oscura solamente en el área de estar (no tapa la habitación completa).
+    box(3.65, 0.022, 2.85, 1.50, 0.017, -1.12, rugFabric);
+
+    // SOFÁ NEGRO · junto a la pared derecha, paralelo a la cama y mirando a la TV izquierda.
+    // Solo este grupo define el sofá; se conserva la geometría redondeada original.
     const sofaGroup = new THREE.Group();
-    sofaGroup.position.set(4.3, 0, -4.8);
+    sofaGroup.position.set(4.20, 0, -1.20);
     sofaGroup.rotation.y = -Math.PI / 2;
     scene.add(sofaGroup);
-    const sofaItems = scene.children.slice(sofaObjectsStart).filter((item) => item !== sofaGroup);
-    for (const item of sofaItems) {
+    const sofaBack = new THREE.Group();
+    sofaGroup.add(sofaBack);
+    // Subgrupo en coordenadas originales, recolocado una sola vez.
+    sofaBack.position.set(0.55, 0, 5.20);
+    const sofaBox = (
+      w: number, h: number, d: number, x: number, y: number, z: number, material: THREE.Material
+    ) => box(w, h, d, x, y, z, material, sofaBack);
+    const sofaRound = (
+      w: number, h: number, d: number, radius: number,
+      x: number, y: number, z: number, material: THREE.Material
+    ) => {
+      const item = roundBox(w, h, d, radius, x, y, z, material);
       scene.remove(item);
-      sofaGroup.add(item);
-      item.position.x += 0.55;
-      item.position.z += 5.2;
+      sofaBack.add(item);
+      return item;
+    };
+    sofaBox(2.30, 0.30, 1.22, -0.55, 0.36, -5.20, dark);
+    sofaRound(2.32, 1.02, 0.24, 0.20, -0.55, 0.92, -5.77, sofaFabric);
+    for (const x of [-1.56, 0.46]) {
+      sofaRound(0.29, 0.88, 1.28, 0.14, x, 0.72, -5.20, sofaFabric);
     }
+    for (const x of [-1.09, -0.01]) {
+      sofaRound(1.00, 0.20, 0.90, 0.09, x, 0.65, -5.08, sofaFabric);
+      sofaRound(1.00, 0.76, 0.19, 0.13, x, 1.09, -5.56, sofaFabric);
+    }
+    for (const x of [-1.22, 0.11]) {
+      const cushion = sofaRound(0.50, 0.51, 0.16, 0.12, x, 1.00, -5.42, sofaAccent);
+      cushion.rotation.z = x < -0.5 ? -0.16 : 0.16;
+    }
+    // MESA DE CENTRO · mármol negro, frente al sofá y sin invadir el paso.
     const marbleMap = canvas((ctx) => {
       ctx.fillStyle = "#111017"; ctx.fillRect(0, 0, 512, 512);
       for (let k = 0; k < 35; k++) {
@@ -930,16 +999,23 @@ export default function CinematicTour({
         ctx.moveTo(x, y);
         ctx.bezierCurveTo(x + 32, y - 24, x + 80, y + 32, x + 135, y - 25);
         ctx.stroke();
-    }
-    });
+  }});
     marbleMap.wrapS = THREE.RepeatWrapping;
     marbleMap.wrapT = THREE.RepeatWrapping;
-    box(2.2, 0.095, 1.12, -0.4, 0.47, -3.55,
-      new THREE.MeshStandardMaterial({ map: marbleMap, roughness: 0.19, metalness: 0.16 }));
-    for (const x of [-1.33, 0.5])
-      for (const z of [-3.97, -3.12])
-        box(0.042, 0.4, 0.042, x, 0.23, z, mat("#111018", 0.3, 0.5));
-// Laptop
+    const tableTop = new THREE.MeshStandardMaterial({ map: marbleMap, roughness: 0.19, metalness: 0.16 });
+    const tableMetal = mat("#101016", 0.3, 0.5);
+    box(1.75, 0.095, 1.17, 2.08, 0.47, -1.20, tableTop);
+    for (const x of [1.30, 2.86]) {
+    for (const z of [-1.72, -0.68]) {
+        box(0.042, 0.4, 0.042, x, 0.23, z, tableMetal);
+  }}
+        box(1.6, 0.035, 1.02, 2.08, 0.13, -1.20, tableMetal);
+// LAPTOP · la base, teclado y pantalla comparten exactamente la misma rotación.
+// La tapa (y el vídeo) mira a +X: hacia los asientos del sofá.
+    const laptopGroup = new THREE.Group();
+    laptopGroup.position.set(2.08, 0, -1.20);
+    laptopGroup.rotation.y = Math.PI / 2;
+    scene.add(laptopGroup);
     const laptopDark = mat("#0b1020", 0.33, 0.12);
     const laptopMetal = mat("#68718c", 0.38, 0.45);
     box(1.26, 0.045, 0.79, -0.40, 0.55, -3.44, laptopMetal);
@@ -978,17 +1054,75 @@ export default function CinematicTour({
     const keyboardGlow = new THREE.PointLight("#43baff", 2.8, 1.7);
     keyboardGlow.position.set(-0.40, 0.78, -3.43);
     scene.add(keyboardGlow);
-    box(1.28, 0.83, 0.055, -0.40, 1.01, -3.80, laptopDark);
+    // Gray laptop lid and FX logo.
+    const keyboardGlowMaterial = new THREE.MeshStandardMaterial({
+      color: "#0a1222",
+      emissive: "#4fd7ff",
+      emissiveIntensity: 0.65,
+      roughness: 0.28,
+      metalness: 0.08,
+    });
+        box(1.04, 0.008, 0.48, -0.40, 0.580, -3.43, keyboardGlowMaterial);
+// trackpad
+        box(0.28, 0.006, 0.16, -0.40, 0.587, -3.18, mat("#9aa3b8", 0.22, 0.18));
+// pantalla / tapa
+// Tapa de laptop: interior negro y exterior gris metálico
+    const laptopLidBack = new THREE.MeshStandardMaterial({
+      color: "#8d97a6",
+      metalness: 0.65,
+      roughness: 0.28,
+    });
+    const laptopLid = new THREE.Mesh(
+      new THREE.BoxGeometry(1.28, 0.83, 0.055),
+      [ laptopMetal,
+        laptopMetal,
+        laptopMetal,
+        laptopMetal,
+        laptopDark,    // Interior negro
+        laptopLidBack, // Exterior gris
+      ]);
+    laptopLid.position.set(-0.40, 1.01, -3.80);
+    scene.add(laptopLid);
+    // Logo original USER FX en la tapa exterior
+    const fxLogoTexture = new THREE.TextureLoader().load(
+      "/assets/userfx-logo-sin.png",
+    () => wakeRender.current?.()
+    );
+    fxLogoTexture.colorSpace = THREE.SRGBColorSpace;
+    const fxBackLogo = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.38, 0.38),
+      new THREE.MeshBasicMaterial({
+        map: fxLogoTexture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        toneMapped: false,
+      }));
+    fxBackLogo.position.set(-0.40, 1.04, -3.838);
+    fxBackLogo.rotation.y = Math.PI;
+    scene.add(fxBackLogo);
+// luz puntual sutil sobre el teclado
+      const keyboardLight = new THREE.PointLight("#69dcff", 2.8, 2.2);
+      keyboardLight.position.set(-0.40, 0.86, -3.38);
+      scene.add(keyboardLight);
 // Video de la pantalla 3D
-    const laptopVideo = document.createElement("video");
-    laptopVideo.crossOrigin = "anonymous";
-    laptopVideo.src = `${LAPTOP_VIDEO_SRC}?v=${encodeURIComponent(process.env.NEXT_PUBLIC_FX_VIDEO_VERSION || "fx-20261105-refresh")}`;
-    laptopVideo.muted = true;
-    laptopVideo.defaultMuted = true;
-    laptopVideo.autoplay = true;
-    laptopVideo.loop = true;
-    laptopVideo.playsInline = true;
-    laptopVideo.preload = "auto";
+      const makeLaptopVideo = (src: string) => {
+      const v = document.createElement("video");
+      v.crossOrigin = "anonymous";
+      v.src = `${src}?v=${encodeURIComponent(process.env.NEXT_PUBLIC_FX_VIDEO_VERSION || "fx-20261105-refresh")}`;
+      v.muted = true;
+      v.defaultMuted = true;
+      v.autoplay = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.preload = "auto";
+      return v;
+    };
+    const laptopVideos: Record<LaptopMode, HTMLVideoElement> = {
+      gallery: makeLaptopVideo(LAPTOP_VIDEOS.gallery),
+      multimedia: makeLaptopVideo(LAPTOP_VIDEOS.multimedia),
+    };
+    let laptopMode: LaptopMode = "gallery";
     // Use an origin-checked canvas rather than uploading the raw video directly.
     // Cross-origin or redirected media cannot poison the whole WebGL scene.
     const laptopCanvas = document.createElement("canvas");
@@ -1002,12 +1136,13 @@ export default function CinematicTour({
     laptopVideoTexture.generateMipmaps = false;
     let unsafeLaptopVideo = false;
     const updateLaptopVideo = () => {
+      const laptopVideo = laptopVideos[laptopMode];
       if (!laptopCtx || unsafeLaptopVideo || laptopVideo.readyState < 2) return;
       try {
         laptopCtx.drawImage(laptopVideo, 0, 0, laptopCanvas.width, laptopCanvas.height);
         laptopCtx.getImageData(0, 0, 1, 1);
         laptopVideoTexture.needsUpdate = true;
-      } catch (error) {
+    } catch (error) {
         // Resetting dimensions restores origin-clean state after a tainted draw.
         unsafeLaptopVideo = true;
         laptopCanvas.width = 512;
@@ -1017,47 +1152,46 @@ export default function CinematicTour({
         laptopVideoTexture.needsUpdate = true;
         if (process.env.NODE_ENV !== "production") {
           console.warn("[CinematicTour] Laptop video is not origin-clean:", error);
-        }
-      }
-    };
+    }}};
     const laptopDisplay = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.16, 0.73),
+      new THREE.PlaneGeometry(0.97, 0.65),
       new THREE.MeshBasicMaterial({
         map: laptopVideoTexture,
         toneMapped: false,
         side: THREE.DoubleSide,
     }));
-    laptopDisplay.position.set(-0.40, 1.01, -3.768);
+    laptopDisplay.position.set(0, 0.97, -0.327);
     laptopDisplay.userData.fxDestination = "#/private-room/gallery";
     interactiveTargets.push(laptopDisplay);
-    scene.add(laptopDisplay);
-// Actualizar Three.js cuando cambien los fotogramas
-    laptopVideo.addEventListener(
-      "loadeddata",
-      () => { updateLaptopVideo(); wakeRender.current?.(); },
-      { signal: abort.signal },
+    laptopGroup.add(laptopDisplay);
+// Actualizar Three.js cuando cambien los fotogramas (cada video redibuja solo si es el activo)
+    for (const [mode, video] of Object.entries(laptopVideos) as [LaptopMode, HTMLVideoElement][]) {
+    video.addEventListener("loadeddata",
+    () => { if (mode === laptopMode) updateLaptopVideo(); wakeRender.current?.(); },
+    { signal: abort.signal },
     );
-
-    if ("requestVideoFrameCallback" in laptopVideo) {
-      const refreshFrame = () => {
-        if (abort.signal.aborted) return;
-        updateLaptopVideo();
-        wakeRender.current?.();
-        laptopVideo.requestVideoFrameCallback(refreshFrame);
+    if ("requestVideoFrameCallback" in video) {
+        const refreshFrame = () => {
+    if (abort.signal.aborted) return;
+    if (mode === laptopMode) { updateLaptopVideo(); wakeRender.current?.(); }
+      video.requestVideoFrameCallback(refreshFrame);
     };
-      laptopVideo.requestVideoFrameCallback(refreshFrame);
+      video.requestVideoFrameCallback(refreshFrame);
     }
-// Reproducción automática, en bucle 24/7 (el listener cubre navegadores que ignoran loop)
-    laptopVideo.addEventListener("ended", () => {
-      laptopVideo.currentTime = 0;
-      void laptopVideo.play().catch(() => {});
+      // Bucle 24/7 (el listener cubre navegadores que ignoran loop)
+      video.addEventListener("ended", () => {
+        video.currentTime = 0;
+        void video.play().catch(() => {});
     }, { signal: abort.signal });
-    void laptopVideo.play().catch(() => {});
+      void video.play().catch(() => {});
+    }
 // Limpieza al desmontar la escena
     abort.signal.addEventListener("abort", () => {
-      laptopVideo.pause();
-      laptopVideo.removeAttribute("src");
-      laptopVideo.load();
+      for (const video of Object.values(laptopVideos)) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
       laptopVideoTexture.dispose();
     }, { once: true });
 
@@ -1137,14 +1271,16 @@ export default function CinematicTour({
     for (const px of [2.13, 3.57]) {
       const pillow = paddedShape(1.27, 0.29, 0.78, px, 1.08, -2.18, upholstery);
       pillow.rotation.y = px < 3 ? -0.07 : 0.07;
-      const seam = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.012, 6, 48), mat("#142a36", 1));
+      const seam = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.012, 6, 48), mat("#0a0a0e", 1));
       seam.scale.set(1.48, 0.55, 1);
       seam.position.set(px, 1.085, -2.18);
       seam.rotation.x = Math.PI / 2;
       scene.add(seam);
     }
     const bedGroup = new THREE.Group();
-    bedGroup.position.set(2.55, 0, -1.0);
+    // Cabecera junto a la pared derecha, cama atravesada hacia la TV y
+    // uno de sus laterales pegado a la pared de la ventana (z = -6.95).
+    bedGroup.position.set(2.73, 0, -4.87);
     bedGroup.rotation.y = -Math.PI / 2;
     scene.add(bedGroup);
     const bedItems = scene.children.slice(bedObjectsStart).filter((item) => item !== bedGroup);
@@ -1155,29 +1291,7 @@ export default function CinematicTour({
       item.position.z += 1.0;
     }
 
-    // Lámpara de pie trasladada al lado derecho de la cama, lejos del espejo.
-    const lampX = 4.48, lampZ = 1.38;
-    const lampMetal = mat("#111722", 0.26, 0.75);
-    const lampBase = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.34, 0.055, 28), lampMetal);
-    lampBase.position.set(lampX, 0.05, lampZ);
-    scene.add(lampBase);
-    const lampStem = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.034, 2.16, 14), lampMetal);
-    lampStem.position.set(lampX, 1.13, lampZ);
-    scene.add(lampStem);
-    const lampShade = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.33, 0.51, 0.60, 30, 1, true),
-      new THREE.MeshStandardMaterial({
-        color: "#e4d4bb", emissive: "#ffcf96", emissiveIntensity: 0.45,
-        roughness: 0.88, side: THREE.DoubleSide,
-      })
-    );
-    lampShade.position.set(lampX, 2.39, lampZ);
-    scene.add(lampShade);
-    const lampLight = new THREE.PointLight("#ffd7aa", 5.8, 5, 2);
-    lampLight.position.set(lampX, 2.35, lampZ);
-    scene.add(lampLight);
-
-    const consoleWood = mat("#3c5757", 0.45, 0.08);
+    const consoleWood = mat("#171619", 0.45, 0.08);
     box(0.68, 0.48, 3.1, -4.42, 0.3, -2.0, consoleWood);
     box(0.74, 0.055, 3.2, -4.42, 0.57, -2.0, mat("#25202b", 0.23, 0.12));
     for (const z of [-2.96, -2.03, -1.1]) {
@@ -1284,7 +1398,7 @@ export default function CinematicTour({
         blockedTvPlayback.delete(video);
         if (video.paused) playTv(video, true);
       }
-      if (laptopVideo.paused) void laptopVideo.play().catch(() => {});
+      for (const video of Object.values(laptopVideos)) if (video.paused) void video.play().catch(() => {});
     };
     const resumeTvOnGesture = () => {
       retryTvPlayback();
@@ -1565,8 +1679,8 @@ export default function CinematicTour({
     // Modelos GLB de alta calidad (opcionales): añade el nombre a enabledModelSlots para activarlos.
     const modelLoader = new GLTFLoader();
     const modelSlots = [
-      { name: "bed", file: "/assets/my-room/bed.glb", pos: [2.85, 0, -1.05], size: [3.3, 2.55, 3.9] },
-      { name: "sofa", file: "/assets/my-room/sofa.glb", pos: [-0.55, 0, -5.12], size: [4.15, 1.65, 1.65] },
+      { name: "bed", file: "/assets/my-room/bed.glb", pos: [2.73, 0, -4.87], size: [3.9, 2.55, 3.6] },
+      { name: "sofa", file: "/assets/my-room/sofa.glb", pos: [4.20, 0, -1.20], size: [1.8, 1.65, 2.4] },
       { name: "mirror", file: "/assets/my-room/mirror.glb", pos: [-4.53, 0, -3.35], size: [1.3, 3, 0.4] },
     ] as const;
     const loadHighDetailModel = (
@@ -1727,10 +1841,16 @@ export default function CinematicTour({
         camera.fov = fovSmooth.current;
         camera.updateProjectionMatrix();
       }
+      const wantLaptop: LaptopMode = current.current >= LAPTOP_MULTIMEDIA_AT ? "multimedia" : "gallery";
+      if (wantLaptop !== laptopMode) {
+        laptopMode = wantLaptop;
+        updateLaptopVideo();
+        wakeRender.current?.();
+      }
       updateTv(current.current, now);
       renderer.render(scene, camera);
       const lookSettled = lookSmooth.distanceToSquared(look) < 1e-6;
-      const videoPlaying = Object.values(tvVideos).some((video) => !video.paused) || !laptopVideo.paused || transitionStart >= 0;
+      const videoPlaying = Object.values(tvVideos).some((video) => !video.paused) || Object.values(laptopVideos).some((video) => !video.paused) || transitionStart >= 0;
       if (!scrollSettled || !lookSettled || videoPlaying || life.current > 0.002 || (wallLogo && !reducedMotion && current.current < 0.2)) {
         raf = requestAnimationFrame(tick);
       }};
@@ -1764,7 +1884,6 @@ export default function CinematicTour({
           material.dispose();
       }
       });
-      wallEnvRT.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
       };

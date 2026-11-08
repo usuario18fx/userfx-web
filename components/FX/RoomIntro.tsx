@@ -41,6 +41,7 @@ const BOT_URL = "https://t.me/User18Fx_bot";
 const LINKS = {
   gallery: "#/private-room/gallery", // botón "My gallery"
   gotCode: "#/private-room/gallery", // botón "Got code" (pantalla de username de Telegram)
+  multimedia: "#/private-room/gallery", // botón "Multimedia" (enlace a tu galería dentro de priv room)
 } as const;
 
 // ── Intro (steps 0..2) ──
@@ -52,21 +53,27 @@ const INTRO = [
 
 // ── Contenido de cada bloque (se muestra en su último step, el de botones) ──
 const COPY: Record<BlockId, { short: string; badge: string; title: ReactNode; subtitle: string }> = {
+  "laptop-gallery": {
+    short: "GALLERY",
+    badge: "01  PUBLIC ARCHIVE / LAPTOP 01",
+    title: <>Mis fotos<br />públicas.</>,
+    subtitle: "Una selección editorial abierta. Cambia de fotografía, amplía la imagen o continúa hacia la siguiente habitación.",
+  },
   "tv-videocall": {
     short: "VIDEOCALL",
-    badge: "01  ONE TO ONE / TV 01",
+    badge: "02  ONE TO ONE / TV 01",
     title: <>ᴊᴜsᴛ 𝕐𝕆𝕌<br />🜲ᴀɴᴅ 𝕄𝔼</>,
     subtitle: "La cámara se traslada a la cama y mira hacia la pantalla. Las videollamadas y los canales se gestionan directamente desde Telegram.",
   },
-  "laptop-gallery": {
-    short: "GALLERY",
-    badge: "02  PUBLIC ARCHIVE / LAPTOP 01",
-    title: <>Mis fotos<br />públicas.</>,
-    subtitle: "Una selección editorial abierta y contenido multimedia desde la laptop. Explora la galería o continúa hacia el escenario.",
+  "laptop-multimedia": {
+    short: "MULTIMEDIA",
+    badge: "03  OTRA EXPERIENCIA / LAPTOP 01",
+    title: <>ᴄᴏᴍᴍᴜɴɪᴛʏ<br />𝕄𝔼𝔻𝕀𝔸</>,
+    subtitle: "Otra experiencia inmersiva para explorar contenido adicional dentro del recorrido.",
   },
   "tv-stage": {
     short: "STAGE",
-    badge: "03  LIVE STAGE / TV 01",
+    badge: "04  LIVE STAGE / TV 01",
     title: <>The room<br />is your 𝕊𝕋𝔸𝔾𝔼.</>,
     subtitle: "El recorrido termina frente a la pantalla principal, donde la pasarela se vuelve el foco.",
   },
@@ -271,17 +278,23 @@ export default function RoomIntro() {
   const actions: Action[] = useMemo(() => {
     if (!block) return [];
     switch (block.id) {
+      case "laptop-gallery":
+        return [
+          { title: "Continuar", sub: "Seguir hacia Videocall", arrow: "→", run: advance },
+          { title: "Get code", sub: "Solicitarlo en el bot de Telegram", arrow: "↗", run: openBot },
+          { title: "My gallery", sub: "Abrir mi galería privada", arrow: "↗", run: () => goHash(LINKS.gallery) },
+        ];
       case "tv-videocall":
         return [
-          { title: "Continuar", sub: "Seguir hacia Laptop · My Gallery", arrow: "→", run: advance },
+          { title: "Continuar", sub: "Seguir hacia Multimedia", arrow: "→", run: advance },
           { title: "Videocall", sub: "Abrir videollamada en mi bot", arrow: "↗", run: openBot },
           { title: "Channels", sub: "Consultar canales en Telegram", arrow: "↗", run: openBot },
         ];
-      case "laptop-gallery":
+      case "laptop-multimedia":
         return [
           { title: "Continuar", sub: "Seguir hacia Stage", arrow: "→", run: advance },
-          { title: "Get code", sub: "Solicitarlo en el bot de Telegram", arrow: "↗", run: openBot },
-          { title: "My gallery", sub: "Abrir mi galería privada", arrow: "↗", run: () => goHash(LINKS.gallery) },
+          { title: "Get code", sub: "Solicitar acceso en el bot", arrow: "↗", run: openBot },
+          { title: "Multimedia", sub: "Reproducir experiencia", arrow: "↗", run: () => goHash(LINKS.multimedia) },
         ];
       case "tv-stage":
         return [
@@ -411,8 +424,11 @@ GALLERY / STAGE / CALLS / PROTOCOL
             {index !== 1 && (
               <div className="fx-room-intro-copy" key={index}>
                 <small>{String(index + 1).padStart(2, "0")} / CINEMATIC JOURNEY</small>
-                <h1 className={index === 0 ? "fx-room-title-welcome" : undefined}>
-                  {intro.title} <strong>
+                <h1>
+                  <span className="fx-t-chrome">
+{intro.title}
+</span>{" "}
+                  <strong>
 {intro.accent}
 </strong>
                 </h1>

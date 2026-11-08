@@ -1,10 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&display=swap");
 /* ══════════════════════════════════════════════════════════════════════════
    USER FX — ROOM INTRO
    ══════════════════════════════════════════════════════════════════════════ */
 .fx-room-intro {
   position: relative;
   width: 100%;
-  height: 1700svh; /* 15 steps · ~115svh por step */
+  height: 2150svh; /* 19 steps · ~115svh por step */
   background: #05070d;
   color: #fff;
 }
@@ -83,66 +84,58 @@
   color: #0370ff;
 }
 
+/* ── TÍTULO con el estilo del logo ──────────────────────────────────────────
+   Palabra 1 (blanca): cromo redondeado, como el "USER" del logo.
+   Palabra 2 (azul):   acero azul texturizado y ancho, como la "FX" del logo.
+   Las fuentes se cargan de Google Fonts (primera línea del archivo). */
 .fx-room-intro-copy h1 {
   margin: 12px 0 18px;
-  font-family: "Arial Black", Impact, "Helvetica Neue", sans-serif;
-  font-size: clamp(56px, 8.4vw, 132px);
-  line-height: .94;
-  font-weight: 900;
-  letter-spacing: -.055em;
-  color: #ffffff;
-  /* Reverse-facing extrusion: text remains readable, the 3D depth goes left. */
-  text-shadow:
-    -1px 1px 0 #868383,
-    -3px 3px 0 #868383,
-    -4px 4px 0 #868383,
-    -6px 6px 0 #868383,
-    -7px 7px 0 #868383,
-    -8px 8px 0 #868383,
-    -10px 10px 0 #868383,
-    -11px 11px 0 #868383,
-    -14px 18px 24px rgba(0, 0, 0, .45);
+  font-family: "Fredoka", "Nunito", "Arial Rounded MT Bold", "Arial Black", sans-serif;
+  font-size: clamp(52px, 7.4vw, 118px);
+  line-height: 1.04;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
 }
 
-.fx-room-intro-copy h1.fx-room-title-welcome::first-letter {
-  font-family: Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-weight: 900;
+.fx-t-chrome {
+  display: block;
+  width: fit-content;
+  background: linear-gradient(180deg,
+    #ffffff 0%, #e9eff6 16%, #8b98a7 36%, #f6f9fc 50%,
+    #5d6978 68%, #c8d2dd 86%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(10, 18, 30, .92);
+  paint-order: stroke fill;
+  filter: drop-shadow(0 2px 0 #18202c) drop-shadow(0 8px 12px rgba(0, 0, 0, .55));
 }
 
 .fx-room-intro-copy h1 strong {
-  font-weight: 900;
-  color: #0370ff;
-  text-shadow:
-    -1px 1px 0 #08477f,
-    -3px 3px 0 #08477f,
-    -4px 4px 0 #08477f,
-    -6px 6px 0 #08477f,
-    -7px 7px 0 #08477f,
-    -8px 8px 0 #08477f,
-    -10px 10px 0 #08477f,
-    -11px 11px 0 #08477f,
-    -14px 18px 24px rgba(0, 0, 0, .45);
+  display: block;
+  width: fit-content;
+  margin-top: .08em;
+  font-family: "Krona One", "Michroma", "Eurostile", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: .7em;
+  letter-spacing: .01em;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    linear-gradient(180deg, #38a3ea 0%, #1c78bb 24%, #0d4a7c 55%, #0a3a63 78%, #1b73b5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 1.5px #052238;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 2px 0 #041b2e) drop-shadow(0 8px 12px rgba(0, 0, 0, .5));
 }
 
 @media (max-width: 680px) {
-  .fx-room-intro-copy h1,
-  .fx-room-intro-copy h1 strong {
-    text-shadow:
-      -1px 1px 0 #868383,
-      -2px 2px 0 #868383,
-      -3px 3px 0 #868383,
-      -5px 5px 0 #868383,
-      -8px 10px 16px rgba(0, 0, 0, .45);
-  }
-  .fx-room-intro-copy h1 strong {
-    text-shadow:
-      -1px 1px 0 #08477f,
-      -2px 2px 0 #08477f,
-      -3px 3px 0 #08477f,
-      -5px 5px 0 #08477f,
-      -8px 10px 16px rgba(0, 0, 0, .45);
-  }
+  .fx-t-chrome,
+  .fx-room-intro-copy h1 strong { -webkit-text-stroke-width: 1px; }
 }
 
 .fx-room-intro-copy p {
@@ -698,7 +691,7 @@
 }
 @media (max-width: 680px) {
   .fx-room-intro {
-    height: 1000svh;
+    height: 1250svh;
   }
   .fx-room-intro-head {
     top: 28px;
@@ -780,7 +773,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .fx-room-intro {
-    height: 1000svh;
+    height: 1250svh;
   }
   .fx-room-intro-copy,
   .fx-room-ui,
@@ -791,14 +784,4 @@
   .fx-piece { animation: fxFadeIn .2s ease both; }
   .fx-puzzle.is-out .fx-piece { animation: none; opacity: 0; }
   .fx-puzzle.is-shake { animation: none; }
-}
-
-/* Intro: misma fuente y tipo de letra que el título (WELCOME MY ROOM) */
-.fx-room-intro-head,
-.fx-room-intro-head nav,
-.fx-room-intro-copy small,
-.fx-room-intro-copy p,
-.fx-room-intro-description {
-  font-family: "Arial Black", Impact, "Helvetica Neue", sans-serif;
-  font-weight: 900;
 }

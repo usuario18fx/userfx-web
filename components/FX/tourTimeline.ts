@@ -3,36 +3,24 @@
  * La comparten CinematicTour (cámara, TV, laptop) y RoomIntro (texto, overlay,
  * bloqueo de scroll, snap y enlaces).
  *
- * ESTRUCTURA (15 steps)
- *   0  welcome          intro
- *   1  corridor         intro
- *   2  enter-room       intro
- *   ── BLOQUE 1 · TV videollamada ───────────────────────────────
- *   3  videocall-a      vacío  (ángulo A: desde la cama)
- *   4  videocall-b      vacío  (ángulo B: diagonal alta)
- *   5  videocall-focus  enfoque exacto a la TV
- *   6  videocall-lock   botones + texto  ← BLOQUEO
- *   ── BLOQUE 2 · Laptop (My Gallery / Multimedia) ──────────────
- *   7  gallery-a        vacío
- *   8  gallery-b        vacío
- *   9  gallery-focus    enfoque exacto a la pantalla
- *   10 gallery-lock     botones + texto  ← BLOQUEO
- *   ── BLOQUE 3 · TV pasarela (Stage) ───────────────────────────
- *   11 stage-a          vacío
- *   12 stage-b          vacío
- *   13 stage-focus      enfoque exacto a la TV
- *   14 stage-lock       botones + texto  ← BLOQUEO (salida de la sección)
+ * ORDEN (19 steps): intro → Laptop gallery → TV videocall → Laptop multimedia → TV pasarela
+ *   0  welcome · 1 corridor · 2 enter-room
+ *   BLOQUE 1 · Laptop My Gallery      gallery-a · -b · -focus · -lock
+ *   BLOQUE 2 · TV videollamada        videocall-a · -b · -focus · -lock
+ *   BLOQUE 3 · Laptop multimedia      multimedia-a · -b · -focus · -lock
+ *   BLOQUE 4 · TV pasarela            stage-a · -b · -focus · -lock
+ *   a / b  → vacíos, ángulos distintos · focus → enfoque exacto · lock → botones (BLOQUEO)
  *
  * ENLACES A STEPS
- *   • Hash:    #tour/gallery-focus   (cualquier key de STEPS)
+ *   • Hash:    #tour/multimedia-focus   (cualquier key de STEPS)
  *   • Evento:  window.dispatchEvent(new CustomEvent("fx:tour-goto", { detail: { key: "stage-a" } }))
  *   Ambos desbloquean los bloques anteriores al destino.
  *
  * Para mover un step: cambia su `t` (0..1). Los holds no deben solaparse
- * (t[i+1] - t[i] debe ser mayor que (hold[i] + hold[i+1]) / 2).
+ * (t[i+1] - t[i] debe ser mayor que (hold[i] + hold[i+1]) / 2); en desarrollo avisa por consola.
  */
 
-export type BlockId = "tv-videocall" | "laptop-gallery" | "tv-stage";
+export type BlockId = "laptop-gallery" | "tv-videocall" | "laptop-multimedia" | "tv-stage";
 export type StepKind = "intro" | "empty" | "focus" | "lock";
 export type StepDef = {
   key: string;
@@ -45,24 +33,25 @@ export type StepDef = {
 };
 
 export const STEPS = [
-  { key: "welcome",         block: null,             kind: "intro", t: 0,     hold: 0.028 },
-  { key: "corridor",        block: null,             kind: "intro", t: 0.06,  hold: 0.03 },
-  { key: "enter-room",      block: null,             kind: "intro", t: 0.12,  hold: 0.034 },
-
-  { key: "videocall-a",     block: "tv-videocall",   kind: "empty", t: 0.193, hold: 0.03 },
-  { key: "videocall-b",     block: "tv-videocall",   kind: "empty", t: 0.267, hold: 0.03 },
-  { key: "videocall-focus", block: "tv-videocall",   kind: "focus", t: 0.34,  hold: 0.034 },
-  { key: "videocall-lock",  block: "tv-videocall",   kind: "lock",  t: 0.413, hold: 0.045 },
-
-  { key: "gallery-a",       block: "laptop-gallery", kind: "empty", t: 0.487, hold: 0.03 },
-  { key: "gallery-b",       block: "laptop-gallery", kind: "empty", t: 0.56,  hold: 0.03 },
-  { key: "gallery-focus",   block: "laptop-gallery", kind: "focus", t: 0.633, hold: 0.034 },
-  { key: "gallery-lock",    block: "laptop-gallery", kind: "lock",  t: 0.707, hold: 0.045 },
-
-  { key: "stage-a",         block: "tv-stage",       kind: "empty", t: 0.78,  hold: 0.03 },
-  { key: "stage-b",         block: "tv-stage",       kind: "empty", t: 0.853, hold: 0.03 },
-  { key: "stage-focus",     block: "tv-stage",       kind: "focus", t: 0.927, hold: 0.03 },
-  { key: "stage-lock",      block: "tv-stage",       kind: "lock",  t: 1,     hold: 0 },
+  { key: "welcome",            block: null,              kind: "intro", t: 0,     hold: 0.02 },
+  { key: "corridor",           block: null,              kind: "intro", t: 0.05,  hold: 0.022 },
+  { key: "enter-room",         block: null,              kind: "intro", t: 0.1,   hold: 0.026 },
+  { key: "gallery-a",          block: "laptop-gallery",  kind: "empty", t: 0.165, hold: 0.024 },
+  { key: "gallery-b",          block: "laptop-gallery",  kind: "empty", t: 0.221, hold: 0.024 },
+  { key: "gallery-focus",      block: "laptop-gallery",  kind: "focus", t: 0.276, hold: 0.026 },
+  { key: "gallery-lock",       block: "laptop-gallery",  kind: "lock",  t: 0.332, hold: 0.036 },
+  { key: "videocall-a",        block: "tv-videocall",    kind: "empty", t: 0.388, hold: 0.024 },
+  { key: "videocall-b",        block: "tv-videocall",    kind: "empty", t: 0.444, hold: 0.024 },
+  { key: "videocall-focus",    block: "tv-videocall",    kind: "focus", t: 0.499, hold: 0.026 },
+  { key: "videocall-lock",     block: "tv-videocall",    kind: "lock",  t: 0.555, hold: 0.036 },
+  { key: "multimedia-a",       block: "laptop-multimedia", kind: "empty", t: 0.611, hold: 0.024 },
+  { key: "multimedia-b",       block: "laptop-multimedia", kind: "empty", t: 0.666, hold: 0.024 },
+  { key: "multimedia-focus",   block: "laptop-multimedia", kind: "focus", t: 0.722, hold: 0.026 },
+  { key: "multimedia-lock",    block: "laptop-multimedia", kind: "lock",  t: 0.778, hold: 0.036 },
+  { key: "stage-a",            block: "tv-stage",        kind: "empty", t: 0.833, hold: 0.024 },
+  { key: "stage-b",            block: "tv-stage",        kind: "empty", t: 0.889, hold: 0.024 },
+  { key: "stage-focus",        block: "tv-stage",        kind: "focus", t: 0.945, hold: 0.026 },
+  { key: "stage-lock",         block: "tv-stage",        kind: "lock",  t: 1,     hold: 0 },
 ] as const;
 
 export type StepKey = (typeof STEPS)[number]["key"];
@@ -111,7 +100,7 @@ export type BlockDef = {
   lock: number;
 };
 
-export const BLOCKS: BlockDef[] = (["tv-videocall", "laptop-gallery", "tv-stage"] as const).map(
+export const BLOCKS: BlockDef[] = (["laptop-gallery", "tv-videocall", "laptop-multimedia", "tv-stage"] as const).map(
   (id, n) => {
     const idxs = STEPS.map((s, i) => (s.block === id ? i : -1)).filter((i) => i >= 0);
     return { id, number: n + 1, first: idxs[0], lock: idxs[idxs.length - 1] };
