@@ -998,7 +998,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
         <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
-            ᴇɴᴛᴇʀ ᴡʜɪᴛ
+            ᴇɴᴛᴇʀ ᴡɪᴛʜ
             <br />
             <em>
             𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌
