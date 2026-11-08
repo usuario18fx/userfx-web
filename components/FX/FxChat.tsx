@@ -166,6 +166,18 @@ export default function FxChat() {
             <div className="fx-web-chat-gate">
               <strong>Conecta tu Telegram</strong>
               <p>Habla con el bot desde esta página y recibe respuestas también en Telegram. Debes vincular tu cuenta y aceptar las condiciones.</p>
+              <div className="fx-web-chat-paths" aria-label="Dos formas de obtener tu código">
+                <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+                  <small>VÍA 01 · TELEGRAM STARS</small>
+                  <strong>OBTENER CÓDIGO</strong>
+                  <span>Pago real y entrega segura en Telegram</span>
+                </a>
+                <div>
+                  <small>VÍA 02 · CHAT WEB</small>
+                  <strong>HABLAR CON FX</strong>
+                  <span>Chat real sincronizado tras vincular tu cuenta</span>
+                </div>
+              </div>
               <label className="fx-web-chat-consent">
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
                 <span>Acepto la sincronización entre la web y Telegram, el almacenamiento de hasta 100 mensajes durante 30 días y el uso de mi identidad de Telegram para esta conversación. Puedo revocar el permiso cuando quiera. <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacidad y condiciones</a>.</span>
