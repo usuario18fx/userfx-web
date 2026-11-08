@@ -191,7 +191,7 @@ function fxSmallCapsSegment(value = "") {
 function fxBotTone(value = "") {
   const text = fxGenZRewrite(value);
 
-  const protectedToken = /(<code>[^<]*<\/code>|<b>(?:COD|SPCL)<\/b>|<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;
+  const protectedToken = /(<code>[^<]*<\/code>|<b>(?:COD|SPCL)<\/b>|<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4}|FXCHAT-[A-F0-9]{20})/g;
 
   return text
     .split(protectedToken)
