@@ -1857,7 +1857,7 @@ bot.on("document", handleMedia);
 bot.on("text", async (ctx, next) => {
   const text = String(ctx.message?.text || "").trim();
   const userId = String(ctx.from?.id || "");
-  logger.info("USER TEXT RECEIVED", { userId, text });
+  logger.info("USER TEXT RECEIVED", { userId, textLength: text.length });
   if (!userId) {
     return;
   }
@@ -2680,7 +2680,7 @@ export default async function handler(req, res) {
     updateId: update.update_id ?? null,
     hasMessage: Boolean(update.message),
     hasText: Boolean(update.message?.text),
-    messageText: update.message?.text?.slice(0, 100) || null,
+    messageTextPresent: Boolean(update.message?.text),
     messageType: Object.keys(update.message || {}).find((k) => ["text", "photo", "video", "document", "sticker", "animation", "voice", "video_note", "location", "contact", "poll"].includes(k)) || "other",
     hasCallback: Boolean(update.callback_query),
     hasPhoto: Boolean(update.message?.photo),
