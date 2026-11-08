@@ -341,7 +341,7 @@ export default function CinematicTour({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.55;
+    renderer.toneMappingExposure = 1.82;
     renderer.shadowMap.enabled = false;
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
@@ -880,7 +880,21 @@ scene.add(lampFillLight);
     pink.position.set(-3.1, 3.1, -3.1); scene.add(pink);
     const amber = new THREE.PointLight("#186370", 20, 11);
     amber.position.set(3.1, 2.6, -1); scene.add(amber);
-    scene.add(new THREE.AmbientLight("#4c7279", 1.4));
+    // Iluminacion principal: luz blanca suave para paredes, cama y suelo,
+    // conservando los acentos cyan / azul del ambiente USER FX.
+    scene.add(new THREE.AmbientLight("#b8d0ef", 1.65));
+    const roomSky = new THREE.HemisphereLight("#d1e5ff", "#354059", 1.8);
+    roomSky.position.set(0, 4.2, -1.5);
+    scene.add(roomSky);
+    const roomCeilingLight = new THREE.PointLight("#e0edff", 19, 12, 1.4);
+    roomCeilingLight.position.set(0.25, 3.95, -2.4);
+    scene.add(roomCeilingLight);
+    const bedSoftLight = new THREE.PointLight("#ffd5e4", 12, 8.5, 1.5);
+    bedSoftLight.position.set(3.25, 3.25, -4.3);
+    scene.add(bedSoftLight);
+    const entrySoftLight = new THREE.PointLight("#c9e5ff", 10, 9, 1.5);
+    entrySoftLight.position.set(-0.2, 3.4, 1.3);
+    scene.add(entrySoftLight);
 
     const fabricTexture = (base: string, accent: string, frequency = 140) => {
       const tex = canvas((ctx) => {
@@ -1010,17 +1024,18 @@ scene.add(lampFillLight);
         box(0.042, 0.4, 0.042, x, 0.23, z, tableMetal);
   }}
         box(1.6, 0.035, 1.02, 2.08, 0.13, -1.20, tableMetal);
-// LAPTOP · la base, teclado y pantalla comparten exactamente la misma rotación.
-// La tapa (y el vídeo) mira a +X: hacia los asientos del sofá.
+// LAPTOP UNICA: una sola geometria y un solo video dentro del mismo grupo.
+    // La cara externa metalica y el logo miran hacia la camara al entrar.
     const laptopGroup = new THREE.Group();
-    laptopGroup.position.set(2.08, 0, -1.20);
-    laptopGroup.rotation.y = Math.PI / 2;
+    laptopGroup.position.set(2.08, 0, -1.20); // sobre la mesa de centro
+    laptopGroup.rotation.y = Math.PI / 2 + 0.55;
     scene.add(laptopGroup);
+
     const laptopDark = mat("#0b1020", 0.33, 0.12);
-    const laptopMetal = mat("#68718c", 0.38, 0.45);
-    box(1.26, 0.045, 0.79, -0.40, 0.55, -3.44, laptopMetal);
-    box(1.13, 0.011, 0.62, -0.40, 0.578, -3.43, laptopDark);
-    // Teclado RGB retroiluminado: una sola textura para no sobrecargar WebGL.
+    const laptopMetal = mat("#8c9bae", 0.31, 0.52);
+    box(1.26, 0.045, 0.79, 0, 0.555, 0, laptopMetal, laptopGroup);
+    box(1.13, 0.011, 0.62, 0, 0.584, -0.025, laptopDark, laptopGroup);
+    // Teclas RGB: la textura original se conserva sin otra tapa encima.
     const keyboardTexture = canvas((ctx) => {
       ctx.fillStyle = "#080c16";
       ctx.fillRect(0, 0, 1024, 512);
@@ -1045,67 +1060,57 @@ scene.add(lampFillLight);
       });
     }, 1024, 512);
     const keyboardTop = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.08, 0.49),
+      new THREE.PlaneGeometry(1.08, 0.46),
       new THREE.MeshBasicMaterial({ map: keyboardTexture, toneMapped: false, side: THREE.DoubleSide })
     );
     keyboardTop.rotation.x = -Math.PI / 2;
-    keyboardTop.position.set(-0.40, 0.587, -3.49);
-    scene.add(keyboardTop);
-    const keyboardGlow = new THREE.PointLight("#43baff", 2.8, 1.7);
-    keyboardGlow.position.set(-0.40, 0.78, -3.43);
-    scene.add(keyboardGlow);
-    // Gray laptop lid and FX logo.
-    const keyboardGlowMaterial = new THREE.MeshStandardMaterial({
-      color: "#0a1222",
-      emissive: "#4fd7ff",
-      emissiveIntensity: 0.65,
-      roughness: 0.28,
-      metalness: 0.08,
-    });
-        box(1.04, 0.008, 0.48, -0.40, 0.580, -3.43, keyboardGlowMaterial);
-// trackpad
-        box(0.28, 0.006, 0.16, -0.40, 0.587, -3.18, mat("#9aa3b8", 0.22, 0.18));
-// pantalla / tapa
-// Tapa de laptop: interior negro y exterior gris metálico
+    keyboardTop.position.set(0, 0.592, -0.11);
+    laptopGroup.add(keyboardTop);
+
+    box(0.27, 0.005, 0.13, 0, 0.595, 0.258, mat("#a4afc1", 0.24, 0.28), laptopGroup);
+    const keyboardGlow = new THREE.PointLight("#54caff", 2.8, 1.7);
+    keyboardGlow.position.set(0, 0.78, 0);
+    laptopGroup.add(keyboardGlow);
+
+    // Exterior gris plateado con ligero brillo: no depende solo de la luz ambiental.
     const laptopLidBack = new THREE.MeshStandardMaterial({
-      color: "#8d97a6",
-      metalness: 0.65,
-      roughness: 0.28,
+      color: "#b1bfce",
+      metalness: 0.52,
+      roughness: 0.31,
+      emissive: "#66798f",
+      emissiveIntensity: 0.19,
     });
+    const laptopLidSide = mat("#8d9bae", 0.28, 0.52);
     const laptopLid = new THREE.Mesh(
       new THREE.BoxGeometry(1.28, 0.83, 0.055),
-      [ laptopMetal,
-        laptopMetal,
-        laptopMetal,
-        laptopMetal,
-        laptopDark,    // Interior negro
-        laptopLidBack, // Exterior gris
-      ]);
-    laptopLid.position.set(-0.40, 1.01, -3.80);
-    scene.add(laptopLid);
-    // Logo original USER FX en la tapa exterior
+      [laptopLidSide, laptopLidSide, laptopLidSide, laptopLidSide, laptopDark, laptopLidBack]
+    );
+    laptopLid.position.set(0, 1.0, -0.365);
+    laptopGroup.add(laptopLid);
+
+    // Logo USER FX sobre el lado EXTERIOR (-Z) de la misma tapa.
     const fxLogoTexture = new THREE.TextureLoader().load(
       "/assets/userfx-logo-sin.png",
-    () => wakeRender.current?.()
+      () => wakeRender.current?.(),
+      undefined,
+      () => console.warn("[CinematicTour] No se encontro /assets/userfx-logo-sin.png")
     );
     fxLogoTexture.colorSpace = THREE.SRGBColorSpace;
     const fxBackLogo = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.38, 0.38),
+      new THREE.PlaneGeometry(0.44, 0.44),
       new THREE.MeshBasicMaterial({
-        map: fxLogoTexture,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        toneMapped: false,
-      }));
-    fxBackLogo.position.set(-0.40, 1.04, -3.838);
+        map: fxLogoTexture, transparent: true, side: THREE.DoubleSide,
+        depthWrite: false, toneMapped: false,
+      })
+    );
+    fxBackLogo.position.set(0, 1.035, -0.401);
     fxBackLogo.rotation.y = Math.PI;
-    scene.add(fxBackLogo);
-// luz puntual sutil sobre el teclado
-      const keyboardLight = new THREE.PointLight("#69dcff", 2.8, 2.2);
-      keyboardLight.position.set(-0.40, 0.86, -3.38);
-      scene.add(keyboardLight);
-// Video de la pantalla 3D
+    laptopGroup.add(fxBackLogo);
+    const lidAccentLight = new THREE.PointLight("#c7e4ff", 3.6, 2.3);
+    lidAccentLight.position.set(0, 1.3, -0.9);
+    laptopGroup.add(lidAccentLight);
+
+    // UNICA pantalla: permanece en laptopGroup, delante de la tapa (+Z).
       const makeLaptopVideo = (src: string) => {
       const v = document.createElement("video");
       v.crossOrigin = "anonymous";
