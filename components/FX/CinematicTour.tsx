@@ -748,7 +748,7 @@ export default function CinematicTour({
     // Reflector renderiza la geometría actual (incluida la colcha roja) en tiempo real.
     const mirrorFrame = mat("#0b0d12", 0.35, 0.45);
     const mirrorAssembly = new THREE.Group();
-    mirrorAssembly.position.set(-4.49, 1.72, -5.47);
+    mirrorAssembly.position.set(-4.27, 1.72, -5.47);
     mirrorAssembly.rotation.y = 0.88; // diagonal hacia el dormitorio y la cama
     scene.add(mirrorAssembly);
     box(1.72, 3.35, 0.12, 0, 0, -0.09, mirrorFrame, mirrorAssembly);
