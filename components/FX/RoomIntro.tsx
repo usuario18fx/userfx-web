@@ -385,7 +385,6 @@ export default function RoomIntro() {
   }, []);
 
   const intro = INTRO[Math.min(index, INTRO.length - 1)];
-  const roomSteps = STEPS.map((s, i) => ({ s, i })).filter(({ s }) => s.block !== null);
 
   return (
     <section
@@ -480,19 +479,26 @@ Pantalla completa
               </div>
             )}
 
-            {/* Rieles de steps: un punto por step, los cuadrados son los de botones */}
-            <nav className="fx-step-rail" aria-label="Steps del recorrido">
-              {roomSteps.map(({ s, i }, n) => (
-                <span key={s.key} className="fx-rail-item">
-                  {n > 0 && roomSteps[n - 1].s.block !== s.block && <span className="fx-rail-gap" />}
-                  <button
-                    className={`fx-rail-dot${s.kind === "lock" ? " is-lock" : ""}${i === index ? " is-active" : ""}`}
-                    onClick={() => goToStep(s.key)}
-                    aria-label={`${COPY[s.block as BlockId].short} · ${STEP_LABEL(s.key, s.kind)}`}
-                    aria-current={i === index ? "step" : undefined}
-                  />
-                </span>
+            {/* Navegación cinematográfica por capítulos, sin la columna de 12 puntos. */}
+            <nav className="fx-step-rail" aria-label="Capítulos del recorrido">
+              <span className="fx-rail-caption">EXPLORE / 03</span>
+              {BLOCKS.map((b, i) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  className={`fx-chapter-item${blockIdx === i ? " is-active" : ""}`}
+                  onClick={() => goToStep(STEPS[b.first].key)}
+                  aria-label={`Ir a ${COPY[b.id].short}`}
+                  aria-current={blockIdx === i ? "step" : undefined}
+                >
+                  <span className="fx-chapter-number">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="fx-chapter-label">{COPY[b.id].short}</span>
+                  <span className="fx-chapter-track" aria-hidden="true">
+                    <span style={{ width: `${blockIdx > i ? 100 : blockIdx === i ? stepInBlock(index) * 25 : 0}%` }} />
+                  </span>
+                </button>
               ))}
+              <span className="fx-rail-caption fx-rail-caption--foot">SCROLL TO EXPLORE</span>
             </nav>
 
             {/* Step de botones: texto y botones como piezas que encajan */}
