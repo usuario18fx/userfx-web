@@ -181,9 +181,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 2px;
+  height: 4px;
   z-index: 6;
-  background: rgba(255, 255, 255, .12);
+  background: rgba(112, 169, 239, .14);
   pointer-events: none;
   overflow: hidden;
 }
@@ -191,7 +191,8 @@
 .fx-room-intro-progress > div {
   width: 100%;
   height: 100%;
-  background: #0370ff;
+  background: linear-gradient(90deg, #0370ff, #50d6ff);
+  box-shadow: 0 -2px 14px rgba(41, 164, 255, .75);
   transform-origin: 0 50%;
   will-change: transform;
 }
@@ -319,47 +320,98 @@
 .fx-step-tag-label { color: #0370ff; }
 .fx-step-tag-count { color: rgba(255, 255, 255, .55); }
 
+
+/* ── Capítulos cinematográficos · navegación compacta de tres secciones ── */
 .fx-step-rail {
   position: absolute;
-  right: 14px;
+  right: clamp(18px, 2.1vw, 38px);
   top: 50%;
   transform: translateY(-50%);
-  z-index: 5;
+  z-index: 7;
+  width: clamp(132px, 11.5vw, 176px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 9px;
-  pointer-events: none;
+  gap: 8px;
+  padding: 16px 12px;
+  border: 1px solid rgba(180, 216, 255, .22);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(4, 10, 22, .79), rgba(7, 21, 37, .49));
+  box-shadow: 0 12px 46px rgba(0, 0, 0, .38);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: auto;
 }
-.fx-rail-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 9px;
+.fx-rail-caption {
+  display: block;
+  padding: 3px 6px 8px;
+  color: rgba(189, 213, 236, .67);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  white-space: nowrap;
 }
-.fx-rail-gap { display: block; height: 10px; }
-.fx-rail-dot {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, .55);
-  background: transparent;
+.fx-rail-caption--foot {
+  padding: 8px 6px 2px;
+  font-size: 8px;
+  color: rgba(189, 213, 236, .42);
+}
+.fx-chapter-item {
+  display: grid;
+  grid-template-columns: 25px minmax(0,1fr);
+  grid-template-rows: auto 3px;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 9px;
+  min-width: 0;
+  padding: 11px 9px;
+  color: #cad6e8;
+  background: rgba(255,255,255,.035);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-align: left;
   cursor: pointer;
-  transition: background .2s, transform .2s, border-color .2s;
+  transition: border-color .22s ease, background .22s ease, transform .22s ease;
 }
-.fx-rail-dot::before { /* zona de clic más grande */
-  content: "";
-  position: absolute;
-  inset: -7px;
+.fx-chapter-item:hover,
+.fx-chapter-item:focus-visible {
+  background: rgba(3,112,255,.13);
+  border-color: rgba(99,171,255,.48);
 }
-.fx-rail-dot.is-lock { border-radius: 2px; }
-.fx-rail-dot:hover { border-color: #fff; }
-.fx-rail-dot.is-active {
-  background: #fff;
-  border-color: #fff;
-  transform: scale(1.5);
+.fx-chapter-item.is-active {
+  background: linear-gradient(110deg,rgba(3,112,255,.27),rgba(5,31,69,.4));
+  border-color: rgba(66,165,255,.68);
+  box-shadow: inset 3px 0 0 #39b9ff;
+}
+.fx-chapter-number {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(206,230,255,.68);
+}
+.fx-chapter-item.is-active .fx-chapter-number { color: #55caff; }
+.fx-chapter-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .095em;
+}
+.fx-chapter-track {
+  grid-column: 1 / -1;
+  display: block;
+  overflow: hidden;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.13);
+}
+.fx-chapter-track > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg,#0370ff,#63dcff);
+  border-radius: inherit;
+  transition: width .22s ease;
 }
 
 /* ── PUZZLE (step de botones) ───────────────────────────────────────────── */
@@ -673,7 +725,20 @@
     display: none;
   }
   .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; }
-  .fx-step-rail { right: 6px; }
+  .fx-step-rail {
+    right: 10px;
+    top: 92px;
+    transform: none;
+    width: 106px;
+    padding: 9px 7px;
+    gap: 4px;
+    border-radius: 13px;
+  }
+  .fx-rail-caption { padding: 2px 4px 5px; font-size: 8px; }
+  .fx-rail-caption--foot { display: none; }
+  .fx-chapter-item { grid-template-columns: 18px minmax(0,1fr); column-gap: 4px; padding: 8px 5px; row-gap: 6px; }
+  .fx-chapter-number { font-size: 10px; }
+  .fx-chapter-label { font-size: 8px; letter-spacing: 0; }
 
   /* Móvil: título arriba, botones abajo, la pantalla queda en medio */
   .fx-pz-left {
