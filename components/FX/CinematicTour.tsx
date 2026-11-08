@@ -880,18 +880,8 @@ scene.add(lampFillLight);
     pink.position.set(-3.1, 3.1, -3.1); scene.add(pink);
     const amber = new THREE.PointLight("#186370", 20, 11);
     amber.position.set(3.1, 2.6, -1); scene.add(amber);
-    // El pasillo conserva su iluminacion original; nada de luces globales extra.
-    // Solo el dormitorio recibe luz de relleno con alcance limitado.
+    // Iluminacion original de toda la escena: mantener el look cinematografico.
     scene.add(new THREE.AmbientLight("#4c7279", 1.4));
-    const roomCeilingLight = new THREE.PointLight("#d6e7ff", 9, 6.5, 1.8);
-    roomCeilingLight.position.set(0.25, 3.85, -3.35);
-    scene.add(roomCeilingLight);
-    const bedSoftLight = new THREE.PointLight("#ffd5e4", 7, 5.5, 1.8);
-    bedSoftLight.position.set(3.25, 2.95, -3.85);
-    scene.add(bedSoftLight);
-    const roomDeskLight = new THREE.PointLight("#d3e6ff", 5, 4.5, 2);
-    roomDeskLight.position.set(1.9, 2.0, -1.2);
-    scene.add(roomDeskLight);
 
     const fabricTexture = (base: string, accent: string, frequency = 140) => {
       const tex = canvas((ctx) => {
@@ -1103,9 +1093,6 @@ scene.add(lampFillLight);
     fxBackLogo.position.set(0, 1.035, -0.401);
     fxBackLogo.rotation.y = Math.PI;
     laptopGroup.add(fxBackLogo);
-    const lidAccentLight = new THREE.PointLight("#d3e3ff", 1.8, 1.8);
-    lidAccentLight.position.set(0, 1.3, -0.9);
-    laptopGroup.add(lidAccentLight);
 
     // UNICA pantalla: permanece en laptopGroup, delante de la tapa (+Z).
       const makeLaptopVideo = (src: string) => {
