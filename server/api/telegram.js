@@ -259,7 +259,7 @@ bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
   }
 
   return fxOriginalUserCallApi(nextMethod, nextPayload, signal).then((result) => {
-    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !nextPayload.text.startsWith("USER FX SUPPORT:")) {
+    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !String(payload.text || "").startsWith("USER FX SUPPORT:")) {
       void appendFxChatMessage(String(nextPayload.chat_id), "bot", nextPayload.text, "telegram", "tg-bot:" + nextPayload.chat_id + ":" + result?.message_id)
         .catch((error) => logger.warn("FX CHAT BOT MIRROR FAILED", { message: error?.message || "unknown" }));
     }
