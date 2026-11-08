@@ -3,7 +3,7 @@
           import winston from "winston";
           import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
-import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram } from "../../lib/fx-chat.js";
+import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
           export const config = {
             api: {
               bodyParser: false,
@@ -1992,6 +1992,10 @@ bot.on("text", async (ctx, next) => {
       await setVideoRequest(userId, { ...pending, invalidTextCount });
       await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
       return;
+    }
+    // Linked users can talk to the same FX responder from Telegram or the web.
+    if (await hasFxChatConsent(userId)) {
+      return await ctx.reply(fxChatReply(text));
     }
     return await sendMainPanel(ctx);
   } catch (error) {
