@@ -180,7 +180,7 @@ export default function FxChat() {
               </div>
               <label className="fx-web-chat-consent">
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-                <span>Acepto la sincronización entre la web y Telegram, el almacenamiento de hasta 100 mensajes durante 30 días y el uso de mi identidad de Telegram para esta conversación. Puedo revocar el permiso cuando quiera. <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacidad y condiciones</a>.</span>
+                <span>Acepto la sincronización entre la web y Telegram, el almacenamiento de hasta 100 mensajes durante 30 días y el uso de mi identidad de Telegram para esta conversación. Puedo revocar el permiso cuando quiera. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Condiciones del chat</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacidad</a>.</span>
               </label>
               <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")}
                 href={accepted ? BOT_LINK : undefined}
