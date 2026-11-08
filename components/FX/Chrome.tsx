@@ -132,8 +132,8 @@ export function StickyHeader({ active }: { active: string }) {
               ))}
             </nav>
             <div className="flex items-center gap-6">
-              <a href={ENTER_URL} className="hidden rounded-full bg-gold px-5 py-2 text-xs font-semibold text-sky transition-transform duration-300 hover:scale-[1.04] sm:block">
-                Enter the Vault
+              <a href={ENTER_URL} className="hidden min-h-[48px] items-center justify-center gap-2 rounded-[5px] border border-[#90b9de] bg-[linear-gradient(135deg,#5e6a7c_0%,#253d64_48%,#0c66b2_100%)] px-7 py-2 font-display text-[15px] font-bold tracking-[.02em] text-[#f1f6ff] shadow-[inset_0_1px_0_rgba(255,255,255,.25),0_0_20px_rgba(36,143,241,.23)] transition-all duration-300 hover:brightness-125 sm:inline-flex">
+                <span className="text-[#edf2f8]">Enter the</span><span className="text-[#69c5ff]">Vault</span>
               </a>
               <MenuButton width="22.76px" gap="4.56px" />
             </div>
