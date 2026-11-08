@@ -38,6 +38,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Reflector } from "three/examples/jsm/objects/Reflector.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { ENTER_AT, STEPS, stepIndex, STOP_T, type StepKey } from "./tourTimeline";
 import "./CinematicTour.css";
@@ -743,14 +744,28 @@ export default function CinematicTour({
     box(10, 0.2, 9.8, 0, 4.6, -2.1, mat("#101b31"));
     box(10, 4.6, 0.15, 0, 2.2, -6.95, mat("#162742"));
     box(2.4, 0.1, 2.0, -2.9, 0.03, -2.7, carpet);
-    // Espejo vertical grande en la esquina izquierda, sin reemplazar la geometría.
-    const mirrorFrame = mat("#1c2a40", 0.3, 0.5);
-    const mirrorSurface = new THREE.MeshPhysicalMaterial({
-      color: "#7c98ba", metalness: 0.82, roughness: 0.12,
-      transparent: true, opacity: 0.78, side: THREE.DoubleSide
+    // Espejo vertical real: en la esquina izquierda, orientado hacia la cama.
+    // Reflector renderiza la geometría actual (incluida la colcha roja) en tiempo real.
+    const mirrorFrame = mat("#0b0d12", 0.35, 0.45);
+    const mirrorAssembly = new THREE.Group();
+    mirrorAssembly.position.set(-4.49, 1.72, -5.47);
+    mirrorAssembly.rotation.y = 0.88; // diagonal hacia el dormitorio y la cama
+    scene.add(mirrorAssembly);
+    box(1.72, 3.35, 0.12, 0, 0, -0.09, mirrorFrame, mirrorAssembly);
+    const mirrorReflection = new Reflector(new THREE.PlaneGeometry(1.49, 3.10), {
+      color: 0xcbd7eb,
+      textureWidth: window.innerWidth < 768 ? 256 : 512,
+      textureHeight: window.innerWidth < 768 ? 512 : 1024,
+      clipBias: 0.003,
     });
-    box(0.12, 3.25, 1.62, -4.84, 1.7, -5.52, mirrorFrame);
-    box(0.014, 3.04, 1.43, -4.765, 1.7, -5.52, mirrorSurface);
+    mirrorReflection.position.z = 0.015;
+    mirrorAssembly.add(mirrorReflection);
+    // Marco negro visible sin cubrir la superficie reflectante.
+    const mirrorTrim = mat("#050608", 0.25, 0.2);
+    box(1.67, 0.075, 0.08, 0, 1.615, 0.016, mirrorTrim, mirrorAssembly);
+    box(1.67, 0.075, 0.08, 0, -1.615, 0.016, mirrorTrim, mirrorAssembly);
+    box(0.075, 3.16, 0.08, -0.805, 0, 0.016, mirrorTrim, mirrorAssembly);
+    box(0.075, 3.16, 0.08, 0.805, 0, 0.016, mirrorTrim, mirrorAssembly);
     const zebraCanvas = canvas((ctx) => {
       ctx.fillStyle = "#0e1011"; ctx.fillRect(0, 0, 512, 512);
       ctx.fillStyle = "#3c5757"; ctx.beginPath(); ctx.ellipse(230, 270, 150, 195, -0.36, 0, Math.PI * 2); ctx.fill();
@@ -796,6 +811,7 @@ export default function CinematicTour({
     const windowGlow = new THREE.PointLight("#003db6", 3.8, 5.5);
     windowGlow.position.set(-2.35, 2.6, -5.9); scene.add(windowGlow);
     const abort = new AbortController();
+    abort.signal.addEventListener("abort", () => mirrorReflection.getRenderTarget().dispose(), { once: true });
     new THREE.TextureLoader().load(
       "/assets/my-room/zebra.png",
       (texture) => {
@@ -928,6 +944,40 @@ export default function CinematicTour({
     const laptopMetal = mat("#68718c", 0.38, 0.45);
     box(1.26, 0.045, 0.79, -0.40, 0.55, -3.44, laptopMetal);
     box(1.13, 0.011, 0.62, -0.40, 0.578, -3.43, laptopDark);
+    // Teclado RGB retroiluminado: una sola textura para no sobrecargar WebGL.
+    const keyboardTexture = canvas((ctx) => {
+      ctx.fillStyle = "#080c16";
+      ctx.fillRect(0, 0, 1024, 512);
+      const rows = [14, 14, 13, 12, 8];
+      rows.forEach((count, row) => {
+        const left = 36;
+        const gap = 5;
+        const cellW = (952 - gap * (count - 1)) / count;
+        const top = 42 + row * 78;
+        for (let col = 0; col < count; col++) {
+          const x = left + col * (cellW + gap);
+          const shade = col % 3 === 0 ? "#24dcff" : col % 3 === 1 ? "#4d86ff" : "#9eeaff";
+          ctx.fillStyle = "rgba(13, 26, 45, .98)";
+          ctx.fillRect(x, top, cellW, 62);
+          ctx.strokeStyle = shade;
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x + 2, top + 2, cellW - 4, 58);
+          ctx.fillStyle = "#e2f8ff";
+          ctx.font = "bold 23px monospace";
+          ctx.fillText(row === 4 && col === 3 ? "SPACE" : "FX1234567890QWERTY"[ (row * 3 + col) % 18 ], x + 9, top + 34);
+        }
+      });
+    }, 1024, 512);
+    const keyboardTop = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.08, 0.49),
+      new THREE.MeshBasicMaterial({ map: keyboardTexture, toneMapped: false, side: THREE.DoubleSide })
+    );
+    keyboardTop.rotation.x = -Math.PI / 2;
+    keyboardTop.position.set(-0.40, 0.587, -3.49);
+    scene.add(keyboardTop);
+    const keyboardGlow = new THREE.PointLight("#43baff", 2.8, 1.7);
+    keyboardGlow.position.set(-0.40, 0.78, -3.43);
+    scene.add(keyboardGlow);
     box(1.28, 0.83, 0.055, -0.40, 1.01, -3.80, laptopDark);
 // Video de la pantalla 3D
     const laptopVideo = document.createElement("video");
@@ -1104,6 +1154,28 @@ export default function CinematicTour({
       item.position.x -= 2.85;
       item.position.z += 1.0;
     }
+
+    // Lámpara de pie trasladada al lado derecho de la cama, lejos del espejo.
+    const lampX = 4.48, lampZ = 1.38;
+    const lampMetal = mat("#111722", 0.26, 0.75);
+    const lampBase = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.34, 0.055, 28), lampMetal);
+    lampBase.position.set(lampX, 0.05, lampZ);
+    scene.add(lampBase);
+    const lampStem = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.034, 2.16, 14), lampMetal);
+    lampStem.position.set(lampX, 1.13, lampZ);
+    scene.add(lampStem);
+    const lampShade = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.33, 0.51, 0.60, 30, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: "#e4d4bb", emissive: "#ffcf96", emissiveIntensity: 0.45,
+        roughness: 0.88, side: THREE.DoubleSide,
+      })
+    );
+    lampShade.position.set(lampX, 2.39, lampZ);
+    scene.add(lampShade);
+    const lampLight = new THREE.PointLight("#ffd7aa", 5.8, 5, 2);
+    lampLight.position.set(lampX, 2.35, lampZ);
+    scene.add(lampLight);
 
     const consoleWood = mat("#3c5757", 0.45, 0.08);
     box(0.68, 0.48, 3.1, -4.42, 0.3, -2.0, consoleWood);
