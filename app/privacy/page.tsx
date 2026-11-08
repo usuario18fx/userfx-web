@@ -28,6 +28,14 @@ export default function Privacy() {
         .
       </p>
       <p className="text-ink/70">
+        Webchat Telegram sync is optional and requires explicit consent plus a one-time code from
+        the Telegram bot. When enabled, USER FX stores up to 100 synchronized messages for up to
+        30 days in its server database and uses a signed-in cookie to show them only to the linked
+        account. You can unlink from the chat, which deletes your web chat history and sync consent.
+        This does not delete any messages stored separately inside Telegram. Replies may be sent by
+        the automated bot or USER FX support.
+      </p>
+      <p className="text-ink/70">
         Session cookies keep you signed in. They do not give another user access to your private
         collections.
       </p>
