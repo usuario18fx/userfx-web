@@ -6,6 +6,7 @@ import { useMotionValue } from "framer-motion";
 import type { CrownTL } from "./CrownModel";
 const CrownModel=dynamic(()=>import("./CrownModel"),{ssr:false});
 import "./CrownLanding.css";
+import FxChat from "./FxChat";
 
 const CROWN_TIMELINE: CrownTL = {
   descend: [0, 0.12],
@@ -147,6 +148,7 @@ ORDINARY.
 ↓
 </span></div>}
 </div>
+<FxChat />
 </main>
 );
 }
