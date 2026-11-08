@@ -3,6 +3,7 @@
           import winston from "winston";
           import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
+import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram } from "../../lib/fx-chat.js";
           export const config = {
             api: {
               bodyParser: false,
@@ -257,8 +258,26 @@ bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
     delete nextPayload.photo;
   }
 
-  return fxOriginalUserCallApi(nextMethod, nextPayload, signal);
+  return fxOriginalUserCallApi(nextMethod, nextPayload, signal).then((result) => {
+    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !nextPayload.text.startsWith("USER FX SUPPORT:")) {
+      void appendFxChatMessage(String(nextPayload.chat_id), "bot", nextPayload.text, "telegram", "tg-bot:" + nextPayload.chat_id + ":" + result?.message_id)
+        .catch((error) => logger.warn("FX CHAT BOT MIRROR FAILED", { message: error?.message || "unknown" }));
+    }
+    return result;
+  });
 };
+
+// Inbound text from the actual Telegram bot webhook; no second webhook.
+bot.use(async (ctx, next) => {
+  if (ctx.chat?.type === "private" && ctx.from?.id && typeof ctx.message?.text === "string") {
+    try {
+      await appendFxChatMessage(String(ctx.from.id), "user", ctx.message.text, "telegram", "tg-in:" + ctx.update?.update_id);
+    } catch (error) {
+      logger.warn("FX CHAT USER MIRROR FAILED", { message: error?.message || "unknown" });
+    }
+  }
+  return next();
+});
 // ======================================================
 // TOKEN VALIDATION
 // ======================================================
@@ -1566,6 +1585,29 @@ bot.command("getcode", async (ctx) => {
 bot.command("identity", async (ctx) => {
   await sendIdentityCode(ctx);
 });
+
+// Web chat linking is separate from SPCL and paid access codes.
+async function sendFxChatLink(ctx) {
+  if (ctx.chat?.type !== "private" || !ctx.from?.id || String(ctx.chat.id) !== String(ctx.from.id)) {
+    await ctx.reply("Open this command in a private chat with @User18Fx_bot.");
+    return;
+  }
+  try {
+    const code = await issueFxChatLink(ctx.from.id, ctx.chat.id);
+    await ctx.reply(code
+      ? "FX WEBCHAT · ONE-TIME LINK\n\n" + code + "\n\nCopy this code into the USER FX website chat after accepting the terms. Expires in 10 minutes. Never share it."
+      : "Wait 15 seconds before requesting another web chat link.");
+  } catch (error) {
+    logger.error("FX WEBCHAT LINK FAILED", { message: error?.message || "unknown" });
+    await ctx.reply("Website chat linking is temporarily unavailable.");
+  }
+}
+bot.command("webchat", sendFxChatLink);
+bot.command("stopchat", async (ctx) => {
+  if (ctx.chat?.type !== "private" || !ctx.from?.id) return;
+  await revokeFxChatByTelegram(String(ctx.from.id));
+  await ctx.reply("Website chat sync disabled. Web chat history was deleted.");
+});
 bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
   const requestedCode = String(ctx.match?.[1] || "")
     .trim()
@@ -1627,6 +1669,10 @@ async function handleUserStart(ctx) {
     // TGMX IDENTITY START
     if (startPayload === "identity") {
       await sendIdentityCode(ctx);
+      return;
+    }
+    if (startPayload === "webchat") {
+      await sendFxChatLink(ctx);
       return;
     }
     // Direct Telegram deep link: https://t.me/User18Fx_bot?start=videocall
@@ -2447,6 +2493,25 @@ adminBot.command("code", async (ctx) => {
   }
   const record = result.record;
   await ctx.reply(`✔ CODE FOUND\n\nCode: ${record.code}\nPlan: ${record.plan}\nPlan ID: ${record.planId}\nSource: ${record.source}\nUser ID: ${record.userId}\nStatus: ${record.status}\nUsed accesses: ${record.usedAccesses ?? 0}\nRemaining accesses: ${record.remainingAccesses ?? "UNLIMITED"}\nCreated: ${record.createdAt}`);
+});
+// Owner can answer a linked web chat by replying to its admin notification.
+adminBot.on("text", async (ctx, next) => {
+  if (!isAdmin(ctx)) return next();
+  const adminChatId = ctx.chat?.id;
+  const replyTo = ctx.message?.reply_to_message?.message_id;
+  if (!adminChatId || !replyTo) return next();
+  try {
+    const recipientId = await getFxChatAdminReplyTarget(adminChatId, replyTo);
+    if (!recipientId) return next();
+    const message = String(ctx.message?.text || "").trim().slice(0, 1000);
+    if (!message) return;
+    await bot.telegram.sendMessage(recipientId, "USER FX SUPPORT:\n" + message);
+    await appendFxChatMessage(recipientId, "support", message, "telegram:admin", "admin-webchat:" + adminChatId + ":" + ctx.message?.message_id);
+    await ctx.reply("Sent to website chat and Telegram.");
+  } catch (error) {
+    logger.error("FX WEBCHAT SUPPORT REPLY FAILED", { message: error?.message || "unknown" });
+    await ctx.reply("Could not deliver web chat reply.");
+  }
 });
 //// ERROR HANDLERS //
 bot.catch((error, ctx) => {
