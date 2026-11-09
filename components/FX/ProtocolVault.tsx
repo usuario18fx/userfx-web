@@ -82,7 +82,7 @@ function timeline(steps: number) {
     descend: segment(textEnd + 95, textEnd + 125),
     outro: segment(photoEnd, outroEnd),
     rise: segment(outroEnd, videoStart + 40),
-    breakStart: (videoStart + 40) / D,
+    breakStart: (videoStart + 80) / D,
     fade: segment(videoStart + 300, videoStart + 380),
     rooms: [0, 1, 2, 3].map((i) => segment(videoStart + 80 + i * VIDEO_STEP, videoStart + 80 + i * VIDEO_STEP + 45)),
   };
@@ -315,7 +315,7 @@ export default function ProtocolVault({
       <div id="spaces" className="pv-inside-anchor" style={{ top: "calc(100svh + " + (config.D * config.photosStart) + "svh)" }} aria-hidden="true" />
       <div className="pv-bg" aria-hidden="true" style={flat ? undefined : { visibility: inView ? "visible" : "hidden" }}>
         <motion.div className="pv-rose" style={flat ? undefined : { scale: roseScale, opacity: roseOpacity }}>
-          <img src="/assets/iconos/rosa1.png" alt="" draggable={false} />
+          <img src="/assets/iconos/rosa1.png" alt="" draggable={false} onError={(event) => { if (!event.currentTarget.src.endsWith("/assets/iconos/rosa.png")) event.currentTarget.src = "/assets/iconos/rosa.png"; }} />
         </motion.div>
         {!flat && (
           <div className="pv-crown-wrap">
