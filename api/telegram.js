@@ -1327,9 +1327,9 @@ async function openVideocallFlow(ctx) {
     };
     await setVideoRequest(userId, request);
     await ctx.reply(
-      `Hold up...
-I'm down to video call with you, but lemme grab some water real quick. Gimme 2 mins and I'll send you the link.
-Wanna swap pics in the meantime?`,
+      `ʜᴏʟᴅ ᴜᴘ...
+ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
+ᴡᴀɴɴᴀ ꜱᴡᴀᴘ ᴘɪᴄꜱ ɪɴ ᴛʜᴇ ᴍᴇᴀɴᴛɪᴍᴇ?`,
                 getPendingPhotoKeyboard(),
               );
               await adminBot.telegram.sendMessage(
