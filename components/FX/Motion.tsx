@@ -246,13 +246,25 @@ export function Marquee({
 }
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 26, restDelta: 0.001 });
+  const progress = useSpring(scrollYProgress, { stiffness: 110, damping: 28, restDelta: 0.001 });
+  const markerTop = useTransform(progress, v => `${Math.max(0, Math.min(100, v * 100))}%`);
+  const percent = useTransform(progress, v => `${String(Math.round(Math.max(0, Math.min(1, v)) * 100)).padStart(2, "0")}%`);
+
+  // Un solo indicador de lectura: sin lista de capítulos ni barra horizontal.
   return (
-    <motion.div
-      aria-hidden
-      style={{ scaleX }}
-      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gold/70"
-    />
+    <div aria-hidden="true" className="pointer-events-none fixed right-[10px] top-1/2 z-[60] flex -translate-y-1/2 flex-col items-center gap-3 sm:right-6">
+      <div className="relative h-[122px] w-[3px] rounded-full bg-[#a7b7cc]/20 sm:h-[180px]">
+        <motion.div
+          style={{ scaleY: progress }}
+          className="absolute inset-0 origin-top rounded-full bg-gradient-to-b from-[#b7c6d9] via-[#64baff] to-[#0370ff] shadow-[0_0_12px_rgba(76,163,255,.4)]"
+        />
+        <motion.span
+          style={{ top: markerTop }}
+          className="absolute left-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#c8dcee] bg-[#59baff] shadow-[0_0_12px_rgba(67,172,255,.65)]"
+        />
+      </div>
+      <motion.span className="font-mono text-[9px] font-medium tracking-[.04em] text-[#afbdd3]/80">{percent}</motion.span>
+    </div>
   );
 }
 export function Counter({ to, suffix }: { to: number; suffix: string }) {
