@@ -495,28 +495,6 @@ Pantalla completa
               </div>
             )}
 
-            {/* Navegación cinematográfica por capítulos, sin la columna de 12 puntos. */}
-            <nav className="fx-step-rail" aria-label="Capítulos del recorrido">
-              <span className="fx-rail-caption">EXPLORE / {String(BLOCKS.length).padStart(2, "0")}</span>
-              {BLOCKS.map((b, i) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className={`fx-chapter-item${blockIdx === i ? " is-active" : ""}`}
-                  onClick={() => goToStep(STEPS[b.first].key)}
-                  aria-label={`Ir a ${COPY[b.id].short}`}
-                  aria-current={blockIdx === i ? "step" : undefined}
-                >
-                  <span className="fx-chapter-number">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="fx-chapter-label">{COPY[b.id].short}</span>
-                  <span className="fx-chapter-track" aria-hidden="true">
-                    <span style={{ width: `${blockIdx > i ? 100 : blockIdx === i ? stepInBlock(index) * 25 : 0}%` }} />
-                  </span>
-                </button>
-              ))}
-              <span className="fx-rail-caption fx-rail-caption--foot">SCROLL TO EXPLORE</span>
-            </nav>
-
             {/* Step de botones: texto y botones como piezas que encajan */}
             {puzzle && pzCopy && pzBlock && (
               <div
