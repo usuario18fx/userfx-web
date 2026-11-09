@@ -191,7 +191,7 @@ Your access. Your level.
                   <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-gold text-sky" transition={{ duration: 0.4, ease: EASE }} />
                 )}
                 <span className={`relative ${view === value ? "text-sky" : "opacity-50"}`}>
-                  {value === "stars" ? "Telegram Stars" : "Access window"}
+                  {value === "stars" ? "Telegram Stars" : "Code validity"}
                 </span>
               </button>
             ))}
@@ -246,7 +246,7 @@ Your access. Your level.
                     {price}
                   </motion.span>
                   <p className="opacity-55" style={{ marginTop: 6, fontSize: "clamp(9px, 0.9vw, 12px)", lineHeight: 1.25 }}>
-                    {view === "stars" ? `${plan.window} active access` : `✪ ${plan.stars} Telegram Stars`}
+                    {view === "stars" ? `${plan.window} code validity · ${plan.session}` : `✪ ${plan.stars} Telegram Stars · ${plan.session}`}
                   </p>
                 </div>
                 <details className="group min-w-0" style={{ fontSize: "clamp(9px, 0.85vw, 11px)" }}>
