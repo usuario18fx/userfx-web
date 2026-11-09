@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import Script from "next/script";
 import { ASSET_ORIGIN } from "@/lib/assets";
 import { MotionProvider } from "@/components/FX/Motion";
-import WebChat from "@/components/FX/WebChat";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,7 +31,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         <MotionProvider>
           {children}
         </MotionProvider>
-        <WebChat />
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" />
         </body>
         </html>

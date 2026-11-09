@@ -1,6 +1,7 @@
 import { accessEntryMode } from "../../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../../lib/access-notices.js";
 import { PLAN_DAYS } from "../../lib/access-plans.js";
+import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
 ﻿          import { Telegraf, Markup } from "telegraf";
           import Redis from "ioredis";
           import winston from "winston";
@@ -138,6 +139,34 @@ bot.use(async (ctx, next) => {
   }
   return next();
 });
+
+// One consent-gated chat, shared with the existing Telegram webhook.
+bot.use(async (ctx, next) => {
+  if (ctx.chat?.type === "private" && ctx.from?.id && typeof ctx.message?.text === "string") {
+    try {
+      await appendFxChatMessage(String(ctx.from.id), "user", ctx.message.text, "telegram", "tg-in:" + ctx.update?.update_id);
+    } catch (error) {
+      logger.warn("FX CHAT USER MIRROR FAILED", { message: error?.message || "unknown" });
+    }
+  }
+  return next();
+});
+adminBot.use(async (ctx, next) => {
+  if (!isAdmin(ctx) || !ctx.message?.reply_to_message?.message_id || typeof ctx.message?.text !== "string") return next();
+  const adminChatId = ctx.chat?.id;
+  try {
+    const recipientId = await getFxChatAdminReplyTarget(adminChatId, ctx.message.reply_to_message.message_id);
+    if (!recipientId) return next();
+    const message = ctx.message.text.trim().slice(0, 1000);
+    if (!message) return;
+    await bot.telegram.sendMessage(recipientId, "USER FX SUPPORT:\n" + message);
+    await appendFxChatMessage(recipientId, "support", message, "telegram:admin", "admin-webchat:" + adminChatId + ":" + ctx.message.message_id);
+    return ctx.reply("Reply delivered to web chat and Telegram.");
+  } catch (error) {
+    logger.error("FX WEBCHAT ADMIN REPLY FAILED", { message: error?.message || "unknown" });
+    return ctx.reply("The reply couldn't be delivered.");
+  }
+});
 // ======================================================
 const accessEntryModes = new Map();
 for (const [targetBot, botId] of [[bot, "user"], [adminBot, "admin"]]) {
@@ -219,7 +248,7 @@ function fxSmallCapsSegment(value = "") {
 function fxBotTone(value = "") {
   const text = fxGenZRewrite(value);
 
-  const protectedToken = /(<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})/g;
+  const protectedToken = /(<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4}|FXCHAT-[A-F0-9]{20})/g;
 
   return text
     .split(protectedToken)
@@ -286,7 +315,13 @@ bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
     delete nextPayload.photo;
   }
 
-  return fxOriginalUserCallApi(nextMethod, nextPayload, signal);
+  return fxOriginalUserCallApi(nextMethod, nextPayload, signal).then((result) => {
+    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !nextPayload.text.startsWith("USER FX SUPPORT:")) {
+      void appendFxChatMessage(String(nextPayload.chat_id), "bot", nextPayload.text, "telegram", "tg-bot:" + nextPayload.chat_id + ":" + result?.message_id)
+        .catch((error) => logger.warn("FX CHAT BOT MIRROR FAILED", { message: error?.message || "unknown" }));
+    }
+    return result;
+  });
 };
 // ======================================================
 // TOKEN VALIDATION
@@ -1609,6 +1644,29 @@ async function openGetCodePanel(ctx, source = "ᴛᴇʟᴇɢʀᴀᴍ") {
     await ctx.reply("⚠️ᴜɴᴀʙʟᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.").catch(() => {});
   }
 }
+
+// Website chat linking never grants a paid or SPCL code.
+async function sendFxChatLink(ctx) {
+  if (ctx.chat?.type !== "private" || !ctx.from?.id || String(ctx.chat.id) !== String(ctx.from.id)) {
+    await ctx.reply("Open this command in a private chat with @User18Fx_bot.");
+    return;
+  }
+  try {
+    const code = await issueFxChatLink(ctx.from.id, ctx.chat.id);
+    await ctx.reply(code
+      ? "FX WEB CHAT · ONE-TIME LINK\n\n" + code + "\n\nEnter this code in the USER FX web chat after accepting the terms. Expires in 10 minutes. Keep it private."
+      : "Please wait 15 seconds before requesting another chat link.");
+  } catch (error) {
+    logger.error("FX WEBCHAT LINK FAILED", { message: error?.message || "unknown" });
+    await ctx.reply("Chat linking is temporarily unavailable. Try again.");
+  }
+}
+bot.command("webchat", sendFxChatLink);
+bot.command("stopchat", async (ctx) => {
+  if (ctx.chat?.type !== "private" || !ctx.from?.id) return;
+  await revokeFxChatByTelegram(String(ctx.from.id));
+  await ctx.reply("Website chat sync turned off. Your synced chat history has been cleared.");
+});
 bot.command("getcode", async (ctx) => {
   await openGetCodePanel(ctx, "COMMAND");
 });
@@ -1753,6 +1811,10 @@ async function handleUserStart(ctx) {
       .toLowerCase();
     if (startPayload === "spcl") {
       await openSpclConfirmation(ctx);
+      return;
+    }
+    if (startPayload === "webchat") {
+      await sendFxChatLink(ctx);
       return;
     }
     // TGMX IDENTITY START
@@ -2082,6 +2144,7 @@ bot.on("text", async (ctx, next) => {
       await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
       return;
     }
+    if (await hasFxChatConsent(userId)) return await ctx.reply(fxChatReply(text));
     return await sendMainPanel(ctx);
   } catch (error) {
     logger.error("ᴛᴇxᴛ ʜᴀɴᴅʟᴇʀ ᴇʀʀᴏʀ", {
