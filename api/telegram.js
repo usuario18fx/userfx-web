@@ -1697,7 +1697,7 @@ async function openSpclConfirmation(ctx) {
     { parse_mode: "HTML", reply_markup: buttons.reply_markup }
   );
 }
-bot.action(/^spcl_confirm_(\\d+)$/, async (ctx) => {
+bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
   const requestedId = String(ctx.match?.[1] || "");
   if (!requestedId || requestedId !== String(ctx.from?.id || "")) {
     await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
@@ -1734,7 +1734,7 @@ bot.action(/^spcl_confirm_(\\d+)$/, async (ctx) => {
     await ctx.reply("⚠️ No fue posible verificar SPCL. Inténtalo de nuevo; no se ha concedido acceso.").catch(() => {});
   }
 });
-bot.action(/^spcl_cancel_(\\d+)$/, async (ctx) => {
+bot.action(/^spcl_cancel_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
     await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
     return;
