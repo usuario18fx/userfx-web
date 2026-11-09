@@ -1,3 +1,4 @@
+import { PLAN_DAYS, PLAN_STARS, PLAN_SESSION_LABELS } from "./access-plans.js";
 export const BOT_URL = "https://t.me/User18Fx_bot?start=getcode";
 export const ENTER_URL = "#/private-room-access";
 export const NAV = [
@@ -109,9 +110,9 @@ export const PLANS = [
   { id: "basic",
     name: "Basic",
     prefix: "BSIC",
-    stars: 350,
-    window: "3 days",
-    session: "12-hour session",
+    stars: PLAN_STARS.basic,
+    window: `${PLAN_DAYS.basic} days`,
+    session: PLAN_SESSION_LABELS.basic,
     tagline: "Your first private collection.",
     features: ["BSIC private album", "Camera access and private chat", "Unlimited entries while code is valid", "Personal access code"],
     cta: "Get Basic",
@@ -121,9 +122,9 @@ export const PLANS = [
   { id: "pro",
     name: "Pro",
     prefix: "PRX0",
-    stars: 750,
-    window: "14 days",
-    session: "24-hour session",
+    stars: PLAN_STARS.pro,
+    window: `${PLAN_DAYS.pro} days`,
+    session: PLAN_SESSION_LABELS.pro,
     tagline: "More room for your moment.",
     features: ["PRX0 private album", "Camera and private chat", "Recording and multimedia", "Unlimited entries while code is valid", "Personal access code"],
     cta: "Get Pro",
@@ -133,9 +134,9 @@ export const PLANS = [
   { id: "vip",
     name: "VIP",
     prefix: "VIPX",
-    stars: 1500,
-    window: "30 days",
-    session: "7-day session",
+    stars: PLAN_STARS.vip,
+    window: `${PLAN_DAYS.vip} days`,
+    session: PLAN_SESSION_LABELS.vip,
     tagline: "The full VIP collection.",
     features: ["VIPX private album", "Camera and private chat", "Recording and multimedia", "Exclusive Stage access", "Unlimited entries while code is valid", "Personal access code"],
     cta: "Get VIP",

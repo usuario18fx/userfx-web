@@ -1,12 +1,12 @@
-import { PLAN_DAYS } from "../../lib/access-plans.js";
+import { PLAN_DAYS, PLAN_STARS } from "../../lib/access-plans.js";
           import type { NextApiRequest, NextApiResponse } from "next";
 
           type Data = { invoiceLink?: string; error?: string };
 
           const PRICING: Record<string, { stars: number; days: number; title: string }> = {
-            basic: { stars: 350, days: PLAN_DAYS.basic, title: "BASIC" },
-            pro: { stars: 750, days: PLAN_DAYS.pro, title: "PRO" },
-            vip: { stars: 1500, days: PLAN_DAYS.vip, title: "VIP" },
+            basic: { stars: PLAN_STARS.basic, days: PLAN_DAYS.basic, title: "BASIC" },
+            pro: { stars: PLAN_STARS.pro, days: PLAN_DAYS.pro, title: "PRO" },
+            vip: { stars: PLAN_STARS.vip, days: PLAN_DAYS.vip, title: "VIP" },
           };
 
           export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -18,7 +18,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
             const plan = PRICING[planId || ""];
 
             if (!plan || !planId) {
-              return res.status(400).json({ error: "plan invalido" });
+              return res.status(400).json({ error: "Invalid plan" });
             }
 
             const BOT_TOKEN = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;

@@ -1,3 +1,4 @@
+import { PLAN_SESSION_SECONDS } from "../../lib/access-plans.js";
           import crypto from "crypto";
           import Redis from "ioredis";
 
@@ -8,9 +9,9 @@
           const MAX_ATTEMPTS = 5;
           const WINDOW_SECONDS = 15 * 60;
 
-          const BASIC_SESSION_SECONDS = 12 * 60 * 60;
-          const PRO_SESSION_SECONDS = 24 * 60 * 60;
-          const VIP_SESSION_SECONDS = 7 * 24 * 60 * 60;
+          const BASIC_SESSION_SECONDS = PLAN_SESSION_SECONDS.basic;
+          const PRO_SESSION_SECONDS = PLAN_SESSION_SECONDS.pro;
+          const VIP_SESSION_SECONDS = PLAN_SESSION_SECONDS.vip;
 
           const PREFIX_TO_PLAN = Object.freeze({
             BSIC: "basic",

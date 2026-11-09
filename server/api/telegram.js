@@ -1,6 +1,6 @@
 import { accessEntryMode } from "../../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../../lib/access-notices.js";
-import { PLAN_DAYS } from "../../lib/access-plans.js";
+import { PLAN_DAYS, PLAN_STARS } from "../../lib/access-plans.js";
 import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
 ﻿          import { Telegraf, Markup } from "telegraf";
           import Redis from "ioredis";
@@ -594,9 +594,9 @@ async function releasePaymentClaim(chargeId) {
 // ======================================================
 // PLAN CONSTANTS
 // ======================================================
-const BASIC_STARS_PRICE = 350;
-const PRO_STARS_PRICE = 750;
-const VIP_STARS_PRICE = 1500;
+const BASIC_STARS_PRICE = PLAN_STARS.basic;
+const PRO_STARS_PRICE = PLAN_STARS.pro;
+const VIP_STARS_PRICE = PLAN_STARS.vip;
 const STARS_130_PAYLOAD = "videocall_access_130";
 const STARS_130_PRICE = 130;
 const BASIC_PAYLOAD = "basic";
