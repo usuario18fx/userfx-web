@@ -1879,6 +1879,21 @@ async function handleUserStart(ctx) {
       await sendFxChatLink(ctx);
       return;
     }
+    if (startPayload === "gallery") {
+      await trackButtonClick(ctx, "public_gallery");
+      await openPublicGallery(ctx);
+      return;
+    }
+    if (startPayload === "videocall") {
+      await trackButtonClick(ctx, "website_videocall");
+      await openVideocallFlow(ctx);
+      return;
+    }
+    if (startPayload === "channels") {
+      await trackButtonClick(ctx, "website_channels");
+      await sendChannelsPanel(ctx);
+      return;
+    }
     // TGMX IDENTITY START
     if (startPayload === "identity") {
       await sendIdentityCode(ctx);

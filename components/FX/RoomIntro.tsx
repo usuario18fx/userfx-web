@@ -39,7 +39,6 @@ type Action = { title: string; sub: string; arrow: string; run: () => void };
 // ── Enlaces (cambia aquí a dónde lleva cada botón) ──
 const BOT_URL = "https://t.me/User18Fx_bot";
 const LINKS = {
-  gallery: "#/private-room/gallery", // botón "My gallery"
   gotCode: "#/private-room/gallery", // botón "Got code" (pantalla de username de Telegram)
   multimedia: "#/private-room/gallery", // botón "Multimedia" (enlace a tu galería dentro de priv room)
 } as const;
@@ -265,6 +264,9 @@ export default function RoomIntro() {
 
   // ── Acciones ──
   const openBot = useCallback(() => window.open(BOT_URL, "_blank", "noopener,noreferrer"), []);
+  const openBotCommand = useCallback((command: "gallery" | "getcode" | "videocall" | "channels") => {
+    window.open(BOT_URL + "?start=" + command, "_blank", "noopener,noreferrer");
+  }, []);
   const goHash = useCallback((h: string) => { window.location.hash = h; }, []);
 
   // "Continue": libera el bloque y avanza al siguiente step (o sale de la sección).
@@ -281,29 +283,29 @@ export default function RoomIntro() {
       case "laptop-gallery":
         return [
           { title: "Continue", sub: "Up next: Video Call", arrow: "→", run: advance },
-          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: openBot },
-          { title: "My gallery", sub: "Open my private gallery", arrow: "↗", run: () => goHash(LINKS.gallery) },
+          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: () => openBotCommand("getcode") },
+          { title: "My gallery", sub: "Open the public gallery in Telegram", arrow: "↗", run: () => openBotCommand("gallery") },
         ];
       case "tv-videocall":
         return [
           { title: "Continue", sub: "Up next: Multimedia", arrow: "→", run: advance },
-          { title: "Videocall", sub: "Start a video call in Telegram", arrow: "↗", run: openBot },
-          { title: "Channels", sub: "Browse Telegram channels", arrow: "↗", run: openBot },
+          { title: "Videocall", sub: "Start a video call in Telegram", arrow: "↗", run: () => openBotCommand("videocall") },
+          { title: "Channels", sub: "Browse Telegram channels", arrow: "↗", run: () => openBotCommand("channels") },
         ];
       case "laptop-multimedia":
         return [
           { title: "Continue", sub: "Up next: Stage", arrow: "→", run: advance },
-          { title: "Get code", sub: "Get access through the bot", arrow: "↗", run: openBot },
+          { title: "Get code", sub: "Get access through the bot", arrow: "↗", run: () => openBotCommand("getcode") },
           { title: "Multimedia", sub: "Launch the experience", arrow: "↗", run: () => goHash(LINKS.multimedia) },
         ];
       case "tv-stage":
         return [
           { title: "Keep scrolling", sub: "Explore what's next", arrow: "↓", run: advance },
-          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: openBot },
+          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: () => openBotCommand("getcode") },
           { title: "Got code", sub: "Already have a code? Enter here", arrow: "↗", run: () => goHash(LINKS.gotCode) },
         ];
     }
-  }, [block, advance, openBot, goHash]);
+  }, [block, advance, openBotCommand, goHash]);
 
   // ── Puzzle: se arma al llegar al step de botones y se desarma al salir ──
   const [puzzle, setPuzzle] = useState<{ block: number; phase: "in" | "out" } | null>(null);
