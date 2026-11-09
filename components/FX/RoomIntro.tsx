@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import {
   BLOCKS,
   BLOCK_COUNT,
@@ -603,9 +603,6 @@ SALIR
           </div>
         )}
 
-        <div className="fx-room-intro-progress" aria-hidden="true">
-          <motion.div style={{ scaleX: scrollYProgress }} />
-        </div>
       </div>
     </section>
   );
