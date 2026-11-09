@@ -307,10 +307,10 @@ SEATS
 {isStage ? "No one on camera yet." : "Todo empieza con alguien que se anima."}
 <br />
 <span>
-{isStage ? "The next good conversation starts with you." : "Esta sala está tranquila por ahora. Puedes ser el primero en llegar."}
+{isStage ? "The next good conversation starts with you." : "It's quiet in here. Be the first to show up."}
 </span>
 </p>
-{!isStage && <button type="button" className="ufx-people-enter" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>{status === "pending" ? "Esperando aprobación" : "Entrar ahora"}<Icon name="arrow" size={16} /></button>}
+{!isStage && <button type="button" className="ufx-people-enter" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>{status === "pending" ? "Waiting for approval" : "Join now"}<Icon name="arrow" size={16} /></button>}
 </div>
 }
 </section>
@@ -393,7 +393,7 @@ PRIVATE ACCESS · PERSONAL CONNECTION
   const frameControls = (
 <>
 <div className="ufx-frame-top">
-{!isStage && <button type="button" className="ufx-camera-drag" title="Arrastra para mover · flechas para ajustar · doble clic para centrar" aria-label="Mover cámara" onPointerDown={startCameraDrag} onPointerMove={moveCamera} onPointerUp={stopCameraDrag} onPointerCancel={stopCameraDrag} onLostPointerCapture={stopCameraDrag} onDoubleClick={() => setCameraOffset({ x: 0, y: 0 })} onKeyDown={(event) => {
+{!isStage && <button type="button" className="ufx-camera-drag" title="Drag to move · use arrow keys to adjust · double-click to reset" aria-label="Move camera" onPointerDown={startCameraDrag} onPointerMove={moveCamera} onPointerUp={stopCameraDrag} onPointerCancel={stopCameraDrag} onLostPointerCapture={stopCameraDrag} onDoubleClick={() => setCameraOffset({ x: 0, y: 0 })} onKeyDown={(event) => {
 const steps: Record<string, [number, number]> = { ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16] };
 if (event.key === "Home" || event.key === "Escape") { event.preventDefault(); setCameraOffset({ x: 0, y: 0 }); return; }
 const step = steps[event.key];
@@ -408,7 +408,7 @@ setCameraOffset((current) => ({ x: current.x + Math.max(8 - box.left, Math.min(M
 {isStage ? call.joined ? "ROOMFX LIVE" : stageMain ? "CAMARA PRINCIPAL" : "VISTA DE MUESTRA" : call.joined ? "LIVE CONNECTION" : "PRIVATE SPACE"}
 </span>
 <div className="ufx-frame-actions">
-{!isStage && (cameraOffset.x !== 0 || cameraOffset.y !== 0) && <button type="button" title="Volver a la posición original" aria-label="Restablecer posición de cámara" onClick={() => setCameraOffset({ x: 0, y: 0 })}><Icon name="home" size={16} /></button>}
+{!isStage && (cameraOffset.x !== 0 || cameraOffset.y !== 0) && <button type="button" title="Reset position" aria-label="Reset camera position" onClick={() => setCameraOffset({ x: 0, y: 0 })}><Icon name="home" size={16} /></button>}
 <button type="button" className="ufx-sound-toggle" aria-label={sound.enabled ? "Mute FX-room sounds" : "Enable FX-room sounds"} aria-pressed={sound.enabled} title={sound.enabled ? "FX SOUND · ON" : "FX SOUND · OFF"} onClick={sound.toggle}>
 <span aria-hidden="true">{sound.enabled ? "♪" : "♩"}</span><span>FX SOUND {sound.enabled ? "ON" : "OFF"}</span>
 </button>
@@ -432,7 +432,7 @@ CHAT
 </div>
 </div>
 {!isStage && <div className="ufx-camera-switch" role="group" aria-label="Vista del panel izquierdo">
-<button ref={cameraViewButton} type="button" aria-label="Mostrar cámara" aria-pressed={cameraPanel === "camera"} onClick={() => setCameraPanel("camera")}><Icon name="camera" size={15} /><span>CÁMARA</span></button>
+<button ref={cameraViewButton} type="button" aria-label="Show camera" aria-pressed={cameraPanel === "camera"} onClick={() => setCameraPanel("camera")}><Icon name="camera" size={15} /><span>CAMERA</span></button>
 <button type="button" aria-label="Mostrar usuarios conectados" aria-pressed={cameraPanel === "people"} aria-controls="ufx-connected-people" onClick={() => setCameraPanel("people")}><Icon name="people" size={15} /><span>USUARIOS</span><b>{people.length}</b></button>
 </div>}
 {!isStage && !spotlight && cameraPanel === "camera" && <div className="ufx-camera-signature" aria-hidden="true">USER🜲FX <span>PRIVATE CONNECTION</span></div>}
@@ -644,8 +644,8 @@ YOU'RE IN
 <img className="ufx-stage-poster" src="/assets/userFX.png" alt="" />
 <div className="ufx-stage-welcome-copy">
 <span>NO HAY DOS ENCUENTROS IGUALES</span>
-<h2>La próxima gran charla<br />empieza con un hola.</h2>
-<p>Este escenario está esperando por ti.</p>
+<h2>The next great conversation<br />starts with hello.</h2>
+<p>The stage is yours whenever you're ready.</p>
 </div>
 </div>}
 {frameControls}
@@ -660,7 +660,7 @@ YOU'RE IN
 <div className="ufx-camera-off">
 <Avatar name={spotlight.name} large />
 <h2>{spotlight.name}</h2>
-<p>{!spotlight.cameraOn ? "Su cámara está apagada. La conversación continúa." : call.joined ? "Conectando su cámara…" : "Entra a la sala para ver su cámara."}</p>
+<p>{!spotlight.cameraOn ? "Their camera is off. The conversation keeps going." : call.joined ? "Connecting their camera…" : "Join the room to see their camera."}</p>
 </div>
  :
 <div className="ufx-scene">
@@ -699,17 +699,17 @@ at home.
 {isStage && !call.joined && <button type="button" className="ufx-primary" style={{ position: "absolute", bottom: 16, right: 16, zIndex: 5 }} disabled={!approved || call.connecting} onClick={() => { if (!admin.requestFeature("camera")) setPreview(true); }}><Icon name="camera" size={16} /> IR A LA VISTA PREVIA</button>}
 {!isStage && frameControls}
 {!isStage && cameraPanel === "people" && <section id="ufx-connected-people" className="ufx-connected-panel" aria-label="Usuarios conectados">
-<div className="ufx-connected-heading"><span>EN ESTA SALA</span><p>Elige a alguien para ver su cámara.</p></div>
+<div className="ufx-connected-heading"><span>IN THIS ROOM</span><p>Choose someone to view their camera.</p></div>
 {people.length ? <div className="ufx-connected-grid">
 {people.map((person) => {
 const stream = person.id === profile.id ? call.localStream : call.remoteStreams[person.id];
-return <button key={person.id} type="button" className={person.id === selected ? "is-selected" : ""} aria-label={`Ver cámara de ${person.name}`} onClick={() => { setSelected(person.id); setCameraPanel("camera"); cameraViewButton.current?.focus(); }}>
+return <button key={person.id} type="button" className={person.id === selected ? "is-selected" : ""} aria-label={`View camera of ${person.name}`} onClick={() => { setSelected(person.id); setCameraPanel("camera"); cameraViewButton.current?.focus(); }}>
 <span className="ufx-connected-visual">{stream && person.cameraOn ? <VideoStream stream={stream} mirrored={person.id === profile.id} /> : <Avatar name={person.name} />}</span>
-<span className="ufx-connected-copy"><strong>{person.name}{person.id === profile.id ? " · TÚ" : ""}</strong><small><i className={person.cameraOn ? "is-live" : ""} />{person.cameraOn ? "CÁMARA ON" : "CÁMARA OFF"}</small></span>
+<span className="ufx-connected-copy"><strong>{person.name}{person.id === profile.id ? " · YOU" : ""}</strong><small><i className={person.cameraOn ? "is-live" : ""} />{person.cameraOn ? "CAMERA ON" : "CAMERA OFF"}</small></span>
 <Icon name="arrow" size={15} />
 </button>;
 })}
-</div> : <div className="ufx-connected-empty"><Icon name="people" size={27} /><h2>El próximo encuentro empieza contigo.</h2><p>Los usuarios conectados aparecerán aquí.</p></div>}
+</div> : <div className="ufx-connected-empty"><Icon name="people" size={27} /><h2>The next meetup starts with you.</h2><p>People who join will appear here.</p></div>}
 </section>}
 {!isStage && cameraPanel === "camera" && spotlight &&
 <div className="ufx-frame-bottom">
@@ -724,7 +724,7 @@ return <button key={person.id} type="button" className={person.id === selected ?
 }
 </div>
 {!isStage && <div className="ufx-call-toolbar">
-{isStage && !call.joined && <div className="ufx-stage-ready"><Icon name="camera" /><strong>¿Listo para aparecer?</strong></div>}
+{isStage && !call.joined && <div className="ufx-stage-ready"><Icon name="camera" /><strong>Ready to go live?</strong></div>}
 <div className={isStage && !call.joined ? "ufx-stage-idle-media" : undefined}>
 <button type="button" className={call.micOn ? "is-on" : ""} disabled={!call.joined} aria-pressed={call.micOn} onClick={() => void call.toggleMedia("audio")}>
 <Icon name="mic" />
@@ -771,18 +771,18 @@ LEAVE
     <Icon name="people" size={22} /><span>USUARIOS<small>CONECTADOS · {people.length}</small></span>
   </button>
   <button type="button" onClick={() => { window.location.hash = "#/private-room/buzon"; }}>
-    <Icon name="inbox" size={22} /><span>BUZÓN<small>MENSAJES</small></span>
+    <Icon name="inbox" size={22} /><span>INBOX<small>MESSAGES</small></span>
   </button>
   <button type="button" onClick={() => { window.location.hash = "#/private-room/gallery"; }}>
-    <Icon name="gallery" size={22} /><span>MULTIMEDIA<small>ÁLBUMES COMPARTIDOS</small></span>
+    <Icon name="gallery" size={22} /><span>MULTIMEDIA<small>SHARED ALBUMS</small></span>
   </button>
   <button type="button" disabled={!!working || call.connecting || !state || status === "pending" || status === "rejected"} onClick={() => { if (admin.requestFeature("camera")) return; if (approved) setPreview(true); else void requestEntrance(); }}>
-    <Icon name="camera" size={22} /><span>ON CAM<small>{call.joined ? "TRANSMISIÓN ACTIVA" : approved ? "PREPARAR CÁMARA" : status === "pending" ? "SOLICITUD PENDIENTE" : "SOLICITAR ENTRADA"}</small></span>
+    <Icon name="camera" size={22} /><span>ON CAM<small>{call.joined ? "LIVE NOW" : approved ? "SET UP CAMERA" : status === "pending" ? "REQUEST PENDING" : "REQUEST TO JOIN"}</small></span>
   </button>
 </nav>}
 </div>
 {isStage && <>
-<p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Tu cámara, bajo tu control.</strong> Comprueba la vista previa antes de entrar. Puedes apagar cámara y micrófono cuando quieras.</span></p>
+<p className="ufx-stage-privacy"><Icon name="shield" size={17} /><span><strong>Your camera. Your call.</strong> Check your preview before joining. Turn your camera or mic off whenever you want.</span></p>
 {stageSeats}
 </>}
 {soundBlocked &&
@@ -949,7 +949,7 @@ INTERESTS · SEPARATE WITH COMMAS
 <input type="url" maxLength={1000} placeholder="https://…" value={draft.coverUrl} onChange={(event) => setDraft((current) => ({ ...current, coverUrl: event.target.value }))} />
 </label>
 </div>
-<p>Usa enlaces públicos a tus imágenes. Solo se muestran dentro de tu sala a invitados aprobados.</p>
+<p>Use public links to your images. They're only shown to approved guests in your room.</p>
 </details>
 <div className="ufx-profile-privacy">
 <label className="ufx-profile-visibility">

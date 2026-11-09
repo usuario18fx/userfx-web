@@ -102,7 +102,7 @@ export default function FxChat() {
       setMessages(fresh.messages || []);
       setLinkCode("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Código inválido o caducado");
+      setError(e instanceof Error ? e.message : "Invalid or expired code");
     } finally {
       setBusy(false);
     }
@@ -126,7 +126,7 @@ export default function FxChat() {
   }
 
   async function disconnect() {
-    if (busy || !window.confirm("¿Desvincular Telegram y borrar el historial web sincronizado?")) return;
+    if (busy || !window.confirm("Disconnect Telegram and clear synced web chat history?")) return;
     setBusy(true);
     try {
       await callChat("DELETE");
@@ -156,31 +156,31 @@ export default function FxChat() {
             <div className="fx-web-chat-header-mark">FX</div>
             <div className="fx-web-chat-heading">
               <strong>USER FX</strong>
-              <small>{linked ? "BOT + TELEGRAM CONECTADOS" : "CHAT · TELEGRAM"}</small>
+              <small>{linked ? "BOT + TELEGRAM CONNECTED" : "CHAT · TELEGRAM"}</small>
             </div>
-            <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Cerrar chat">×</button>
+            <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </header>
           {loading ? (
-            <div className="fx-web-chat-center" role="status">Conectando…</div>
+            <div className="fx-web-chat-center" role="status">Connecting…</div>
           ) : !linked ? (
             <div className="fx-web-chat-gate">
-              <strong>Conecta tu Telegram</strong>
-              <p>Habla con el bot desde esta página y recibe respuestas también en Telegram. Debes vincular tu cuenta y aceptar las condiciones.</p>
-              <div className="fx-web-chat-paths" aria-label="Dos formas de obtener tu código">
+              <strong>Connect your Telegram</strong>
+              <p>Chat here and keep the conversation synced with Telegram. Link your account and accept the terms first.</p>
+              <div className="fx-web-chat-paths" aria-label="Two ways to get your code">
                 <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
-                  <small>VÍA 01 · TELEGRAM STARS</small>
-                  <strong>OBTENER CÓDIGO</strong>
-                  <span>Pago real y entrega segura en Telegram</span>
+                  <small>OPTION 01 · TELEGRAM STARS</small>
+                  <strong>GET A CODE</strong>
+                  <span>Secure checkout and delivery through Telegram</span>
                 </a>
                 <div>
-                  <small>VÍA 02 · CHAT WEB</small>
-                  <strong>HABLAR CON FX</strong>
-                  <span>Chat real sincronizado tras vincular tu cuenta</span>
+                  <small>OPTION 02 · WEB CHAT</small>
+                  <strong>CHAT WITH FX</strong>
+                  <span>Live chat synced once your account is linked</span>
                 </div>
               </div>
               <label className="fx-web-chat-consent">
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-                <span>Acepto la sincronización entre la web y Telegram, el almacenamiento de hasta 100 mensajes durante 30 días y el uso de mi identidad de Telegram para esta conversación. Puedo revocar el permiso cuando quiera. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Condiciones del chat</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacidad</a>.</span>
+                <span>I agree to sync this chat with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
               </label>
               <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")}
                 href={accepted ? BOT_LINK : undefined}
@@ -188,35 +188,35 @@ export default function FxChat() {
                 rel="noopener noreferrer"
                 aria-disabled={!accepted}
                 onClick={(e) => { if (!accepted) e.preventDefault(); }}>
-                1. ABRIR @USER18FX_BOT
+                1. OPEN @USER18FX_BOT
               </a>
-              <p className="fx-web-chat-steps">Pulsa INICIAR en Telegram. El bot te enviará un código temporal FXCHAT, válido por 10 minutos.</p>
+              <p className="fx-web-chat-steps">Tap START in Telegram to get a temporary FXCHAT code, valid for 10 minutes.</p>
               <form onSubmit={handleLink} className="fx-web-chat-link-form">
-                <input type="text" value={linkCode} onChange={(e) => setLinkCode(e.target.value.toUpperCase())} placeholder="FXCHAT-..." maxLength={27} aria-label="Código de vinculación" autoComplete="off" spellCheck={false} />
-                <button type="submit" disabled={!accepted || busy || linkCode.trim().length < 27}>2. VINCULAR</button>
+                <input type="text" value={linkCode} onChange={(e) => setLinkCode(e.target.value.toUpperCase())} placeholder="FXCHAT-..." maxLength={27} aria-label="Link code" autoComplete="off" spellCheck={false} />
+                <button type="submit" disabled={!accepted || busy || linkCode.trim().length < 27}>2. LINK ACCOUNT</button>
               </form>
             </div>
           ) : (
             <>
               <div className="fx-web-chat-message-list" ref={scroll} role="log" aria-live="polite" aria-relevant="additions">
                 {messages.length === 0 && (
-                  <p className="fx-web-chat-empty">Conexión verificada. Escribe para consultar planes, códigos o contactar con soporte.</p>
+                  <p className="fx-web-chat-empty">Connected. Ask about plans, access codes, or support.</p>
                 )}
                 {messages.map((msg) => (
                   <div key={msg.id} className={"fx-web-chat-bubble " + (msg.role === "user" ? "is-user" : "is-bot")}>
-                    <span className="fx-web-chat-author">{msg.role === "user" ? "TÚ" : msg.role === "support" ? "SOPORTE USER FX" : "FX BOT"}</span>
+                    <span className="fx-web-chat-author">{msg.role === "user" ? "YOU" : msg.role === "support" ? "USER FX SUPPORT" : "FX BOT"}</span>
                     <p>{msg.text}</p>
                     <time dateTime={msg.at}>{clock(msg.at)}</time>
                   </div>
                 ))}
               </div>
               <form className="fx-web-chat-compose" onSubmit={handleSend}>
-                <input type="text" aria-label="Escribir mensaje" placeholder="Escribe tu mensaje…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
-                <button type="submit" disabled={busy || !draft.trim()} aria-label="Enviar mensaje">➤</button>
+                <input type="text" aria-label="Type a message" placeholder="Type a message…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
+                <button type="submit" disabled={busy || !draft.trim()} aria-label="Send message">➤</button>
               </form>
               <div className="fx-web-chat-bottom">
-                <span>Mensajes sincronizados · No compartas códigos privados</span>
-                <button type="button" onClick={disconnect} disabled={busy}>Desvincular</button>
+                <span>Messages are synced · Keep your private codes safe</span>
+                <button type="button" onClick={disconnect} disabled={busy}>Disconnect</button>
               </div>
             </>
           )}

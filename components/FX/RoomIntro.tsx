@@ -46,9 +46,9 @@ const LINKS = {
 
 // ── Intro (steps 0..2) ──
 const INTRO = [
-  { title: "WELCOME", accent: "MY ROOM",  sub: "A PRIVATE WORLD AWAITS",  body: "Comienza el recorrido. Cada paso revela una parte de USER FX." },
-  { title: "THE",     accent: "CORRIDOR", sub: "THE JOURNEY CONTINUES",   body: "Un pasillo de arte, reflejos y luz cálida conduce a tu habitación." },
-  { title: "ENTER",   accent: "MY ROOM",  sub: "WELCOME TO YOUR SPACE",   body: "Deja atrás el pasillo y descubre el interior de MY ROOM." },
+  { title: "WELCOME", accent: "MY ROOM",  sub: "A PRIVATE WORLD AWAITS",  body: "Start exploring. Every step reveals a new side of USER FX." },
+  { title: "THE",     accent: "CORRIDOR", sub: "THE JOURNEY CONTINUES",   body: "An art-filled hallway, warm lights, and the next step into your private world." },
+  { title: "ENTER",   accent: "MY ROOM",  sub: "WELCOME TO YOUR SPACE",   body: "Leave the hallway behind. Welcome to MY ROOM." },
 ] as const;
 
 // ── Contenido de cada bloque (se muestra en su último step, el de botones) ──
@@ -56,31 +56,31 @@ const COPY: Record<BlockId, { short: string; badge: string; title: ReactNode; su
   "laptop-gallery": {
     short: "GALLERY",
     badge: "01  PUBLIC ARCHIVE / LAPTOP 01",
-    title: <>Mis fotos<br />públicas.</>,
-    subtitle: "Una selección editorial abierta. Cambia de fotografía, amplía la imagen o continúa hacia la siguiente habitación.",
+    title: <>My photos<br />on display.</>,
+    subtitle: "Explore the collection. Switch photos, zoom in, or keep moving through the room.",
   },
   "tv-videocall": {
     short: "VIDEOCALL",
     badge: "02  ONE TO ONE / TV 01",
     title: <>ᴊᴜsᴛ 𝕐𝕆𝕌<br />🜲ᴀɴᴅ 𝕄𝔼</>,
-    subtitle: "La cámara se traslada a la cama y mira hacia la pantalla. Las videollamadas y los canales se gestionan directamente desde Telegram.",
+    subtitle: "Get closer. Video calls and private channels are handled directly through Telegram.",
   },
   "laptop-multimedia": {
     short: "MULTIMEDIA",
-    badge: "03  OTRA EXPERIENCIA / LAPTOP 01",
+    badge: "03  NEXT EXPERIENCE / LAPTOP 01",
     title: <>ᴄᴏᴍᴍᴜɴɪᴛʏ<br />𝕄𝔼𝔻𝕀𝔸</>,
-    subtitle: "Otra experiencia inmersiva para explorar contenido adicional dentro del recorrido.",
+    subtitle: "A whole new angle. More visuals, more to explore.",
   },
   "tv-stage": {
     short: "STAGE",
     badge: "04  LIVE STAGE / TV 01",
     title: <>The room<br />is your 𝕊𝕋𝔸𝔾𝔼.</>,
-    subtitle: "El recorrido termina frente a la pantalla principal, donde la pasarela se vuelve el foco.",
+    subtitle: "The final stop puts the spotlight on the main screen and the live stage.",
   },
 };
 
 const STEP_LABEL = (key: string, kind: string) =>
-  kind === "focus" ? "ENFOQUE" : kind === "lock" ? "OPCIONES" : key.endsWith("-a") ? "ÁNGULO A" : "ÁNGULO B";
+  kind === "focus" ? "FOCUS" : kind === "lock" ? "OPTIONS" : key.endsWith("-a") ? "ANGLE A" : "ANGLE B";
 
 // Puzzle: desde dónde llega cada pieza (x, y en px · rotación en grados · retardo de entrada / salida en s · z)
 const pv = (x: number, y: number, r: number, d: number, dOut: number, z: number, kx = 50): CSSProperties =>
@@ -267,7 +267,7 @@ export default function RoomIntro() {
   const openBot = useCallback(() => window.open(BOT_URL, "_blank", "noopener,noreferrer"), []);
   const goHash = useCallback((h: string) => { window.location.hash = h; }, []);
 
-  // "Continuar": libera el bloque y avanza al siguiente step (o sale de la sección).
+  // "Continue": libera el bloque y avanza al siguiente step (o sale de la sección).
   const advance = useCallback(() => {
     if (!block) return;
     unlock(blockIdx + 1);
@@ -280,27 +280,27 @@ export default function RoomIntro() {
     switch (block.id) {
       case "laptop-gallery":
         return [
-          { title: "Continuar", sub: "Seguir hacia Videocall", arrow: "→", run: advance },
-          { title: "Get code", sub: "Solicitarlo en el bot de Telegram", arrow: "↗", run: openBot },
-          { title: "My gallery", sub: "Abrir mi galería privada", arrow: "↗", run: () => goHash(LINKS.gallery) },
+          { title: "Continue", sub: "Up next: Video Call", arrow: "→", run: advance },
+          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: openBot },
+          { title: "My gallery", sub: "Open my private gallery", arrow: "↗", run: () => goHash(LINKS.gallery) },
         ];
       case "tv-videocall":
         return [
-          { title: "Continuar", sub: "Seguir hacia Multimedia", arrow: "→", run: advance },
-          { title: "Videocall", sub: "Abrir videollamada en mi bot", arrow: "↗", run: openBot },
-          { title: "Channels", sub: "Consultar canales en Telegram", arrow: "↗", run: openBot },
+          { title: "Continue", sub: "Up next: Multimedia", arrow: "→", run: advance },
+          { title: "Videocall", sub: "Start a video call in Telegram", arrow: "↗", run: openBot },
+          { title: "Channels", sub: "Browse Telegram channels", arrow: "↗", run: openBot },
         ];
       case "laptop-multimedia":
         return [
-          { title: "Continuar", sub: "Seguir hacia Stage", arrow: "→", run: advance },
-          { title: "Get code", sub: "Solicitar acceso en el bot", arrow: "↗", run: openBot },
-          { title: "Multimedia", sub: "Reproducir experiencia", arrow: "↗", run: () => goHash(LINKS.multimedia) },
+          { title: "Continue", sub: "Up next: Stage", arrow: "→", run: advance },
+          { title: "Get code", sub: "Get access through the bot", arrow: "↗", run: openBot },
+          { title: "Multimedia", sub: "Launch the experience", arrow: "↗", run: () => goHash(LINKS.multimedia) },
         ];
       case "tv-stage":
         return [
-          { title: "Continuar scroll", sub: "Seguir bajando", arrow: "↓", run: advance },
-          { title: "Get code", sub: "Solicitarlo en el bot de Telegram", arrow: "↗", run: openBot },
-          { title: "Got code", sub: "Ya tengo mi código · abrir acceso", arrow: "↗", run: () => goHash(LINKS.gotCode) },
+          { title: "Keep scrolling", sub: "Explore what's next", arrow: "↓", run: advance },
+          { title: "Get code", sub: "Get your code from the Telegram bot", arrow: "↗", run: openBot },
+          { title: "Got code", sub: "Already have a code? Enter here", arrow: "↗", run: () => goHash(LINKS.gotCode) },
         ];
     }
   }, [block, advance, openBot, goHash]);
@@ -522,14 +522,14 @@ Pantalla completa
                 <aside className="fx-pz-menu">
                   <div className="fx-piece fx-piece--knob fx-piece--head" style={pv(130, -70, 7, 0.05, 0.3, 8, 72)}>
                     <span>
-SELECCIONA UNA OPCIÓN
+CHOOSE YOUR NEXT MOVE
 </span>
                     <span className="fx-menu-counter">
                       {String(pzBlock.number).padStart(2, "0")} / {String(BLOCK_COUNT).padStart(2, "0")}
                     </span>
                     <span className="fx-lock-chip">
                       <LockIcon />
-                      {pzLocked ? "SCROLL BLOQUEADO" : "SCROLL LIBRE"}
+                      {pzLocked ? "SCROLL LOCKED" : "FREE SCROLL"}
                     </span>
                   </div>
                   {pzList.map((a, i) => (
@@ -564,20 +564,20 @@ SELECCIONA UNA OPCIÓN
               <LockIcon />
               <span>
                 <strong>
-Presiona un botón para continuar
+Choose an option to keep going
 </strong>
-                <small>¿Deseas avanzar? Elige «{actions[0]?.title ?? "Continuar"}»</small>
+                <small>Ready for what's next? Select “{actions[0]?.title ?? "Continue"}”</small>
               </span>
             </div>
 
             <div className="fx-footer-controls">
               {locked ? (
                 <span className="is-locked-text">
-SCROLL BLOQUEADO · PULSA CONTINUAR
+SCROLL LOCKED · SELECT CONTINUE
 </span>
               ) : (
                 <span>
-SCROLL PARA AVANZAR
+SCROLL TO EXPLORE
 </span>
               )}
               {isLockStep && (
@@ -590,10 +590,10 @@ SCROLL PARA AVANZAR
 </kbd>
 <kbd>
 3
-</kbd> PARA ELEGIR</span>
+</kbd> TO SELECT</span>
                   <span><kbd>
 ↵
-</kbd> CONTINUAR</span>
+</kbd> CONTINUE</span>
                 </>
               )}
             </div>

@@ -6,19 +6,19 @@ import { EASE } from "@/lib/motion";
 const ACCENT = "#6fb8c8";
 const COLUMNS = [
   { title: "Spaces", links: [
-    { label: "MyRoom", href: "#/myroom" },
-    { label: "Stage", href: "#/stage" },
-    { label: "Gallery", href: "#/gallery" },
-    { label: "Buzón", href: "#/buzon" },
+    { label: "MyRoom", href: "#/private-room" },
+    { label: "Stage", href: "#/private-room/stage" },
+    { label: "Gallery", href: "#/private-room/gallery" },
+    { label: "Inbox", href: "#/private-room/buzon" },
   ] },
   { title: "Access", links: [
-    { label: "Get my code", href: "#/get-code" },
-    { label: "Enter a code", href: "#/enter-code" },
-    { label: "Compare access", href: "#/compare" },
+    { label: "Get my code", href: "https://t.me/User18Fx_bot?start=getcode" },
+    { label: "Enter a code", href: "#/private-room-access" },
+    { label: "Compare access", href: "#access" },
   ] },
   { title: "Support", links: [
-    { label: "Questions", href: "#/faq" },
-    { label: "Contact", href: "#/contact" },
+    { label: "Questions", href: "#faq" },
+    { label: "Contact", href: "https://t.me/User18fx" },
     { label: "Privacy", href: "/privacy" },
   ] },
 ] as const;
@@ -43,7 +43,7 @@ function TelegramSignIn() {
         setConfigured(Boolean(data.configured));
         if (data.authenticated && data.user) setUser(data.user as TelegramUser);
       })
-      .catch(() => { if (active) setError("No fue posible verificar la sesión."); })
+      .catch(() => { if (active) setError("Couldn't verify your session. Try again."); })
       .finally(() => { if (active) setReady(true); });
     return () => { active = false; };
   }, []);
@@ -64,11 +64,11 @@ function TelegramSignIn() {
         });
         const result = await response.json();
         if (!response.ok || !result.authenticated) {
-          throw new Error(result.error || "No se pudo verificar tu cuenta de Telegram.");
+          throw new Error(result.error || "We couldn't verify your Telegram account.");
         }
         setUser(result.user as TelegramUser);
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : "Error de autenticación.");
+        setError(reason instanceof Error ? reason.message : "Couldn't sign in. Try again.");
       } finally {
         setBusy(false);
       }
@@ -82,7 +82,7 @@ function TelegramSignIn() {
     script.setAttribute("data-userpic", "false");
     script.setAttribute("data-radius", "6");
     script.setAttribute("data-onauth", "userFxTelegramAuth(user)");
-    script.onerror = () => setError("El botón de Telegram no pudo cargarse.");
+    script.onerror = () => setError("Telegram sign-in couldn't load.");
     element.appendChild(script);
     return () => {
       delete w.userFxTelegramAuth;
@@ -97,10 +97,10 @@ function TelegramSignIn() {
       const response = await fetch("/api/telegram-auth", {
         method: "DELETE", credentials: "same-origin",
       });
-      if (!response.ok) throw new Error("No se pudo cerrar sesión.");
+      if (!response.ok) throw new Error("Couldn't sign out. Try again.");
       setUser(null);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Error al cerrar sesión.");
+      setError(reason instanceof Error ? reason.message : "Something went wrong while signing out.");
     } finally {
       setBusy(false);
     }
@@ -119,7 +119,7 @@ function TelegramSignIn() {
         Your private <span className="text-white/40">identity.</span>
       </h2>
       <p className="mt-4 text-sm leading-relaxed text-white/55">
-        Inicia sesión con Telegram para conectar tu identidad con USER FX.
+        Sign in with Telegram to connect your identity to USER FX.
       </p>
       <div className="mt-8 rounded-2xl border border-[#6fb8c8]/25 bg-white/[.035] p-5 backdrop-blur-md">
         <div className="mb-4 flex items-center gap-3">
@@ -128,26 +128,26 @@ function TelegramSignIn() {
           </span>
           <div>
             <p className="text-sm font-semibold text-white">Telegram · USER FX</p>
-            <p className="mt-1 text-xs text-white/45">{user ? "Identidad verificada" : "Acceso seguro con tu cuenta"}</p>
+            <p className="mt-1 text-xs text-white/45">{user ? "Identity verified" : "Secure access with your account"}</p>
           </div>
         </div>
         {user ? (
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <p className="text-sm text-[#91d5e6]">{user.username ? `@${user.username}` : user.first_name || "Telegram conectado"}</p>
-            <button type="button" onClick={() => void logout()} disabled={busy} className="rounded-lg border border-white/20 px-4 py-2 text-xs text-white/75 transition-colors hover:border-white/50 hover:text-white disabled:opacity-50">Cerrar sesión</button>
+            <p className="text-sm text-[#91d5e6]">{user.username ? `@${user.username}` : user.first_name || "Telegram connected"}</p>
+            <button type="button" onClick={() => void logout()} disabled={busy} className="rounded-lg border border-white/20 px-4 py-2 text-xs text-white/75 transition-colors hover:border-white/50 hover:text-white disabled:opacity-50">Sign out</button>
           </div>
         ) : (
           <div className="border-t border-white/10 pt-4">
-            {!ready && <p className="text-xs text-white/45">Comprobando sesión…</p>}
-            {ready && configured && <div ref={mount} className="min-h-[44px]" aria-label="Iniciar sesión con Telegram" />}
-            {ready && !configured && <p className="text-xs text-amber-200/80">El inicio de sesión necesita configurar TELEGRAM_BOT_TOKEN en el servidor.</p>}
-            <a href="https://t.me/User18Fx_bot" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs text-[#91d5e6] transition-colors hover:text-white">Abrir @User18Fx_bot <span aria-hidden="true">↗</span></a>
+            {!ready && <p className="text-xs text-white/45">Checking your session…</p>}
+            {ready && configured && <div ref={mount} className="min-h-[44px]" aria-label="Sign in with Telegram" />}
+            {ready && !configured && <p className="text-xs text-amber-200/80">Telegram sign-in isn't configured yet. Set TELEGRAM_BOT_TOKEN on the server.</p>}
+            <a href="https://t.me/User18Fx_bot" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs text-[#91d5e6] transition-colors hover:text-white">Open @User18Fx_bot <span aria-hidden="true">↗</span></a>
           </div>
         )}
-        {busy && <p className="mt-3 text-xs text-white/55" role="status">Verificando con Telegram…</p>}
+        {busy && <p className="mt-3 text-xs text-white/55" role="status">Verifying with Telegram…</p>}
         {error && <p className="mt-3 text-xs text-red-300" role="alert">{error}</p>}
       </div>
-      <p className="mt-3 pl-1 text-xs text-white/35">La sesión verifica tu identidad; el acceso privado sigue requiriendo un código válido.</p>
+      <p className="mt-3 pl-1 text-xs text-white/35">Signing in confirms your identity. Private access still requires a valid code.</p>
     </div>
   );
 }
