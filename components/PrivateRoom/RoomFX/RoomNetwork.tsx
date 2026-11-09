@@ -522,7 +522,7 @@ Your rules.
 PRIVATE INVITATIONS
 </span>
 <h2>
-Your Buzón
+Your Inbox
 </h2>
 </div>
 <span>

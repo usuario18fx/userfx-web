@@ -95,27 +95,27 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(""); }
   }
-  const hostName = ownerProfile?.name || ownerName || "Tu sala";
+  const hostName = ownerProfile?.name || ownerName || "Your room";
   function cancelPost() {
     setText(""); setImageUrl(""); setImagePreview(""); setImagePreviewError(false); setImageFieldsOpen(false); setError("");
     composer.current?.querySelector("textarea")?.focus();
   }
   return (
 <section className="ufx-feed ufx-feed-premium" aria-labelledby="ufx-feed-title">
-<header className="ufx-room-profile" aria-label="Perfil del anfitrión">
+<header className="ufx-room-profile" aria-label="Host profile">
 <div className="ufx-room-cover">
-{approved && ownerProfile?.coverUrl && <img key={ownerProfile.coverUrl} src={ownerProfile.coverUrl} alt={`Portada de ${hostName}`} referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />}
+{approved && ownerProfile?.coverUrl && <img key={ownerProfile.coverUrl} src={ownerProfile.coverUrl} alt={`Cover of ${hostName}`} referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />}
 <span className="ufx-room-cover-mark" aria-hidden="true">USER🜲FX</span>
 </div>
 <div className="ufx-room-profile-main">
 <Avatar name={hostName} large src={approved ? ownerProfile?.avatarUrl : undefined} />
-{isOwner && <button type="button" className="ufx-room-edit-profile" onClick={onEdit}><Icon name="profile" size={14} /> Editar perfil</button>}
-<div className="ufx-room-profile-copy"><h2>{hostName}</h2><span><Icon name="shield" size={12} /> MYROOM · CÍRCULO PRIVADO</span>{approved && ownerProfile?.bio && <p>{ownerProfile.bio}</p>}{approved && ownerProfile?.location && <small><Icon name="home" size={12} /> {ownerProfile.location}</small>}</div>
+{isOwner && <button type="button" className="ufx-room-edit-profile" onClick={onEdit}><Icon name="profile" size={14} /> Edit profile</button>}
+<div className="ufx-room-profile-copy"><h2>{hostName}</h2><span><Icon name="shield" size={12} /> MYROOM · PRIVATE CIRCLE</span>{approved && ownerProfile?.bio && <p>{ownerProfile.bio}</p>}{approved && ownerProfile?.location && <small><Icon name="home" size={12} /> {ownerProfile.location}</small>}</div>
 </div>
 </header>
 <div className="ufx-section-head ufx-feed-heading ufx-wall-heading">
-<div><small className="ufx-feed-eyebrow">LA SALA HABLA ✦</small><h2 id="ufx-feed-title">EL MURO</h2><span>Lo que pasa aquí, se queda aquí.</span></div>
-<div className="ufx-feed-tally"><span className="ufx-wall-live" aria-hidden="true" /><span className="ufx-feed-count" aria-label={`${posts.length} publicaciones`}>{loading ? "…" : posts.length}</span><small>PUBLICACIONES</small></div>
+<div><small className="ufx-feed-eyebrow">ROOM TALK ✦</small><h2 id="ufx-feed-title">THE WALL</h2><span>What happens here, stays here.</span></div>
+<div className="ufx-feed-tally"><span className="ufx-wall-live" aria-hidden="true" /><span className="ufx-feed-count" aria-label={`${posts.length} posts`}>{loading ? "…" : posts.length}</span><small>POSTS</small></div>
 </div>
 <div className="ufx-feed-body">
 {(error || loadError) &&
@@ -128,31 +128,31 @@ export default function RoomFeed({ client, roomId, profile, approved, isOwner, o
 <Avatar name={profile.name} src={profile.avatarUrl} />
 <form className="ufx-post-compose" onSubmit={(event) => void publish(event)}>
 <div>
-<div className="ufx-compose-caption"><span>TU TURNO ✦</span></div>
+<div className="ufx-compose-caption"><span>YOUR TURN ✦</span></div>
 <label htmlFor="ufx-new-post">
-PUBLICACIÓN
+POST
 </label>
-<textarea id="ufx-new-post" rows={3} maxLength={2000} placeholder="Di algo que valga la pena leer…" value={text} onChange={(event) => setText(event.target.value)} disabled={busy} />
+<textarea id="ufx-new-post" rows={3} maxLength={2000} placeholder="Say something worth sharing…" value={text} onChange={(event) => setText(event.target.value)} disabled={busy} />
 {imageFieldsOpen && <div id="ufx-wall-image-fields">
 <label htmlFor="ufx-post-image" className="ufx-image-label">
-ENLACE DE IMAGEN · OPCIONAL
+IMAGE LINK · OPTIONAL
 </label>
 <div className="ufx-image-input-row">
 <input id="ufx-post-image" type="url" maxLength={1000} placeholder="https://…" value={imageUrl} onChange={(event) => { setImageUrl(event.target.value); setImagePreview(""); setImagePreviewError(false); }} disabled={busy} />
-<button type="button" className="ufx-image-preview-button" onClick={previewImage} disabled={busy || !imageUrl.trim()}><Icon name="gallery" size={15} /> Ver imagen</button>
+<button type="button" className="ufx-image-preview-button" onClick={previewImage} disabled={busy || !imageUrl.trim()}><Icon name="gallery" size={15} /> Preview image</button>
 </div>
-{imagePreview && <figure className="ufx-image-preview"><img key={imagePreview} src={imagePreview} alt="Vista previa de la imagen de tu publicación" referrerPolicy="no-referrer" onError={() => { setImagePreview(""); setImagePreviewError(true); }} /><figcaption><Icon name="gallery" size={13} /> Vista previa</figcaption></figure>}
-{imagePreviewError && <p className="ufx-warning" role="status">No se pudo mostrar la imagen. Revisa que el enlace sea público, HTTPS y lleve a una imagen.</p>}
+{imagePreview && <figure className="ufx-image-preview"><img key={imagePreview} src={imagePreview} alt="Preview of your post image" referrerPolicy="no-referrer" onError={() => { setImagePreview(""); setImagePreviewError(true); }} /><figcaption><Icon name="gallery" size={13} /> Preview</figcaption></figure>}
+{imagePreviewError && <p className="ufx-warning" role="status">Couldn't load the image. Make sure the link is public, HTTPS, and points to an image.</p>}
 <p className="ufx-image-note">
-Usa un enlace público HTTPS a una imagen.
+Use a public HTTPS image link.
 </p>
 </div>}
 <footer>
-<button type="button" className="ufx-wall-image-toggle" aria-expanded={imageFieldsOpen} aria-controls="ufx-wall-image-fields" onClick={() => setImageFieldsOpen((current) => !current)} disabled={busy}><Icon name="gallery" size={14} /> Imagen{imageUrl.trim() && <i aria-label="Imagen añadida" />}</button>
-<span className="ufx-compose-length"><meter min={0} max={2000} value={text.length} aria-label="Caracteres de la publicación" /><span>{text.length} / 2000</span></span>
-<button type="button" className="ufx-wall-cancel" onClick={cancelPost} disabled={busy}>Cancelar</button>
+<button type="button" className="ufx-wall-image-toggle" aria-expanded={imageFieldsOpen} aria-controls="ufx-wall-image-fields" onClick={() => setImageFieldsOpen((current) => !current)} disabled={busy}><Icon name="gallery" size={14} /> Image{imageUrl.trim() && <i aria-label="Image added" />}</button>
+<span className="ufx-compose-length"><meter min={0} max={2000} value={text.length} aria-label="Post character count" /><span>{text.length} / 2000</span></span>
+<button type="button" className="ufx-wall-cancel" onClick={cancelPost} disabled={busy}>Cancel</button>
 <button type="submit" className="ufx-primary" disabled={!text.trim() || busy}>
-{working === "publish" ? "PUBLICANDO…" : "PUBLICAR"}
+{working === "publish" ? "POSTING…" : "POST"}
 <Icon name="arrow" size={15} />
 </button>
 </footer>
@@ -160,7 +160,7 @@ Usa un enlace público HTTPS a una imagen.
 </form>
 </div>
 }
-{approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Las publicaciones del anfitrión aparecen aquí.</span></div>}
+{approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Las posts del anfitrión aparecen aquí.</span></div>}
 {!approved ?
 <div className="ufx-feed-empty">
 <Icon name="shield" size={25} />
@@ -179,12 +179,12 @@ Opening the feed…
 <div className="ufx-feed-empty">
 <div className="ufx-feed-empty-art" aria-hidden="true"><span><Icon name="gallery" size={22} /></span><span><Icon name="inbox" size={27} /></span><i /></div>
 <h3>
-El muro está en blanco
+Nothing on the wall yet
 </h3>
 <p>
-{isOwner ? "Una foto, una idea o ese momento que merece quedarse." : "La próxima publicación del anfitrión aparecerá aquí."}
+{isOwner ? "A photo, an idea, or a moment worth keeping." : "Your host's next post will show up here."}
 </p>
-{isOwner && <button type="button" className="ufx-feed-first-post" onClick={openComposer}><Icon name="inbox" size={15} /> Crear publicación <Icon name="arrow" size={14} /></button>}
+{isOwner && <button type="button" className="ufx-feed-first-post" onClick={openComposer}><Icon name="inbox" size={15} /> Create a post <Icon name="arrow" size={14} /></button>}
 </div>
  : posts.map((post) => (
 <article key={post.id} className="ufx-post">
@@ -199,7 +199,7 @@ El muro está en blanco
 </time>
 </div>
 <span>
-ANFITRIÓN
+HOST
 </span>
 {isOwner &&
 <button type="button" disabled={busy} aria-label="Delete post" onClick={() => void remove(post.id)}>

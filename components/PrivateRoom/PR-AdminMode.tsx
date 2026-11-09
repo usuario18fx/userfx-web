@@ -8,7 +8,7 @@ type Scope = "membership" | "myroom" | "stage" | "gallery" | "buzon" | "profiles
 type Prefix = "SPCL" | "VIPX" | "PRX0" | "BSIC";
 type Status = { ownerEligible: boolean; mode: "user" | "admin"; email?: string; linked?: boolean; googleEnabled?: boolean };
 type Member = { username: string; name: string; avatarUrl?: string; active: boolean; grants: Partial<Record<Scope, { prefix: Prefix; expiresAt: string | null }>> };
-const LABELS: Record<Scope, string> = { membership: "Membresía", myroom: "MyRoom", stage: "Stage", gallery: "Gallery", buzon: "Buzón", profiles: "Perfiles", camera: "OnCam", chat: "Chat" };
+const LABELS: Record<Scope, string> = { membership: "Membership", myroom: "MyRoom", stage: "Stage", gallery: "Gallery", buzon: "Inbox", profiles: "Profiles", camera: "OnCam", chat: "Chat" };
 const initial: Status = { ownerEligible: false, mode: "user" };
 const AdminContext = createContext<Status & { revealed: boolean; revealSwitch: () => boolean; requestFeature: (scope: Scope) => boolean; login: () => void; userMode: () => Promise<void> }>({ ...initial, revealed: false, revealSwitch: () => false, requestFeature: (_scope: Scope) => false, login: () => {}, userMode: async () => {} });
 export const useAdminMode = () => useContext(AdminContext);
@@ -16,7 +16,7 @@ async function request<T>(op: string, body?: unknown, signal?: AbortSignal): Pro
   const response = await fetch(`/api/admin-runtime?op=${op}`, { method: body ? "POST" : "GET", credentials: "same-origin", cache: "no-store", signal,
     headers: { Accept: "application/json", ...(body ? { "Content-Type": "application/json" } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw Object.assign(new Error(data.error || "No se pudo completar la acción."), { status: response.status });
+  if (!response.ok) throw Object.assign(new Error(data.error || "Couldn't complete that action."), { status: response.status });
   return data;
 }
 
@@ -40,7 +40,7 @@ export function AdminModeProvider({ children }: { children: ReactNode }) {
     const params = new URLSearchParams(window.location.search);
     if (params.has("admin")) {
       setRevealed(true);
-      if (params.get("admin") === "error") setNotice("No se completó Google. Vuelve a iniciar sesión.");
+      if (params.get("admin") === "error") setNotice("Google sign-in didn't finish. Please try again.");
       params.delete("admin");
       const search = params.toString();
       window.history.replaceState({}, "", `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`);
@@ -70,7 +70,7 @@ export function AdminModeProvider({ children }: { children: ReactNode }) {
 export function AdminModeSwitch() {
   const admin = useAdminMode();
   if (!admin.ownerEligible || !admin.revealed) return null;
-  return <div className="pvr-admin-switch" role="group" aria-label="Modo de plataforma">
+  return <div className="pvr-admin-switch" role="group" aria-label="Platform mode">
     <button type="button" aria-pressed={admin.mode === "user"} onClick={() => { if (admin.mode !== "user") void admin.userMode(); }}>USER</button>
     <button type="button" aria-pressed={admin.mode === "admin"} onClick={() => { if (admin.mode !== "admin") admin.login(); }}><Icon name="shield" size={12} />ADMIN</button>
   </div>;
@@ -80,7 +80,7 @@ function AdminDialog({ title, onClose, children, login = false, signup = false }
   const previous = useRef(document.activeElement as HTMLElement | null);
   useEffect(() => { ref.current?.showModal(); return () => previous.current?.focus(); }, []);
   const content = <>
-    <header><span>USER FX · ADMIN</span><button type="button" aria-label="Cerrar" onClick={onClose}><Icon name="close" /></button></header>
+    <header><span>USER FX · ADMIN</span><button type="button" aria-label="Close" onClick={onClose}><Icon name="close" /></button></header>
     <h2 id="pvr-admin-title">{title}</h2>
     {children}
   </>;
@@ -108,14 +108,14 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
     try { const data = await request<{ url: string }>("admin-google", {}); window.location.assign(data.url); }
     catch (cause) { setError((cause as Error).message); setWorking(false); }
   }
-  return <AdminDialog login signup={signup} title={signup ? "Crear acceso Admin" : "ADMIN"} onClose={onClose}>
-    <p className="pvr-admin-caption">@User18Fx · Tu plataforma, tus controles.</p>
+  return <AdminDialog login signup={signup} title={signup ? "Create admin access" : "ADMIN"} onClose={onClose}>
+    <p className="pvr-admin-caption">@User18Fx · Your platform. Your controls.</p>
     <form onSubmit={submit}>
-      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Correo</span><AdminLoginFieldIcon kind="email" /><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Contraseña</span><AdminLoginFieldIcon kind="password" /><input type="password" placeholder="Password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
-      {confirmation && <p className="pvr-admin-success" role="status">Revisa tu correo, confirma el acceso y vuelve a iniciar sesión.</p>}
+      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Email</span><AdminLoginFieldIcon kind="email" /><input autoFocus type="email" placeholder="Email" autoComplete="username" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+      <label className="pvr-admin-login-field"><span className="pvr-admin-login-label">Password</span><AdminLoginFieldIcon kind="password" /><input type="password" placeholder="Password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 12 : 1} maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+      {confirmation && <p className="pvr-admin-success" role="status">Check your email, confirm access, then sign in again.</p>}
       {error && <p className="pvr-admin-error" role="alert">{error}</p>}
-      <button type="submit" className="pvr-admin-primary" disabled={working}>{working ? "Verificando…" : signup ? "Crear acceso" : "Login"}</button>
+      <button type="submit" className="pvr-admin-primary" disabled={working}>{working ? "Verifying…" : signup ? "Create access" : "Login"}</button>
     </form>
     <button type="button" className="pvr-admin-google" disabled={working || !status.googleEnabled} onClick={() => void google()}>
       <svg className="pvr-admin-google-icon" viewBox="-3 0 262 262" aria-hidden="true">
@@ -126,8 +126,8 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
       </svg>
       Sign in with Google
     </button>
-    {!status.googleEnabled && <p className="pvr-admin-caption">Google pendiente de activación.</p>}
-    {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Ya tengo acceso · Iniciar sesión" : "Primera vez · Crear acceso"}</button>}
+    {!status.googleEnabled && <p className="pvr-admin-caption">Google sign-in isn't available yet.</p>}
+    {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Already have access · Sign in" : "Primera vez · Create access"}</button>}
   </AdminDialog>;
 }
 function AdminLoginFieldIcon({ kind }: { kind: "email" | "password" }) {
@@ -175,27 +175,27 @@ function AdminBenefits({ scope, onClose, onExpired }: { scope: Scope; onClose: (
     finally { setSaving(false); }
   }
   const level = prefix ? ACCESS_LEVELS[prefix] : null;
-  return <AdminDialog title={`Beneficios · ${LABELS[scope]}`} onClose={onClose}>
+  return <AdminDialog title={`Benefits · ${LABELS[scope]}`} onClose={onClose}>
     {!selected ? <>
-      <label className="pvr-admin-search">Buscar usuario<div><span>@</span><input autoFocus type="search" autoComplete="off" maxLength={33} placeholder="usuario" value={query} onChange={(event) => setQuery(event.target.value)} /></div></label>
+      <label className="pvr-admin-search">Find a user<div><span>@</span><input autoFocus type="search" autoComplete="off" maxLength={33} placeholder="username" value={query} onChange={(event) => setQuery(event.target.value)} /></div></label>
       <div className="pvr-admin-users" aria-live="polite">
-        {loading ? <p>Buscando…</p> : users.map((member) => <button type="button" key={member.username} disabled={!member.active} onClick={() => { setSelected(member); const grant = member.grants[scope]; setPrefix(grant && (grant.expiresAt === null || Date.parse(grant.expiresAt) > Date.now()) ? grant.prefix : null); }}>
-          <Avatar name={member.name} src={member.avatarUrl} /><span><strong>{member.name}</strong><small>@{member.username}{!member.active ? " · identidad inactiva" : ""}</small></span><Icon name="arrow" size={16} />
+        {loading ? <p>Searching…</p> : users.map((member) => <button type="button" key={member.username} disabled={!member.active} onClick={() => { setSelected(member); const grant = member.grants[scope]; setPrefix(grant && (grant.expiresAt === null || Date.parse(grant.expiresAt) > Date.now()) ? grant.prefix : null); }}>
+          <Avatar name={member.name} src={member.avatarUrl} /><span><strong>{member.name}</strong><small>@{member.username}{!member.active ? " · identity inactive" : ""}</small></span><Icon name="arrow" size={16} />
         </button>)}
-        {!loading && query.replace(/^@/, "").length >= 3 && !users.length && !error && <p>No hay coincidencias. Busca su usuario de Telegram.</p>}
-        {!query && <p>Escribe al menos tres letras para encontrar un usuario.</p>}
+        {!loading && query.replace(/^@/, "").length >= 3 && !users.length && !error && <p>No hay coincidencias. Busca su username de Telegram.</p>}
+        {!query && <p>Escribe al menos tres letras para encontrar un username.</p>}
       </div>
     </> : <>
-      <div className="pvr-admin-selected"><Avatar name={selected.name} src={selected.avatarUrl} /><span><strong>{selected.name}</strong><small>@{selected.username}</small></span><button type="button" disabled={saving} onClick={() => { setSelected(null); setPrefix(null); setSaved(false); }}>Cambiar</button></div>
-      <div className="pvr-admin-levels" role="group" aria-label="Prefijo y beneficios">
+      <div className="pvr-admin-selected"><Avatar name={selected.name} src={selected.avatarUrl} /><span><strong>{selected.name}</strong><small>@{selected.username}</small></span><button type="button" disabled={saving} onClick={() => { setSelected(null); setPrefix(null); setSaved(false); }}>Change</button></div>
+      <div className="pvr-admin-levels" role="group" aria-label="Code prefix and benefits">
         {(["SPCL", "VIPX", "PRX0", "BSIC"] as Prefix[]).map((value) => <button key={value} type="button" className={`pvr-admin-level pvr-admin-level--${value.toLowerCase()}`} aria-label={`${ACCESS_LEVELS[value].label} · ${value}`} aria-pressed={prefix === value} disabled={saving} onClick={() => { setPrefix(value); setSaved(false); }}>
           <span className="pvr-admin-orb" aria-hidden="true"><PrefixIcon prefix={value} /></span><strong>{value}</strong>
         </button>)}
       </div>
-      <div className="pvr-admin-benefit-summary" aria-live="polite"><strong>{prefix ? `${LABELS[scope]} · ${prefix}` : "Elige un prefijo"}</strong><p>{prefix ? benefitDescription(prefix, scope) : "Selecciona el nivel que quieres asignar."}</p>{level && <small>{level.days ? `${level.duration} desde la asignación` : level.duration}</small>}</div>
-      {scope === "membership" && <p className="pvr-admin-caption">Las asignaciones de cada sección prevalecen sobre la membresía.</p>}
-      {saved && <p className="pvr-admin-success" role="status"><Icon name="check" size={16} /> Beneficios guardados para @{selected.username}.</p>}
-      <button type="button" className="pvr-admin-primary" disabled={!prefix || saving || saved} onClick={() => void save()}>{saving ? "GUARDANDO…" : saved ? "GUARDADO" : "GUARDAR BENEFICIOS"}</button>
+      <div className="pvr-admin-benefit-summary" aria-live="polite"><strong>{prefix ? `${LABELS[scope]} · ${prefix}` : "Choose a prefix"}</strong><p>{prefix ? benefitDescription(prefix, scope) : "Select the access level to assign."}</p>{level && <small>{level.days ? `${level.duration} from assignment` : level.duration}</small>}</div>
+      {scope === "membership" && <p className="pvr-admin-caption">Section-specific access overrides membership access.</p>}
+      {saved && <p className="pvr-admin-success" role="status"><Icon name="check" size={16} /> Benefits saved for @{selected.username}.</p>}
+      <button type="button" className="pvr-admin-primary" disabled={!prefix || saving || saved} onClick={() => void save()}>{saving ? "SAVING…" : saved ? "SAVED" : "SAVE BENEFITS"}</button>
     </>}
     {error && <p className="pvr-admin-error" role="alert">{error}</p>}
   </AdminDialog>;
