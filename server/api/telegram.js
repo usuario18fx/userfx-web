@@ -670,6 +670,10 @@ const BTN_TELEGRAM = "💬 ᴛᴇʟᴇɢʀᴀᴍ";
 const BTN_CANCEL = "✖ ᴄᴀɴᴄᴇʟ";
 const BTN_BACK_MENU = "↽ ʙᴀᴄᴋ";
 const BTN_GALLERY = "📸 ɢᴀʟʟᴇʀʏ";
+const BTN_GALLERY_PREV = "❮ ᴘʀᴇᴠ";
+const BTN_GALLERY_NEXT = "ɴᴇxᴛ ❯";
+const BTN_GALLERY_CLOSE = "✕ ᴄʟᴏꜱᴇ";
+const PUBLIC_GALLERY_SESSION_SECONDS = 60 * 60;
 const PUBLIC_GALLERY_PHOTOS = Array.from({ length: 7 }, (_, i) => `${ASSETS_BASE_URL}/album/PRVW/PRVW-${String(i + 1).padStart(2, "0")}.jpg`);
 const BTN_SMOKELANDIA = "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ";
 const BTN_USERFX_SITE = "𝐔𝐬ᴇʀ 🜲∓ҳ";
@@ -1191,37 +1195,91 @@ function getChannelsKeyboard() {
 }
 function getPublicGalleryCaption(index) {
   return [
-    `📸 USER FX · PUBLIC GALLERY · ${index + 1}/${PUBLIC_GALLERY_PHOTOS.length}`,
+    "📸 USER FX · PUBLIC GALLERY",
     "Toronto, Canada",
     "Official page: User18fx.com",
+    "",
+    String(index + 1) + " / " + String(PUBLIC_GALLERY_PHOTOS.length),
   ].join("\n");
 }
-function publicGalleryKeyboard(index) {
-  const total = PUBLIC_GALLERY_PHOTOS.length;
-  return { inline_keyboard: [
-    [{ text: "❮ ᴘʀᴇᴠ", callback_data: `public_gallery:${(index - 1 + total) % total}` },
-     { text: `${index + 1} / ${total}`, callback_data: "public_gallery:counter" },
-     { text: "ɴᴇxᴛ ❯", callback_data: `public_gallery:${(index + 1) % total}` }],
-    [{ text: "✕ ᴄʟᴏꜱᴇ", callback_data: "public_gallery:close" }],
-  ] };
+function getPublicGalleryKeyboard() {
+  return Markup.keyboard([
+    [BTN_GALLERY_PREV, BTN_GALLERY_NEXT],
+    [BTN_GALLERY_CLOSE],
+  ]).resize();
 }
-bot.action(/^public_gallery:(\d+|counter|close)$/, async (ctx) => {
-  const action = ctx.match[1];
+function getPublicGallerySessionKey(ctx) {
+  return CODE_ENGINE_NAMESPACE + ":public-gallery:" + ctx.chat.id + ":" + ctx.from.id;
+}
+async function openPublicGallery(ctx) {
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("Gallery is temporarily unavailable. Please try again.", getMainKeyboard());
+  const key = getPublicGallerySessionKey(ctx);
+  let previous = null;
   try {
-    if (action === "counter") return await ctx.answerCbQuery();
-    if (action === "close") {
-      await ctx.answerCbQuery();
-      return await ctx.deleteMessage().catch(() => {});
-    }
-    const index = Number(action);
-    if (!Number.isInteger(index) || index < 0 || index >= PUBLIC_GALLERY_PHOTOS.length) return await ctx.answerCbQuery("Invalid photo");
-    await ctx.editMessageMedia({ type: "photo", media: PUBLIC_GALLERY_PHOTOS[index], caption: getPublicGalleryCaption(index) }, { reply_markup: publicGalleryKeyboard(index) });
-    await ctx.answerCbQuery();
+    const raw = await client.get(key);
+    if (raw) previous = JSON.parse(raw);
   } catch (error) {
-    logger.error("PUBLIC GALLERY ERROR", getTelegramError(error));
-    await ctx.answerCbQuery("Please try again").catch(() => {});
+    logger.warn("PUBLIC GALLERY SESSION READ FAILED", { message: error?.message });
   }
-});
+  const sent = await ctx.replyWithPhoto(PUBLIC_GALLERY_PHOTOS[0], {
+    caption: getPublicGalleryCaption(0),
+    reply_markup: getPublicGalleryKeyboard().reply_markup,
+  });
+  try {
+    await client.set(key, JSON.stringify({ index: 0, messageId: sent.message_id }), "EX", PUBLIC_GALLERY_SESSION_SECONDS);
+  } catch (error) {
+    logger.error("PUBLIC GALLERY SESSION SAVE FAILED", { message: error?.message });
+    await ctx.telegram.deleteMessage(ctx.chat.id, sent.message_id).catch(() => {});
+    return ctx.reply("Gallery is temporarily unavailable. Please try again.", getMainKeyboard());
+  }
+  if (Number.isInteger(previous?.messageId) && previous.messageId !== sent.message_id) {
+    await ctx.telegram.deleteMessage(ctx.chat.id, previous.messageId).catch(() => {});
+  }
+  return sent;
+}
+async function handlePublicGalleryNavigation(ctx, action) {
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("Gallery is temporarily unavailable. Please try again.", getMainKeyboard());
+  const key = getPublicGallerySessionKey(ctx);
+  const lock = key + ":lock";
+  let locked = false;
+  try {
+    locked = await client.set(lock, "1", "EX", 10, "NX") === "OK";
+    if (!locked) {
+      await ctx.deleteMessage().catch(() => {});
+      return;
+    }
+    const raw = await client.get(key);
+    let session = null;
+    try { session = raw ? JSON.parse(raw) : null; } catch {}
+    if (!session || !Number.isInteger(session.messageId) || !Number.isInteger(session.index)) {
+      await ctx.deleteMessage().catch(() => {});
+      return ctx.reply("Gallery session expired. Tap GALLERY to open it again.", getMainKeyboard());
+    }
+    if (action === BTN_GALLERY_CLOSE) {
+      await client.del(key);
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.telegram.deleteMessage(ctx.chat.id, session.messageId).catch(() => {});
+      return ctx.reply("Gallery closed.", getMainKeyboard());
+    }
+    const delta = action === BTN_GALLERY_NEXT ? 1 : -1;
+    const index = (session.index + delta + PUBLIC_GALLERY_PHOTOS.length) % PUBLIC_GALLERY_PHOTOS.length;
+    await ctx.telegram.editMessageMedia(ctx.chat.id, session.messageId, undefined, {
+      type: "photo",
+      media: PUBLIC_GALLERY_PHOTOS[index],
+      caption: getPublicGalleryCaption(index),
+    });
+    await client.set(key, JSON.stringify({ messageId: session.messageId, index }), "EX", PUBLIC_GALLERY_SESSION_SECONDS);
+    await ctx.deleteMessage().catch(() => {});
+  } catch (error) {
+    logger.error("PUBLIC GALLERY NAVIGATION FAILED", getTelegramError(error));
+    await ctx.deleteMessage().catch(() => {});
+    await ctx.reply("Couldn't switch photos. Tap GALLERY to reopen.", getMainKeyboard()).catch(() => {});
+  } finally {
+    if (locked) await client.del(lock).catch(() => {});
+  }
+}
 //// ACCESS STATE //
 function tierRank(tier) {
   if (tier === TIER_VIP) return 3;
@@ -1667,6 +1725,10 @@ bot.command("stopchat", async (ctx) => {
   await revokeFxChatByTelegram(String(ctx.from.id));
   await ctx.reply("Website chat sync turned off. Your synced chat history has been cleared.");
 });
+bot.command("gallery", async (ctx) => {
+  await trackButtonClick(ctx, "public_gallery");
+  return openPublicGallery(ctx);
+});
 bot.command("getcode", async (ctx) => {
   await openGetCodePanel(ctx, "COMMAND");
 });
@@ -2042,6 +2104,10 @@ bot.on("text", async (ctx, next) => {
       await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
       return;
     }
+    //// PUBLIC GALLERY KEYBOARD ////
+    if ([BTN_GALLERY_PREV, BTN_GALLERY_NEXT, BTN_GALLERY_CLOSE].includes(text)) {
+      return await handlePublicGalleryNavigation(ctx, text);
+    }
     //// GET CODE //
     if (text === BTN_GET_CODE) {
       return await openGetCodePanel(ctx, "ʙᴜᴛᴛᴏɴ");
@@ -2079,10 +2145,7 @@ bot.on("text", async (ctx, next) => {
     //// PUBLIC GALLERY //
     if (text === BTN_GALLERY) {
       await trackButtonClick(ctx, "public_gallery");
-      return await ctx.replyWithPhoto(PUBLIC_GALLERY_PHOTOS[0], {
-        caption: getPublicGalleryCaption(0),
-        reply_markup: publicGalleryKeyboard(0),
-      });
+      return await openPublicGallery(ctx);
     }
     //// CHANNELS //
     if (text === BTN_CHANNELS) {
