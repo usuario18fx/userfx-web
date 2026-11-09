@@ -497,7 +497,7 @@ Pantalla completa
 
             {/* Navegación cinematográfica por capítulos, sin la columna de 12 puntos. */}
             <nav className="fx-step-rail" aria-label="Capítulos del recorrido">
-              <span className="fx-rail-caption">EXPLORE / 03</span>
+              <span className="fx-rail-caption">EXPLORE / {String(BLOCKS.length).padStart(2, "0")}</span>
               {BLOCKS.map((b, i) => (
                 <button
                   key={b.id}
