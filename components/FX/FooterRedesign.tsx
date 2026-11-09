@@ -1,5 +1,5 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
 
@@ -22,32 +22,89 @@ const COLUMNS = [
     { label: "Privacy", href: "/privacy" },
   ] },
 ] as const;
-type Status = "idle" | "loading" | "success" | "error";
+type TelegramUser = { id: string; first_name: string; username: string };
+type TelegramPayload = TelegramUser & { auth_date: number; hash: string; last_name?: string; photo_url?: string };
+type TelegramWindow = Window & { userFxTelegramAuth?: (data: TelegramPayload) => void };
 
-function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
+function TelegramSignIn() {
+  const mount = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<TelegramUser | null>(null);
+  const [ready, setReady] = useState(false);
+  const [configured, setConfigured] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-      setStatus("error");
-      return;
-    }
-    setStatus("loading");
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/telegram-auth", { cache: "no-store", credentials: "same-origin" })
+      .then(r => r.json())
+      .then(data => {
+        if (!active) return;
+        setConfigured(Boolean(data.configured));
+        if (data.authenticated && data.user) setUser(data.user as TelegramUser);
+      })
+      .catch(() => { if (active) setError("No fue posible verificar la sesión."); })
+      .finally(() => { if (active) setReady(true); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!ready || !configured || user || !mount.current) return;
+    const element = mount.current;
+    const w = window as TelegramWindow;
+    w.userFxTelegramAuth = async (data: TelegramPayload) => {
+      setBusy(true);
+      setError("");
+      try {
+        const response = await fetch("/api/telegram-auth", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.authenticated) {
+          throw new Error(result.error || "No se pudo verificar tu cuenta de Telegram.");
+        }
+        setUser(result.user as TelegramUser);
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : "Error de autenticación.");
+      } finally {
+        setBusy(false);
+      }
+    };
+    element.replaceChildren();
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://telegram.org/js/telegram-widget.js?22";
+    script.setAttribute("data-telegram-login", "User18Fx_bot");
+    script.setAttribute("data-size", "large");
+    script.setAttribute("data-userpic", "false");
+    script.setAttribute("data-radius", "6");
+    script.setAttribute("data-onauth", "userFxTelegramAuth(user)");
+    script.onerror = () => setError("El botón de Telegram no pudo cargarse.");
+    element.appendChild(script);
+    return () => {
+      delete w.userFxTelegramAuth;
+      element.replaceChildren();
+    };
+  }, [ready, configured, user]);
+
+  async function logout() {
+    setBusy(true);
+    setError("");
     try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+      const response = await fetch("/api/telegram-auth", {
+        method: "DELETE", credentials: "same-origin",
       });
-      if (!res.ok) throw new Error("Subscription unavailable");
-      setStatus("success");
-      setEmail("");
-    } catch {
-      setStatus("error");
+      if (!response.ok) throw new Error("No se pudo cerrar sesión.");
+      setUser(null);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Error al cerrar sesión.");
+    } finally {
+      setBusy(false);
     }
-  };
+  }
 
   return (
     <div className="max-w-md">
@@ -59,22 +116,38 @@ function Newsletter() {
         The Inner Circle
       </p>
       <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white md:text-5xl">
-        A private <span className="text-white/40">signal.</span>
+        Your private <span className="text-white/40">identity.</span>
       </h2>
-      <p className="mt-4 text-sm leading-relaxed text-white/55">Occasional updates from UserFX. No noise.</p>
-      <form onSubmit={submit} noValidate className="mt-8">
-        <label htmlFor="footer-email" className="sr-only">Email address</label>
-        <div className={`group flex items-center rounded-full border bg-white/[.03] p-1.5 pl-5 backdrop-blur-md transition-colors duration-300 focus-within:bg-white/[.06] ${status === "error" ? "border-red-400/60" : "border-white/10 focus-within:border-white/30"}`}>
-          <input id="footer-email" type="email" inputMode="email" autoComplete="email" placeholder="you@domain.com" value={email} disabled={status === "loading"} aria-invalid={status === "error"} aria-describedby="footer-email-msg" onChange={(e) => { setEmail(e.target.value); if (status !== "idle") setStatus("idle"); }} className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none disabled:opacity-50" />
-          <button type="submit" disabled={status === "loading"} className="flex h-11 shrink-0 items-center gap-2 rounded-full px-5 text-xs font-semibold text-[#06141a] transition-all duration-300 hover:brightness-110 active:scale-95 disabled:opacity-60" style={{ background: ACCENT }}>
-            {status === "loading" ? "Sending…" : "Subscribe"}
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 10 10 2M4 2h6v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
+      <p className="mt-4 text-sm leading-relaxed text-white/55">
+        Inicia sesión con Telegram para conectar tu identidad con USER FX.
+      </p>
+      <div className="mt-8 rounded-2xl border border-[#6fb8c8]/25 bg-white/[.035] p-5 backdrop-blur-md">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#6fb8c8]/30 bg-[#6fb8c8]/10">
+            <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" fill="#73bed2"><path d="m21.4 4.6-3.2 15.1c-.2 1.1-.9 1.4-1.8.9l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.3l-11.2 7-4.8-1.5c-1-.3-1-1 .2-1.5L19.9 3c.9-.4 1.8.2 1.5 1.6Z"/></svg>
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-white">Telegram · USER FX</p>
+            <p className="mt-1 text-xs text-white/45">{user ? "Identidad verificada" : "Acceso seguro con tu cuenta"}</p>
+          </div>
         </div>
-        <p id="footer-email-msg" role="status" aria-live="polite" className={`mt-3 pl-5 text-xs ${status === "error" ? "text-red-300" : status === "success" ? "text-[#6fb8c8]" : "text-white/35"}`}>
-          {status === "error" ? "Please enter a valid email, or try again later." : status === "success" ? "Subscribed successfully." : "No spam. Unsubscribe anytime."}
-        </p>
-      </form>
+        {user ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+            <p className="text-sm text-[#91d5e6]">{user.username ? `@${user.username}` : user.first_name || "Telegram conectado"}</p>
+            <button type="button" onClick={() => void logout()} disabled={busy} className="rounded-lg border border-white/20 px-4 py-2 text-xs text-white/75 transition-colors hover:border-white/50 hover:text-white disabled:opacity-50">Cerrar sesión</button>
+          </div>
+        ) : (
+          <div className="border-t border-white/10 pt-4">
+            {!ready && <p className="text-xs text-white/45">Comprobando sesión…</p>}
+            {ready && configured && <div ref={mount} className="min-h-[44px]" aria-label="Iniciar sesión con Telegram" />}
+            {ready && !configured && <p className="text-xs text-amber-200/80">El inicio de sesión necesita configurar TELEGRAM_BOT_TOKEN en el servidor.</p>}
+            <a href="https://t.me/User18Fx_bot" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs text-[#91d5e6] transition-colors hover:text-white">Abrir @User18Fx_bot <span aria-hidden="true">↗</span></a>
+          </div>
+        )}
+        {busy && <p className="mt-3 text-xs text-white/55" role="status">Verificando con Telegram…</p>}
+        {error && <p className="mt-3 text-xs text-red-300" role="alert">{error}</p>}
+      </div>
+      <p className="mt-3 pl-1 text-xs text-white/35">La sesión verifica tu identidad; el acceso privado sigue requiriendo un código válido.</p>
     </div>
   );
 }
@@ -85,7 +158,7 @@ export default function SiteFooter() {
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-0 h-[480px] w-[480px] rounded-full opacity-[.12] blur-[120px]" style={{ background: ACCENT }} />
       <div className="relative mx-auto w-full max-w-[1440px] px-6 pb-10 pt-20 md:px-10 md:pt-28">
         <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease: EASE }} className="grid gap-16 lg:grid-cols-[1.2fr_1fr]">
-          <Newsletter />
+          <TelegramSignIn />
           <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3">
             {COLUMNS.map((col) => (
               <div key={col.title}>
