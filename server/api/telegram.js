@@ -43,7 +43,7 @@ import { createClient } from "@supabase/supabase-js";
            * Example:
            * https://t.me/User18Fx_bot?startapp=vault
            */
-          const TELEGRAM_MINI_APP_URL = process.env.TELEGRAM_MINI_APP_URL || USERFX_SITE_URL.replace(/\/$/, "");
+          const TELEGRAM_MINI_APP_URL = process.env.TELEGRAM_MINI_APP_URL || `${USERFX_SITE_URL.replace(/\/$/, "")}/vault`;
           const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
           const MAX_BODY_BYTES = 1024 * 1024;
           const PAYMENT_TTL_SECONDS = 60 * 60 * 24 * 365;
