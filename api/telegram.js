@@ -1327,9 +1327,9 @@ async function openVideocallFlow(ctx) {
     };
     await setVideoRequest(userId, request);
     await ctx.reply(
-      `ʜᴏʟᴅ ᴜᴘ...
-          ᴄᴀɴ ɪ ꜱᴇᴇ ᴡʜᴀᴛ ʏᴏᴜ ʟᴏᴏᴋ ʟɪᴋᴇ ғɪʀꜱᴛ👀
-          ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ᴏᴠᴇʀ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ.`,
+      `Hold up...
+I'm down to video call with you, but lemme grab some water real quick. Gimme 2 mins and I'll send you the link.
+Wanna swap pics in the meantime?`,
                 getPendingPhotoKeyboard(),
               );
               await adminBot.telegram.sendMessage(
