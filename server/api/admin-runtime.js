@@ -1,11 +1,11 @@
-import { readVaultSession } from "../../lib/vault-session.js";
 import crypto from "crypto";
 import Redis from "ioredis";
+import { createAdminAccessHandler } from "../../lib/admin-access.js";
 
 const REDIS_URL = process.env.REDIS_URL;
 const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
 const SESSION_COOKIE = "userfx_vault_session";
-const ADMIN_USER_ID = String(process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || "").trim();
+const ADMIN_USER_ID = String(process.env.ADMIN_USER_ID || "").trim();
 const GALLERY_VISIBLE_KEY = `${CODE_ENGINE_NAMESPACE}:runtime:gallery-visible`;
 const STAGE_STATE_KEY = `${CODE_ENGINE_NAMESPACE}:runtime:stage`;
 const GALLERY_PRESENCE_PREFIX = `${CODE_ENGINE_NAMESPACE}:presence:gallery:`;
@@ -137,7 +137,10 @@ async function readRuntime(redis) {
   };
 }
 
+const adminAccess = createAdminAccessHandler({ getRedis });
 export default async function handler(req, res) {
+  const query = req.query || Object.fromEntries(new URL(req.url || "/api/admin-runtime", "http://localhost").searchParams);
+  if (String(query.op || "").startsWith("admin-")) return adminAccess(req, res);
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
 
@@ -148,7 +151,7 @@ export default async function handler(req, res) {
 
   try {
     const redis = getRedis();
-    const session = await readVaultSession(req);
+    const session = await readSession(redis, req);
 
     if (!session) {
       return res.status(401).json({
@@ -165,10 +168,6 @@ export default async function handler(req, res) {
       const action = String(body.action || "");
       const accountKey = String(session.accountId || session.telegramUserId || "anonymous");
 
-      if ((action === "gallery-heartbeat" && !session.features.multimedia) || (action === "stage-heartbeat" && !session.features.stage)) {
-        return res.status(403).json({ ok: false, error: "feature_not_allowed" });
-      }
-
       if (action === "gallery-heartbeat") {
         await redis.set(`${GALLERY_PRESENCE_PREFIX}${hashValue(accountKey).slice(0, 24)}`, "1", "EX", PRESENCE_TTL_SECONDS);
       } else if (action === "stage-heartbeat") {
@@ -177,6 +176,8 @@ export default async function handler(req, res) {
         if (!owner) {
           return res.status(403).json({ ok: false, error: "owner_required" });
         }
+        if (!req.headers.origin || new URL(req.headers.origin).host !== req.headers.host) return res.status(403).json({ error: "Origin not allowed." });
+        await adminAccess.requireAdmin(req, redis, session);
 
         if (action === "gallery-show") {
           await redis.set(GALLERY_VISIBLE_KEY, "1");
@@ -201,8 +202,6 @@ export default async function handler(req, res) {
     }
 
     const runtime = await readRuntime(redis);
-    if (!session.features.multimedia) { runtime.galleryVisible = false; runtime.viewingGallery = 0; }
-    if (!session.features.stage) { runtime.stage = { live: false, startedAt: null }; runtime.viewingStage = 0; }
 
     return res.status(200).json({
       ok: true,
@@ -213,6 +212,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error("[api/admin-runtime]", error);
-    return res.status(500).json({ ok: false, error: "server_error" });
+    return res.status(error.status || 500).json({ ok: false, error: error.status ? error.message : "server_error" });
   }
 }
