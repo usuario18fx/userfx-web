@@ -61,28 +61,28 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                     {
                       icon: ICONS.fotos,
                       text: "Camera access",
-                      sub: "Use ONCAM in your private room",
+                      sub: "Go on cam in your private room",
                     },
                     {
                       icon: ICONS.getin,
                       text: "Instant entry",
-                      sub: "Your access code is generated after purchase",
+                      sub: "Get your personal code after checkout",
                     },
                     {
                       icon: ICONS.anydevice,
                       text: "Any device",
-                      sub: "Watch smoothly on phone, tablet or desktop",
+                      sub: "Your phone, tablet or desktop. Your choice.",
                     },
                     {
                       icon: ICONS.preview,
                       text: "Private chat",
-                      sub: "Chat during your private experience",
+                      sub: "Keep the conversation going in private chat",
                     },
                   ],
                 },
                 {
                   label: "Best for",
-                  items: [{ icon: ICONS.candado2, text: "Core privileges", sub: "Camera and chat while your BASIC code is active." }],
+                  items: [{ icon: ICONS.candado2, text: "Your starting lineup", sub: "Camera and chat while your BASIC code is active." }],
                 },
               ],
             },
@@ -99,7 +99,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                     {
                       icon: ICONS.choose,
                       text: "Camera and private chat",
-                      sub: "Connect through ONCAM and chat",
+                      sub: "Get on cam. Find your people.",
                     },
                     {
                       icon: ICONS.quality,
@@ -109,7 +109,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                     {
                       icon: ICONS.quickly,
                       text: "Instant access",
-                      sub: "No waiting — unlock and enter when you are ready",
+                      sub: "Got your code? You’re ready to step inside.",
                     },
                   ],
                 },
@@ -119,12 +119,12 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                     {
                       icon: ICONS.fuego,
                       text: "Multimedia access",
-                      sub: "Open the multimedia collection",
+                      sub: "Explore the private collection",
                     },
                     { icon: "💎", text: "Recording and multimedia", sub: "Save ONLIVE sessions and explore the collection" },
                     {
                       icon: ICONS.vipcard,
-                      text: "Extended privileges",
+                      text: "More to explore",
                       sub: "Camera, chat, recording and multimedia",
                     },
                   ],
@@ -141,20 +141,20 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                 {
                   label: "What you get",
                   items: [
-                    { icon: ICONS.fotos, text: "Camera, chat and multimedia", sub: "Connect and explore the private collection" },
+                    { icon: ICONS.fotos, text: "Camera, chat and multimedia", sub: "Connect, chat and explore the collection" },
                     { icon: ICONS.limit, text: "Unlimited entries", sub: "Enter as many times as you want" },
                     {
                       icon: ICONS.calendario,
                       text: "Exclusive Stage access",
-                      sub: "All PRO privileges, plus the VIP Stage experience",
+                      sub: "Everything in PRO, plus your spot on the VIP Stage",
                     },
-                    { icon: ICONS.quality, text: "Longest access period", sub: "Keep all included privileges for the full VIP period" },
+                    { icon: ICONS.quality, text: "Longest access period", sub: "Your full VIP lineup, for the whole access period" },
                     { icon: ICONS.candado2, text: "Any device", sub: "Keep your access active" },
                   ],
                 },
                 {
                   label: "",
-                  items: [{ icon: ICONS.telegram, text: "Chat Experience", sub: "Private chat while your VIP code is active" }],
+                  items: [{ icon: ICONS.telegram, text: "Keep the conversation going", sub: "Private chat while your VIP code is active" }],
                 },
               ],
             },
@@ -219,7 +219,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
       window.location.assign(TELEGRAM_PLAN_LINKS[activeSheet]);
     } catch {
       setBuying(false);
-      setBuyError("No se pudo abrir Telegram. Inténtalo nuevamente.");
+      setBuyError("Telegram didn’t open. Give it another try.");
     }
   };
   const currentPlan = activeSheet ? PLANS[activeSheet] : null;
@@ -330,12 +330,12 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
               <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ""}`} onClick={openPlanInBot} disabled={buying || !currentPlan}>
                 {buying ? (
                   <span className="vd-buy-loading">
-                  CREATING ORDER...
+                  GETTING CHECKOUT READY...
                   </span>
                 ) : (
                   <>
                     <span className="vd-buy-label">
-                    GET CODE
+                    GET MY CODE
                     </span>
                     <span className="vd-buy-price">{currentPlan?.stars ?? 0} STARS ⭐</span>
                   </>

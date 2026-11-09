@@ -77,7 +77,7 @@ async function main() {
       if (pixels[index + 3] > 64) rosePixels.push([x, y, pixels[index], pixels[index + 1], pixels[index + 2]]);
     }
   }
-  if (!rosePixels.length) throw new Error('La imagen de la rosa está vacía.');
+  if (!rosePixels.length) throw new Error('The rose image is empty.');
   const crownCount = Math.min(source.length / 3, 22000);
   const roseCount = Math.min(rosePixels.length, 10000);
   const count = crownCount + roseCount;
@@ -136,9 +136,9 @@ async function main() {
   let dragging = false, moved = false, lastX = 0, lastY = 0, active = true, raf = 0;
   const mouse = { x: 10, y: 10, dx: 0, dy: 0, energy: 0, inside: false };
   function sync() {
-    button.textContent = phase === 'falling' || phase === 'ground' ? 'Regenerar corona y rosa' : 'Deshacer corona y rosa';
+    button.textContent = phase === 'falling' || phase === 'ground' ? 'BRING THEM BACK' : 'LET THEM FALL';
     button.setAttribute('aria-pressed', String(phase === 'falling' || phase === 'ground'));
-    status.textContent = phase === 'ground' ? 'ARENA SUELTA · MUEVE EL MOUSE PARA DISPERSARLA' : phase === 'falling' ? 'GRANOS EN CAÍDA LIBRE' : phase === 'rising' ? 'REGENERANDO CORONA Y ROSA…' : `${count.toLocaleString('es')} GRANOS · PULSA PARA DESHACER`;
+    status.textContent = phase === 'ground' ? 'ALL FALLEN · MOVE YOUR CURSOR TO STIR THINGS UP' : phase === 'falling' ? 'LET IT ALL FALL' : phase === 'rising' ? 'COMING BACK TOGETHER…' : `${count.toLocaleString('en-CA')} PARTICLES · TAP TO SCATTER`;
   }
   function transition(next) {
     phase = next; elapsed = 0; hold = 0;

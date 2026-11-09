@@ -26,36 +26,36 @@ import { PrivateFeatureGate } from "./PR-Permissions";
             {
               kicker: "WELCOME",
               title: "YOUR PRIVATE CLUB",
-              text: "Salon, live camera, members, private gallery and your profile now live inside one private member space.",
+              text: "Your cam, your circle, your collection. Get to know your private corner of USER FX.",
             },
             {
               kicker: "MY CAM",
-              title: "CAMERA AS DEFAULT VIEW",
-              text: "Start your camera, choose PRIVATE or PUBLIC, then close the studio. Your live preview stays docked while you browse the club.",
+              title: "GET CAMERA READY",
+              text: "Start your cam, pick PRIVATE or PUBLIC, and close the studio. Your preview stays with you while you explore.",
               action: "OPEN CAMERA",
             },
             {
               kicker: "SALONS · 5",
               title: "BUILD A PRIVATE CIRCLE",
-              text: "Your salon starts with you as host. Invite up to four members and keep the camera private to your group when the room layer is connected.",
+              text: "Host your own circle with up to four guests. Group calls will be available once live rooms are ready.",
               action: "VIEW SALON",
             },
             {
               kicker: "MEMBERS",
               title: "DISCOVER WHO IS ONLINE",
-              text: "Member presence, public cameras and private requests will appear in the network as the live presence backend is connected.",
+              text: "See who’s around, discover public cams and check private invites when the live network is available.",
               action: "VIEW MEMBERS",
             },
             {
               kicker: "PRIVATE MEDIA",
               title: "YOUR GALLERY STAYS PROTECTED",
-              text: "The existing private gallery, access rules and forensic watermark system remain part of the same PrivateRoom.",
+              text: "Your private collection lives here too. Access rules and watermarks still apply, so keep it personal.",
               action: "VIEW GALLERY",
             },
             {
               kicker: "READY",
               title: "BROWSE WITHOUT LEAVING CAM",
-              text: "Use the dock to manage visibility, reopen the camera studio, open your profile or turn the camera off at any time.",
+              text: "Keep exploring with your cam nearby. Change visibility, edit your profile or switch your cam off whenever you like.",
             },
           ] as const;
 
@@ -207,14 +207,14 @@ import { PrivateFeatureGate } from "./PR-Permissions";
                         <span></span>
                       </div>
                       <strong>
-                      NO PUBLIC CAMS LIVE
+                      QUIET FOR NOW
                       </strong>
                       <p>
                       When a member starts a public camera, the stream will appear here.
                       </p>
                       <div className="pvr-live-signal-meta">
                         <span>
-                        WEBRTC
+                        LIVE VIDEO
                         </span>
                         <span>
                         PRIVATE NETWORK
@@ -292,11 +292,11 @@ import { PrivateFeatureGate } from "./PR-Permissions";
           </div>
         </div>
       </section>
-      <section className="pvr-live-group" aria-label="Group salon">
+      <section className="pvr-live-group" aria-label="Private group">
         <div className="pvr-live-section-head">
           <div>
             <span>
-            PRIVATE SALON
+            PRIVATE CIRCLE
             </span>
             <strong>
             GROUP OF FIVE
@@ -338,14 +338,14 @@ import { PrivateFeatureGate } from "./PR-Permissions";
             GROUP SESSION
             </span>
             <strong>
-            Build your salon
+            Bring your circle together
             </strong>
             <p>
             Invite up to four members. The room becomes available when the group circle is complete.
             </p>
             <div className="pvr-group-progress-head">
               <span>
-              TEAM PROGRESS
+              YOUR CIRCLE
               </span>
               <strong>
               1 / 5

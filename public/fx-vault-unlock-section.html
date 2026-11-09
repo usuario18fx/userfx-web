@@ -1,4 +1,4 @@
-<section id="fx-vault-unlock" aria-label="Vault privado desbloqueable">
+<section id="fx-vault-unlock" aria-label="Interactive vault preview">
   <style>
     #fx-vault-unlock {
       --accent: #75d6b1;
@@ -688,8 +688,8 @@
       <div class="fx-o-brand">
         <div class="fx-o-mark">FX</div>
         <div>
-          <div class="fx-o-title">Vault Privado</div>
-          <div class="fx-o-sub" id="fxStepLabel">Bienvenida • pago verificado</div>
+          <div class="fx-o-title">Private Vault</div>
+          <div class="fx-o-sub" id="fxStepLabel">Welcome • interactive preview</div>
         </div>
       </div>
       <div class="fx-o-lock">⌾</div>
@@ -698,23 +698,23 @@
       <div class="fx-step active" id="fxStepIntro">
         <div class="fx-intro-icon">✦</div>
         <div class="fx-h1">
-          Tu acceso ya está listo<span class="fx-typing"><i></i><i></i><i></i></span>
+          Your preview is ready<span class="fx-typing"><i></i><i></i><i></i></span>
         </div>
         <p class="fx-p">
-          Después del pago exitoso recibiste un código. Escríbelo para abrir las puertas y
-          desbloquear tus fotos privadas. La última imagen que subiste queda como fondo.
+          Try the vault preview. Enter the demo code below to open the doors.
+          Your latest image becomes the backdrop.
         </p>
         <div class="fx-code-hint">
-          🔒 <span><b>Pago 100% verificado.</b> El contenido solo existe en este dispositivo.</span>
+          🔒 <span><b>Interactive demo.</b> This preview does not verify payments.</span>
         </div>
         <div class="fx-actions">
-          <button class="fx-btn fx-btn-primary" id="fxGoCode">Tengo mi código →</button
-          ><button class="fx-btn fx-btn-ghost" id="fxNeedHelp">¿No llegó?</button>
+          <button class="fx-btn fx-btn-primary" id="fxGoCode">GOT MY CODE →</button
+          ><button class="fx-btn fx-btn-ghost" id="fxNeedHelp">NEED HELP?</button>
         </div>
       </div>
       <div class="fx-step" id="fxStepCode">
-        <div class="fx-h1" style="font-size: 18px">Ingresa tu código</div>
-        <p class="fx-p">Te lo enviamos al correo después del pago. Código demo: <b>FX2026</b></p>
+        <div class="fx-h1" style="font-size: 18px">Enter your code</div>
+        <p class="fx-p">Try the preview with demo code: <b>FX2026</b></p>
         <div class="fx-code-box" id="fxCodeBox">
           <input inputmode="text" maxlength="1" autocomplete="off" /><input
             inputmode="text"
@@ -729,15 +729,15 @@
         </div>
         <div class="fx-p" id="fxCodeMsg" style="min-height: 18px; font-size: 10.5px"></div>
         <div class="fx-actions">
-          <button class="fx-btn fx-btn-ghost" id="fxBackIntro">← Volver</button
-          ><button class="fx-btn fx-btn-primary" id="fxVerifyBtn" disabled>Desbloquear</button>
+          <button class="fx-btn fx-btn-ghost" id="fxBackIntro">← BACK</button
+          ><button class="fx-btn fx-btn-primary" id="fxVerifyBtn" disabled>UNLOCK</button>
         </div>
       </div>
       <div class="fx-step" id="fxStepSuccess">
         <div class="fx-success">
           <div class="fx-check">✓</div>
-          <h3>Pago verificado</h3>
-          <p>Abriendo puertas… tus fotos están listas</p>
+          <h3>You’re in</h3>
+          <p>Opening the doors… your preview is ready</p>
         </div>
       </div>
     </div>
@@ -748,13 +748,13 @@
       <div class="fx-vc-head-left">
         <div class="fx-vc-mark">FX</div>
         <div>
-          <div class="fx-vc-title">Tus fotos desbloqueadas</div>
-          <div class="fx-vc-count" id="fxVcCount">10 fotos • fondo: última imagen</div>
+          <div class="fx-vc-title">Your unlocked photos</div>
+          <div class="fx-vc-count" id="fxVcCount">10 photos • backdrop: latest image</div>
         </div>
       </div>
       <div class="fx-vc-actions">
-        <button class="fx-vc-btn" id="fxLockAgain">Bloquear ⌾</button
-        ><button class="fx-vc-btn" id="fxCloseVault">Cerrar ✕</button>
+        <button class="fx-vc-btn" id="fxLockAgain">LOCK ⌾</button
+        ><button class="fx-vc-btn" id="fxCloseVault">CLOSE ✕</button>
       </div>
     </div>
     <div class="fx-grid" id="fxGrid">
@@ -762,7 +762,7 @@
         <img
           src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop"
           alt="" />
-        <div class="fx-photo-meta"><span>Última imagen • fondo</span><span>★ Favorita</span></div>
+        <div class="fx-photo-meta"><span>Latest image • backdrop</span><span>★ Favorite</span></div>
       </div>
       <div class="fx-photo w4" style="animation-delay: 0.12s">
         <img
@@ -840,16 +840,16 @@
         [stepIntro, stepCode, stepSuccess].forEach((s) => s.classList.remove("active"));
         if (n === 1) {
           stepIntro.classList.add("active");
-          stepLabel.textContent = "Bienvenida • pago verificado";
+          stepLabel.textContent = "Welcome • interactive preview";
         }
         if (n === 2) {
           stepCode.classList.add("active");
-          stepLabel.textContent = "Ingresa tu código de acceso";
+          stepLabel.textContent = "Enter your access code";
           setTimeout(() => inputs[0].focus(), 80);
         }
         if (n === 3) {
           stepSuccess.classList.add("active");
-          stepLabel.textContent = "Success • abriendo puertas";
+          stepLabel.textContent = "Success • opening the doors";
         }
       }
       function getCode() {
@@ -881,7 +881,7 @@
         const ok =
           VALID.includes(code) || localStorage.getItem(PAY_KEY) === "1" || code.length >= 4;
         if (!ok) {
-          setMsg("Código incorrecto. Prueba FX2026", true);
+          setMsg("That code didn’t work. Try FX2026.", true);
           shake();
           return;
         }
@@ -926,7 +926,7 @@
       document.getElementById("fxGoCode").onclick = () => setStep(2);
       document.getElementById("fxBackIntro").onclick = () => setStep(1);
       document.getElementById("fxNeedHelp").onclick = () =>
-        setMsg("Revisa spam. Demo: FX2026. Conecta aquí tu webhook de Stripe/MercadoPago.");
+        setMsg("This is a preview. Use demo code FX2026 to try it out.");
       verifyBtn.onclick = attempt;
       document.getElementById("fxLockAgain").onclick = () => {
         localStorage.removeItem(LS_KEY);
@@ -969,7 +969,7 @@
             })
             .join("");
           document.getElementById("fxVcCount").textContent =
-            `${urls.length} fotos • fondo: última imagen`;
+            `${urls.length} photos • backdrop: latest image`;
         },
       };
       if (localStorage.getItem(LS_KEY) === "1") {

@@ -265,7 +265,7 @@ async function handleFxVoice(req, res, body) {
     return res.status(200).json({
       ok: true,
       transcript,
-      reply: `Te escuché: ${transcript}`,
+      reply: `Here’s what I heard: ${transcript}`,
       degraded: true,
     });
   }

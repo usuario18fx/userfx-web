@@ -66,7 +66,7 @@
               e.preventDefault();
 
               if (attempts >= MAX_ATTEMPTS) {
-                setError("Demasiados intentos. Recarga la página.");
+                setError("Too many attempts. Refresh the page to try again.");
                 return;
               }
 
@@ -87,11 +87,11 @@
                   setUnlocked(true);
                 } else {
                   setAttempts((n) => n + 1);
-                  setError(data.error || "Código inválido");
+                  setError(data.error || "That code didn’t work. Check it and try again.");
                   setSuffix("");
                 }
               } catch {
-                setError("Error de conexión");
+                setError("Connection dropped. Try again in a moment.");
               } finally {
                 setLoading(false);
               }
@@ -114,7 +114,7 @@
                     <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
                   </div>
                   <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
-                    {loading ? "Verificando..." : "Entrar"}
+                    {loading ? "CHECKING..." : "LET ME IN"}
                   </button>
                   {error && (
                     <p role="alert" className="access-error">

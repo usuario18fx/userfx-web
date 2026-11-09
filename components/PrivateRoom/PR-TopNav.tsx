@@ -5,11 +5,11 @@ import { usePrivatePermissions } from "./PR-Permissions";
           const HOME_URL = "https://user18fx.com";
 
           const NAV_ITEMS = [
-            { label: "INICIO", route: HOME_URL, external: true },
+            { label: "HOME", route: HOME_URL, external: true },
             { label: "MYROOM", route: "#/private-room" },
             { label: "STAGE", route: "#/private-room/stage" },
             { label: "GALLERY", route: "#/private-room/gallery" },
-            { label: "BUZON", route: "#/private-room/buzon" },
+            { label: "INBOX", route: "#/private-room/buzon" },
           ] as const;
 
           function cameraIsLive() {
@@ -82,7 +82,7 @@ import { usePrivatePermissions } from "./PR-Permissions";
 
           export default function PrivateRoomTopNav() {
             const { features } = usePrivatePermissions();
-            const planLocked = (label: string) => label === "STAGE" ? !features.stage : label === "GALLERY" ? !features.multimedia : label === "BUZON" ? !features.chat : false;
+            const planLocked = (label: string) => label === "STAGE" ? !features.stage : label === "GALLERY" ? !features.multimedia : label === "INBOX" ? !features.chat : false;
             const [route, setRoute] = useState(() => window.location.hash || "#/private-room");
             const [accessCode, setAccessCode] = useState("PRIVATE ACCESS");
             const [cameraLive, setCameraLive] = useState(false);

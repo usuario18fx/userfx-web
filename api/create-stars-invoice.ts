@@ -35,7 +35,7 @@ import { PLAN_DAYS } from "../lib/access-plans.js";
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title: `USER FX — ${plan.title} VAULT`,
-        description: `${plan.days} días de acceso privado. Código personal e intransferible.`,
+        description: `${plan.days} days of private access. Your code is personal and cannot be shared.`,
         payload,
         currency: "XTR",
         prices: [

@@ -147,7 +147,7 @@
 
             <h1>{profileName}</h1>
             <p className="pvr-profile-username">{account.telegramUsername || "PRIVATE MEMBER"}</p>
-            <p className="pvr-profile-bio">{profile.bio || "No bio yet."}</p>
+            <p className="pvr-profile-bio">{profile.bio || "A little mystery. No bio yet."}</p>
           </div>
         </div>
 
@@ -222,10 +222,10 @@
 
           <div className="pvr-profile-media-empty">
             <span>
-            NO MEDIA POSTED YET
+            NOTHING HERE YET
             </span>
             <small>
-            Photos, videos and albums will appear here.
+            This is where their photos, videos and albums will show up.
             </small>
           </div>
         </section>
@@ -309,7 +309,7 @@ function CameraStudio({ stream, visibility, live, requesting, cameraEnabled, mic
               CAMERA OFFLINE
               </strong>
               <span>
-              CONNECT YOUR CAMERA TO CONTINUE
+              TURN ON YOUR CAMERA TO GET STARTED
               </span>
             </div>
           )}
@@ -769,7 +769,7 @@ export default function PrivateRoomAccount() {
                 <span>
                 BIO
                 </span>
-                <textarea name="bio" value={profile.bio} onChange={handleTextChange} placeholder="Private profile bio..." maxLength={280} rows={4} />
+                <textarea name="bio" value={profile.bio} onChange={handleTextChange} placeholder="A little about you. Set the vibe..." maxLength={280} rows={4} />
                 <small>{profile.bio.length}/280</small>
               </label>
 

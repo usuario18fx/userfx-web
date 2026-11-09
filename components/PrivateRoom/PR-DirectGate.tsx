@@ -639,7 +639,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
         }
 
         if (!rememberedUsername) {
-          setError("REMEMBER YOUR TELEGRAM USERNAME BEFORE USING SPCL");
+          setError("SAVE YOUR TELEGRAM USERNAME BEFORE USING SPCL");
           return;
         }
 
@@ -1121,7 +1121,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
             <div className="pvr-direct-secondary-actions">
               <button type="button" className={secondaryMode === "code" ? "is-active" : ""} onClick={() => toggleSecondaryMode("code")} aria-expanded={secondaryMode === "code"}>
                 <span>
-                ALREADY GOT CODE
+                GOT A CODE?
                 </span>
               </button>
 
@@ -1131,7 +1131,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
                 </span>
 
                 <small>
-                CHOOSE & PAY
+                PICK YOUR PLAN
                 </small>
               </button>
             </div>
@@ -1151,7 +1151,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
             <span className="pvr-direct-granted-user">WELCOME {telegramUsername}</span>
 
             <p className="pvr-direct-granted-message">
-            You were selected for early access to our new videocall platform. Tap the green button below to get your FREE access code.
+            You’re on the list. Get an early look at our video call platform. Tap the green button for your free access code.
             </p>
 
             {returningIdentityRef.current ? (
@@ -1330,7 +1330,7 @@ export default function PrivateRoomDirectGate({ children }: DirectGateProps) {
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
           {secondaryMode === "code" && (
-            /* ───── PANEL “ALREADY GOT CODE” ───── */
+            /* ───── PANEL “GOT A CODE?” ───── */
 
             <form className="pvr-direct-form pvr-direct-secondary-panel" onSubmit={handleSubmit}>
               <div className="pvr-direct-code-line">

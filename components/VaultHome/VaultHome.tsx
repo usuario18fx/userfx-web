@@ -39,19 +39,19 @@ const ICONS = {
   tv: "/assets/iconos/tv.png",
 };
 
-const TICKER_ITEMS = ["| VIA TELEGRAM | CODED ACCESS | TELEGRAM ", "| BOT | TELEGRAM | VIDEOCALL | WEBSITE 2026", "| FX | CLOSED CIRCUIT | TORONTO,CANADA", "| ALL RIGHTS RESERVED |"];
+const TICKER_ITEMS = ["YOUR CODE. YOUR WAY IN.", "PRIVATE ACCESS · TELEGRAM STARS", "FRESH DROPS · FRIDAY 22:00 UTC", "USER FX · TORONTO, CANADA"];
 const STEPS = [
-  { n: "01", title: "OPEN THE TELEGRAM BOT", text: "Open our Telegram bot to explore the available access levels and see what each option includes." },
-  { n: "02", title: "CHOOSE YOUR ACCESS", text: "Select ʙᴀꜱɪᴄ, ᴠɪᴘ or ᴘʀᴏ based on the experience and level of access you prefer." },
-  { n: "03", title: "COMPLETE YOUR PAYMENT", text: "Finish your payment securely inside Telegram. Once confirmed, your unique private code is delivered instantly." },
-  { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
+  { n: "01", title: "OPEN THE TELEGRAM BOT", text: "Start in Telegram. Check out the plans and find your way in." },
+  { n: "02", title: "CHOOSE YOUR ACCESS", text: "Find your fit: BASIC, PRO or VIP. Compare the perks and make it yours." },
+  { n: "03", title: "COMPLETE YOUR PAYMENT", text: "Pay with Telegram Stars. Once payment is confirmed, the bot sends your personal access code." },
+  { n: "04", title: "UNLOCK THE VAULT", text: "Got your code? Head back here, paste it in and step inside. Your plan unlocks your perks." },
 ];
 
 const FAQS = [
-  { q: "How do I get a code?", a: "In the section 'ᴄʜᴏᴏꜱᴇ ʏᴏᴜʀ ᴄᴏᴅᴇ', discover the different codes, according to your interest." },
+  { q: "How do I get a code?", a: "Pick BASIC, PRO or VIP below, then finish checkout in Telegram. The bot sends your code after payment is confirmed." },
   { q: "How many times can I enter?", a: `Enter as often as you want while your code is active. BASIC includes camera and chat for ${PLAN_DAYS.basic} days. PRO adds recording and multimedia for ${PLAN_DAYS.pro} days. VIP adds exclusive Stage access for ${PLAN_DAYS.vip} days. Validity starts at first activation.` },
-  { q: "Can I share my code?", a: "Your key is personal and non-transferable." },
-  { q: "What happens if I don't receive my code?", a: "Contact @User18Fx_bot and we'll review your request." },
+  { q: "Can I share my code?", a: "Your code is just for you. Keep it private; sharing or transferring it is not allowed." },
+  { q: "What happens if I don't receive my code?", a: "Reach out to @User18Fx_bot with your payment details. We’ll help you track it down." },
   { q: "Are refunds available?", a: "Digital access is non-refundable once the key is delivered, except payment errors or delivery failures." },
 ];
 function nextFridayUtc() {
@@ -260,7 +260,7 @@ export default function VaultHome() {
     e.preventDefault();
 
     if (attempts >= MAX_ATTEMPTS) {
-      setVerifyError("ᴛᴏᴏ ᴍᴀɴʏ ᴀᴛᴛᴇᴍᴘᴛꜱ. ᴘʟᴇᴀꜱᴇ ʀᴇꜰʀᴇꜱʜ ᴛʜᴇ ᴘᴀɢᴇ..");
+      setVerifyError("Too many attempts. Refresh the page to try again.");
       return;
     }
     const normalizedPrefix = prefix
@@ -321,9 +321,9 @@ export default function VaultHome() {
         return;
       }
       setAttempts((n) => n + 1);
-      setVerifyError(data.error || "ᴄᴏ́ᴅɪɢᴏ ɪɴᴠᴀ́ʟɪᴅᴏ");
+      setVerifyError(data.error || "ᴛʜᴀᴛ ᴄᴏᴅᴇ ᴅɪᴅɴ’ᴛ ᴡᴏʀᴋ. ᴅᴏᴜʙʟᴇ-ᴄʜᴇᴄᴋ ɪᴛ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.");
     } catch {
-      setVerifyError("ᴇʀʀᴏʀ ᴅᴇ ᴄᴏɴᴇxɪᴏ́ɴ");
+      setVerifyError("ᴄᴏɴɴᴇᴄᴛɪᴏɴ ᴅʀᴏᴘᴘᴇᴅ. ᴄʜᴇᴄᴋ ʏᴏᴜʀ ɪɴᴛᴇʀɴᴇᴛ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.");
     } finally {
       setVerifyLoading(false);
     }
@@ -406,7 +406,7 @@ export default function VaultHome() {
               <Scramble text="RESTRICTED" className="vx-rest" delay={420} />
             </h1>
             <p className="vx-p vx-pNormal">
-              <Scramble text="There are images that were never meant to be seen.." />{" "}
+              <Scramble text="Some things stay off the feed." />{" "}
               <strong>
                 <Scramble text="USER🜲 FX" delay={180} />
               </strong>
@@ -414,7 +414,7 @@ export default function VaultHome() {
               <strong className="vx-privateVaultLine">
                 <Scramble text="—ᴘʀɪᴠᴀᴛᴇ ᴠᴀᴜʟᴛ—" delay={300} />
               </strong>{" "}
-              <Scramble text="Is a reserved place. access is not public. You'll need a ᴄᴏᴅᴇ" delay={420} />
+              <Scramble text="Your invite to the other side. Grab a code and make yourself at home." delay={420} />
             </p>
             <div className="vx-dossierRow">
               <div className="vx-dossierOrnament" aria-hidden="true">
@@ -452,10 +452,10 @@ export default function VaultHome() {
               </h2>
               <p className="vx-privateAlbumDescription">
                 {memberAccess ? (
-                  <>SPCL member access is active. Full private collection available.</>
+                  <>Your SPCL access is active. The private collection is ready to explore.</>
                 ) : (
                   <>
-                    Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "Welcome inside the private vault." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
+                    Your {activePlanPrefix} access key has been verified. {unlimitedAccess ? "Unlimited entries available." : remainingAccesses === null ? "You’re in. Make yourself at home." : `${remainingAccesses} future ${remainingAccesses === 1 ? "entry" : "entries"} remaining.`}
                   </>
                 )}
               </p>
@@ -489,7 +489,7 @@ export default function VaultHome() {
       <section id="protocolo" className="vx-sec vx-protocol">
         <Reveal>
           <p className="vx-goldk">
-          ◈ ACCESS PROTOCOL
+          ◈ YOUR WAY IN
           </p>
           <h2>
             HOW TO UNLOCK
@@ -551,14 +551,14 @@ export default function VaultHome() {
               </h2>
               <div className="vx-insideRow">
                 <p className="vx-lead">
-                  A private space where sexy, free-spirited, open-minded guys can connect. Join one-on-one or group video calls and share the moment with guys who match your vibe. You're only seeing a preview. A new exclusive drop arrives every Friday at 22:00 UTC—this is just a glimpse of what's waiting inside.
+                  Find your people. Catch a vibe. Stay a little longer. A private space for open-minded guys, video calls and a collection that stays off the feed. This is your sneak peek. Fresh drops land every Friday at 22:00 UTC.
                   <strong>
-                  —Keep it lit—
+                  —Your vibe. Your vault.—
                   </strong>
                 </p>
                 <div className="vx-count">
                   <p>
-                  DROP IN
+                  NEXT DROP IN
                   </p>
                   <strong>{countdown}</strong>
                   <p>
@@ -581,7 +581,7 @@ export default function VaultHome() {
             href="https://t.me/+Smfuo6ObfVFkOTFh"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Abrir canal de Telegram 𝐔𝐬𝐞𝐫 Ŧҳ 🜲"
+            aria-label="Open Telegram channel 𝐔𝐬𝐞𝐫 Ŧҳ 🜲"
             style={{
               display: "flex",
               alignItems: "center",
@@ -610,7 +610,7 @@ export default function VaultHome() {
         <section id="faq" className="vx-sec">
           <Reveal>
             <p className="vx-goldk">
-            ◈ PRIVATE INFORMATION
+            ◈ GOOD TO KNOW
             </p>
             <h2>
               BEFORE YOU
@@ -712,7 +712,7 @@ export default function VaultHome() {
               <img src={ICONS.corona} alt="" className="vx-modalTitleCrown" draggable={false} />
             </h3>
             <p className="vx-modalText">
-            Choose your access level, then continue on Telegram to request your private access code.
+            Pick your plan. Head to Telegram. Get your code and come on in.
             </p>
             <div className="vx-modalDivider" />
             <a className="vx-modalLink" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noreferrer">

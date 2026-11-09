@@ -18,7 +18,7 @@
           const MEDIA: MediaItem[] = [
             {
               id: 1,
-              title: "LATEST UPDATE",
+              title: "FIRST LOOK",
               subtitle: "PRIVATE COLLECTION",
               src: "/assets/introFX.mp4",
               poster: "/assets/album/PRVW/PRVW-01.jpg",
@@ -33,7 +33,7 @@
             {
               id: 3,
               title: "VAULT NEWS",
-              subtitle: "LATEST INFORMATION",
+              subtitle: "THE LATEST FROM FX",
               src: "/assets/introFX.mp4",
               poster: "/assets/album/PRVW/PRVW-04.jpg",
             },
@@ -72,7 +72,7 @@
                   </div>
                 </div>
                 {/* ─────────────────────────────────────
-                    LATEST UPDATES
+                    FIRST LOOKS
                     ───────────────────────────────────── */}
                 <aside className="vinfo__buttons">
                   {MEDIA.map((item, index) => (
@@ -88,7 +88,7 @@
                     </button>
                   ))}
                   <div className="vinfo__title">
-                  LATEST UPDATES
+                  FIRST LOOKS
                   </div>
                 </aside>
               </section>

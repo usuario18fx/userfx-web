@@ -163,19 +163,19 @@ export const SKINS: Array<{ id: Skin; label: string; css: string }> = [
 export const REACTIONS = ["🔥", "💅", "😂", "❤️", "🌈", "✨", "🍁", "🦄"];
 
 export const PEOPLE: Person[] = [
-  { nick: "@MapleBabe", nombre: "Maple Babe", edad: 24, ciudad: "Montreal", prov: "QC", flag: "🇨🇦", signo: "Gémeaux", fama: 4.9, votos: 812, bio: "MTL queen · bilingual (fr/en) · hyperpop & late night calls ☕", intereses: ["hyperpop", "drag", "montréal"], cam: true, regalos: 218, identidad: "she/her", pnp: "no" },
-  { nick: "@TorontoKiki", nombre: "Toronto Kiki", edad: 27, ciudad: "Toronto", prov: "ON", flag: "🇨🇦", signo: "Léo", fama: 4.8, votos: 733, bio: "Ballroom scene TO · kiki house member · they/them energy 💅", intereses: ["ballroom", "vogue", "kiki"], cam: true, regalos: 196, identidad: "they/them", pnp: "sober" },
-  { nick: "@VancouverVibe", nombre: "Vancouver Vibe", edad: 29, ciudad: "Vancouver", prov: "BC", flag: "🇨🇦", signo: "Balance", fama: 4.7, votos: 505, bio: "West coast chill · hikes, rain, and good convos 🌧️", intereses: ["hiking", "chill", "rain"], cam: true, regalos: 174, identidad: "he/him", pnp: "no" },
-  { nick: "@PrairieDyke", nombre: "Prairie Dyke", edad: 31, ciudad: "Winnipeg", prov: "MB", flag: "🇨🇦", signo: "Taureau", fama: 4.5, votos: 342, bio: "Prairies represent · zines, dogs & radical softness", intereses: ["zines", "dogs", "prairie"], cam: true, regalos: 118, identidad: "she/they", pnp: "sober" },
+  { nick: "@MapleBabe", nombre: "Maple Babe", edad: 24, ciudad: "Montreal", prov: "QC", flag: "🇨🇦", signo: "Gemini", fama: 4.9, votos: 812, bio: "MTL queen · bilingual (fr/en) · hyperpop & late night calls ☕", intereses: ["hyperpop", "drag", "montréal"], cam: true, regalos: 218, identidad: "she/her", pnp: "no" },
+  { nick: "@TorontoKiki", nombre: "Toronto Kiki", edad: 27, ciudad: "Toronto", prov: "ON", flag: "🇨🇦", signo: "Leo", fama: 4.8, votos: 733, bio: "Ballroom scene TO · kiki house member · they/them energy 💅", intereses: ["ballroom", "vogue", "kiki"], cam: true, regalos: 196, identidad: "they/them", pnp: "sober" },
+  { nick: "@VancouverVibe", nombre: "Vancouver Vibe", edad: 29, ciudad: "Vancouver", prov: "BC", flag: "🇨🇦", signo: "Libra", fama: 4.7, votos: 505, bio: "West coast chill · hikes, rain, and good convos 🌧️", intereses: ["hiking", "chill", "rain"], cam: true, regalos: 174, identidad: "he/him", pnp: "no" },
+  { nick: "@PrairieDyke", nombre: "Prairie Dyke", edad: 31, ciudad: "Winnipeg", prov: "MB", flag: "🇨🇦", signo: "Taurus", fama: 4.5, votos: 342, bio: "Prairies represent · zines, dogs & radical softness", intereses: ["zines", "dogs", "prairie"], cam: true, regalos: 118, identidad: "she/they", pnp: "sober" },
   { nick: "@HalifaxHoney", nombre: "Halifax Honey", edad: 26, ciudad: "Halifax", prov: "NS", flag: "🇨🇦", signo: "Cancer", fama: 4.6, votos: 412, bio: "East coast honey · sea shanties & drag brunch 🌊", intereses: ["drag", "brunch", "ocean"], cam: true, regalos: 148, identidad: "she/her", pnp: "no" },
-  { nick: "@OttawaOtter", nombre: "Ottawa Otter", edad: 33, ciudad: "Ottawa", prov: "ON", flag: "🇨🇦", signo: "Vierge", fama: 4.4, votos: 288, bio: "Capitol otter · policy by day, pool by night 🦦", intereses: ["policy", "pool", "otter"], cam: true, regalos: 92, identidad: "he/him", pnp: "curious" },
-  { nick: "@QuebecQueen", nombre: "Québec Queen", edad: 28, ciudad: "Québec", prov: "QC", flag: "🇨🇦", signo: "Scorpion", fama: 4.8, votos: 640, bio: "Vieux-Québec · francophone first, en deuxième 💙", intereses: ["français", "vieux-québec", "café"], cam: true, regalos: 205, identidad: "she/her", pnp: "no" },
-  { nick: "@CalgaryCowboy", nombre: "Calgary Cowboy", edad: 30, ciudad: "Calgary", prov: "AB", flag: "🇨🇦", signo: "Sagittaire", fama: 4.3, votos: 377, bio: "Yeehaw but make it gay · stampede is my olympics 🤠", intereses: ["rodeo", "country", "gay"], cam: true, regalos: 133, identidad: "he/him", pnp: "party" },
+  { nick: "@OttawaOtter", nombre: "Ottawa Otter", edad: 33, ciudad: "Ottawa", prov: "ON", flag: "🇨🇦", signo: "Virgo", fama: 4.4, votos: 288, bio: "Capitol otter · policy by day, pool by night 🦦", intereses: ["policy", "pool", "otter"], cam: true, regalos: 92, identidad: "he/him", pnp: "curious" },
+  { nick: "@QuebecQueen", nombre: "Québec Queen", edad: 28, ciudad: "Québec", prov: "QC", flag: "🇨🇦", signo: "Scorpio", fama: 4.8, votos: 640, bio: "Vieux-Québec · French first, English too 💙", intereses: ["français", "vieux-québec", "café"], cam: true, regalos: 205, identidad: "she/her", pnp: "no" },
+  { nick: "@CalgaryCowboy", nombre: "Calgary Cowboy", edad: 30, ciudad: "Calgary", prov: "AB", flag: "🇨🇦", signo: "Sagittarius", fama: 4.3, votos: 377, bio: "Yeehaw but make it gay · stampede is my olympics 🤠", intereses: ["rodeo", "country", "gay"], cam: true, regalos: 133, identidad: "he/him", pnp: "party" },
   { nick: "@EdmontonEmber", nombre: "Edmonton Ember", edad: 25, ciudad: "Edmonton", prov: "AB", flag: "🇨🇦", signo: "Aries", fama: 4.5, votos: 298, bio: "Oil city but I glow · poetry nights & cheap beer 🔥", intereses: ["poetry", "beer", "night"], cam: true, regalos: 86, identidad: "they/she", pnp: "harm-reduction" },
-  { nick: "@SaskatoonStar", nombre: "Saskatoon Star", edad: 22, ciudad: "Saskatoon", prov: "SK", flag: "🇨🇦", signo: "Lion", fama: 4.7, votos: 598, bio: "Prairie star · first out in my family, big feelings ✨", intereses: ["family", "pride", "queer joy"], cam: true, regalos: 189, identidad: "he/they", pnp: "no" },
+  { nick: "@SaskatoonStar", nombre: "Saskatoon Star", edad: 22, ciudad: "Saskatoon", prov: "SK", flag: "🇨🇦", signo: "Leo", fama: 4.7, votos: 598, bio: "Prairie star · first out in my family, big feelings ✨", intereses: ["family", "pride", "queer joy"], cam: true, regalos: 189, identidad: "he/they", pnp: "no" },
   { nick: "@NFLDNewfie", nombre: "NFLD Newfie", edad: 34, ciudad: "St. John's", prov: "NL", flag: "🇨🇦", signo: "Pisces", fama: 4.6, votos: 322, bio: "Rock the rock · cod, fog & fiddles 🎻", intereses: ["fiddle", "fog", "cod"], cam: false, regalos: 121, identidad: "he/him", pnp: "no" },
-  { nick: "@YukonYoni", nombre: "Yukon Yoni", edad: 27, ciudad: "Whitehorse", prov: "YT", flag: "🇨🇦", signo: "Verseau", fama: 4.4, votos: 245, bio: "Northern lights & northern dykes · aurora calls 🌌", intereses: ["aurora", "north", "chill"], cam: true, regalos: 97, identidad: "she/they", pnp: "sober" },
-  { nick: "@NWTNonbinary", nombre: "NWT Nonbinary", edad: 23, ciudad: "Yellowknife", prov: "NT", flag: "🇨🇦", signo: "Gémeaux", fama: 4.5, votos: 267, bio: "They/them in the territories · snow & solstice energy ❄️", intereses: ["solstice", "snow", "they/them"], cam: true, regalos: 102, identidad: "they/them", pnp: "no" },
+  { nick: "@YukonYoni", nombre: "Yukon Yoni", edad: 27, ciudad: "Whitehorse", prov: "YT", flag: "🇨🇦", signo: "Aquarius", fama: 4.4, votos: 245, bio: "Northern lights & northern dykes · aurora calls 🌌", intereses: ["aurora", "north", "chill"], cam: true, regalos: 97, identidad: "she/they", pnp: "sober" },
+  { nick: "@NWTNonbinary", nombre: "NWT Nonbinary", edad: 23, ciudad: "Yellowknife", prov: "NT", flag: "🇨🇦", signo: "Gemini", fama: 4.5, votos: 267, bio: "They/them in the territories · snow & solstice energy ❄️", intereses: ["solstice", "snow", "they/them"], cam: true, regalos: 102, identidad: "they/them", pnp: "no" },
   { nick: "@NunavutNova", nombre: "Nunavut Nova", edad: 26, ciudad: "Iqaluit", prov: "NU", flag: "🇨🇦", signo: "Cancer", fama: 4.6, votos: 233, bio: "Inuit & queer · throat singing meets hyperpop 🎶", intereses: ["inuit", "throat singing", "hyperpop"], cam: true, regalos: 79, identidad: "she/her", pnp: "sober" },
   { nick: "@DragKingMtl", nombre: "Drag King MTL", edad: 29, ciudad: "Montreal", prov: "QC", flag: "🇨🇦", signo: "Leo", fama: 4.9, votos: 806, bio: "King of the plateau · beard glitter & bad decisions 💫", intereses: ["drag king", "plateau", "comedy"], cam: true, regalos: 221, identidad: "he/him", pnp: "party" },
   { nick: "@TransVanCity", nombre: "Trans VanCity", edad: 25, ciudad: "Vancouver", prov: "BC", flag: "🇨🇦", signo: "Pisces", fama: 4.8, votos: 598, bio: "Trans masc · 3 yrs on T · gym, sushi, mosh pits 💪", intereses: ["gym", "sushi", "mosh"], cam: true, regalos: 189, identidad: "he/they", pnp: "no" },
@@ -443,7 +443,7 @@ function initialState(): Fx5State {
     ciudad: "Toronto",
     prov: "ON",
     flag: "🇨🇦",
-    signo: "Gémeaux",
+    signo: "Gemini",
     identidad: "they/them",
     mood: MOODS[0],
     skin: "arcade",
@@ -1402,7 +1402,7 @@ function GenteView() {
               ["online", "ONLINE"],
               ["cam", "CAM ON"],
               ["incall", "IN CALL"],
-              ["fama", "TOP FAMA"],
+              ["fama", "TOP RATED"],
               ["pnp", "PNP / HR"],
               ["sober", "SOBER"],
             ] as Array<[PeopleFilter, string]>
@@ -1589,7 +1589,7 @@ function MyProfileView() {
         </section>
 
         <section className="card">
-          <h2>TESTIMONIALS FROM MY FRIENDS <em>MY NETWORK'S FAMA</em></h2>
+          <h2>TESTIMONIALS FROM MY FRIENDS <em>MY NETWORK’S RATINGS</em></h2>
           <div className="testi">
             {shuffle(state.people).slice(0, 3).map((person) => (
               <article key={person.nick}><b>{person.nick}</b><p>{pick(MIS_TESTIMONIOS)}</p></article>
@@ -2079,7 +2079,7 @@ export default function PRFX5({ nick = "@User18Ca", initialTab = "muro", classNa
         <span className="fx5-pill is-live"><i /><b>{enLinea}</b> FRIENDS ONLINE</span>
 
         <div className="fx5-metrics">
-          <Metric label="FAMA" value={state.me.fama.toFixed(1)} tone="a" />
+          <Metric label="RATING" value={state.me.fama.toFixed(1)} tone="a" />
           <Metric label="FRIENDS" value={state.me.amigues} />
           <Metric label="VISITS" value={state.me.visitas} />
           <Metric label="GIFTS" value={state.me.regalos} tone="green" />
@@ -2212,7 +2212,7 @@ export default function PRFX5({ nick = "@User18Ca", initialTab = "muro", classNa
           <CallDock />
 
           <section className="card">
-            <h2>SEND A GIFT <em>BOOSTS FAMA</em></h2>
+            <h2>SEND A GIFT <em>SHOW SOME LOVE</em></h2>
             <p className="eyebrow">
               SENDING TO <b>{giftTarget}</b>{" "}
               <button type="button" className="chip" onClick={() => fx5.cycleGiftTarget()} aria-label="Change gift target">CHANGE TARGET</button>

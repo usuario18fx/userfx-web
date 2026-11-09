@@ -28,7 +28,7 @@ export default function VisitorCounter() {
           return;
         }
 
-        throw new Error("Respuesta inválida");
+        throw new Error("Invalid response");
       })
       .catch((error) => {
         console.error("VisitorCounter:", error);

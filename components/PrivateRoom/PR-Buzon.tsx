@@ -31,7 +31,7 @@ import { usePrivatePermissions } from "./PR-Permissions";
                     USER FX · PRIVATE CONTACTS
                     </span>
                     <h1>
-                    BUZON
+                    INBOX
                     </h1>
                   </div>
                   <button
@@ -92,16 +92,16 @@ import { usePrivatePermissions } from "./PR-Permissions";
                 PRIVATE MESSAGES
                 </span>
                 <strong>
-                SELECT A CONTACT
+                PICK SOMEONE TO CHAT WITH
                 </strong>
                 <p>
-                Your conversations with RoomFX members will appear here.
+                Your RoomFX conversations live here. Pick a member to get started.
                 </p>
               </>
             )}
           </div>
           <div className="pvr-buzon-compose">
-            <input type="text" placeholder={chatLocked ? "Paid membership required" : "Write a private message..."} disabled={chatLocked} />
+            <input type="text" placeholder={chatLocked ? "Paid membership required" : "Say hey..."} disabled={chatLocked} />
             <button type="button" disabled={chatLocked}>
               {chatLocked ? "LOCKED" : "SEND"}
             </button>

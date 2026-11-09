@@ -248,10 +248,10 @@
 USER FX · PRIVATE COLLECTION
             </span>
             <strong>
-ALBUM TEMPORARILY HIDDEN
+THIS ALBUM IS ON PAUSE
             </strong>
             <p>
-The owner has paused this shared gallery.
+The owner has paused sharing. Check back later.
             </p>
           </section>
         ) : null}
@@ -321,7 +321,7 @@ VIEWING NOW
         </div>
         <section className="mml-section">
           <div className="mml-sectionTitle">
-          FEATURED MULTIMEDIA
+          IN THE SPOTLIGHT
           </div>
           <div className="mml-sectionDesc">TRENDING CONTENT · {filteredItems.length} ITEMS · VIDEOS OPEN IN GALLERY VIEW MODE</div>
           <div className="mml-fanContainer">
@@ -467,7 +467,7 @@ VIEWING NOW
                 }}
               />
               <span>
-              DROP A FILE OR CLICK TO CHOOSE
+              DROP IT HERE OR PICK A FILE
               </span>
             </label>
             {uploadError && <p className="mml-uploadError">{uploadError}</p>}

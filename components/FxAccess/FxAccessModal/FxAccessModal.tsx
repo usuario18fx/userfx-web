@@ -85,7 +85,7 @@
         </h2>
         <p>WELCOME, {username}</p>
         <button type="button" onClick={proceedToPrivateRoom}>
-          PROCEED TO PRIVATE ROOM
+          STEP INSIDE
         </button>
       </section>
     </div>
