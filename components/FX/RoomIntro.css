@@ -321,7 +321,9 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 7;
-  width: clamp(132px, 11.5vw, 176px);
+  width: clamp(216px, 18vw, 244px);
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -338,9 +340,9 @@
   display: block;
   padding: 3px 6px 8px;
   color: rgba(189, 213, 236, .67);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: .18em;
+  letter-spacing: .12em;
   white-space: nowrap;
 }
 .fx-rail-caption--foot {
@@ -384,12 +386,12 @@
 .fx-chapter-item.is-active .fx-chapter-number { color: #55caff; }
 .fx-chapter-label {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .095em;
+  letter-spacing: .02em;
 }
 .fx-chapter-track {
   grid-column: 1 / -1;
@@ -664,6 +666,21 @@
   border-color: rgba(255, 255, 255, .32);
 }
 
+/* Evitar que el panel de capítulos invada el botón flotante en pantallas bajas. */
+@media (max-height: 720px) {
+  .fx-step-rail {
+    top: 70px;
+    transform: none;
+    gap: 4px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    max-height: calc(100svh - 164px);
+    overflow-y: auto;
+  }
+  .fx-rail-caption--foot { display: none; }
+  .fx-chapter-item { padding-top: 8px; padding-bottom: 8px; }
+}
+
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .fx-room-intro-head,
@@ -722,16 +739,17 @@
     right: 10px;
     top: 92px;
     transform: none;
-    width: 106px;
-    padding: 9px 7px;
-    gap: 4px;
+    width: min(210px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    padding: 10px 9px;
+    gap: 5px;
     border-radius: 13px;
   }
-  .fx-rail-caption { padding: 2px 4px 5px; font-size: 8px; }
+  .fx-rail-caption { padding: 2px 4px 5px; font-size: 9px; letter-spacing: .08em; }
   .fx-rail-caption--foot { display: none; }
-  .fx-chapter-item { grid-template-columns: 18px minmax(0,1fr); column-gap: 4px; padding: 8px 5px; row-gap: 6px; }
-  .fx-chapter-number { font-size: 10px; }
-  .fx-chapter-label { font-size: 8px; letter-spacing: 0; }
+  .fx-chapter-item { grid-template-columns: 22px minmax(0,1fr); column-gap: 6px; padding: 9px 8px; row-gap: 6px; }
+  .fx-chapter-number { font-size: 11px; }
+  .fx-chapter-label { font-size: 10px; letter-spacing: 0; }
 
   /* Móvil: título arriba, botones abajo, la pantalla queda en medio */
   .fx-pz-left {
