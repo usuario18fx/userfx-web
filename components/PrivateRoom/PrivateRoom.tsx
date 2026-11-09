@@ -376,7 +376,7 @@ const ErrorScreen: FC<ErrorScreenProps> = ({ onBack }) => (
     ACCESS DENIED
     </h1>
     <p>
-    We couldn’t verify your session. Sign in again to get back inside.
+    Could not verify your private session.
     </p>
     <button type="button" onClick={onBack}>
       ← BACK
@@ -772,7 +772,7 @@ export default function PrivateRoom(): ReactElement {
             </em>
           </h1>
           <p>
-          Start with a video call. Stay for the collection. Your private space is ready when you are.
+          The videocall stage is the first thing inside. Start here, then move through the private files below.
           </p>
           <div className="pvr-call-actions">
             <button className="pvr-get-in" type="button" onClick={handleVideocall} disabled={!canUse("videocall")}>

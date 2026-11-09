@@ -1,0 +1,51 @@
+.fx-web-chat { position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(18px, env(safe-area-inset-right)); z-index: 9998; font-family: Inter, "Segoe UI", Arial, sans-serif; color: #edf5fb; }
+.fx-web-chat * { box-sizing: border-box; }
+.fx-web-chat-launcher { display: flex; align-items: center; gap: 10px; padding: 13px 18px; border: 1px solid rgba(60, 164, 255, .48); border-radius: 32px; color: #eef8ff; background: #060b13; font-size: 12px; font-weight: 800; letter-spacing: .17em; cursor: pointer; box-shadow: 0 12px 36px rgba(0,0,0,.6); }
+.fx-web-chat-launcher:hover { border-color: #2d95eb; background: #102135; }
+.fx-web-chat-symbol, .fx-web-chat-header-mark { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid rgba(82, 170, 251, .7); border-radius: 50%; color: #8fd3ff; font-weight: 800; letter-spacing: -.1em; font-size: 13px; }
+.fx-web-chat-pulse { width: 7px; height: 7px; border-radius: 50%; background: #3cceae; box-shadow: 0 0 10px #3cceae; }
+.fx-web-chat-window { display: flex; flex-direction: column; width: min(400px, calc(100vw - 24px)); height: min(640px, calc(100dvh - 40px)); border: 1px solid rgba(92, 143, 188, .36); border-radius: 16px; overflow: hidden; background: #090f1b; box-shadow: 0 26px 80px rgba(0,0,0,.75); }
+.fx-web-chat-header { display: flex; align-items: center; gap: 12px; min-height: 73px; padding: 15px 17px; border-bottom: 1px solid #203249; background: #0e1827; }
+.fx-web-chat-header-mark { width: 39px; height: 39px; font-size: 16px; }
+.fx-web-chat-heading { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.fx-web-chat-heading strong { color: #f5f8fc; font-size: 13px; letter-spacing: .19em; }
+.fx-web-chat-heading small { color: #61bbd5; font-size: 9px; letter-spacing: .11em; }
+.fx-web-chat-close { width: 34px; height: 34px; cursor: pointer; color: #d4e3ee; border: 0; background: transparent; font-size: 27px; }
+.fx-web-chat-center { flex: 1; display: grid; place-items: center; color: #9ab3c9; }
+.fx-web-chat-gate { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding: 22px 20px; }
+.fx-web-chat-gate > strong { font-size: 20px; letter-spacing: .03em; }
+.fx-web-chat-gate > p { margin: 0; font-size: 12px; line-height: 1.7; color: #aebdd1; }
+.fx-web-chat-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fx-web-chat-paths > * { display: flex; flex-direction: column; gap: 8px; padding: 13px 10px; border: 1px solid #2e4860; border-radius: 6px; background: #0c1b2d; color: #f2f7fc; text-decoration: none; }
+.fx-web-chat-paths > a { border-color: #b49358; background: #231e16; }
+.fx-web-chat-paths small { font-size: 8px; letter-spacing: .1em; color: #85b3d3; }
+.fx-web-chat-paths > a small { color: #e7bf80; }
+.fx-web-chat-paths strong { font-size: 11px; }
+.fx-web-chat-paths span { font-size: 10px; color: #9fb1c5; line-height: 1.45; }
+.fx-web-chat-consent { display: flex; align-items: start; gap: 12px; padding: 14px; border: 1px solid #284058; background: #102033; border-radius: 8px; cursor: pointer; }
+.fx-web-chat-consent input { flex: none; margin: 4px 0 0; accent-color: #229fff; width: 16px; height: 16px; }
+.fx-web-chat-consent span { font-size: 11px; line-height: 1.55; color: #c9d8e9; }
+.fx-web-chat-consent a { color: #82caff; text-decoration: underline; }
+.fx-web-chat-telegram { display: block; text-align: center; padding: 13px 12px; background: #188ad3; border: 1px solid #48afe9; border-radius: 6px; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-decoration: none; }
+.fx-web-chat-telegram.is-disabled { opacity: .4; cursor: not-allowed; }
+.fx-web-chat-gate .fx-web-chat-steps { font-size: 10px; }
+.fx-web-chat-link-form { display: flex; flex-direction: column; gap: 10px; }
+.fx-web-chat-link-form input, .fx-web-chat-compose input { width: 100%; min-width: 0; padding: 13px; color: #e2efff; background: #08111e; border: 1px solid #2b435d; border-radius: 6px; font-size: 12px; outline: none; }
+.fx-web-chat-link-form input:focus, .fx-web-chat-compose input:focus { border-color: #35a6e8; }
+.fx-web-chat-link-form button { padding: 13px; border: 1px solid #4aa7e5; background: #123f68; color: #f5fbff; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; letter-spacing: .12em; }
+.fx-web-chat-link-form button:disabled { opacity: .4; cursor: not-allowed; }
+.fx-web-chat-message-list { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 18px 15px; scroll-behavior: smooth; }
+.fx-web-chat-empty { color: #9eb4c8; text-align: center; margin: auto; padding: 24px; line-height: 1.6; font-size: 12px; }
+.fx-web-chat-bubble { max-width: 87%; padding: 11px 13px 8px; border-radius: 10px; background: #15253b; border: 1px solid #254360; align-self: flex-start; overflow-wrap: anywhere; }
+.fx-web-chat-bubble.is-user { background: #15405b; border-color: #276a90; align-self: flex-end; }
+.fx-web-chat-author { color: #86d3fa; font-size: 9px; font-weight: 750; letter-spacing: .1em; }
+.fx-web-chat-bubble p { white-space: pre-wrap; margin: 5px 0 8px; font-size: 12px; line-height: 1.6; }
+.fx-web-chat-bubble time { display: block; text-align: right; color: #8096ab; font-size: 9px; }
+.fx-web-chat-compose { display: flex; gap: 8px; padding: 12px 11px; border-top: 1px solid #21364c; }
+.fx-web-chat-compose button { flex: none; width: 41px; border: 1px solid #51a9e9; border-radius: 6px; background: #195887; color: #fff; cursor: pointer; font-size: 18px; }
+.fx-web-chat-compose button:disabled { opacity: .35; cursor: not-allowed; }
+.fx-web-chat-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 13px 12px; font-size: 9px; color: #778da5; }
+.fx-web-chat-bottom button { flex: none; cursor: pointer; border: 0; color: #91c5e8; background: transparent; text-decoration: underline; font-size: 10px; }
+.fx-web-chat-error { flex: none; color: #ffb9bd; font-size: 11px; line-height: 1.5; padding: 8px 12px; background: #3b1822; margin: 0; }
+@media (max-width: 480px) { .fx-web-chat { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); } .fx-web-chat-window { width: calc(100vw - 24px); height: calc(100dvh - 28px); } }
+@media (prefers-reduced-motion: reduce) { .fx-web-chat-message-list { scroll-behavior: auto; } }

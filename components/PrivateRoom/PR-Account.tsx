@@ -147,7 +147,7 @@
 
             <h1>{profileName}</h1>
             <p className="pvr-profile-username">{account.telegramUsername || "PRIVATE MEMBER"}</p>
-            <p className="pvr-profile-bio">{profile.bio || "A little mystery. No bio yet."}</p>
+            <p className="pvr-profile-bio">{profile.bio || "No bio yet."}</p>
           </div>
         </div>
 
@@ -222,10 +222,10 @@
 
           <div className="pvr-profile-media-empty">
             <span>
-            NOTHING HERE YET
+            NO MEDIA POSTED YET
             </span>
             <small>
-            This is where their photos, videos and albums will show up.
+            Photos, videos and albums will appear here.
             </small>
           </div>
         </section>
@@ -309,7 +309,7 @@ function CameraStudio({ stream, visibility, live, requesting, cameraEnabled, mic
               CAMERA OFFLINE
               </strong>
               <span>
-              TURN ON YOUR CAMERA TO GET STARTED
+              CONNECT YOUR CAMERA TO CONTINUE
               </span>
             </div>
           )}
@@ -410,7 +410,7 @@ export default function PrivateRoomAccount() {
 
   /* ─────   LOCAL DEV ACCOUNT ─────── */
   const loadDevAccount = useCallback(() => {
-    if (!import.meta.env.DEV) return false;
+    if (process.env.NODE_ENV !== "development") return false;
     const devAccount = createDevAccount();
     setAccount(devAccount);
     setProfile(devAccount.profile);
@@ -588,7 +588,7 @@ export default function PrivateRoomAccount() {
         setSaving(true);
         setMessage("");
 
-        if (import.meta.env.DEV && account?.accountId === "usr_DEV_USER18FX") {
+        if (process.env.NODE_ENV === "development" && account?.accountId === "usr_DEV_USER18FX") {
           localStorage.setItem(DEV_PROFILE_KEY, JSON.stringify(profile));
           setAccount((current) => (current ? { ...current, profile } : current));
           setMessage("PROFILE SAVED");
@@ -769,7 +769,7 @@ export default function PrivateRoomAccount() {
                 <span>
                 BIO
                 </span>
-                <textarea name="bio" value={profile.bio} onChange={handleTextChange} placeholder="A little about you. Set the vibe..." maxLength={280} rows={4} />
+                <textarea name="bio" value={profile.bio} onChange={handleTextChange} placeholder="Private profile bio..." maxLength={280} rows={4} />
                 <small>{profile.bio.length}/280</small>
               </label>
 

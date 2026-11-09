@@ -1,16 +1,10 @@
-import VaultAccessOptions from "./components/VaultAccessOptions/VaultAccessOptions";
-import CrownLanding from "./components/CrownLanding/CrownLanding";
-import { PrivatePermissionsProvider, PrivateFeatureGate } from "./components/PrivateRoom/PR-Permissions";
           import { useEffect, useState } from "react";
-          import VaultHome from "./components/VaultHome/VaultHome";
-          import PrivateRoomLiveShell from "./components/PrivateRoom/PR-LiveShell";
+          import VaultHome from "./components/FX/Landing";
+import PrivateRoomDirectGate from "./components/PrivateRoom/PR-DirectGate";
+import { AdminModeProvider } from "./components/PrivateRoom/PR-AdminMode";
           import PrivateRoomMyRoom from "./components/PrivateRoom/PR-MyRoom";
-          import PrivateRoomStage from "./components/PrivateRoom/PR-Stage";
-          import PrivateRoomGallery from "./components/PrivateRoom/PR-Gallery";
-          import PrivateRoomBuzon from "./components/PrivateRoom/PR-Buzon";
-          import PrivateRoomTopNav from "./components/PrivateRoom/PR-TopNav";
-          import PrivateRoomCameraEnhancer from "./components/PrivateRoom/PR-CameraEnhancer";
-
+          import RoomNetwork from "./components/PrivateRoom/RoomFX/RoomNetwork";
+import Friends from "./components/PrivateRoom/RoomFX/Friends";
           function getRoute() {
             return typeof window !== "undefined" ? window.location.hash || "#/" : "#/";
           }
@@ -27,36 +21,24 @@ function hasVerifiedSpecialCode() {
   }
 }
 function PrivateRoomRoute({ route }) {
-  if (route === "#/private-room/stage") return (
-<PrivateFeatureGate feature="stage">
-<PrivateRoomStage />
-</PrivateFeatureGate>
-);
-  if (route === "#/private-room/gallery") return (
-<PrivateFeatureGate feature="multimedia">
-<PrivateRoomGallery />
-</PrivateFeatureGate>
-);
-  if (route === "#/private-room/buzon") return (
-<PrivateFeatureGate feature="chat">
-<PrivateRoomBuzon />
-</PrivateFeatureGate>
-);
-  return (
-<PrivateFeatureGate feature="oncam">
-<PrivateRoomMyRoom />
-</PrivateFeatureGate>
-);
+  const spaces = {
+    "#/private-room/stage": "stage",
+    "#/private-room/gallery": "gallery",
+    "#/private-room/buzon": "buzon",
+    "#/private-room/profiles": "profiles",
+  };
+  return <RoomNetwork space={spaces[route.split("?")[0]] || "myroom"} />;
 }
 export default function App() {
+  return <AdminModeProvider><UserFXApp /><Friends /></AdminModeProvider>;
+}
+export function UserFXApp() {
   const [route, setRoute] = useState(getRoute);
-  const [coverDismissed, setCoverDismissed] = useState(false);
   useEffect(() => {
     const handleRouteChange = () => setRoute(getRoute());
     window.addEventListener("hashchange", handleRouteChange);
     return () => window.removeEventListener("hashchange", handleRouteChange);
   }, []);
-
   useEffect(() => {
     let cancelled = false;
     const params = new URLSearchParams(window.location.search);
@@ -136,34 +118,21 @@ export default function App() {
       if (timer) window.clearTimeout(timer);
     };
   }, []);
-
   if (route === "#/private-room-access") {
     return (
-      <PrivatePermissionsProvider>
-        <PrivateRoomLiveShell />
-      </PrivatePermissionsProvider>
+<>
+<PrivateRoomDirectGate><PrivateRoomMyRoom /></PrivateRoomDirectGate>
+</>
     );
   }
-
   if (route.startsWith("#/private-room")) {
     return (
-      <PrivatePermissionsProvider>
-        <PrivateRoomTopNav />
-        <PrivateRoomLiveShell />
-        <PrivateRoomRoute route={route} />
-        <PrivateFeatureGate feature="oncam" quiet>
-        <PrivateRoomCameraEnhancer />
-        </PrivateFeatureGate>
-      </PrivatePermissionsProvider>
+<PrivateRoomDirectGate>
+<PrivateRoomRoute route={route} />
+</PrivateRoomDirectGate>
     );
   }
-
-  const directAccess = new URLSearchParams(window.location.search);
-  if (!coverDismissed && (route === "#/" || route === "#/corona") && !directAccess.has("code") && !directAccess.has("handoff")) {
-    return <CrownLanding onEnter={() => { setCoverDismissed(true); window.location.hash = "#/vault"; setRoute("#/vault"); window.scrollTo(0, 0); }} />;
-  }
-  return <>
-    {route === "#/vault" && <VaultAccessOptions />}
-    <VaultHome />
-  </>;
+  return (
+<VaultHome />
+);
 }

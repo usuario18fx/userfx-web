@@ -28,10 +28,11 @@ export default function VisitorCounter() {
           return;
         }
 
-        throw new Error("Invalid response");
+        throw new Error("Respuesta inválida");
       })
-      .catch((error) => {
-        console.error("VisitorCounter:", error);
+      .catch(() => {
+        // En desarrollo, la API puede no estar configurada; mostrar un marcador neutro.
+        // No bloquear la portada ni activar el overlay de errores de Next.js.
         setStats(null);
       });
   }, []);
@@ -39,7 +40,7 @@ export default function VisitorCounter() {
   const value = stats ? (showUnique ? stats.unique : stats.visitors) : null;
   const label = showUnique ? "USER" : "VIEW";
   const icon = showUnique ? "/assets/iconos/user.png" : "/assets/iconos/view.png";
-  const formattedValue = `${label}-${formatCounterValue(value)}`;
+  const formattedValue = `${label}-${value === null ? "—" : formatCounterValue(value)}`;
 
   return (
     <button type="button" className="vx-visitorCount" onClick={() => setShowUnique((current) => !current)} title={showUnique ? "Unique users" : "Views"} aria-label={formattedValue}>

@@ -10,7 +10,7 @@
 
   padding:24px;
 
-  background:radial-gradient(ellipse at 18% 0%, #c4a57414, transparent 40%), radial-gradient(ellipse at 82% 12%, #7a2e3a14, transparent 34%), linear-gradient(180deg, #0c0b0a, #080706);
+  background:#08090d;
 
   color:#f3ece0;
 
@@ -90,6 +90,10 @@
 }
 
 .pvr-direct-card{
+  /* Used by Framer Motion's transformTemplate. Keeping this defined is
+     essential: an undefined CSS variable drops the centering transform
+     and places the card's upper-left corner at 50%/50%. */
+  --fx-gate-base-transform:translate(-50%, -50%) scale(var(--pvr-direct-scale));
   position:absolute;
 
   top:50%;
@@ -108,204 +112,37 @@
 
   border:1px solid rgba(221, 178, 105, 0.52);
 
-  background:
-    radial-gradient(
-      85% 62% at 92% 2%,
-
-      rgba(35, 126, 178, 0.18),
-      transparent 66%
-    ),
-    radial-gradient(
-      72% 60% at 0% 100%,
-
-      rgba(128, 35, 62, 0.2),
-      transparent 70%
-    ),
-    linear-gradient(180deg, #1b1510 0%, #120e0b 48%, #0b0a0a 100%);
+  background:#0b0a0f url("/wallpaperGeneral.png") center / cover no-repeat;
 
   box-shadow:
     0 32px 90px #00000080,
     0 0 32px rgba(196, 165, 116, 0.08),
     inset 0 1px 0 rgba(255, 233, 195, 0.09);
 
-  transform:translate(-50%, -50%) scale(var(--pvr-direct-scale));
+  transform:var(--fx-gate-base-transform);
 
   transform-origin:center;
 }
 
-/* ══════════════  DECORATIVE BACKGROUND ═════════════════ */
-
-.pvr-direct-fondo-wrap{
-  position:absolute;
-
-  z-index:0;
-
-  inset:0;
-
-  width:100%;
-
-  height:100%;
-
-  overflow:hidden;
-
-  opacity:0.25;
-
-  pointer-events:none;
-}
-
-.pvr-direct-fondo{
-  display:block;
-
-  width:100%;
-
-  height:100%;
-
-  object-fit:cover;
-
-  object-position:center;
-
-  filter:contrast(1.35) brightness(0.9);
-
-  transform:scale(1.02);
-}
+/* ══════════════ MODAL BACKDROP: ONE IMAGE, ONE OVERLAY ══════════════ */
 
 .pvr-direct-card::before{
   content:"";
-
   position:absolute;
-
-  z-index:1;
-
-  right:44px;
-
-  bottom:42px;
-
-  width:100px;
-
-  height:42px;
-
-  background:url("/iconFX.png") center / contain no-repeat;
-
-  opacity:0.62;
-
-  filter:brightness(0.72) contrast(1.08) saturate(0.8) drop-shadow(6px 9px 7px #0000007a);
-
-  transform:scale(2.45) translateY(-6px);
-
+  inset:0;
+  z-index:0;
   pointer-events:none;
+  background:linear-gradient(180deg, rgba(5,6,10,0.48) 0%, rgba(5,6,10,0.70) 100%);
 }
 
-.pvr-direct-card::after{
-  content:"";
-
-  position:absolute;
-
-  z-index:1;
-
-  top:4px;
-
-  left:4px;
-
-  width:120px;
-
-  height:120px;
-
-  background:url("/icon2.png") center / contain no-repeat;
-
-  opacity:0.7;
-
-  filter:brightness(0.78) contrast(1.1) drop-shadow(7px 10px 8px #00000075);
-
-  transform:scale(3.25) rotate(-2deg);
-
-  transform-origin:top left;
-
-  pointer-events:none;
-}
-
-.direct-icon3,
-.direct-icon4{
-  position:absolute;
-
-  z-index:1;
-
-  width:92px;
-
-  height:92px;
-
-  background-position:center;
-
-  background-repeat:no-repeat;
-
-  background-size:contain;
-
-  pointer-events:none;
-}
-
-.direct-icon3{
-  top:-4px;
-
-  right:24px;
-
-  background-image:url("/icon3.png");
-
-  opacity:0.66;
-
-  filter:brightness(0.94) contrast(1.12) drop-shadow(6px 9px 7px #0000007a);
-
-  transform:scale(2.25) rotate(197deg);
-}
-
-.direct-icon4{
-  bottom:-5px;
-
-  left:24px;
-
-  background-image:url("/icon4.png");
-
-  opacity:0.67;
-
-  filter:brightness(0.92) contrast(1.12) drop-shadow(6px 9px 7px #00000080);
-
-  transform:scale(2.3) rotate(5deg);
-}
-
-.direct-icon3::before,
-.direct-icon4::before{
-  content:"";
-
-  position:absolute;
-
-  z-index:-1;
-
-  inset:-10px;
-
-  background-position:center;
-
-  background-repeat:no-repeat;
-
-  background-size:contain;
-
-  opacity:0.28;
-
-  filter:blur(5px) brightness(0.42);
-
-  pointer-events:none;
-}
-
-.direct-icon3::before{
-  background-image:url("/icon3.png");
-
-  transform:translate(8px, 10px) scale(1.12);
-}
-
-.direct-icon4::before{
-  background-image:url("/icon4.png");
-
-  transform:translate(8px, 10px) scale(1.12);
+.fx-gate-content{
+  position:relative;
+  z-index:2;
 }
 
 /* ═══════════   CONTENT LAYERS ══════════════════════ */
+
+
 
 .pvr-direct-head,
 .pvr-direct-copy,
@@ -517,7 +354,7 @@
 
   background:
     linear-gradient(#05090cb3, #05090cb3),
-    url("/wallpaper.png") center / 180% auto no-repeat;
+    linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 }
 
 .pvr-direct-username > span{
@@ -663,7 +500,7 @@
 
   background:
     linear-gradient(#05090c4d, #05090c4d),
-    url("/wallpaper.png") center / 180% auto no-repeat;
+    linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 
   box-shadow:
     0 0 0 1px #2aabee70,
@@ -712,88 +549,91 @@
   letter-spacing:0.14em;
 }
 
+/* USERFX_CODE_ACTION_HOVER_V2 — wallpaper only on hover / keyboard focus. */
 .pvr-direct-secondary-actions{
   position:relative;
-
   z-index:2;
-
   display:grid;
-
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:7px;
-
-  width:min(430px, 100%);
-
+  width:min(430px,100%);
   margin:5px auto 0;
 }
 
 .pvr-direct-secondary-actions > button{
+  position:relative;
+  isolation:isolate;
   display:flex;
-
-  flex-direction:column;
-
   align-items:center;
-
   justify-content:center;
-
-  gap:1px;
-
   min-width:0;
-
-  min-height:30px;
-
-  padding:4px 7px;
-
-  border:1px solid #c4a57455;
-
-  border-radius:4px;
-
-  background:#0f0d0b;
-
-  color:#dcd3c5;
-
+  min-height:34px;
+  padding:7px 10px;
+  overflow:hidden;
+  border:1px solid rgba(196,165,116,.36);
+  border-radius:5px;
+  background:rgba(13,15,20,.78);
+  color:#ece2d3;
   cursor:pointer;
+  transition:border-color .22s ease,transform .22s ease,box-shadow .22s ease;
+}
 
-  transition:
-    border-color 0.16s ease,
-    background 0.16s ease,
-    transform 0.16s ease;
+.pvr-direct-secondary-actions > button.pvr-direct-get-code{
+  color:#e8c992;
+  border-color:rgba(208,178,117,.49);
+  background:rgba(73,56,34,.24);
+}
+
+/* A single background image; no icon layer or hidden crown SVG in either button. */
+.pvr-direct-secondary-actions > button::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    linear-gradient(110deg,rgba(8,9,15,.40),rgba(8,9,15,.22)),
+    url("/wallpaperGeneral.png") center / cover no-repeat;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+
+.pvr-direct-secondary-actions > button:hover::before,
+.pvr-direct-secondary-actions > button:focus-visible::before{
+  opacity:1;
 }
 
 .pvr-direct-secondary-actions > button:hover,
+.pvr-direct-secondary-actions > button:focus-visible,
 .pvr-direct-secondary-actions > button.is-active{
-  border-color:#fcc061;
-
-  background:#18140f;
-
+  border-color:#d5b77f;
+  box-shadow:inset 0 0 0 1px rgba(213,183,127,.14),0 5px 18px rgba(0,0,0,.24);
   transform:translateY(-1px);
 }
 
-.pvr-direct-secondary-actions .pvr-direct-get-code{
-  background:linear-gradient(180deg, #c4a5741a, rgba(196, 165, 116, 0.03));
-
-  color:#ddc28f;
+.pvr-direct-secondary-actions > button:focus-visible{
+  outline:2px solid #2aabee;
+  outline-offset:2px;
 }
 
-.pvr-direct-secondary-actions span{
+.pvr-direct-secondary-actions .pvr-direct-action-text{
+  position:relative;
+  z-index:1;
+  display:block;
+  min-width:0;
   color:inherit;
-
-  font-size:7px;
-
-  font-weight:900;
-
-  letter-spacing:0.12em;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.085em;
+  white-space:nowrap;
+  text-shadow:0 1px 6px rgba(0,0,0,.72);
 }
 
-.pvr-direct-secondary-actions small{
-  color:#9b8f7f;
-
-  font-size:5px;
-
-  font-weight:700;
-
-  letter-spacing:0.1em;
+@media (prefers-reduced-motion:reduce){
+  .pvr-direct-secondary-actions > button,
+  .pvr-direct-secondary-actions > button::before{
+    transition:none;
+  }
 }
 
 /* ══════════  SECONDARY STAGE ═══════════════════════════════════ */
@@ -1009,7 +849,7 @@
 
   outline:0;
 
-  background:url("/wallpaper.png") center / 200% auto no-repeat;
+  background:linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 
   color:#fff;
 
@@ -1111,7 +951,7 @@
 .pvr-direct-inputs[data-prefix="BSIC"] input{
   background:
     linear-gradient(180deg, #6aeb0014, #6aeb0010),
-    url("/wallpaper.png") center / 200% auto no-repeat;
+    linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 
   border:1px solid #6aeb009c !important;
 
@@ -1123,7 +963,7 @@
 .pvr-direct-inputs[data-prefix="PRX0"] input{
   background:
     linear-gradient(180deg, #d84f1442, #ff400016),
-    url("/wallpaper.png") center / 200% auto no-repeat;
+    linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 
   border:2px solid #d85b32 !important;
 
@@ -1135,7 +975,7 @@
 .pvr-direct-inputs[data-prefix="VIPX"] input{
   background:
     linear-gradient(180deg, #c800ff3a, #c800ff30),
-    url("/wallpaper.png") center / 200% auto no-repeat;
+    linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
 
   border:1px solid #c800ff9c !important;
 
@@ -1960,6 +1800,7 @@
   }
 
   .pvr-direct-card{
+    --fx-gate-base-transform:none;
     position:relative;
 
     top:auto;
@@ -2036,7 +1877,7 @@
 
     background:
       linear-gradient(#05090cad, #05090ccc),
-      url("/wallpaper.png") center / 160% auto no-repeat;
+      linear-gradient(180deg, rgba(8, 11, 17, 0.86), rgba(8, 11, 17, 0.86));
   }
 
   .pvr-direct-username > span::before{

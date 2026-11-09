@@ -77,7 +77,7 @@ async function main() {
       if (pixels[index + 3] > 64) rosePixels.push([x, y, pixels[index], pixels[index + 1], pixels[index + 2]]);
     }
   }
-  if (!rosePixels.length) throw new Error('The rose image is empty.');
+  if (!rosePixels.length) throw new Error('La imagen de la rosa está vacía.');
   const crownCount = Math.min(source.length / 3, 22000);
   const roseCount = Math.min(rosePixels.length, 10000);
   const count = crownCount + roseCount;
@@ -136,9 +136,9 @@ async function main() {
   let dragging = false, moved = false, lastX = 0, lastY = 0, active = true, raf = 0;
   const mouse = { x: 10, y: 10, dx: 0, dy: 0, energy: 0, inside: false };
   function sync() {
-    button.textContent = phase === 'falling' || phase === 'ground' ? 'BRING THEM BACK' : 'LET THEM FALL';
+    button.textContent = phase === 'falling' || phase === 'ground' ? 'Regenerar corona y rosa' : 'Deshacer corona y rosa';
     button.setAttribute('aria-pressed', String(phase === 'falling' || phase === 'ground'));
-    status.textContent = phase === 'ground' ? 'ALL FALLEN · MOVE YOUR CURSOR TO STIR THINGS UP' : phase === 'falling' ? 'LET IT ALL FALL' : phase === 'rising' ? 'COMING BACK TOGETHER…' : `${count.toLocaleString('en-CA')} PARTICLES · TAP TO SCATTER`;
+    status.textContent = phase === 'ground' ? 'ARENA SUELTA · MUEVE EL MOUSE PARA DISPERSARLA' : phase === 'falling' ? 'GRANOS EN CAÍDA LIBRE' : phase === 'rising' ? 'REGENERANDO CORONA Y ROSA…' : `${count.toLocaleString('es')} GRANOS · PULSA PARA DESHACER`;
   }
   function transition(next) {
     phase = next; elapsed = 0; hold = 0;
@@ -154,6 +154,17 @@ async function main() {
   }
   function toggle() { transition(phase === 'falling' || phase === 'ground' ? 'rising' : 'falling'); }
   button.onclick = toggle;
+  const fxEmbedded = new URLSearchParams(location.search).has('embed');
+  if (fxEmbedded) window.addEventListener('message', (event) => {
+    if (event.origin !== location.origin || event.source !== window.parent) return;
+    if (event.data?.type !== 'userfx:protocol-crown') return;
+    const p = Math.min(1, Math.max(0, Number(event.data.progress) || 0));
+    yaw = -.2 + p * Math.PI * 2.2;
+    pitch = .08 + Math.sin(p * Math.PI) * .10;
+    const breaking = Boolean(event.data.dissolve);
+    if (breaking && phase !== 'falling' && phase !== 'ground') transition('falling');
+    if (!breaking && (phase === 'falling' || phase === 'ground')) transition('rising');
+  });
   document.querySelector('#reset').onclick = () => { yaw = -.2; pitch = .08; mouse.energy = 0; transition('rising'); };
   canvas.onpointerdown = event => {
     dragging = true; moved = false; lastX = event.clientX; lastY = event.clientY;
@@ -252,7 +263,7 @@ async function main() {
     const dt = Math.min((now - (last || now)) / 1000, .04);
     last = now; elapsed += dt;
     if (phase === 'falling' && elapsed > 3.2) transition('ground');
-    if (phase === 'ground') { hold += dt; if (hold > 12 && !dragging) transition('rising'); }
+    if (phase === 'ground') { hold += dt; if (!fxEmbedded && hold > 12 && !dragging) transition('rising'); }
     if (phase === 'rising' && elapsed > (reduced ? 1 : 5)) { velocity.fill(0); transition('idle'); }
     // Substeps keep impacts stable on slower displays.
     const steps = Math.max(1, Math.ceil(dt / .012));

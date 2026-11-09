@@ -87,7 +87,7 @@ npm run build
 ```powershell
 git add package.json package-lock.json .gitignore
 git add components/VaultHome.tsx
-git add api/verify.js api/access-session.js api/private-media.js
+git add server/api/verify.js server/api/access-session.js server/api/private-media.js
 git add lib/vault-session.js scripts/upload-private-album.mjs
 git add public/assets/album/PRVW
 git commit -m "feat: protect plan albums with private Blob storage"

@@ -1,9 +1,7 @@
           import { useState, useEffect } from "react";
           import VaultHome from "./VaultHome/VaultHome";
-
           const STORAGE_KEY = "vault_unlocked";
           const MAX_ATTEMPTS = 5;
-
           export default function AccessGate() {
             const [prefix, setPrefix] = useState("");
             const [suffix, setSuffix] = useState("");
@@ -12,9 +10,8 @@
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState("");
             const [attempts, setAttempts] = useState(0);
-
-            // La sesión del servidor es la fuente principal de verdad.
-            // sessionStorage queda solo como reflejo local del estado autenticado.
+// La sesión del servidor es la fuente principal de verdad.
+// sessionStorage queda solo como reflejo local del estado autenticado.
             useEffect(() => {
               let cancelled = false;
 
@@ -25,132 +22,118 @@
                     credentials: "same-origin",
                     headers: { Accept: "application/json" },
                     cache: "no-store",
-                  });
-
+                });
                   const data = await res.json().catch(() => null);
-
                   if (!cancelled && res.ok && data?.authenticated === true) {
                     sessionStorage.setItem(STORAGE_KEY, "true");
                     setUnlocked(true);
-                  } else if (!cancelled) {
+                } else if (!cancelled) {
                     sessionStorage.removeItem(STORAGE_KEY);
                     setUnlocked(false);
-                  }
+                }
                 } catch {
                   if (!cancelled) {
                     // No conceder acceso únicamente por un valor local si el servidor no pudo validarlo.
                     sessionStorage.removeItem(STORAGE_KEY);
                     setUnlocked(false);
-                  }
-                } finally {
+                  }} finally {
                   if (!cancelled) setChecking(false);
-                }
-
+              }
                 fetch("/api/miniapp-track", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     initData: window.Telegram?.WebApp?.initData || "",
-                  }),
-                }).catch(() => {});
+              }),
+              }).catch(() => {});
               }
-
               bootstrapSession();
-
               return () => {
                 cancelled = true;
-              };
-            }, []);
-
+             };
+             }, []);
             async function handleSubmit(e: React.FormEvent) {
               e.preventDefault();
-
               if (attempts >= MAX_ATTEMPTS) {
-                setError("Too many attempts. Refresh the page to try again.");
+                setError("Demasiados intentos. Recarga la página.");
                 return;
-              }
-
+            }
               setLoading(true);
               setError("");
-
               try {
                 const res = await fetch("/api/verify", {
                   method: "POST",
                   credentials: "same-origin",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ prefix, suffix }),
-                });
+            });
                 const data = await res.json();
-
                 if (data.ok) {
                   sessionStorage.setItem(STORAGE_KEY, "true");
                   setUnlocked(true);
-                } else {
+            } else {
                   setAttempts((n) => n + 1);
-                  setError(data.error || "That code didn’t work. Check it and try again.");
+                  setError(data.error || "Código inválido");
                   setSuffix("");
-                }
+            }
               } catch {
-                setError("Connection dropped. Try again in a moment.");
+                setError("Error de conexión");
               } finally {
                 setLoading(false);
-              }
-            }
-
+            }}
             if (checking) return null;
-
-            if (unlocked) return <VaultHome />;
-
+            if (unlocked) return 
+            <VaultHome />;
             return (
-              <div className="access-gate">
-                <style>{GATE_CSS}</style>
+                <div className="access-gate">
+                <style>
+                 {GATE_CSS}
+                </style>
                 <form onSubmit={handleSubmit}>
-                  <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
-                  <p className="access-gate__kicker">
-                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE VAULT
-                  </p>
-                  <div className="access-gate__inputs">
-                    <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
-                    <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
-                  </div>
-                  <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
-                    {loading ? "CHECKING..." : "LET ME IN"}
-                  </button>
+                <img src="/assets/userfx-logo-sin.png" alt="USER FX" className="access-gate__logo" />
+                <p className="access-gate__kicker">
+                  𝐔𝐒𝐄𝐑 🜲 𝓕𝐗 · PRIVATE ROOM
+                </p>
+                <div className="access-gate__inputs">
+                <input value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())} placeholder="PREFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+                <input value={suffix} onChange={(e) => setSuffix(e.target.value.toUpperCase())} placeholder="SUFFIX" maxLength={4} autoCapitalize="characters" autoComplete="off" disabled={loading || attempts >= MAX_ATTEMPTS} />
+                </div>
+                <button type="submit" disabled={loading || attempts >= MAX_ATTEMPTS}>
+                    {loading ? "Verificando..." : "Entrar"}
+                </button>
                   {error && (
-                    <p role="alert" className="access-error">
+                <p role="alert" className="access-error">
                       {error}
-                    </p>
+                </p>
                   )}
                 </form>
-              </div>
-            );
-          }
-
-          const GATE_CSS = `
-.access-gate{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100dvh;
-  padding:24px;
-  background:#07060a;
-  font-family:"JetBrains Mono", ui-monospace, monospace;
-}
-.access-gate form{
-  width:100%;
-  max-width:320px;
-  padding:32px 24px;
-  border:1px solid rgba(224,184,90,.24);
-  background:linear-gradient(rgba(7,6,10,.64), rgba(7,6,10,.84));
-  text-align:center;
-}
-.access-gate__logo{
-  width:64px;
-  height:64px;
-  object-fit:contain;
-  margin:0 auto 12px;
-  display:block;
-}
+                </div>
+                  );
+                  } 
+          const GATE_CSS = `.access-gate{
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  min-height:100dvh;
+                  padding:24px; 
+                  background:#07060a;
+                  font-family:"JetBrains Mono", ui-monospace, monospace;
+                }
+                .access-gate form{
+                 width:100%;
+                 max-width:320px;
+                 padding:32px 24px;
+                 border:1px solid rgba(224,184,90,.24);
+                 background:linear-gradient(rgba(7,6,10,.64), rgba(7,6,10,.84));
+                 text-align:center;
+                }
+                .access-gate__logo{
+                 width:64px;
+                 height:64px;
+                 object-fit:contain;
+                 margin:0 auto 12px;
+                display:block;
+                }
 .access-gate__kicker{
   margin:0 0 24px;
   color:#e0b85a;
@@ -187,7 +170,7 @@
 .access-gate button{
   width:100%;
   height:44px;
-  border:1px solid #d4a83a;
+  border:1px solid #3ad1d4;
   background:linear-gradient(180deg, #2a2a2a, #111);
   color:#f6d77a;
   font-family:inherit;

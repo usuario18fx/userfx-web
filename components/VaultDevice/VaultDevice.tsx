@@ -1,4 +1,3 @@
-import { PLAN_DAYS } from "../../lib/access-plans.js";
           import { useState, useEffect } from "react";
           import "./VaultDevice.css";
 
@@ -52,7 +51,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
               title: "Basic",
               emoji: ICONS.rosa,
               stars: 350,
-              entries: null,
+              entries: 1,
               ctaClass: "cta-basic",
               groups: [
                 {
@@ -60,29 +59,29 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                   items: [
                     {
                       icon: ICONS.fotos,
-                      text: "Camera access",
-                      sub: "Go on cam in your private room",
+                      text: "Private session access",
+                      sub: "Unlock one selected session from the vault",
                     },
                     {
                       icon: ICONS.getin,
                       text: "Instant entry",
-                      sub: "Get your personal code after checkout",
+                      sub: "Your access code is generated after purchase",
                     },
                     {
                       icon: ICONS.anydevice,
                       text: "Any device",
-                      sub: "Your phone, tablet or desktop. Your choice.",
+                      sub: "Watch smoothly on phone, tablet or desktop",
                     },
                     {
                       icon: ICONS.preview,
-                      text: "Private chat",
-                      sub: "Keep the conversation going in private chat",
+                      text: "Full session view",
+                      sub: "Enjoy the complete unlocked session, not just a preview",
                     },
                   ],
                 },
                 {
                   label: "Best for",
-                  items: [{ icon: ICONS.candado2, text: "Your starting lineup", sub: "Camera and chat while your BASIC code is active." }],
+                  items: [{ icon: ICONS.candado2, text: "One premium drop", sub: "One-time access only." }],
                 },
               ],
             },
@@ -90,7 +89,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
               title: "Pro",
               emoji: ICONS.fuego,
               stars: 750,
-              entries: null,
+              entries: 10,
               ctaClass: "cta-pro",
               groups: [
                 {
@@ -98,18 +97,18 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                   items: [
                     {
                       icon: ICONS.choose,
-                      text: "Camera and private chat",
-                      sub: "Get on cam. Find your people.",
+                      text: "Choose your sessions",
+                      sub: "Pick from available premium sessions in the vault",
                     },
                     {
                       icon: ICONS.quality,
-                      text: "Recording",
-                      sub: "Record your ONLIVE sessions",
+                      text: "Enhanced quality",
+                      sub: "Higher-quality streaming for a smoother viewing experience",
                     },
                     {
                       icon: ICONS.quickly,
                       text: "Instant access",
-                      sub: "Got your code? You’re ready to step inside.",
+                      sub: "No waiting — unlock and enter when you are ready",
                     },
                   ],
                 },
@@ -118,14 +117,14 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                   items: [
                     {
                       icon: ICONS.fuego,
-                      text: "Multimedia access",
-                      sub: "Explore the private collection",
+                      text: "Regular viewers",
+                      sub: "Made for people who want more than one session",
                     },
-                    { icon: "💎", text: "Recording and multimedia", sub: "Save ONLIVE sessions and explore the collection" },
+                    { icon: "💎", text: "More value per entry", sub: "Code saved. Access secured." },
                     {
                       icon: ICONS.vipcard,
-                      text: "More to explore",
-                      sub: "Camera, chat, recording and multimedia",
+                      text: "VIP-ready",
+                      sub: "A natural step up before going all-access",
                     },
                   ],
                 },
@@ -141,20 +140,20 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
                 {
                   label: "What you get",
                   items: [
-                    { icon: ICONS.fotos, text: "Camera, chat and multimedia", sub: "Connect, chat and explore the collection" },
-                    { icon: ICONS.limit, text: "Unlimited entries", sub: "Enter as many times as you want" },
+                    { icon: ICONS.fotos, text: "Full vault entry", sub: "Every session, no restrictions" },
+                    { icon: ICONS.limit, text: "Unlimited sessions", sub: "Enter as many times as you want" },
                     {
                       icon: ICONS.calendario,
-                      text: "Exclusive Stage access",
-                      sub: "Everything in PRO, plus your spot on the VIP Stage",
+                      text: "No day limit",
+                      sub: "Unlimited entries while your VIP code remains active",
                     },
-                    { icon: ICONS.quality, text: "Longest access period", sub: "Your full VIP lineup, for the whole access period" },
+                    { icon: ICONS.quality, text: "HD quality", sub: "Highest available resolution" },
                     { icon: ICONS.candado2, text: "Any device", sub: "Keep your access active" },
                   ],
                 },
                 {
                   label: "",
-                  items: [{ icon: ICONS.telegram, text: "Keep the conversation going", sub: "Private chat while your VIP code is active" }],
+                  items: [{ icon: ICONS.telegram, text: "Chat Experience", sub: "Direct DM for anything" }],
                 },
               ],
             },
@@ -219,7 +218,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
       window.location.assign(TELEGRAM_PLAN_LINKS[activeSheet]);
     } catch {
       setBuying(false);
-      setBuyError("Telegram didn’t open. Give it another try.");
+      setBuyError("No se pudo abrir Telegram. Inténtalo nuevamente.");
     }
   };
   const currentPlan = activeSheet ? PLANS[activeSheet] : null;
@@ -298,7 +297,7 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
           <div className="vd-sheet-handle">
             <div className="vd-sheet-handle-bar" />
           </div>
-          <div className="vd-sheet-header" data-validity={activeSheet ? `VALID · ${PLAN_DAYS[activeSheet]} DAYS` : ""} data-privileges={activeSheet === "basic" ? "CAMERA + CHAT" : activeSheet === "vip" ? "VIP · STAGE INCLUDED" : activeSheet ? "REC + MEDIA" : ""}>
+          <div className="vd-sheet-header">
             <div className="vd-sheet-title-area">
               <div className="vd-sheet-title">
                 <span className={`vd-sheet-title-name vd-title-${activeSheet}`}>{currentPlan?.title}</span>
@@ -330,12 +329,12 @@ import { PLAN_DAYS } from "../../lib/access-plans.js";
               <button type="button" className={`vd-buy-btn ${currentPlan?.ctaClass ?? ""}`} onClick={openPlanInBot} disabled={buying || !currentPlan}>
                 {buying ? (
                   <span className="vd-buy-loading">
-                  GETTING CHECKOUT READY...
+                  CREATING ORDER...
                   </span>
                 ) : (
                   <>
                     <span className="vd-buy-label">
-                    GET MY CODE
+                    GET CODE
                     </span>
                     <span className="vd-buy-price">{currentPlan?.stars ?? 0} STARS ⭐</span>
                   </>

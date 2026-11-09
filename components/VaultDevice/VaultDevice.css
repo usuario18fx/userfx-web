@@ -838,9 +838,15 @@
     box-shadow 0.2s ease,
     color 0.2s ease;
 }
-
-
-
+.vd-detail-basic .vd-sheet-header::before{
+  content:"EXPIRES · 7 DAYS";
+}
+.vd-detail-pro .vd-sheet-header::before{
+  content:"EXPIRES · 30 DAYS";
+}
+.vd-detail-vip .vd-sheet-header::before{
+  content:"EXPIRES · 90 DAYS";
+}
 /* Access badge shown as soon as a plan is selected. */
 .vd-detail-sheet .vd-sheet-header::after{
   position:absolute;
@@ -867,9 +873,15 @@
   white-space:nowrap;
 }
 
-
-
-
+.vd-detail-basic .vd-sheet-header::after{
+  content:"1 ACCESS";
+}
+.vd-detail-pro .vd-sheet-header::after{
+  content:"10 ACCESS";
+}
+.vd-detail-vip .vd-sheet-header::after{
+  content:"∞ ACCESS";
+}
 /* Desktop hover: expiry becomes a slightly brighter information drawer. */
 @media (hover: hover){
   .vd-detail-sheet .vd-sheet-header:hover::before{
@@ -880,9 +892,15 @@
       0 8px 22px #0000004f,
       0 0 15px #d3aa4930;
   }
-  
-  
-  
+  .vd-detail-basic .vd-sheet-header:hover::before{
+    content:"EXPIRES · 7 DAYS · ACTIVE KEY";
+  }
+  .vd-detail-pro .vd-sheet-header:hover::before{
+    content:"EXPIRES · 30 DAYS · ACTIVE KEY";
+  }
+  .vd-detail-vip .vd-sheet-header:hover::before{
+    content:"EXPIRES · 90 DAYS · ACTIVE KEY";
+  }
 }
 @media (max-width: 560px){
   /* Phone layout */
@@ -985,6 +1003,3 @@
     min-height:700px !important;
   }
 }
-
-.vd-detail-sheet .vd-sheet-header::before { content: attr(data-validity); }
-.vd-detail-sheet .vd-sheet-header::after { content: attr(data-privileges); }

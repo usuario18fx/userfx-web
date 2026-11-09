@@ -1,0 +1,39 @@
+/* Corona de partículas original, sin panel ni controles del micrositio. */
+.pv .pv-stage { isolation: isolate; }
+.pv .fx-protocol-particle-crown {
+  position: absolute; z-index: 2; pointer-events: none; overflow: hidden;
+  left: 50%; top: 49%; transform: translate(-50%, -50%);
+  width: clamp(190px, 25vw, 400px); aspect-ratio: 1;
+  border-radius: 50%; background: transparent;
+  filter: drop-shadow(0 0 23px rgba(16,188,237,.25));
+}
+.pv .fx-protocol-particle-crown-frame {
+  position: absolute; border: 0; pointer-events: none;
+  left: -17%; top: -17%; width: 134%; height: 134%;
+  background: transparent;
+}
+@media(max-width: 900px) {
+  .pv .fx-protocol-particle-crown { left: 50%; top: 37%; width: 36vw; min-width: 130px; opacity: .65; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .pv .fx-protocol-particle-crown { display: none; }
+}
+.pv .pv-stage { isolation: isolate; position: relative; }
+
+.pv .pv-crown {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 23px rgba(16, 188, 237, .25));
+}
+
+@media (max-width: 900px) {
+  .pv .pv-crown { opacity: .65; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv .pv-crown { display: none; }
+}
