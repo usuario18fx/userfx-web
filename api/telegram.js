@@ -625,6 +625,7 @@ const REQUEST_STATUS = {
 // ======================================================
 const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
+const BTN_SPCL = "✦ ꜱᴘᴄʟ";
 const BTN_BASIC = "🌹 ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
@@ -937,7 +938,7 @@ async function generateIdentityCode(ctx, options = {}) {
 
   const access = await getTelegramFxAccess(parsedUsername.normalized);
   if (!access || !access.enabled || !access.telegramfx_access) {
-    await ctx.reply("⛔ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀᴄᴄᴏᴜɴᴛ ɪꜱ ɴᴏᴛ ʀᴇɢɪꜱᴛᴇʀᴇᴅ ꜰᴏʀ ᴘʀɪᴠᴀᴛᴇ ᴀᴄᴄᴇꜱꜱ.");
+    await ctx.reply("⛔ Tu cuenta de Telegram no tiene acceso SPCL activo. Puedes solicitarlo enviándome un DM.", getSpclRequestKeyboard());
     return null;
   }
 
@@ -953,7 +954,7 @@ async function generateIdentityCode(ctx, options = {}) {
     if (previousRaw) {
       try {
         const previousRecord = JSON.parse(previousRaw);
-        if (previousRecord.status === "consumed") {
+        if (previousRecord.status === "consumed" && !replaceExisting) {
           await ctx.reply("✔ ʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ʜᴀꜱ ᴀʟʀᴇᴀᴅʏ ʙᴇᴇɴ ᴜꜱᴇᴅ.");
           return null;
         }
@@ -1123,7 +1124,7 @@ function getMainKeyboard() {
   ]).resize();
 }
 function getAccessKeyboard() {
-  return Markup.keyboard([[BTN_BASIC, BTN_VIP], [BTN_PRO], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
+  return Markup.keyboard([[BTN_BASIC, BTN_PRO], [BTN_VIP, BTN_SPCL], [BTN_BACK_MENU, Markup.button.webApp(BTN_WEBSITE, USERFX_SITE_URL)]]).resize();
 }
 function getPendingPhotoKeyboard() {
   return Markup.keyboard([[BTN_PENDING_REQUEST], [BTN_CANCEL]]).resize();
@@ -1665,6 +1666,83 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
   }
 });
 
+// SPCL — Confirm the real Telegram identity before checking server-side access.
+// Never trust a username typed by the visitor or grant a session from a button alone.
+const SPCL_DM_URL = "https://t.me/User18Fx";
+function getSpclRequestKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.url("✉ SOLICITAR ACCESO · DM", SPCL_DM_URL)],
+  ]);
+}
+async function openSpclConfirmation(ctx) {
+  await trackButtonClick(ctx, "ꜱᴘᴄʟ");
+  if (ctx.chat?.type !== "private") {
+    await ctx.reply("🔒 Abre este bot en un chat privado para verificar SPCL.",
+      Markup.inlineKeyboard([[Markup.button.url("ABRIR BOT", "https://t.me/User18Fx_bot?start=spcl")]]));
+    return;
+  }
+  // ctx.from comes from Telegram's signed webhook, not user-entered text.
+  const username = normalizeTelegramFxUsername(ctx.from?.username || "");
+  const id = String(ctx.from?.id || "");
+  if (!username || !id) {
+    await ctx.reply("⚠️ Para SPCL primero configura un @username en tu perfil de Telegram y vuelve a pulsar SPCL.");
+    return;
+  }
+  const buttons = Markup.inlineKeyboard([
+    [Markup.button.callback("✓ CONFIRMAR MI USERNAME", `spcl_confirm_${id}`)],
+    [Markup.button.callback("← CANCELAR", `spcl_cancel_${id}`)],
+  ]);
+  await ctx.reply(
+    `✦ <b>SPCL · CONFIRMA TU USERNAME</b>\n\n¿Eres <b>${escapeHtml(username.display)}</b>?\n\nComprobaremos tu acceso antes de entregar cualquier código.`,
+    { parse_mode: "HTML", reply_markup: buttons.reply_markup }
+  );
+}
+bot.action(/^spcl_confirm_(\\d+)$/, async (ctx) => {
+  const requestedId = String(ctx.match?.[1] || "");
+  if (!requestedId || requestedId !== String(ctx.from?.id || "")) {
+    await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
+    return;
+  }
+  if (ctx.chat?.type !== "private") {
+    await ctx.answerCbQuery("Solo en chat privado.", { show_alert: true });
+    return;
+  }
+  const username = normalizeTelegramFxUsername(ctx.from?.username || "");
+  if (!username) {
+    await ctx.answerCbQuery("Primero configura tu @username.", { show_alert: true });
+    return;
+  }
+  try {
+    await ctx.answerCbQuery("Verificando acceso SPCL…");
+    const access = await getTelegramFxAccess(username.normalized);
+    if (!access || access.enabled !== true || access.telegramfx_access !== true) {
+      await ctx.reply(
+        `⛔ <b>NO TIENES ACCESO SPCL</b>\n\n${escapeHtml(username.display)} no tiene autorización activa.\n\nPuedes solicitar acceso enviándome un mensaje directo.`,
+        { parse_mode: "HTML", reply_markup: getSpclRequestKeyboard().reply_markup }
+      );
+      return;
+    }
+    // Existing Redis identity-code engine: 15-minute, one-time code tied to
+    // this Telegram user ID and username; Vault verifies it server-side.
+    await sendIdentityCode(ctx, { replaceExisting: true });
+  } catch (error) {
+    logger.error("SPCL CONFIRMATION ERROR", {
+      userId: String(ctx.from?.id || ""),
+      ...getTelegramError(error),
+      stack: getErrorStack(error),
+    });
+    await ctx.reply("⚠️ No fue posible verificar SPCL. Inténtalo de nuevo; no se ha concedido acceso.").catch(() => {});
+  }
+});
+bot.action(/^spcl_cancel_(\\d+)$/, async (ctx) => {
+  if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
+    await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
+    return;
+  }
+  await ctx.answerCbQuery("Cancelado");
+  await ctx.reply("Verificación SPCL cancelada.", getAccessKeyboard());
+});
+
 //// USER START //
 async function handleUserStart(ctx) {
   try {
@@ -1673,6 +1751,10 @@ async function handleUserStart(ctx) {
     const startPayload = String(ctx.startPayload || textPayload || "")
       .trim()
       .toLowerCase();
+    if (startPayload === "spcl") {
+      await openSpclConfirmation(ctx);
+      return;
+    }
     // TGMX IDENTITY START
     if (startPayload === "identity") {
       await sendIdentityCode(ctx);
@@ -1912,6 +1994,10 @@ bot.on("text", async (ctx, next) => {
     if (text === BTN_PENDING_REQUEST) {
       await trackButtonClick(ctx, "ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ");
       return await sendPendingVideocallPanel(ctx);
+    }
+    //// SPCL · Telegram username confirmation and permission check //
+    if (text === BTN_SPCL) {
+      return await openSpclConfirmation(ctx);
     }
     //// VIP //
     if (text === BTN_VIP) {
