@@ -127,7 +127,7 @@ function AdminLogin({ status, onClose, onComplete }: { status: Status; onClose: 
       Sign in with Google
     </button>
     {!status.googleEnabled && <p className="pvr-admin-caption">Google sign-in isn't available yet.</p>}
-    {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Already have access · Sign in" : "Primera vez · Create access"}</button>}
+    {!status.linked && <button type="button" className="pvr-admin-text" disabled={working} onClick={() => { setSignup((value) => !value); setError(""); }}>{signup ? "Already have access · Sign in" : "New here? Create access"}</button>}
   </AdminDialog>;
 }
 function AdminLoginFieldIcon({ kind }: { kind: "email" | "password" }) {
@@ -182,8 +182,8 @@ function AdminBenefits({ scope, onClose, onExpired }: { scope: Scope; onClose: (
         {loading ? <p>Searching…</p> : users.map((member) => <button type="button" key={member.username} disabled={!member.active} onClick={() => { setSelected(member); const grant = member.grants[scope]; setPrefix(grant && (grant.expiresAt === null || Date.parse(grant.expiresAt) > Date.now()) ? grant.prefix : null); }}>
           <Avatar name={member.name} src={member.avatarUrl} /><span><strong>{member.name}</strong><small>@{member.username}{!member.active ? " · identity inactive" : ""}</small></span><Icon name="arrow" size={16} />
         </button>)}
-        {!loading && query.replace(/^@/, "").length >= 3 && !users.length && !error && <p>No hay coincidencias. Busca su username de Telegram.</p>}
-        {!query && <p>Escribe al menos tres letras para encontrar un username.</p>}
+        {!loading && query.replace(/^@/, "").length >= 3 && !users.length && !error && <p>No matches. Try their Telegram username.</p>}
+        {!query && <p>Enter at least three characters to find someone.</p>}
       </div>
     </> : <>
       <div className="pvr-admin-selected"><Avatar name={selected.name} src={selected.avatarUrl} /><span><strong>{selected.name}</strong><small>@{selected.username}</small></span><button type="button" disabled={saving} onClick={() => { setSelected(null); setPrefix(null); setSaved(false); }}>Change</button></div>

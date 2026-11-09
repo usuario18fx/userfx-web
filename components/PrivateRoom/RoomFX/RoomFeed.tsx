@@ -160,7 +160,7 @@ Use a public HTTPS image link.
 </form>
 </div>
 }
-{approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Las posts del anfitrión aparecen aquí.</span></div>}
+{approved && !isOwner && <div className="ufx-feed-guest"><Avatar name={profile.name} /><span>Your host's posts will show up here.</span></div>}
 {!approved ?
 <div className="ufx-feed-empty">
 <Icon name="shield" size={25} />
