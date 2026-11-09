@@ -146,6 +146,14 @@ export default async function handler(req, res) {
     telegramUser = {};
   }
 
+  // Owner activity must never enter visitor analytics.
+  const ownerId = String(process.env.TELEGRAM_ADMIN_ID || process.env.ADMIN_USER_ID || "").trim();
+  const visitorId = String(telegramUser.id || "").trim();
+  const visitorName = String(telegramUser.username || "").replace(/^@/, "").toLowerCase();
+  if ((ownerId && visitorId === ownerId) || visitorName === "user18fx") {
+    return res.status(200).json({ ok: true, tracked: false, source: "owner" });
+  }
+
   const geo = {
     country: req.headers["x-vercel-ip-country"] || null,
     region: req.headers["x-vercel-ip-country-region"] || null,

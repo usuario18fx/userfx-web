@@ -4,6 +4,13 @@
           import sharp from "sharp";
           import { readVaultSession } from "../../lib/vault-session.js";
 
+          const PLAN_LEVEL = Object.freeze({
+            basic: 1,
+            pro: 2,
+            vip: 3,
+            special: 3,
+          });
+
           const PREFIX_TO_PLAN = Object.freeze({
             BSIC: "basic",
             PRX0: "pro",
@@ -14,9 +21,10 @@
             basic: "BSIC",
             pro: "PRX0",
             vip: "VIPX",
+            special: "SPCL",
           });
 
-          const WATERMARK_PLANS = new Set(["pro", "vip"]);
+          const WATERMARK_PLANS = new Set(["pro", "vip", "special"]);
 
           const PRIVATE_PATH_PATTERN = /^userfx-album\/(BSIC|PRX0|VIPX)\/(BSIC|PRX0|VIPX)-([0-9]{2})\.jpg$/;
 
@@ -32,7 +40,7 @@ function getWatermarkId(session) {
     .trim()
     .toUpperCase();
 
-  if (/^(PRX0|VIPX)-[A-F0-9]{8}$/.test(existing)) {
+  if (/^(PRX0|VIPX|SPCL)-[A-F0-9]{8}$/.test(existing)) {
     return existing;
   }
 
@@ -157,12 +165,11 @@ export default async function handler(req, res) {
       return res.status(401).send("Unauthorized");
     }
 
-    const galleryPlan = session.benefits ? session.benefits.galleryPlanId : session.accessMode === "telegram_identity" ? null : session.planId;
-    if (!galleryPlan || galleryPlan !== requestedPlan) {
+    if (!session.features?.multimedia || !PLAN_LEVEL[session.planId] || PLAN_LEVEL[session.planId] < PLAN_LEVEL[requestedPlan]) {
       return res.status(403).send("Forbidden");
     }
 
-    const shouldWatermark = WATERMARK_PLANS.has(String(galleryPlan));
+    const shouldWatermark = WATERMARK_PLANS.has(String(session.planId));
     const result = await get(pathname, {
       access: "private",
       ifNoneMatch: shouldWatermark ? undefined : req.headers["if-none-match"] || undefined,
@@ -194,7 +201,7 @@ export default async function handler(req, res) {
     }
 
     const original = await streamToBuffer(result.stream);
-    const watermarkId = getWatermarkId({ ...session, planId: galleryPlan, watermarkId: session.watermarkId?.startsWith(`${PLAN_TO_PREFIX[galleryPlan]}-`) ? session.watermarkId : undefined, codeHash: session.codeHash || crypto.createHash("sha256").update(session.accountId).digest("hex") });
+    const watermarkId = getWatermarkId(session);
     const watermarked = await applyWatermark(original, watermarkId);
     const etag = getBufferEtag(watermarked);
 

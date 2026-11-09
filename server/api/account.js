@@ -1,12 +1,7 @@
           import crypto from "crypto";
           import Redis from "ioredis";
-          import { ensureAccount, getAccount, updateAccountProfile, accountProfileImages } from "../../lib/account.js";
+          import { ensureAccount, getAccount, updateAccountProfile } from "../../lib/account.js";
           import { getTelegramFxAccess, hasTelegramFxAccess, normalizeTelegramUsername } from "../../lib/telegram/access.js";
-          import { createRoomLiveHandler } from "../../lib/room-live.js";
-
-          import { updateRoomDirectory } from "../../lib/room-social.js";
-
-          const roomLive = createRoomLiveHandler();
 
           const REDIS_URL = process.env.REDIS_URL;
           const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
@@ -151,7 +146,6 @@ function shapeAccount(account, session) {
     accessLabel: session.accessMode === "telegram_identity" ? "SPCL" : session.accessLabel || null,
     memberAccess: session.accessMode === "telegram_identity",
     profile: account.profile,
-    profileImages: accountProfileImages(account),
     createdAt: account.createdAt,
     updatedAt: account.updatedAt,
     lastAccessAt: account.lastAccessAt,
@@ -159,9 +153,6 @@ function shapeAccount(account, session) {
 }
 
 export default async function handler(req, res) {
-  // /api/room-live shares this function to stay within Vercel Hobby's limit.
-  if (req.query?.roomfx === "1") return roomLive(req, res);
-
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Vary", "Cookie");
 
@@ -198,14 +189,6 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "PATCH") {
-      let originHost;
-      try { originHost = req.headers.origin ? new URL(req.headers.origin).host : null; } catch { originHost = "invalid"; }
-      if (originHost && originHost !== String(req.headers.host || "")) {
-        return res.status(403).json({ error: "Request origin is not allowed." });
-      }
-      if (!String(req.headers["content-type"] || "").startsWith("application/json")) {
-        return res.status(415).json({ error: "JSON is required." });
-      }
       let body;
 
       try {
@@ -217,12 +200,7 @@ export default async function handler(req, res) {
         });
       }
 
-      try {
-        account = await updateAccountProfile(redis, CODE_ENGINE_NAMESPACE, account.accountId, body.profile || body);
-      } catch (error) {
-        if (error.status === 400) return res.status(400).json({ ok: false, error: error.message });
-        throw error;
-      }
+      account = await updateAccountProfile(redis, CODE_ENGINE_NAMESPACE, account.accountId, body.profile || body);
 
       if (!account) {
         return res.status(404).json({
@@ -230,7 +208,6 @@ export default async function handler(req, res) {
           error: "ACCOUNT NOT FOUND",
         });
       }
-      await updateRoomDirectory(redis, (...parts) => `${CODE_ENGINE_NAMESPACE}:roomfx:${parts.join(":")}`, account);
     }
 
     return res.status(200).json({

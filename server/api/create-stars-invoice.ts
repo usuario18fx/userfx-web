@@ -1,11 +1,12 @@
+import { PLAN_DAYS } from "../../lib/access-plans.js";
           import type { NextApiRequest, NextApiResponse } from "next";
 
           type Data = { invoiceLink?: string; error?: string };
 
           const PRICING: Record<string, { stars: number; days: number; title: string }> = {
-            basic: { stars: 350, days: 7, title: "BASIC" },
-            pro: { stars: 750, days: 30, title: "PRO" },
-            vip: { stars: 1500, days: 90, title: "VIP" },
+            basic: { stars: 350, days: PLAN_DAYS.basic, title: "BASIC" },
+            pro: { stars: 750, days: PLAN_DAYS.pro, title: "PRO" },
+            vip: { stars: 1500, days: PLAN_DAYS.vip, title: "VIP" },
           };
 
           export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -34,7 +35,7 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title: `USER FX — ${plan.title} VAULT`,
-        description: `${plan.days} días de acceso privado. Código personal e intransferible.`,
+        description: `${plan.days} days of private access. Your code is personal and cannot be shared.`,
         payload,
         currency: "XTR",
         prices: [
