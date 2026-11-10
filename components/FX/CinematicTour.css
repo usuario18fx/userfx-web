@@ -5,7 +5,12 @@
 .tour-scroll {
   position: relative;
   height: 600vh; /* 500vh–800vh: más alto = recorrido más lento */
-  background: #035bff;
+  background:  linear-gradient(
+  180deg,
+  #00A8FF 0%,
+  #0055A6 45%,
+  #002761 100%
+);
 }
 /* ─── Escenario fijo mientras dura el recorrido ─── */
 .tour-stage {

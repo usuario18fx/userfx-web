@@ -1,0 +1,791 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&family=Orbitron:wght@700&display=swap");
+
+/* ══════════════════════════════════════════════════════════════════════════
+   USER FX — ROOM INTRO
+   ══════════════════════════════════════════════════════════════════════════ */
+.fx-room-intro {
+  position: relative;
+  width: 100%;
+  height: 2150svh; /* 19 steps · ~115svh por step */
+  background: #05070d;
+  color: #eaf7ff; /* Corrección: color sólido en lugar de gradiente */
+}
+
+.fx-room-intro-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Contenedor del canvas 3D */
+.fx-room-intro .cinematic-tour,
+.fx-room-intro .fx-cinematic-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+.fx-room-intro .cinematic-tour canvas,
+.fx-room-intro .fx-cinematic-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.fx-room-intro-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(3, 7, 17, .48) 0%, rgba(3, 7, 17, .12) 35%, transparent 62%),
+    linear-gradient(0deg, rgba(3, 5, 9, .45) 0%, transparent 35%);
+}
+
+/* Header flotante (UI) */
+.fx-room-intro-head {
+  position: absolute;
+  top: 52px;
+  left: 52px;
+  right: 52px;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: .22em;
+  color: #00A8FF; /* Corrección: color sólido */
+  text-shadow: 0 2px 12px #000;
+  pointer-events: none;
+}
+
+/* ── UI DENTRO DE LA HABITACIÓN (Bloques 1, 2, 3, 4) ── */
+.fx-room-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 20; /* z-index alto para estar encima de la portada al hacer scroll */
+  font-family: Inter, system-ui, sans-serif;
+  color: #fff;
+  pointer-events: none;
+  animation: fxFadeIn .45s ease both;
+}
+
+.fx-room-ui button,
+.fx-room-ui a {
+  pointer-events: auto;
+  font-family: inherit;
+}
+
+.fx-header {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  right: 28px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fx-logo strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+}
+.fx-logo span {
+  font-size: 10px;
+  letter-spacing: .24em;
+  color: rgba(255, 255, 255, .6);
+}
+
+.fx-nav-center {
+  display: flex;
+  gap: 28px;
+}
+.nav-item {
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0 0 6px;
+  color: rgba(255, 255, 255, .55);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+.nav-item:hover { color: #00A8FF; }
+.nav-item.active {
+  color: #00A8FF;
+  border-bottom-color: #00A8FF;
+}
+
+.fx-nav-right {
+  display: flex;
+  gap: 18px;
+}
+.nav-icon {
+  background: none;
+  border: none;
+  color: #00A8FF;
+  cursor: pointer;
+  transition: color .2s;
+}
+.nav-icon:hover { color: #50d6ff; }
+
+/* Etiqueta de step (esquina inferior izquierda) */
+.fx-step-tag {
+  position: absolute;
+  left: clamp(24px, 3.2vw, 56px);
+  bottom: 44px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  letter-spacing: .2em;
+  color: rgba(255, 255, 255, .75);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .8);
+  animation: fxCopyIn .55s cubic-bezier(.2, .7, .2, 1) both;
+}
+.fx-step-tag-block { color: #0055A6; font-weight: 600; }
+.fx-step-tag-label { color: #00A8FF; }
+.fx-step-tag-count { color: #00A8FF; }
+
+/* ── PUZZLE (Menú de botones) ── */
+.fx-puzzle {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  --line: rgba(255, 255, 255, .18);
+  --fill: #0b1226;
+}
+.fx-pz-left {
+  position: absolute;
+  left: clamp(24px, 3.2vw, 56px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(320px, 26vw, 440px);
+}
+.fx-pz-menu {
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(370px, 31vw);
+}
+
+/* Pieza base del puzzle */
+.fx-piece {
+  position: relative;
+  z-index: var(--z, 1);
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  color: #fff;
+  text-align: left;
+  overflow-wrap: anywhere;
+  animation:
+    fxPieceIn .85s cubic-bezier(.22, 1, .36, 1) var(--pd, 0s) both,
+    fxClick .6s ease-out calc(var(--pd, 0s) + .6s) both;
+}
+.fx-piece + .fx-piece { margin-top: -1px; }
+
+/* Lengüeta del puzzle */
+.fx-piece--knob::after {
+  content: "";
+  position: absolute;
+  left: var(--kx, 50%);
+  bottom: -13px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: inherit;
+  border: 1px solid var(--line);
+  clip-path: inset(calc(50% - 2px) 0 0 0);
+  pointer-events: none;
+}
+
+.fx-piece--title { padding: 24px 26px 30px; }
+.fx-piece--sub { padding: 26px 26px 22px; }
+
+.fx-badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: #00A8FF;
+}
+.fx-title {
+  margin: 0;
+  font-size: clamp(38px, 4.2vw, 62px);
+  line-height: .98;
+  font-weight: 600;
+  letter-spacing: -.05em;
+}
+.fx-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #a2c6e0;
+}
+
+/* Cabecera del menú */
+.fx-piece--head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 12px;
+  padding: 18px 22px 20px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  color: rgba(255, 255, 255, .62);
+}
+.fx-menu-counter { color: #00A8FF; }
+.fx-lock-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: #ffc857;
+  transition: color .3s;
+}
+.fx-puzzle.is-open .fx-lock-chip { color: #7be0a8; }
+
+/* Botones del menú */
+.fx-piece--item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px 22px;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.fx-piece--item:hover { background: #15213f; }
+.fx-piece--item.is-primary {
+  background: linear-gradient(180deg, #00A8FF 0%, #0055A6 45%, #002761 100%);
+  color: #111;
+}
+.fx-piece--item.is-primary:hover {
+  background: linear-gradient(180deg, #00c3ff 0%, #006bcc 45%, #003b8f 100%);
+}
+.menu-num {
+  width: 22px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .45);
+}
+.is-primary .menu-num { color: rgba(0, 0, 0, .42); }
+.menu-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.menu-text strong { font-size: 18px; font-weight: 600; }
+.menu-text small { font-size: 12px; color: rgba(255, 255, 255, .58); }
+.is-primary .menu-text small { color: rgba(0, 0, 0, .56); }
+.menu-arrow {
+  font-size: 20px;
+  opacity: .8;
+  transition: transform .2s;
+}
+.fx-piece--item:hover .menu-arrow { transform: translateX(3px); }
+
+/* Animaciones */
+@keyframes fxPieceIn {
+  0%   { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
+  18%  { opacity: 1; }
+  62%  { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.03); }
+  74%  { transform: translate(0, 0) rotate(0deg) scale(.985); }
+  88%  { transform: translate(0, 0) rotate(0deg) scale(1.008); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+@keyframes fxClick {
+  0%   { box-shadow: 0 0 0 0 rgba(3, 112, 255, 0), 0 0 0 rgba(3, 112, 255, 0); }
+  25%  { box-shadow: 0 0 0 0 rgba(3, 112, 255, .9), 0 0 26px rgba(3, 112, 255, .55); }
+  100% { box-shadow: 0 0 0 12px rgba(3, 112, 255, 0), 0 0 0 rgba(3, 112, 255, 0); }
+}
+@keyframes fxPieceOut {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+  18%  { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.03); }
+  100% { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
+}
+.fx-puzzle.is-out .fx-piece {
+  animation: fxPieceOut .6s cubic-bezier(.55, 0, .85, .35) var(--pdo, 0s) both;
+  pointer-events: none;
+}
+
+@keyframes fxShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
+}
+.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; }
+
+/* Leyenda del bloqueo */
+.fx-lock-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 76px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 22px;
+  background: rgba(11, 18, 38, .96);
+  border: 1px solid rgba(255, 200, 87, .6);
+  color: #ffc857;
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+}
+.fx-lock-hint.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.fx-lock-hint svg { width: 16px; height: 16px; flex: none; }
+.fx-lock-hint span { display: flex; flex-direction: column; gap: 4px; }
+.fx-lock-hint strong { font-size: 14px; font-weight: 600; color: #fff; }
+.fx-lock-hint small { font-size: 12px; color: rgba(255, 255, 255, .7); }
+
+/* Botón de salir */
+.fx-btn-exit {
+  position: absolute;
+  right: 44px;
+  bottom: 42px;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, .45);
+  border: 1px solid rgba(255, 255, 255, .16);
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+  z-index: 25;
+}
+.fx-btn-exit:hover {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .32);
+}
+
+/* Controles inferiores */
+.fx-footer-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .55);
+  white-space: nowrap;
+}
+.fx-footer-controls .is-locked-text { color: #ffc857; }
+.fx-footer-controls kbd {
+  padding: 2px 5px;
+  margin-right: 2px;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+/* Flechas plateadas */
+.fx-room-intro .menu-arrow--continue,
+.fx-room-intro .menu-arrow--right {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  color: #cfd5df !important;
+  font-size: 0;
+  line-height: 1;
+  opacity: 1;
+  animation: fxMenuChevronBlink 1.6s ease-in-out infinite;
+}
+.fx-room-intro .menu-arrow--continue::before,
+.fx-room-intro .menu-arrow--right::before {
+  content: "";
+  display: block;
+  border-radius: 1px;
+  filter: drop-shadow(0 0 4px rgba(215, 223, 235, .42));
+}
+.fx-room-intro .menu-arrow--continue::before {
+  width: 18px;
+  height: 18px;
+  border-top: 4px solid currentColor;
+  border-left: 4px solid currentColor;
+  transform: translateY(5px) rotate(45deg);
+}
+.fx-room-intro .menu-arrow--right::before {
+  width: 16px;
+  height: 16px;
+  border-top: 4px solid currentColor;
+  border-right: 4px solid currentColor;
+  transform: rotate(45deg);
+}
+.fx-room-intro .fx-piece--item:hover .menu-arrow--continue,
+.fx-room-intro .fx-piece--item:hover .menu-arrow--right {
+  transform: none;
+}
+@keyframes fxMenuChevronBlink {
+  0%, 100% { opacity: .42; }
+  50% { opacity: 1; }
+}
+
+/* Animaciones generales de UI */
+@keyframes fxCopyIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fxFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Loader */
+.fx-room-intro-loading {
+  display: grid;
+  place-items: center;
+  height: 100svh;
+  background: #0b0d14;
+  color: rgba(255, 255, 255, .6);
+  font-size: 12px;
+  letter-spacing: .22em;
+}
+
+/* Barra de progreso */
+.fx-room-intro-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  z-index: 30;
+  background: rgba(112, 169, 239, .14);
+  pointer-events: none;
+  overflow: hidden;
+}
+.fx-room-intro-progress > div {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #0370ff, #50d6ff);
+  box-shadow: 0 -2px 14px rgba(0, 168, 255, 0.6);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+.fx-room-intro.is-locked .fx-room-intro-progress > div {
+  background: linear-gradient(90deg, #ffc857, #ffaa00);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .fx-room-intro-head,
+  .fx-room-intro-copy,
+  .fx-room-intro-index {
+    left: 24px;
+    right: 24px;
+  }
+  .fx-pz-left { left: 3%; width: 32%; }
+  .fx-pz-menu { width: min(310px, 35vw); right: 2%; }
+  .fx-footer-controls { display: none; }
+}
+
+@media (max-width: 680px) {
+  .fx-room-intro {
+    height: 1250svh;
+  }
+  .fx-room-intro-head {
+    top: 28px;
+    font-size: 10px;
+  }
+  .fx-header {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  .fx-nav-center,
+  .fx-nav-right {
+    display: none;
+  }
+  .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; }
+
+  .fx-pz-left {
+    left: 14px;
+    right: 14px;
+    top: 72px;
+    transform: none;
+    width: auto;
+  }
+  .fx-piece--sub { display: none; }
+  .fx-piece--title { padding: 14px 16px 18px; }
+  .fx-title { font-size: clamp(28px, 9vw, 40px); }
+
+  .fx-pz-menu {
+    left: 14px;
+    right: 14px;
+    top: auto;
+    bottom: 14px;
+    transform: none;
+    width: auto;
+  }
+  .fx-piece--head { padding: 12px 16px 14px; }
+  .fx-piece--item { padding: 12px 16px 14px; gap: 10px; }
+  .menu-text strong { font-size: 16px; }
+  .menu-text { gap: 3px; }
+
+  .fx-lock-hint {
+    bottom: 312px;
+    width: calc(100% - 28px);
+    box-sizing: border-box;
+    padding: 11px 16px;
+  }
+  .fx-btn-exit {
+    top: 18px;
+    bottom: auto;
+    right: 16px;
+    padding: 8px 14px;
+  }}
+@media (prefers-reduced-motion: reduce) {
+  .fx-room-intro { height: 1250svh; }
+  .fx-room-intro-copy, .fx-room-ui, .fx-step-tag { animation: none; }
+  .fx-piece { animation: fxFadeIn .2s ease both; }
+  .fx-puzzle.is-out .fx-piece { animation: none; opacity: 0; }
+  .fx-puzzle.is-shake { animation: none; }
+  .fx-room-intro .menu-arrow--continue,
+  .fx-room-intro .menu-arrow--right { animation: none; opacity: 1; }
+}
+/*=================================================================================*/
+/* USER FX — rehabilitación visual de la UI del recorrido.
+   Solo se aplican reglas dentro de .fx-room-intro.
+   NO altera la altura del scroll, sus stops ni la trayectoria 3D. */
+.fx-room-intro-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 480px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.fx-room-intro-sticky > .cinematic-tour {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.fx-room-intro .fx-room-intro-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.40), transparent 60%);
+}
+.fx-room-intro .fx-room-ui,
+.fx-room-intro .fx-room-intro-head,
+.fx-room-intro .fx-room-intro-copy,
+.fx-room-intro .fx-room-intro-index {
+  box-sizing: border-box;
+  color: #eef6ff;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+}
+.fx-room-intro .fx-room-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.fx-room-intro .fx-room-ui button {
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+/* Navegación 3D, centrada y legible. */
+.fx-room-intro .fx-header {
+  position: absolute;
+  top: clamp(14px, 2.5vh, 28px);
+  left: clamp(16px, 3vw, 52px);
+  right: clamp(16px, 3vw, 52px);
+  z-index: 35;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: minmax(140px,1fr) auto minmax(140px,1fr);
+  align-items: center;
+  gap: 20px;
+  padding: 11px 18px;
+  border: 1px solid rgba(153,214,255,.20);
+  border-radius: 14px;
+  background: rgba(5,12,25,.84);
+  box-shadow: 0 10px 32px rgba(0,0,0,.24);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  pointer-events: auto;
+}
+.fx-room-intro .fx-logo {display:flex;flex-direction:column;gap:1px;min-width:0;}
+.fx-room-intro .fx-logo strong {font-size:clamp(17px,1.6vw,23px);letter-spacing:.16em;font-weight:800;line-height:1.1;white-space:nowrap;}
+.fx-room-intro .fx-logo span {font-size:9px;letter-spacing:.23em;opacity:.65;white-space:nowrap;}
+.fx-room-intro .fx-nav-center {display:flex;align-items:center;justify-content:center;gap:clamp(6px,1vw,18px);min-width:0;}
+.fx-room-intro .fx-nav-center .nav-item {
+  appearance:none;border:0;border-bottom:2px solid transparent;border-radius:0;
+  background:transparent;color:#c6d5e6;padding:10px 9px;
+  font-size:clamp(10px,.86vw,13px);font-weight:700;letter-spacing:.04em;
+  white-space:nowrap;transition:color .2s,border-color .2s;
+}
+.fx-room-intro .fx-nav-center .nav-item:hover,
+.fx-room-intro .fx-nav-center .nav-item.active {color:#f5fbff;border-color:#3bc9ff;}
+.fx-room-intro .fx-nav-right {display:flex;justify-content:flex-end;align-items:center;gap:8px;}
+.fx-room-intro .fx-nav-right .nav-icon {
+  appearance:none;border:1px solid rgba(155,207,255,.27);border-radius:9px;
+  padding:9px 12px;background:rgba(24,56,90,.52);color:#eaf4ff;
+  font-size:11px;font-weight:700;white-space:nowrap;
+}
+.fx-room-intro .fx-nav-right .nav-icon:hover {background:rgba(30,104,155,.75);}
+/* Etiqueta de etapa. */
+.fx-room-intro .fx-step-tag {
+  position:absolute;top:clamp(96px,12vh,130px);left:clamp(18px,4vw,70px);
+  z-index:24;display:flex;align-items:center;gap:12px;max-width:calc(100% - 36px);
+  padding:10px 14px;border:1px solid rgba(156,216,255,.16);
+  border-radius:9px;background:rgba(2,9,20,.67);font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.fx-room-intro .fx-step-tag-block {color:#78d8ff;font-weight:800;}
+.fx-room-intro .fx-step-tag-label {font-weight:600;}
+.fx-room-intro .fx-step-tag-count {color:#99adbf;font-variant-numeric:tabular-nums;}
+/* Opciones de cada bloqueo: columna de presentación + menú. */
+.fx-room-intro .fx-puzzle {
+  position:absolute;
+  z-index:28;
+  top:52%;left:clamp(20px,6vw,115px);right:clamp(20px,6vw,115px);
+  transform:translateY(-45%);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,410px);
+  align-items:center;gap:clamp(24px,5vw,100px);
+  pointer-events:none;
+}
+.fx-room-intro .fx-pz-left {min-width:0;display:flex;flex-direction:column;gap:18px;}
+.fx-room-intro .fx-puzzle .fx-piece {box-sizing:border-box;}
+.fx-room-intro .fx-pz-left .fx-badge {
+  display:inline-flex;width:max-content;max-width:100%;padding:7px 12px;
+  font-size:11px;letter-spacing:.15em;font-weight:800;text-transform:uppercase;
+  border:1px solid rgba(164,221,255,.35);border-radius:6px;background:rgba(3,14,32,.75);
+}
+.fx-room-intro .fx-pz-left .fx-title {
+  margin:16px 0 0;font-size:clamp(36px,5vw,84px);line-height:1.04;
+  letter-spacing:-.035em;font-weight:850;text-wrap:balance;
+  text-shadow:0 5px 24px rgba(0,0,0,.75);
+}
+.fx-room-intro .fx-pz-left .fx-subtitle {
+  max-width:48ch;margin:0;color:#d7e3ee;font-size:clamp(14px,1.3vw,18px);
+  line-height:1.55;text-shadow:0 2px 12px rgba(0,0,0,.85);
+}
+.fx-room-intro .fx-pz-menu {display:flex;flex-direction:column;gap:10px;min-width:0;}
+.fx-room-intro .fx-piece--head {
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 15px;border:1px solid rgba(159,208,255,.25);
+  border-radius:10px;background:rgba(4,12,28,.87);font-size:11px;
+  font-weight:800;letter-spacing:.08em;
+}
+.fx-room-intro .fx-menu-counter {color:#9ecfff;white-space:nowrap;}
+.fx-room-intro .fx-lock-chip {display:inline-flex;align-items:center;gap:6px;font-size:10px;color:#b5cbdb;}
+.fx-room-intro .fx-piece--item {
+  display:flex;width:100%;min-height:70px;align-items:center;gap:15px;text-align:left;
+  padding:13px 17px;border:1px solid rgba(149,198,238,.29);border-radius:11px;
+  background:rgba(8,19,41,.90);color:#fff;pointer-events:auto;
+  box-shadow:0 12px 24px rgba(0,0,0,.23);
+}
+.fx-room-intro .fx-piece--item:hover {background:rgba(20,56,89,.96);border-color:#58b7ff;}
+.fx-room-intro .fx-piece--item.is-primary {border-color:rgba(73,177,255,.73);background:rgba(13,62,111,.94);}
+.fx-room-intro .menu-num {font-size:12px;font-weight:800;color:#81d5ff;}
+.fx-room-intro .menu-text {display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;}
+.fx-room-intro .menu-text strong {font-size:clamp(13px,1vw,16px);line-height:1.25;}
+.fx-room-intro .menu-text small {font-size:11px;line-height:1.4;color:#b8c9da;}
+.fx-room-intro .menu-arrow {flex:none;margin-left:auto;}
+/* Ayudas de navegación, fuera de la zona del contenido principal. */
+.fx-room-intro .fx-lock-hint {
+  position:absolute;z-index:31;left:50%;bottom:90px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;max-width:min(92vw,560px);
+  padding:13px 18px;border:1px solid rgba(155,219,255,.3);border-radius:11px;
+  background:rgba(3,13,30,.94);box-shadow:0 10px 25px rgba(0,0,0,.35);
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;
+}
+.fx-room-intro .fx-lock-hint.is-on {opacity:1;visibility:visible;}
+.fx-room-intro .fx-lock-hint span {display:flex;flex-direction:column;gap:2px;}
+.fx-room-intro .fx-lock-hint strong {font-size:13px;}
+.fx-room-intro .fx-lock-hint small {color:#aebecf;font-size:11px;}
+.fx-room-intro .fx-footer-controls {
+  position:absolute;z-index:24;bottom:clamp(16px,3vh,32px);left:clamp(18px,4vw,70px);
+  display:flex;flex-wrap:wrap;align-items:center;gap:16px;
+  font-size:11px;letter-spacing:.08em;font-weight:700;
+  text-transform:uppercase;text-shadow:0 2px 8px #000;
+}
+.fx-room-intro .fx-footer-controls kbd {
+  display:inline-block;margin:0 3px;padding:2px 6px;
+  border:1px solid rgba(170,222,255,.42);border-radius:4px;
+  background:rgba(5,15,30,.85);font:inherit;
+}
+.fx-room-intro .fx-btn-exit {
+  position:absolute;z-index:30;right:clamp(18px,4vw,70px);bottom:clamp(16px,3vh,32px);
+  padding:10px 16px;border:1px solid rgba(145,196,231,.38);
+  border-radius:8px;background:rgba(5,15,30,.84);color:#fff;font-size:11px;font-weight:800;
+  letter-spacing:.12em;pointer-events:auto;
+}
+/* Presentación de bienvenida, separada de la escena 3D. */
+.fx-room-intro .fx-room-intro-head {
+  position:absolute;z-index:20;top:22px;left:4%;right:4%;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;
+  pointer-events:none;
+}
+.fx-room-intro .fx-room-intro-head nav {font-size:10px;color:#a9c0d4;}
+.fx-room-intro .fx-room-intro-copy {
+  position:absolute;z-index:20;left:clamp(20px,8vw,140px);right:clamp(20px,8vw,140px);
+  top:50%;transform:translateY(-50%);max-width:850px;
+  text-shadow:0 4px 24px #000;pointer-events:none;
+}
+.fx-room-intro .fx-room-intro-copy small {font-size:12px;letter-spacing:.22em;color:#7fcefa;font-weight:800;}
+.fx-room-intro .fx-room-intro-copy h1 {margin:15px 0;font-size:clamp(46px,8vw,118px);line-height:.95;text-wrap:balance;}
+.fx-room-intro .fx-room-intro-copy h1 span,
+.fx-room-intro .fx-room-intro-copy h1 strong {display:block;}
+.fx-room-intro .fx-room-intro-copy p {margin:14px 0 0;font-size:clamp(15px,1.65vw,22px);}
+.fx-room-intro .fx-room-intro-copy .fx-room-intro-description {font-size:clamp(13px,1.2vw,17px);color:#c0d2e3;line-height:1.6;}
+.fx-room-intro .fx-room-intro-index {position:absolute;z-index:20;right:5%;bottom:9%;font-size:clamp(48px,8vw,110px);font-weight:800;opacity:.13;}
+@media (max-width:900px) {
+  .fx-room-intro .fx-header {grid-template-columns:auto minmax(0,1fr);gap:8px;padding:9px 12px;}
+  .fx-room-intro .fx-nav-center {grid-column:1/-1;grid-row:2;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;}
+  .fx-room-intro .fx-nav-center::-webkit-scrollbar {display:none;}
+  .fx-room-intro .fx-nav-right {grid-column:2;grid-row:1;}
+  .fx-room-intro .fx-step-tag {top:138px;}
+  .fx-room-intro .fx-puzzle {top:55%;left:5vw;right:5vw;grid-template-columns:minmax(0,1fr) minmax(260px,42%);gap:22px;}
+}
+@media (max-width:640px) {
+  .fx-room-intro .fx-header {top:10px;left:10px;right:10px;}
+  .fx-room-intro .fx-nav-right .nav-icon {padding:7px 8px;font-size:10px;}
+  .fx-room-intro .fx-step-tag {top:127px;left:12px;padding:6px 9px;gap:6px;font-size:9px;}
+  .fx-room-intro .fx-puzzle {top:54%;left:14px;right:14px;transform:translateY(-40%);grid-template-columns:minmax(0,1fr);gap:14px;}
+  .fx-room-intro .fx-pz-left {gap:5px;}
+  .fx-room-intro .fx-pz-left .fx-title {margin:8px 0 0;font-size:clamp(28px,8vw,44px);}
+  .fx-room-intro .fx-pz-left .fx-subtitle {font-size:12px;line-height:1.4;}
+  .fx-room-intro .fx-pz-menu {gap:7px;}
+  .fx-room-intro .fx-piece--head {padding:8px 10px;font-size:10px;}
+  .fx-room-intro .fx-piece--item {min-height:55px;padding:9px 12px;gap:11px;}
+  .fx-room-intro .fx-lock-hint {bottom:66px;padding:9px 11px;}
+  .fx-room-intro .fx-footer-controls {bottom:12px;left:12px;gap:8px;font-size:9px;}
+  .fx-room-intro .fx-btn-exit {bottom:12px;right:12px;padding:8px 10px;font-size:9px;}
+  .fx-room-intro .fx-room-intro-head {top:138px;left:16px;right:16px;flex-wrap:wrap;font-size:9px;}
+  .fx-room-intro .fx-room-intro-head nav {font-size:8px;}
+  .fx-room-intro .fx-room-intro-copy {left:18px;right:18px;}
+}

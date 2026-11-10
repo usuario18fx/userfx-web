@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { MotionValue } from "framer-motion";
 
 export type CrownTL = {
@@ -10,220 +10,303 @@ export type CrownTL = {
   fade: [number, number];
 };
 
-type Props = {
-  progress: MotionValue<number>;
-  tl: CrownTL;
-  active: boolean;
+type Props =
+  | { progress: MotionValue<number>; tl: CrownTL; active: boolean; step?: never; className?: string }
+  | { progress: number; step: number; className?: string; tl?: never; active?: never };
+
+// Timeline de compatibilidad para ScrollStory; el timeline original de
+// ProtocolVault sigue prevaleciendo cuando se pasa mediante `tl`.
+const SCROLL_STORY_TL: CrownTL = {
+  descend: [0, 0.25],
+  rise: [0.25, 0.6],
+  breakStart: 0.72,
+  fade: [0.85, 1],
 };
 
 type Particle = {
-  u: number;
-  v: number;
-  depth: number;
+  // posiciÃ³n base (coordenadas normalizadas al viewport)
+  x: number;
+  y: number;
+  z: number;
+  // posiciÃ³n "objetivo" durante la formaciÃ³n de la corona
+  nx: number;
+  ny: number;
+  nz: number;
+  // estado fÃ­sico
   size: number;
   alpha: number;
-  delay: number;
+  vx: number;
+  vy: number;
+  px: number;
+  py: number;
+  driftX: number;
+  driftY: number;
+  dvx: number;
+  dvy: number;
+  threshold: number;
   scatterX: number;
   scatterY: number;
+  bounce: number;
   floorDepth: number;
+  detached: boolean;
 };
 
-const clamp = (value: number, min = 0, max = 1) =>
-  Math.min(max, Math.max(min, value));
+const clamp = (v: number, min = 0, max = 1) =>
+  v < min ? min : v > max ? max : v;
 
-const smoothstep = (value: number) => {
-  const t = clamp(value);
-  return t * t * (3 - 2 * t);
-};
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-const phase = (value: number, start: number, end: number) =>
-  clamp((value - start) / Math.max(0.0001, end - start));
+/** Progreso normalizado dentro de un rango [a, b] del timeline. */
+const range = (v: number, [a, b]: [number, number]) =>
+  clamp((v - a) / Math.max(1e-6, b - a));
 
-// Five distinct crown points, two side wings and an elliptical lower rim.
-const PEAKS: readonly [number, number][] = [
-  [-1, 0.1],
-  [-0.88, -0.52],
-  [-0.66, -0.08],
-  [-0.47, -0.82],
-  [-0.24, -0.2],
-  [0, -1.1],
-  [0.24, -0.2],
-  [0.47, -0.82],
-  [0.66, -0.08],
-  [0.88, -0.52],
-  [1, 0.1],
-];
+export default function CrownParticles({ progress, tl, active, className }: Props) {
+  const timeline = tl ?? SCROLL_STORY_TL;
+  const isEnabled = active ?? true;
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rafRef = useRef<number>(0);
+  const activeRef = useRef(isEnabled);
+  const particlesRef = useRef<Particle[]>([]);
+  const sizeRef = useRef({ w: 0, h: 0, dpr: 1 });
+  const pointerRef = useRef({ x: 0.5, y: 0.5 });
 
-function crownTop(u: number) {
-  for (let i = 1; i < PEAKS.length; i += 1) {
-    const left = PEAKS[i - 1];
-    const right = PEAKS[i];
-    if (u <= right[0]) {
-      const t = clamp((u - left[0]) / (right[0] - left[0]));
-      return left[1] + (right[1] - left[1]) * t;
-    }
-  }
-  return PEAKS[PEAKS.length - 1][1];
-}
-
-function createParticles(count: number): Particle[] {
-  let seed = 0x18fcb4;
-  const random = () => {
-    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-
-  return Array.from({ length: count }, (_, i) => {
-    const band = i % 5 === 0;
-    const edge = i % 7 === 0;
-    return {
-      u: random() * 2 - 1,
-      v: band ? 0.83 + random() * 0.17 : edge ? random() * 0.05 : random(),
-      depth: random() * 2 - 1,
-      size: 0.65 + random() * 1.2,
-      alpha: 0.38 + random() * 0.62,
-      delay: random() * 0.32,
-      scatterX: (random() * 2 - 1) * (0.58 + random() * 0.42),
-      scatterY: random(),
-      floorDepth: random(),
-    };
-  });
-}
-
-export default function ProtocolCrown({ progress, tl, active }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef(0);
-  const activeRef = useRef(active);
-
+  // Mantener `active` fuera del closure del loop
   useEffect(() => {
-    activeRef.current = active;
-  }, [active]);
+    activeRef.current = isEnabled;
+  }, [isEnabled]);
+
+  // InicializaciÃ³n de partÃ­culas (una vez)
+  useEffect(() => {
+    const N = 180;
+    const particles: Particle[] = [];
+    for (let i = 0; i < N; i++) {
+      const angle = (i / N) * Math.PI * 2;
+      const r = 0.25 + Math.random() * 0.15;
+      particles.push({
+        x: 0.5 + Math.cos(angle) * r,
+        y: 0.5 + Math.sin(angle) * r,
+        z: Math.random(),
+        nx: 0.5 + Math.cos(angle) * r,
+        ny: 0.5 + Math.sin(angle) * r * 0.4,
+        nz: Math.random(),
+        size: 0.5 + Math.random() * 1.5,
+        alpha: 1,
+        vx: 0,
+        vy: 0,
+        px: 0,
+        py: 0,
+        driftX: (Math.random() - 0.5) * 0.2,
+        driftY: (Math.random() - 0.5) * 0.2,
+        dvx: 0,
+        dvy: 0,
+        threshold: Math.random(),
+        scatterX: (Math.random() - 0.5) * 2,
+        scatterY: (Math.random() - 0.5) * 2,
+        bounce: 0.6 + Math.random() * 0.4,
+        floorDepth: Math.random(),
+        detached: false,
+      });
+    }
+    particlesRef.current = particles;
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const context = canvas.getContext("2d", { alpha: true });
-    if (!context) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let width = 0;
-    let height = 0;
-    let particles: Particle[] = [];
-    let lastProgress = -1;
-    let wasVisible = false;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    // --- Resize con DPR y ResizeObserver ---
     const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      width = Math.max(1, rect.width);
-      height = Math.max(1, rect.height);
+      const parent = canvas.parentElement;
+      const w = parent?.clientWidth ?? window.innerWidth;
+      const h = parent?.clientHeight ?? window.innerHeight;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      particles = createParticles(width < 680 ? 1500 : 3600);
-      lastProgress = -1;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sizeRef.current = { w, h, dpr };
     };
 
     resize();
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
 
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(resize)
+        : null;
+    ro?.observe(canvas.parentElement ?? canvas);
+    window.addEventListener("resize", resize);
+
+    // --- Pointer ---
+    const onPointerMove = (e: PointerEvent) => {
+      const { w, h } = sizeRef.current;
+      pointerRef.current.x = e.clientX / Math.max(1, w);
+      pointerRef.current.y = e.clientY / Math.max(1, h);
+    };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+
+    let lastProgress = -1;
+    let paused = false;
+    const onVisibility = () => {
+      paused = document.hidden;
+      if (!paused) rafRef.current = requestAnimationFrame(frame);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // --- Loop ---
     const frame = () => {
-      animationRef.current = window.requestAnimationFrame(frame);
-      if (document.hidden || !activeRef.current) {
-        wasVisible = false;
-        return;
-      }
+      rafRef.current = requestAnimationFrame(frame);
+      if (paused) return;
 
-      const p = clamp(progress.get());
-      if (wasVisible && Math.abs(p - lastProgress) < 0.0001) return;
+      const { w, h } = sizeRef.current;
+      if (w === 0 || h === 0) return;
+
+      const p = typeof progress === "number" ? progress : progress.get();
+      // Evitar redibujar si nada cambia (ahorra baterÃ­a)
+      const stationary =
+        Math.abs(p - lastProgress) < 1e-5 &&
+        !activeRef.current &&
+        particlesRef.current.every(
+          (pt) => Math.abs(pt.vx) < 0.001 && Math.abs(pt.vy) < 0.001
+        );
+      if (stationary) return;
       lastProgress = p;
-      wasVisible = true;
 
-      context.clearRect(0, 0, width, height);
+      // --- Fases del timeline ---
+      const tDescend = range(p, timeline.descend);
+      const tRise = range(p, timeline.rise);
+      const tBreak = clamp((p - timeline.breakStart) / Math.max(1e-6, 1 - timeline.breakStart));
+      const tFade = range(p, timeline.fade);
 
-      const appears = smoothstep(phase(p, tl.descend[0] - 0.06, tl.rise[0] + 0.06));
-      const fades = 1 - smoothstep(phase(p, tl.fade[0], tl.fade[1]));
-      const opacity = appears * fades;
-      if (opacity <= 0.002) return;
+      const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+      const easeInOut = (t: number) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-      // The fourth chapter begins precisely at breakStart. The scroll controls
-      // both the three-dimensional rotation and the destruction of the crown.
-      const turn = clamp(p / Math.max(0.01, tl.breakStart)) * Math.PI * 2.25;
-      const spinCos = Math.cos(turn);
-      const spinSin = Math.sin(turn);
-      const destruction = smoothstep(phase(p, tl.breakStart, tl.fade[0]));
-      const centerX = width * (width < 680 ? 0.5 : 0.61);
-      const centerY = height * (width < 680 ? 0.54 : 0.55);
-      const scaleX = Math.min(width * (width < 680 ? 0.45 : 0.31), 430);
-      const scaleY = Math.min(width * (width < 680 ? 0.29 : 0.2), 235);
-      const groundY = height * 0.88;
+      ctx.clearRect(0, 0, w, h);
 
-      if (destruction > 0.5) {
-        context.save();
-        context.globalAlpha = opacity * Math.min(0.25, destruction * 0.25);
-        context.fillStyle = "#168bcc";
-        context.beginPath();
-        context.ellipse(centerX, groundY + 5, scaleX * 0.92, 8, 0, 0, Math.PI * 2);
-        context.fill();
-        context.restore();
-      }
+      const ptr = pointerRef.current;
+      const isActive = activeRef.current;
 
-      for (let i = 0; i < particles.length; i += 1) {
-        const pt = particles[i];
-        const top = crownTop(pt.u);
-        const lower = 0.25 + 0.08 * (1 - pt.u * pt.u);
-        const localY = top + (lower - top) * pt.v;
-        const depth = pt.depth * 0.32;
-        const rotatedX = pt.u * spinCos + depth * spinSin;
-        const rotatedZ = depth * spinCos - pt.u * spinSin;
-        const perspective = 1 + rotatedZ * 0.17;
+      for (const pt of particlesRef.current) {
+        // --- FÃ­sica / animaciÃ³n ---
+        if (isActive && tBreak < 1) {
+          // RepulsiÃ³n del puntero
+          const dx = pt.x - ptr.x;
+          const dy = pt.y - ptr.y;
+          const dist2 = dx * dx + dy * dy;
+          const force = 0.0008 / (dist2 + 0.001);
+          pt.dvx += dx * force;
+          pt.dvy += dy * force;
+        }
 
-        const startX = centerX + rotatedX * perspective * scaleX;
-        const startY = centerY + (localY + pt.depth * 0.045) * scaleY;
-        const release = reducedMotion
-          ? (destruction > 0 ? 1 : 0)
-          : smoothstep(phase(destruction, pt.delay, Math.min(1, pt.delay + 0.64)));
+        // Scatter al romper
+        if (tBreak > 0.05 && !pt.detached) {
+          if (Math.random() < 0.02 * tBreak || pt.threshold < tBreak) {
+            pt.detached = true;
+            pt.vx += pt.scatterX * (0.4 + Math.random() * 0.8);
+            pt.vy += pt.scatterY * (0.4 + Math.random() * 0.8);
+          }
+        }
 
-        // Deterministic gravity: scroll backward reconstructs the same crown
-        // without a second physics loop, random jumps or stuck particles.
-        const spread = (1 - Math.pow(1 - release, 2)) * scaleX * 0.36;
-        const x = startX + pt.scatterX * spread;
-        const floor = groundY + pt.floorDepth * height * 0.04;
-        const fall = release * release;
-        const bounce = release > 0.65
-          ? Math.abs(Math.sin(release * Math.PI * 5)) * Math.pow(1 - release, 2) * height * 0.025
-          : 0;
-        const y = Math.min(floor, startY + (floor - startY) * fall - bounce + pt.scatterY * 3 * release);
+        // CaÃ­da por gravedad
+        if (pt.detached) {
+          pt.vy += 0.0006 * pt.bounce;
+        }
 
-        const depthShade = 0.65 + Math.max(-0.5, Math.min(0.5, rotatedZ)) * 0.4;
-        const alpha = opacity * pt.alpha * depthShade;
-        const size = pt.size * (width < 680 ? 0.9 : 1.1);
-        if (alpha <= 0.015) continue;
+        // Drift suave
+        pt.dvx += (Math.sin(pt.driftX * 10 + p * 6) * 0.5 - pt.dvx) * 0.02;
+        pt.dvy += (Math.cos(pt.driftY * 10 + p * 6) * 0.5 - pt.dvy) * 0.02;
 
-        context.globalAlpha = alpha;
-        context.fillStyle = i % 11 === 0 ? "#a6edff" : i % 3 === 0 ? "#39caff" : "#008fe5";
-        if (i % 17 === 0) {
-          context.beginPath();
-          context.arc(x, y, size * 1.65, 0, Math.PI * 2);
-          context.fill();
-        } else {
-          context.fillRect(x, y, size, size);
+        pt.vx = (pt.vx + pt.dvx) * 0.98;
+        pt.vy = (pt.vy + pt.dvy) * 0.98;
+
+        pt.px = pt.x;
+        pt.py = pt.y;
+        pt.x += pt.vx * 0.01;
+        pt.y += pt.vy * 0.01;
+
+        // Rebote en el suelo (con perspectiva segÃºn floorDepth)
+        const floorY = 0.85 + pt.floorDepth * 0.1;
+        if (pt.detached && pt.y > floorY) {
+          pt.y = floorY;
+          pt.vy *= -0.4;
+          pt.vx *= 0.9;
+        }
+
+        // Re-enganche si estÃ¡ en reposo
+        if (
+          pt.detached &&
+          Math.abs(pt.vx) < 0.01 &&
+          Math.abs(pt.vy) < 0.01
+        ) {
+          pt.vx = pt.vy = pt.dvx = pt.dvy = 0;
+          pt.x = lerp(pt.x, pt.nx, 0.02);
+          pt.y = lerp(pt.y, pt.ny, 0.02);
+        }
+
+        // --- InterpolaciÃ³n por fases ---
+        const descendT = easeOut(tDescend);
+        const riseT = easeInOut(tRise);
+
+        const targetX = lerp(pt.nx, 0.5 + pt.driftX * 0.3, descendT);
+        const targetY = lerp(pt.ny, 0.5 + pt.driftY * 0.3, descendT);
+
+        // Mezcla final segÃºn fase
+        const formT = riseT * (1 - tBreak) + tBreak * 0.3;
+        pt.px = pt.x;
+        pt.py = pt.y;
+        pt.x = lerp(targetX, pt.x, formT * 0.1);
+        pt.y = lerp(targetY, pt.y, formT * 0.1);
+
+        // Alpha por fade
+        pt.alpha = 1 - tFade;
+
+        // --- Render ---
+        const screenX = pt.x * w;
+        const screenY = pt.y * h;
+        const size = pt.size * (1 - pt.z * 0.4);
+
+        ctx.globalAlpha = clamp(pt.alpha);
+        ctx.fillStyle = `hsl(${45 + pt.z * 20}, 90%, ${60 + pt.z * 20}%)`;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Estela
+        if (isActive && (Math.abs(pt.vx) > 0.01 || Math.abs(pt.vy) > 0.01)) {
+          ctx.globalAlpha = clamp(pt.alpha * 0.25);
+          ctx.strokeStyle = ctx.fillStyle;
+          ctx.lineWidth = size * 0.6;
+          ctx.beginPath();
+          ctx.moveTo(pt.px * w, pt.py * h);
+          ctx.lineTo(screenX, screenY);
+          ctx.stroke();
         }
       }
 
-      context.globalAlpha = 1;
+      ctx.globalAlpha = 1;
     };
 
-    animationRef.current = window.requestAnimationFrame(frame);
+    rafRef.current = requestAnimationFrame(frame);
 
     return () => {
-      window.cancelAnimationFrame(animationRef.current);
-      observer.disconnect();
+      cancelAnimationFrame(rafRef.current);
+      ro?.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [progress, tl]);
+  }, [progress, timeline]);
 
   return (
-    <canvas ref={canvasRef} className="pv-crown" aria-hidden="true" />
+    <canvas ref={canvasRef} className={className ?? "pointer-events-none absolute inset-0"} aria-hidden="true" />
   );
 }
+

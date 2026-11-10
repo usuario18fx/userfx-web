@@ -76,15 +76,18 @@
   font-size:8px;
   letter-spacing:0.16em;
 }
-
 .pvr-account-online{
   width:7px;
   height:7px;
   border-radius:50%;
   background:#4dffab;
-  box-shadow:0 0 9px rgba(77, 255, 171, 0.78);
+  box-shadow:0 0 9px  linear-gradient(
+  180deg,
+  #00A8FF 0%,
+  #0055A6 45%,
+  #002761 100%
+);
 }
-
 .pvr-account-backdrop{
   position:fixed;
   inset:0;
@@ -210,7 +213,11 @@
   border:1px solid rgba(77, 255, 171, 0.2);
   border-radius:10px;
   background:rgba(10, 18, 17, 0.82);
-  color:#64dcb8;
+  color: linear-gradient(180deg,
+  #00A8FF 0%,
+  #0055A6 45%,
+  #002761 100%
+);
   font-family:"Cinzel", serif;
   font-size:8px;
   font-weight:700;
@@ -304,7 +311,12 @@
   border:1px solid rgba(77, 255, 171, 0.35);
   border-radius:11px;
   background:radial-gradient(120% 160% at 50% 0%, rgba(54, 145, 105, 0.28), transparent 60%), linear-gradient(180deg, #123326, #081b14);
-  color:#5cffba;
+  color: linear-gradient(
+  180deg,
+  #00A8FF 0%,
+  #0055A6 45%,
+  #002761 100%
+);
   font-family:"Cinzel", serif;
   font-size:9px;
   font-weight:700;
