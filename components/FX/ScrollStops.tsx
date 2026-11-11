@@ -55,7 +55,8 @@ export default function ScrollStops() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     const observer = new MutationObserver(onScroll);
-    observer.observe(tour, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    const tourElement = document.getElementById("home");
+    if (tourElement) observer.observe(tourElement, { subtree: true, attributes: true, attributeFilter: ["class"] });
     return () => {
       observer.disconnect();
       if (frame) cancelAnimationFrame(frame);
