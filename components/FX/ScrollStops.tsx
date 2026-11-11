@@ -18,6 +18,7 @@ const STOPS = [
 
 export default function ScrollStops() {
   const [active, setActive] = useState(0);
+  const [compact, setCompact] = useState(false);
 
   useEffect(() => {
     let frame = 0;
@@ -28,6 +29,9 @@ export default function ScrollStops() {
       const top = tour.getBoundingClientRect().top + window.scrollY;
       const range = Math.max(1, tour.offsetHeight - window.innerHeight);
       const y = window.scrollY;
+      const roomRect = tour.getBoundingClientRect();
+      const optionsVisible = roomRect.top <= window.innerHeight * 0.35 && roomRect.bottom > window.innerHeight * 0.35 && Boolean(tour.querySelector(".fx-puzzle.is-in .fx-pz-menu"));
+      setCompact(optionsVisible);
       const protocol = document.getElementById("protocol");
       const access = document.getElementById("access");
       const faq = document.getElementById("faq");
@@ -69,7 +73,7 @@ export default function ScrollStops() {
   };
 
   return (
-    <nav className="fx-story-stops" aria-label="USER FX section navigation">
+    <nav className={`fx-story-stops${compact ? " is-compact" : ""}`} aria-label="USER FX section navigation">
       {STOPS.map((stop, index) => (
         <button type="button" key={stop.label} className={`fx-story-stop ${active === index ? "is-active" : ""}`} onClick={() => navigate(index)} aria-label={`Go to ${stop.label}`} aria-current={active === index ? "step" : undefined} title={stop.label}>
           <span className="fx-story-stop-label">
