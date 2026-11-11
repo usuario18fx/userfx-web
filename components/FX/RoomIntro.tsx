@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type BlockId, type StepKey,
 } from "./tourTimeline";
-import { jumpToPosition } from "./Motion";
+import { travelToPosition } from "./Motion";
 import "./RoomIntro.css"; // <--- IMPORTANTE: Sin esto, el texto se ve sin estilo
 const CinematicTour = dynamic(() => import("./CinematicTour"), {
   ssr: false,
@@ -240,7 +240,7 @@ export default function RoomIntro() {
   }, [goToStep]);
   useEffect(() => {
     const jump = (event: Event) => {
-      const key = (event as CustomEvent<{ key?: string }>).detail?.key;
+      const key = (event as CustomEvent<{ key?: string; duration?: number }>).detail?.key;
       if (!key || !STEPS.some((item) => item.key === key)) return;
       const target = STEPS[stepIndex(key as StepKey)];
       const targetBlock = BLOCKS.find((item) => item.id === target.block);
@@ -249,7 +249,7 @@ export default function RoomIntro() {
       if (!el) return;
       const range = Math.max(0, el.offsetHeight - window.innerHeight);
       const top = el.getBoundingClientRect().top + window.scrollY + STOP_T[stepIndex(key as StepKey)] * range;
-      jumpToPosition(top);
+      travelToPosition(top, (event as CustomEvent<{ duration?: number }>).detail?.duration ?? 1.6);
     };
     window.addEventListener("fx:tour-jump", jump);
     return () => window.removeEventListener("fx:tour-jump", jump);
