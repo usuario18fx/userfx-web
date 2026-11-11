@@ -29,6 +29,12 @@ let instance: Lenis | null = null;
 export function setSmoothScroll(enabled: boolean) {
   if (instance) enabled ? instance.start() : instance.stop();
 }
+export function jumpToPosition(top: number) {
+  const target = Math.max(0, top);
+  if (instance) instance.scrollTo(target, { immediate: true, force: true });
+  else window.scrollTo({ top: target, behavior: "instant" });
+}
+
 export function SmoothScroll() {
   const reduced = useReducedMotion();
   useEffect(() => {
