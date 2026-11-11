@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
 import type { MotionValue } from "framer-motion";
 
 export type CrownTL = {
@@ -14,18 +15,6 @@ type Props =
   | { progress: MotionValue<number>; tl: CrownTL; active: boolean; step?: never; className?: string }
   | { progress: number; step: number; className?: string; tl?: never; active?: never };
 
-type Speck = {
-  x: number;
-  y: number;
-  z: number;
-  radius: number;
-  shine: number;
-  side: number;
-  dx: number;
-  dy: number;
-  phase: number;
-};
-
 const DEFAULT_TL: CrownTL = {
   descend: [0, 0.25],
   rise: [0.25, 0.6],
@@ -33,79 +22,82 @@ const DEFAULT_TL: CrownTL = {
   fade: [0.85, 1],
 };
 
-const clamp = (value: number) => Math.max(0, Math.min(1, value));
-const smooth = (value: number) => {
-  const x = clamp(value);
+const clamp = (v: number) => Math.max(0, Math.min(1, v));
+const ease = (v: number) => {
+  const x = clamp(v);
   return x * x * (3 - 2 * x);
 };
-const phase = (value: number, [start, end]: [number, number]) =>
-  smooth((value - start) / Math.max(0.000001, end - start));
+const range = (v: number, [a, b]: [number, number]) =>
+  ease((v - a) / Math.max(b - a, 0.000001));
 
-function makeSpecks(): Speck[] {
-  let seed = 41829;
-  const random = () => {
+function crownGeometry(count: number) {
+  let seed = 714221;
+  const rnd = () => {
     seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
     return seed / 4294967296;
   };
-  // Crown outline: five peaks, sloping toward a curved metallic band.
-  const outline: [number, number][] = [
-    [-0.98, 0.01], [-0.94, -0.70], [-0.65, -0.38],
-    [-0.52, -0.96], [-0.17, -0.54], [0, -1.16],
-    [0.21, -0.50], [0.54, -0.90], [0.64, -0.37],
-    [0.94, -0.68], [0.98, 0.05], [0.84, 0.19],
-    [0.39, 0.26], [0, 0.29], [-0.42, 0.22], [-0.86, 0.14],
-  ];
-  const inside = (x: number, y: number) => {
-    let hit = false;
-    for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
-      const a = outline[i];
-      const b = outline[j];
-      if ((a[1] > y) !== (b[1] > y) &&
-        x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]) hit = !hit;
-    }
-    return hit;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const scatter = new Float32Array(count * 3);
+  const phase = new Float32Array(count);
+  const color = new THREE.Color();
+  const palette = ["#09508b", "#087bb9", "#00a7e8", "#35caff", "#a0ecff", "#d6f8ff"];
+  const peak = (angle: number) =>
+    Math.pow((Math.cos(7 * (angle - Math.PI / 2)) + 1) / 2, 5);
+  const point = (index: number, x: number, y: number, z: number, highlight: number) => {
+    const j = index * 3;
+    positions[j] = x;
+    positions[j + 1] = y;
+    positions[j + 2] = z;
+    phase[index] = rnd() * Math.PI * 2;
+    const paletteIndex = highlight > 0.98 ? 5 : highlight > 0.87 ? 4 :
+      highlight > 0.67 ? 3 : highlight > 0.36 ? 2 : highlight > 0.12 ? 1 : 0;
+    color.set(palette[paletteIndex]);
+    colors[j] = color.r;
+    colors[j + 1] = color.g;
+    colors[j + 2] = color.b;
+    const angle = rnd() * Math.PI * 2;
+    const radial = 1.0 + rnd() * 2.7;
+    scatter[j] = Math.cos(angle) * radial;
+    scatter[j + 1] = 0.65 + rnd() * 2.3;
+    scatter[j + 2] = Math.sin(angle) * radial;
   };
-  const points: Speck[] = [];
-  let attempts = 0;
-  while (points.length < 8500 && attempts++ < 28000) {
-    const x = random() * 2 - 1;
-    const y = random() * 1.55 - 1.18;
-    if (!inside(x, y)) continue;
-    const z = random();
-    points.push({
-      x, y, z,
-      radius: 0.35 + random() * 0.8,
-      shine: random(),
-      side: random(),
-      dx: (random() - 0.5) * (1.6 + random() * 1.3),
-      dy: -(random() * 1.05) + 0.1,
-      phase: random() * Math.PI * 2,
-    });
-  }
-  // Concentrated contour grains keep the iconic crown geometry sharp.
-  for (let i = 0; i < outline.length; i++) {
-    const a = outline[i];
-    const b = outline[(i + 1) % outline.length];
-    const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 850);
-    for (let k = 0; k < n; k++) {
-      const t = (k + random()) / n;
-      points.push({
-        x: a[0] + (b[0] - a[0]) * t + (random() - 0.5) * 0.013,
-        y: a[1] + (b[1] - a[1]) * t + (random() - 0.5) * 0.013,
-        z: random() * 0.25,
-        radius: 0.55 + random() * 0.85,
-        shine: 0.7 + random() * 0.3,
-        side: random(),
-        dx: (random() - 0.5) * 2.5,
-        dy: -random(),
-        phase: random() * Math.PI * 2,
-      });
-    }
-  }
-  return points;
-}
 
-const SPECKS = makeSpecks();
+  for (let i = 0; i < count; i++) {
+    const theta = rnd() * Math.PI * 2;
+    const c = Math.cos(theta), s = Math.sin(theta);
+    const spike = peak(theta);
+    const crownTop = 0.05 + 1.42 * spike;
+    const mode = rnd();
+    let y: number;
+    let highlight = rnd() * 0.82;
+    if (mode < 0.13) {
+      // Sharp cyan contours across every peak.
+      y = crownTop + (rnd() - 0.5) * 0.038;
+      highlight = 0.75 + rnd() * 0.25;
+    } else if (mode < 0.29) {
+      // The heavy curved metal rim is also made entirely of grains.
+      y = -1.04 + rnd() * 0.16;
+      highlight = 0.73 + rnd() * 0.27;
+    } else if (mode < 0.36) {
+      y = -0.90 + rnd() * 0.04;
+      highlight = 0.7 + rnd() * 0.29;
+    } else {
+      y = -0.95 + rnd() * (crownTop + 0.95);
+    }
+    // Two concentric particle layers give the crown real 3D thickness.
+    const shell = rnd() < 0.16 ? 0.88 : 1;
+    const rx = (1.79 + (rnd() - 0.5) * 0.065) * shell;
+    const rz = (1.05 + (rnd() - 0.5) * 0.055) * shell;
+    point(i, rx * c, y, rz * s, highlight);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  geometry.computeBoundingSphere();
+  return { geometry, original: positions.slice(), scatter, phase };
+}
 
 export default function ProtocolCrown({ progress, tl, active, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -119,98 +111,119 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const context = canvas.getContext("2d", { alpha: true });
-    if (!context) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas, alpha: true, antialias: false, powerPreference: "high-performance",
+      });
+    } catch {
+      return;
+    }
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let raf = 0;
-    let w = 0;
-    let h = 0;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(39, 1, 0.1, 100);
+    camera.position.set(0, 0.25, 7.7);
+    camera.lookAt(0, -0.05, 0);
+
+    const group = new THREE.Group();
+    scene.add(group);
+    const isMobile = window.matchMedia("(max-width: 700px)").matches;
+    const data = crownGeometry(isMobile ? 12000 : 30000);
+    const material = new THREE.PointsMaterial({
+      size: isMobile ? 0.022 : 0.017,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.91,
+      depthWrite: false,
+      depthTest: true,
+      sizeAttenuation: true,
+      blending: THREE.AdditiveBlending,
+    });
+    const points = new THREE.Points(data.geometry, material);
+    points.frustumCulled = false;
+    group.add(points);
+
+    // Separate, larger and dimmer grains create a soft cyan halo.
+    const haloMaterial = new THREE.PointsMaterial({
+      size: isMobile ? 0.055 : 0.047,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.075,
+      depthWrite: false,
+      sizeAttenuation: true,
+      blending: THREE.AdditiveBlending,
+    });
+    const halo = new THREE.Points(data.geometry, haloMaterial);
+    halo.frustumCulled = false;
+    group.add(halo);
+
+    let w = 1, h = 1, frame = 0;
     let visible = !document.hidden;
-
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       w = Math.max(1, rect.width);
       h = Math.max(1, rect.height);
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      camera.aspect = w / h;
+      camera.position.z = w < 700 ? 10.8 : 7.7;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+      renderer.setSize(w, h, false);
     };
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
-
     const onVisibility = () => { visible = !document.hidden; };
     document.addEventListener("visibilitychange", onVisibility);
 
-    const render = (timestamp: number) => {
-      raf = window.requestAnimationFrame(render);
-      if (!visible || !activeRef.current || !w || !h) return;
-
+    const render = (ms: number) => {
+      frame = requestAnimationFrame(render);
+      if (!visible || !activeRef.current) return;
       const p = clamp(typeof progress === "number" ? progress : progress.get());
-      const descend = phase(p, timeline.descend);
-      const rise = phase(p, timeline.rise);
-      const broken = smooth((p - timeline.breakStart) / Math.max(0.00001, 1 - timeline.breakStart));
-      const fade = 1 - phase(p, timeline.fade);
-      context.clearRect(0, 0, w, h);
-      if (fade <= 0) return;
+      const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
+      const descend = range(p, timeline.descend);
+      const rise = range(p, timeline.rise);
+      const opacity = 1 - range(p, timeline.fade);
+      const time = ms * 0.001;
+      const v = data.geometry.getAttribute("position") as THREE.BufferAttribute;
+      const arr = v.array as Float32Array;
+      const original = data.original;
+      const scatter = data.scatter;
 
-      const mobile = w < 680;
-      const scale = Math.min(w * (mobile ? 0.42 : 0.31), h * (mobile ? 0.31 : 0.37));
-      const cx = w * (mobile ? 0.53 : 0.59);
-      const cy = h * (mobile ? 0.47 : 0.54) + (descend - rise) * h * 0.19;
-      const seconds = timestamp * 0.001;
-
-      context.save();
-      context.globalCompositeOperation = "lighter";
-
-      // A faint blue reflection under the crown, behind the protocol cards.
-      const aura = context.createRadialGradient(cx, cy + scale * 0.52, 0, cx, cy + scale * 0.52, scale * 1.4);
-      aura.addColorStop(0, "rgba(0,166,255,0.22)");
-      aura.addColorStop(0.5, "rgba(0,77,156,0.07)");
-      aura.addColorStop(1, "rgba(0,77,156,0)");
-      context.globalAlpha = fade * (1 - broken);
-      context.fillStyle = aura;
-      context.beginPath();
-      context.ellipse(cx, cy + scale * 0.5, scale * 1.4, scale * 0.5, 0, 0, Math.PI * 2);
-      context.fill();
-
-      const colors = ["#0b477d", "#12659b", "#138bce", "#19bdff", "#72dbff", "#c2efff"];
-      for (let i = 0; i < SPECKS.length; i++) {
-        const dot = SPECKS[i];
-        const depth = 0.86 + dot.z * 0.22;
-        const tremor = reduceMotion ? 0 : Math.sin(seconds * 1.1 + dot.phase) * 0.0015;
-        const falling = broken * broken;
-        const x = dot.x + tremor + dot.dx * falling;
-        const y = dot.y + (falling * dot.dy + falling * falling * 2.5);
-        // Perspective tilt and gentle curvature of a real crown's rim.
-        const sx = cx + (x + dot.y * 0.13) * scale * depth;
-        const sy = cy + (y * 0.76 + dot.x * 0.10 + dot.x * dot.x * 0.105) * scale * depth;
-        if (sx < -5 || sx > w + 5 || sy < -5 || sy > h + 5) continue;
-        const highlight = dot.shine > 0.965;
-        const colorIndex = highlight ? 5 : Math.min(4, Math.floor((dot.shine * 0.68 + (1 - dot.z) * 0.32) * 5));
-        context.fillStyle = colors[colorIndex];
-        context.globalAlpha = fade * (highlight ? 0.85 : 0.32 + dot.shine * 0.52);
-        const radius = dot.radius * (mobile ? 0.68 : 0.94) * (highlight ? 1.35 : 1);
-        context.fillRect(sx, sy, radius, radius);
+      // Purely independent motion: no spring, wobble or jelly interpolation.
+      for (let i = 0; i < arr.length; i += 3) {
+        const j = i / 3;
+        const free = broken * broken;
+        arr[i] = original[i] + scatter[i] * free;
+        arr[i + 1] = original[i + 1] +
+          scatter[i + 1] * free * 0.35 -
+          5.5 * free * free;
+        arr[i + 2] = original[i + 2] + scatter[i + 2] * free;
+        if (!reduced && broken < 0.001) {
+          arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
+        }
       }
-
-      if (!reduceMotion && broken < 0.9) {
-        context.globalAlpha = fade * (1 - broken) * 0.8;
-        context.strokeStyle = "rgba(24,182,255,0.36)";
-        context.lineWidth = Math.max(0.6, scale * 0.003);
-        context.beginPath();
-        context.ellipse(cx, cy + scale * 0.24, scale * 0.98, scale * 0.105, 0.1, 0, Math.PI * 2);
-        context.stroke();
-      }
-      context.restore();
+      v.needsUpdate = true;
+      group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.14) * 0.12) + p * 0.3;
+      group.rotation.x = -0.055;
+      group.rotation.z = -0.07;
+      group.position.set(w < 700 ? 0 : 0.55,
+        (rise - descend) * 1.0, 0);
+      material.opacity = 0.92 * opacity;
+      haloMaterial.opacity = 0.075 * opacity * (1 - broken);
+      renderer.render(scene, camera);
     };
-    raf = window.requestAnimationFrame(render);
+    frame = requestAnimationFrame(render);
     return () => {
-      window.cancelAnimationFrame(raf);
-      observer.disconnect();
+      cancelAnimationFrame(frame);
       document.removeEventListener("visibilitychange", onVisibility);
+      observer.disconnect();
+      data.geometry.dispose();
+      material.dispose();
+      haloMaterial.dispose();
+      renderer.dispose();
     };
   }, [progress, timeline]);
 
