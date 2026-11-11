@@ -12,7 +12,7 @@ const LAPTOP_VIDEOS = {
   gallery: "/assets/introFX.mp4", multimedia: "/assets/my-room/multimedia.mp4",
 } as const;
 type LaptopMode = keyof typeof LAPTOP_VIDEOS;
-const TUNING = { smoothTime: 0.58, smoothTimeReduced: 0.06, baseSpeed: 0.38, catchUp: 2.0, speedCeil: 2.1, speedCap: 1.8, entryEase: 0.02, lookAhead: 0.11, lookAheadMax: 0.3, fovKick: 1.05, fovKickMax: 2.4, fadeIn: 1.6, breathSide: 0.006, breathUp: 0.005, lookSway: 0.035, parallax: 0.09, roll: 0.0022, bank: 0.05, bankLambda: 3.0, barMax: 72, barSpeed: 1.1, barLambda: 5.5, vignetteIdle: 0.2, vignetteSpeed: 0.45, lookSettle: 9, } as const;
+const TUNING = { smoothTime: 0.58, smoothTimeReduced: 0.06, baseSpeed: 0.38, catchUp: 2.0, speedCeil: 2.1, speedCap: 1.8, entryEase: 0.02, lookAhead: 0.018, lookAheadMax: 0.035, fovKick: 0.15, fovKickMax: 0.35, fadeIn: 1.6, breathSide: 0.001, breathUp: 0.001, lookSway: 0.004, parallax: 0.015, roll: 0, bank: 0, bankLambda: 6.0, barMax: 72, barSpeed: 1.1, barLambda: 5.5, vignetteIdle: 0.2, vignetteSpeed: 0.45, lookSettle: 9, } as const;
 const CINE_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&family=Orbitron:wght@700&display=swap');
 
@@ -246,16 +246,16 @@ const CAMERAS: Record<StepKey, Cam> = {
   "gallery-b": { fov: 42, p: P(2.75, 1.63, -2.2), l: LAPTOP_LOOK },
   "gallery-focus": { fov: 39, p: P(2.98, 1.1, -1.2), l: LAPTOP_LOOK },
   "gallery-lock": { fov: 49, p: P(3.18, 1.1, -1.2), l: LAPTOP_LOOK },
-  "videocall-a": { fov: 34, p: P(3.35, 1.48, -4.55), l: TV_LOOK },
-  "videocall-b": { fov: 42, p: P(-0.2, 2.2, 0.9), l: TV_LOOK },
+  "videocall-a": { fov: 47, p: P(0.95, 1.78, -2.0), l: TV_LOOK },
+  "videocall-b": { fov: 46, p: P(-0.45, 1.82, -1.5), l: TV_LOOK },
   "videocall-focus": { fov: 40, p: P(-1.75, 1.72, -2.0), l: TV_LOOK },
   "videocall-lock": { fov: 50, p: P(-0.7, 1.72, -2.0), l: TV_LOOK },
   "multimedia-a": { fov: 46, p: P(1.55, 1.72, -2.45), l: LAPTOP_LOOK },
   "multimedia-b": { fov: 41, p: P(3.3, 2.05, -0.15), l: LAPTOP_LOOK },
   "multimedia-focus": { fov: 37, p: P(2.72, 1.02, -1.42), l: LAPTOP_LOOK },
   "multimedia-lock": { fov: 52, p: P(2.92, 1.02, -1.42), l: LAPTOP_LOOK },
-  "stage-a": { fov: 46, p: P(-2.3, 2.4, -0.4), l: TV_LOOK },
-  "stage-b": { fov: 46, p: P(-2.5, 1.55, -3.0), l: TV_LOOK },
+  "stage-a": { fov: 48, p: P(-1.55, 1.85, -0.9), l: TV_LOOK },
+  "stage-b": { fov: 46, p: P(-1.8, 1.72, -2.1), l: TV_LOOK },
   "stage-focus": { fov: 40, p: P(-1.75, 1.72, -2.0), l: TV_LOOK },
   "stage-lock": { fov: 50, p: P(-0.7, 1.72, -2.0), l: TV_LOOK },
 };
@@ -304,7 +304,7 @@ STEPS.forEach((s) => {
     fov: cam.fov,
     p: cam.p,
     l: cam.l,
-    drift: s.drift || undefined,
+    drift: 0,
     life: s.life,
   });
 });
@@ -387,8 +387,15 @@ const fovAt = (u: number) => {
   return THREE.MathUtils.clamp(value, lo, hi);
 };
 const samplePath = (u: number, lead: number, position: THREE.Vector3, look: THREE.Vector3) => {
-  posCurve.getPoint(THREE.MathUtils.clamp(u / SEGMENTS, 0, 1), position);
-  lookCurve.getPoint(THREE.MathUtils.clamp((u + lead) / SEGMENTS, 0, 1), look);
+  const sample = (step: number, out: THREE.Vector3, field: "p" | "l") => {
+    const clamped = THREE.MathUtils.clamp(step, 0, SEGMENTS);
+    const i = Math.min(SEGMENTS - 1, Math.floor(clamped));
+    const t = clamped >= SEGMENTS ? 1 : clamped - i;
+    const eased = t * t * (3 - 2 * t);
+    out.copy(frames[i][field]).lerp(frames[i + 1][field], eased);
+  };
+  sample(u, position, "p");
+  sample(u + lead, look, "l");
 };
 const HOLD_PAD = 0.012;
 const stopWindows = frames
