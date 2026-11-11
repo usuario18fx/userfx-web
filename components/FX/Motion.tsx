@@ -34,6 +34,21 @@ export function jumpToPosition(top: number) {
   if (instance) instance.scrollTo(target, { immediate: true, force: true });
   else window.scrollTo({ top: target, behavior: "instant" });
 }
+export function travelToPosition(top: number, duration = 1.5) {
+  const target = Math.max(0, top);
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) return jumpToPosition(target);
+  if (instance) {
+    instance.scrollTo(target, {
+      duration,
+      force: true,
+      easing: (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+    });
+  } else {
+    window.scrollTo({ top: target, behavior: "smooth" });
+  }
+}
+
 
 export function SmoothScroll() {
   const reduced = useReducedMotion();
