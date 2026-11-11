@@ -125,6 +125,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     const fallbackPalette = ["#07588e", "#0875b0", "#00a6ec", "#32c5ff", "#9deaff", "#e1faff"];
     let fallbackW = 1, fallbackH = 1;
     let useFallback = false;
+    let lastFallbackFrame = -1000;
     const resizeFallback = () => {
       const rect = fallbackCanvas.getBoundingClientRect();
       fallbackW = Math.max(1, rect.width);
@@ -173,12 +174,16 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     let fallbackFrame = 0;
     const fallbackLoop = (ms: number) => {
       fallbackFrame = requestAnimationFrame(fallbackLoop);
-      if (useFallback && !document.hidden) renderFallback(ms);
+      if (!document.hidden && ms - lastFallbackFrame > (useFallback ? 40 : 90)) {
+        lastFallbackFrame = ms;
+        renderFallback(ms);
+      }
     };
     fallbackFrame = requestAnimationFrame(fallbackLoop);
     const showFallback = () => {
       useFallback = true;
       fallbackCanvas.style.display = "block";
+      fallbackCanvas.style.opacity = "1";
       canvas.style.display = "none";
     };
     const onContextLost = (event: Event) => {
@@ -314,7 +319,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
   return (
     <div className="pv-crown-layer" aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "none", position: "absolute", inset: 0 }} />
+      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "block", opacity: 0.52, position: "absolute", inset: 0 }} />
       <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{ position: "absolute", inset: 0 }} />
     </div>
   );
