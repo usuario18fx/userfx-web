@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
-import { ScrollProgress, SmoothScroll, setSmoothScroll } from "./Motion";
+import { SmoothScroll, setSmoothScroll } from "./Motion";
+import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import RoomIntro from "./RoomIntro";
@@ -966,7 +967,7 @@ export default function Landing() {
 {LANDING_STYLES}
 </style>
       <SmoothScroll />
-      <ScrollProgress />
+      <ScrollStops />
       <StickyHeader active={active} />
       <MenuOverlay>
         <SiteFooter />
