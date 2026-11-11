@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { STOP_T, stepIndex, type StepKey } from "./tourTimeline";
-import { jumpToPosition } from "./Motion";
+import { travelToPosition } from "./Motion";
 import "./ScrollStops.css";
 
 const STOPS = [
@@ -39,7 +39,7 @@ export default function ScrollStops() {
       let current = 0;
       for (let i = 1; i < 5; i++) {
         const stop = STOPS[i];
-        if ("key" in stop && p >= STOP_T[stepIndex(stop.key)] - 0.012) current = i;
+        if ("key" in stop && p >= STOP_T[stepIndex(stop.key)] - 0.018) current = i;
       }
       setActive(current);
     };
@@ -60,12 +60,12 @@ export default function ScrollStops() {
     const stop = STOPS[index];
     setActive(index);
     if ("key" in stop) {
-      window.dispatchEvent(new CustomEvent("fx:tour-jump", { detail: { key: stop.key } }));
+      window.dispatchEvent(new CustomEvent("fx:tour-jump", { detail: { key: stop.key, duration: Math.min(3.4, 1.25 + Math.abs(index - active) * 0.4) } }));
       return;
     }
     const element = document.getElementById(stop.id);
     if (!element) return;
-    jumpToPosition(element.getBoundingClientRect().top + window.scrollY - 72);
+    travelToPosition(element.getBoundingClientRect().top + window.scrollY - 72, Math.min(3.4, 1.25 + Math.abs(index - active) * 0.4));
   };
 
   return (
@@ -75,7 +75,7 @@ export default function ScrollStops() {
           <span className="fx-story-stop-label">
             {stop.label}
           </span>
-          <span className="fx-story-stop-line" />
+          <span className="fx-story-stop-dot" aria-hidden="true" />
         </button>
       ))}
     </nav>
