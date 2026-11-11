@@ -101,6 +101,7 @@ function crownGeometry(count: number) {
 
 export default function ProtocolCrown({ progress, tl, active, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fallbackRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(active ?? true);
   const timeline = tl ?? DEFAULT_TL;
 
@@ -110,7 +111,86 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const fallbackCanvas = fallbackRef.current;
+    if (!canvas || !fallbackCanvas) return;
+    const fallbackContext = fallbackCanvas.getContext("2d", { alpha: true });
+    if (!fallbackContext) return;
+
+    // Canvas 2D renders the same 3D positions and is used if WebGL is unavailable.
+    // This prevents an entirely blank Protocol background on GPU-limited devices.
+    const fallbackData = crownGeometry(window.innerWidth < 700 ? 10500 : 17000);
+    const fOriginal = fallbackData.original;
+    const fScatter = fallbackData.scatter;
+    const fColors = fallbackData.geometry.getAttribute("color").array as Float32Array;
+    const fallbackPalette = ["#07588e", "#0875b0", "#00a6ec", "#32c5ff", "#9deaff", "#e1faff"];
+    let fallbackW = 1, fallbackH = 1;
+    let useFallback = false;
+    let lastFallbackFrame = -1000;
+    const resizeFallback = () => {
+      const rect = fallbackCanvas.getBoundingClientRect();
+      fallbackW = Math.max(1, rect.width);
+      fallbackH = Math.max(1, rect.height);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      fallbackCanvas.width = Math.round(fallbackW * dpr);
+      fallbackCanvas.height = Math.round(fallbackH * dpr);
+      fallbackContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const renderFallback = (ms: number) => {
+      fallbackContext.clearRect(0, 0, fallbackW, fallbackH);
+      const p = clamp(typeof progress === "number" ? progress : progress.get());
+      const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
+      const opacity = 1 - range(p, timeline.fade);
+      if (opacity <= 0) return;
+      const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.34);
+      const cx = fallbackW * (fallbackW < 700 ? 0.51 : 0.56);
+      const cy = fallbackH * 0.48 + (range(p, timeline.rise) - range(p, timeline.descend)) * scale * 0.25;
+      const turn = -0.20 + Math.sin(ms * 0.00012) * 0.11 + p * 0.30;
+      const cos = Math.cos(turn), sin = Math.sin(turn);
+      const free = broken * broken;
+      fallbackContext.save();
+      fallbackContext.globalCompositeOperation = "lighter";
+      for (let i = 0; i < fOriginal.length; i += 3) {
+        const x = fOriginal[i] + fScatter[i] * free;
+        const y = fOriginal[i + 1] + fScatter[i + 1] * free * 0.35 - 5.5 * free * free;
+        const z = fOriginal[i + 2] + fScatter[i + 2] * free;
+        const rx = x * cos - z * sin;
+        const rz = x * sin + z * cos;
+        const perspective = 5.8 / (5.8 - rz * 0.28);
+        const px = cx + rx * scale * perspective;
+        const py = cy - y * scale * perspective;
+        if (px < -2 || px > fallbackW + 2 || py < -2 || py > fallbackH + 2) continue;
+        const intensity = (fColors[i] + fColors[i + 1] + fColors[i + 2]) / 3;
+        const shade = intensity > 0.73 ? 5 : intensity > 0.44 ? 4 : intensity > 0.27 ? 3 : intensity > 0.17 ? 2 : intensity > 0.11 ? 1 : 0;
+        fallbackContext.globalAlpha = opacity * (shade >= 4 ? 0.88 : 0.58);
+        fallbackContext.fillStyle = fallbackPalette[shade];
+        const size = (shade >= 4 ? 1.5 : 1.0) * perspective;
+        fallbackContext.fillRect(px, py, size, size);
+      }
+      fallbackContext.restore();
+    };
+    resizeFallback();
+    const fallbackObserver = new ResizeObserver(resizeFallback);
+    fallbackObserver.observe(fallbackCanvas);
+    let fallbackFrame = 0;
+    const fallbackLoop = (ms: number) => {
+      fallbackFrame = requestAnimationFrame(fallbackLoop);
+      if (!document.hidden && ms - lastFallbackFrame > (useFallback ? 40 : 90)) {
+        lastFallbackFrame = ms;
+        renderFallback(ms);
+      }
+    };
+    fallbackFrame = requestAnimationFrame(fallbackLoop);
+    const showFallback = () => {
+      useFallback = true;
+      fallbackCanvas.style.display = "block";
+      fallbackCanvas.style.opacity = "1";
+      canvas.style.display = "none";
+    };
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      showFallback();
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let renderer: THREE.WebGLRenderer;
     try {
@@ -118,7 +198,13 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
         canvas, alpha: true, antialias: false, powerPreference: "high-performance",
       });
     } catch {
-      return;
+      showFallback();
+      return () => {
+        cancelAnimationFrame(fallbackFrame);
+        fallbackObserver.disconnect();
+        fallbackData.geometry.dispose();
+        canvas.removeEventListener("webglcontextlost", onContextLost);
+      };
     }
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -180,7 +266,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
     const render = (ms: number) => {
       frame = requestAnimationFrame(render);
-      if (!visible || !activeRef.current) return;
+      if (!visible || useFallback) return;
       const p = clamp(typeof progress === "number" ? progress : progress.get());
       const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
       const descend = range(p, timeline.descend);
@@ -220,6 +306,10 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       cancelAnimationFrame(frame);
       document.removeEventListener("visibilitychange", onVisibility);
       observer.disconnect();
+      cancelAnimationFrame(fallbackFrame);
+      fallbackObserver.disconnect();
+      fallbackData.geometry.dispose();
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       data.geometry.dispose();
       material.dispose();
       haloMaterial.dispose();
@@ -227,5 +317,10 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     };
   }, [progress, timeline]);
 
-  return <canvas ref={canvasRef} className={className ?? "pv-crown"} aria-hidden="true" />;
+  return (
+    <div className="pv-crown-layer" aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "block", opacity: 0.52, position: "absolute", inset: 0 }} />
+      <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{ position: "absolute", inset: 0 }} />
+    </div>
+  );
 }
