@@ -73,6 +73,26 @@
   outline: 2px solid #3fd8d0;
   outline-offset: 2px;
 }
+
+/* Panels and content cards must never be covered by navigation labels. */
+.fx-story-stops.is-compact .fx-story-stop-label,
+.fx-story-stops.is-compact .fx-story-stop.is-active .fx-story-stop-label,
+.fx-story-stops.is-compact .fx-story-stop:hover .fx-story-stop-label,
+.fx-story-stops.is-compact .fx-story-stop:focus-visible .fx-story-stop-label {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+.fx-story-stops.is-compact {
+  width: 34px;
+  right: clamp(8px, 1.2vw, 18px);
+}
+.fx-story-stops.is-compact .fx-story-stop {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+}
+
 @media (max-width: 768px) {
   .fx-story-stops { right: 5px; gap: 3px; width: 38px; }
   .fx-story-stop { width: 34px; height: 34px; flex-basis: 34px; }
