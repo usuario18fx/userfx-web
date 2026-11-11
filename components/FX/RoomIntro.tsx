@@ -248,7 +248,7 @@ export default function RoomIntro() {
       const el = section.current;
       if (!el) return;
       const range = Math.max(0, el.offsetHeight - window.innerHeight);
-      const top = el.getBoundingClientRect().top + window.scrollY + STOP_T[stepIndex(key as StepKey)] * range;
+      const top = el.getBoundingClientRect().top + window.scrollY + STOPS[stepIndex(key as StepKey)] * range;
       travelToPosition(top, (event as CustomEvent<{ duration?: number }>).detail?.duration ?? 1.6);
     };
     window.addEventListener("fx:tour-jump", jump);
