@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type BlockId, type StepKey,
 } from "./tourTimeline";
+import { jumpToPosition } from "./Motion";
 import "./RoomIntro.css"; // <--- IMPORTANTE: Sin esto, el texto se ve sin estilo
 const CinematicTour = dynamic(() => import("./CinematicTour"), {
   ssr: false,
@@ -237,6 +238,22 @@ export default function RoomIntro() {
       window.removeEventListener("hashchange", onHash);
   };
   }, [goToStep]);
+  useEffect(() => {
+    const jump = (event: Event) => {
+      const key = (event as CustomEvent<{ key?: string }>).detail?.key;
+      if (!key || !STEPS.some((item) => item.key === key)) return;
+      const target = STEPS[stepIndex(key as StepKey)];
+      const targetBlock = BLOCKS.find((item) => item.id === target.block);
+      if (targetBlock) unlock(targetBlock.number);
+      const el = section.current;
+      if (!el) return;
+      const range = Math.max(0, el.offsetHeight - window.innerHeight);
+      const top = el.getBoundingClientRect().top + window.scrollY + STOP_T[stepIndex(key as StepKey)] * range;
+      jumpToPosition(top);
+    };
+    window.addEventListener("fx:tour-jump", jump);
+    return () => window.removeEventListener("fx:tour-jump", jump);
+  }, [unlock]);
   const openBot = useCallback(() => window.open(BOT_URL, "_blank", "noopener,noreferrer"), []);
   const openBotCommand = useCallback(
     (command: "gallery" | "getcode" | "videocall" | "channels") => {
