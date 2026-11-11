@@ -357,16 +357,6 @@ const timeToU = (t: number) => {
     (s3 - s2) * h * (b.d as number)
   );
 };
-const posCurve = new THREE.CatmullRomCurve3(
-  frames.map((f) => f.p),
-  false,
-  "centripetal",
-);
-const lookCurve = new THREE.CatmullRomCurve3(
-  frames.map((f) => f.l),
-  false,
-  "centripetal",
-);
 const SEGMENTS = frames.length - 1;
 const fovAt = (u: number) => {
   const i = Math.max(0, Math.min(frames.length - 2, Math.floor(u)));
