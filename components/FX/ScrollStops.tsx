@@ -31,11 +31,12 @@ export default function ScrollStops() {
       const y = window.scrollY;
       const roomRect = tour.getBoundingClientRect();
       const optionsVisible = roomRect.top <= window.innerHeight * 0.35 && roomRect.bottom > window.innerHeight * 0.35 && Boolean(tour.querySelector(".fx-puzzle.is-in .fx-pz-menu"));
-      setCompact(optionsVisible);
       const protocol = document.getElementById("protocol");
       const access = document.getElementById("access");
       const faq = document.getElementById("faq");
       const cutoff = window.innerHeight * 0.35;
+      const inContent = [protocol, access, faq].some((el) => el && el.getBoundingClientRect().top <= cutoff && el.getBoundingClientRect().bottom > 0);
+      setCompact(optionsVisible || inContent);
       if (faq && faq.getBoundingClientRect().top <= cutoff) return setActive(7);
       if (access && access.getBoundingClientRect().top <= cutoff) return setActive(6);
       if (protocol && protocol.getBoundingClientRect().top <= cutoff) return setActive(5);
@@ -53,7 +54,10 @@ export default function ScrollStops() {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    const observer = new MutationObserver(onScroll);
+    observer.observe(tour, { subtree: true, attributes: true, attributeFilter: ["class"] });
     return () => {
+      observer.disconnect();
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
