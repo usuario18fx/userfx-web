@@ -58,6 +58,8 @@ const ASSET_CHANNELS_VIDEO = `${ASSETS_BASE_URL}/videoSMKLFX.mp4`;
 const ASSET_SMOKELANDIA_VIDEO = `${ASSETS_BASE_URL}/introSMKL.mp4`;
 const ASSET_USERFX_VIDEO = `${ASSETS_BASE_URL}/introFX.mp4`;
 const ASSET_GETCODE_IMAGE = `${ASSETS_BASE_URL}/USERFX-ID18V20.jpg`;
+const VIDEOCALL_REPLY_MEDIA_URL = process.env.VIDEOCALL_REPLY_MEDIA_URL || ASSET_USERFX_VIDEO;
+const VIDEOCALL_REPLY_MEDIA_TYPE = String(process.env.VIDEOCALL_REPLY_MEDIA_TYPE || (/\.(mp4|mov|m4v|webm)(?:\?|$)/i.test(VIDEOCALL_REPLY_MEDIA_URL) ? "video" : "photo")).toLowerCase() === "video" ? "video" : "photo";
 // ======================================================
 // VAULT WEBSITE RELAY
 // ======================================================
@@ -649,6 +651,7 @@ const PLAN_CONFIG = {
 // REQUEST STATUS
 // ======================================================
 const REQUEST_STATUS = {
+  WAITING_CONSENT: "waiting_consent",
   WAITING_PHOTO: "waiting_photo",
   AWAITING_ADMIN: "awaiting_admin",
   AWAITING_PAYMENT: "awaiting_payment",
@@ -1393,141 +1396,140 @@ async function sendGeneratedCode(ctx, record) {
 //// VIDEOCALL FLOW //
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
-  if (!userId) return;
+  if (!userId || ctx.chat?.type !== "private") {
+    await ctx.reply("🔒 ᴏᴘᴇɴ ᴛʜɪꜱ ꜰʟᴏᴡ ɪɴ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ.");
+    return;
+  }
   try {
-    const allowed = await checkRateLimit(userId, 3, 300);
-    if (!allowed) {
-      await ctx.reply("⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɢᴀɪɴ.");
-      return;
+    const existing = await getVideoRequest(userId);
+    if (existing && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN, REQUEST_STATUS.AWAITING_PAYMENT].includes(existing.status)) {
+      return await sendPendingVideocallPanel(ctx);
     }
-    const currentRequest = await getVideoRequest(userId);
-    if (currentRequest?.status === REQUEST_STATUS.WAITING_PHOTO || currentRequest?.status === REQUEST_STATUS.AWAITING_ADMIN || currentRequest?.status === REQUEST_STATUS.AWAITING_PAYMENT) {
-      await ctx.reply(
-        `⏳ ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
-          ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴘʀᴏᴄᴇꜱꜱɪɴɢ.`,
-        getPendingPhotoKeyboard(),
-      );
+    if (!(await checkRateLimit(userId, 3, 300))) {
+      await ctx.reply("⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ᴛʀʏɪɴɢ ᴀɢᴀɪɴ.");
       return;
     }
     const user = getUserMeta(ctx.from);
-    const request = {
+    await setVideoRequest(userId, {
       userId,
       fullName: user.fullName,
       username: user.username,
-      status: REQUEST_STATUS.WAITING_PHOTO,
-      invalidTextCount: 0,
+      status: REQUEST_STATUS.WAITING_CONSENT,
+      mediaCount: 0,
+      replySent: false,
       createdAt: Date.now(),
-    };
-    await setVideoRequest(userId, request);
+    });
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback("✔ ɪ'ᴍ 𝟣𝟪+ · ʟᴇᴛ'ꜱ ɢᴏ", `exchange_consent_${userId}`)],
+      [Markup.button.callback("✖ ᴄᴀɴᴄᴇʟ", `exchange_cancel_${userId}`)],
+    ]);
     await ctx.reply(
-      `ʜᴏʟᴅ ᴜᴘ...
-ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
-ᴡᴀɴɴᴀ ꜱᴡᴀᴘ ᴘɪᴄꜱ ɪɴ ᴛʜᴇ ᴍᴇᴀɴᴛɪᴍᴇ?`,
-                getPendingPhotoKeyboard(),
-              );
-              await adminBot.telegram.sendMessage(
-                ADMIN_CHAT_ID,
-                `📞 <b>ɴᴇᴡ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ</b>
-    Username: ${escapeHtml(user.username)}
-              ID: ${escapeHtml(user.id)}
-              Chat ID: ${escapeHtml(userId)}
-              ⏳ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʜᴏᴛᴏ...`,
-      { parse_mode: "HTML" },
+      `🔞 ᴘʀɪᴠᴀᴛᴇ ᴍᴇᴅɪᴀ ꜱᴡᴀᴘ · 18+
+
+ʙᴇꜰᴏʀᴇ ᴡᴇ ꜱᴛᴀʀᴛ: ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴀɴᴅ ᴛʜᴀᴛ ᴇᴠᴇʀʏ ᴘɪᴄ ᴏʀ ᴠɪᴅᴇᴏ ɪꜱ ʏᴏᴜʀꜱ ᴛᴏ ꜱʜᴀʀᴇ.
+
+ʏᴏᴜʀ ᴍᴇᴅɪᴀ ᴡɪʟʟ ʙᴇ ꜱʜᴀʀᴇᴅ ᴘʀɪᴠᴀᴛᴇʟʏ ᴡɪᴛʜ ᴛʜᴇ ᴄʀᴇᴀᴛᴏʀ ꜰᴏʀ ʀᴇᴠɪᴇᴡ. ɴᴏ ᴛᴇxᴛ · ᴊᴜꜱᴛ ᴘɪᴄꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ.
+
+ʏᴏᴜ ᴄᴀɴ ᴄᴀɴᴄᴇʟ ᴀɴʏᴛɪᴍᴇ.`,
+      { reply_markup: keyboard.reply_markup },
     );
   } catch (error) {
-    logger.error("OPEN VIDEOCALL FLOW ERROR", {
-      userId,
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-    });
+    logger.error("OPEN VIDEOCALL FLOW ERROR", { userId, ...getTelegramError(error), stack: getErrorStack(error) });
   }
 }
+bot.action(/^exchange_consent_(\d+)$/, async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  if (userId !== String(ctx.match[1]) || ctx.chat?.type !== "private") {
+    await ctx.answerCbQuery("ᴛʜɪꜱ ʀᴇǫᴜᴇꜱᴛ ɪꜱɴ'ᴛ ʏᴏᴜʀꜱ.");
+    return;
+  }
+  const pending = await getVideoRequest(userId);
+  if (!pending || pending.status !== REQUEST_STATUS.WAITING_CONSENT) {
+    await ctx.answerCbQuery("ʀᴇǫᴜᴇꜱᴛ ᴇxᴘɪʀᴇᴅ.");
+    return;
+  }
+  await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO, consentConfirmedAt: Date.now() });
+  await ctx.answerCbQuery("✔ 18+ ᴄᴏɴꜰɪʀᴍᴇᴅ.");
+  await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
+  await ctx.reply(
+    `👀 ᴏᴋᴀʏ, ʏᴏᴜ'ᴠᴇ ɢᴏᴛ ᴍʏ ᴀᴛᴛᴇɴᴛɪᴏɴ.
+
+ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴏʀ ᴀ ᴠɪᴅᴇᴏ ғɪʀꜱᴛ. ɪ'ʟʟ ꜱᴇɴᴅ ꜱᴏᴍᴇᴛʜɪɴɢ ʙᴀᴄᴋ.
+
+ᴘʜᴏᴛᴏꜱ & ᴠɪᴅᴇᴏꜱ ᴏɴʟʏ.`,
+    getPendingPhotoKeyboard(),
+  );
+  await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `📞 <b>NEW PRIVATE MEDIA REQUEST</b>\nUsername: ${escapeHtml(pending.username)}\nID: ${escapeHtml(userId)}\n18+ self-confirmed · awaiting first photo/video.`, { parse_mode: "HTML" }).catch((error) => {
+    logger.error("VIDEOCALL ADMIN NOTICE FAILED", getTelegramError(error));
+  });
+});
+bot.action(/^exchange_cancel_(\d+)$/, async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  if (userId !== String(ctx.match[1])) {
+    await ctx.answerCbQuery("ᴛʜɪꜱ ʀᴇǫᴜᴇꜱᴛ ɪꜱɴ'ᴛ ʏᴏᴜʀꜱ.");
+    return;
+  }
+  await deleteVideoRequest(userId);
+  await ctx.answerCbQuery("ᴄᴀɴᴄᴇʟʟᴇᴅ.");
+  await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
+  await ctx.reply("✖ ᴇxᴄʜᴀɴɢᴇ ᴄᴀɴᴄᴇʟʟᴇᴅ.", getMainKeyboard());
+});
+
 //// PENDING VIDEOCALL //
 async function sendPendingVideocallPanel(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId) return;
   try {
-    const request = await getVideoRequest(userId);
-    if (!request) {
-      await ctx.reply(
-        `⏳ɴᴏ ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.
-               ᴡʜᴇɴ ʏᴏᴜ ʀᴇǫᴜᴇꜱᴛ ᴀ ᴠɪᴅᴇᴏᴄᴀʟʟ, ɪᴛ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.`,
-        getMainKeyboard(),
-      );
+    const pending = await getVideoRequest(userId);
+    if (!pending) {
+      await ctx.reply("⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ʀᴇǫᴜᴇꜱᴛ. ᴛᴀᴘ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴛᴏ ꜱᴛᴀʀᴛ.", getMainKeyboard());
       return;
     }
-    let message = "";
-    let keyboard = getMainKeyboard();
-    switch (request.status) {
-      case REQUEST_STATUS.WAITING_PHOTO:
-        message = `ꜱᴛᴀᴛᴜꜱ: ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ᴘʜᴏᴛᴏ 📸
-              ɪ ɴᴇᴇᴅ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`;
-        keyboard = getPendingPhotoKeyboard();
-        break;
-      case REQUEST_STATUS.AWAITING_ADMIN:
-        message = `⏳ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-              ꜱᴛᴀᴛᴜꜱ: ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ʀᴇᴄᴇɪᴠᴇᴅ.
-              ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴅᴍɪɴ ᴀᴘᴘʀᴏᴠᴀʟ.`;
-        keyboard = getPendingPhotoKeyboard();
-        break;
-      case REQUEST_STATUS.AWAITING_PAYMENT:
-        message = `ᴘᴇɴᴅɪɴɢ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-              ꜱᴛᴀᴛᴜꜱ: ✔️ ʏᴏᴜʀ ᴘʜᴏᴛᴏ ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.
-              ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`;
-        keyboard = getPendingPhotoKeyboard();
-        break;
-      case REQUEST_STATUS.PAID:
-        message = `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-              ꜱᴛᴀᴛᴜꜱ: ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`;
-        keyboard = getApprovedVideocallKeyboard();
-        break;
-      case REQUEST_STATUS.APPROVED:
-        message = `ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ
-              ꜱᴛᴀᴛᴜꜱ: 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 ✔
-              ᴠɪᴅᴇᴏᴄᴀʟʟ ᴀᴄᴄᴇꜱꜱ ɪꜱ ʀᴇᴀᴅʏ.`;
-        keyboard = getApprovedVideocallKeyboard();
-        break;
-      default:
-        await ctx.reply("⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
-        return;
+    if (pending.status === REQUEST_STATUS.WAITING_CONSENT) {
+      await ctx.reply("🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ.");
+      return;
     }
-    await ctx.reply(message, keyboard);
-    logger.info("PENDING VIDEOCALL PANEL", { userId, status: request.status });
+    if (pending.status === REQUEST_STATUS.WAITING_PHOTO) {
+      await ctx.reply("📸 ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ ꜱᴡᴀᴘ.", getPendingPhotoKeyboard());
+      return;
+    }
+    if (pending.status === REQUEST_STATUS.AWAITING_ADMIN) {
+      await ctx.reply("👀 ɪ'ᴠᴇ ɢᴏᴛ ʏᴏᴜʀ ᴍᴇᴅɪᴀ. ᴡᴇ ᴄᴀɴ ᴋᴇᴇᴘ ꜱᴡᴀᴘᴘɪɴɢ ᴘɪᴄꜱ/ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ɪ ᴄʜᴇᴄᴋ ᴄᴀʟʟ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.", getPendingPhotoKeyboard());
+      return;
+    }
+    if (pending.status === REQUEST_STATUS.AWAITING_PAYMENT) {
+      await ctx.reply("✪ ᴡᴇ ᴄᴀɴ ᴛᴀᴋᴇ ᴛʜɪꜱ ᴛᴏ ᴀ ᴄᴀʟʟ. ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ 130 ꜱᴛᴀʀꜱ ɪɴᴠᴏɪᴄᴇ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.", getPendingPhotoKeyboard());
+      return;
+    }
+    if ([REQUEST_STATUS.APPROVED, REQUEST_STATUS.PAID].includes(pending.status)) {
+      await ctx.reply("📞 ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴀʀᴇ ʀᴇᴀᴅʏ.", { reply_markup: getVideocallInlineKeyboard() });
+      return;
+    }
+    await ctx.reply("⏳ ɴᴏ ᴀᴄᴛɪᴠᴇ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
   } catch (error) {
-    logger.error("PENDING VIDEOCALL PANEL ERROR", {
-      userId,
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-    });
-    await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴘᴇɴᴅɪɴɢ ʀᴇǫᴜᴇꜱᴛ.", getMainKeyboard());
+    logger.error("PENDING VIDEOCALL PANEL ERROR", { userId, ...getTelegramError(error), stack: getErrorStack(error) });
+    await ctx.reply("✘ ᴄᴏᴜʟᴅɴ'ᴛ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ.");
   }
 }
+
 //// APPROVED VIDEOCALL //
 async function sendApprovedVideocallFlow(userId) {
   const targetUserId = String(userId);
   try {
     await bot.telegram.sendMessage(
       targetUserId,
-      `✔ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
-              ʏᴏᴜʀ ᴘʜᴏᴛᴏ ᴡᴀꜱ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃.`,
-    );
-    await bot.telegram.sendMessage(
-      targetUserId,
-      `📞 ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.
-              ᴄʜᴏᴏꜱᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ꜱᴛᴀʀᴛ ᴛʜᴇ 𝐕𝐈𝐃𝐄𝐎𝐂𝐀𝐋𝐋:`,
+      `👀 ʏᴏᴜ ɢᴏᴛ ᴍʏ ᴀᴛᴛᴇɴᴛɪᴏɴ.
+
+ʀᴇᴀᴅʏ ᴛᴏ ᴛᴀᴋᴇ ᴛʜɪꜱ ᴏꜰꜰ ᴄʜᴀᴛ? ᴘɪᴄᴋ ᴡʜᴇʀᴇ ʏᴏᴜ ᴡᴀɴɴᴀ ᴄᴀʟʟ.`,
       { reply_markup: getVideocallInlineKeyboard() },
     );
-    logger.info("VIDEOCALL OPTIONS SENT", {
-      userId: targetUserId,
-    });
+    logger.info("VIDEOCALL OPTIONS SENT", { userId: targetUserId });
   } catch (error) {
-    logger.error("SEND APPROVED VIDEOCALL ERROR", {
-      userId: targetUserId,
-      ...getTelegramError(error),
-    });
+    logger.error("SEND APPROVED VIDEOCALL ERROR", { userId: targetUserId, ...getTelegramError(error) });
     throw error;
   }
 }
+
 //// INVOICES //
 async function sendStarsInvoice(telegram, chatId, options) {
   if (!chatId) return;
@@ -2007,70 +2009,92 @@ bot.on("pre_checkout_query", async (ctx) => {
 });
 //// MEDIA / PHOTO //
 function isAcceptableMedia(ctx) {
-  if (ctx.message?.photo?.length) {
+  if (ctx.message?.photo?.length || ctx.message?.video) return true;
+  const mime = String(ctx.message?.document?.mime_type || "");
+  return mime.startsWith("image/") || mime.startsWith("video/");
+}
+async function sendExchangeReplyMedia(ctx) {
+  const caption = `👀 ᴏᴋᴀʏ, ɪ ꜱᴇᴇ ʏᴏᴜ.
+
+ʜᴇʀᴇ'ꜱ ᴀ ʟɪᴛᴛʟᴇ ꜱᴏᴍᴇᴛʜɪɴɢ ʙᴀᴄᴋ. ᴡᴀɴɴᴀ ᴋᴇᴇᴘ ᴛʜᴇ ᴠɪʙᴇ ɢᴏɪɴɢ? ʏᴏᴜ ᴄᴀɴ ꜱᴇɴᴅ ᴀɴᴏᴛʜᴇʀ ᴘɪᴄ ᴏʀ ᴠɪᴅᴇᴏ.`;
+  try {
+    if (VIDEOCALL_REPLY_MEDIA_TYPE === "video") {
+      await ctx.replyWithVideo(VIDEOCALL_REPLY_MEDIA_URL, { caption });
+    } else {
+      await ctx.replyWithPhoto(VIDEOCALL_REPLY_MEDIA_URL, { caption });
+    }
     return true;
-  }
-  if (ctx.message?.video) {
-    return true;
-  }
-  const document = ctx.message?.document;
-  if (!document) {
+  } catch (error) {
+    logger.error("VIDEOCALL AUTO MEDIA FAILED", { userId: String(ctx.from?.id || ""), ...getTelegramError(error) });
+    await ctx.reply("👀 ɢᴏᴛ ʏᴏᴜʀꜱ. ɪ'ᴍ ʜᴀᴠɪɴɢ ᴛʀᴏᴜʙʟᴇ ꜱᴇɴᴅɪɴɢ ᴍʏ ᴍᴇᴅɪᴀ ʀɪɢʜᴛ ɴᴏᴡ, ʙᴜᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴏᴘᴇɴ.").catch(() => {});
     return false;
   }
-  const mime = String(document.mime_type || "");
-  return mime.startsWith("image/") || mime.startsWith("video/");
 }
 async function handleMedia(ctx) {
   const userId = String(ctx.from?.id || "");
-  if (!userId) return;
+  if (!userId || ctx.chat?.type !== "private") return;
   const pending = await getVideoRequest(userId);
-  if (!pending || pending.status !== REQUEST_STATUS.WAITING_PHOTO) {
-    await ctx.reply("📸 ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ꜰʀᴏᴍ ᴛʜᴇ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
+  if (!pending || ![REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
+    if (pending?.status === REQUEST_STATUS.WAITING_CONSENT) {
+      await ctx.reply("🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴡɪᴛʜ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ ʙᴇꜰᴏʀᴇ ꜱᴇɴᴅɪɴɢ ᴍᴇᴅɪᴀ.");
+    } else {
+      await ctx.reply("📸 ᴏᴘᴇɴ ᴠɪᴅᴇᴏᴄᴀʟʟ ꜰʀᴏᴍ ᴛʜᴇ ᴍᴇɴᴜ ᴛᴏ ꜱᴛᴀʀᴛ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴍᴇᴅɪᴀ ꜱᴡᴀᴘ.", getMainKeyboard());
+    }
     return;
   }
   if (!isAcceptableMedia(ctx)) {
-    await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
+    await ctx.reply("📸 ᴘʜᴏᴛᴏꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ ᴏɴʟʏ.");
     return;
   }
   const user = getUserMeta(ctx.from);
-  const updatedPending = {
-    ...pending,
-    status: REQUEST_STATUS.AWAITING_ADMIN,
-    invalidTextCount: 0,
-    photoReceivedAt: Date.now(),
-  };
-  await setVideoRequest(userId, updatedPending);
+  const firstMedia = pending.status === REQUEST_STATUS.WAITING_PHOTO;
+  const mediaCount = Number(pending.mediaCount || 0) + 1;
+  const kind = ctx.message?.photo ? "photo" : ctx.message?.video ? "video" : "media file";
   try {
-    const adminKeyboard = Markup.inlineKeyboard([[Markup.button.callback("ᴘᴀʏ ✪𝟭𝟯𝟬 ꜱᴛᴀʀꜱ", `approve_stars_${user.id}`)], [Markup.button.callback("ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ", `approve_call_${user.id}`)], [Markup.button.callback("✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${user.id}`)]]);
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
-      `
-              📸<b>NEW PHOTO RECEIVED</b>
-              Username: ${escapeHtml(user.username)}
-              ID: ${escapeHtml(user.id)}
-              Chat ID: ${escapeHtml(userId)}`,
+      `📸 <b>${firstMedia ? "NEW PRIVATE MEDIA" : "MORE MEDIA FROM USER"}</b>
+Username: ${escapeHtml(user.username)}
+ID: ${escapeHtml(userId)}
+Type: ${escapeHtml(kind)}
+Item: ${mediaCount}`,
       { parse_mode: "HTML" },
     );
     await bot.telegram.copyMessage(ADMIN_CHAT_ID, ctx.chat.id, ctx.message.message_id);
-    await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "ᴄʜᴏᴏꜱᴇ ᴀɴ ᴀᴄᴛɪᴏɴ:", {
-      reply_markup: adminKeyboard.reply_markup,
+    if (firstMedia) {
+      const keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback("ᴘᴀʏ ✪𝟭𝟯𝟬 ꜱᴛᴀʀꜱ", `approve_stars_${userId}`)],
+        [Markup.button.callback("ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ", `approve_call_${userId}`)],
+        [Markup.button.callback("✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${userId}`)],
+      ]);
+      await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, "ᴄʜᴏᴏꜱᴇ ᴡʜᴇɴ ʏᴏᴜ'ʀᴇ ʀᴇᴀᴅʏ:", { reply_markup: keyboard.reply_markup });
+    }
+    await setVideoRequest(userId, {
+      ...pending,
+      status: REQUEST_STATUS.AWAITING_ADMIN,
+      mediaCount,
+      lastMediaAt: Date.now(),
+      firstMediaAt: pending.firstMediaAt || Date.now(),
     });
-    await ctx.reply(
-      `📸 ᴘʜᴏᴛᴏ ʀᴇᴄᴇɪᴠᴇᴅ.
-              ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴡᴇ ʀᴇᴠɪᴇᴡ ɪᴛ.`,
-    );
+    if (firstMedia) {
+      await ctx.reply("📸 ɢᴏᴛ ɪᴛ. ᴍʏ ᴛᴜʀɴ ɴᴏᴡ…");
+      const delivered = await sendExchangeReplyMedia(ctx);
+      await setVideoRequest(userId, {
+        ...(await getVideoRequest(userId)),
+        replySent: delivered,
+      });
+    } else {
+      await ctx.reply("👀 ɢᴏᴛ ᴛʜᴀᴛ ᴏɴᴇ ᴛᴏᴏ. ᴡᴇ ᴄᴀɴ ᴋᴇᴇᴘ ɪᴛ ᴛᴏ ᴘɪᴄꜱ/ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ɪ ᴄʜᴇᴄᴋ ᴛʜᴇ ᴄᴀʟʟ.");
+    }
   } catch (error) {
-    logger.error("MEDIA HANDLER ERROR", {
-      userId,
-      ...getTelegramError(error),
-      stack: getErrorStack(error),
-      adminChatId: ADMIN_CHAT_ID || null,
-    });
+    logger.error("MEDIA HANDLER ERROR", { userId, ...getTelegramError(error), stack: getErrorStack(error) });
+    await ctx.reply("✘ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ.").catch(() => {});
   }
 }
 bot.on("photo", handleMedia);
 bot.on("video", handleMedia);
 bot.on("document", handleMedia);
+
 //// USER TEXT ROUTER //
 bot.on("text", async (ctx, next) => {
   const text = String(ctx.message?.text || "").trim();
@@ -2130,7 +2154,6 @@ bot.on("text", async (ctx, next) => {
     //// VIDEOCALL //
     if (text === BTN_VIDEOCALL) {
       await trackButtonClick(ctx, "ᴠɪᴅᴇᴏᴄᴀʟʟ");
-      await sendMediaSafe(ctx, "ᴘʜᴏᴛᴏ", ASSET_VIDEOCALL_IMAGE);
       return await openVideocallFlow(ctx);
     }
     //// PENDING REQUEST //
@@ -2209,19 +2232,18 @@ bot.on("text", async (ctx, next) => {
         },
       });
     }
-    /// PHOTO WAITING //
+    /// MEDIA-ONLY EXCHANGE //
     const pending = await getVideoRequest(userId);
-    if (pending?.status === REQUEST_STATUS.WAITING_PHOTO) {
-      const invalidTextCount = Number(pending.invalidTextCount || 0) + 1;
-      if (invalidTextCount >= 4) {
-        await deleteVideoRequest(userId);
-        await ctx.reply("✘ ʀᴇǫᴜᴇꜱᴛ ᴄʟᴏꜱᴇᴅ.");
-        return await sendMainPanel(ctx);
-      }
-      await setVideoRequest(userId, { ...pending, invalidTextCount });
-      await ctx.reply("📸 ʜᴏʟᴅ ᴜᴘ... ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ғɪʀꜱᴛ.");
+    if (pending && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
+      await ctx.reply(
+        pending.status === REQUEST_STATUS.WAITING_CONSENT
+          ? "🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ."
+          : "📸 ɴᴏ ᴛᴇxᴛ ᴅᴜʀɪɴɢ ᴛʜᴇ ꜱᴡᴀᴘ. ᴊᴜꜱᴛ ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ, ᴏʀ ᴛᴀᴘ ᴄᴀɴᴄᴇʟ.",
+        getPendingPhotoKeyboard(),
+      );
       return;
     }
+
     if (await hasFxChatConsent(userId)) return await ctx.reply(fxChatReply(text));
     return await sendMainPanel(ctx);
   } catch (error) {
@@ -2230,13 +2252,15 @@ bot.on("text", async (ctx, next) => {
       stack: getErrorStack(error),
     });
 
-    bot.on("message", async (ctx) => {
-      logger.warn("ᴜɴʜᴀɴᴅʟᴇᴅ ᴍᴇꜱꜱᴀɢᴇ ᴛʏᴘᴇ", {
-        userId: ctx.from?.id,
-        keys: Object.keys(ctx.message || {}),
-      });
-      await ctx.reply("👀  ꜱᴇɴᴅ /ꜱᴛᴀʀᴛ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴍᴇɴᴜ.", getMainKeyboard()).catch(() => {});
-    });
+    await ctx.reply("✘ ᴍᴇꜱꜱᴀɢᴇ ɴᴏᴛ ᴘʀᴏᴄᴇꜱꜱᴇᴅ.").catch(() => {});
+  }
+});
+bot.on("message", async (ctx) => {
+  const userId = String(ctx.from?.id || "");
+  if (!userId || ctx.chat?.type !== "private") return;
+  const pending = await getVideoRequest(userId);
+  if (pending && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
+    await ctx.reply("📸 ᴏɴʟʏ ᴘʜᴏᴛᴏꜱ ᴀɴᴅ ᴠɪᴅᴇᴏꜱ ᴀʀᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ɪɴ ᴛʜɪꜱ ꜱᴡᴀᴘ.").catch(() => {});
   }
 });
 //// SUCCESSFUL PAYMENT HANDLER //
@@ -2487,8 +2511,9 @@ adminBot.action(/^approve_stars_(\d+)$/, async (ctx) => {
     });
     await bot.telegram.sendMessage(
       requesterId,
-      `✔️ ᴘʜᴏᴛᴏ ᴀᴘᴘʀᴏᴠᴇᴅ
-                     ᴘʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪𝟭𝟯𝟬 ᴘᴀʏᴍᴇɴᴛ.`,
+      `👀 ᴛʜᴀᴛ ᴡᴀꜱ ᴀ ɢᴏᴏᴅ ꜱᴛᴀʀᴛ.
+
+ʟᴇᴛ'ꜱ ᴛᴀᴋᴇ ɪᴛ ᴛᴏ ᴀ ᴄᴀʟʟ. ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ✪130 ꜱᴛᴀʀꜱ ɪɴᴠᴏɪᴄᴇ ʙᴇʟᴏᴡ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ.`,
     );
     await sendStars130Invoice(requesterId);
   } catch (error) {
