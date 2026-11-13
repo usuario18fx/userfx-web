@@ -172,13 +172,13 @@ bot.use(async (ctx, next) => {
 });
 
 // A FREE reply is attached to a specific admin prompt; other chat replies keep their own routes.
-adminBot.use(async (ctx, next) => {
+async function adminFreeReplyMiddleware(ctx, next) {
   const answer = ctx.message?.text;
   const replyId = ctx.message?.reply_to_message?.message_id;
   if (!isAdmin(ctx) || !replyId || typeof answer !== "string") return next();
   const client = await ensureRedis();
   if (!client) return next();
-  const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.chat.id + ":" + ctx.from.id + ":" + replyId;
+  const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.botInfo.id + ":" + ctx.chat.id + ":" + ctx.from.id + ":" + replyId;
   const recipientId = await client.get(key);
   if (!recipientId) return next();
   if (answer.trim() === "/cancel") {
@@ -198,7 +198,8 @@ adminBot.use(async (ctx, next) => {
   }
   await client.del(lock);
   return ctx.reply("✘ " + result.reason);
-});
+}
+for (const targetBot of [bot, adminBot]) targetBot.use(adminFreeReplyMiddleware);
 // One consent-gated chat, shared with the existing Telegram webhook.
 bot.use(async (ctx, next) => {
   if (ctx.chat?.type === "private" && ctx.from?.id && typeof ctx.message?.text === "string") {
@@ -2558,6 +2559,17 @@ async function getAdminMessageContact(userId, client) {
       raw = JSON.stringify({ id, username: request.username || "", firstName: request.fullName || "", lastSeen: request.createdAt || 0 });
     }
   }
+  if (!raw) {
+    try {
+      const chat = await bot.telegram.getChat(id);
+      if (chat?.type === "private" && String(chat.id) === id) {
+        raw = JSON.stringify({ id, username: chat.username ? "@" + chat.username : "", firstName: chat.first_name || "", lastSeen: 0 });
+        await client.set(BOT_CONTACT_DATA_PREFIX + id, raw, "EX", BOT_CONTACT_RETENTION_SECONDS);
+      }
+    } catch {
+      return null;
+    }
+  }
   if (!raw) return null;
   try {
     const contact = JSON.parse(raw);
@@ -2725,10 +2737,6 @@ for (const targetBot of [bot, adminBot]) {
   });
   targetBot.action(/^admin_message_free:(\d{5,20})$/, async (ctx) => {
     if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
-    if (targetBot !== adminBot) {
-      await ctx.answerCbQuery("Open the admin bot", { show_alert: true });
-      return ctx.reply("Para escribir FREE, abre el chat con el bot administrador.");
-    }
     const client = await ensureRedis();
     if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
     const contact = await getAdminMessageContact(ctx.match[1], client);
@@ -2738,7 +2746,7 @@ for (const targetBot of [bot, adminBot]) {
       "✍ FREE → " + formatAdminRecipient(ctx.match[1], contact) + "\n\nEscribe la respuesta a este mensaje para enviarla. /cancel para salir.",
       { reply_markup: { force_reply: true, selective: true } },
     );
-    const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.chat.id + ":" + ctx.from.id + ":" + prompt.message_id;
+    const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.botInfo.id + ":" + ctx.chat.id + ":" + ctx.from.id + ":" + prompt.message_id;
     await client.set(key, ctx.match[1], "EX", 900);
   });
 }
