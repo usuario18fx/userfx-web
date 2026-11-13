@@ -1,13 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ENTER_URL } from "@/lib/content";
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import ProtocolCrown from "./ProtocolCrown";
 import "./ScrollStory.css";
 
-export default function ScrollStory() {
+export default function ScrollStory({ onOpenTelegram }: { onOpenTelegram: () => void }) {
   const reduced = useReducedMotion();
   const menu = useMenu();
   const admin = useAdminMode();
@@ -70,14 +69,9 @@ VAULT
             <p className="fx-scroll-hero-subtitle">
 unlocked with your code.
 </p>
-            <a href={ENTER_URL} className="fx-scroll-hero-enter">
-              <span>
-ENTER THE VAULT
-</span>
-              <span aria-hidden="true">
-↗
-</span>
-            </a>
+            <button type="button" className="fx-telegram-launch fx-telegram-launch--hero" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
+              <span role="img" aria-hidden="true">👤</span>
+            </button>
           </motion.div>
           <div className="fx-rose-stage">
             <div className="fx-rose-stage-particles">
