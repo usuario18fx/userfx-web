@@ -167,6 +167,17 @@ html {
   border-radius: 8px;
   background: linear-gradient(#789bfa, #3ad1d4);
 }
+/* On narrow screens, scrolling remains enabled without the bright scrollbar gutter. */
+@media (max-width: 768px) {
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto;
   }
