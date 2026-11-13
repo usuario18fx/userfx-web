@@ -41,7 +41,7 @@ function crownGeometry(count: number) {
   const scatter = new Float32Array(count * 3);
   const phase = new Float32Array(count);
   const color = new THREE.Color();
-  const palette = ["#09508b", "#087bb9", "#00a7e8", "#35caff", "#a0ecff", "#d6f8ff"];
+  const palette = ["#0b7775", "#149d98", "#22bdb8", "#39d3d0", "#3fd8d0", "#55e0d9"];
   const peak = (angle: number) =>
     Math.pow((Math.cos(7 * (angle - Math.PI / 2)) + 1) / 2, 5);
   const point = (index: number, x: number, y: number, z: number, highlight: number) => {
@@ -116,13 +116,13 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     const fallbackContext = fallbackCanvas.getContext("2d", { alpha: true });
     if (!fallbackContext) return;
 
-    // Canvas 2D renders the same 3D positions and is used if WebGL is unavailable.
+    // Draw the canvas 2D only when WebGL is unavailable; never overlay both particle layers.
     // This prevents an entirely blank Protocol background on GPU-limited devices.
     const fallbackData = crownGeometry(window.innerWidth < 700 ? 10500 : 17000);
     const fOriginal = fallbackData.original;
     const fScatter = fallbackData.scatter;
     const fColors = fallbackData.geometry.getAttribute("color").array as Float32Array;
-    const fallbackPalette = ["#07588e", "#0875b0", "#00a6ec", "#32c5ff", "#9deaff", "#e1faff"];
+    const fallbackPalette = ["#0b7775", "#149d98", "#22bdb8", "#39d3d0", "#3fd8d0", "#55e0d9"];
     let fallbackW = 1, fallbackH = 1;
     let useFallback = false;
     let lastFallbackFrame = -1000;
@@ -174,7 +174,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     let fallbackFrame = 0;
     const fallbackLoop = (ms: number) => {
       fallbackFrame = requestAnimationFrame(fallbackLoop);
-      if (!document.hidden && ms - lastFallbackFrame > (useFallback ? 40 : 90)) {
+      if (useFallback && !document.hidden && ms - lastFallbackFrame > 40) {
         lastFallbackFrame = ms;
         renderFallback(ms);
       }
@@ -319,7 +319,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
   return (
     <div className="pv-crown-layer" aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "block", opacity: 0.52, position: "absolute", inset: 0 }} />
+      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "none", opacity: 1, position: "absolute", inset: 0 }} />
       <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{ position: "absolute", inset: 0 }} />
     </div>
   );
