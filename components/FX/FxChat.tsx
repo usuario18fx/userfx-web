@@ -142,16 +142,18 @@ export default function FxChat() {
   }
 
   return (
-    <div className="fx-web-chat" aria-label="USER FX chat">
-      {!open && (
-        <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen(true)} aria-label="Abrir chat USER FX">
-          <span className="fx-web-chat-symbol" aria-hidden="true">FX</span>
-          <span>CHAT</span>
-          <span className="fx-web-chat-pulse" aria-hidden="true" />
-        </button>
-      )}
+    <div className={"fx-web-chat" + (open ? " is-open" : "")} aria-label="USER FX chat">
+      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
+        <span className="fx-web-chat-symbol" aria-hidden="true">
+          FX
+        </span>
+        <span>
+          CHAT
+        </span>
+        <span className="fx-web-chat-pulse" aria-hidden="true" />
+      </button>
       {open && (
-        <section className="fx-web-chat-window" aria-label="Chat USER FX">
+        <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
           <header className="fx-web-chat-header">
             <div className="fx-web-chat-header-mark">FX</div>
             <div className="fx-web-chat-heading">
