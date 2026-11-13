@@ -825,7 +825,7 @@ function telegramFxPanelKeyboard(usernameNormalized, mask) {
   const group = buttonFor("ɢʀᴏᴜᴘ", 16);
   const save = Markup.button.callback("💾 ꜱᴀᴠᴇ", `tfx_save_${usernameNormalized}_${mask}`);
   const revoke = Markup.button.callback("⛔ ʀᴇᴠᴏᴋᴇ ᴀʟʟ", `tfx_revoke_${usernameNormalized}_0`);
-  return Markup.inlineKeyboard([[telegramfx], [gallery, chat], [priv, group], [save, revoke], [Markup.button.callback("✉ Enviar aviso", `tfx_notify_${usernameNormalized}`)]]);
+  return Markup.inlineKeyboard([[telegramfx], [gallery, chat], [priv, group], [save, revoke], [Markup.button.callback("✉ Enviar aviso", `tfx_notify_${usernameNormalized}`)], [Markup.button.callback("💬 MESSAGE OPTIONS", "tfx_message_" + usernameNormalized)]]);
 }
 async function telegramFxRequest(pathname, options = {}) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -2725,7 +2725,7 @@ for (const targetBot of [bot, adminBot]) {
   });
   targetBot.action(/^admin_message_free:(\d{5,20})$/, async (ctx) => {
     if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
-    if (ctx.botInfo.id !== adminBot.botInfo?.id) {
+    if (targetBot !== adminBot) {
       await ctx.answerCbQuery("Open the admin bot", { show_alert: true });
       return ctx.reply("Para escribir FREE, abre el chat con el bot administrador.");
     }
@@ -2915,7 +2915,7 @@ function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "")
   const button = (label, plan) => Markup.button.callback(label, `manual_access:${plan}${username ? ":" + username : ""}`);
   if (issuedCode) return Markup.inlineKeyboard([
     [Markup.button.callback(`${PLAN_CONFIG[selectedPlan]?.prefix || "SPCL"} ✔️`, `manual_manage:view:${issuedCode}`), Markup.button.callback("EDITAR ✏️", `manual_manage:edit:${issuedCode}`)],
-    [Markup.button.callback("SEND TEXT 💬", `manual_manage:text:${issuedCode}`), Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
+    [Markup.button.callback("💬 MESSAGE OPTIONS", `manual_manage:messages:${issuedCode}`), Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
     ...(username ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
   ]);
   return Markup.inlineKeyboard([[button("SPCL", "special"), button("BSIC", "basic")], [button("PRX0", "pro"), button("VIPX", "vip")]]);
@@ -3039,6 +3039,12 @@ async function handleManualManage(ctx) {
     await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(code));
     return ctx.editMessageText(`Acceso eliminado: ${code}\n@${username}`, manualAccessKeyboard("", username));
   }
+  if (action === "messages") {
+    if (!username) return ctx.reply("Este código no tiene un usuario asignado.");
+    const recipientId = await resolveNoticeRecipient(username, client);
+    if (!recipientId) return ctx.reply("No hay un chat verificado para @" + username + ". El usuario debe iniciar @User18Fx_bot.");
+    return openAdminMessageMenu(ctx, recipientId);
+  }
   if (action === "text") {
     if (!username) return ctx.reply("Este código no tiene un usuario asignado.");
     const prompt = await ctx.reply(`Escribe el mensaje para @${username}. Responde a este mensaje; /cancel para cancelar.`, {reply_markup:{force_reply:true,selective:true}});
@@ -3075,7 +3081,7 @@ async function manualTextMiddleware(ctx, next) {
 for (const targetBot of [bot, adminBot]) {
   targetBot.command("access", showManualAccess);
   targetBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
-  targetBot.action(/^manual_manage:(view|edit|code|text|delete|confirm_delete|exit|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
+  targetBot.action(/^manual_manage:(view|edit|code|text|messages|delete|confirm_delete|exit|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
 }
 // =======  ADMIN: TELEGRAMFX ACCESS PANEL ==================
           async function showTelegramPermissions(ctx) {
@@ -3304,8 +3310,21 @@ async function handleAccessNoticeBatch(ctx) {
     return ctx.reply("El lote no terminó. Usa /notify_access para revisar pendientes; los avisos confirmados no se repetirán.");
   }
 }
+async function openTelegramFxMessageMenu(ctx) {
+  if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+  const client = await ensureRedis();
+  if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
+  const target = String(ctx.match[1]).toLowerCase();
+  const recipientId = await resolveNoticeRecipient(target, client);
+  if (!recipientId) {
+    await ctx.answerCbQuery("User unavailable", { show_alert: true });
+    return ctx.reply("@" + target + " no tiene un chat privado verificado con @User18Fx_bot.");
+  }
+  return openAdminMessageMenu(ctx, recipientId, true);
+}
 for (const targetBot of [bot, adminBot]) {
   targetBot.action(/^tfx_notify_([A-Za-z0-9_]{3,32})$/, handleAccessNotice);
+  targetBot.action(/^tfx_message_([A-Za-z0-9_]{3,32})$/, openTelegramFxMessageMenu);
   targetBot.action(/^tfx_notify_batch:(0|[A-Za-z0-9_]{3,32})$/, handleAccessNoticeBatch);
   targetBot.command("notify_access", showAccessNotices);
 }
