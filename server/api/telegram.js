@@ -2143,6 +2143,17 @@ bot.on("text", async (ctx, next) => {
       await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
       return;
     }
+    //// EXCHANGE: MEDIA-ONLY UNTIL ADMIN DECIDES ////
+    const exchange = await getVideoRequest(userId);
+    if (exchange && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(exchange.status) && ![BTN_CANCEL, BTN_PENDING_REQUEST, BTN_VIDEOCALL].includes(text)) {
+      await ctx.reply(
+        exchange.status === REQUEST_STATUS.WAITING_CONSENT
+          ? "🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ."
+          : "📸 ᴊᴜꜱᴛ ᴘʜᴏᴛᴏꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ᴡᴇ ꜱᴡᴀᴘ. ᴛᴀᴘ ᴄᴀɴᴄᴇʟ ᴛᴏ ᴇxɪᴛ.",
+        getPendingPhotoKeyboard(),
+      );
+      return;
+    }
     //// PUBLIC GALLERY KEYBOARD ////
     if ([BTN_GALLERY_PREV, BTN_GALLERY_NEXT, BTN_GALLERY_CLOSE].includes(text)) {
       return await handlePublicGalleryNavigation(ctx, text);
@@ -2232,17 +2243,6 @@ bot.on("text", async (ctx, next) => {
         },
       });
     }
-    /// MEDIA-ONLY EXCHANGE //
-    const pending = await getVideoRequest(userId);
-    if (pending && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
-      await ctx.reply(
-        pending.status === REQUEST_STATUS.WAITING_CONSENT
-          ? "🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ."
-          : "📸 ɴᴏ ᴛᴇxᴛ ᴅᴜʀɪɴɢ ᴛʜᴇ ꜱᴡᴀᴘ. ᴊᴜꜱᴛ ꜱᴇɴᴅ ᴀ ᴘʜᴏᴛᴏ ᴏʀ ᴠɪᴅᴇᴏ, ᴏʀ ᴛᴀᴘ ᴄᴀɴᴄᴇʟ.",
-        getPendingPhotoKeyboard(),
-      );
-      return;
-    }
 
     if (await hasFxChatConsent(userId)) return await ctx.reply(fxChatReply(text));
     return await sendMainPanel(ctx);
@@ -2255,13 +2255,16 @@ bot.on("text", async (ctx, next) => {
     await ctx.reply("✘ ᴍᴇꜱꜱᴀɢᴇ ɴᴏᴛ ᴘʀᴏᴄᴇꜱꜱᴇᴅ.").catch(() => {});
   }
 });
-bot.on("message", async (ctx) => {
+bot.on("message", async (ctx, next) => {
+  if (ctx.message?.text || ctx.message?.successful_payment) return next();
   const userId = String(ctx.from?.id || "");
-  if (!userId || ctx.chat?.type !== "private") return;
+  if (!userId || ctx.chat?.type !== "private") return next();
   const pending = await getVideoRequest(userId);
   if (pending && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
     await ctx.reply("📸 ᴏɴʟʏ ᴘʜᴏᴛᴏꜱ ᴀɴᴅ ᴠɪᴅᴇᴏꜱ ᴀʀᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ɪɴ ᴛʜɪꜱ ꜱᴡᴀᴘ.").catch(() => {});
+    return;
   }
+  return next();
 });
 //// SUCCESSFUL PAYMENT HANDLER //
 bot.on("successful_payment", handleSuccessfulPayment);
