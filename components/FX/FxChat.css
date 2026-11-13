@@ -47,50 +47,71 @@
 .fx-web-chat-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 13px 12px; font-size: 9px; color: #778da5; }
 .fx-web-chat-bottom button { flex: none; cursor: pointer; border: 0; color: #91c5e8; background: transparent; text-decoration: underline; font-size: 10px; }
 .fx-web-chat-error { flex: none; color: #ffb9bd; font-size: 11px; line-height: 1.5; padding: 8px 12px; background: #3b1822; margin: 0; }
-/* FX CHAT stays in the upper navigation, not as a bottom-floating bubble. */
-@media (max-width: 900px) and (min-width: 481px) {
+/* Mobile / tablet: compact FX tab; never cover Telegram access or menu. */
+@media (max-width: 900px) {
   .fx-web-chat {
     position: fixed !important;
-    top: max(0px, env(safe-area-inset-top)) !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
     bottom: auto !important;
-    left: 12px !important;
+    left: max(10px, env(safe-area-inset-left)) !important;
     right: auto !important;
     z-index: 9998;
-  }
-  .fx-web-chat-window {
-    width: min(400px, calc(100vw - 24px));
-    height: min(640px, calc(100dvh - 90px));
-  }
-}
-@media (max-width: 480px) {
-  .fx-web-chat {
-    position: fixed !important;
-    top: max(0px, env(safe-area-inset-top)) !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: max(94px, calc(env(safe-area-inset-right) + 86px)) !important;
-    z-index: 9998;
+    width: auto;
   }
   .fx-web-chat-launcher {
-    padding: 9px 12px;
-    gap: 7px;
-    font-size: 10px;
-    letter-spacing: .1em;
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(57, 211, 208, .62);
+    border-radius: 12px;
+    background: rgba(4, 12, 20, .94);
+    box-shadow: 0 7px 22px rgba(0, 0, 0, .4);
+    letter-spacing: 0;
+  }
+  .fx-web-chat-launcher:focus-visible {
+    outline: 2px solid #3fd8d0;
+    outline-offset: 2px;
+  }
+  .fx-web-chat-launcher > span:not(.fx-web-chat-symbol):not(.fx-web-chat-pulse) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .fx-web-chat-symbol {
-    width: 26px;
-    height: 26px;
-    font-size: 12px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a6e3ff;
+    font-size: 14px;
+  }
+  .fx-web-chat-pulse {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 6px;
+    height: 6px;
   }
   .fx-web-chat-window {
     position: fixed;
-    top: max(52px, calc(env(safe-area-inset-top) + 52px));
+    top: max(62px, calc(env(safe-area-inset-top) + 58px));
     right: 12px;
     left: 12px;
     width: auto;
-    max-width: none;
-    height: min(640px, calc(100dvh - 68px - env(safe-area-inset-top)));
+    max-width: 400px;
+    height: min(640px, calc(100dvh - 82px - env(safe-area-inset-top)));
     margin: 0;
+  }
+}
+@media (max-width: 480px) {
+  .fx-web-chat-window {
+    max-width: none;
   }
 }
 @media (prefers-reduced-motion: reduce) { .fx-web-chat-message-list { scroll-behavior: auto; } }
