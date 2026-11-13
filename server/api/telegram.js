@@ -45,6 +45,12 @@ import { createClient } from "@supabase/supabase-js";
            */
           const TELEGRAM_MINI_APP_URL = process.env.TELEGRAM_MINI_APP_URL || `${USERFX_SITE_URL.replace(/\/$/, "")}/vault`;
           const CODE_ENGINE_NAMESPACE = process.env.CODE_ENGINE_NAMESPACE || "userfx:vault";
+const BOT_CONTACT_ACTIVITY_KEY = CODE_ENGINE_NAMESPACE + ":bot-contacts:last-seen";
+const BOT_CONTACT_DATA_PREFIX = CODE_ENGINE_NAMESPACE + ":bot-contacts:user:";
+const BOT_CONTACT_OPTOUT_PREFIX = CODE_ENGINE_NAMESPACE + ":bot-contacts:optout:";
+const BOT_CONTACT_BLOCK_PREFIX = CODE_ENGINE_NAMESPACE + ":bot-contacts:blocked:";
+const BOT_CONTACT_RETENTION_SECONDS = 30 * 24 * 60 * 60;
+
           const MAX_BODY_BYTES = 1024 * 1024;
           const PAYMENT_TTL_SECONDS = 60 * 60 * 24 * 365;
           const IDENTITY_CODE_TTL_SECONDS = 15 * 60;
@@ -133,15 +139,66 @@ bot.telegram.webhookReply = false;
 adminBot.telegram.webhookReply = false;
 
 bot.use(async (ctx, next) => {
-  if (ctx.chat?.type === "private" && ctx.from?.id && ctx.from?.username) {
+  if (ctx.chat?.type === "private" && ctx.from?.id) {
     try {
       const client = await ensureRedis();
-      if (client) await client.set(`${CODE_ENGINE_NAMESPACE}:private-recipient:${ctx.from.username.toLowerCase()}`, String(ctx.from.id));
-    } catch (error) { logger.warn("PRIVATE RECIPIENT INDEX FAILED", { message: error?.message }); }
+      if (client) {
+        const userId = String(ctx.from.id);
+        const username = String(ctx.from.username || "").toLowerCase();
+        const started = /^\/start(?:@\w+)?(?:\s|$)/i.test(String(ctx.message?.text || ""));
+        if (username) await client.set(CODE_ENGINE_NAMESPACE + ":private-recipient:" + username, userId);
+        if (started) await client.del(BOT_CONTACT_OPTOUT_PREFIX + userId);
+        if (!(await client.exists(BOT_CONTACT_OPTOUT_PREFIX + userId))) {
+          const now = Date.now();
+          const data = JSON.stringify({
+            id: userId,
+            username: username ? "@" + username : "",
+            firstName: String(ctx.from.first_name || "").slice(0, 80),
+            lastSeen: now,
+          });
+          await client.multi()
+            .zadd(BOT_CONTACT_ACTIVITY_KEY, now, userId)
+            .zremrangebyscore(BOT_CONTACT_ACTIVITY_KEY, "-inf", now - BOT_CONTACT_RETENTION_SECONDS * 1000)
+            .set(BOT_CONTACT_DATA_PREFIX + userId, data, "EX", BOT_CONTACT_RETENTION_SECONDS)
+            .del(BOT_CONTACT_BLOCK_PREFIX + userId)
+            .exec();
+        }
+      }
+    } catch (error) {
+      logger.warn("BOT CONTACT ACTIVITY TRACKING FAILED", { message: error?.message });
+    }
   }
   return next();
 });
 
+// A FREE reply is attached to a specific admin prompt; other chat replies keep their own routes.
+adminBot.use(async (ctx, next) => {
+  const answer = ctx.message?.text;
+  const replyId = ctx.message?.reply_to_message?.message_id;
+  if (!isAdmin(ctx) || !replyId || typeof answer !== "string") return next();
+  const client = await ensureRedis();
+  if (!client) return next();
+  const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.chat.id + ":" + ctx.from.id + ":" + replyId;
+  const recipientId = await client.get(key);
+  if (!recipientId) return next();
+  if (answer.trim() === "/cancel") {
+    await client.del(key);
+    return ctx.reply("FREE cancelado.");
+  }
+  const text = answer.trim();
+  if (!text || text.length > 3000) return ctx.reply("Escribe un mensaje de 1 a 3000 caracteres, o /cancel.");
+  const lock = key + ":sending";
+  if (await client.set(lock, "1", "EX", 600, "NX") !== "OK") {
+    return ctx.reply("Ya se está procesando esta respuesta.");
+  }
+  const result = await deliverAdminMessage(recipientId, text);
+  if (result.ok) {
+    await client.del(key);
+    return ctx.reply("✔ FREE enviado a " + formatAdminRecipient(recipientId, result.contact) + ".");
+  }
+  await client.del(lock);
+  return ctx.reply("✘ " + result.reason);
+});
 // One consent-gated chat, shared with the existing Telegram webhook.
 bot.use(async (ctx, next) => {
   if (ctx.chat?.type === "private" && ctx.from?.id && typeof ctx.message?.text === "string") {
@@ -2057,6 +2114,7 @@ Item: ${mediaCount}`,
     await bot.telegram.copyMessage(ADMIN_CHAT_ID, ctx.chat.id, ctx.message.message_id);
     if (firstMedia) {
       const keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback("💬 ʀᴇᴘʟʏ ᴏᴘᴛɪᴏɴꜱ", "admin_message_to:" + userId)],
         [Markup.button.callback("ᴘᴀʏ ✪𝟭𝟯𝟬 ꜱᴛᴀʀꜱ", `approve_stars_${userId}`)],
         [Markup.button.callback("ꜱᴇɴᴅ ᴢᴏᴏᴍ + ᴛᴇʟᴇɢʀᴀᴍ", `approve_call_${userId}`)],
         [Markup.button.callback("✘ ʀᴇᴊᴇᴄᴛ", `reject_video_${userId}`)],
@@ -2130,7 +2188,7 @@ bot.on("text", async (ctx, next) => {
       await sendMainPanel(ctx);
       return;
     }
-    if (/^\/(access|permissions|notify_access|find|revoke|users|identity|visitors|visitorstats|clearvideo|resetvc|report)(?:@\w+)?(?:\s|$)/i.test(text)) {
+    if (/^\/(access|permissions|notify_access|find|revoke|users|identity|visitors|visitorstats|clearvideo|resetvc|report|online|message|msg|stop)(?:@\w+)?(?:\s|$)/i.test(text)) {
       return next();
     }
     if (text.startsWith("/")) {
@@ -2470,6 +2528,231 @@ bot.command("visitorstats", async (ctx) => {
 
     await ctx.reply("✘ ᴜɴᴀʙʟᴇ ᴛᴏ ʟᴏᴀᴅ ꜱᴛᴀᴛꜱ.");
   }
+});
+
+// ======================================================
+// ADMIN MESSAGING: TEMPLATES / FREE / RECENT CONTACTS
+// Telegram Bot API does not disclose a user's true online status.
+// ======================================================
+const ADMIN_MESSAGE_TEMPLATES = Object.freeze({
+  talk: { label: "💬 KEEP TALKING", text: "👀 I'm here. Wanna keep talking? Send another pic or video whenever you're ready." },
+  more: { label: "📸 SEND MORE", text: "📸 Wanna send another pic or a short video? I'm checking this out." },
+  wait: { label: "⏳ HOLD ON", text: "⏳ Give me a little time. I'll get back to you right here." },
+  call: { label: "📞 VIDEOCALL", text: "📞 Wanna take this to a videocall? I'll send the call options when they're ready." },
+  thanks: { label: "✔ THANKS", text: "✔ Got it. Thanks for sharing. I'll keep you posted." },
+  decline: { label: "✖ NOT NOW", text: "I'm gonna pass for now. Thanks for reaching out." },
+});
+
+function formatAdminRecipient(userId, contact) {
+  return (contact?.username || (contact?.firstName ? contact.firstName + " " : "")) + " · ID " + String(userId);
+}
+async function getAdminMessageContact(userId, client) {
+  const id = String(userId || "");
+  if (!/^\d{5,20}$/.test(id)) return null;
+  if (await client.exists(BOT_CONTACT_OPTOUT_PREFIX + id)) return null;
+  if (await client.exists(BOT_CONTACT_BLOCK_PREFIX + id)) return null;
+  let raw = await client.get(BOT_CONTACT_DATA_PREFIX + id);
+  if (!raw) {
+    const request = await getVideoRequest(id);
+    if (request) {
+      raw = JSON.stringify({ id, username: request.username || "", firstName: request.fullName || "", lastSeen: request.createdAt || 0 });
+    }
+  }
+  if (!raw) return null;
+  try {
+    const contact = JSON.parse(raw);
+    return String(contact.id || "") === id ? contact : null;
+  } catch {
+    return null;
+  }
+}
+async function deliverAdminMessage(userId, text) {
+  const client = await ensureRedis();
+  if (!client) return { ok: false, reason: "Redis unavailable." };
+  const contact = await getAdminMessageContact(userId, client);
+  if (!contact) return { ok: false, reason: "Destinatario no registrado, bloqueado o dado de baja. Debe iniciar @User18Fx_bot." };
+  try {
+    await bot.telegram.sendMessage(String(userId), text, { disable_web_page_preview: true });
+    return { ok: true, contact };
+  } catch (error) {
+    const errorCode = Number(error?.response?.error_code || 0);
+    const description = String(error?.response?.description || error?.message || "unknown");
+    if (errorCode === 403) {
+      await client.multi()
+        .set(BOT_CONTACT_BLOCK_PREFIX + userId, "1", "EX", BOT_CONTACT_RETENTION_SECONDS)
+        .zrem(BOT_CONTACT_ACTIVITY_KEY, String(userId))
+        .exec();
+      return { ok: false, reason: "Telegram rechaza el contacto (bot bloqueado o chat no disponible)." };
+    }
+    logger.error("ADMIN MESSAGE SEND FAILED", { userId, errorCode, description });
+    return { ok: false, reason: "Telegram no confirmó la entrega. Verifica antes de reintentar." };
+  }
+}
+function adminMessageKeyboard(userId) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.talk.label, "admin_message_pick:talk:" + userId),
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.more.label, "admin_message_pick:more:" + userId),
+    ],
+    [
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.wait.label, "admin_message_pick:wait:" + userId),
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.call.label, "admin_message_pick:call:" + userId),
+    ],
+    [
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.thanks.label, "admin_message_pick:thanks:" + userId),
+      Markup.button.callback(ADMIN_MESSAGE_TEMPLATES.decline.label, "admin_message_pick:decline:" + userId),
+    ],
+    [Markup.button.callback("✍ FREE · WRITE NOW", "admin_message_free:" + userId)],
+  ]);
+}
+async function openAdminMessageMenu(ctx, userId, answerCallback = false) {
+  if (!isAdmin(ctx)) {
+    if (answerCallback) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+    return ctx.reply("Unauthorized");
+  }
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("Redis unavailable.");
+  const contact = await getAdminMessageContact(userId, client);
+  if (!contact) {
+    if (answerCallback) await ctx.answerCbQuery("User not available", { show_alert: true });
+    return ctx.reply("No se puede enviar a ese usuario. Debe iniciar el bot y permitir mensajes.");
+  }
+  if (answerCallback) await ctx.answerCbQuery();
+  return ctx.reply(
+    "💬 RESPONDER A " + formatAdminRecipient(userId, contact) + "\n\nSelecciona una respuesta o usa FREE para escribirla ahora.",
+    { reply_markup: adminMessageKeyboard(userId).reply_markup },
+  );
+}
+async function showRecentAdminContacts(ctx, period = "1h", offset = 0, callback = false) {
+  if (!isAdmin(ctx)) {
+    if (callback) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+    return ctx.reply("Unauthorized");
+  }
+  if (ctx.chat?.type !== "private") {
+    if (callback) await ctx.answerCbQuery("Private admin chat only", { show_alert: true });
+    return ctx.reply("Usa /online en el chat privado del bot administrador.");
+  }
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("Redis unavailable.");
+  const hours = period === "24h" ? 24 : 1;
+  const cutoff = Date.now() - hours * 60 * 60 * 1000;
+  const entries = await client.zrevrangebyscore(BOT_CONTACT_ACTIVITY_KEY, "+inf", cutoff, "WITHSCORES", "LIMIT", offset, 11);
+  const buttons = [];
+  const rows = [];
+  let index = offset;
+  for (let i = 0; i < entries.length && rows.length < 8; i += 2) {
+    const id = String(entries[i]);
+    const seen = Number(entries[i + 1]);
+    const contact = await getAdminMessageContact(id, client);
+    if (!contact) continue;
+    const mins = Math.max(0, Math.floor((Date.now() - seen) / 60000));
+    const elapsed = mins < 60 ? mins + " min" : Math.floor(mins / 60) + " h";
+    rows.push((index + 1) + ". " + formatAdminRecipient(id, contact) + " · hace " + elapsed);
+    buttons.push([Markup.button.callback("✉ " + (contact.username || contact.firstName || id).slice(0, 28), "admin_message_to:" + id)]);
+    index++;
+  }
+  const hasMore = entries.length >= 22;
+  buttons.push([
+    Markup.button.callback(period === "1h" ? "✔ LAST 1H" : "LAST 1H", "admin_message_online:1h:0"),
+    Markup.button.callback(period === "24h" ? "✔ LAST 24H" : "LAST 24H", "admin_message_online:24h:0"),
+  ]);
+  if (hasMore && offset < 992) buttons.push([Markup.button.callback("NEXT ›", "admin_message_online:" + period + ":" + (offset + 8))]);
+  if (callback) await ctx.answerCbQuery();
+  return ctx.reply(
+    "👥 /online · ACTIVIDAD RECIENTE (" + hours + "h)\n\n" +
+    (rows.length ? rows.join("\n") : "No hay usuarios recientes registrados en este periodo.") +
+    "\n\nNo representa el estado online de Telegram. Solo interacciones recientes; el envío puede fallar si el usuario bloqueó el bot.",
+    { reply_markup: Markup.inlineKeyboard(buttons).reply_markup },
+  );
+}
+async function openAdminMessageCommand(ctx) {
+  if (!isAdmin(ctx)) return ctx.reply("Unauthorized");
+  const arg = String(getCommandArg(ctx) || "").trim();
+  if (!arg) return showRecentAdminContacts(ctx, "24h", 0);
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("Redis unavailable.");
+  let id = arg;
+  if (!/^\d{5,20}$/.test(arg)) {
+    const parsed = normalizeTelegramFxUsername(arg);
+    if (!parsed) return ctx.reply("Uso: /message @username o /message 123456789");
+    id = await resolveNoticeRecipient(parsed.normalized, client);
+    if (!id) return ctx.reply("No encuentro un chat privado verificado para " + parsed.display + ".");
+  }
+  return openAdminMessageMenu(ctx, id);
+}
+for (const targetBot of [bot, adminBot]) {
+  targetBot.command("online", async (ctx) => showRecentAdminContacts(ctx, "1h", 0));
+  targetBot.command("message", openAdminMessageCommand);
+  targetBot.command("msg", openAdminMessageCommand);
+  targetBot.action(/^admin_message_online:(1h|24h):(\d{1,4})$/, async (ctx) => {
+    return showRecentAdminContacts(ctx, ctx.match[1], Math.min(992, Number(ctx.match[2]) || 0), true);
+  });
+  targetBot.action(/^admin_message_to:(\d{5,20})$/, async (ctx) => {
+    return openAdminMessageMenu(ctx, ctx.match[1], true);
+  });
+  targetBot.action(/^admin_message_pick:(talk|more|wait|call|thanks|decline):(\d{5,20})$/, async (ctx) => {
+    if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+    const template = ADMIN_MESSAGE_TEMPLATES[ctx.match[1]];
+    const userId = ctx.match[2];
+    const client = await ensureRedis();
+    if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
+    const contact = await getAdminMessageContact(userId, client);
+    if (!contact) return ctx.answerCbQuery("User unavailable", { show_alert: true });
+    await ctx.answerCbQuery();
+    const preview = Markup.inlineKeyboard([
+      [Markup.button.callback("✔ SEND", "admin_message_send:" + ctx.match[1] + ":" + userId)],
+      [Markup.button.callback("↶ OPTIONS", "admin_message_to:" + userId)],
+    ]);
+    return ctx.reply("PREVIEW → " + formatAdminRecipient(userId, contact) + "\n\n" + template.text, { reply_markup: preview.reply_markup });
+  });
+  targetBot.action(/^admin_message_send:(talk|more|wait|call|thanks|decline):(\d{5,20})$/, async (ctx) => {
+    if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+    const client = await ensureRedis();
+    if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
+    const key = CODE_ENGINE_NAMESPACE + ":admin-message-confirm:" + ctx.chat.id + ":" + ctx.callbackQuery.message.message_id;
+    if (await client.set(key, "1", "NX", "EX", 86400) !== "OK") {
+      return ctx.answerCbQuery("Already processed");
+    }
+    const template = ADMIN_MESSAGE_TEMPLATES[ctx.match[1]];
+    const result = await deliverAdminMessage(ctx.match[2], template.text);
+    if (!result.ok) {
+      await ctx.answerCbQuery(result.reason, { show_alert: true });
+      return ctx.reply(result.reason);
+    }
+    await ctx.answerCbQuery("Message sent");
+    await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
+    return ctx.reply("✔ Enviado a " + formatAdminRecipient(ctx.match[2], result.contact) + ".");
+  });
+  targetBot.action(/^admin_message_free:(\d{5,20})$/, async (ctx) => {
+    if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized", { show_alert: true });
+    if (ctx.botInfo.id !== adminBot.botInfo?.id) {
+      await ctx.answerCbQuery("Open the admin bot", { show_alert: true });
+      return ctx.reply("Para escribir FREE, abre el chat con el bot administrador.");
+    }
+    const client = await ensureRedis();
+    if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
+    const contact = await getAdminMessageContact(ctx.match[1], client);
+    if (!contact) return ctx.answerCbQuery("User unavailable", { show_alert: true });
+    await ctx.answerCbQuery();
+    const prompt = await ctx.reply(
+      "✍ FREE → " + formatAdminRecipient(ctx.match[1], contact) + "\n\nEscribe la respuesta a este mensaje para enviarla. /cancel para salir.",
+      { reply_markup: { force_reply: true, selective: true } },
+    );
+    const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.chat.id + ":" + ctx.from.id + ":" + prompt.message_id;
+    await client.set(key, ctx.match[1], "EX", 900);
+  });
+}
+bot.command("stop", async (ctx) => {
+  if (ctx.chat?.type !== "private" || !ctx.from?.id) return;
+  const client = await ensureRedis();
+  if (!client) return ctx.reply("No se pudo guardar la preferencia. Intenta de nuevo.");
+  const id = String(ctx.from.id);
+  await client.multi()
+    .set(BOT_CONTACT_OPTOUT_PREFIX + id, "1")
+    .zrem(BOT_CONTACT_ACTIVITY_KEY, id)
+    .del(BOT_CONTACT_DATA_PREFIX + id)
+    .exec();
+  await ctx.reply("✔ No recibirás mensajes individuales del administrador. Envía /start si deseas reactivar los mensajes.");
 });
 
 //// ADMIN BOT / MY ID  //
