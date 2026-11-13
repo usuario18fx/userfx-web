@@ -47,5 +47,50 @@
 .fx-web-chat-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 13px 12px; font-size: 9px; color: #778da5; }
 .fx-web-chat-bottom button { flex: none; cursor: pointer; border: 0; color: #91c5e8; background: transparent; text-decoration: underline; font-size: 10px; }
 .fx-web-chat-error { flex: none; color: #ffb9bd; font-size: 11px; line-height: 1.5; padding: 8px 12px; background: #3b1822; margin: 0; }
-@media (max-width: 480px) { .fx-web-chat { right: max(12px, env(safe-area-inset-right)); top: max(0px, env(safe-area-inset-top)); } .fx-web-chat-launcher { padding: 9px 13px; font-size: 11px; } .fx-web-chat-window { width: calc(100vw - 24px); height: calc(100dvh - 92px - env(safe-area-inset-top)); } }
+/* FX CHAT stays in the upper navigation, not as a bottom-floating bubble. */
+@media (max-width: 900px) and (min-width: 481px) {
+  .fx-web-chat {
+    position: fixed !important;
+    top: max(0px, env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    left: 12px !important;
+    right: auto !important;
+    z-index: 9998;
+  }
+  .fx-web-chat-window {
+    width: min(400px, calc(100vw - 24px));
+    height: min(640px, calc(100dvh - 90px));
+  }
+}
+@media (max-width: 480px) {
+  .fx-web-chat {
+    position: fixed !important;
+    top: max(0px, env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: max(94px, calc(env(safe-area-inset-right) + 86px)) !important;
+    z-index: 9998;
+  }
+  .fx-web-chat-launcher {
+    padding: 9px 12px;
+    gap: 7px;
+    font-size: 10px;
+    letter-spacing: .1em;
+  }
+  .fx-web-chat-symbol {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+  .fx-web-chat-window {
+    position: fixed;
+    top: max(52px, calc(env(safe-area-inset-top) + 52px));
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+    height: min(640px, calc(100dvh - 68px - env(safe-area-inset-top)));
+    margin: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) { .fx-web-chat-message-list { scroll-behavior: auto; } }
