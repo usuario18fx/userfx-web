@@ -1,0 +1,42 @@
+
+/* FX ROOM — FONDO Y PISO 3D */
+body { background: #080d15;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:radial-gradient(
+  ellipse 80% 57% at 30% 35%,
+  #2e415285,  transparent 70%),
+  linear-gradient(to bottom,
+  #070c14 0%,#131e29 49%,
+  #26323b 59%,#111a23 77%,
+  #060a11 100%); 
+  pointer-events: none;}
+.floor {
+  position: absolute;
+  inset: 57% 0 0;
+  background:radial-gradient(
+  ellipse 51% 24% at 29% 72%,
+  #557e9f36, transparent 100%),
+  linear-gradient(to bottom,
+  #40526057 0%,#131f2aa8 30%,
+  #05090ff7 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+.shadow {
+  left: 6%;
+  top: 72%;
+  width: 45vw;
+  height: 7vh;
+  background: #00000080;
+  filter: blur(26px);
+  transform: rotate(-4deg);
+}
+@media (max-width: 700px) {
+  .floor { inset: 57% 0 0;
+  }
+  .shadow { left: 12%; top: 58%; width: 74vw; height: 6vh;
+  }}

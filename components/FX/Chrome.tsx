@@ -46,7 +46,7 @@ export function Brand({ style }: { style?: CSSProperties }) {
   const admin = useAdminMode();
   return (
     <div className="flex items-center gap-3" style={style}>
-      <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV Vault · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
+      <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV ROOM · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
         <img src={FX.logo} alt="" width={32} height={26} className="object-contain" />
         <span className="font-wide text-[10px] uppercase tracking-[-.06em]">
 USER FX
@@ -111,23 +111,16 @@ export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpe
   const [shown, setShown] = useState(false);
   useMotionValueEvent(scrollY, "change", (y) => setShown(y > window.innerHeight * 0.75));
   return (
-    <AnimatePresence>
-      {shown && !open && (
-        <motion.header initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ duration: 0.5, ease: EASE }} className="fixed inset-x-0 top-0 z-40 border-b border-ink/10 bg-sky/85 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-6 md:px-10">
-            <Brand />
-            <nav aria-label="Main navigation" className="hidden items-center gap-10 md:flex">
-              {NAV.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  aria-current={active === item.id ? "page" : undefined}
-                  className={`group relative py-1 font-display text-xs transition-all duration-300 hover:opacity-100 ${active === item.id ? "text-gold opacity-100" : "opacity-40"}`}>
+                <AnimatePresence>
+                 {shown && !open && (
+                <motion.header initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ duration: 0.5, ease: EASE }} className="fixed inset-x-0 top-0 z-40 border-b border-ink/10 bg-sky/85 backdrop-blur-xl">
+                <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-6 md:px-10">
+                <Brand />
+                <nav aria-label="Main navigation" className="hidden items-center gap-10 md:flex">
+                  {NAV.map((item) => (
+                <a key={item.id} href={`#${item.id}`} aria-current={active === item.id ? "page" : undefined} className={`group relative py-1 font-display text-xs transition-all duration-300 hover:opacity-100 ${active === item.id ? "text-gold opacity-100" : "opacity-40"}`}>
                   {item.label}
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-x-0 -bottom-0.5 h-px origin-left bg-gold transition-transform duration-300 ease-out group-hover:scale-x-100 ${active === item.id ? "scale-x-100" : "scale-x-0"}`}
-                  />
+                <span aria-hidden="true" className={`absolute inset-x-0 -bottom-0.5 h-px origin-left bg-gold transition-transform duration-300 ease-out group-hover:scale-x-100 ${active === item.id ? "scale-x-100" : "scale-x-0"}`}/>
                 </a>
               ))}
             </nav>
@@ -177,12 +170,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
           <div className="flex min-h-24 items-center justify-between gap-3">
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
-              <a
-                href={ENTER_URL}
-                onClick={close}
-                aria-label="Enter ROOM PRIV"
-                className="inline-flex min-h-10 items-center justify-center rounded-full border border-gold/60 bg-gold px-3 py-2 text-[10px] font-bold uppercase tracking-[.06em] text-sky transition-colors hover:bg-gold/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:px-5 sm:text-xs"
-              >
+              <a href={ENTER_URL} onClick={close} aria-label="Enter ROOM PRIV" className="inline-flex min-h-10 items-center justify-center rounded-full border border-gold/60 bg-gold px-3 py-2 text-[10px] font-bold uppercase tracking-[.06em] text-sky transition-colors hover:bg-gold/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:px-5 sm:text-xs" >
                 ROOM PRIV
               </a>
               <MenuButton width="25px" gap="6px" />

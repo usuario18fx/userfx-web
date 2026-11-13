@@ -10,7 +10,6 @@
   background: #05070d;
   color: #eaf7ff; /* Corrección: color sólido en lugar de gradiente */
 }
-
 .fx-room-intro-sticky {
   position: sticky;
   top: 0;
@@ -20,7 +19,6 @@
   overflow: hidden;
   isolation: isolate;
 }
-
 /* Contenedor del canvas 3D */
 .fx-room-intro .cinematic-tour,
 .fx-room-intro .fx-cinematic-canvas {
@@ -32,14 +30,11 @@
   display: block;
   overflow: hidden;
 }
-
 .fx-room-intro .cinematic-tour canvas,
-.fx-room-intro .fx-cinematic-canvas canvas {
-  display: block;
+.fx-room-intro .fx-cinematic-canvas canvas { display: block;
   width: 100% !important;
   height: 100% !important;
 }
-
 .fx-room-intro-shade {
   position: absolute;
   inset: 0;
@@ -49,7 +44,6 @@
     linear-gradient(90deg, rgba(3, 7, 17, .48) 0%, rgba(3, 7, 17, .12) 35%, transparent 62%),
     linear-gradient(0deg, rgba(3, 5, 9, .45) 0%, transparent 35%);
 }
-
 /* Header flotante (UI) */
 .fx-room-intro-head {
   position: absolute;
@@ -65,7 +59,6 @@
   text-shadow: 0 2px 12px #000;
   pointer-events: none;
 }
-
 /* ── UI DENTRO DE LA HABITACIÓN (Bloques 1, 2, 3, 4) ── */
 .fx-room-ui {
   position: absolute;
@@ -76,13 +69,11 @@
   pointer-events: none;
   animation: fxFadeIn .45s ease both;
 }
-
 .fx-room-ui button,
 .fx-room-ui a {
   pointer-events: auto;
   font-family: inherit;
 }
-
 .fx-header {
   position: absolute;
   top: 28px;
@@ -93,7 +84,6 @@
   justify-content: space-between;
   align-items: center;
 }
-
 .fx-logo strong {
   display: block;
   font-size: 18px;
@@ -104,7 +94,6 @@
   letter-spacing: .24em;
   color: rgba(255, 255, 255, .6);
 }
-
 .fx-nav-center {
   display: flex;
   gap: 28px;
@@ -124,7 +113,6 @@
   color: #00A8FF;
   border-bottom-color: #00A8FF;
 }
-
 .fx-nav-right {
   display: flex;
   gap: 18px;
@@ -137,7 +125,6 @@
   transition: color .2s;
 }
 .nav-icon:hover { color: #50d6ff; }
-
 /* Etiqueta de step (esquina inferior izquierda) */
 .fx-step-tag {
   position: absolute;
@@ -179,7 +166,6 @@
   transform: translateY(-50%);
   width: min(370px, 31vw);
 }
-
 /* Pieza base del puzzle */
 .fx-piece {
   position: relative;
@@ -198,7 +184,6 @@
     fxClick .6s ease-out calc(var(--pd, 0s) + .6s) both;
 }
 .fx-piece + .fx-piece { margin-top: -1px; }
-
 /* Lengüeta del puzzle */
 .fx-piece--knob::after {
   content: "";
@@ -214,10 +199,8 @@
   clip-path: inset(calc(50% - 2px) 0 0 0);
   pointer-events: none;
 }
-
 .fx-piece--title { padding: 24px 26px 30px; }
 .fx-piece--sub { padding: 26px 26px 22px; }
-
 .fx-badge {
   display: inline-block;
   margin-bottom: 18px;
@@ -238,7 +221,6 @@
   line-height: 1.6;
   color: #a2c6e0;
 }
-
 /* Cabecera del menú */
 .fx-piece--head {
   display: flex;
@@ -262,7 +244,6 @@
   transition: color .3s;
 }
 .fx-puzzle.is-open .fx-lock-chip { color: #7be0a8; }
-
 /* Botones del menú */
 .fx-piece--item {
   display: flex;
@@ -300,8 +281,8 @@
   opacity: .8;
   transition: transform .2s;
 }
-.fx-piece--item:hover .menu-arrow { transform: translateX(3px); }
-
+.fx-piece--item:hover .menu-arrow { transform: translateX(3px); 
+}
 /* Animaciones */
 @keyframes fxPieceIn {
   0%   { opacity: 0; transform: translate(var(--px), var(--py)) rotate(var(--pr)) scale(.94); }
@@ -325,15 +306,14 @@
   animation: fxPieceOut .6s cubic-bezier(.55, 0, .85, .35) var(--pdo, 0s) both;
   pointer-events: none;
 }
-
 @keyframes fxShake {
   10%, 90% { transform: translateX(-2px); }
   20%, 80% { transform: translateX(4px); }
   30%, 50%, 70% { transform: translateX(-7px); }
   40%, 60% { transform: translateX(7px); }
 }
-.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; }
-
+.fx-puzzle.is-shake { animation: fxShake .46s cubic-bezier(.36, .07, .19, .97) both; 
+}
 /* Leyenda del bloqueo */
 .fx-lock-hint {
   position: absolute;
@@ -359,8 +339,8 @@
 .fx-lock-hint svg { width: 16px; height: 16px; flex: none; }
 .fx-lock-hint span { display: flex; flex-direction: column; gap: 4px; }
 .fx-lock-hint strong { font-size: 14px; font-weight: 600; color: #fff; }
-.fx-lock-hint small { font-size: 12px; color: rgba(255, 255, 255, .7); }
-
+.fx-lock-hint small { font-size: 12px; color: rgba(255, 255, 255, .7); 
+}
 /* Botón de salir */
 .fx-btn-exit {
   position: absolute;
@@ -378,7 +358,6 @@
   background: rgba(255, 255, 255, .12);
   border-color: rgba(255, 255, 255, .32);
 }
-
 /* Controles inferiores */
 .fx-footer-controls {
   position: absolute;
@@ -399,7 +378,6 @@
   border-radius: 4px;
   font-family: inherit;
 }
-
 /* Flechas plateadas */
 .fx-room-intro .menu-arrow--continue,
 .fx-room-intro .menu-arrow--right {
@@ -445,7 +423,6 @@
   0%, 100% { opacity: .42; }
   50% { opacity: 1; }
 }
-
 /* Animaciones generales de UI */
 @keyframes fxCopyIn {
   from { opacity: 0; transform: translateY(14px); }
@@ -455,7 +432,6 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
 /* Loader */
 .fx-room-intro-loading {
   display: grid;
@@ -466,7 +442,6 @@
   font-size: 12px;
   letter-spacing: .22em;
 }
-
 /* Barra de progreso */
 .fx-room-intro-progress {
   position: absolute;
@@ -490,7 +465,6 @@
 .fx-room-intro.is-locked .fx-room-intro-progress > div {
   background: linear-gradient(90deg, #ffc857, #ffaa00);
 }
-
 /* RESPONSIVE */
 @media (max-width: 1024px) {
   .fx-room-intro-head,
@@ -503,7 +477,6 @@
   .fx-pz-menu { width: min(310px, 35vw); right: 2%; }
   .fx-footer-controls { display: none; }
 }
-
 @media (max-width: 680px) {
   .fx-room-intro {
     height: 1250svh;
@@ -521,8 +494,8 @@
   .fx-nav-right {
     display: none;
   }
-  .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; }
-
+  .fx-step-tag { left: 16px; bottom: 20px; font-size: 10px; gap: 10px; 
+  }
   .fx-pz-left {
     left: 14px;
     right: 14px;
@@ -533,7 +506,6 @@
   .fx-piece--sub { display: none; }
   .fx-piece--title { padding: 14px 16px 18px; }
   .fx-title { font-size: clamp(28px, 9vw, 40px); }
-
   .fx-pz-menu {
     left: 14px;
     right: 14px;
@@ -546,7 +518,6 @@
   .fx-piece--item { padding: 12px 16px 14px; gap: 10px; }
   .menu-text strong { font-size: 16px; }
   .menu-text { gap: 3px; }
-
   .fx-lock-hint {
     bottom: 312px;
     width: calc(100% - 28px);
@@ -788,4 +759,19 @@
   .fx-room-intro .fx-room-intro-head {top:138px;left:16px;right:16px;flex-wrap:wrap;font-size:9px;}
   .fx-room-intro .fx-room-intro-head nav {font-size:8px;}
   .fx-room-intro .fx-room-intro-copy {left:18px;right:18px;}
+.fx-room-key,
+.fx-room-space,
+.fx-room-keyboard button {
+  color: #ffffff;
+  border: 1px solid rgba(120, 235, 255, 0.9);
+  background: rgba(9, 16, 28, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 12px rgba(43, 203, 255, 0.22);
 }
+.fx-room-key span,
+.fx-room-space span,
+.fx-room-keyboard button span {
+  color: #ffffff;
+}
+.fx-room-keyboard * {
+  color: #ffffff !important;
+}}

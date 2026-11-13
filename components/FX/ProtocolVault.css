@@ -103,41 +103,14 @@
 .pv-chapter-count span {
   color: #7b9aaa;
 }
-.pv-chapter-cue {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-width: min(340px, 48vw);
-  min-height: 78px;
-  padding: 14px 12px;
-  border: 1px solid rgba(180, 225, 239, .83);
-  color: #8ba7b9;
-  background: rgba(2, 9, 17, .34);
-  font: 500 13px/1.4 "IBM Plex Mono", monospace;
-  letter-spacing: .23em;
-  white-space: nowrap;
-}
-.pv-chapter-cue i {
-  display: block;
-  width: 1px;
-  height: 45px;
-  margin-left: 12px;
-  background: linear-gradient(180deg, transparent, #a2c7d5);
-  animation: pv-scroll-cue 1.8s ease-in-out infinite;
-}
 @keyframes pv-scroll-cue {
   0%, 100% { opacity: .35; transform: scaleY(.7); }
   50% { opacity: 1; transform: scaleY(1); }
 }
 @media(max-width: 640px) {
   .pv-chapter-hud { inset: auto 15px 18px; align-items: center; gap: 8px; }
-  .pv-chapter-count { font-size: 11px; letter-spacing: .1em; }
-  .pv-chapter-cue { min-width: 0; min-height: 48px; padding: 8px; font-size: 9px; letter-spacing: .09em; }
-  .pv-chapter-cue i { height: 26px; }
-}
-@media(prefers-reduced-motion: reduce) {
-  .pv-chapter-cue i { animation: none; }
-}
+  .pv-chapter-count { font-size: 11px; letter-spacing: .1em;
+  }}
 .pv-content {
   position: absolute;
   z-index: 1;
@@ -573,6 +546,23 @@
 .pv--flat .pv-room {
   background: #05070b;
 }
+.pv-crown-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.pv-protocol-crown {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(7%);
+}
+.pv-content {
+  position: relative;
+  z-index: 3;
+}
 @media (max-width:900px) {
   .pv-content {
     grid-template-columns: 1fr;
@@ -614,10 +604,13 @@
     bottom: 8px;
     gap: 5px;
     font-size: 9px;
-  }
-}
+  }}
 @media (prefers-reduced-motion:reduce) {
   .pv-room-video {
     transition: none;
-  }
-}
+  }}
+/* FX ROSE GLB PARTICLES — cinematic protocol background */
+.pv-rose--particles { filter: none; pointer-events: none; }
+.pv-rose--particles .fx-rose-particles-widget { height: 100%; min-height: 0; }
+.pv-rose--particles .fx-rose-particles-canvas { position: absolute; inset: 0; pointer-events: none; }
+.pv-rose--particles .fx-rose-particles-trigger { pointer-events: auto; bottom: 16%; }

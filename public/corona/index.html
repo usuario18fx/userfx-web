@@ -1,12 +1,473 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070b12"><meta name="description" content="CORONA DARK — una corona azul que se transforma en miles de partículas. Una experiencia interactiva de FX."><title>FX · CORONA DARK</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#070b12;color:#dee7f2;font:14px Arial,sans-serif;overflow:hidden;height:100dvh}body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 30% 37%,#25303b 0%,#121c27 28%,#080e16 60%,#04070c 100%);pointer-events:none}.floor{position:absolute;inset:52% 0 0;background:radial-gradient(ellipse at 28% 62%,#5e79901c,transparent 58%);pointer-events:none}.shadow{position:absolute;width:40vw;height:9vh;left:7%;top:73%;border-radius:50%;background:#0009;filter:blur(22px);transform:rotate(-7deg);pointer-events:none}canvas{position:absolute;inset:0;width:100vw;height:100dvh;display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}header{position:absolute;top:34px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{font-size:24px;font-style:italic;font-weight:700;letter-spacing:-3px}.edition,#status{font-size:9px;letter-spacing:.21em;color:#8193a3}.title{position:absolute;left:59%;top:43%;pointer-events:none;animation:arrive 1.8s ease both}.title small{display:block;color:#698bad;font-size:9px;letter-spacing:.4em;margin-bottom:19px}h1{font-size:clamp(28px,4.3vw,68px);font-weight:200;letter-spacing:.13em;margin:0;color:#c6d2df;line-height:1.05}.subtitle{font-size:clamp(11px,1.1vw,16px);letter-spacing:.65em;color:#5e7388;margin:13px 0 24px 4px}.line{width:36px;height:1px;background:#587d9b;margin:28px 0}.caption{font-size:11px;line-height:1.8;color:#718397;letter-spacing:.07em}.controls{position:absolute;bottom:40px;left:40px;right:40px;display:flex;align-items:end;justify-content:space-between;gap:20px}button{font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid #50678070;color:#bccbdc;padding:13px 18px;cursor:pointer;transition:background .2s,border-color .2s}button:hover{background:#719cc01a;border-color:#85b4db}button:focus-visible{outline:2px solid #9bd0ff;outline-offset:5px}#reset{border-color:transparent;color:#6e8399;margin-left:8px}.hint{font-size:9px;line-height:1.8;letter-spacing:.1em;color:#687d91;text-align:right;margin:0}#status{position:absolute;left:40px;bottom:107px;max-width:70%;line-height:1.5}@keyframes arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@media(max-width:700px),(max-aspect-ratio:115/100){header{left:24px;right:24px;top:24px}.edition{font-size:8px}.title{top:68%;left:0;width:100%;text-align:center}.title small,.line,.caption{display:none}h1{font-size:32px;letter-spacing:.2em}.subtitle{font-size:10px;letter-spacing:.55em;margin:10px 0}.shadow{left:15%;width:70vw;top:57%;height:6vh}.controls{left:20px;right:20px;bottom:24px;justify-content:center}.hint{display:none}#status{left:0;bottom:85px;max-width:100%;width:100%;text-align:center;font-size:8px}button{font-size:9px;padding:12px}#reset{margin-left:0}}@media(prefers-reduced-motion:reduce){.title{animation:none}button{transition:none}}
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070b12">
+  <meta name="description" content="FX · SPECIAL CODE — Corona azul interactiva de miles de partículas.">
+  <title>
+    FX · SPECIAL CODE
+  </title>
 
-.enter-vault{display:inline-block;margin-top:26px;padding:15px 23px;border:1px solid #85b4db80;background:#29435c30;color:#dcefff;pointer-events:auto;text-decoration:none;font:11px Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;cursor:pointer}.enter-vault:hover{background:#456c9140}.enter-vault:focus-visible{outline:2px solid #9bd0ff;outline-offset:5px}.title{pointer-events:none}.enter-vault{pointer-events:auto}@media(max-width:700px),(max-aspect-ratio:115/100){.title{top:64%}.enter-vault{margin-top:14px;padding:12px 20px}.controls{bottom:16px}#status{bottom:68px}}
-.userfx-logo{position:absolute;left:0;bottom:100%;width:220px;height:140px;object-fit:contain;margin-bottom:24px;filter:drop-shadow(0 0 16px #1863dc55)}@media(max-width:700px),(max-aspect-ratio:115/100){.userfx-logo{left:50%;transform:translateX(-50%);width:150px;height:90px;margin-bottom:16px}}
-</style><style id="fx-embed-style">
-.fx-embed body{background:transparent!important}
-.fx-embed body:before,.fx-embed .floor,.fx-embed .shadow,.fx-embed header,.fx-embed main,.fx-embed #status,.fx-embed .controls{display:none!important}
-.fx-embed canvas{pointer-events:none!important;cursor:default!important}
-</style><script>if(new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('fx-embed');</script></head><body><div class="floor"></div><div class="shadow"></div><canvas aria-label="Corona azul y rosa en partículas. Arrastra para girarlas; pulsa para dejar caer las partículas. Usa espacio para deshacer y Escape para restablecer." id="c" tabindex="0"></canvas><header><span class="brand">ƒx</span><span class="edition">INTERACTIVE EXPERIENCE / 01</span></header><main class="title"><img class="userfx-logo" src="../assets/userfx-logo-sin.png" alt="USER FX" width="220" height="140" draggable="false"><small>FX · DIGITAL EXPERIMENT</small><h1>CORONA</h1><p class="subtitle">D A R K</p><div class="line"></div><p class="caption">Corona y rosa. Miles de posibilidades.<br>Todo vuelve a su origen.</p><a class="enter-vault" id="enter-vault" href="../../#/vault" target="_top">Entrar al vault ↗</a></main><span id="status" role="status">FORMANDO CORONA…</span><div class="controls"><div><button id="burst" aria-pressed="false">Deshacer corona</button><button id="reset">Restablecer</button></div><p class="hint">ARRASTRA PARA GIRAR · MUEVE EL MOUSE SOBRE LA ARENA</p></div><script src="particles.js?v=fixed-size" defer></script></html>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --fx-title: 'Krona One', sans-serif;
+      --fx-tech: 'Orbitron', sans-serif;
+      --fx-button: 'Fredoka', sans-serif;
+
+      --fx-bg: #070b12;
+      --fx-text: #dee7f2;
+      --fx-muted: #8193a3;
+      --fx-accent: #85b4db;
+      --fx-line: #587d9b;
+
+      --fx-gutter: clamp(20px, 4vw, 56px);
+      --fx-top: clamp(18px, 3.5vh, 42px);
+      --fx-bottom: clamp(18px, 4vh, 44px);
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: var(--fx-bg);
+      color: var(--fx-text);
+      font: 14px var(--fx-tech);
+      overflow: hidden;
+      height: 100dvh;
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 32% 38%,
+        #25303b 0%,
+        #121c27 28%,
+        #080e16 60%,
+        #04070c 100%
+      );
+      pointer-events: none;
+    }
+
+    .floor {
+      position: absolute;
+      inset: 55% 0 0;
+      background: radial-gradient(
+        ellipse at 30% 62%,
+        #5e79901c,
+        transparent 58%
+      );
+      pointer-events: none;
+    }
+
+    .shadow {
+      position: absolute;
+      width: clamp(280px, 38vw, 620px);
+      height: clamp(40px, 8vh, 90px);
+      left: clamp(4vw, 7%, 10%);
+      top: 81%;
+      border-radius: 50%;
+      background: #0009;
+      filter: blur(24px);
+      transform: rotate(-7deg);
+      pointer-events: none;
+    }
+
+    canvas#c {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    canvas#c:active {
+      cursor: grabbing;
+    }
+
+    /* HEADER */
+    header {
+      position: absolute;
+      z-index: 6;
+      top: var(--fx-top);
+      left: var(--fx-gutter);
+      right: var(--fx-gutter);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .brand {
+      font-family: var(--fx-tech);
+      font-size: clamp(18px, 1.6vw, 24px);
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .edition {
+      font-family: var(--fx-tech);
+      font-size: clamp(7px, .72vw, 9px);
+      letter-spacing: .21em;
+      color: var(--fx-muted);
+    }
+    /* LOGO 3D */
+    .userfx-logo {
+  position: fixed;
+  z-index: 5;
+  left: 28%;
+  top: 43%;
+  width: 23vw;
+  height: 24vw;
+  min-width: 210px;
+  min-height: 260px;
+  max-width: 430px;
+  max-height: 430px;
+  margin: 0;
+  background: transparent;
+  --poster-color: transparent;
+  pointer-events: none;
+  filter: none;
+  transform: translate(-50%, -50%);
+}
+    /* COLUMNA DERECHA */
+    .fx-copy {
+      position: absolute;
+      z-index: 4;
+      top: clamp(11vh, 14vh, 18vh);
+      right: var(--fx-gutter);
+      left: 1%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: clamp(52vh, 66vh, 74vh);
+      pointer-events: none;
+      animation: arrive 1.8s ease both;
+    }
+    .title {
+  position: absolute;
+  z-index: 4;
+  left: 59%;
+  top: 13%;
+  width: 36%;
+  pointer-events: none;
+  animation: arrive 1.8s ease both;
+}
+.bottom-copy {
+  position: absolute;
+  z-index: 4;
+  left: 59%;
+  top: 74%;
+  width: 36%;
+  pointer-events: none;
+  animation: arrive 1.8s ease both;
+}
+    .title small {
+      display: block;
+      color: #698bad;
+      font-family: var(--fx-tech);
+      font-size: clamp(7px, .78vw, 9px);
+      letter-spacing: .4em;
+      margin-bottom: clamp(12px, 1.6vw, 20px);
+    }
+    h1 {
+      font-family: var(--fx-title);
+      font-size: clamp(30px, 4.2vw, 66px);
+      font-weight: 400;
+      letter-spacing: .04em;
+      margin: 0;
+      color: #c6d2df;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+    .subtitle {
+      font-family: var(--fx-tech);
+      font-size: clamp(10px, 1vw, 15px);
+      font-weight: 700;
+      letter-spacing: .35em;
+      color: #5e7388;
+      margin: clamp(10px, 1.4vw, 18px) 0 0 4px;
+    }
+    .line {
+      width: clamp(28px, 3vw, 42px);
+      height: 1px;
+      background: var(--fx-line);
+      margin-bottom: clamp(12px, 1.6vw, 20px);
+    }
+    .caption {
+      font-family: var(--fx-tech);
+      font-size: clamp(9px, .85vw, 11px);
+      line-height: 1.75;
+      color: #718397;
+      letter-spacing: .04em;
+      margin: 0;
+    }
+    .enter-vault {
+      pointer-events: auto;
+      display: inline-block;
+      margin-top: clamp(12px, 1.6vw, 20px);
+      padding: clamp(12px, 1.4vw, 16px) clamp(18px, 2.2vw, 26px);
+      border: 1px solid #85b4db80;
+      background: #29435c30;
+      color: #dcefff;
+      text-decoration: none;
+      font-family: var(--fx-button);
+      font-size: clamp(10px, .95vw, 12px);
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .enter-vault:hover {
+      background: #456c9140;
+      border-color: var(--fx-accent);
+    }
+    button:focus-visible,
+    .enter-vault:focus-visible {
+      outline: 2px solid #9bd0ff;
+      outline-offset: 5px;
+    }
+    /* STATUS + CONTROLES */
+    #status {
+      position: absolute;
+      z-index: 6;
+      left: var(--fx-gutter);
+      bottom: calc(var(--fx-bottom) + 58px);
+      max-width: min(62vw, 620px);
+      font-family: var(--fx-tech);
+      font-size: clamp(7px, .72vw, 9px);
+      letter-spacing: .21em;
+      color: var(--fx-muted);
+      line-height: 1.5;
+    }
+    .controls {
+      position: absolute;
+      z-index: 6;
+      bottom: var(--fx-bottom);
+      left: var(--fx-gutter);
+      right: var(--fx-gutter);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    button {
+      font-family: var(--fx-button);
+      font-size: clamp(9px, .82vw, 11px);
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid #50678070;
+      color: #bccbdc;
+      padding: clamp(10px, 1.2vw, 14px) clamp(13px, 1.5vw, 18px);
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    button:hover {
+      background: #719cc01a;
+      border-color: var(--fx-accent);
+    }
+    #reset {
+      border-color: transparent;
+      color: #6e8399;
+      margin-left: 8px;
+    }
+/* Partículas detrás */
+.particles-layer,
+canvas.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+/* Botón delante de las partículas */
+#enter-vault {
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(12px);
+      }
+      to { opacity: 1; transform: none;
+      }}
+    /* RESPONSIVE */
+    @media (max-width: 860px), (max-aspect-ratio: 115/100) {
+      :root {
+        --fx-gutter: 18px;
+        --fx-top: 18px;
+        --fx-bottom: 16px;
+      }
+       .userfx-logo {
+        left: 50%;
+        top: clamp(9vh, 12vh, 16vh);
+        transform: translateX(-50%);
+        width: min(78vw, 420px);
+        height: clamp(180px, 26vh, 280px);
+      }
+      .fx-copy {
+        left: var(--fx-gutter);
+        right: var(--fx-gutter);
+        top: 42vh;
+        height: auto;
+        align-items: center;
+        text-align: center;
+      }
+      .title,
+      .bottom-copy {
+        max-width: 100%;
+      }
+      .title small {
+        display: none;
+      }
+      h1 {
+        font-size: clamp(25px, 7vw, 38px);
+        letter-spacing: .02em;
+        white-space: normal;
+      }
+      .subtitle {
+        font-size: 10px;
+        margin: 10px 0 0;
+      }
+      .bottom-copy {
+        align-items: center;
+        margin-top: clamp(16px, 4vh, 32px);
+      }
+      .line {
+        display: none;
+      }
+      .caption {
+        font-size: 9px;
+      }
+      .shadow {
+        left: 50%;
+        top: 55%;
+        transform: translateX(-50%) rotate(-7deg);
+        width: min(76vw, 420px);
+        height: 5vh;
+      }
+      #status {
+        display: none;
+      }
+      .controls {
+        justify-content: center;
+      }
+      #reset {
+        margin-left: 0;
+      }}
+    @media (prefers-reduced-motion: reduce) {
+      .fx-copy {
+        animation: none;
+      }
+      button,
+      .enter-vault {
+        transition: none;
+      }}
+    /* EMBED */
+    .fx-embed body {
+      background: transparent !important;
+    }
+    .fx-embed body:before,
+    .fx-embed .floor,
+    .fx-embed .shadow,
+    .fx-embed header,
+    .fx-embed main,
+    .fx-embed .fx-copy,
+    .fx-embed .userfx-logo,
+    .fx-embed #status,
+    .fx-embed .controls {
+      display: none !important;
+    }
+    .fx-embed canvas#c {
+      pointer-events: none !important;
+      cursor: default !important;
+    }
+  </style>
+  <script>
+    if (new URLSearchParams(location.search).has('embed')) { document.documentElement.classList.add('fx-embed');}
+  </script>
+  </head>
+  <body>
+  <div class="floor"></div>
+  <div class="shadow"></div>
+  <canvas aria-label="Corona azul y rosa en partículas. Arrastra para girarlas; pulsa para dejarlas caer." id="c" tabindex="0">
+  </canvas>
+  <header>
+  <span class="brand">
+    ƒx
+  </span>
+  <span class="edition">
+  INTERACTIVE EXPERIENCE / 01
+  </span>
+  <link rel="stylesheet" href="escenario.css">
+  </header>
+  <model-viewer class="userfx-logo" id="fx-logo-3d" src="../assets/logos.glb/userFX.glb" alt="USER FX 3D" disable-zoom camera-orbit="15deg 75deg 75%" field-of-view="25deg" interaction-prompt="none" shadow-intensity="0" exposure="1.4" environment-image="neutral">
+  </model-viewer>
+  <div class="fx-copy">
+  <main class="title">
+  <small>
+   FX · DIGITAL EXPERIMENT
+  </small>
+  <h1>
+  FX · ROOM
+  </h1>
+  <p class="subtitle">T E L E G R A M</p>
+  </main>
+  <section class="bottom-copy" aria-label="Enter the room">
+  <div class="line">
+  </div>
+  <p class="caption">
+    Corona y rosa. Miles de posibilidades.<br>
+    Todo vuelve a su origen.
+  </p>
+  <a class="enter-vault" id="enter-vault" href="../../#/vault" target="_top">
+    ENTER THE ROOM ↗
+  </a>
+  </section>
+  </div>
+  <span id="status" role="status">
+  FORMANDO CORONA…
+  </span>
+  <div class="controls">
+  <div>
+  <button id="burst" type="button" aria-pressed="false">
+    Deshacer corona
+  </button>
+  <button id="reset" type="button">
+    Restablecer
+  </button>
+  </div>
+  </div>
+  <script src="particles.js?v=piso-vista-3d" defer>
+  </script>
+  <script>
+  const fxLogo = document.getElementById("fx-logo-3d");
+  if (fxLogo && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const animateLogo = (time) => {
+  const angle = Math.sin(time * 0.00035) * 14;
+  fxLogo.orientation = `0deg ${angle}deg 0deg`;
+  requestAnimationFrame(animateLogo);};
+  requestAnimationFrame(animateLogo);}
+  </script>
+  </body>
+  </html>

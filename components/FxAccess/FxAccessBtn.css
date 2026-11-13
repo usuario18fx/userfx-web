@@ -297,7 +297,6 @@ html[data-userfx-access-tone="paid"] .vx-unlockedState{
     transition:none;
   }
 }
-
 /* ====== FIX · GET MY CODE COMPACTO ====== */
 .fx-access-launcher .smkl-access-button{
   grid-template-columns:42px 1fr 32px !important;

@@ -840,41 +840,14 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
         }
       }}
     >
-      <img
-        className="fx-footer-experiment-poster"
-        src={item.poster}
-        alt={item.title}
-        loading="lazy"
-        style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }}
-      />
-      <video
-        ref={videoRef}
-        className="fx-footer-experiment-video"
-        src={item.video}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        onCanPlay={() => {
-          if (requestedRef.current && videoRef.current?.paused) {
-            void videoRef.current.play().catch(() => {});
-          }
-        }}
-        onPlaying={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onError={() => {
-          requestedRef.current = false;
-          setFailed(true);
-          setPlaying(false);
-          console.warn("[USER FX] Experiment video failed:", item.video);
-        }}
-        style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }}
-      />
+      <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }} />
+      <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
       <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
       </span>
-      <span className="fx-footer-experiment-title">{item.title}</span>
+      <span className="fx-footer-experiment-title">
+{item.title}
+</span>
       <span className="fx-footer-experiment-action">
         {failed ? "VIDEO UNAVAILABLE" : playing ? "PLAYING" : "PREVIEW"}
       </span>
@@ -1221,7 +1194,7 @@ export default function Landing() {
         <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
       )}
       {accessOpen && (
-        <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="Vault access">
+        <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
           <AccessGate forceOpen onRequestClose={() => setAccessOpen(false)}>
             <EnterAuthorizedRoom />
           </AccessGate>

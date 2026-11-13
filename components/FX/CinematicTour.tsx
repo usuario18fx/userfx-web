@@ -14,8 +14,7 @@ const LAPTOP_VIDEOS = {
 type LaptopMode = keyof typeof LAPTOP_VIDEOS;
 const TUNING = { smoothTime: 0.58, smoothTimeReduced: 0.06, baseSpeed: 0.38, catchUp: 2.0, speedCeil: 2.1, speedCap: 1.8, entryEase: 0.02, lookAhead: 0.018, lookAheadMax: 0.035, fovKick: 0.15, fovKickMax: 0.35, fadeIn: 1.6, breathSide: 0.001, breathUp: 0.001, lookSway: 0.004, parallax: 0.015, roll: 0, bank: 0, bankLambda: 6.0, barMax: 72, barSpeed: 1.1, barLambda: 5.5, vignetteIdle: 0.2, vignetteSpeed: 0.45, lookSettle: 9, } as const;
 const CINE_CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&family=Orbitron:wght@700&display=swap');
-
+ @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Krona+One&family=Orbitron:wght@700&display=swap');
 /* ── CAPAS DE AMBIENTE ─────────────────────────────────────────────────── */
 .cinematic-tour .ct-vignette {
   position: absolute;
@@ -24,7 +23,6 @@ const CINE_CSS = `
   z-index: 2;
   background: radial-gradient(120% 92% at 50% 46%, rgba(0, 0, 0, 0) 44%, rgba(1, 3, 7, .92) 100%);
 }
-
 .cinematic-tour .ct-grain {
   position: absolute;
   inset: -48px;
@@ -37,7 +35,6 @@ const CINE_CSS = `
   will-change: transform;
   animation: ct-grain .8s steps(5) infinite;
 }
-
 @keyframes ct-grain {
   0%   { transform: translate3d(0, 0, 0); }
   20%  { transform: translate3d(-14px, 9px, 0); }
@@ -46,7 +43,6 @@ const CINE_CSS = `
   80%  { transform: translate3d(13px, 11px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-
 .cinematic-tour .ct-bar {
   position: absolute;
   left: 0;
@@ -63,7 +59,6 @@ const CINE_CSS = `
   bottom: 0;
   box-shadow: inset 0 -1px 0 rgba(140, 220, 255, .10);
 }
-/* PORTADA */
 .cinematic-tour .ct-cover {
   --ct-title: clamp(40px, 10vw, 140px);
   position: absolute !important;
@@ -80,21 +75,19 @@ const CINE_CSS = `
   transition: opacity .4s ease, visibility .4s ease;
   will-change: opacity;
 }
-/* El letter-spacing añade espacio tras la última letra y descentra el texto:
-   se compensa con padding-left igual al tracking. */
 /* USER FX — más claro y con halo oscuro: antes se perdía contra la luz del techo */
 .cinematic-tour .ct-cover-eyebrow {
-  margin: 0 0 .0em !important;
+  margin: 0 0 .6em !important;
   font-family: 'Orbitron', system-ui, sans-serif !important;
-  font-weight: 900 !important;
-  font-size: clamp(13px, 1.8vw, 25px) !important;
+  font-weight: 700 !important;
+  font-size: clamp(12px, 1.5vw, 24px) !important;
   letter-spacing: .5em !important;
   padding-left: .5em !important;
-  color: #008ace !important;
+  color: #5cc8ff !important;
   text-transform: uppercase !important;
   text-shadow:
-    0 0 10px rgba(0, 102, 197, 0.85),
-    0 2px 3px rgb(0, 35, 87),
+    0 0 10px rgba(0, 170, 255, .85),
+    0 2px 3px rgba(0, 8, 20, 1),
     0 0 22px rgba(0, 8, 20, .95) !important;
 }
 .cinematic-tour .ct-cover-title {
@@ -110,12 +103,12 @@ const CINE_CSS = `
   align-items: center !important;
   max-width: 100% !important;
 }
-/* ((WELCOME)) — cromo (trazo y sombras en em para que escalen con el tamaño) */
+/* WELCOME — cromo (trazo y sombras en em para que escalen con el tamaño) */
 .cinematic-tour .ct-chrome {
   display: block !important;
   width: fit-content !important;
   max-width: 100% !important;
-  background: linear-gradient(210deg, #ffffff 0%, #e9eff6 20%, #8b98a7 40%, #f6f9fc 50%, #5d6978 70%, #c8d2dd 90%, #ffffff 100%) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #e9eff6 20%, #8b98a7 40%, #f6f9fc 50%, #5d6978 70%, #c8d2dd 90%, #ffffff 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -124,7 +117,7 @@ const CINE_CSS = `
   paint-order: stroke fill !important;
   filter: drop-shadow(0 .04em 0 #18202c) drop-shadow(0 .1em .2em rgba(0, 0, 0, 1)) !important;
 }
-/* ((PRIVATE WORLD)) — azul acero luminoso */
+/* PRIVATE WORLD — azul acero luminoso */
 .cinematic-tour .ct-blue {
   display: block !important;
   width: fit-content !important;
@@ -137,7 +130,7 @@ const CINE_CSS = `
   padding-left: .12em !important;
   background:
     url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-   linear-gradient(180deg, #129bf0 0%, #0c5ca3 55%, #0a3b7c 100%);
+    linear-gradient(180deg, #8fd6ff 0%, #3fa8ee 26%, #1b78bf 56%, #145f9e 78%, #2e92d8 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -149,16 +142,16 @@ const CINE_CSS = `
     drop-shadow(0 0 .25em rgba(0, 160, 255, .35))
     drop-shadow(0 .25em .45em rgba(0, 0, 0, .9)) !important;
 }
-/* ((Desplázate para entrar)) */
+/* Desplázate para entrar */
 .cinematic-tour .ct-cover-hint {
-  margin: clamp(2px, 3vh, 9px) 0 0 !important;
+  margin: clamp(16px, 3vh, 32px) 0 0 !important;
   max-width: 92vw !important;
   font-family: 'Orbitron', system-ui, sans-serif !important;
   font-weight: 700 !important;
-  font-size: clamp(7px, .8vw, 16px) !important;
+  font-size: clamp(10px, 1.4vw, 22px) !important;
   letter-spacing: .22em !important;
   padding-left: .22em !important;
-  color: #fcfeff7d !important;
+  color: #c1dff2 !important;
   text-shadow: 0 0 10px rgba(0, 168, 255, 0.5), 0 3px 12px rgba(0, 0, 0, 1) !important;
   text-transform: uppercase !important;
   text-wrap: balance;
@@ -171,7 +164,6 @@ const CINE_CSS = `
   opacity: 1;
   transition: opacity .3s ease !important;
 }
-
 @media (prefers-reduced-motion: reduce) {
   .cinematic-tour .ct-grain { animation: none !important; }
   .cinematic-tour .ct-cover,
@@ -181,8 +173,7 @@ const CINE_CSS = `
   .cinematic-tour .ct-cover-hint {
     transition: none !important;
     animation: none !important;
-  }
-}
+  }}
 @keyframes ct-pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.02);}}
 @media (prefers-reduced-motion:reduce){
   .cinematic-tour .ct-grain{animation:none !important;}

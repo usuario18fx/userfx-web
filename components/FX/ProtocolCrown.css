@@ -1,5 +1,6 @@
 /* Corona de partículas original, sin panel ni controles del micrositio. */
-.pv .pv-stage { isolation: isolate; }
+.pv .pv-stage { isolation: isolate; 
+}
 .pv .fx-protocol-particle-crown {
   position: absolute; z-index: 2; pointer-events: none; overflow: hidden;
   left: 50%; top: 49%; transform: translate(-50%, -50%);
@@ -18,8 +19,8 @@
 @media(prefers-reduced-motion: reduce) {
   .pv .fx-protocol-particle-crown { display: none; }
 }
-.pv .pv-stage { isolation: isolate; position: relative; }
-
+.pv .pv-stage { isolation: isolate; position: relative; 
+}
 .pv .pv-crown {
   position: absolute;
   inset: 0;
@@ -29,11 +30,32 @@
   pointer-events: none;
   filter: drop-shadow(0 0 23px rgba(16, 188, 237, .25));
 }
-
 @media (max-width: 900px) {
   .pv .pv-crown { opacity: .65; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .pv .pv-crown { display: none; }
+}
+.fx-center-line { /* FX — CENTER VERTICAL LINE */
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100dvh;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom,
+  #37d7dbf2,#37d7dbcc,#37d7dbf2);
+  box-shadow: 0 0 7px #37d7db26;
+  pointer-events: none;
+  z-index: 40;
+}
+.protocol-crown {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.protocol-crown-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }

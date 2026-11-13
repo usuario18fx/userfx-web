@@ -1035,13 +1035,11 @@ async function generateIdentityCode(ctx, options = {}) {
     await ctx.reply("⚠️ʏᴏᴜ ɴᴇᴇᴅ ᴀ ᴛᴇʟᴇɢʀᴀᴍ @ᴜꜱᴇʀɴᴀᴍᴇ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɴ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ. ꜱᴇᴛ ᴏɴᴇ ɪɴ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴇᴛᴛɪɴɢꜱ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.");
     return null;
   }
-
   const access = await getTelegramFxAccess(parsedUsername.normalized);
   if (!access || !access.enabled || !access.telegramfx_access) {
-    await ctx.reply("⛔ Tu cuenta de Telegram no tiene acceso SPCL activo. Puedes solicitarlo enviándome un DM.", getSpclRequestKeyboard());
+    await ctx.reply("⛔ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀᴄᴄᴏᴜɴᴛ ᴅᴏᴇꜱɴ’ᴛ ʜᴀᴠᴇ ᴀᴄᴛɪᴠᴇ ꜱᴘᴄʟ ᴀᴄᴄᴇꜱꜱ. ʏᴏᴜ ᴄᴀɴ ʀᴇǫᴜᴇꜱᴛ ɪᴛ ʙʏ ꜱᴇɴᴅɪɴɢ ᴍᴇ ᴀ ᴅᴍ..", getSpclRequestKeyboard());
     return null;
   }
-
   const client = await ensureRedis();
   if (!client) {
     throw new Error("Redis is required for TGMX generation");
@@ -1086,14 +1084,10 @@ async function generateIdentityCode(ctx, options = {}) {
 
     if (created === "OK") {
       await client.set(userKey, code, "EX", IDENTITY_CODE_TTL_SECONDS);
-      logger.info("TGMX IDENTITY CODE GENERATED", {
-        userId,
-        username: parsedUsername.display,
-      });
+      logger.info("TGMX IDENTITY CODE GENERATED", { userId, username: parsedUsername.display,
+    });
       return record;
-    }
-  }
-
+    }}
   throw new Error("ᴜɴᴀʙʟᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ᴜɴɪǫᴜᴇ ᴛɢᴍx ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ");
 }
 async function sendIdentityCode(ctx, options = {}) {
@@ -1174,10 +1168,9 @@ async function generateAccessCode(planId, source, userId, chargeId = null, recip
       await client.sadd(getUserCodeIndexKey(String(userId)), code);
       logger.info("ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ɢᴇɴᴇʀᴀᴛᴇᴅ", { planId, source, userId });
       return record;
-    }
-  }
+    }}
   throw new Error("ᴜɴᴀʙʟᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ᴜɴɪǫᴜᴇ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ");
-}
+   }
 async function getAccessCode(code) {
   const normalized = String(code || "")
     .trim()
@@ -1238,10 +1231,7 @@ function getVideocallInlineKeyboard() {
       [
         { text: BTN_ZOOM, url: ZOOM_URL },
         { text: BTN_TELEGRAM, url: TELEGRAM_CALL_URL },
-      ],
-    ],
-  };
-}
+      ],],};}
 function getStarsVipKeyboard() {
   return Markup.inlineKeyboard([[Markup.button.callback(`| ✪ ${VIP_STARS_PRICE} |`, "pay_vip_stars")]]);
 }
@@ -1296,9 +1286,9 @@ async function openPublicGallery(ctx) {
   }
   if (Number.isInteger(previous?.messageId) && previous.messageId !== sent.message_id) {
     await ctx.telegram.deleteMessage(ctx.chat.id, previous.messageId).catch(() => {});
-  }
+    }
   return sent;
-}
+    }
 async function handlePublicGalleryNavigation(ctx, action) {
   const client = await ensureRedis();
   if (!client) return ctx.reply("Gallery is temporarily unavailable. Please try again.", getMainKeyboard());
@@ -1316,7 +1306,7 @@ async function handlePublicGalleryNavigation(ctx, action) {
     try { session = raw ? JSON.parse(raw) : null; } catch {}
     if (!session || !Number.isInteger(session.messageId) || !Number.isInteger(session.index)) {
       await ctx.deleteMessage().catch(() => {});
-      return ctx.reply("Gallery session expired. Tap GALLERY to open it again.", getMainKeyboard());
+      return ctx.reply("Gɢᴀʟʟᴇʀʏ ꜱᴇꜱꜱɪᴏɴ ᴇxᴘɪʀᴇᴅ. ᴛᴀᴘ ɢᴀʟʟᴇʀʏ ᴛᴏ ᴏᴘᴇɴ ɪᴛ ᴀɢᴀɪɴ.", getMainKeyboard());
     }
     if (action === BTN_GALLERY_CLOSE) {
       await client.del(key);
@@ -1357,7 +1347,7 @@ async function getAccessState(userId) {
     hasBasic: tierRank(tier) >= 1,
     entry,
   };
-}
+  }
 //// PANELS //
 async function sendMainPanel(ctx) {
   try {
@@ -1374,10 +1364,9 @@ async function sendMainPanel(ctx) {
       ...getTelegramError(error),
       userId: ctx.from?.id || null,
       chatId: ctx.chat?.id || null,
-    });
+  });
     throw error;
-  }
-}
+  }}
 async function sendMembershipPanel(ctx) {
   await typing(ctx);
   await ctx.reply(
@@ -1387,7 +1376,7 @@ async function sendMembershipPanel(ctx) {
                👑 ᴠɪᴘ`,
     getAccessKeyboard(),
   );
-}
+  }
 async function sendVipPanel(ctx) {
   try {
     await ctx.reply(
@@ -1396,47 +1385,44 @@ async function sendVipPanel(ctx) {
     );
   } catch (error) {
     logger.error("VIP PANEL ERROR", getTelegramError(error));
-  }
-}
+  }}
 async function sendBasicPanel(ctx) {
   try {
     await ctx.reply(
-      `🌹 BASIC ACCESS\nCamera access · Private chat\nUnlimited entries while active\nValid for ${PLAN_DAYS.basic} days from first activation`,
+      `🌹ʙᴀꜱɪᴄ ᴀᴄᴄᴇꜱꜱ\nᴄᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ\nUnlimited entries while active\nValid for ${PLAN_DAYS.basic} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
       getStarsBasicKeyboard(),
     );
   } catch (error) {
     logger.error("BASIC PANEL ERROR", getTelegramError(error));
-  }
-}
+  }}
 async function sendProPanel(ctx) {
   try {
     await ctx.reply(
-      `🔥 PRO ACCESS\nCamera · Private chat · Recording · Multimedia\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} days from first activation`,
+      `🔥 PRO ACCESS\nᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ · ʀᴇᴄᴏʀᴅɪɴɢ · ᴍᴜʟᴛɪᴍᴇᴅɪᴀ\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
       getStarsProKeyboard(),
-    );
+  );
   } catch (error) {
     logger.error("PRO PANEL ERROR", getTelegramError(error));
-  }
-}
+  }}
 //// CHANNELS //
 async function sendChannelsPanel(ctx) {
   await sendMediaSafe(ctx, "video", ASSET_CHANNELS_VIDEO);
   await ctx.reply(
     `📺ᴄʜᴀɴɴᴇʟꜱ
-              ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
+    ᴄʜᴏᴏꜱᴇ ᴡʜɪᴄʜ ʀᴏᴜᴛᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ.`,
     getChannelsKeyboard(),
   );
-}
+  }
 //// REFRESH //
 async function sendRefreshPanel(ctx) {
   const { hasVip, hasPro, hasBasic } = await getAccessState(String(ctx.from?.id || ""));
   const tier = hasVip ? "👑 ᴠɪᴘ" : hasPro ? "🔥 ᴘʀᴏ" : hasBasic ? "🌹 ʙᴀꜱɪᴄ" : "ɴᴏ ᴘʟᴀɴ";
   await ctx.reply(
     `↻ ꜱᴛᴀᴛᴜꜱ ᴜᴘᴅᴀᴛᴇᴅ
-              ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
+  ᴄᴜʀʀᴇɴᴛ ᴛɪᴇʀ: ${tier}`,
     getMainKeyboard(),
   );
-}
+  }
 //// SEND GENERATED CODE //
 async function sendGeneratedCode(ctx, record) {
   const safeCode = escapeHtml(record.code);
@@ -1444,13 +1430,13 @@ async function sendGeneratedCode(ctx, record) {
   const keyboard = getOpenVaultKeyboard(record.code);
   await ctx.reply(
     `✔ ᴀᴄᴄᴇꜱꜱ 𝐔𝐍𝐋𝐎𝐂𝐊𝐄𝐃
-              ᴘʟᴀɴ: ${safePlan}
-              ᴄᴏᴅᴇ:
-              <code>${safeCode}</code>
-              ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`,
+      ᴘʟᴀɴ: ${safePlan}
+      ᴄᴏᴅᴇ:
+      <code>${safeCode}</code>
+      ᴋᴇᴇᴘ ᴛʜɪꜱ ᴄᴏᴅᴇ ᴛᴏ ᴇɴᴛᴇʀ ᴛʜᴇ ᴠᴀᴜʟᴛ.`,
     { parse_mode: "HTML", reply_markup: keyboard.reply_markup },
   );
-}
+  }
 //// VIDEOCALL FLOW //
 const VIDEOCALL_INVITE_TEXT = `ʜᴏʟᴅ ᴜᴘ...
 ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
@@ -1475,7 +1461,7 @@ async function openVideocallFlow(ctx) {
     if (!(await checkRateLimit(userId, 3, 300))) {
       await ctx.reply("⏳ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ʙᴇꜰᴏʀᴇ ᴛʀʏɪɴɢ ᴀɢᴀɪɴ.");
       return;
-    }
+      }
     const user = getUserMeta(ctx.from);
     await setVideoRequest(userId, {
       userId,
@@ -1595,13 +1581,13 @@ async function sendStarsInvoice(telegram, chatId, options) {
     currency: "XTR",
     prices: [{ label: options.label, amount: options.amount }],
   });
-}
+  }
 async function sendVipInvoice(ctx) {
   const chatId = ctx.chat?.id || ctx.callbackQuery?.message?.chat?.id;
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝓥ɪᴘ ᴀᴄᴄᴇss",
-    description: `Camera, chat, recording, multimedia and stage. ${PLAN_DAYS.vip} days from first activation.`,
+    description: `ᴄᴀᴍᴇʀᴀ, ᴄʜᴀᴛ, ʀᴇᴄᴏʀᴅɪɴɢ, ᴍᴜʟᴛɪᴍᴇᴅɪᴀ ᴀɴᴅ ꜱᴛᴀɢᴇ.${PLAN_DAYS.vip} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
     payload: VIP_PAYLOAD,
     label: "ᴠɪᴘ ᴀᴄᴄᴇss",
     amount: VIP_STARS_PRICE,
@@ -1612,7 +1598,7 @@ async function sendBasicInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝐁𝐀𝐒𝐈𝐂 ᴀᴄᴄᴇss",
-    description: `Camera and private chat. ${PLAN_DAYS.basic} days from first activation.`,
+    description: `Camera and private chat. ${PLAN_DAYS.basic} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
     payload: BASIC_PAYLOAD,
     label: "ʙᴀꜱɪᴄ ᴀᴄᴄᴇss",
     amount: BASIC_STARS_PRICE,
@@ -1623,7 +1609,7 @@ async function sendProInvoice(ctx) {
   if (!chatId) return;
   await sendStarsInvoice(ctx.telegram, chatId, {
     title: "𝐏𝐑𝐎 ᴀᴄᴄᴇss",
-    description: `Camera, chat, recording and multimedia. ${PLAN_DAYS.pro} days from first activation.`,
+    description: `ᴄᴀᴍᴇʀᴀ, ᴄʜᴀᴛ, ʀᴇᴄᴏʀᴅɪɴɢ ᴀɴᴅ ᴍᴜʟᴛɪᴍᴇᴅɪᴀ. ${PLAN_DAYS.pro} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ.`,
     payload: PRO_PAYLOAD,
     label: "ᴘʀᴏ ᴀᴄᴄᴇss",
     amount: PRO_STARS_PRICE,
@@ -1734,12 +1720,12 @@ async function handleSuccessfulPayment(ctx) {
         ...getTelegramError(error),
         stack: getErrorStack(error),
       });
-      await ctx.reply(`⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
-              ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
-              ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
+      await ctx.reply(
+      `⚠️ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ.
+    ᴡᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇɴᴇʀᴀᴛᴇ ʏᴏᴜʀ ᴀᴄᴄᴇꜱꜱ ᴄᴏᴅᴇ ʏᴇᴛ.
+    ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ꜱᴜᴘᴘᴏʀᴛ.`);
       return;
-    }
-  }
+    }}
   logger.warn("ᴜɴᴋɴᴏᴡɴ ᴘᴀʏᴍᴇɴᴛ ᴘᴀʏʟᴏᴀᴅ", { userId, payload, chargeId });
 }
 //// GET CODE PANEL //
@@ -1755,23 +1741,21 @@ async function openGetCodePanel(ctx, source = "ᴛᴇʟᴇɢʀᴀᴍ") {
       stack: getErrorStack(error),
     });
     await ctx.reply("⚠️ᴜɴᴀʙʟᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ᴀᴄᴄᴇꜱꜱ ᴘᴀɴᴇʟ.").catch(() => {});
-  }
-}
-
+    }}
 // Website chat linking never grants a paid or SPCL code.
 async function sendFxChatLink(ctx) {
   if (ctx.chat?.type !== "private" || !ctx.from?.id || String(ctx.chat.id) !== String(ctx.from.id)) {
-    await ctx.reply("Open this command in a private chat with @User18Fx_bot.");
+    await ctx.reply("ᴏᴘᴇɴ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴡɪᴛʜ @User18Fx_bot.");
     return;
   }
   try {
     const code = await issueFxChatLink(ctx.from.id, ctx.chat.id);
     await ctx.reply(code
-      ? "FX WEB CHAT · ONE-TIME LINK\n\n" + code + "\n\nEnter this code in the USER FX web chat after accepting the terms. Expires in 10 minutes. Keep it private."
-      : "Please wait 15 seconds before requesting another chat link.");
+      ? "FX WEB CHAT · ONE-TIME LINK\n\n" + code + "\n\nᴇɴᴛᴇʀ ᴛʜɪꜱ ᴄᴏᴅᴇ ɪɴ ᴛʜᴇ ᴜꜱᴇʀ ꜰx ᴡᴇʙ ᴄʜᴀᴛ ᴀꜰᴛᴇʀ ᴀᴄᴄᴇᴘᴛɪɴɢ ᴛʜᴇ ᴛᴇʀᴍꜱ. ᴇxᴘɪʀᴇꜱ ɪɴ 𝟣𝟢 ᴍɪɴᴜᴛᴇꜱ. ᴋᴇᴇᴘ ɪᴛ ᴘʀɪᴠᴀᴛᴇ."
+      : "ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ 𝟣𝟧 ꜱᴇᴄᴏɴᴅꜱ ʙᴇꜰᴏʀᴇ ʀᴇǫᴜᴇꜱᴛɪɴɢ ᴀɴᴏᴛʜᴇʀ ᴄʜᴀᴛ ʟɪɴᴋ.");
   } catch (error) {
     logger.error("FX WEBCHAT LINK FAILED", { message: error?.message || "unknown" });
-    await ctx.reply("Chat linking is temporarily unavailable. Try again.");
+    await ctx.reply("ᴄʜᴀᴛ ʟɪɴᴋɪɴɢ ɪꜱ ᴛᴇᴍᴘᴏʀᴀʀɪʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ. ᴛʀʏ ᴀɢᴀɪɴ.");
   }
 }
 bot.command("webchat", sendFxChatLink);

@@ -1,3 +1,4 @@
+
 /* USER FX · Editorial opening from the supplied cinematic reference. */
 .fx-scroll-story {
   color: #f4efe6;
@@ -108,6 +109,11 @@
   margin: var(--fx-nav-h,64px) auto 0;
   padding: clamp(30px,5vw,80px) clamp(22px,4vw,75px);
 }
+/* Envoltorio de los elementos del hero que se mueven con el scroll */
+.fx-scroll-parallax {
+  min-width: 0;
+  will-change: transform, opacity;
+}
 .fx-scroll-hero-title {
   min-width: 0;
 }
@@ -200,6 +206,8 @@
   letter-spacing: .24em;
   text-transform: uppercase;
 }
+
+/* Indicador "scroll down": la flecha respira para invitar a bajar */
 .fx-scroll-cue {
   display: inline-flex;
   align-items: center;
@@ -209,14 +217,26 @@
   font-size: 11px;
   letter-spacing: .28em;
   text-decoration: none;
+  transition: color .25s ease;
+}
+.fx-scroll-cue:hover,
+.fx-scroll-cue:focus-visible {
+  color: #f0d9a8;
 }
 .fx-scroll-cue span:last-child {
+  display: inline-block;
   font-size: 24px;
-  transition: transform .3s ease;
+  animation: fx-cue-bob 1.9s ease-in-out infinite;
 }
-.fx-scroll-cue:hover span:last-child {
-  transform: translateY(8px);
+.fx-scroll-cue:hover span:last-child,
+.fx-scroll-cue:focus-visible span:last-child {
+  animation-duration: .9s;
 }
+@keyframes fx-cue-bob {
+  0%, 100% { transform: translateY(0);   opacity: .65; }
+  50%      { transform: translateY(8px); opacity: 1; }
+}
+
 @media (max-width: 900px) {
   .fx-scroll-hero-grid {
     grid-template-columns: 1fr;
@@ -236,20 +256,18 @@
   }
   .fx-scroll-hero-aside p {
     display: none;
-  }}
+  }
+}
 @media (max-width: 600px) {
   .fx-scroll-quick-nav a {
     display: none;
   }
   .fx-scroll-hero-title h1 {
     font-size: clamp(50px,12.2vw,78px);
-  }}
-@media (prefers-reduced-motion: reduce) {
-  .fx-scroll-hero-enter,.fx-scroll-cue span:last-child {
-    transition: none;
-  }}
+  }
+}
 
-  .fx-rose-stage {
+.fx-rose-stage {
   position: relative;
   width: 100%;
   height: min(72vh, 760px);
@@ -268,4 +286,232 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+/* El hero tiene 3 hijos (título, escenario de la rosa, lateral) en un grid de 2
+   columnas: el lateral caía a una segunda fila y el "SCROLL DOWN" quedaba fuera de
+   la primera pantalla. Ahora el escenario y el lateral comparten la columna derecha:
+   la rosa de fondo y el lateral encima, abajo a la derecha.
+   (Para volver al comportamiento anterior, borra este bloque.) */
+.fx-scroll-hero-grid > .fx-scroll-parallax:first-child,
+.fx-scroll-hero-grid > .fx-rose-stage,
+.fx-scroll-hero-grid > .fx-scroll-parallax--aside {
+  grid-row: 1;
+}
+.fx-scroll-hero-grid > .fx-scroll-parallax:first-child { grid-column: 1; }
+.fx-scroll-hero-grid > .fx-rose-stage,
+.fx-scroll-hero-grid > .fx-scroll-parallax--aside { grid-column: 2; }
+.fx-scroll-hero-grid > .fx-scroll-parallax--aside {
+  z-index: 2;
+  align-self: end;
+  justify-self: end;
+  pointer-events: none;
+}
+.fx-scroll-hero-grid > .fx-scroll-parallax--aside a { pointer-events: auto; }
+/* En pantallas medianas el raíl de scroll (fijo, a la derecha) cae sobre el lateral:
+   se deja un carril libre para él. En pantallas anchas el hero queda centrado y no choca. */
+@media (min-width: 901px) and (max-width: 1599px) {
+  .fx-scroll-hero-grid > .fx-scroll-parallax--aside { margin-right: 52px; }
+}
+@media (max-width: 900px) {
+  .fx-scroll-hero-grid > .fx-scroll-parallax:first-child,
+  .fx-scroll-hero-grid > .fx-rose-stage,
+  .fx-scroll-hero-grid > .fx-scroll-parallax--aside {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .fx-scroll-hero-grid > .fx-scroll-parallax--aside {
+    align-self: start;
+    justify-self: start;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RAÍL DE SCROLL (derecha)
+   · Un hilo vertical con un punto por sección.
+   · El hilo se llena de forma continua con el scroll (--fx-p, de 0 a 1).
+   · Los puntos ya recorridos se iluminan; el activo muestra etiqueta y brillo.
+   · Con el cursor sobre el raíl se muestran todas las etiquetas.
+   · Contador "03/08" bajo el hilo.
+   Geometría: todos los ítems miden --fx-stop-h y se separan --fx-stop-gap, así
+   que el hilo (de centro a centro del primer y último punto) y el progreso
+   lineal coinciden exactamente con la posición de cada punto.
+   ══════════════════════════════════════════════════════════════════════════ */
+.fx-story-stops {
+  --fx-rail-right: 28px;   /* distancia al borde derecho; súbela si choca con otro indicador */
+  --fx-stop-h: 28px;
+  --fx-stop-gap: 6px;
+  --fx-dot: 9px;
+  --fx-accent: #39d3d0;
+  --fx-rail-idle: rgba(157, 190, 209, .5);
+  --fx-p: 0;
+
+  position: fixed;
+  top: 50%;
+  right: var(--fx-rail-right);
+  transform: translateY(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--fx-stop-gap);
+}
+
+/* Hilo base y relleno de progreso */
+.fx-story-stops::before,
+.fx-story-stops::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc(var(--fx-stop-h) / 2);
+  bottom: calc(var(--fx-stop-h) / 2);
+  pointer-events: none;
+}
+.fx-story-stops::before {
+  right: calc(var(--fx-dot) / 2 - .5px);
+  width: 1px;
+  background: linear-gradient(180deg, rgba(157, 190, 209, .38), rgba(157, 190, 209, .16));
+}
+.fx-story-stops::after {
+  right: calc(var(--fx-dot) / 2 - 1px);
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(57, 211, 208, .25), var(--fx-accent));
+  box-shadow: 0 0 10px rgba(57, 211, 208, .5);
+  transform-origin: top;
+  transform: scaleY(var(--fx-p));
+}
+
+.fx-story-stop {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  min-width: 44px;           /* zona de cursor estable aunque las etiquetas estén ocultas */
+  height: var(--fx-stop-h);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.fx-story-stop:focus-visible {
+  outline: none;
+}
+
+/* Punto */
+.fx-story-stop-dot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: var(--fx-dot);
+  height: var(--fx-dot);
+  border-radius: 50%;
+  background: #05070b;
+  border: 1.5px solid var(--fx-rail-idle);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.fx-story-stop.is-passed .fx-story-stop-dot {
+  border-color: var(--fx-accent);
+  background: rgba(57, 211, 208, .3);
+}
+.fx-story-stop:hover .fx-story-stop-dot {
+  border-color: var(--fx-accent);
+  transform: scale(1.25);
+}
+.fx-story-stop.is-active .fx-story-stop-dot {
+  border-color: var(--fx-accent);
+  background: var(--fx-accent);
+  transform: scale(1.4);
+  box-shadow: 0 0 0 4px rgba(57, 211, 208, .16), 0 0 14px rgba(57, 211, 208, .55);
+}
+.fx-story-stop:focus-visible .fx-story-stop-dot {
+  outline: 2px solid var(--fx-accent);
+  outline-offset: 4px;
+}
+
+/* Etiqueta: colapsada (sin ancho) hasta que se necesita, para que no estorbe al cursor */
+.fx-story-stop-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(6px);
+  white-space: nowrap;
+  color: var(--fx-accent);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .9);
+  transition: max-width .38s cubic-bezier(.22, 1, .36, 1), opacity .25s ease, transform .3s ease;
+}
+.fx-story-stop-label em {
+  font-style: normal;
+  font-size: 10px;
+  color: rgba(57, 211, 208, .55);
+}
+.fx-story-stop.is-active .fx-story-stop-label,
+.fx-story-stops:hover .fx-story-stop-label,
+.fx-story-stops:focus-within .fx-story-stop-label {
+  max-width: 200px;
+  opacity: .62;
+  transform: none;
+}
+.fx-story-stop.is-active .fx-story-stop-label,
+.fx-story-stop:hover .fx-story-stop-label,
+.fx-story-stop:focus-visible .fx-story-stop-label {
+  max-width: 200px;
+  opacity: 1;
+  transform: none;
+}
+
+/* Contador bajo el hilo (no altera la altura del raíl) */
+.fx-story-count {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  color: var(--fx-accent);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .14em;
+  line-height: 1;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
+  pointer-events: none;
+}
+.fx-story-count i {
+  margin-left: 2px;
+  font-style: normal;
+  color: rgba(157, 190, 209, .55);
+}
+
+@media (max-width: 768px) {
+  .fx-story-stops {
+    --fx-rail-right: 10px;
+    --fx-stop-h: 24px;
+    --fx-stop-gap: 4px;
+    --fx-dot: 7px;
+  }
+  .fx-story-stop-label,
+  .fx-story-count {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-scroll-hero-enter,
+  .fx-scroll-cue {
+    transition: none;
+  }
+  .fx-scroll-cue span:last-child {
+    animation: none;
+  }
+  .fx-scroll-parallax {
+    will-change: auto;
+  }
+  .fx-story-stop-dot,
+  .fx-story-stop-label {
+    transition: none;
+  }
 }

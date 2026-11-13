@@ -19,43 +19,37 @@ export const COURSES = [
     level: "Your space",
     route: "#/private-room",
     glyph: "camera",
-    blurb:
-      "Your camera, your guests, your rules. Approve who enters, open chat when you need it and share your moments in the feed.",
-    metrics: [
-      { value: "01", label: "personal room" },
-      { value: "You", label: "control entry" },
-      ],},
+    blurb: "Your camera, your guests,    your rules. Approve who enters, open chat when you need it and share your moments in the feed.",
+    metrics: [{ value:"01",label: "personal room" },
+    { value: "You", label: "control entry"},
+    ],},
   { id: "stage",
     name: "Stage",
     level: "Together",
     route: "#/private-room/stage",
     glyph: "stage",
-    blurb:
-      "Meet on the shared stage. Switch the spotlight, see who is connected and keep the next event within reach.",
-    metrics: [
-      { value: "06", label: "camera seats" },
-      { value: "Live", label: "shared moments" },
-      ],},
+    blurb: "Meet on the shared stage. Switch the spotlight, see who is connected and keep the next event within reach.",
+    metrics: [{ value: "06", label: "camera seats" },
+      { value: "Live", label: "shared moments"},
+    ],},
   { id: "gallery",
     name: "Gallery",
     level: "Code protected",
     route: "#/private-room/gallery",
     glyph: "lock",
     blurb: "A private collection for each album code. BSIC, PRX0 and VIPX open their matching albums; SPCL identifies you without revealing private photos.",
-    metrics: [
-      { value: "03", label: "album codes" },
-      { value: "Private", label: "matching access" },
-       ],},
+    metrics: [{ value: "03", label: "album codes" },
+    { value: "Private", label:"matching access" },
+    ],},
   { id: "buzon",
     name: "Buzón",
     level: "Stay connected",
     route: "#/private-room/buzon",
     glyph: "mail",
     blurb: "Your invitations in one place. See requests, respond and return to the conversations that matter.",
-    metrics: [
-      { value: "Your", label: "invitations" },
-      { value: "One", label: "identity" },
-      ],},] as const;
+    metrics: [{ value: "Your", label: "invitations" },
+    { value: "One", label:"identity"},
+    ],},] as const;
 export const METHOD = [
   { step: "01",
     title: "Open the Telegram bot",
@@ -74,7 +68,7 @@ export const METHOD = [
     body: "Return to the Vault and enter the code from the bot. Verification happens before your private content opens.",
     link: ENTER_URL,
     cta: "Enter a code",
-      },] as const;
+    },] as const;
 export const METRICS = [
   { value: 4, suffix: "", label: "connected spaces" },
   { value: 6, suffix: "", label: "Stage camera seats" },
@@ -105,7 +99,7 @@ export const TRAINERS = [
     line: "The VIP collection. Your benefits stay linked to your account and their active access window.",
     highlight: "VIP ALBUM · 30-DAY CODE VALIDITY",
     emoji: "👑",
-      },] as const;
+    },] as const;
 export const PLANS = [
   { id: "basic",
     name: "Basic",
@@ -142,7 +136,7 @@ export const PLANS = [
     cta: "Get VIP",
     featured: false,
     emoji: "👑",
-        },] as const;
+    },] as const;
 export const FAQS = [
   { q: "How do I get a code?",
     a: "Open @User18Fx_bot and choose your access. The bot sends your personal code, which you enter at the Vault gate.",
@@ -150,27 +144,24 @@ export const FAQS = [
   { q: "Does SPCL open every album?",
     a: "SPCL is identity access. Private albums require their matching BSIC, PRX0 or VIPX code. Your code does not reveal another collection.",
   },
-  { q: "When does my access period start?",
-    a: "Your code validity begins at the first successful activation. BASIC lasts 3 days with 12-hour sessions; PRO lasts 14 days with 24-hour sessions; VIP lasts 30 days with 7-day sessions.",
+  { q: "When does my access period start?",a: "Your code validity begins at the first successful activation. BASIC lasts 3 days with 12-hour sessions; PRO lasts 14 days with 24-hour sessions; VIP lasts 30 days with 7-day sessions.",
   },
   { q: "Can I share my code?",
     a: "Codes are personal. Identity verification and your active session determine which benefits are available to you.",
   },
-  { q: "What if I do not receive my code?",
-    a: "Return to the bot and contact @User18fx with your payment or access details. Never send your password.",
-        },] as const;
+  { q: "What if I do not receive my code?",a: "Return to the bot and contact @User18fx with your payment or access details. Never send your password.",
+    },] as const;
 export const FOOTER = {
   columns: [
     { title: "Spaces", links: COURSES.map((s) => ({ label: s.name, href: s.route })) },
     { title: "Access",
+      links: [{ label: "Get my code", href: BOT_URL },
+      { label: "Enter a code", href: ENTER_URL },
+      { label: "Compare access", href: "#access" },
+      ],},
+      { title: "Support",
       links: [
-        { label: "Get my code", href: BOT_URL },
-        { label: "Enter a code", href: ENTER_URL },
-        { label: "Compare access", href: "#access" },
-        ],},
-    { title: "Support",
-      links: [
-        { label: "Questions", href: "#faq" },
-        { label: "Contact", href: "https://t.me/User18fx" },
-        { label: "Privacy", href: "/privacy" },
-        ],},],} as const;
+      { label: "Questions", href: "#faq" },
+      { label: "Contact", href: "https://t.me/User18fx" },
+      { label: "Privacy", href: "/privacy" },
+      ],},],} as const;
