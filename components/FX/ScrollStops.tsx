@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { STOP_T, stepIndex, type StepKey } from "./tourTimeline";
 import { travelToPosition } from "./Motion";
 import "./ScrollStops.css";
@@ -19,6 +19,8 @@ const STOPS = [
 export default function ScrollStops() {
   const [active, setActive] = useState(0);
   const [compact, setCompact] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let frame = 0;
@@ -65,7 +67,24 @@ export default function ScrollStops() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    const closeOnOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !navRef.current?.contains(event.target)) setMobileOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("pointerdown", closeOnOutside);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("pointerdown", closeOnOutside);
+    };
+  }, [mobileOpen]);
+
   const navigate = (index: number) => {
+    setMobileOpen(false);
     const stop = STOPS[index];
     setActive(index);
     if ("key" in stop) {
@@ -77,16 +96,27 @@ export default function ScrollStops() {
     travelToPosition(element.getBoundingClientRect().top + window.scrollY - 72, Math.min(3.4, 1.25 + Math.abs(index - active) * 0.4));
   };
 
+
   return (
-    <nav className={`fx-story-stops${compact ? " is-compact" : ""}`} aria-label="USER FX section navigation">
-      {STOPS.map((stop, index) => (
-        <button type="button" key={stop.label} className={`fx-story-stop ${active === index ? "is-active" : ""}`} onClick={() => navigate(index)} aria-label={`Go to ${stop.label}`} aria-current={active === index ? "step" : undefined} title={stop.label}>
-          <span className="fx-story-stop-label">
-            {stop.label}
-          </span>
-          <span className="fx-story-stop-dot" aria-hidden="true" />
-        </button>
-      ))}
+    <nav ref={navRef} className={`fx-story-stops${compact ? " is-compact" : ""}${mobileOpen ? " is-mobile-open" : ""}`} aria-label="USER FX section navigation">
+      <button type="button" className="fx-story-stops-mobile-toggle" aria-label={`Navigate sections, currently ${STOPS[active].label}, ${active + 1} of ${STOPS.length}`} aria-expanded={mobileOpen} aria-controls="fx-story-stops-options" onClick={() => setMobileOpen((current) => !current)}>
+        <span className="fx-story-stops-mobile-number">
+          {String(active + 1).padStart(2, "0")}<span aria-hidden="true">/08</span>
+        </span>
+        <span className="fx-story-stops-mobile-arrow" aria-hidden="true">
+          {mobileOpen ? "×" : "⌃"}
+        </span>
+      </button>
+      <div id="fx-story-stops-options" className="fx-story-stops-list">
+        {STOPS.map((stop, index) => (
+          <button type="button" key={stop.label} className={`fx-story-stop ${active === index ? "is-active" : ""}`} onClick={() => navigate(index)} aria-label={`Go to ${stop.label}`} aria-current={active === index ? "step" : undefined} title={stop.label}>
+            <span className="fx-story-stop-label">
+              {stop.label}
+            </span>
+            <span className="fx-story-stop-dot" aria-hidden="true" />
+          </button>
+        ))}
+      </div>
     </nav>
   );
 }
