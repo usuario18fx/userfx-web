@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chrome";
 import { SmoothScroll, setSmoothScroll } from "./Motion";
@@ -27,6 +27,130 @@ const LANDING_STYLES = String.raw`
 
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
+
+/* Telegram profile button · gold/orange star control from PrivateRoom, with user glyph only. */
+.fx-telegram-launch {
+  display: inline-grid;
+  position: relative;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(15deg,#ffc014,#ffa600,#ff7b00,#754200,#ffc014,#ffa600,#ff7b00,#ffa705) no-repeat;
+  background-size: 350% 350%;
+  background-position: left center;
+  box-shadow: 0 3px 1px 0 #ff7b00, inset 0 1px 0 rgba(255,255,255,.35),0 0 20px rgba(255,149,0,.17);
+  color: #10141a;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-position .35s ease,transform .25s ease,box-shadow .25s ease;
+}
+.fx-telegram-launch:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 1px #ff7b00,0 0 25px rgba(255,149,0,.36);
+}
+.fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 #ff7b00; }
+.fx-telegram-launch:focus-visible { outline: 2px solid #3fd8d0; outline-offset: 4px; }
+.fx-telegram-launch--hero { width: 56px; height: 56px; margin-top: 20px; font-size: 27px; }
+.fx-telegram-dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2,5,12,.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.fx-telegram-dialog {
+  position: relative;
+  width: min(100%,430px);
+  max-height: min(90dvh,650px);
+  overflow-y: auto;
+  padding: clamp(22px,5vw,36px);
+  border: 1px solid rgba(63,216,208,.38);
+  border-radius: 15px;
+  background: radial-gradient(circle at 15% 0%,rgba(63,216,208,.12),transparent 57%),linear-gradient(155deg,#131c29,#070a11 75%);
+  box-shadow: 0 25px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
+  color: #f1f6ff;
+  font-family: "Syne","Funnel Display",system-ui,sans-serif;
+}
+.fx-telegram-dialog-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  background: rgba(255,255,255,.04);
+  color: #f4f6f8;
+  font-size: 20px;
+  cursor: pointer;
+}
+.fx-telegram-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(63,216,208,.5);
+  border-radius: 12px;
+  background: rgba(63,216,208,.1);
+  font-size: 26px;
+}
+.fx-telegram-dialog-kicker { color: #3fd8d0; font-size: 10px; font-weight: 800; letter-spacing: .22em; }
+.fx-telegram-dialog h2 { margin: 10px 0 8px; font-size: clamp(22px,5vw,30px); font-weight: 750; line-height: 1.1; }
+.fx-telegram-dialog-desc { margin: 0 0 25px; color: #a7b7c7; font-size: 13px; line-height: 1.6; }
+.fx-telegram-dialog-form { display: flex; flex-direction: column; gap: 11px; }
+.fx-telegram-dialog-form label { color: #9db8c8; font-size: 10px; font-weight: 700; letter-spacing: .15em; }
+.fx-telegram-dialog-field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 52px;
+  padding: 0 15px;
+  border: 1px solid rgba(75,174,210,.55);
+  border-radius: 8px;
+  background: rgba(2,9,16,.8);
+}
+.fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
+.fx-telegram-dialog-field span { color: #3fd8d0; font-size: 20px; font-weight: 800; }
+.fx-telegram-dialog-field input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f6f7fa;
+  font: 600 16px "IBM Plex Mono",ui-monospace,monospace;
+}
+.fx-telegram-dialog-field input::placeholder { color: #66869c; }
+.fx-telegram-dialog-submit {
+  min-height: 48px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(125deg,#3fd8d0,#1596bb);
+  color: #051016;
+  font: 800 12px "Syne",system-ui,sans-serif;
+  letter-spacing: .1em;
+  cursor: pointer;
+}
+.fx-telegram-dialog-submit:disabled { opacity: .55; cursor: progress; }
+.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; line-height: 1.5; }
+.fx-telegram-dialog-bot { display: inline-block; margin-top: 20px; color: #87c4e8; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+
 /* Room videos: a single 2x2 surface, zero space between tiles.
    Individual tiles are revealed in order by the section's scroll timeline. */
 .fx-landing #identity.fx-room-video-section {
@@ -909,6 +1033,111 @@ function FooterBar() {
 
 const AccessGate = dynamic(() => import("@/components/PrivateRoom/PR-DirectGate"), { ssr: false });
 
+
+type TelegramDialogProps = {
+  onClose: () => void;
+  onVerified: (username: string) => void;
+};
+
+function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    try {
+      setUsername((localStorage.getItem("userfx_telegram_username") || "").replace(/^@+/, ""));
+    } catch {
+      // Storage may be disabled by the browser.
+    }
+    inputRef.current?.focus();
+    const dialog = dialogRef.current;
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>("button:not([disabled]),input:not([disabled]),a[href]") || []);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    dialog?.addEventListener("keydown", trapFocus);
+    return () => dialog?.removeEventListener("keydown", trapFocus);
+  }, []);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (loading) return;
+    const clean = username.trim().replace(/^@+/, "");
+    if (!/^[A-Za-z0-9_]{5,32}$/.test(clean)) {
+      setError("ENTER A VALID TELEGRAM USERNAME (5–32 CHARACTERS)");
+      return;
+    }
+    const normalized = "@" + clean;
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("/api/telegram-eligibility?username=" + encodeURIComponent(normalized), {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      const result: { eligible?: boolean; username?: string; error?: string } = await response.json().catch(() => ({}));
+      if (!response.ok || !result.eligible) {
+        throw new Error(result.error || "USERNAME IS NOT ACTIVE IN TELEGRAMFX");
+      }
+      const candidate = (result.username || normalized).replace(/^@+/, "");
+      const verified = "@" + (/^[A-Za-z0-9_]{5,32}$/.test(candidate) ? candidate : clean);
+      try {
+        localStorage.setItem("userfx_telegram_username", verified);
+      } catch {
+        // The access gate can still continue without local storage.
+      }
+      onVerified(verified);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "TELEGRAM VERIFICATION FAILED");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fx-telegram-dialog-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section ref={dialogRef} className="fx-telegram-dialog" role="dialog" aria-modal="true" aria-labelledby="fx-telegram-dialog-title">
+        <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
+          ×
+        </button>
+        <div className="fx-telegram-dialog-icon" aria-hidden="true">👤</div>
+        <span className="fx-telegram-dialog-kicker">USER FX · TELEGRAM IDENTITY</span>
+        <h2 id="fx-telegram-dialog-title">Your Telegram username</h2>
+        <p className="fx-telegram-dialog-desc">Enter your @username to check access and continue to the private room.</p>
+        <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
+          <label htmlFor="fx-telegram-dialog-username">TELEGRAM USERNAME</label>
+          <div className="fx-telegram-dialog-field">
+            <span aria-hidden="true">@</span>
+            <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+          </div>
+          {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
+          <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
+            {loading ? "CHECKING…" : "VERIFY USER"}
+          </button>
+        </form>
+        <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+          Need access? Open Telegram bot ↗
+        </a>
+      </section>
+    </div>
+  );
+}
+
 const SECTION_IDS = ["home", "protocol", "spaces", "access"] as const;
 
 function EnterAuthorizedRoom() {
@@ -922,6 +1151,8 @@ function EnterAuthorizedRoom() {
 export default function Landing() {
   const active = useActiveSection(SECTION_IDS);
   const [accessOpen, setAccessOpen] = useState(false);
+  const [telegramOpen, setTelegramOpen] = useState(false);
+  const openTelegram = () => setTelegramOpen(true);
 
   useEffect(() => {
     const onAccessClick = (event: MouseEvent) => {
@@ -941,7 +1172,7 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    if (!accessOpen) return;
+    if (!accessOpen && !telegramOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -949,7 +1180,10 @@ export default function Landing() {
     setSmoothScroll(false);
 
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAccessOpen(false);
+      if (event.key === "Escape") {
+        if (telegramOpen) setTelegramOpen(false);
+        else setAccessOpen(false);
+      }
     };
     document.addEventListener("keydown", onEscape);
 
@@ -959,7 +1193,7 @@ export default function Landing() {
       setSmoothScroll(true);
       previousFocus?.focus();
     };
-  }, [accessOpen]);
+  }, [accessOpen, telegramOpen]);
 
   return (
     <MenuProvider>
@@ -968,14 +1202,14 @@ export default function Landing() {
 </style>
       <SmoothScroll />
       <ScrollStops />
-      <StickyHeader active={active} />
+      <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
         <SiteFooter />
       </MenuOverlay>
       <div className="fx-landing">
         <main>
           <RoomIntro />
-          <ScrollStory />
+          <ScrollStory onOpenTelegram={openTelegram} />
           <SectionMethod />
           <SectionPricing />
           <SectionFaq />
@@ -983,6 +1217,9 @@ export default function Landing() {
         </main>
       </div>
       <FooterBar />
+      {telegramOpen && (
+        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
+      )}
       {accessOpen && (
         <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="Vault access">
           <AccessGate forceOpen onRequestClose={() => setAccessOpen(false)}>
