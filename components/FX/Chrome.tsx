@@ -105,7 +105,7 @@ export function useActiveSection(ids: readonly string[]) {
   return active;
 }
 /* Altura del header fijo: h-16 = 64px. Debe coincidir con --fx-nav-h en ScrollStory.css */
-export function StickyHeader({ active }: { active: string }) {
+export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpenTelegram: () => void }) {
   const { open } = useMenu(),
     { scrollY } = useScroll();
   const [shown, setShown] = useState(false);
@@ -132,9 +132,9 @@ export function StickyHeader({ active }: { active: string }) {
               ))}
             </nav>
             <div className="flex items-center gap-6">
-              <a href={ENTER_URL} className="hidden min-h-[48px] items-center justify-center gap-2 rounded-[5px] border border-[#90b9de] bg-[linear-gradient(135deg,#5e6a7c_0%,#253d64_48%,#0c66b2_100%)] px-7 py-2 font-display text-[15px] font-bold tracking-[.02em] text-[#f1f6ff] shadow-[inset_0_1px_0_rgba(255,255,255,.25),0_0_20px_rgba(36,143,241,.23)] transition-all duration-300 hover:brightness-125 sm:inline-flex">
-                <span className="text-[#edf2f8]">Enter the</span><span className="text-[#69c5ff]">Vault</span>
-              </a>
+              <button type="button" className="fx-telegram-launch" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
+                <span role="img" aria-hidden="true">👤</span>
+              </button>
               <MenuButton width="22.76px" gap="4.56px" />
             </div>
           </div>
