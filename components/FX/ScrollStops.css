@@ -1,4 +1,4 @@
-/* USER FX — cinematic dot navigation */
+/* USER FX — one section navigation system: desktop rail, compact mobile selector. */
 .fx-story-stops {
   position: fixed;
   top: 50%;
@@ -8,9 +8,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
   width: 44px;
   padding: 8px 0;
+}
+.fx-story-stops-mobile-toggle {
+  display: none;
+}
+.fx-story-stops-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
 .fx-story-stop {
   position: relative;
@@ -73,19 +82,13 @@
   outline: 2px solid #3fd8d0;
   outline-offset: 2px;
 }
-
-/* Panels and content cards must never be covered by navigation labels. */
-.fx-story-stops.is-compact .fx-story-stop-label,
-.fx-story-stops.is-compact .fx-story-stop.is-active .fx-story-stop-label,
-.fx-story-stops.is-compact .fx-story-stop:hover .fx-story-stop-label,
-.fx-story-stops.is-compact .fx-story-stop:focus-visible .fx-story-stop-label {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
+/* Hide section labels over important interactions on desktop. */
+.fx-story-stops.is-compact .fx-story-stop-label {
+  display: none;
 }
 .fx-story-stops.is-compact {
-  width: 34px;
   right: clamp(8px, 1.2vw, 18px);
+  width: 34px;
 }
 .fx-story-stops.is-compact .fx-story-stop {
   width: 32px;
@@ -93,11 +96,117 @@
   flex-basis: 32px;
 }
 
+/* Mobile: no eight-dot rail over the room or CTA buttons. */
 @media (max-width: 768px) {
-  .fx-story-stops { right: 5px; gap: 3px; width: 38px; }
-  .fx-story-stop { width: 34px; height: 34px; flex-basis: 34px; }
-  .fx-story-stop-label { display: none; }
+  .fx-story-stops,
+  .fx-story-stops.is-compact {
+    top: auto;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    right: 12px;
+    left: auto;
+    transform: none;
+    z-index: 65;
+    width: auto;
+    padding: 0;
+  }
+  .fx-story-stops-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 91px;
+    min-height: 40px;
+    padding: 6px 12px;
+    border: 1px solid rgba(57, 211, 208, .55);
+    border-radius: 999px;
+    background: rgba(4, 12, 20, .94);
+    color: #86f1ed;
+    font: 700 12px/1 "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 7px 22px rgba(0, 0, 0, .4);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+  }
+  .fx-story-stops-mobile-toggle:focus-visible {
+    outline: 2px solid #3fd8d0;
+    outline-offset: 3px;
+  }
+  .fx-story-stops-mobile-number > span {
+    color: rgba(166, 194, 202, .65);
+    font-weight: 500;
+  }
+  .fx-story-stops-mobile-arrow {
+    font-family: system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1;
+  }
+  .fx-story-stops-list {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    align-items: stretch;
+    gap: 3px;
+    width: min(238px, calc(100vw - 24px));
+    max-height: min(410px, calc(100dvh - 100px));
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid rgba(57, 211, 208, .3);
+    border-radius: 14px;
+    background: rgba(5, 13, 22, .97);
+    box-shadow: 0 15px 42px rgba(0, 0, 0, .65);
+    backdrop-filter: blur(18px);
+  }
+  .fx-story-stops.is-mobile-open .fx-story-stops-list {
+    display: flex;
+  }
+  .fx-story-stop,
+  .fx-story-stops.is-compact .fx-story-stop {
+    display: flex;
+    justify-content: flex-start;
+    flex: 0 0 40px;
+    gap: 12px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    text-align: left;
+  }
+  .fx-story-stop.is-active {
+    background: rgba(57, 211, 208, .12);
+  }
+  .fx-story-stop-label,
+  .fx-story-stops.is-compact .fx-story-stop-label {
+    position: static;
+    display: block !important;
+    order: 2;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #d9f7fa;
+    font-size: 11px;
+    white-space: normal;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: none;
+  }
+  .fx-story-stop-dot {
+    order: 1;
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+  }
+  .fx-story-stop.is-active .fx-story-stop-dot {
+    flex-basis: 9px;
+    width: 9px;
+    height: 9px;
+    box-shadow: 0 0 0 3px rgba(57, 211, 208, .14);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fx-story-stop-dot, .fx-story-stop-label { transition: none; }
+  .fx-story-stop-dot,
+  .fx-story-stop-label {
+    transition: none;
+  }
 }
