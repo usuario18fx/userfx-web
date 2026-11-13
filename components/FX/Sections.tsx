@@ -23,6 +23,23 @@ import { RollLabel } from "./Hero";
 import { Drift, Magnetic, Reveal, RevealGroup, SplitText, Spotlight } from "./Motion";
 import ProtocolVault, { type VaultStep } from "./ProtocolVault";
 
+const PLAN_HOVER_VIDEOS = {
+  basic: "/assets/my-room/room1.mp4",
+  pro: "/assets/FX-Y24V01.mp4",
+  vip: "/assets/my-room/room3.mp4",
+} as const;
+
+function setPlanPreview(card: HTMLElement, playing: boolean) {
+  const video = card.querySelector<HTMLVideoElement>(".fx-plan-hover-video");
+  if (!video) return;
+  if (playing && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    void video.play().catch(() => {});
+  } else {
+    video.pause();
+    if (video.readyState > 0) video.currentTime = 0;
+  }
+}
+
 function Shell({ id, children }: { id: string; children: ReactNode }) {
   return (
     <section
@@ -281,6 +298,14 @@ export function SectionPricing() {
                 key={plan.id}
                 variants={wipe(40)}
                 whileHover={{ y: -4 }}
+                onMouseEnter={(event) => setPlanPreview(event.currentTarget, true)}
+                onMouseLeave={(event) => setPlanPreview(event.currentTarget, false)}
+                onFocusCapture={(event) => setPlanPreview(event.currentTarget, true)}
+                onBlurCapture={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setPlanPreview(event.currentTarget, false);
+                  }
+                }}
                 transition={{ duration: 0.25, ease: EASE }}
                 className={`fx-plan relative flex min-w-0 flex-col ${plan.featured ? "fx-plan-featured text-sky" : "glass"}`}
                 style={{
@@ -294,6 +319,8 @@ export function SectionPricing() {
                   gap: "clamp(6px, 0.9vw, 11px)",
                   borderRadius: "clamp(10px, 1.2vw, 16px)",
                 }}>
+                <video src={PLAN_HOVER_VIDEOS[plan.id]} className="fx-plan-hover-video" muted loop playsInline preload="metadata" aria-hidden="true" />
+                <span className="fx-plan-video-shade" aria-hidden="true" />
                 <div className="flex min-w-0 flex-col gap-2">
                   <img
                     src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip}
@@ -371,7 +398,7 @@ export function SectionPricing() {
                     href={`https://t.me/User18Fx_bot?start=${plan.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className={`group flex min-w-0 items-center justify-between gap-1 rounded-full font-semibold transition-opacity hover:opacity-85 ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
+                    className={`fx-plan-cta group flex min-w-0 items-center justify-between gap-1 rounded-full font-semibold transition-opacity ${plan.featured ? "bg-sky text-gold" : "bg-gold text-sky"}`}
                     style={{
                       minHeight: 32,
                       padding: "8px clamp(6px, 1vw, 12px)",
