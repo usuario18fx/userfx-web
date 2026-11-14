@@ -37,7 +37,7 @@ function getPlanVideo(id: string) {
 
 function setPlanPreview(card: HTMLElement, playing: boolean) {
   const video = card.querySelector<HTMLVideoElement>(".fx-plan-hover-video");
-  if (!video) return;
+  if (!video || video.autoplay) return;
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -264,7 +264,7 @@ function PricingCard({ plan, view }: { plan: any, view: "stars" | "window" }) {
       {/* Fondo de video */}
       <div className="fx-plan-bg">
         {videoSrc && (
-          <video src={videoSrc} className="fx-plan-hover-video" muted loop playsInline preload="metadata" aria-hidden="true" />
+          <video src={videoSrc} className="fx-plan-hover-video" muted loop playsInline autoPlay={plan.id === "pro"} preload={plan.id === "pro" ? "auto" : "metadata"} aria-hidden="true" />
         )}
         <div className="fx-plan-video-shade" />
       </div>
