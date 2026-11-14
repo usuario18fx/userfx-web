@@ -17,7 +17,7 @@ export default function FxSceneLoader({ onComplete }: Props) {
 
   useEffect(() => {
     let frame = 0;
-    let finishTimer: ReturnType<typeof setTimeout> | null = null;
+    let finishTimer: number | null = null;
     const start = performance.now();
     const animate = (now: number) => {
       const elapsed = Math.min(1, (now - start) / INTRO_DURATION_MS);
