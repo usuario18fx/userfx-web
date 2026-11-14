@@ -428,7 +428,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
   onLoadProgressRef.current = onLoadProgress;
   const onSceneReadyRef = useRef(onSceneReady);
   onSceneReadyRef.current = onSceneReady;
-  const coverLogoRef = useRef<THREE.Group | null>(null);
   const stepReported = useRef("");
 
   const bank = useRef(0);
@@ -475,17 +474,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
       coverRef.current.style.visibility = fadeContainer <= 0 ? "hidden" : "visible";
       coverRef.current.style.pointerEvents = fadeContainer <= 0 ? "none" : "auto";
     }
-    const coverLogo = coverLogoRef.current;
-    if (coverLogo) {
-      const fade = 1 - clamp((progress - 0.105) / 0.03);
-      coverLogo.visible = fade > 0.002;
-      coverLogo.traverse((node) => {
-        const mesh = node as THREE.Mesh;
-        if (!mesh.isMesh) return;
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        for (const material of materials) material.opacity = fade;
-      });
-    }
     wakeRender.current?.();
     }, [progress]);
 
@@ -502,7 +490,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#14121c");
     const camera = new THREE.PerspectiveCamera(frames[0].fov, 1, 0.08, 70);
-    scene.add(camera);
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: "high-performance",
@@ -1118,89 +1105,16 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
     scene.add(amber);
     scene.add(new THREE.AmbientLight("#4c7279", 1.4));
 
-    // Cover logo: camera-attached 3D, behind the HTML headline and last to fade.
+    // The cover remains typography-only. Complete loading after the first rendered frame.
     let firstFrameRendered = false;
-    let logoSettled = false;
     let sceneReadySent = false;
     const reportSceneReady = () => {
-      if (!firstFrameRendered || !logoSettled || sceneReadySent || abort.signal.aborted) return;
+      if (!firstFrameRendered || sceneReadySent || abort.signal.aborted) return;
       sceneReadySent = true;
       onLoadProgressRef.current?.(100);
       onSceneReadyRef.current?.();
     };
-    onLoadProgressRef.current?.(18);
-    new GLTFLoader().load(
-      "/assets/logos.glb/userFX.glb",
-      (gltf) => {
-        if (abort.signal.aborted) return;
-        const root = gltf.scene;
-        const rawBounds = new THREE.Box3().setFromObject(root);
-        if (!rawBounds.isEmpty()) {
-          const rawSize = rawBounds.getSize(new THREE.Vector3());
-          const oriented = new THREE.Group();
-          oriented.add(root);
-          if (rawSize.y < rawSize.z * 0.55 && rawSize.y < rawSize.x * 0.55) {
-            oriented.rotation.x = -Math.PI / 2;
-          } else if (rawSize.x < rawSize.z * 0.55 && rawSize.x < rawSize.y * 0.55) {
-            oriented.rotation.y = Math.PI / 2;
-          }
-          oriented.updateMatrixWorld(true);
-          const bounds = new THREE.Box3().setFromObject(oriented);
-          const size = bounds.getSize(new THREE.Vector3());
-          const center = bounds.getCenter(new THREE.Vector3());
-          const visibleWidth = 2 * 5.8 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
-          const fit = Math.min(
-            Math.min(3.8, visibleWidth * 0.8) / Math.max(size.x, 0.001),
-            1.65 / Math.max(size.y, 0.001),
-            1.1 / Math.max(size.z, 0.001),
-          );
-          oriented.position.sub(center);
-          const logo = new THREE.Group();
-          logo.position.set(0, 0.05, -5.8);
-          const scaled = new THREE.Group();
-          scaled.scale.setScalar(fit);
-          scaled.add(oriented);
-          logo.add(scaled);
-          const opacity = 1 - clamp((target.current - 0.105) / 0.03);
-          logo.visible = opacity > 0.002;
-          logo.traverse((node) => {
-            const mesh = node as THREE.Mesh;
-            if (!mesh.isMesh) return;
-            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            for (const material of materials) {
-              material.transparent = true;
-              material.depthWrite = false;
-              material.opacity = opacity;
-              material.needsUpdate = true;
-              if (material instanceof THREE.MeshStandardMaterial) {
-                material.emissive.set("#316de6");
-                material.emissiveIntensity = 0.25;
-              }
-            }
-          });
-          camera.add(logo);
-          coverLogoRef.current = logo;
-          wakeRender.current?.();
-        }
-        logoSettled = true;
-        reportSceneReady();
-      },
-      (event) => {
-        if (!abort.signal.aborted && event.total > 0) {
-          onLoadProgressRef.current?.(Math.min(95, 18 + Math.round((event.loaded / event.total) * 77)));
-        }
-      },
-      () => {
-        logoSettled = true;
-        reportSceneReady();
-      },
-    );
-    // Never hold the entry screen indefinitely if optional 3D branding fails.
-    const introLoadTimeout = window.setTimeout(() => {
-      logoSettled = true;
-      reportSceneReady();
-    }, 12000);
-
+    onLoadProgressRef.current?.(60);
 
     const fabricTexture = (base: string, accent: string, frequency = 140) => {
       const tex = canvas((ctx) => {
@@ -2354,8 +2268,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
     wake();
     return () => {
       abort.abort();
-      window.clearTimeout(introLoadTimeout);
-      coverLogoRef.current = null;
       wakeRender.current = null;
       if (raf) cancelAnimationFrame(raf);
       mql?.removeEventListener?.("change", onReducedMotionChange);
