@@ -443,7 +443,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
   const coverHintRef = useRef<HTMLParagraphElement>(null);
 
   const coverWelcomeRef = useRef<HTMLSpanElement>(null);
-  const coverUserRef = useRef<HTMLParagraphElement>(null);
   const coverPrivateRef = useRef<HTMLSpanElement>(null);
 
      useEffect(() => {
@@ -457,11 +456,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
     if (coverHintRef.current) {
       const fade = 1 - clamp((progress - 0.03) / 0.015);
       coverHintRef.current.style.opacity = fade.toFixed(3);
-    }
-    // 3. "USER FX" (Desaparece del 5% al 6.5% del scroll)
-    if (coverUserRef.current) {
-      const fade = 1 - clamp((progress - 0.05) / 0.015);
-      coverUserRef.current.style.opacity = fade.toFixed(3);
     }
     // 4. "PRIVATE WORLD" (Desaparece del 7% al 8.5% del scroll)
     if (coverPrivateRef.current) {
@@ -2308,9 +2302,6 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
       <div ref={barBottomRef} className="ct-bar ct-bar-bottom" aria-hidden="true" />      
 {/* Portada */}
       <div ref={coverRef} className="ct-cover">
-      <p ref={coverUserRef} className="ct-cover-eyebrow">
-       USER FX
-      </p>
       <div className="ct-cover-title">
       <span ref={coverWelcomeRef} className="ct-chrome">
        WELCOME
