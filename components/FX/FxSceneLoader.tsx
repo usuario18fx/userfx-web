@@ -64,7 +64,7 @@ export default function FxSceneLoader({ onComplete }: Props) {
           </filter>
         </defs>
       </svg>
-      <div className="fx-scene-loader-mark" style={{ "--fx-scene-glow": glow } as CSSProperties}>
+      <div className={`fx-scene-loader-mark${modelStatus === "fallback" ? " is-fallback" : ""}`} style={{ "--fx-scene-glow": glow } as CSSProperties}>
         <FxIntroModel percent={percent} onReady={() => setModelStatus((status) => status === "loading" ? "ready" : status)} onError={() => setModelStatus((status) => status === "loading" ? "fallback" : status)} />
         {modelStatus === "fallback" && (
           <div className="fx-scene-loader-fallback">
