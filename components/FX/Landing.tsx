@@ -8,6 +8,7 @@ import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import RoomIntro from "./RoomIntro";
+import FxSceneLoader from "./FxSceneLoader";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import { ENTER_URL } from "@/lib/content";
@@ -1125,7 +1126,16 @@ export default function Landing() {
   const active = useActiveSection(SECTION_IDS);
   const [accessOpen, setAccessOpen] = useState(false);
   const [telegramOpen, setTelegramOpen] = useState(false);
+  const [introComplete, setIntroComplete] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const [sceneTimedOut, setSceneTimedOut] = useState(false);
+  const showIntro = !introComplete || (!sceneReady && !sceneTimedOut);
   const openTelegram = () => setTelegramOpen(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSceneTimedOut(true), 10000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const onAccessClick = (event: MouseEvent) => {
@@ -1173,6 +1183,9 @@ export default function Landing() {
       <style>
 {LANDING_STYLES}
 </style>
+      {showIntro && (
+        <FxSceneLoader onComplete={() => setIntroComplete(true)} />
+      )}
       <SmoothScroll />
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
@@ -1181,7 +1194,7 @@ export default function Landing() {
       </MenuOverlay>
       <div className="fx-landing">
         <main>
-          <RoomIntro />
+          <RoomIntro onSceneReady={() => setSceneReady(true)} />
           <ScrollStory onOpenTelegram={openTelegram} />
           <SectionMethod />
           <SectionPricing />
