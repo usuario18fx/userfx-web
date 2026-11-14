@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Reflector } from "three/examples/jsm/objects/Reflector.js";
+import { FX_MODELS } from "@/lib/assets";
 import {
   ENTER_AT, stepAt, stepIndex, STEPS, STOP_T,
   type StepKey, type StepPhase,
@@ -833,7 +834,7 @@ export default function CinematicTour({ progress, onModeChange, onStepChange, on
           pic(side * 1.81, LOGO_Y, z, -Math.PI / 2, panelMat, PANEL_W, PANEL_H);
 
           wallLogoLoader.load(
-            "/logoFX.glb",
+            FX_MODELS.roomLogo,
             (gltf) => {
               if (abort.signal.aborted) return;
               const root = gltf.scene;
