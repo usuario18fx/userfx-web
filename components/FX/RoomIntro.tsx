@@ -6,12 +6,11 @@ import { useMotionValueEvent, useScroll } from "framer-motion";
 import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type BlockId, type StepKey,
 } from "./tourTimeline";
 import { travelToPosition } from "./Motion";
-import "./RoomIntro.css"; // <--- IMPORTANTE: Sin esto, el texto se ve sin estilo
+import "./RoomIntro.css";
+import FxSceneLoader from "./FxSceneLoader"; // <--- IMPORTANTE: Sin esto, el texto se ve sin estilo
 const CinematicTour = dynamic(() => import("./CinematicTour"), {
   ssr: false,
-  loading: () => <div className="fx-room-intro-loading">
-    LOADING USER FX ROOM…
-  </div>,
+  loading: () => null,
 });
 type Action = { title: string; sub: string; arrow: string; run: () => void };
 const BOT_URL = "https://t.me/User18Fx_bot";
@@ -103,6 +102,8 @@ const LockIcon = () => (
 export default function RoomIntro() {
   const section = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(0);
+  const [sceneLoadProgress, setSceneLoadProgress] = useState(0);
+  const [sceneReady, setSceneReady] = useState(false);
   const lastProgress = useRef(0);
   const [unlocked, setUnlocked] = useState(0);
   const unlockedRef = useRef(0);
@@ -365,8 +366,9 @@ export default function RoomIntro() {
         return (
                <section className={`fx-room-intro${locked ? " is-locked" : ""}`} ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour"  data-step={step.key}>
                <div className="fx-room-intro-sticky">
-               <CinematicTour progress={progress} />
+               <CinematicTour progress={progress} onLoadProgress={setSceneLoadProgress} onSceneReady={() => setSceneReady(true)} />
                <div className="fx-room-intro-shade" aria-hidden="true" />
+                {!sceneReady && <FxSceneLoader progress={sceneLoadProgress} />}
                 {showRoomUI && block && (
                <div className="fx-room-ui">
                <header className="fx-header">
@@ -388,10 +390,10 @@ export default function RoomIntro() {
               </div>
               <div className="fx-nav-right">
               <button className="nav-icon" onClick={openBot}>
-               Ayuda
+               HELP
               </button>
               <button className="nav-icon" onClick={toggleFullscreen}>
-               Pantalla completa
+               FULLSCREEN
               </button>
               </div>
               </header>
@@ -460,7 +462,7 @@ export default function RoomIntro() {
               </span>
               </div>
               <button className="fx-btn-exit" onClick={() => scrollToProgress(0)}>
-               SALIR
+               EXIT
               </button>
               </div>
                )}
