@@ -79,6 +79,15 @@
   opacity: 1;
 }
 
+/* PRO: always show its muted looping video, even without hover. */
+#access .fx-plan-card.is-featured .fx-plan-bg .fx-plan-hover-video {
+  opacity: 0.5;
+  transform: scale(1);
+}
+#access .fx-plan-card.is-featured .fx-plan-bg .fx-plan-video-shade {
+  opacity: 1;
+}
+
 /* --- CARD CONTENT --- */
 #access .fx-plan-content {
   position: relative;
