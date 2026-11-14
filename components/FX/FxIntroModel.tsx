@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { FX_MODELS } from "@/lib/assets";
 
 type Props = {
   percent: number;
@@ -78,7 +79,7 @@ export default function FxIntroModel({ percent, onReady, onError }: Props) {
 
     const loader = new GLTFLoader();
     loader.load(
-      "/userfx.glb",
+      FX_MODELS.logo,
       (gltf) => {
         if (cancelled) {
           gltf.scene.traverse((object) => {
