@@ -273,7 +273,11 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: url("/icon7.png") center / cover no-repeat;
+  background-image: url("/icon7.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border-radius: inherit;
   filter: grayscale(1) sepia(0.34) hue-rotate(165deg) saturate(0.68) brightness(0.56) contrast(1.12);
   opacity: 0.92;
   transition: filter 0.25s ease;
