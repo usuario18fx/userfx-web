@@ -319,6 +319,77 @@
   border-color: rgba(145, 220, 255, 0.28);
   box-shadow: 0 4px 18px rgba(42, 120, 255, 0.14);
 }
+/* LED marquee — the existing ornamental /icon7.png surface stays unchanged. */
+#access .fx-plan-led-viewport {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+
+#access .fx-plan-led-track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  width: max-content;
+  animation: fx-plan-led-marquee 11s linear infinite;
+  will-change: transform;
+}
+
+#access .fx-plan-led-text {
+  display: block;
+  flex: none;
+  font-family: "Orbitron", "Krona One", sans-serif;
+  font-size: clamp(14px, 1.35vw, 18px);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  color: #0f58c3;
+  background-image: radial-gradient(circle, #1766dd 46%, transparent 55%);
+  background-size: 3.5px 3.5px;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 3px rgba(12, 70, 180, 0.48));
+}
+
+#access .fx-plan-led-arrow {
+  flex: none;
+  margin-left: 12px;
+  color: #c3e8ff;
+}
+
+#access .fx-plan-cta:hover .fx-plan-led-track,
+#access .fx-plan-cta:focus-visible .fx-plan-led-track {
+  animation-play-state: paused;
+}
+
+@keyframes fx-plan-led-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 14px));
+  }
+}
+
+@media (max-width: 600px) {
+  #access .fx-plan-led-text {
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #access .fx-plan-led-track {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* --- ACCESSIBILITY (FOCUS) --- */
 #access .fx-plan-cta:focus-visible,
 #faq .fx-faq button:focus-visible {
