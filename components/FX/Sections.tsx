@@ -335,16 +335,18 @@ BENEFITS
           </details>
 
           <Magnetic strength={0.1}>
-            <a
-              href={`https://t.me/User18Fx_bot?start=${plan.id}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="fx-plan-cta group"
-            >
-              <RollLabel>
-{plan.cta}
-</RollLabel>
-              <Glyph name="caret" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
+            <a href={`https://t.me/User18Fx_bot?start=${plan.id}`} target="_blank" rel="noreferrer noopener" className="fx-plan-cta group" aria-label={`Get ${plan.name} code via Telegram`}>
+              <span className="fx-plan-led-viewport" aria-hidden="true">
+                <span className="fx-plan-led-track">
+                  <span className="fx-plan-led-text">
+                    {`GET ${plan.id.toUpperCase()}-CODE`}
+                  </span>
+                  <span className="fx-plan-led-text">
+                    {`GET ${plan.id.toUpperCase()}-CODE`}
+                  </span>
+                </span>
+              </span>
+              <Glyph name="caret" className="fx-plan-led-arrow h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
             </a>
           </Magnetic>
         </div>
