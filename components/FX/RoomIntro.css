@@ -539,66 +539,131 @@
   .fx-piece--item:hover .menu-arrow,
   .fx-piece--item:focus-visible .menu-arrow { animation: none; opacity: 1; }
 }
-/* USER FX — branded scene-loading overlay */
+/* USER FX — single full-screen intro. Progress is independent of asset loading. */
 .fx-scene-loader {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 100500;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 17px;
-  background: radial-gradient(ellipse at 50% 38%, #0d2035 0%, #080b13 58%, #05070c 100%);
-  color: #dce9ff;
-  pointer-events: auto;
+  align-items: center;
+  gap: clamp(16px, 3vh, 24px);
+  padding: 32px 20px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 43%, #102638 0%, #070d16 53%, #03060b 100%);
+  color: #e7f8ff;
   text-align: center;
+  pointer-events: auto;
+  touch-action: none;
 }
-.fx-scene-loader-ring {
-  width: clamp(118px, 25vw, 172px);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  padding: 3px;
-  border-radius: 50%;
-  box-shadow: 0 0 24px rgba(49, 109, 230, .16);
-  transition: background .16s linear;
+
+.fx-scene-loader-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
-.fx-scene-loader-core {
+
+.fx-scene-loader-mark {
   position: relative;
-  display: grid;
-  place-items: center;
+  width: min(79vw, 620px);
+  height: clamp(155px, 29vw, 300px);
+  isolation: isolate;
+}
+
+.fx-scene-loader-mark::before {
+  content: "";
+  position: absolute;
+  inset: 15% 6%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(46, 172, 205, .21), transparent 68%);
+  opacity: var(--fx-scene-glow, 0);
+  filter: blur(15px);
+  pointer-events: none;
+}
+
+.fx-scene-loader-mark-edge,
+.fx-scene-loader-mark-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  background: #090e18;
-  font-family: "Orbitron", "Arial Black", sans-serif;
-  font-size: clamp(44px, 9vw, 64px);
-  font-weight: 900;
-  letter-spacing: -.07em;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
 }
-.fx-scene-loader-ghost {
-  color: rgba(96, 138, 201, .22);
+
+.fx-scene-loader-mark-edge {
+  filter: url("#fx-scene-loader-edge-filter") drop-shadow(0 0 5px rgba(63, 216, 208, .30));
 }
-.fx-scene-loader-fill {
+
+.fx-scene-loader-mark-fill {
+  z-index: 1;
+  opacity: 1;
+  filter: saturate(.88) drop-shadow(0 0 calc(10px * var(--fx-scene-glow, 0)) rgba(77, 205, 225, .3));
+}
+
+.fx-scene-loader-crown {
   position: absolute;
-  color: #316de6;
-  text-shadow: 0 0 22px rgba(49, 109, 230, .45);
-  transition: clip-path .16s linear;
+  z-index: 2;
+  top: -6%;
+  right: 5%;
+  width: clamp(38px, 8vw, 82px);
+  height: clamp(38px, 8vw, 82px);
+  object-fit: contain;
+  transform-origin: center;
+  filter: grayscale(1) sepia(1) saturate(2) hue-rotate(129deg) drop-shadow(0 0 3px rgba(52, 203, 212, .26));
+  user-select: none;
+  pointer-events: none;
 }
+
 .fx-scene-loader-label {
-  font-size: clamp(10px, 2.3vw, 13px);
-  font-weight: 700;
-  letter-spacing: .25em;
-  color: rgba(223, 234, 255, .75);
+  color: rgba(213, 238, 247, .68);
+  font-family: "Orbitron", "IBM Plex Mono", ui-monospace, monospace;
+  font-size: clamp(9px, 1.8vw, 12px);
+  font-weight: 600;
+  letter-spacing: .21em;
 }
+
+.fx-scene-loader-progress {
+  width: min(72vw, 380px);
+  height: 3px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(63, 216, 208, .16);
+}
+
+.fx-scene-loader-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #0c557f, #0076a0, #3fd8d0);
+  border-radius: inherit;
+}
+
 .fx-scene-loader-percent {
-  font-size: 12px;
+  color: #83dce3;
+  font: 600 13px/1 "IBM Plex Mono", ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: .14em;
-  color: #79a8ff;
 }
+
+@media (max-width: 600px) {
+  .fx-scene-loader-mark {
+    width: min(92vw, 500px);
+    height: clamp(135px, 45vw, 220px);
+  }
+  .fx-scene-loader-crown {
+    right: 3%;
+    top: -8%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .fx-scene-loader-ring,
-  .fx-scene-loader-fill { transition: none; }
+  .fx-scene-loader-crown {
+    transform: none !important;
+  }
 }
