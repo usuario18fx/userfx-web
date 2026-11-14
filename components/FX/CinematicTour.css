@@ -182,3 +182,66 @@
   transparent 55%);
 }
 
+
+
+/* Cover: device-aware gesture, with half-opacity English instructions */
+.cinematic-tour .ct-cover-hint {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+.cinematic-tour .ct-gesture-copy {
+  display: block;
+  opacity: .5;
+  color: #c1dff2;
+}
+.cinematic-tour .ct-gesture-desktop,
+.cinematic-tour .ct-gesture-mobile {
+  width: 26px;
+  height: 34px;
+  color: #6eabff;
+  opacity: .8;
+}
+.cinematic-tour .ct-gesture-desktop svg,
+.cinematic-tour .ct-gesture-mobile svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cinematic-tour .ct-gesture-mobile,
+.cinematic-tour .ct-mobile-copy {
+  display: none;
+}
+.cinematic-tour .ct-gesture-wheel {
+  animation: ct-scroll-wheel 1.7s ease-in-out infinite;
+}
+@keyframes ct-scroll-wheel {
+  0%, 100% { transform: translateY(0); opacity: .2; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@keyframes ct-finger-swipe {
+  0% { transform: translateY(10px); opacity: .2; }
+  35%, 70% { opacity: 1; }
+  100% { transform: translateY(-9px); opacity: .1; }
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .cinematic-tour .ct-gesture-desktop,
+  .cinematic-tour .ct-desktop-copy {
+    display: none;
+  }
+  .cinematic-tour .ct-gesture-mobile,
+  .cinematic-tour .ct-mobile-copy {
+    display: block;
+  }
+  .cinematic-tour .ct-gesture-mobile svg {
+    animation: ct-finger-swipe 2s ease-in-out infinite;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-tour .ct-gesture-wheel,
+  .cinematic-tour .ct-gesture-mobile svg {
+    animation: none !important;
+  }
+}
