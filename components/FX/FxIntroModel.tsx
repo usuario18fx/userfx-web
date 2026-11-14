@@ -116,10 +116,10 @@ export default function FxIntroModel({ percent, onReady, onError }: Props) {
               previousCompile.call(material, shader, rendererRef);
               shader.uniforms.fxReveal = reveal;
               shader.uniforms.fxViewport = { value: viewport };
-              shader.fragmentShader = "uniform float fxReveal;\\nuniform vec2 fxViewport;\\n" + shader.fragmentShader;
+              shader.fragmentShader = "uniform float fxReveal;\nuniform vec2 fxViewport;\n" + shader.fragmentShader;
               shader.fragmentShader = shader.fragmentShader.replace(
                 "void main() {",
-                "void main() {\\nvec2 fxUv = gl_FragCoord.xy / fxViewport - vec2(0.5);\\nif (length(fxUv) > fxReveal * 0.73) discard;"
+                "void main() {\nvec2 fxUv = gl_FragCoord.xy / fxViewport - vec2(0.5);\nif (length(fxUv) > fxReveal * 0.73) discard;"
               );
             };
             material.needsUpdate = true;
