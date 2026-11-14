@@ -7,7 +7,6 @@ import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type Bl
 } from "./tourTimeline";
 import { travelToPosition } from "./Motion";
 import "./RoomIntro.css";
-import FxSceneLoader from "./FxSceneLoader"; // <--- IMPORTANTE: Sin esto, el texto se ve sin estilo
 const CinematicTour = dynamic(() => import("./CinematicTour"), {
   ssr: false,
   loading: () => null,
@@ -99,11 +98,9 @@ const LockIcon = () => (
   <path fill="currentColor" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V6H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-.5V4.5A3.5 3.5 0 0 0 8 1Zm-2 3.5a2 2 0 1 1 4 0V6H6V4.5Z" />
   </svg>
 );
-export default function RoomIntro() {
+export default function RoomIntro({ onSceneReady }: { onSceneReady?: () => void }) {
   const section = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(0);
-  const [sceneLoadProgress, setSceneLoadProgress] = useState(0);
-  const [sceneReady, setSceneReady] = useState(false);
   const lastProgress = useRef(0);
   const [unlocked, setUnlocked] = useState(0);
   const unlockedRef = useRef(0);
@@ -366,9 +363,8 @@ export default function RoomIntro() {
         return (
                <section className={`fx-room-intro${locked ? " is-locked" : ""}`} ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour"  data-step={step.key}>
                <div className="fx-room-intro-sticky">
-               <CinematicTour progress={progress} onLoadProgress={setSceneLoadProgress} onSceneReady={() => setSceneReady(true)} />
+               <CinematicTour progress={progress} onSceneReady={onSceneReady} />
                <div className="fx-room-intro-shade" aria-hidden="true" />
-                {!sceneReady && <FxSceneLoader progress={sceneLoadProgress} />}
                 {showRoomUI && block && (
                <div className="fx-room-ui">
                <header className="fx-header">
