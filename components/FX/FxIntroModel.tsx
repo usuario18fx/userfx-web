@@ -107,12 +107,12 @@ export default function FxIntroModel({ percent, onReady, onError }: Props) {
         logo.traverse((object) => {
           if (!(object instanceof THREE.Mesh)) return;
 
-          const original = Array.isArray(object.material) ? object.material : [object.material];
-          const materials = original.map((source) => {
+          const original: THREE.Material[] = Array.isArray(object.material) ? object.material : [object.material];
+          const materials = original.map((source: THREE.Material) => {
             const material = source.clone();
             clonedMaterials.push(material);
             const previousCompile = material.onBeforeCompile;
-            material.onBeforeCompile = (shader, rendererRef) => {
+            material.onBeforeCompile = (shader: Parameters<THREE.Material["onBeforeCompile"]>[0], rendererRef: Parameters<THREE.Material["onBeforeCompile"]>[1]) => {
               previousCompile.call(material, shader, rendererRef);
               shader.uniforms.fxReveal = reveal;
               shader.uniforms.fxViewport = { value: viewport };
