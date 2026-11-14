@@ -539,3 +539,66 @@
   .fx-piece--item:hover .menu-arrow,
   .fx-piece--item:focus-visible .menu-arrow { animation: none; opacity: 1; }
 }
+/* USER FX — branded scene-loading overlay */
+.fx-scene-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 17px;
+  background: radial-gradient(ellipse at 50% 38%, #0d2035 0%, #080b13 58%, #05070c 100%);
+  color: #dce9ff;
+  pointer-events: auto;
+  text-align: center;
+}
+.fx-scene-loader-ring {
+  width: clamp(118px, 25vw, 172px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(49, 109, 230, .16);
+  transition: background .16s linear;
+}
+.fx-scene-loader-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #090e18;
+  font-family: "Orbitron", "Arial Black", sans-serif;
+  font-size: clamp(44px, 9vw, 64px);
+  font-weight: 900;
+  letter-spacing: -.07em;
+}
+.fx-scene-loader-ghost {
+  color: rgba(96, 138, 201, .22);
+}
+.fx-scene-loader-fill {
+  position: absolute;
+  color: #316de6;
+  text-shadow: 0 0 22px rgba(49, 109, 230, .45);
+  transition: clip-path .16s linear;
+}
+.fx-scene-loader-label {
+  font-size: clamp(10px, 2.3vw, 13px);
+  font-weight: 700;
+  letter-spacing: .25em;
+  color: rgba(223, 234, 255, .75);
+}
+.fx-scene-loader-percent {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .14em;
+  color: #79a8ff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-scene-loader-ring,
+  .fx-scene-loader-fill { transition: none; }
+}
