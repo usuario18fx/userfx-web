@@ -1,15 +1,16 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState,
-  type CSSProperties, type ReactNode, } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { useMotionValueEvent, useScroll } from "framer-motion";
-import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type BlockId, type StepKey,
-} from "./tourTimeline";
-import { travelToPosition } from "./Motion";
+import { BLOCKS, BLOCK_COUNT, STEPS, STOP_T as STOPS, stepIndex, stepAt, type BlockId, type StepKey } from "./tourTimeline";
 import "./RoomIntro.css";
 const CinematicTour = dynamic(() => import("./CinematicTour"), {
   ssr: false,
-  loading: () => null,
+  loading: () => (
+    <div className="fx-room-intro-loading">
+      LOADING USER FX ROOM…
+    </div>
+  ),
 });
 type Action = { title: string; sub: string; arrow: string; run: () => void };
 const BOT_URL = "https://t.me/User18Fx_bot";
@@ -17,54 +18,56 @@ const LINKS = {
   gotCode: "#/private-room/gallery",
   multimedia: "#/private-room/gallery",
 } as const;
-const COPY: Record<BlockId, { short: string; badge: string; title: ReactNode; subtitle: string }> =
-           {
-           gallery
-           :{
-           short: "GALLERY",
-           badge: "01  PUBLIC ARCHIVE / LAPTOP 01",
-           title: (
-           <>
-           My photos
-           <br />
-           on display.
-           </>
-           ),
-           subtitle: "Explore the collection. Switch photos, zoom in, or keep moving through the room.",},
-           videocall: {
-           short: "VIDEOCALL",
-           badge: "02  ONE TO ONE / TV 01",
-           title: (
-           <>
-           ᴊᴜsᴛ 𝕐𝕆𝕌
-           <br />
-           🜲ᴀɴᴅ 𝕄𝔼
-           </>
-           ),
-           subtitle:
-           "Get closer. Video calls and private channels are handled directly through Telegram.",},
-           multimedia: {
-           short: "MULTIMEDIA",
-           badge: "03  NEXT EXPERIENCE / LAPTOP 01",
-           title: (
-           <> 
-           ᴄᴏᴍᴍᴜɴɪᴛʏ
-           <br />
-           𝕄𝔼𝔻𝕀𝔸
-           </>
-           ),
-           subtitle: "A whole new angle. More visuals, more to explore.",},
-           stage: { short: "STAGE",
-           badge: "04  LIVE STAGE / TV 01",
-           title: (
-           <>
-           The room
-           <br />
-           is your 𝕊𝕋𝔸𝔾𝔼.
-           </>
-           ),
-           subtitle: "The final stop puts the spotlight on the main screen and the live stage.",
-  },};
+const COPY: Record<BlockId, { short: string; badge: string; title: ReactNode; subtitle: string }> = {
+  gallery: {
+    short: "GALLERY",
+    badge: "01  PUBLIC ARCHIVE / LAPTOP 01",
+    title: (
+      <>
+        My photos
+        <br />
+        on display.
+      </>
+    ),
+    subtitle: "Explore the collection. Switch photos, zoom in, or keep moving through the room.",
+  },
+  videocall: {
+    short: "VIDEOCALL",
+    badge: "02  ONE TO ONE / TV 01",
+    title: (
+      <>
+        ᴊᴜsᴛ 𝕐𝕆𝕌
+        <br />
+        🜲ᴀɴᴅ 𝕄𝔼
+      </>
+    ),
+    subtitle: "Get closer. Video calls and private channels are handled directly through Telegram.",
+  },
+  multimedia: {
+    short: "MULTIMEDIA",
+    badge: "03  NEXT EXPERIENCE / LAPTOP 01",
+    title: (
+      <>
+        ᴄᴏᴍᴍᴜɴɪᴛʏ
+        <br />
+        𝕄𝔼𝔻𝕀𝔸
+      </>
+    ),
+    subtitle: "A whole new angle. More visuals, more to explore.",
+  },
+  stage: {
+    short: "STAGE",
+    badge: "04  LIVE STAGE / TV 01",
+    title: (
+      <>
+        The room
+        <br />
+        is your 𝕊𝕋𝔸𝔾𝔼.
+      </>
+    ),
+    subtitle: "The final stop puts the spotlight on the main screen and the live stage.",
+  },
+};
 const STEP_LABEL = (key: string, kind: string) =>
   kind === "focus"
     ? "FOCUS"
@@ -236,22 +239,6 @@ export default function RoomIntro({ onSceneReady }: { onSceneReady?: () => void 
       window.removeEventListener("hashchange", onHash);
   };
   }, [goToStep]);
-  useEffect(() => {
-    const jump = (event: Event) => {
-      const key = (event as CustomEvent<{ key?: string; duration?: number }>).detail?.key;
-      if (!key || !STEPS.some((item) => item.key === key)) return;
-      const target = STEPS[stepIndex(key as StepKey)];
-      const targetBlock = BLOCKS.find((item) => item.id === target.block);
-      if (targetBlock) unlock(targetBlock.number);
-      const el = section.current;
-      if (!el) return;
-      const range = Math.max(0, el.offsetHeight - window.innerHeight);
-      const top = el.getBoundingClientRect().top + window.scrollY + STOPS[stepIndex(key as StepKey)] * range;
-      travelToPosition(top, (event as CustomEvent<{ duration?: number }>).detail?.duration ?? 1.6);
-    };
-    window.addEventListener("fx:tour-jump", jump);
-    return () => window.removeEventListener("fx:tour-jump", jump);
-  }, [unlock]);
   const openBot = useCallback(() => window.open(BOT_URL, "_blank", "noopener,noreferrer"), []);
   const openBotCommand = useCallback(
     (command: "gallery" | "getcode" | "videocall" | "channels") => {
@@ -356,114 +343,116 @@ export default function RoomIntro({ onSceneReady }: { onSceneReady?: () => void 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  // Bloques 1 y 3: laptop; bloques 2 y 4: TV.
+  const screenOnLaptop = puzzle ? puzzle.block % 2 === 0 : true;
+  const screenUi: ReactNode = puzzle && pzCopy && pzBlock ? (
+    <div className={`fx-scr fx-scr--${screenOnLaptop ? "laptop" : "tv"} is-${puzzle.phase} ${pzLocked ? "is-locked" : "is-open"}${shake ? " is-shake" : ""}`} key={`scr-${puzzle.block}`}>
+      <span className="fx-scr-badge">
+        {pzCopy.badge}
+      </span>
+      <h2 className="fx-scr-title">
+        {pzCopy.title}
+      </h2>
+      <p className="fx-scr-sub">
+        {pzCopy.subtitle}
+      </p>
+      <div className="fx-scr-head">
+        <span>
+          CHOOSE YOUR NEXT MOVE
+        </span>
+        <span className="fx-scr-chip">
+          <LockIcon />
+          {pzLocked ? "SCROLL LOCKED" : "FREE SCROLL"}
+        </span>
+      </div>
+      <div className="fx-scr-actions">
+        {pzList.map((action, i) => (
+          <button key={action.title} type="button" className={`fx-scr-btn${i === 0 ? " is-primary" : ""}`} onClick={action.run} tabIndex={puzzle.phase === "in" ? 0 : -1}>
+            <span className="fx-scr-num">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="fx-scr-text">
+              <strong>
+                {action.title}
+              </strong>
+              <small>
+                {action.sub}
+              </small>
+            </span>
+            <span className="fx-scr-arrow" aria-hidden="true">
+              {action.arrow.includes("↗") ? "↗" : "→"}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  ) : null;
+
   const toggleFullscreen = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen?.();
-    else void document.documentElement.requestFullscreen?.().catch(() => { });
+    else void document.documentElement.requestFullscreen?.().catch(() => {});
   }, []);
-        return (
-               <section className={`fx-room-intro${locked ? " is-locked" : ""}`} ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour"  data-step={step.key}>
-               <div className="fx-room-intro-sticky">
-               <CinematicTour progress={progress} onSceneReady={onSceneReady} />
-               <div className="fx-room-intro-shade" aria-hidden="true" />
-                {showRoomUI && block && (
-               <div className="fx-room-ui">
-               <header className="fx-header">
-               <div className="fx-logo">
-               <strong>
+
+  return (
+    <section className={`fx-room-intro${locked ? " is-locked" : ""}`} ref={section} id="home" aria-label="USER FX continuous cinematic 3D tour" data-step={step.key}>
+      <div className="fx-room-intro-sticky">
+        <CinematicTour progress={progress} onSceneReady={onSceneReady} laptopScreen={screenOnLaptop ? screenUi : undefined} tvScreen={screenOnLaptop ? undefined : screenUi} />
+        <div className="fx-room-intro-shade" aria-hidden="true" />
+        {showRoomUI && block && (
+          <div className="fx-room-ui">
+            <header className="fx-header">
+              <div className="fx-logo">
+                <strong>
                   USER FX
-               </strong>
-               <span>
+                </strong>
+                <span>
                   PRIVATE ROOM
-               </span>
-               </div>
-               <div className="fx-nav-center">
-               {BLOCKS.map((b, i) => (
-               <button key={b.id} className={`nav-item ${blockIdx === i ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[b.first])}>
-               {String(b.number).padStart(2, "0")}{" "}
-               {COPY[b.id].short.charAt(0) + COPY[b.id].short.slice(1).toLowerCase()}
-              </button>
+                </span>
+              </div>
+              <div className="fx-nav-center">
+                {BLOCKS.map((b, i) => (
+                  <button key={b.id} className={`nav-item ${blockIdx === i ? "active" : ""}`} onClick={() => scrollToProgress(STOPS[b.first])}>
+                    {String(b.number).padStart(2, "0")}{" "}
+                    {COPY[b.id].short.charAt(0) + COPY[b.id].short.slice(1).toLowerCase()}
+                  </button>
                 ))}
               </div>
               <div className="fx-nav-right">
-              <button className="nav-icon" onClick={openBot}>
-               HELP
-              </button>
-              <button className="nav-icon" onClick={toggleFullscreen}>
-               FULLSCREEN
-              </button>
+                <button className="nav-icon" onClick={openBot}>
+                  Ayuda
+                </button>
+                <button className="nav-icon" onClick={toggleFullscreen}>
+                  Pantalla completa
+                </button>
               </div>
-              </header>
-               {!isLockStep && (
+            </header>
+            {!isLockStep && (
               <div className="fx-step-tag" key={step.key}>
-              <span className="fx-step-tag-block">
-                {COPY[block.id].short}
-              </span>
-              <span className="fx-step-tag-label">
-               {STEP_LABEL(step.key, step.kind)}
-              </span>
+                <span className="fx-step-tag-block">
+                  {COPY[block.id].short}
+                </span>
+                <span className="fx-step-tag-label">
+                  {STEP_LABEL(step.key, step.kind)}
+                </span>
               </div>
-               )}
-               {puzzle && pzCopy && pzBlock && (
-              <div className={`fx-puzzle is-${puzzle.phase} ${pzLocked ? "is-locked" : "is-open"}${shake ? " is-shake" : ""}`} key={`pz-${puzzle.block}`}>
-              <div className="fx-pz-left">
-              <div className="fx-piece fx-piece--knob fx-piece--title" style={pv(-150, -40, -8, 0, 0.1, 3, 68)}>
-              <span className="fx-badge">
-              {pzCopy.badge}
-              </span>
-              <h2 className="fx-title">
-              {pzCopy.title}
-              </h2>
-              </div>
-              <div className="fx-piece fx-piece--sub" style={pv(-120, 90, 6, 0.1, 0, 2)}>
-              <p className="fx-subtitle">
-              {pzCopy.subtitle}
-              </p>
-              </div>
-              </div>
-              <aside className="fx-pz-menu">
-              <div className="fx-piece fx-piece--knob fx-piece--head" style={pv(130, -70, 7, 0.05, 0.3, 8, 72)}>
-              <span>      
-               CHOOSE YOUR NEXT MOVE
-              </span>
-              <span className="fx-lock-chip">
-              <LockIcon /> {pzLocked ? "SCROLL LOCKED" : "FREE SCROLL"}
-              </span>
-              </div>
-               {pzList.map((a, i) => (
-              <button key={a.title} className={`fx-piece fx-piece--item${i < pzList.length - 1 ? " fx-piece--knob" : ""}${i === 0 ? " is-primary" : ""}`} style={pv( 170, i % 2 ? 50 : -30, i % 2 ? -6 : 5, 0.13 + i * 0.09,0.2 - i * 0.07, 7 - i,i % 2 ? 26 : 74, )} onClick={a.run} tabIndex={puzzle.phase === "in" ? 0 : -1}>
-              <span className="menu-num">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="menu-text">
-              <strong>
-                {a.title}
-              </strong>
-              <small>
-                {a.sub}
-              </small>
-              </span>
-              <span className={`menu-arrow${a.title === "Continue" ? " menu-arrow--continue" : " menu-arrow--right"}`}/>
-              </button>
-                ))}
-              </aside>
-              </div>
-               )}
-              <div className={`fx-lock-hint${hintOn && locked ? " is-on" : ""}`} role="status">
+            )}
+            <div className={`fx-lock-hint${hintOn && locked ? " is-on" : ""}`} role="status">
               <LockIcon />
               <span>
-              <strong>
+                <strong>
                   Choose an option to keep going
-              </strong>
-              <small>Ready for what's next? Select “{actions[0]?.title ?? "Continue"}”</small>
+                </strong>
+                <small>
+                  Ready for what's next? Select “{actions[0]?.title ?? "Continue"}”
+                </small>
               </span>
-              </div>
-              <button className="fx-btn-exit" onClick={() => scrollToProgress(0)}>
-               EXIT
-              </button>
-              </div>
-               )}
-              </div>
-              </section>
-               );
-               }
- 
+            </div>
+            <button className="fx-btn-exit" onClick={() => scrollToProgress(0)}>
+              SALIR
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
