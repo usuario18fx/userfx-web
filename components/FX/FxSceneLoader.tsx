@@ -77,7 +77,7 @@ export default function FxSceneLoader({ onComplete }: Props) {
         </defs>
       </svg>
       <div className={`fx-scene-loader-mark${modelStatus === "fallback" ? " is-fallback" : ""}`} style={{ "--fx-scene-glow": glow } as CSSProperties}>
-        <FxIntroModel percent={percent} onReady={() => setModelStatus((status) => status === "loading" ? "ready" : status)} onError={() => setModelStatus((status) => status === "loading" ? "fallback" : status)} />
+        <FxIntroModel percent={percent} onReady={() => setModelStatus("ready")} onError={() => setModelStatus((status) => status === "loading" ? "fallback" : status)} />
         <div className="fx-scene-loader-fallback" style={{ opacity: modelStatus === "ready" ? 0 : 1, transition: "opacity 300ms ease" }}>
           {!logoError ? (
             <>
@@ -90,7 +90,7 @@ export default function FxSceneLoader({ onComplete }: Props) {
             </span>
           )}
         </div>
-        <img src={FX.vip} alt="" className="fx-scene-loader-crown" style={{ opacity: crownOpacity, transform: `perspective(450px) rotateY(${Math.round(crownProgress * 360)}deg)` }} draggable={false} />
+        {modelStatus !== "ready" && <img src={FX.vip} alt="" className="fx-scene-loader-crown" style={{ opacity: crownOpacity, transform: `perspective(450px) rotateY(${Math.round(crownProgress * 360)}deg)` }} draggable={false} />}
       </div>
       <span className="fx-scene-loader-label">
         USER FX · ENTERING THE ROOM
