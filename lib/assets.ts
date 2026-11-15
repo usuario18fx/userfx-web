@@ -43,7 +43,7 @@ export const FX = {
 
 // Three.js models in public/. These are GLB files, not <img> sources.
 export const FX_MODELS = {
-  logo: "/assets/logos.glb/userFX.glb",
+  logo: "/iconFX.glb",
   rose: "/assets/logos.glb/rosa.glb",
   crown: "/assets/logos.glb/crown-Blue2.glb",
   roomLogo: "/logoFX.glb",
