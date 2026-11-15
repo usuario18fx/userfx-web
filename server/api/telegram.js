@@ -721,7 +721,7 @@ const REQUEST_STATUS = {
 // ======================================================
 const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
-const BTN_SPCL = "✦ ꜱᴘᴄʟ";
+const BTN_SPCL = "✦ ꜱᴘᴇᴄɪᴀʟ";
 const BTN_BASIC = "🌹 ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
@@ -1291,46 +1291,75 @@ async function openPublicGallery(ctx) {
     }
 async function handlePublicGalleryNavigation(ctx, action) {
   const client = await ensureRedis();
-  if (!client) return ctx.reply("Gallery is temporarily unavailable. Please try again.", getMainKeyboard());
+  if (!client) return ctx.reply("Gallery is temporarily unavailable. Please try again.", getPublicGalleryKeyboard());
+
   const key = getPublicGallerySessionKey(ctx);
   const lock = key + ":lock";
   let locked = false;
+
   try {
     locked = await client.set(lock, "1", "EX", 10, "NX") === "OK";
     if (!locked) {
       await ctx.deleteMessage().catch(() => {});
       return;
     }
+
     const raw = await client.get(key);
     let session = null;
     try { session = raw ? JSON.parse(raw) : null; } catch {}
+
     if (!session || !Number.isInteger(session.messageId) || !Number.isInteger(session.index)) {
       await ctx.deleteMessage().catch(() => {});
-      return ctx.reply("Gɢᴀʟʟᴇʀʏ ꜱᴇꜱꜱɪᴏɴ ᴇxᴘɪʀᴇᴅ. ᴛᴀᴘ ɢᴀʟʟᴇʀʏ ᴛᴏ ᴏᴘᴇɴ ɪᴛ ᴀɢᴀɪɴ.", getMainKeyboard());
+      return openPublicGallery(ctx);
     }
+
     if (action === BTN_GALLERY_CLOSE) {
       await client.del(key);
       await ctx.deleteMessage().catch(() => {});
       await ctx.telegram.deleteMessage(ctx.chat.id, session.messageId).catch(() => {});
       return ctx.reply("Gallery closed.", getMainKeyboard());
     }
+
     const delta = action === BTN_GALLERY_NEXT ? 1 : -1;
-    const index = (session.index + delta + PUBLIC_GALLERY_PHOTOS.length) % PUBLIC_GALLERY_PHOTOS.length;
-    await ctx.telegram.editMessageMedia(ctx.chat.id, session.messageId, undefined, {
-      type: "photo",
-      media: PUBLIC_GALLERY_PHOTOS[index],
-      caption: getPublicGalleryCaption(index),
-    });
-    await client.set(key, JSON.stringify({ messageId: session.messageId, index }), "EX", PUBLIC_GALLERY_SESSION_SECONDS);
+    const index = Math.max(0, Math.min(PUBLIC_GALLERY_PHOTOS.length - 1, session.index + delta));
+    if (index === session.index) {
+      await ctx.deleteMessage().catch(() => {});
+      return ctx.reply(
+        delta > 0 ? "You're on the last photo. That's the full public gallery." : "You're on the first photo.",
+        getPublicGalleryKeyboard()
+      );
+    }
+
+    let messageId = session.messageId;
+    try {
+      await ctx.telegram.editMessageMedia(ctx.chat.id, messageId, undefined, {
+        type: "photo",
+        media: PUBLIC_GALLERY_PHOTOS[index],
+        caption: getPublicGalleryCaption(index),
+      });
+    } catch (editError) {
+      logger.warn("PUBLIC GALLERY EDIT FAILED; SENDING NEXT PHOTO", getTelegramError(editError));
+      const sent = await ctx.replyWithPhoto(PUBLIC_GALLERY_PHOTOS[index], {
+        caption: getPublicGalleryCaption(index),
+        reply_markup: getPublicGalleryKeyboard().reply_markup,
+      });
+      messageId = sent.message_id;
+    }
+
+    await client.set(key, JSON.stringify({ messageId, index }), "EX", PUBLIC_GALLERY_SESSION_SECONDS);
+    if (messageId !== session.messageId) {
+      await ctx.telegram.deleteMessage(ctx.chat.id, session.messageId).catch(() => {});
+    }
     await ctx.deleteMessage().catch(() => {});
   } catch (error) {
     logger.error("PUBLIC GALLERY NAVIGATION FAILED", getTelegramError(error));
     await ctx.deleteMessage().catch(() => {});
-    await ctx.reply("Couldn't switch photos. Tap GALLERY to reopen.", getMainKeyboard()).catch(() => {});
+    await ctx.reply("Couldn't switch photos. Your gallery is still open — tap NEXT to retry.", getPublicGalleryKeyboard()).catch(() => {});
   } finally {
     if (locked) await client.del(lock).catch(() => {});
   }
 }
+
 //// ACCESS STATE //
 function tierRank(tier) {
   if (tier === TIER_VIP) return 3;
@@ -2180,15 +2209,15 @@ bot.on("text", async (ctx, next) => {
       await ctx.reply("🤖 ᴄᴏᴍᴀɴᴅᴏ ɴᴏ ʀᴇᴄᴏɴᴏᴄɪᴅᴏ.", getMainKeyboard()).catch(() => {});
       return;
     }
+    //// GALLERY NAVIGATION MUST TAKE PRIORITY OVER PENDING VIDEOCALL REQUESTS ////
+    if ([BTN_GALLERY_PREV, BTN_GALLERY_NEXT, BTN_GALLERY_CLOSE].includes(text)) {
+      return await handlePublicGalleryNavigation(ctx, text);
+    }
     //// EXCHANGE: MEDIA-ONLY UNTIL ADMIN DECIDES ////
     const exchange = await getVideoRequest(userId);
     if (exchange && [REQUEST_STATUS.WAITING_CONSENT, REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN].includes(exchange.status) && ![BTN_CANCEL, BTN_PENDING_REQUEST, BTN_VIDEOCALL].includes(text)) {
       await ctx.reply("📸 ᴊᴜꜱᴛ ᴘʜᴏᴛᴏꜱ ᴏʀ ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ᴡᴇ ꜱᴡᴀᴘ. ᴛᴀᴘ ᴄᴀɴᴄᴇʟ ᴛᴏ ᴇxɪᴛ.", getPendingPhotoKeyboard());
       return;
-    }
-    //// PUBLIC GALLERY KEYBOARD ////
-    if ([BTN_GALLERY_PREV, BTN_GALLERY_NEXT, BTN_GALLERY_CLOSE].includes(text)) {
-      return await handlePublicGalleryNavigation(ctx, text);
     }
     //// GET CODE //
     if (text === BTN_GET_CODE) {
@@ -2264,14 +2293,14 @@ bot.on("text", async (ctx, next) => {
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
       return await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO, {
-        reply_markup: { inline_keyboard: [[{ text: "𝕊ᴍᴏᴋᴇʟᴀɴᴅɪᴀ", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
+        reply_markup: { inline_keyboard: [[{ text: "↗ CLICK HERE · SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }]] },
       });
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
       return await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO, {
         reply_markup: {
-          inline_keyboard: [[{ text: "𝐔𝐬𝐞𝐫 Ŧҳ 🜲", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
+          inline_keyboard: [[{ text: "↗ CLICK HERE · USER FX", url: USER_GROUP_LINK }]],
         },
       });
     }
