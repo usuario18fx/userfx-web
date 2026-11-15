@@ -1099,7 +1099,23 @@ async function sendIdentityCode(ctx, options = {}) {
     const username = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
     const returnUrl = `${USERFX_SITE_URL.replace(/\/$/, "")}/?identity=1#/private-room-access`;
     const keyboard = Markup.inlineKeyboard([[Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)]]);
-    await ctx.reply(`🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` + `${escapeHtml(username?.display || "")}` + `\n\n⇀ SPCL-   <code>${escapeHtml(record.code.slice(-4))}</code>` + `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` + `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` + `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`, { parse_mode: "HTML", reply_markup: keyboard.reply_markup });
+    const sent = await ctx.reply(`🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` + `${escapeHtml(username?.display || "")}` + `\n\n⇀ SPCL-   <code>${escapeHtml(record.code.slice(-4))}</code>` + `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` + `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` + `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`, { parse_mode: "HTML", reply_markup: keyboard.reply_markup });
+    try {
+      const client = await ensureRedis();
+      if (client) {
+        const promptKey = `${CODE_ENGINE_NAMESPACE}:identity-prompts:${ctx.from.id}`;
+        const raw = await client.get(promptKey);
+        let prompts = [];
+        try { prompts = raw ? JSON.parse(raw) : []; } catch {}
+        const messageIds = [...new Set([...prompts, sent.message_id])].filter(Number.isInteger);
+        await client.set(`${CODE_ENGINE_NAMESPACE}:identity-messages:${record.code}`, JSON.stringify({
+          chatId: String(ctx.chat.id),
+          messageIds,
+        }), "EX", 60 * 60);
+      }
+    } catch (error) {
+      logger.warn("IDENTITY MESSAGE TRACKING FAILED", { message: error?.message });
+    }
   } catch (error) {
     logger.error("T𝙶𝙼𝚇 𝙸𝙳𝙴𝙽𝚃𝙸𝚃𝚈 𝙴𝚁𝚁𝙾𝚁", {
       userId: String(ctx.from?.id || ""),
@@ -1863,28 +1879,62 @@ function getSpclRequestKeyboard() {
   ]);
 }
 async function openSpclConfirmation(ctx) {
-  await trackButtonClick(ctx, "ꜱᴘᴄʟ");
+  await trackButtonClick(ctx, "ꜱᴘᴇᴄɪᴀʟ");
   if (ctx.chat?.type !== "private") {
-    await ctx.reply("🔒 Abre este bot en un chat privado para verificar SPCL.",
-      Markup.inlineKeyboard([[Markup.button.url("ABRIR BOT", "https://t.me/User18Fx_bot?start=spcl")]]));
+    await ctx.reply("🔒 Open this bot in a private chat to verify SPECIAL.",
+      Markup.inlineKeyboard([[Markup.button.url("OPEN BOT", "https://t.me/User18Fx_bot?start=spcl")]]));
     return;
   }
-  // ctx.from comes from Telegram's signed webhook, not user-entered text.
+
   const username = normalizeTelegramFxUsername(ctx.from?.username || "");
   const id = String(ctx.from?.id || "");
   if (!username || !id) {
-    await ctx.reply("⚠️ Para SPCL primero configura un @username en tu perfil de Telegram y vuelve a pulsar SPCL.");
+    await ctx.reply("Add a @username in Telegram Settings, then tap SPECIAL again.");
     return;
   }
+
   const buttons = Markup.inlineKeyboard([
-    [Markup.button.callback("✓ CONFIRMAR MI USERNAME", `spcl_confirm_${id}`)],
-    [Markup.button.callback("← CANCELAR", `spcl_cancel_${id}`)],
+    [Markup.button.callback("✔️ ᴀᴄᴄᴇᴘᴛ", `spcl_confirm_${id}`), Markup.button.callback("✏️ ᴇᴅɪᴛ", `spcl_edit_${id}`)],
   ]);
-  await ctx.reply(
-    `✦ <b>SPCL · CONFIRMA TU USERNAME</b>\n\n¿Eres <b>${escapeHtml(username.display)}</b>?\n\nComprobaremos tu acceso antes de entregar cualquier código.`,
+  const sent = await ctx.reply(
+    `🜲 <b>ꜱᴘᴄʟ 🜲 ᴜꜱᴇʀɴᴀᴍᴇ ᴄʜᴇᴄᴋ</b>\n\nᴊᴜꜱᴛ ᴄᴏɴꜰɪʀᴍɪɴɢ ʏᴏᴜ’ʀᴇ <b>${escapeHtml(username.display)}</b> — ᴡᴇ’ʟʟ ᴍᴀᴋᴇ ꜱᴜʀᴇ ʏᴏᴜ’ᴠᴇ ɢᴏᴛ ᴀᴄᴄᴇꜱꜱ ʙᴇꜰᴏʀᴇ ꜱᴇɴᴅɪɴɢ ᴀɴʏ ᴄᴏᴅᴇꜱ.`,
     { parse_mode: "HTML", reply_markup: buttons.reply_markup }
   );
+
+  // Only bot-sent message IDs are recorded, for deletion after successful verification.
+  try {
+    const client = await ensureRedis();
+    if (client) {
+      const key = `${CODE_ENGINE_NAMESPACE}:identity-prompts:${id}`;
+      const raw = await client.get(key);
+      let ids = [];
+      try { ids = raw ? JSON.parse(raw) : []; } catch {}
+      ids = [...new Set([...ids, sent.message_id])].slice(-10);
+      await client.set(key, JSON.stringify(ids), "EX", 60 * 60);
+    }
+  } catch (error) {
+    logger.warn("SPCL PROMPT TRACKING FAILED", { message: error?.message });
+  }
 }
+
+bot.action(/^spcl_edit_(\\d+)$/, async (ctx) => {
+  if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
+    return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
+  }
+  await ctx.answerCbQuery();
+  await ctx.reply("✏️ To edit your username, open Telegram Settings → Username, save your changes and tap RECHECK. We verify your real Telegram username.", {
+    reply_markup: Markup.inlineKeyboard([[Markup.button.callback("↻ ʀᴇᴄʜᴇᴄᴋ", `spcl_retry_${ctx.from.id}`)]]).reply_markup,
+  });
+});
+
+bot.action(/^spcl_retry_(\\d+)$/, async (ctx) => {
+  if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
+    return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
+  }
+  await ctx.answerCbQuery();
+  await openSpclConfirmation(ctx);
+});
+
 bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
   const requestedId = String(ctx.match?.[1] || "");
   if (!requestedId || requestedId !== String(ctx.from?.id || "")) {
