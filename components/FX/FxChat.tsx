@@ -145,9 +145,15 @@ export default function FxChat() {
     <div className={"fx-web-chat" + (open ? " is-open" : "")} aria-label="USER FX chat">
       <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
         <span className="fx-web-chat-symbol" aria-hidden="true">
-          FX
+          <svg className="fx-web-chat-icon" viewBox="0 0 32 32" focusable="false">
+            <path d="M4 7.5h15.5a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H10l-6 4v-17a4 4 0 0 1 4-4" />
+            <path d="M13.5 4H25a4 4 0 0 1 4 4v11l-5.5-3.5" />
+            <circle cx="10" cy="16" r="1.2" />
+            <circle cx="15" cy="16" r="1.2" />
+            <circle cx="20" cy="16" r="1.2" />
+          </svg>
         </span>
-        <span>
+        <span className="fx-web-chat-label">
           CHAT
         </span>
         <span className="fx-web-chat-pulse" aria-hidden="true" />
