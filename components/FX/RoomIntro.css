@@ -696,3 +696,230 @@
     transform: none !important;
   }
 }
+
+/* USER FX — interacciones HTML en las pantallas 3D (laptop y TV).
+   Una sola fuente de estilos: la UI ocupa exactamente el plano CSS3D. */
+.fx-room-intro .ct-screen .fx-scr {
+  --u: 1px;
+  --acc: #3fd8d0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(13 * var(--u));
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: calc(46 * var(--u)) calc(58 * var(--u));
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 0;
+  color: #ecf8ff;
+  background:
+    radial-gradient(110% 95% at 13% 4%, rgba(2, 111, 166, .25) 0%, transparent 64%),
+    linear-gradient(160deg, #061f31 0%, #061326 55%, #030b17 100%);
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) rgba(63, 216, 208, .3);
+  font-family: "Orbitron", system-ui, sans-serif;
+  opacity: 1;
+  transform: none;
+  pointer-events: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.fx-room-intro .ct-screen .fx-scr--laptop {
+  --u: .9px;
+}
+
+.fx-room-intro .ct-screen .fx-scr--tv {
+  --u: 1px;
+}
+
+.fx-room-intro .ct-screen .fx-scr.is-in {
+  animation: fx-screen-ui-in .42s ease-out both;
+}
+
+.fx-room-intro .ct-screen .fx-scr.is-out {
+  animation: fx-screen-ui-out .5s ease-in both;
+}
+
+@keyframes fx-screen-ui-in {
+  from { opacity: 0; transform: scale(.985); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fx-screen-ui-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(.985); }
+}
+
+.fx-room-intro .ct-screen .fx-scr-badge {
+  display: block;
+  flex-shrink: 0;
+  color: #70d8f0;
+  font-size: calc(15 * var(--u));
+  font-weight: 700;
+  letter-spacing: .2em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.fx-room-intro .ct-screen .fx-scr-title {
+  display: block;
+  flex-shrink: 0;
+  margin: 0;
+  color: #f5fbff;
+  font-family: "Fredoka", "Orbitron", system-ui, sans-serif;
+  font-size: calc(70 * var(--u));
+  font-weight: 750;
+  letter-spacing: -.025em;
+  line-height: .94;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.fx-room-intro .ct-screen .fx-scr-sub {
+  display: block;
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 96%;
+  margin: 0;
+  color: #b4d2e4;
+  font-family: system-ui, sans-serif;
+  font-size: calc(20 * var(--u));
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.fx-room-intro .ct-screen .fx-scr-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(8 * var(--u)) calc(14 * var(--u));
+  flex-shrink: 0;
+  color: #87aec7;
+  font-size: calc(13 * var(--u));
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.fx-room-intro .ct-screen .fx-scr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(7 * var(--u));
+  padding: calc(6 * var(--u)) calc(12 * var(--u));
+  border: calc(1 * var(--u)) solid rgba(255, 200, 87, .5);
+  border-radius: calc(18 * var(--u));
+  color: #ffd67a;
+  font-size: calc(12 * var(--u));
+  letter-spacing: .09em;
+  white-space: nowrap;
+}
+
+.fx-room-intro .ct-screen .fx-scr-chip svg {
+  width: calc(15 * var(--u));
+  height: calc(15 * var(--u));
+  flex-shrink: 0;
+}
+
+.fx-room-intro .ct-screen .fx-scr.is-open .fx-scr-chip {
+  border-color: rgba(98, 230, 170, .5);
+  color: #83ebbb;
+}
+
+.fx-room-intro .ct-screen .fx-scr-actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(9 * var(--u));
+  width: 100%;
+  min-height: 0;
+}
+
+.fx-room-intro .ct-screen .fx-scr-btn {
+  display: flex;
+  flex-shrink: 1;
+  align-items: center;
+  gap: calc(16 * var(--u));
+  width: 100%;
+  min-height: calc(65 * var(--u));
+  margin: 0;
+  padding: calc(11 * var(--u)) calc(17 * var(--u));
+  box-sizing: border-box;
+  border: calc(1.5 * var(--u)) solid rgba(62, 178, 233, .48);
+  border-radius: calc(12 * var(--u));
+  background: rgba(8, 35, 61, .85);
+  color: #f6fbff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.fx-room-intro .ct-screen .fx-scr-btn.is-primary {
+  background: linear-gradient(100deg, #0b729e, #0b436a);
+  border-color: #69d5f5;
+}
+
+.fx-room-intro .ct-screen .fx-scr-btn:hover,
+.fx-room-intro .ct-screen .fx-scr-btn:focus-visible {
+  transform: translateX(calc(7 * var(--u)));
+  border-color: #3fd8d0;
+  background: rgba(3, 107, 142, .9);
+  outline: none;
+}
+
+.fx-room-intro .ct-screen .fx-scr-btn:focus-visible {
+  box-shadow: 0 0 0 calc(3 * var(--u)) rgba(63, 216, 208, .38);
+}
+
+.fx-room-intro .ct-screen .fx-scr-num {
+  flex: 0 0 calc(29 * var(--u));
+  color: #75e5ee;
+  font-size: calc(15 * var(--u));
+  font-weight: 800;
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+
+.fx-room-intro .ct-screen .fx-scr-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(3 * var(--u));
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.fx-room-intro .ct-screen .fx-scr-text strong {
+  color: #f5fbff;
+  font-size: calc(24 * var(--u));
+  font-weight: 750;
+  letter-spacing: .05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.fx-room-intro .ct-screen .fx-scr-text small {
+  color: #a8c8db;
+  font-family: system-ui, sans-serif;
+  font-size: calc(15 * var(--u));
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.fx-room-intro .ct-screen .fx-scr-arrow {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #74dbe9;
+  font-size: calc(28 * var(--u));
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-room-intro .ct-screen .fx-scr,
+  .fx-room-intro .ct-screen .fx-scr-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
