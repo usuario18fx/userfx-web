@@ -15,6 +15,7 @@ const FINAL_HOLD_MS = 520;
 
 export default function FxSceneLoader({ onComplete }: Props) {
   const [percent, setPercent] = useState(1);
+  const [logoError, setLogoError] = useState(false);
   const [modelStatus, setModelStatus] = useState<"loading" | "ready" | "fallback">("loading");
   const completeRef = useRef(onComplete);
   completeRef.current = onComplete;
@@ -25,26 +26,37 @@ export default function FxSceneLoader({ onComplete }: Props) {
   }, []);
 
   useEffect(() => {
-    if (modelStatus === "loading") return;
+    // The progress bar must not wait for GLB decoding, WebGL or network requests.
     let frame = 0;
     let finishTimer: number | null = null;
+    let fallbackTimer: number | null = null;
+    let completed = false;
     const start = performance.now();
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      setPercent(100);
+      completeRef.current();
+    };
     const animate = (now: number) => {
+      if (completed) return;
       const elapsed = Math.min(1, (now - start) / INTRO_DURATION_MS);
-      const next = Math.min(100, Math.max(1, Math.round(1 + elapsed * 99)));
-      setPercent((current) => current === next ? current : next);
+      setPercent(Math.min(100, Math.max(1, Math.round(1 + elapsed * 99))));
       if (elapsed < 1) {
         frame = window.requestAnimationFrame(animate);
       } else {
-        finishTimer = window.setTimeout(() => completeRef.current(), FINAL_HOLD_MS);
+        finishTimer = window.setTimeout(finish, FINAL_HOLD_MS);
       }
     };
     frame = window.requestAnimationFrame(animate);
+    fallbackTimer = window.setTimeout(finish, INTRO_DURATION_MS + FINAL_HOLD_MS + 2500);
     return () => {
+      completed = true;
       window.cancelAnimationFrame(frame);
       if (finishTimer !== null) window.clearTimeout(finishTimer);
+      if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
     };
-  }, [modelStatus]);
+  }, []);
 
   const edgeOpacity = Math.min(0.94, percent / 20) * (1 - Math.max(0, percent - 30) / 100);
   const fillProgress = Math.max(0, Math.min(1, (percent - 20) / 60));
@@ -66,12 +78,18 @@ export default function FxSceneLoader({ onComplete }: Props) {
       </svg>
       <div className={`fx-scene-loader-mark${modelStatus === "fallback" ? " is-fallback" : ""}`} style={{ "--fx-scene-glow": glow } as CSSProperties}>
         <FxIntroModel percent={percent} onReady={() => setModelStatus((status) => status === "loading" ? "ready" : status)} onError={() => setModelStatus((status) => status === "loading" ? "fallback" : status)} />
-        {modelStatus === "fallback" && (
-          <div className="fx-scene-loader-fallback">
-            <img src={FX.logo} alt="" className="fx-scene-loader-mark-edge" style={{ opacity: edgeOpacity }} draggable={false} />
-            <img src={FX.logo} alt="USER FX" className="fx-scene-loader-mark-fill" style={{ clipPath: `circle(${Math.round(115 * fillProgress)}% at 50% 50%)` }} draggable={false} />
-          </div>
-        )}
+        <div className="fx-scene-loader-fallback" style={{ opacity: modelStatus === "ready" ? 0 : 1, transition: "opacity 300ms ease" }}>
+          {!logoError ? (
+            <>
+              <img src={FX.logo} alt="" className="fx-scene-loader-mark-edge" style={{ opacity: edgeOpacity }} draggable={false} onError={() => setLogoError(true)} />
+              <img src={FX.logo} alt="USER FX" className="fx-scene-loader-mark-fill" style={{ clipPath: `circle(${Math.round(115 * fillProgress)}% at 50% 50%)` }} draggable={false} onError={() => setLogoError(true)} />
+            </>
+          ) : (
+            <span style={{ display: "grid", placeItems: "center", height: "100%", color: "#3fd8d0", fontFamily: "sans-serif", fontSize: "clamp(32px, 8vw, 80px)", fontWeight: 900, letterSpacing: ".12em" }}>
+              USER FX
+            </span>
+          )}
+        </div>
         <img src={FX.vip} alt="" className="fx-scene-loader-crown" style={{ opacity: crownOpacity, transform: `perspective(450px) rotateY(${Math.round(crownProgress * 360)}deg)` }} draggable={false} />
       </div>
       <span className="fx-scene-loader-label">
