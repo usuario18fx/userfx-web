@@ -32,7 +32,10 @@ export default function ScrollStops() {
       const range = Math.max(1, tour.offsetHeight - window.innerHeight);
       const y = window.scrollY;
       const roomRect = tour.getBoundingClientRect();
-      const optionsVisible = roomRect.top <= window.innerHeight * 0.35 && roomRect.bottom > window.innerHeight * 0.35 && Boolean(tour.querySelector(".fx-puzzle.is-in .fx-pz-menu"));
+      const inRoom = roomRect.top <= window.innerHeight * 0.35 && roomRect.bottom > window.innerHeight * 0.35;
+      const inScreenMenu = Boolean(tour.querySelector(".ct-screen .fx-scr.is-in"));
+      const inLockStep = (tour.dataset.step ?? "").endsWith("-lock");
+      const optionsVisible = inRoom && (inScreenMenu || inLockStep);
       const protocol = document.getElementById("protocol");
       const access = document.getElementById("access");
       const faq = document.getElementById("faq");
@@ -58,7 +61,7 @@ export default function ScrollStops() {
     window.addEventListener("resize", onScroll);
     const observer = new MutationObserver(onScroll);
     const tourElement = document.getElementById("home");
-    if (tourElement) observer.observe(tourElement, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    if (tourElement) observer.observe(tourElement, { subtree: true, attributes: true, attributeFilter: ["class", "data-step"] });
     return () => {
       observer.disconnect();
       if (frame) cancelAnimationFrame(frame);
