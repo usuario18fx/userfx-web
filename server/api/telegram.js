@@ -1917,7 +1917,7 @@ async function openSpclConfirmation(ctx) {
   }
 }
 
-bot.action(/^spcl_edit_(\\d+)$/, async (ctx) => {
+bot.action(/^spcl_edit_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
     return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
   }
@@ -1927,7 +1927,7 @@ bot.action(/^spcl_edit_(\\d+)$/, async (ctx) => {
   });
 });
 
-bot.action(/^spcl_retry_(\\d+)$/, async (ctx) => {
+bot.action(/^spcl_retry_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
     return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
   }
@@ -2343,14 +2343,14 @@ bot.on("text", async (ctx, next) => {
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
       return await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO, {
-        reply_markup: { inline_keyboard: [[{ text: "↗ CLICK HERE · SMOKELANDIA", url: SMOKELANDIA_GROUP_LINK }]] },
+        reply_markup: { inline_keyboard: [[{ text: "↗ CLICK HERE · SMOKELANDIA", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
       });
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
       return await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO, {
         reply_markup: {
-          inline_keyboard: [[{ text: "↗ CLICK HERE · USER FX", url: USER_GROUP_LINK }]],
+          inline_keyboard: [[{ text: "↗ CLICK HERE · USER FX", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
         },
       });
     }
