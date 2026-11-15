@@ -539,161 +539,191 @@
   .fx-piece--item:hover .menu-arrow,
   .fx-piece--item:focus-visible .menu-arrow { animation: none; opacity: 1; }
 }
-/* USER FX — single full-screen intro. Progress is independent of asset loading. */
+/* USER FX — single cinematic loading screen; the percentage is driven by React. */
 .fx-scene-loader {
   position: fixed;
   inset: 0;
   z-index: 100500;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(16px, 3vh, 24px);
-  padding: 32px 20px;
+  display: grid;
+  place-items: center;
+  padding: max(28px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 43%, #102638 0%, #070d16 53%, #03060b 100%);
-  color: #e7f8ff;
+  background:
+    radial-gradient(ellipse 42% 34% at 52% 108%, rgba(0, 115, 236, .26), transparent 80%),
+    radial-gradient(ellipse 46% 56% at 94% -10%, rgba(0, 52, 123, .14), transparent 76%),
+    linear-gradient(180deg, #010308 0%, #030812 60%, #061527 100%);
+  color: #f3f8ff;
   text-align: center;
   pointer-events: auto;
   touch-action: none;
-}
-
-.fx-scene-loader-filter {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.fx-scene-loader-mark {
-  position: relative;
-  width: min(79vw, 620px);
-  height: clamp(155px, 29vw, 300px);
   isolation: isolate;
 }
 
-.fx-scene-loader-glb,
-.fx-scene-loader-fallback {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.fx-scene-loader-glb {
-  z-index: 1;
-}
-
-.fx-scene-loader-glb-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: none;
-}
-
-.fx-scene-loader-mark.is-fallback .fx-scene-loader-glb {
-  display: none;
-}
-
-.fx-scene-loader-fallback {
-  z-index: 1;
-}
-
-.fx-scene-loader-mark::before {
+.fx-scene-loader::before {
   content: "";
   position: absolute;
-  inset: 15% 6%;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(46, 172, 205, .21), transparent 68%);
-  opacity: var(--fx-scene-glow, 0);
-  filter: blur(15px);
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(6, 115, 224, .4) 24%, #00bdff 51%, rgba(6, 115, 224, .4) 76%, transparent);
+  box-shadow: 0 0 18px 2px rgba(0, 122, 255, .58), 0 22px 52px 6px rgba(0, 80, 201, .2);
   pointer-events: none;
 }
 
-.fx-scene-loader-mark-edge,
-.fx-scene-loader-mark-fill {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-}
-
-.fx-scene-loader-mark-edge {
-  filter: url("#fx-scene-loader-edge-filter") drop-shadow(0 0 5px rgba(63, 216, 208, .30));
-}
-
-.fx-scene-loader-mark-fill {
+.fx-scene-loader-content {
+  position: relative;
   z-index: 1;
-  opacity: 1;
-  filter: saturate(.88) drop-shadow(0 0 calc(10px * var(--fx-scene-glow, 0)) rgba(77, 205, 225, .3));
+  width: min(88vw, 980px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(22px, 4vh, 40px);
+  transform: translateY(-4vh);
 }
 
-.fx-scene-loader-crown {
-  position: absolute;
-  z-index: 2;
-  top: -6%;
-  right: 5%;
-  width: clamp(38px, 8vw, 82px);
-  height: clamp(38px, 8vw, 82px);
-  object-fit: contain;
-  transform-origin: center;
-  filter: grayscale(1) sepia(1) saturate(2) hue-rotate(129deg) drop-shadow(0 0 3px rgba(52, 203, 212, .26));
-  user-select: none;
-  pointer-events: none;
+.fx-scene-loader-brand {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: clamp(10px, 2.6vw, 38px);
+  width: 100%;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(43px, 8vw, 124px);
+  font-weight: 400;
+  letter-spacing: .055em;
+  line-height: 1.06;
+  white-space: nowrap;
 }
 
-.fx-scene-loader-label {
-  color: rgba(213, 238, 247, .68);
-  font-family: "Orbitron", "IBM Plex Mono", ui-monospace, monospace;
-  font-size: clamp(9px, 1.8vw, 12px);
-  font-weight: 600;
-  letter-spacing: .21em;
+.fx-scene-loader-brand-user,
+.fx-scene-loader-brand-fx {
+  display: inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  paint-order: stroke fill;
+}
+
+.fx-scene-loader-brand-user {
+  background-image: linear-gradient(180deg, #ffffff 8%, #dce9f7 25%, #778a9f 48%, #f8fbff 61%, #637991 77%, #edf7ff 96%);
+  -webkit-text-stroke: .35px rgba(226, 242, 255, .6);
+  filter: drop-shadow(0 2px 0 rgba(9, 27, 49, .85)) drop-shadow(0 0 13px rgba(105, 161, 225, .17));
+}
+
+.fx-scene-loader-brand-fx {
+  background-image: linear-gradient(180deg, #b8faff 0%, #12a8ff 19%, #003df3 47%, #50e7ff 61%, #0051ec 82%, #b1edff 100%);
+  -webkit-text-stroke: .5px rgba(42, 209, 255, .9);
+  filter: drop-shadow(0 0 9px rgba(0, 157, 255, .8)) drop-shadow(0 0 22px rgba(0, 86, 255, .34));
+}
+
+.fx-scene-loader-subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 34px);
+  width: min(82%, 720px);
+  margin: 0 auto;
+  color: #dbecfa;
+  font-family: "Orbitron", "IBM Plex Mono", system-ui, sans-serif;
+  font-size: clamp(11px, 1.7vw, 22px);
+  font-weight: 400;
+  letter-spacing: clamp(.23em, .7vw, .54em);
+  white-space: nowrap;
+  text-shadow: 0 0 14px rgba(65, 154, 233, .45);
+}
+
+.fx-scene-loader-subtitle::before,
+.fx-scene-loader-subtitle::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(87, 173, 250, .7));
+}
+
+.fx-scene-loader-subtitle::after {
+  transform: rotate(180deg);
+}
+
+.fx-scene-loader-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(13px, 2.5vw, 28px);
+  width: min(90%, 800px);
+  margin: clamp(4px, 1.5vh, 16px) auto 0;
 }
 
 .fx-scene-loader-progress {
-  width: min(72vw, 380px);
-  height: 3px;
-  overflow: hidden;
-  border-radius: 99px;
-  background: rgba(63, 216, 208, .16);
+  flex: 1 1 auto;
+  min-width: 0;
+  height: clamp(5px, .65vw, 9px);
+  padding: 2px;
+  border: 1px solid rgba(118, 187, 228, .75);
+  border-radius: 100px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .94), 0 0 12px rgba(10, 116, 232, .15);
+  background: rgba(0, 3, 12, .92);
 }
 
 .fx-scene-loader-progress-fill {
+  position: relative;
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #0c557f, #0076a0, #3fd8d0);
   border-radius: inherit;
+  background: linear-gradient(90deg, #0660f1 0%, #00acff 50%, #10edff 88%, #adffff 100%);
+  box-shadow: 0 0 6px rgba(0, 210, 255, .95), 0 0 18px rgba(0, 112, 255, .75);
+  transition: width 80ms linear;
+}
+
+.fx-scene-loader-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  transform: translate(50%, -50%);
+  border-radius: 50%;
+  background: #b7ffff;
+  box-shadow: 0 0 12px 3px rgba(0, 210, 255, .8);
 }
 
 .fx-scene-loader-percent {
-  color: #83dce3;
-  font: 600 13px/1 "IBM Plex Mono", ui-monospace, monospace;
+  flex: 0 0 clamp(42px, 6vw, 66px);
+  color: #eaf7ff;
+  font: 400 clamp(14px, 1.9vw, 24px)/1 "Orbitron", "IBM Plex Mono", system-ui, sans-serif;
+  letter-spacing: .04em;
   font-variant-numeric: tabular-nums;
-  letter-spacing: .14em;
+  text-align: right;
+  text-shadow: 0 0 12px rgba(43, 168, 255, .44);
 }
 
 @media (max-width: 600px) {
-  .fx-scene-loader-mark {
-    width: min(92vw, 500px);
-    height: clamp(135px, 45vw, 220px);
+  .fx-scene-loader-content {
+    width: min(92vw, 520px);
+    gap: clamp(20px, 3vh, 30px);
   }
-  .fx-scene-loader-crown {
-    right: 3%;
-    top: -8%;
+
+  .fx-scene-loader-brand {
+    font-size: clamp(39px, 11vw, 74px);
+    letter-spacing: .005em;
+  }
+
+  .fx-scene-loader-subtitle {
+    width: 100%;
+    font-size: clamp(10px, 2.7vw, 14px);
+    letter-spacing: .2em;
+  }
+
+  .fx-scene-loader-progress-row {
+    width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fx-scene-loader-crown {
-    transform: none !important;
+  .fx-scene-loader-progress-fill {
+    transition: none;
   }
 }
 
