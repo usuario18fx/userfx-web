@@ -133,6 +133,41 @@ async function clearFailedAttempts(redis, ip) {
   await redis.del(identityRateKey(ip));
 }
 
+// Only delete bot messages from the successful SPCL verification flow.
+// Chat histories and user-sent messages are never modified.
+async function deleteVerifiedIdentityMessages(redis, record) {
+  const code = String(record?.code || "").trim().toUpperCase();
+  const userId = String(record?.userId || "");
+  if (!code || !userId) return;
+
+  const messageKey = `${CODE_ENGINE_NAMESPACE}:identity-messages:${code}`;
+  const promptsKey = `${CODE_ENGINE_NAMESPACE}:identity-prompts:${userId}`;
+  const raw = await redis.get(messageKey);
+  let saved = null;
+  try { saved = raw ? JSON.parse(raw) : null; } catch {}
+
+  const token = process.env.BOT_TOKEN;
+  if (!token || String(saved?.chatId || "") !== userId) return;
+
+  const ids = Array.isArray(saved?.messageIds)
+    ? [...new Set(saved.messageIds)].filter((id) => Number.isInteger(id) && id > 0).slice(-20)
+    : [];
+
+  await Promise.allSettled(ids.map(async (messageId) => {
+    const response = await fetch(`https://api.telegram.org/bot${token}/deleteMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: userId, message_id: messageId }),
+      signal: AbortSignal.timeout(2500),
+    });
+    if (!response.ok) {
+      console.warn("[identity] Telegram could not remove bot message", { messageId, status: response.status });
+    }
+  }));
+
+  await redis.del(messageKey, promptsKey);
+}
+
 async function readIdentitySession(redis, req) {
   const cookies = parseCookies(req);
   const token = String(cookies[IDENTITY_COOKIE] || "");
@@ -240,6 +275,16 @@ export default async function handler(req, res) {
       });
     }
 
+    const activeSession = await readIdentitySession(redis, req);
+    if (activeSession && activeSession.telegramUsername === username.normalized) {
+      return res.status(200).json({
+        ok: true,
+        verified: true,
+        username: username.display,
+        expiresAt: activeSession.expiresAt,
+      });
+    }
+
     const key = identityCodeKey(code);
     const rawRecord = await redis.get(key);
 
@@ -336,6 +381,11 @@ export default async function handler(req, res) {
 
     await clearFailedAttempts(redis, ip);
     res.setHeader("Set-Cookie", serializeIdentityCookie(req, token, IDENTITY_SESSION_SECONDS));
+    try {
+      await deleteVerifiedIdentityMessages(redis, record);
+    } catch (cleanupError) {
+      console.warn("[identity] bot cleanup failed", cleanupError?.message || "unknown");
+    }
 
     return res.status(200).json({
       ok: true,
