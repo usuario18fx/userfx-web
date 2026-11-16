@@ -578,19 +578,19 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: clamp(22px, 4vh, 40px);
-  transform: translateY(-4vh);
+  gap: clamp(13px, 2.8vh, 22px);
+  transform: translateY(-2vh);
 }
 
 .fx-scene-loader-brand {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: clamp(10px, 2.6vw, 38px);
+  gap: clamp(9px, 1.4vw, 22px);
   width: 100%;
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(43px, 8vw, 124px);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: clamp(19px, 3vw, 34px);
   font-weight: 400;
   letter-spacing: .055em;
   line-height: 1.06;
@@ -616,6 +616,43 @@
   background-image: linear-gradient(180deg, #b8faff 0%, #12a8ff 19%, #003df3 47%, #50e7ff 61%, #0051ec 82%, #b1edff 100%);
   -webkit-text-stroke: .5px rgba(42, 209, 255, .9);
   filter: drop-shadow(0 0 9px rgba(0, 157, 255, .8)) drop-shadow(0 0 22px rgba(0, 86, 255, .34));
+}
+
+.fx-scene-loader-3d {
+  position: relative;
+  width: 100%;
+  height: clamp(170px, 31vh, 310px);
+  min-height: 0;
+  transform-origin: center center;
+  transition: transform 900ms cubic-bezier(.32,.75,.15,1), opacity 850ms ease;
+}
+
+.fx-scene-loader-3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fx-scene-loader-3d-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 clamp(46px, 9vw, 116px)/1 "Fredoka", system-ui, sans-serif;
+  letter-spacing: -.04em;
+  color: #d7ecff;
+  text-shadow: 0 7px 20px #000, 0 0 28px #1475d4;
+}
+
+.fx-scene-loader.is-leaving {
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.fx-scene-loader.is-leaving .fx-scene-loader-3d {
+  transform: translateY(-22vh) scale(.12);
+  opacity: 0;
 }
 
 .fx-scene-loader-subtitle {
@@ -706,8 +743,8 @@
   }
 
   .fx-scene-loader-brand {
-    font-size: clamp(39px, 11vw, 74px);
-    letter-spacing: .005em;
+    font-size: clamp(18px, 5vw, 30px);
+    letter-spacing: .03em;
   }
 
   .fx-scene-loader-subtitle {
@@ -722,7 +759,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fx-scene-loader-progress-fill {
+  .fx-scene-loader-progress-fill,
+  .fx-scene-loader-3d,
+  .fx-scene-loader.is-leaving {
     transition: none;
   }
 }
