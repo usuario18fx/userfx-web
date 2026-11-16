@@ -1,5 +1,6 @@
 import { accessEntryMode } from "../../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../../lib/access-notices.js";
+import { getManualNotice, queueManualNotice, cancelManualNotice, processWaitingNotice, scheduledNoticeKey } from "../../lib/manual-spcl-notices.js";
 import { PLAN_DAYS, PLAN_STARS } from "../../lib/access-plans.js";
 import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
 ﻿          import { Telegraf, Markup } from "telegraf";
@@ -162,6 +163,10 @@ bot.use(async (ctx, next) => {
             .set(BOT_CONTACT_DATA_PREFIX + userId, data, "EX", BOT_CONTACT_RETENTION_SECONDS)
             .del(BOT_CONTACT_BLOCK_PREFIX + userId)
             .exec();
+        }
+        const incoming = String(ctx.message?.text || "");
+        if (!/^\/(?:stop|cancel)(?:@\w+)?(?:\s|$)/i.test(incoming)) {
+          await processWaitingNotice(client, CODE_ENGINE_NAMESPACE, userId, bot.telegram, USERFX_SITE_URL).catch((error) => logger.warn("SPCL NOTICE WAIT ERROR", { message: error?.message }));
         }
       }
     } catch (error) {
@@ -2772,7 +2777,6 @@ for (const targetBot of [bot, adminBot]) {
     await ctx.answerCbQuery();
     const preview = Markup.inlineKeyboard([
       [Markup.button.callback("✔ SEND", "admin_message_send:" + ctx.match[1] + ":" + userId)],
-      [Markup.button.callback("↶ OPTIONS", "admin_message_to:" + userId)],
     ]);
     return ctx.reply("PREVIEW → " + formatAdminRecipient(userId, contact) + "\n\n" + template.text, { reply_markup: preview.reply_markup });
   });
@@ -2982,8 +2986,13 @@ function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "")
   const button = (label, plan) => Markup.button.callback(label, `manual_access:${plan}${username ? ":" + username : ""}`);
   if (issuedCode) return Markup.inlineKeyboard([
     [Markup.button.callback(`${PLAN_CONFIG[selectedPlan]?.prefix || "SPCL"} ✔️`, `manual_manage:view:${issuedCode}`), Markup.button.callback("EDITAR ✏️", `manual_manage:edit:${issuedCode}`)],
-    [Markup.button.callback("💬 MESSAGE OPTIONS", `manual_manage:messages:${issuedCode}`), Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
-    ...(username ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`)]] : []),
+    ...(username && selectedPlan === "special" ? [
+      [Markup.button.callback("✉ SEND NOTICE", `manual_notify:${issuedCode}`), Markup.button.callback("↻ RESEND", `manual_notice:askresend:${issuedCode}`)],
+      [Markup.button.callback("⏰ SCHEDULE", `manual_notice:choose:${issuedCode}`), Markup.button.callback("✖ CANCEL NOTICE", `manual_notice:cancel:${issuedCode}`)],
+      [Markup.button.callback("💬 MESSAGE", `manual_manage:messages:${issuedCode}`), Markup.button.callback("◉ WHEN ACTIVE", `manual_notice:when:${issuedCode}`)],
+      [Markup.button.callback("📋 STATUS", `manual_notice:status:${issuedCode}`)],
+    ] : username ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`), Markup.button.callback("💬 MESSAGE", `manual_manage:messages:${issuedCode}`)]] : []),
+    [Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
   ]);
   return Markup.inlineKeyboard([[button("SPCL", "special"), button("BSIC", "basic")], [button("PRX0", "pro"), button("VIPX", "vip")]]);
 }
@@ -3052,6 +3061,7 @@ async function handleManualAccess(ctx) {
     if (replacing && !existing) return ctx.reply("El código anterior cambió. Abre /access de nuevo.");
     const record = await generateAccessCode(planId, "admin_manual", "", null, username || null);
     if (existing) {
+      await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, existing.code);
       // Revoke the old bearer credential after its replacement exists.
       await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(existing.code));
     }
@@ -3103,6 +3113,7 @@ async function handleManualManage(ctx) {
     [Markup.button.callback("ELIMINAR ❌", `manual_manage:confirm_delete:${code}`), Markup.button.callback("CANCELAR", `manual_manage:view:${code}`)]
   ]));
   if (action === "confirm_delete") {
+    await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, code);
     await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(code));
     return ctx.editMessageText(`Acceso eliminado: ${code}\n@${username}`, manualAccessKeyboard("", username));
   }
@@ -3145,7 +3156,80 @@ async function manualTextMiddleware(ctx, next) {
     return ctx.reply("No se confirmó la entrega. Revisa el chat antes de intentar otro envío.");
   }
 }
+async function controlSpclNotice(ctx) {
+  if (!isAdmin(ctx) || ctx.chat?.type !== "private") return ctx.answerCbQuery("Admin private chat only", { show_alert: true });
+  const [, action, code] = ctx.match;
+  const client = await ensureRedis();
+  if (!client) return ctx.answerCbQuery("Redis unavailable", { show_alert: true });
+  const record = await getAccessCode(code);
+  if (record?.source !== "admin_manual" || record.planId !== "special" || record.status !== "active" || !record.telegramUsername) {
+    return ctx.answerCbQuery("SPCL code inactive or without recipient", { show_alert: true });
+  }
+  const username = String(record.telegramUsername).toLowerCase();
+  const task = await getManualNotice(client, CODE_ENGINE_NAMESPACE, code);
+  if (action === "status") {
+    await ctx.answerCbQuery();
+    const info = !task ? "No pending notice." : "Status: " + task.status + "\nMode: " + task.mode +
+      (task.runAt ? "\nAfter: " + new Date(task.runAt).toISOString() + " (daily 12:00 UTC check)" : "") +
+      (task.processedAt ? "\nProcessed: " + task.processedAt : "");
+    return ctx.reply("SPCL NOTICE · @" + username + "\n" + info);
+  }
+  if (action === "cancel") {
+    const outcome = await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, code);
+    await ctx.answerCbQuery(outcome);
+    return ctx.reply("@" + username + " · " + (outcome === "cancelled" ? "Notice cancelled." : "No pending notice to cancel (" + outcome + ")."));
+  }
+  if (action === "choose") {
+    await ctx.answerCbQuery();
+    return ctx.reply("SCHEDULE SPCL · @" + username + "\nDaily processing after the selected interval, at 12:00 UTC. Exact delivery time is not guaranteed.", Markup.inlineKeyboard([
+      [Markup.button.callback("1 DAY", "manual_notice:plan1:" + code), Markup.button.callback("3 DAYS", "manual_notice:plan3:" + code)],
+      [Markup.button.callback("7 DAYS", "manual_notice:plan7:" + code)],
+      [Markup.button.callback("◉ WHEN ACTIVE", "manual_notice:when:" + code)],
+      [Markup.button.callback("← BACK", "manual_notice:back:" + code)],
+    ]));
+  }
+  if (action === "back") {
+    await ctx.answerCbQuery();
+    return ctx.reply(manualAccessText(record), manualAccessKeyboard(record.planId, username, code));
+  }
+  if (action === "askresend") {
+    await ctx.answerCbQuery();
+    return ctx.reply("Confirm resending SPCL to @" + username + "? The original may already have arrived.", Markup.inlineKeyboard([
+      [Markup.button.callback("✔ RESEND NOW", "manual_notice:resend:" + code)],
+      [Markup.button.callback("CANCEL", "manual_notice:back:" + code)],
+    ]));
+  }
+  const recipientId = await resolveNoticeRecipient(username, client);
+  if (!recipientId) return ctx.answerCbQuery("User must start @User18Fx_bot first", { show_alert: true });
+  if (action === "when" || /^plan[137]$/.test(action)) {
+    const delayDays = action === "when" ? 0 : Number(action.slice(4));
+    const queued = await queueManualNotice(client, CODE_ENGINE_NAMESPACE, {
+      code, username, recipientId, mode: action === "when" ? "when_active" : "scheduled", delayDays,
+    });
+    await ctx.answerCbQuery(queued === "busy" ? "Delivery already started" : "Notice queued");
+    return ctx.reply(queued === "busy" ? "A send is in progress." :
+      "✔ @" + username + " · " + (action === "when" ? "Code notice will send after their next bot interaction." : "Scheduled after " + delayDays + " day(s), checked daily at 12:00 UTC.") +
+      "\nCANCEL NOTICE stops it before delivery.");
+  }
+  if (action === "resend") {
+    if (task?.status === "queued" || task?.status === "sending") return ctx.answerCbQuery("Cancel pending notice first", { show_alert: true });
+    const lock = CODE_ENGINE_NAMESPACE + ":manual-notice:resend:" + ctx.chat.id + ":" + ctx.callbackQuery.message.message_id;
+    if (await client.set(lock, "started", "NX", "EX", 86400) !== "OK") return ctx.answerCbQuery("Already processed");
+    await ctx.answerCbQuery();
+    const result = await sendAccessNotice({
+      redis: client, telegram: bot.telegram, namespace: CODE_ENGINE_NAMESPACE,
+      username, access: { enabled: true, telegramfx_access: true },
+      siteUrl: USERFX_SITE_URL, noticeId: code + ":manual-resend:" + ctx.callbackQuery.message.message_id, identityKey: false,
+      text: "USER FX · SPECIAL ACCESS\n\nYour personal code: " + code + "\nOpen USER FX and enter your code to continue.",
+      resolveRecipient: () => Promise.resolve(recipientId),
+    });
+    await client.set(scheduledNoticeKey(CODE_ENGINE_NAMESPACE, code), JSON.stringify({ code, username, recipientId, mode: "resend", status: result, processedAt: new Date().toISOString() }), "EX", 30 * 86400);
+    return ctx.reply("@" + username + " · " + (NOTICE_RESULTS[result] || result));
+  }
+  return ctx.answerCbQuery("Unknown action", { show_alert: true });
+}
 for (const targetBot of [bot, adminBot]) {
+  targetBot.action(/^manual_notice:(choose|back|status|cancel|when|plan1|plan3|plan7|askresend|resend):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, controlSpclNotice);
   targetBot.command("access", showManualAccess);
   targetBot.action(/^manual_access:(special|basic|pro|vip)(?::([A-Za-z0-9_]{3,32}))?$/, handleManualAccess);
   targetBot.action(/^manual_manage:(view|edit|code|text|messages|delete|confirm_delete|exit|toggle_(?:oncam|rec|stage|chat|multimedia)):((?:SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4})$/, handleManualManage);
@@ -3408,6 +3492,8 @@ async function handleManualNotice(ctx) {
     if (!client || record?.source !== "admin_manual" || record.status !== "active" || !username) {
       return ctx.reply("No hay un destinatario válido para este código.");
     }
+    const cancellation = await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, code);
+    if (["sending", "busy"].includes(cancellation)) return ctx.reply("Notice in progress. Check status first.");
     const result = await sendAccessNotice({
       redis: client, telegram: bot.telegram, namespace: CODE_ENGINE_NAMESPACE,
       username, access: { enabled: true, telegramfx_access: true },
@@ -3416,6 +3502,7 @@ async function handleManualNotice(ctx) {
       identityKey: false,
       resolveRecipient: (target) => resolveNoticeRecipient(target, client),
     });
+    await client.set(scheduledNoticeKey(CODE_ENGINE_NAMESPACE, code), JSON.stringify({ code, username, mode: "immediate", status: result, processedAt: new Date().toISOString() }), "EX", 30 * 86400);
     return ctx.reply(`@${username}: ${NOTICE_RESULTS[result]}`);
   } catch (error) {
     logger.error("MANUAL NOTICE ERROR", { message: error?.message });
