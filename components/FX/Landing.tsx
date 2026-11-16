@@ -50,6 +50,14 @@ const LANDING_STYLES = String.raw`
   cursor: pointer;
   transition: background-position .35s ease,transform .25s ease,box-shadow .25s ease;
 }
+.fx-telegram-launch img {
+  display: block;
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
 .fx-telegram-launch:hover {
   background-position: right center;
   transform: translateY(-2px);
