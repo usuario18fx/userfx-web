@@ -649,6 +649,24 @@ export default function CinematicTour({
         sculpture.scale.setScalar(fit);
         sculpture.position.set(0, 0.93, 4.10);
         scene.add(sculpture);
+        const loadOrnament = (file: string, x: number, y: number, z: number, diameter: number) => {
+          new GLTFLoader().load(file, (ornamentGltf) => {
+            if (abort.signal.aborted) return;
+            const ornament = ornamentGltf.scene;
+            const box = new THREE.Box3().setFromObject(ornament);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            ornament.position.sub(center);
+            const rig = new THREE.Group();
+            rig.add(ornament);
+            rig.scale.setScalar(diameter / Math.max(size.x, size.y, size.z, 0.001));
+            rig.position.set(x, y, z);
+            scene.add(rig);
+            wakeRender.current?.();
+          }, undefined, () => {});
+        };
+        loadOrnament("/assets/logos.glb/iconCorona.glb", 0.88, 2.07, 4.08, 0.78);
+        loadOrnament("/assets/logos.glb/iconRosa.glb", -0.90, 0.23, 4.35, 0.78);
         wakeRender.current?.();
       },
       undefined,
