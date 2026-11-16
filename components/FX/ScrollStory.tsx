@@ -74,9 +74,7 @@ export default function ScrollStory({ onOpenTelegram }: { onOpenTelegram: () => 
                 unlocked with your code.
               </p>
               <button type="button" className="fx-telegram-launch fx-telegram-launch--hero" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
-                <span role="img" aria-hidden="true">
-                  👤
-                </span>
+                <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </button>
             </motion.div>
           </motion.div>

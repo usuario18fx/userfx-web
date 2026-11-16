@@ -123,7 +123,7 @@ export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpe
             </nav>
             <div className="flex items-center gap-6">
               <button type="button" className="fx-telegram-launch" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
-                <span role="img" aria-hidden="true">👤</span>
+                <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </button>
               <MenuButton width="22.76px" gap="4.56px" />
             </div>
@@ -168,7 +168,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
               <a href={ENTER_URL} onClick={close} aria-label="Enter ROOM PRIV" title="ROOM PRIV" className="fx-telegram-launch shrink-0">
-                <span role="img" aria-hidden="true">👤</span>
+                <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </a>
               <MenuButton width="25px" gap="6px" />
             </div>
