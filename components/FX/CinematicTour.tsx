@@ -630,6 +630,31 @@ export default function CinematicTour({
       }, undefined, () => {});
     };
 
+    // WELCOME is a real GLB sculpture anchored to the floor at the far end of the corridor.
+    // The loading-screen lettering recedes into this fixed 3D landmark at 100%.
+    const welcomePlinth = box(3.42, 0.09, 0.48, 0, -0.015, 4.10,
+      new THREE.MeshStandardMaterial({ color: "#223644", metalness: 0.45, roughness: 0.4 }));
+    welcomePlinth.receiveShadow = true;
+    new GLTFLoader().load(
+      "/assets/welcome-statue.glb",
+      (gltf) => {
+        if (abort.signal.aborted) return;
+        const statue = gltf.scene;
+        statue.scale.setScalar(0.38);
+        statue.position.set(0, 0.055, 4.10);
+        statue.traverse((item) => {
+          if (item instanceof THREE.Mesh) {
+            item.castShadow = true;
+            item.receiveShadow = true;
+          }
+        });
+        scene.add(statue);
+        wakeRender.current?.();
+      },
+      undefined,
+      () => {},
+    );
+
     // ── Corredor ──
     const bronze = mat("#15bcef", 0.32, 0.68);
     const lacquer = mat("#00aebb", 0.27, 0.34);
@@ -2184,6 +2209,9 @@ export default function CinematicTour({
     >
       <div className="ct-cover" style={{ opacity: Math.max(0, Math.min(1, (WELCOME_FADE_TO - progress) / Math.max(0.001, WELCOME_FADE_TO - WELCOME_FADE_FROM))), visibility: progress >= WELCOME_FADE_TO ? "hidden" : "visible" }} aria-hidden={progress >= WELCOME_FADE_TO}>
         <h1 className="ct-cover-title">
+          <span className="ct-cover-brand">
+            USER FX
+          </span>
           <span className="ct-chrome">
             WELCOME
           </span>
@@ -2191,9 +2219,25 @@ export default function CinematicTour({
             PRIVATE WORLD
           </span>
         </h1>
-        <p className="ct-cover-hint">
-          SCROLL TO ENTER
-        </p>
+        <div className="ct-cover-hint" aria-label="Continue scrolling to enter">
+          <span className="ct-gesture-desktop" aria-hidden="true">
+            <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+              <rect x="5" y="2" width="14" height="28" rx="7" />
+              <path className="ct-gesture-wheel" d="M12 8v8" />
+            </svg>
+          </span>
+          <span className="ct-gesture-mobile" aria-hidden="true">
+            <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 28V14a2 2 0 0 1 4 0v6-11a2 2 0 0 1 4 0v11-8a2 2 0 0 1 4 0v12c0 5-3 8-8 8-3 0-5-1-7-5l-2-5a2 2 0 0 1 4-2l1 2" />
+            </svg>
+          </span>
+          <span className="ct-gesture-copy ct-desktop-copy">
+            SCROLL DOWN TO ENTER
+          </span>
+          <span className="ct-gesture-copy ct-mobile-copy">
+            SWIPE DOWN TO ENTER
+          </span>
+        </div>
       </div>
       {/* La interfaz de cada pantalla vive dentro del 3D (CSS3D); React la monta con portales. */}
       {hosts.laptop && laptopScreen ? createPortal(laptopScreen, hosts.laptop) : null}
