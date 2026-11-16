@@ -1190,7 +1190,7 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-        <SiteFooter />
+        <SiteFooter onVerified={() => setAccessOpen(true)} />
       </MenuOverlay>
       <div className="fx-landing">
         <main>
