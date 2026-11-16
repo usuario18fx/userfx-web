@@ -201,3 +201,41 @@ html {
   height: 16px;
   object-fit: contain;
 }
+
+/* Fredoka editorial typography — USER FX footer and menu access form. */
+.fx-site-footer {
+  font-family: "Fredoka", system-ui, sans-serif;
+}
+.fx-site-footer .fx-footer-heading,
+.fx-site-footer .fx-footer-wordmark {
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-weight: 700;
+}
+.fx-site-footer .fx-footer-wordmark {
+  letter-spacing: -.045em;
+}
+.fx-site-footer .fx-identity-footer {
+  align-items: stretch;
+  min-height: 0;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  background: transparent;
+}
+.fx-site-footer .fx-identity-intro {
+  display: none;
+}
+.fx-site-footer .fx-identity-panel {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.fx-site-footer .fx-identity-form input,
+.fx-site-footer .fx-identity-heading,
+.fx-site-footer .fx-identity-form button,
+.fx-site-footer .fx-identity-feedback {
+  font-family: "Fredoka", system-ui, sans-serif;
+}
