@@ -8,7 +8,7 @@ import {
   type ReactNode,
   type CSSProperties,
 } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FX } from "@/lib/assets";
 import { NAV, ENTER_URL } from "@/lib/content";
 import { EASE } from "@/lib/motion";
@@ -106,13 +106,10 @@ export function useActiveSection(ids: readonly string[]) {
 }
 /* Altura del header fijo: h-16 = 64px. Debe coincidir con --fx-nav-h en ScrollStory.css */
 export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpenTelegram: () => void }) {
-  const { open } = useMenu(),
-    { scrollY } = useScroll();
-  const [shown, setShown] = useState(false);
-  useMotionValueEvent(scrollY, "change", (y) => setShown(y > window.innerHeight * 0.75));
+  const { open } = useMenu();
   return (
                 <AnimatePresence>
-                 {shown && !open && (
+                 {!open && (
                 <motion.header initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ duration: 0.5, ease: EASE }} className="fixed inset-x-0 top-0 z-40 border-b border-ink/10 bg-sky/85 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-6 md:px-10">
                 <Brand />
