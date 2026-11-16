@@ -60,7 +60,8 @@ const BOT_CONTACT_RETENTION_SECONDS = 30 * 24 * 60 * 60;
 // ======================================================
           const ASSETS_BASE_URL = `${USERFX_SITE_URL.replace(/\/$/, "")}/assets`;
 const ASSET_WELCOME_VIDEO = `${ASSETS_BASE_URL}/FX-Y24V01.mp4`;
-const ASSET_VIDEOCALL_IMAGE = `${ASSETS_BASE_URL}/videocall.jpg`;
+const ASSET_VIDEOCALL_IMAGE = `${ASSETS_BASE_URL}/videocall.png`;
+const ASSET_VIDEOCALL_FALLBACK_IMAGE = `${ASSETS_BASE_URL}/videocall.jpg`;
 const ASSET_CHANNELS_VIDEO = `${ASSETS_BASE_URL}/videoSMKLFX.mp4`;
 const ASSET_SMOKELANDIA_VIDEO = `${ASSETS_BASE_URL}/introSMKL.mp4`;
 const ASSET_USERFX_VIDEO = `${ASSETS_BASE_URL}/introFX.mp4`;
@@ -726,7 +727,7 @@ const REQUEST_STATUS = {
 // ======================================================
 const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
-const BTN_SPCL = "✦ ꜱᴘᴇᴄɪᴀʟ";
+const BTN_SPCL = "🜲 ꜱᴘᴇᴄɪᴀʟ";
 const BTN_BASIC = "🌹 ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
@@ -1500,6 +1501,21 @@ const VIDEOCALL_INVITE_TEXT = `ʜᴏʟᴅ ᴜᴘ...
 ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
 ᴡᴀɴɴᴀ ꜱᴡᴀᴘ ᴘɪᴄꜱ ɪɴ ᴛʜᴇ ᴍᴇᴀɴᴛɪᴍᴇ?`;
 
+async function sendVideocallInvite(ctx) {
+  const photoOptions = { caption: VIDEOCALL_INVITE_TEXT, ...getPendingPhotoKeyboard() };
+  try {
+    await ctx.replyWithPhoto(ASSET_VIDEOCALL_IMAGE, photoOptions);
+  } catch (error) {
+    logger.warn("VIDEOCALL PNG UNAVAILABLE; USING JPG FALLBACK", getTelegramError(error));
+    try {
+      await ctx.replyWithPhoto(ASSET_VIDEOCALL_FALLBACK_IMAGE, photoOptions);
+    } catch (fallbackError) {
+      logger.error("VIDEOCALL INVITE IMAGE FAILED", getTelegramError(fallbackError));
+      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+    }
+  }
+}
+
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId || ctx.chat?.type !== "private") {
@@ -1510,7 +1526,7 @@ async function openVideocallFlow(ctx) {
     const existing = await getVideoRequest(userId);
     if (existing?.status === REQUEST_STATUS.WAITING_CONSENT) {
       await setVideoRequest(userId, { ...existing, status: REQUEST_STATUS.WAITING_PHOTO });
-      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+      await sendVideocallInvite(ctx);
       return;
     }
     if (existing && [REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN, REQUEST_STATUS.AWAITING_PAYMENT].includes(existing.status)) {
@@ -1530,7 +1546,7 @@ async function openVideocallFlow(ctx) {
       replySent: false,
       createdAt: Date.now(),
     });
-    await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+    await sendVideocallInvite(ctx);
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
       `📞 <b>NEW PRIVATE MEDIA REQUEST</b>\nUsername: ${escapeHtml(user.username)}\nID: ${escapeHtml(userId)}\nAwaiting first photo/video.`,
@@ -1557,7 +1573,7 @@ bot.action(/^exchange_consent_(\d+)$/, async (ctx) => {
   await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
   await ctx.answerCbQuery("✔ ᴄᴏɴᴛɪɴᴜᴇ.");
   await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
-  await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+  await sendVideocallInvite(ctx);
 });
 bot.action(/^exchange_cancel_(\d+)$/, async (ctx) => {
   const userId = String(ctx.from?.id || "");
@@ -1583,7 +1599,7 @@ async function sendPendingVideocallPanel(ctx) {
     }
     if (pending.status === REQUEST_STATUS.WAITING_CONSENT) {
       await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
-      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+      await sendVideocallInvite(ctx);
       return;
     }
     if (pending.status === REQUEST_STATUS.WAITING_PHOTO) {
@@ -2344,14 +2360,14 @@ bot.on("text", async (ctx, next) => {
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
       return await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO, {
-        reply_markup: { inline_keyboard: [[{ text: "↗ CLICK HERE · SMOKELANDIA", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
+        reply_markup: { inline_keyboard: [[{ text: "ɢᴇᴛ ɪɴ ↗︎", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
       });
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
       return await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO, {
         reply_markup: {
-          inline_keyboard: [[{ text: "↗ CLICK HERE · USER FX", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
+          inline_keyboard: [[{ text: "ɢᴇᴛ ɪɴ ↗︎", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
         },
       });
     }
