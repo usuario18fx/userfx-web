@@ -40,8 +40,7 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
     return () => window.clearTimeout(timer);
   }, [percent, sceneReady]);
 
-  // Render the real GLB typography on the loading screen. The same model is fixed to the
-  // floor at the back of the corridor, so the transition reads as one continuous object.
+  // The existing USER FX logo GLB is the hero in both the loader and the corridor.
   useEffect(() => {
     const mount = stageRef.current;
     if (!mount) return;
@@ -82,11 +81,21 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
     observer.observe(mount);
     let statue: THREE.Group | null = null;
     new GLTFLoader().load(
-      "/assets/welcome-statue.glb",
+      "/logoFX.glb",
       (gltf) => {
         if (disposed) return;
         statue = gltf.scene;
-        scene.add(statue);
+        const bounds = new THREE.Box3().setFromObject(statue);
+        const size = bounds.getSize(new THREE.Vector3());
+        const center = bounds.getCenter(new THREE.Vector3());
+        statue.position.sub(center);
+        const fit = Math.min(7.1 / Math.max(size.x, .001), 2.7 / Math.max(size.y, .001), 2 / Math.max(size.z, .001));
+        const hero = new THREE.Group();
+        hero.add(statue);
+        hero.scale.setScalar(fit);
+        hero.userData.baseScale = fit;
+        statue = hero;
+        scene.add(hero);
         setModelReady(true);
       },
       undefined,
@@ -98,7 +107,7 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
       if (statue) {
         const t = Math.min(1, (now - start) / INTRO_DURATION_MS);
         const zoom = 1 + 0.30 * Math.sin(Math.min(1, t * 1.6) * Math.PI);
-        statue.scale.setScalar(zoom);
+        statue.scale.setScalar((statue.userData.baseScale as number) * zoom);
         renderer.render(scene, camera);
       }
       raf = window.requestAnimationFrame(tick);
@@ -133,7 +142,7 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
         <div ref={stageRef} className="fx-scene-loader-3d" aria-hidden="true">
           {!modelReady && (
             <span className="fx-scene-loader-3d-fallback">
-              WELCOME
+              USER FX
             </span>
           )}
         </div>

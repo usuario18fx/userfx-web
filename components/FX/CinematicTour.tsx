@@ -630,25 +630,25 @@ export default function CinematicTour({
       }, undefined, () => {});
     };
 
-    // WELCOME is a real GLB sculpture anchored to the floor at the far end of the corridor.
-    // The loading-screen lettering recedes into this fixed 3D landmark at 100%.
-    const welcomePlinth = box(3.42, 0.09, 0.48, 0, -0.015, 4.10,
+    // USER FX logo sculpture: reuse the existing GLB, not a second WELCOME model.
+    const logoPlinth = box(3.42, 0.09, 0.48, 0, -0.015, 4.10,
       new THREE.MeshStandardMaterial({ color: "#223644", metalness: 0.45, roughness: 0.4 }));
-    welcomePlinth.receiveShadow = true;
+    logoPlinth.receiveShadow = true;
     new GLTFLoader().load(
-      "/assets/welcome-statue.glb",
+      "/logoFX.glb",
       (gltf) => {
         if (abort.signal.aborted) return;
-        const statue = gltf.scene;
-        statue.scale.setScalar(0.38);
-        statue.position.set(0, 0.055, 4.10);
-        statue.traverse((item) => {
-          if (item instanceof THREE.Mesh) {
-            item.castShadow = true;
-            item.receiveShadow = true;
-          }
-        });
-        scene.add(statue);
+        const logo = gltf.scene;
+        const bounds = new THREE.Box3().setFromObject(logo);
+        const size = bounds.getSize(new THREE.Vector3());
+        const center = bounds.getCenter(new THREE.Vector3());
+        logo.position.sub(center);
+        const fit = Math.min(3.1 / Math.max(size.x, 0.001), 1.55 / Math.max(size.y, 0.001), 0.45 / Math.max(size.z, 0.001));
+        const sculpture = new THREE.Group();
+        sculpture.add(logo);
+        sculpture.scale.setScalar(fit);
+        sculpture.position.set(0, 0.93, 4.10);
+        scene.add(sculpture);
         wakeRender.current?.();
       },
       undefined,
@@ -2208,17 +2208,6 @@ export default function CinematicTour({
       aria-label="Recorrido 3D por la habitación de USER FX"
     >
       <div className="ct-cover" style={{ opacity: Math.max(0, Math.min(1, (WELCOME_FADE_TO - progress) / Math.max(0.001, WELCOME_FADE_TO - WELCOME_FADE_FROM))), visibility: progress >= WELCOME_FADE_TO ? "hidden" : "visible" }} aria-hidden={progress >= WELCOME_FADE_TO}>
-        <h1 className="ct-cover-title">
-          <span className="ct-cover-brand">
-            USER FX
-          </span>
-          <span className="ct-chrome">
-            WELCOME
-          </span>
-          <span className="ct-blue">
-            PRIVATE WORLD
-          </span>
-        </h1>
         <div className="ct-cover-hint" aria-label="Continue scrolling to enter">
           <span className="ct-gesture-desktop" aria-hidden="true">
             <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
