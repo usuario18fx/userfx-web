@@ -1184,7 +1184,7 @@ export default function Landing() {
 {LANDING_STYLES}
 </style>
       {showIntro && (
-        <FxSceneLoader onComplete={() => setIntroComplete(true)} />
+        <FxSceneLoader sceneReady={sceneReady || sceneTimedOut} onComplete={() => setIntroComplete(true)} />
       )}
       <SmoothScroll />
       <ScrollStops />
