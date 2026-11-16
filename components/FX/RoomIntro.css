@@ -646,13 +646,58 @@
 }
 
 .fx-scene-loader.is-leaving {
-  opacity: 0;
-  transition: opacity 900ms ease;
+  animation: fx-loader-final-out 4100ms linear both;
 }
-
-.fx-scene-loader.is-leaving .fx-scene-loader-3d {
-  transform: translateY(-22vh) scale(.12);
+.fx-scene-loader-scroll,
+.fx-scene-loader-welcome {
+  display: block;
+  font-family: "Orbitron", system-ui, sans-serif;
+  letter-spacing: .22em;
+  text-align: center;
+  color: #d6ecff;
+}
+.fx-scene-loader-scroll {
+  font-size: clamp(10px, 1vw, 13px);
+  opacity: .5;
+}
+.fx-scene-loader-welcome {
+  font-size: clamp(24px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1;
+  color: #e3f4ff;
+  text-shadow: 0 0 22px rgba(18, 145, 240, .35);
+}
+.fx-scene-loader-3d {
   opacity: 0;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-scroll {
+  animation: fx-loader-disappear 450ms ease forwards;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-welcome {
+  animation: fx-loader-disappear 550ms ease 500ms forwards;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-brand {
+  animation: fx-loader-disappear 550ms ease 1100ms forwards;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-3d {
+  animation: fx-loader-statue-in 1050ms cubic-bezier(.2,.8,.2,1) 1600ms both;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-subtitle {
+  animation: fx-loader-disappear 550ms ease 2750ms forwards;
+}
+.fx-scene-loader.is-leaving .fx-scene-loader-progress-row {
+  animation: fx-loader-disappear 550ms ease 2950ms forwards;
+}
+@keyframes fx-loader-disappear {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes fx-loader-statue-in {
+  from { opacity: 0; transform: scale(.55) translateY(25px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes fx-loader-final-out {
+  0%, 86% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .fx-scene-loader-subtitle {
@@ -990,5 +1035,18 @@
   .fx-room-intro .ct-screen .fx-scr-btn {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-scene-loader.is-leaving,
+  .fx-scene-loader.is-leaving .fx-scene-loader-scroll,
+  .fx-scene-loader.is-leaving .fx-scene-loader-welcome,
+  .fx-scene-loader.is-leaving .fx-scene-loader-brand,
+  .fx-scene-loader.is-leaving .fx-scene-loader-3d,
+  .fx-scene-loader.is-leaving .fx-scene-loader-subtitle,
+  .fx-scene-loader.is-leaving .fx-scene-loader-progress-row {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
   }
 }

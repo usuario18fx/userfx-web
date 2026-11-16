@@ -10,7 +10,7 @@ type Props = {
 };
 
 const INTRO_DURATION_MS = 4200;
-const RETREAT_DURATION_MS = 950;
+const RETREAT_DURATION_MS = 4100;
 
 export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
   const [percent, setPercent] = useState(1);
@@ -80,6 +80,22 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
     const observer = new ResizeObserver(resize);
     observer.observe(mount);
     let statue: THREE.Group | null = null;
+    const loadAccent = (path: string, x: number, y: number, z: number, maxSize: number) => {
+      new GLTFLoader().load(path, (gltf) => {
+        if (disposed) return;
+        const accent = gltf.scene;
+        const bounds = new THREE.Box3().setFromObject(accent);
+        const size = bounds.getSize(new THREE.Vector3());
+        const center = bounds.getCenter(new THREE.Vector3());
+        accent.position.sub(center);
+        const scale = maxSize / Math.max(size.x, size.y, size.z, 0.001);
+        const pivot = new THREE.Group();
+        pivot.add(accent);
+        pivot.scale.setScalar(scale);
+        pivot.position.set(x, y, z);
+        scene.add(pivot);
+      }, undefined, () => {});
+    };
     new GLTFLoader().load(
       "/logoFX.glb",
       (gltf) => {
@@ -97,6 +113,8 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
         statue = hero;
         scene.add(hero);
         setModelReady(true);
+        loadAccent("/assets/logos.glb/iconCorona.glb", 2.2, 1.65, -0.35, 1.2);
+        loadAccent("/assets/logos.glb/iconRosa.glb", -2.1, -0.5, 0.35, 1.1);
       },
       undefined,
       () => {},
@@ -131,6 +149,12 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
   return (
     <div className={"fx-scene-loader" + (leaving ? " is-leaving" : "")} role="status" aria-label="USER FX loading screen">
       <div className="fx-scene-loader-content">
+        <span className="fx-scene-loader-scroll" aria-hidden="true">
+          SCROLL TO ENTER
+        </span>
+        <span className="fx-scene-loader-welcome">
+          WELCOME
+        </span>
         <h1 className="fx-scene-loader-brand" aria-label="USER FX">
           <span className="fx-scene-loader-brand-user">
             USER
