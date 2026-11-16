@@ -205,6 +205,7 @@
 }
 
 .cinematic-tour .ct-cover-title {
+  animation: ct-cover-type-zoom 1800ms cubic-bezier(.22,.7,.1,1) both;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -219,6 +220,19 @@
   line-height: 0.95;
   letter-spacing: -0.045em;
   text-align: center;
+}
+
+.cinematic-tour .ct-cover-brand {
+  font: 700 clamp(14px, 2vw, 25px)/1.2 "Fredoka", system-ui, sans-serif;
+  letter-spacing: .26em;
+  color: #daeeff;
+  text-shadow: 0 1px 12px #000;
+}
+
+@keyframes ct-cover-type-zoom {
+  0% { transform: scale(1.36); }
+  63% { transform: scale(.94); }
+  100% { transform: scale(1); }
 }
 
 .cinematic-tour .ct-chrome {
@@ -293,6 +307,7 @@
 
 /* Cover: device-aware gesture, with half-opacity English instructions */
 .cinematic-tour .ct-cover-hint {
+  opacity: .5;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -301,7 +316,7 @@
 }
 .cinematic-tour .ct-gesture-copy {
   display: block;
-  opacity: .5;
+  opacity: 1;
   color: #c1dff2;
 }
 .cinematic-tour .ct-gesture-desktop,
@@ -329,9 +344,9 @@
   50% { transform: translateY(8px); opacity: 1; }
 }
 @keyframes ct-finger-swipe {
-  0% { transform: translateY(10px); opacity: .2; }
+  0% { transform: translateY(-9px); opacity: .2; }
   35%, 70% { opacity: 1; }
-  100% { transform: translateY(-9px); opacity: .1; }
+  100% { transform: translateY(10px); opacity: .1; }
 }
 @media (max-width: 768px), (pointer: coarse) {
   .cinematic-tour .ct-gesture-desktop,
@@ -347,6 +362,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .cinematic-tour .ct-cover-title { animation: none !important; }
   .cinematic-tour .ct-gesture-wheel,
   .cinematic-tour .ct-gesture-mobile svg {
     animation: none !important;
