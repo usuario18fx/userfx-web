@@ -52,6 +52,10 @@ import { CSS3DObject, CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRe
 import { ENTER_AT, STEPS, stepIndex, STOP_T, type StepKey } from "./tourTimeline";
 import "./CinematicTour.css";
 
+// Keep the WELCOME title visible across the corridor and fade it only as the gallery begins.
+const WELCOME_FADE_FROM = STOP_T[stepIndex("enter-room")];
+const WELCOME_FADE_TO = STOP_T[stepIndex("gallery-a")];
+
 // Videos de la pantalla de la laptop (bucle 24/7): "gallery" en el bloque 1, "multimedia" en el 3.
 const LAPTOP_VIDEOS = {
   gallery: "/assets/introFX.mp4",
@@ -2178,7 +2182,7 @@ export default function CinematicTour({
       role="img"
       aria-label="Recorrido 3D por la habitación de USER FX"
     >
-      <div className="ct-cover" style={{ opacity: Math.max(0, 1 - progress / 0.1), visibility: progress >= 0.1 ? "hidden" : "visible" }} aria-hidden={progress >= 0.1}>
+      <div className="ct-cover" style={{ opacity: Math.max(0, Math.min(1, (WELCOME_FADE_TO - progress) / Math.max(0.001, WELCOME_FADE_TO - WELCOME_FADE_FROM))), visibility: progress >= WELCOME_FADE_TO ? "hidden" : "visible" }} aria-hidden={progress >= WELCOME_FADE_TO}>
         <h1 className="ct-cover-title">
           <span className="ct-chrome">
             WELCOME
