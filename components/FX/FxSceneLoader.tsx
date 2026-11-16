@@ -90,9 +90,12 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
         const center = bounds.getCenter(new THREE.Vector3());
         statue.position.sub(center);
         const fit = Math.min(7.1 / Math.max(size.x, .001), 2.7 / Math.max(size.y, .001), 2 / Math.max(size.z, .001));
-        statue.scale.setScalar(fit);
-        statue.userData.baseScale = fit;
-        scene.add(statue);
+        const hero = new THREE.Group();
+        hero.add(statue);
+        hero.scale.setScalar(fit);
+        hero.userData.baseScale = fit;
+        statue = hero;
+        scene.add(hero);
         setModelReady(true);
       },
       undefined,
