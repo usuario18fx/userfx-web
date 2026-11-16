@@ -11,6 +11,7 @@ type EligibilityResponse = {
 
 type Props = {
   onVerified: (username: string) => void;
+  instanceId?: string;
 };
 
 const USERNAME_STORAGE_KEY = "userfx_telegram_username";
@@ -20,7 +21,7 @@ function normalizeTelegramUsername(value: string) {
   return clean ? `@${clean}` : "";
 }
 
-export default function TelegramIdentityFooter({ onVerified }: Props) {
+export default function TelegramIdentityFooter({ onVerified, instanceId = "telegram-identity" }: Props) {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -68,7 +69,7 @@ export default function TelegramIdentityFooter({ onVerified }: Props) {
       } catch {
         // No local storage; server verification still succeeds.
       }
-      setMessage("USERNAME VERIFIED · CONTINUE TO VAULT");
+      setMessage("USERNAME ELIGIBLE · ENTER YOUR ACCESS CODE");
       onVerified(verified);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "TELEGRAM VERIFICATION FAILED");
@@ -78,7 +79,7 @@ export default function TelegramIdentityFooter({ onVerified }: Props) {
   }
 
   return (
-    <section id="telegram-identity" className="fx-identity-footer" aria-labelledby="fx-identity-title">
+    <section id={instanceId} className="fx-identity-footer" aria-labelledby={`${instanceId}-title`}>
       <p className="fx-identity-intro">
         are you a special user? Enter a username, enjoy it!
       </p>
@@ -87,7 +88,7 @@ export default function TelegramIdentityFooter({ onVerified }: Props) {
           <span className="fx-identity-pill">
             ·TELEGRAM IDENTITY·
           </span>
-          <strong id="fx-identity-title">
+          <strong id={`${instanceId}-title`}>
             ENTER YOUR USERNAME
           </strong>
         </header>
