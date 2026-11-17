@@ -248,8 +248,11 @@ function PricingCard({ plan, view }: { plan: any, view: "stars" | "window" }) {
 
   return (
     <motion.li
-      variants={wipe(40)}
-      whileHover={{ y: -6, scale: 1.02 }}
+      variants={plan.featured ? {
+        hidden: { opacity: 0, y: 34, scale: 1, clipPath: "inset(16% 0% 0% 0% round 40px)" },
+        show: { opacity: 1, y: -6, scale: 1.02, clipPath: "inset(0% 0% 0% 0% round 40px)", transition: { duration: 1, ease: EASE } },
+      } : wipe(40)}
+      whileHover={{ y: plan.featured ? -24 : -16, scale: plan.featured ? 1.055 : 1.035 }}
       onMouseEnter={(e) => setPlanPreview(e.currentTarget, true)}
       onMouseLeave={(e) => setPlanPreview(e.currentTarget, false)}
       onFocusCapture={(e) => setPlanPreview(e.currentTarget, true)}
