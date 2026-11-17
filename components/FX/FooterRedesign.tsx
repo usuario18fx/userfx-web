@@ -1,5 +1,4 @@
 "use client";
-import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import { useMenu } from "./Chrome";
 import { motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
@@ -29,47 +28,11 @@ type FooterProps = {
 
 function TelegramSignIn({ onVerified }: FooterProps) {
   return (
-    <div className="max-w-md">
-      <p className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[.28em]" style={{ color: ACCENT }}>
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
-        </span>
-        THE INNER CIRCLE
-      </p>
-      <h2 className="fx-footer-heading text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white md:text-5xl">
-        Your private <span className="text-white/40">identity.</span>
-      </h2>
-      <p className="mt-4 text-sm leading-relaxed text-white/55">
-        Enter your Telegram @username to check access, then unlock the private room with your code.
-      </p>
-      <div className="mt-8 rounded-2xl border border-[#6fb8c8]/25 bg-white/[.035] p-5 backdrop-blur-md">
-        <div className="mb-4 flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#6fb8c8]/30 bg-[#6fb8c8]/10">
-            <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" fill="#73bed2">
-              <path d="m21.4 4.6-3.2 15.1c-.2 1.1-.9 1.4-1.8.9l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.3l-11.2 7-4.8-1.5c-1-.3-1-1 .2-1.5L19.9 3c.9-.4 1.8.2 1.5 1.6Z" />
-            </svg>
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-white">
-              Telegram · USER FX
-            </p>
-            <p className="mt-1 text-xs text-white/45">
-              Check username access
-            </p>
-          </div>
-        </div>
-        <TelegramIdentityFooter instanceId="telegram-identity-menu" onVerified={onVerified} />
-        <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs text-[#91d5e6] transition-colors hover:text-white">
-          Need a code? Open @User18Fx_bot
-          <span aria-hidden="true">
-            ↗
-          </span>
-        </a>
-      </div>
-      <p className="mt-3 pl-1 text-xs text-white/35">
-        Checking a username does not sign you in. Private access still requires your valid code.
-      </p>
+    <div className="min-w-0">
+      <div id="fx-chat-footer-slot" className="fx-chat-footer-slot" aria-label="USER FX · CHAT · TELEGRAM" />
+      <button type="button" onClick={onVerified} className="mt-4 rounded-lg border border-[#6fb8c8]/35 px-5 py-3 text-xs font-semibold tracking-wider text-[#91d5e6] transition-colors hover:border-[#6fb8c8] hover:text-white">
+        ALREADY HAVE A CODE? ENTER THE ROOM
+      </button>
     </div>
   );
 }

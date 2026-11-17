@@ -75,3 +75,66 @@
   }
 }
 @media (prefers-reduced-motion: reduce) { .fx-web-chat-message-list { scroll-behavior: auto; } .fx-web-chat-icon circle { animation: none; } }
+
+
+/* One FX chat instance: embed its live panel in the former Telegram identity area. */
+.fx-chat-footer-slot {
+  width: 100%;
+  min-width: 0;
+  min-height: min(710px, 80svh);
+}
+.fx-chat-footer-slot .fx-web-chat-window {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: min(710px, 80svh);
+  min-height: 480px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(92, 143, 188, .36);
+  border-radius: 16px;
+  background: #090f1b;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, .45);
+}
+.fx-chat-footer-slot .fx-web-chat-header {
+  min-height: 90px;
+}
+.fx-chat-footer-slot .fx-web-chat-header-mark {
+  width: 56px;
+  height: 56px;
+  font-size: 21px;
+}
+.fx-chat-footer-slot .fx-web-chat-gate {
+  padding: 26px 28px;
+}
+.fx-chat-footer-slot .fx-web-chat-gate > strong {
+  font-size: 27px;
+}
+.fx-chat-footer-slot .fx-web-chat-reopen,
+.fx-chat-footer-slot .fx-chat-footer-reopen {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 220px;
+  border: 1px solid rgba(92, 143, 188, .36);
+  border-radius: 16px;
+  background: #0e1827;
+  color: #91d5e6;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  .fx-chat-footer-slot {
+    min-height: min(640px, 76svh);
+  }
+  .fx-chat-footer-slot .fx-web-chat-window {
+    height: min(640px, 76svh);
+    min-height: 400px;
+  }
+  .fx-chat-footer-slot .fx-web-chat-gate {
+    padding: 18px 16px;
+  }
+}
