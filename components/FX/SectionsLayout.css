@@ -464,3 +464,38 @@
   #access .fx-plan-cta {
     transition: none;
   }}
+
+/* USER FX: chromatic glaze on the always-visible PRO video.
+   Hover changes only opacity (no video zoom or movement). */
+#access .fx-plan-card.is-featured .fx-plan-bg .fx-plan-hover-video {
+  opacity: 0.53;
+  transform: none;
+  filter: saturate(1.18) contrast(1.08);
+  transition: opacity 0.45s ease;
+}
+
+#access .fx-plan-card.is-featured .fx-plan-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(132deg,
+    rgba(0, 210, 255, 0.26),
+    rgba(38, 83, 198, 0.17) 52%,
+    rgba(151, 57, 209, 0.21));
+  mix-blend-mode: screen;
+  opacity: 0.68;
+  transition: opacity 0.45s ease;
+}
+
+#access .fx-plan-card.is-featured:hover .fx-plan-bg .fx-plan-hover-video,
+#access .fx-plan-card.is-featured:focus-within .fx-plan-bg .fx-plan-hover-video {
+  opacity: 0.72;
+  transform: none;
+}
+
+#access .fx-plan-card.is-featured:hover .fx-plan-bg::after,
+#access .fx-plan-card.is-featured:focus-within .fx-plan-bg::after {
+  opacity: 0.28;
+}
