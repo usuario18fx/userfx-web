@@ -54,17 +54,29 @@ export default function FxChat() {
   const [footerClosed, setFooterClosed] = useState(false);
 
   useEffect(() => {
-    const slot = document.getElementById("fx-chat-footer-slot");
-    if (!slot) return;
-    setFooterSlot(slot);
-    const observer = new IntersectionObserver(([entry]) => {
-      const isVisible = Boolean(entry?.isIntersecting);
-      setFooterVisible(isVisible);
-      if (isVisible) setFooterClosed(false);
-    }, { threshold: 0.08 });
-    observer.observe(slot);
+    let currentSlot: HTMLElement | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    const findSlot = () => {
+      const nextSlot = document.getElementById("fx-chat-footer-slot");
+      if (nextSlot === currentSlot) return;
+      intersectionObserver?.disconnect();
+      currentSlot = nextSlot;
+      setFooterSlot(nextSlot);
+      setFooterVisible(false);
+      if (!nextSlot) return;
+      intersectionObserver = new IntersectionObserver(([entry]) => {
+        const isVisible = Boolean(entry?.isIntersecting);
+        setFooterVisible(isVisible);
+        if (isVisible) setFooterClosed(false);
+      }, { threshold: 0.08 });
+      intersectionObserver.observe(nextSlot);
+    };
+    const domObserver = new MutationObserver(findSlot);
+    domObserver.observe(document.body, { childList: true, subtree: true });
+    findSlot();
     return () => {
-      observer.disconnect();
+      domObserver.disconnect();
+      intersectionObserver?.disconnect();
     };
   }, []);
 
