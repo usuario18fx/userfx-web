@@ -18,6 +18,8 @@
 
 #access .fx-plan-card {
   position: relative;
+  z-index: 1;
+  transform-origin: center bottom;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -31,13 +33,16 @@
 
 #access .fx-plan-card:hover,
 #access .fx-plan-card:focus-within {
+  z-index: 3;
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 #access .fx-plan-card.is-featured {
+  z-index: 2;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* --- CARD BACKGROUND VIDEO --- */
