@@ -245,148 +245,125 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* --- CTA BUTTON (Custom Image) --- */
+/* --- USERFX ACCESS CTA — QUIET PREMIUM, NO LED/TICKER --- */
 #access .fx-plan-cta {
+  --fx-plan-accent: #64bdd0;
+  --fx-plan-edge: rgba(100, 189, 208, 0.27);
   position: relative;
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 14px;
   width: 100%;
-  min-height: 48px;
-  padding: 0 20px;
-  border: 1px solid #ffffff26;
-  border-radius: 12px;
+  min-height: 66px;
+  padding: 11px 14px 11px 18px;
+  border: 1px solid var(--fx-plan-edge);
+  border-radius: 13px;
   overflow: hidden;
   isolation: isolate;
-  background: #070d13;
-  color: #fff;
-  font-family: "Fredoka", system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, rgba(19, 35, 47, 0.94), rgba(5, 13, 23, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 8px 20px rgba(0, 0, 0, 0.14);
   text-decoration: none;
-  opacity: 1;
-  transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  box-shadow: 0 4px 15px #0000004d;
-}
-#access .fx-plan-cta > * {
-  position: relative;
-  z-index: 3;
+  color: #f4f9fc;
+  transition: border-color .24s ease, background-color .24s ease, box-shadow .24s ease, transform .24s ease;
 }
 
-/* Acabado azul carbón sobre los relieves de icon7.png (sin alterar texto). */
 #access .fx-plan-cta::before {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-image: url("/icon7.png");
-  background-position: center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  border-radius: inherit;
-  filter: grayscale(1) sepia(0.34) hue-rotate(165deg) saturate(0.68) brightness(0.56) contrast(1.12);
-  opacity: 0.92;
-  transition: filter 0.25s ease;
-  pointer-events: none;
+  inset: 12px auto 12px 0;
+  width: 3px;
+  border-radius: 0 5px 5px 0;
+  background: var(--fx-plan-accent);
+  opacity: .8;
 }
 
-/* Sombras interiores: no crea resplandor alrededor del botón. */
-#access .fx-plan-cta::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(180deg, rgba(3, 17, 25, 0.12), rgba(0, 8, 16, 0.24));
-  pointer-events: none;
+#access .fx-plan-cta--basic {
+  --fx-plan-accent: #de7284;
+  --fx-plan-edge: rgba(222, 114, 132, 0.28);
+}
+#access .fx-plan-cta--pro {
+  --fx-plan-accent: #40d1df;
+  --fx-plan-edge: rgba(64, 209, 223, 0.35);
+}
+#access .fx-plan-cta--vip {
+  --fx-plan-accent: #dcc389;
+  --fx-plan-edge: rgba(220, 195, 137, 0.29);
 }
 
-/* Hover */
-#access .fx-plan-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 18, 40, 0.34);
-  border-color: rgba(120, 210, 255, 0.3);
-}
-
-#access .fx-plan-cta:hover::before {
-  filter: grayscale(1) sepia(0.34) hue-rotate(165deg) saturate(0.76) brightness(0.62) contrast(1.12);
-}
-
-/* Featured */
-#access .fx-plan-card.is-featured .fx-plan-cta {
-  border-color: rgba(145, 220, 255, 0.28);
-  box-shadow: 0 4px 18px rgba(42, 120, 255, 0.14);
-}
-/* LED marquee — the existing ornamental /icon7.png surface stays unchanged. */
-#access .fx-plan-led-viewport {
-  display: block;
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-}
-
-#access .fx-plan-led-track {
+#access .fx-plan-cta-copy {
   display: flex;
-  align-items: center;
-  gap: 28px;
-  width: max-content;
-  animation: fx-plan-led-marquee 11s linear infinite;
-  will-change: transform;
+  flex-direction: column;
+  min-width: 0;
+  gap: 5px;
 }
 
-#access .fx-plan-led-text {
-  display: block;
-  flex: none;
-  font-family: "Orbitron", "Krona One", sans-serif;
-  font-size: clamp(14px, 1.35vw, 18px);
-  font-weight: 900;
-  line-height: 1.25;
-  letter-spacing: 0.065em;
+#access .fx-plan-cta-eyebrow {
+  color: var(--fx-plan-accent);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: .18em;
   text-transform: uppercase;
-  color: #0f58c3;
-  background-image: radial-gradient(circle, #1766dd 46%, transparent 55%);
-  background-size: 3.5px 3.5px;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 3px rgba(12, 70, 180, 0.48));
 }
 
-#access .fx-plan-led-arrow {
-  flex: none;
-  margin-left: 12px;
-  color: #c3e8ff;
+#access .fx-plan-cta-label {
+  color: #f4f9fc;
+  font-family: "Orbitron", "Fredoka", sans-serif;
+  font-size: clamp(12px, 1.06vw, 15px);
+  font-weight: 700;
+  letter-spacing: .025em;
+  line-height: 1.2;
+  white-space: normal;
 }
 
-#access .fx-plan-cta:hover .fx-plan-led-track,
-#access .fx-plan-cta:focus-visible .fx-plan-led-track {
-  animation-play-state: paused;
+#access .fx-plan-cta-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--fx-plan-edge);
+  border-radius: 50%;
+  color: var(--fx-plan-accent);
+  background: rgba(255, 255, 255, 0.025);
+  transition: transform .24s ease, background-color .24s ease;
 }
 
-@keyframes fx-plan-led-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50% - 14px));
-  }
+#access .fx-plan-cta:hover,
+#access .fx-plan-cta:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--fx-plan-accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 24px rgba(0, 0, 0, 0.19);
+}
+
+#access .fx-plan-cta:hover .fx-plan-cta-icon,
+#access .fx-plan-cta:focus-visible .fx-plan-cta-icon {
+  transform: translateX(3px);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 @media (max-width: 600px) {
-  #access .fx-plan-led-text {
-    font-size: 14px;
+  #access .fx-plan-cta {
+    min-height: 62px;
+  }
+  #access .fx-plan-cta-label {
+    font-size: 13px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #access .fx-plan-led-track {
-    animation: none;
-    will-change: auto;
+  #access .fx-plan-cta,
+  #access .fx-plan-cta-icon {
+    transition: none;
+  }
+  #access .fx-plan-cta:hover,
+  #access .fx-plan-cta:focus-visible,
+  #access .fx-plan-cta:hover .fx-plan-cta-icon,
+  #access .fx-plan-cta:focus-visible .fx-plan-cta-icon {
+    transform: none;
   }
 }
 
