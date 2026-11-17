@@ -608,7 +608,7 @@ export default function CinematicTour({
     // Sin PointLight por cuadro: los materiales son Basic y los apliques ya iluminan el marco.
     const pic = (
       x: number, y: number, z: number, rotate: number,
-      material: THREE.Material, width = 1.05, height = 1.55
+      material: THREE.Material, width = 1.05, height = 1.55, chromatic = false
     ) => {
       const group = new THREE.Group();
       group.position.set(x, y, z);
@@ -618,6 +618,27 @@ export default function CinematicTour({
       const art = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
       art.position.z = 0.044;
       group.add(art);
+      if (chromatic) {
+        const chromaticTexture = canvas((ctx) => {
+          const glow = ctx.createLinearGradient(0, 0, 512, 768);
+          glow.addColorStop(0, "rgba(0, 211, 255, 0.22)");
+          glow.addColorStop(0.48, "rgba(32, 93, 206, 0.12)");
+          glow.addColorStop(1, "rgba(157, 59, 202, 0.18)");
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, 512, 768);
+        }, 512, 768);
+        const chromaticMaterial = new THREE.MeshBasicMaterial({
+          map: chromaticTexture,
+          transparent: true,
+          opacity: 0.82,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          toneMapped: false,
+        });
+        const chromaticLayer = new THREE.Mesh(new THREE.PlaneGeometry(width, height), chromaticMaterial);
+        chromaticLayer.position.z = 0.051;
+        group.add(chromaticLayer);
+      }
     };
     // Texturas originales del directorio public, con fallback al material existente.
     const applyImage = (material: THREE.MeshBasicMaterial, url: string) => {
@@ -830,6 +851,7 @@ export default function CinematicTour({
             portrait,
             1.13,
             1.65,
+            isLastLeft,
           );
         }
         const sconce = new THREE.PointLight("#3c5757", 2.6, 3.7);
