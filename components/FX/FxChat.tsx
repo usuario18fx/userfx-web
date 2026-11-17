@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import "./FxChat.css";
+import { createPortal } from "react-dom";
 
 const TERMS_VERSION = "2026-11-08-v1";
 const BOT_LINK = "https://t.me/User18Fx_bot?start=webchat";
@@ -48,9 +49,31 @@ export default function FxChat() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const scroll = useRef<HTMLDivElement>(null);
+  const [footerSlot, setFooterSlot] = useState<HTMLElement | null>(null);
+  const [footerVisible, setFooterVisible] = useState(false);
+  const [footerClosed, setFooterClosed] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
+    const slot = document.getElementById("fx-chat-footer-slot");
+    if (!slot) return;
+    setFooterSlot(slot);
+    const observer = new IntersectionObserver(([entry]) => {
+      const isVisible = Boolean(entry?.isIntersecting);
+      setFooterVisible(isVisible);
+      if (isVisible) setFooterClosed(false);
+    }, { threshold: 0.08 });
+    observer.observe(slot);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const embedded = Boolean(footerSlot && footerVisible);
+  const visible = embedded ? !footerClosed : open;
+
+
+  useEffect(() => {
+    if (!visible) return;
     let cancelled = false;
     setLoading(true);
     void callChat("GET").then((response) => {
@@ -64,10 +87,10 @@ export default function FxChat() {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [open]);
+  }, [visible]);
 
   useEffect(() => {
-    if (!open || !linked) return;
+    if (!visible || !linked) return;
     let alive = true;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
@@ -84,11 +107,11 @@ export default function FxChat() {
       });
     }, 3500);
     return () => { alive = false; window.clearInterval(timer); };
-  }, [open, linked]);
+  }, [visible, linked]);
 
   useEffect(() => {
-    if (open && linked) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" });
-  }, [messages, open, linked]);
+    if (visible && linked) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" });
+  }, [messages, visible, linked]);
 
   async function handleLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -141,24 +164,7 @@ export default function FxChat() {
     }
   }
 
-  return (
-    <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "")} aria-label="USER FX chat">
-      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
-        <span className="fx-web-chat-symbol" aria-hidden="true">
-          <svg className="fx-web-chat-icon" viewBox="0 0 32 32" focusable="false">
-            <path d="M4 7.5h15.5a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H10l-6 4v-17a4 4 0 0 1 4-4" />
-            <path d="M13.5 4H25a4 4 0 0 1 4 4v11l-5.5-3.5" />
-            <circle cx="10" cy="16" r="1.2" />
-            <circle cx="15" cy="16" r="1.2" />
-            <circle cx="20" cy="16" r="1.2" />
-          </svg>
-        </span>
-        <span className="fx-web-chat-label">
-          CHAT
-        </span>
-        <span className="fx-web-chat-pulse" aria-hidden="true" />
-      </button>
-      {open && (
+  const chatPanel = (
         <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
           <header className="fx-web-chat-header">
             <div className="fx-web-chat-header-mark">FX</div>
@@ -166,7 +172,7 @@ export default function FxChat() {
               <strong>USER FX</strong>
               <small>{linked ? "BOT + TELEGRAM CONNECTED" : "CHAT · TELEGRAM"}</small>
             </div>
-            <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
+            <button type="button" className="fx-web-chat-close" onClick={() => { if (embedded) setFooterClosed(true); else setOpen(false); }} aria-label="Close chat">×</button>
           </header>
           {loading ? (
             <div className="fx-web-chat-center" role="status">Connecting…</div>
@@ -230,6 +236,33 @@ export default function FxChat() {
           )}
           {error && <p className="fx-web-chat-error" role="alert">{error}</p>}
         </section>
+  );
+
+  return (
+    <div id="fx-chat-dock" className={"fx-web-chat" + (visible ? " is-open" : "")} aria-label="USER FX chat">
+      <button type="button" className="fx-web-chat-launcher" onClick={() => { if (embedded) setFooterClosed((value) => !value); else setOpen((current) => !current); }} aria-label={visible ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={visible} aria-controls="fx-web-chat-panel">
+        <span className="fx-web-chat-symbol" aria-hidden="true">
+          <svg className="fx-web-chat-icon" viewBox="0 0 32 32" focusable="false">
+            <path d="M4 7.5h15.5a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H10l-6 4v-17a4 4 0 0 1 4-4" />
+            <path d="M13.5 4H25a4 4 0 0 1 4 4v11l-5.5-3.5" />
+            <circle cx="10" cy="16" r="1.2" />
+            <circle cx="15" cy="16" r="1.2" />
+            <circle cx="20" cy="16" r="1.2" />
+          </svg>
+        </span>
+        <span className="fx-web-chat-label">
+          CHAT
+        </span>
+        <span className="fx-web-chat-pulse" aria-hidden="true" />
+      </button>
+      {visible && (embedded && footerSlot
+        ? createPortal(chatPanel, footerSlot)
+        : chatPanel)}
+      {embedded && footerSlot && !visible && createPortal(
+        <button type="button" className="fx-chat-footer-reopen" onClick={() => setFooterClosed(false)}>
+          OPEN USER FX · CHAT · TELEGRAM
+        </button>,
+        footerSlot
       )}
     </div>
   );
