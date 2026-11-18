@@ -166,7 +166,7 @@ bot.use(async (ctx, next) => {
         }
         const incoming = String(ctx.message?.text || "");
         if (!/^\/(?:stop|cancel)(?:@\w+)?(?:\s|$)/i.test(incoming)) {
-          await processWaitingNotice(client, CODE_ENGINE_NAMESPACE, userId, bot.telegram, USERFX_SITE_URL).catch((error) => logger.warn("SPCL NOTICE WAIT ERROR", { message: error?.message }));
+          await processWaitingNotice(client, CODE_ENGINE_NAMESPACE, userId, bot.telegram, USERFX_SITE_URL, username).catch((error) => logger.warn("SPCL NOTICE WAIT ERROR", { message: error?.message }));
         }
       }
     } catch (error) {
@@ -3200,7 +3200,7 @@ async function controlSpclNotice(ctx) {
     ]));
   }
   const recipientId = await resolveNoticeRecipient(username, client);
-  if (!recipientId) return ctx.answerCbQuery("User must start @User18Fx_bot first", { show_alert: true });
+  if (!recipientId && action !== "when") return ctx.answerCbQuery("User must start @User18Fx_bot first", { show_alert: true });
   if (action === "when" || /^plan[137]$/.test(action)) {
     const delayDays = action === "when" ? 0 : Number(action.slice(4));
     const queued = await queueManualNotice(client, CODE_ENGINE_NAMESPACE, {
@@ -3208,7 +3208,7 @@ async function controlSpclNotice(ctx) {
     });
     await ctx.answerCbQuery(queued === "busy" ? "Delivery already started" : "Notice queued");
     return ctx.reply(queued === "busy" ? "A send is in progress." :
-      "✔ @" + username + " · " + (action === "when" ? "Code notice will send after their next bot interaction." : "Scheduled after " + delayDays + " day(s), checked daily at 12:00 UTC.") +
+      "✔ @" + username + " · " + (action === "when" ? (recipientId ? "Code notice will send after their next bot interaction." : "Queued for their first START in @User18Fx_bot.") : "Scheduled after " + delayDays + " day(s), checked daily at 12:00 UTC.") +
       "\nCANCEL NOTICE stops it before delivery.");
   }
   if (action === "resend") {
