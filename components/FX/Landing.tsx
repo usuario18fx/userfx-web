@@ -715,7 +715,7 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
   const requestedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [backgroundReady, setBackgroundReady] = useState(false);
+  const [backgroundFailed, setBackgroundFailed] = useState(false);
   const backgroundVideo = item.id === 3 ? "/assets/footer/footer3-1.mp4" : null;
 
   const start = () => {
@@ -773,11 +773,11 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          poster={item.poster}
           aria-hidden="true"
-          onLoadedData={() => setBackgroundReady(true)}
-          onError={() => setBackgroundReady(false)}
-          style={{ opacity: backgroundReady && !playing ? 1 : 0 }}
+          onError={() => setBackgroundFailed(true)}
+          style={{ opacity: backgroundFailed ? 0 : 1 }}
         />
       )}
       <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
