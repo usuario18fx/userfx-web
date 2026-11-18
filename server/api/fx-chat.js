@@ -1,3 +1,4 @@
+import { fxBotTone } from "../../lib/fx-telegram-tone.js";
 import {
   FX_CHAT_TERMS_VERSION,
   appendFxChatMessage,
@@ -44,8 +45,8 @@ async function informAdmin(userId, message) {
     const adminChatId = String(process.env.ADMIN_CHAT_ID);
     const sent = await telegramApi(process.env.ADMIN_BOT_TOKEN, "sendMessage", {
       chat_id: adminChatId,
-      text: "USER FX WEB CHAT\nUser ID: " + userId + "\n\n" + message +
-        "\n\nResponde a este mensaje desde Telegram para contestar al usuario.",
+      text: fxBotTone("USER FX · NEW WEB CHAT\nGuest ID: ") + userId + "\n\n" + message +
+        "\n\n" + fxBotTone("Reply to this message on Telegram to reach the guest."),
     });
     if (sent?.message_id) await setFxChatAdminReplyTarget(adminChatId, sent.message_id, userId);
   } catch (error) {
@@ -114,7 +115,7 @@ export default async function handler(req, res) {
     const answer = fxChatReply(message);
     await telegramApi(process.env.BOT_TOKEN, "sendMessage", {
       chat_id: session.userId,
-      text: "WEBCHAT · Tu mensaje:\n" + message + "\n\nFX BOT:\n" + answer,
+      text: fxBotTone("WEB CHAT · YOUR MESSAGE:\n") + message + "\n\n" + fxBotTone("FX BOT:\n" + answer),
     });
     await appendFxChatMessage(session.userId, "user", message, "web");
     await appendFxChatMessage(session.userId, "bot", answer, "web");
