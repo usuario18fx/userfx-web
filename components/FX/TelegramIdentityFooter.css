@@ -132,3 +132,11 @@
   .fx-identity-form { grid-template-columns: 30px 13px minmax(0, 1fr) 92px; }
   .fx-identity-form button { font-size: 8px; }
 }
+
+/* FX identity section wallpaper */
+.fx-landing .fx-identity-footer {
+  background:
+    linear-gradient(180deg, rgba(2, 5, 11, .28), rgba(2, 5, 11, .65)),
+    url("/wallpaperModal.png") center center / cover no-repeat;
+  background-color: #05070b;
+}
