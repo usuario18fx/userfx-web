@@ -1043,6 +1043,14 @@ async function sendIdentityCode(ctx, options = {}) {
     const keyboard = Markup.inlineKeyboard([[Markup.button.callback("↻ ꜱᴇɴᴅ ᴀɢᴀɪɴ", `tgmx_resend_${record.code}`), Markup.button.webApp("ᴇɴᴛᴇʀ ᴄᴏᴅᴇ", returnUrl)]]);
     const sent = await ctx.reply(`🔐 <b>ᴛᴇʟᴇɢʀᴀᴍ ɪᴅᴇɴᴛɪᴛʏ ᴋᴇʏ</b>\n\n` + `${escapeHtml(username?.display || "")}` + `\n\n⇀ SPCL-   <code>${escapeHtml(record.code.slice(-4))}</code>` + `\n\nᴛʜɪꜱ ɪꜱ ᴀ ꜱᴘᴇᴄɪᴀʟ ᴄᴏᴅᴇ, ᴇɴᴊᴏʏ ɪᴛ, ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇꜱᴛɪᴏɴꜱ, ʟᴇᴛ ᴍᴇ ᴋɴᴏᴡ.` + `\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴, 𝙺𝙴𝙴𝙿 𝙸𝚃 𝙻𝙸𝚃` + `\n\n⏱ ᴇxᴘɪʀᴇꜱ ɪɴ 𝟭𝟱 ᴍɪɴᴜᴛᴇꜱ ᴀɴᴅ ᴄᴀɴ ʙᴇ ᴜꜱᴇᴅ ᴏɴᴄᴇ.`, { parse_mode: "HTML", reply_markup: keyboard.reply_markup });
     await rememberSpclBotMessage(ctx, sent.message_id, record.code);
+    await notifySpclDelivered({
+      recipientId: String(ctx.from?.id || ""),
+      messageId: sent.message_id,
+      sentAt: new Date().toISOString(),
+      code: "SPCL-" + record.code.slice(-4),
+      username: username?.normalized || "",
+      mode: "identity",
+    }).catch((error) => logger.warn("SPCL IDENTITY ADMIN RECEIPT FAILED", { message: error?.message || "unknown" }));
   } catch (error) {
     logger.error("T𝙶𝙼𝚇 𝙸𝙳𝙴𝙽𝚃𝙸𝚃𝚈 𝙴𝚁𝚁𝙾𝚁", {
       userId: String(ctx.from?.id || ""),
