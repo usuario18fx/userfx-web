@@ -1,5 +1,6 @@
 import { accessEntryMode } from "../../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../../lib/access-notices.js";
+import { sendSpclDeliveryReceipt } from "../../lib/spcl-delivery-receipt.js";
 import { getManualNotice, queueManualNotice, cancelManualNotice, processWaitingNotice, scheduledNoticeKey } from "../../lib/manual-spcl-notices.js";
 import { PLAN_DAYS, PLAN_STARS } from "../../lib/access-plans.js";
 import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
@@ -123,6 +124,9 @@ if (!ADMIN_BOT_TOKEN) {
 // ======================================================
 const bot = new Telegraf(BOT_TOKEN);
 const adminBot = new Telegraf(ADMIN_BOT_TOKEN);
+async function notifySpclDelivered(details) {
+  await sendSpclDeliveryReceipt({ telegram: adminBot.telegram, chatId: ADMIN_CHAT_ID, ...details });
+}
 function syntheticUsernameForId(id) {
   const value = String(id || "").trim();
   return /^\d{5,20}$/.test(value) ? `id_${value}` : "";
@@ -166,7 +170,7 @@ bot.use(async (ctx, next) => {
         }
         const incoming = String(ctx.message?.text || "");
         if (!/^\/(?:stop|cancel)(?:@\w+)?(?:\s|$)/i.test(incoming)) {
-          await processWaitingNotice(client, CODE_ENGINE_NAMESPACE, userId, bot.telegram, USERFX_SITE_URL, username).catch((error) => logger.warn("SPCL NOTICE WAIT ERROR", { message: error?.message }));
+          await processWaitingNotice(client, CODE_ENGINE_NAMESPACE, userId, bot.telegram, USERFX_SITE_URL, username, notifySpclDelivered).catch((error) => logger.warn("SPCL NOTICE WAIT ERROR", { message: error?.message }));
         }
       }
     } catch (error) {
@@ -3222,6 +3226,7 @@ async function controlSpclNotice(ctx) {
       siteUrl: USERFX_SITE_URL, noticeId: code + ":manual-resend:" + ctx.callbackQuery.message.message_id, identityKey: false,
       text: "USER FX · SPECIAL ACCESS\n\nYour personal code: " + code + "\nOpen USER FX and enter your code to continue.",
       resolveRecipient: () => Promise.resolve(recipientId),
+      onDelivered: (receipt) => notifySpclDelivered({ ...receipt, code, username, mode: "resend" }),
     });
     await client.set(scheduledNoticeKey(CODE_ENGINE_NAMESPACE, code), JSON.stringify({ code, username, recipientId, mode: "resend", status: result, processedAt: new Date().toISOString() }), "EX", 30 * 86400);
     return ctx.reply("@" + username + " · " + (NOTICE_RESULTS[result] || result));
@@ -3501,6 +3506,9 @@ async function handleManualNotice(ctx) {
       text: `You've been granted ${record.plan} access to USER FX. Your personal access code is ${record.code}. Open the website and choose ALREADY GOT CODE to enter.`,
       identityKey: false,
       resolveRecipient: (target) => resolveNoticeRecipient(target, client),
+      onDelivered: record.planId === "special"
+        ? (receipt) => notifySpclDelivered({ ...receipt, code, username, mode: "immediate" })
+        : null,
     });
     await client.set(scheduledNoticeKey(CODE_ENGINE_NAMESPACE, code), JSON.stringify({ code, username, mode: "immediate", status: result, processedAt: new Date().toISOString() }), "EX", 30 * 86400);
     return ctx.reply(`@${username}: ${NOTICE_RESULTS[result]}`);
