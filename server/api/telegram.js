@@ -193,18 +193,18 @@ async function adminFreeReplyMiddleware(ctx, next) {
   if (!recipientId) return next();
   if (answer.trim() === "/cancel") {
     await client.del(key);
-    return ctx.reply("FREE cancelado.");
+    return ctx.reply("FREE reply canceled.");
   }
   const text = answer.trim();
-  if (!text || text.length > 3000) return ctx.reply("Escribe un mensaje de 1 a 3000 caracteres, o /cancel.");
+  if (!text || text.length > 3000) return ctx.reply("Drop a message (1–3,000 characters), or hit /cancel.");
   const lock = key + ":sending";
   if (await client.set(lock, "1", "EX", 600, "NX") !== "OK") {
-    return ctx.reply("Ya se está procesando esta respuesta.");
+    return ctx.reply("This reply's already being handled, babe.");
   }
   const result = await deliverAdminMessage(recipientId, text);
   if (result.ok) {
     await client.del(key);
-    return ctx.reply("✔ FREE enviado a " + formatAdminRecipient(recipientId, result.contact) + ".");
+    return ctx.reply("✔ FREE reply sent to " + formatAdminRecipient(recipientId, result.contact) + ".");
   }
   await client.del(lock);
   return ctx.reply("✘ " + result.reason);
@@ -745,7 +745,7 @@ function telegramFxPanelKeyboard(usernameNormalized, mask) {
   const group = buttonFor("ɢʀᴏᴜᴘ", 16);
   const save = Markup.button.callback("💾 ꜱᴀᴠᴇ", `tfx_save_${usernameNormalized}_${mask}`);
   const revoke = Markup.button.callback("⛔ ʀᴇᴠᴏᴋᴇ ᴀʟʟ", `tfx_revoke_${usernameNormalized}_0`);
-  return Markup.inlineKeyboard([[telegramfx], [gallery, chat], [priv, group], [save, revoke], [Markup.button.callback("✉ Enviar aviso", `tfx_notify_${usernameNormalized}`)], [Markup.button.callback("💬 MESSAGE OPTIONS", "tfx_message_" + usernameNormalized)]]);
+  return Markup.inlineKeyboard([[telegramfx], [gallery, chat], [priv, group], [save, revoke], [Markup.button.callback("✉ SEND NOTICE", `tfx_notify_${usernameNormalized}`)], [Markup.button.callback("💬 MESSAGE OPTIONS", "tfx_message_" + usernameNormalized)]]);
 }
 async function telegramFxRequest(pathname, options = {}) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -1802,7 +1802,7 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
 const SPCL_DM_URL = "https://t.me/User18Fx";
 function getSpclRequestKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.url("✉ SOLICITAR ACCESO · DM", SPCL_DM_URL)],
+    [Markup.button.url("✉ REQUEST ACCESS · DM", SPCL_DM_URL)],
   ]);
 }
 async function openSpclConfirmation(ctx) {
@@ -1853,11 +1853,11 @@ bot.action(/^spcl_retry_(\d+)$/, async (ctx) => {
 bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
   const requestedId = String(ctx.match?.[1] || "");
   if (!requestedId || requestedId !== String(ctx.from?.id || "")) {
-    await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
+    await ctx.answerCbQuery("That confirmation belongs to another account.", { show_alert: true });
     return;
   }
   if (ctx.chat?.type !== "private") {
-    await ctx.answerCbQuery("Solo en chat privado.", { show_alert: true });
+    await ctx.answerCbQuery("Private chat only, babe.", { show_alert: true });
     return;
   }
   const username = normalizeTelegramFxUsername(ctx.from?.username || "");
@@ -1866,11 +1866,11 @@ bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
     return;
   }
   try {
-    await ctx.answerCbQuery("Verificando acceso SPCL…");
+    await ctx.answerCbQuery("Checking your SPCL access…");
     const access = await getTelegramFxAccess(username.normalized);
     if (!access || access.enabled !== true || access.telegramfx_access !== true) {
       await ctx.reply(
-        `⛔ <b>NO TIENES ACCESO SPCL</b>\n\n${escapeHtml(username.display)} no tiene autorización activa.\n\nPuedes solicitar acceso enviándome un mensaje directo.`,
+        `⛔ <b>SPCL ACCESS NOT ACTIVE</b>\n\n${escapeHtml(username.display)} doesn't have active clearance.\n\nWant in, babe? Send me a DM to request access.`,
         { parse_mode: "HTML", reply_markup: getSpclRequestKeyboard().reply_markup }
       );
       return;
@@ -1884,16 +1884,16 @@ bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
       ...getTelegramError(error),
       stack: getErrorStack(error),
     });
-    await ctx.reply("⚠️ No fue posible verificar SPCL. Inténtalo de nuevo; no se ha concedido acceso.").catch(() => {});
+    await ctx.reply("Couldn't verify SPCL, babe. Give it another go. No access was granted.").catch(() => {});
   }
 });
 bot.action(/^spcl_cancel_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
-    await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
+    await ctx.answerCbQuery("That confirmation belongs to another account.", { show_alert: true });
     return;
   }
-  await ctx.answerCbQuery("Cancelado");
-  await ctx.reply("Verificación SPCL cancelada.", getAccessKeyboard());
+  await ctx.answerCbQuery("Canceled");
+  await ctx.reply("SPCL verification canceled.", getAccessKeyboard());
 });
 
 //// USER START //
@@ -2605,7 +2605,7 @@ async function openAdminMessageMenu(ctx, userId, answerCallback = false) {
   const contact = await getAdminMessageContact(userId, client);
   if (!contact) {
     if (answerCallback) await ctx.answerCbQuery("User not available", { show_alert: true });
-    return ctx.reply("No se puede enviar a ese usuario. Debe iniciar el bot y permitir mensajes.");
+    return ctx.reply("Can't reach this guest yet. They need to start the bot and allow messages.");
   }
   if (answerCallback) await ctx.answerCbQuery();
   return ctx.reply(
@@ -2650,8 +2650,8 @@ async function showRecentAdminContacts(ctx, period = "1h", offset = 0, callback 
   if (callback) await ctx.answerCbQuery();
   return ctx.reply(
     "👥 /online · ACTIVIDAD RECIENTE (" + hours + "h)\n\n" +
-    (rows.length ? rows.join("\n") : "No hay usuarios recientes registrados en este periodo.") +
-    "\n\nNo representa el estado online de Telegram. Solo interacciones recientes; el envío puede fallar si el usuario bloqueó el bot.",
+    (rows.length ? rows.join("\n") : "No recent guest activity for this time window.") +
+    "\n\nThis shows recent bot activity, not who's online on Telegram. Delivery can fail if a guest blocked the bot.",
     { reply_markup: Markup.inlineKeyboard(buttons).reply_markup },
   );
 }
@@ -2720,7 +2720,7 @@ for (const targetBot of [bot, adminBot]) {
     if (!contact) return ctx.answerCbQuery("User unavailable", { show_alert: true });
     await ctx.answerCbQuery();
     const prompt = await ctx.reply(
-      "✍ FREE → " + formatAdminRecipient(ctx.match[1], contact) + "\n\nEscribe la respuesta a este mensaje para enviarla. /cancel para salir.",
+      "✍ FREE → " + formatAdminRecipient(ctx.match[1], contact) + "\n\nReply to this message to send your answer. Use /cancel to exit.",
       { reply_markup: { force_reply: true, selective: true } },
     );
     const key = CODE_ENGINE_NAMESPACE + ":admin-message-free:" + ctx.botInfo.id + ":" + ctx.chat.id + ":" + ctx.from.id + ":" + prompt.message_id;
@@ -2730,14 +2730,14 @@ for (const targetBot of [bot, adminBot]) {
 bot.command("stop", async (ctx) => {
   if (ctx.chat?.type !== "private" || !ctx.from?.id) return;
   const client = await ensureRedis();
-  if (!client) return ctx.reply("No se pudo guardar la preferencia. Intenta de nuevo.");
+  if (!client) return ctx.reply("Couldn't save that preference. Give it another go.");
   const id = String(ctx.from.id);
   await client.multi()
     .set(BOT_CONTACT_OPTOUT_PREFIX + id, "1")
     .zrem(BOT_CONTACT_ACTIVITY_KEY, id)
     .del(BOT_CONTACT_DATA_PREFIX + id)
     .exec();
-  await ctx.reply("✔ No recibirás mensajes individuales del administrador. Envía /start si deseas reactivar los mensajes.");
+  await ctx.reply("✔ Admin DMs are off for you. Send /start if you want them back on.");
 });
 
 //// ADMIN BOT / MY ID  //
@@ -2899,13 +2899,13 @@ bot.action(/^notify_me_(\d+)$/, async (ctx) => {
 function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "") {
   const button = (label, plan) => Markup.button.callback(label, `manual_access:${plan}${username ? ":" + username : ""}`);
   if (issuedCode) return Markup.inlineKeyboard([
-    [Markup.button.callback(`${PLAN_CONFIG[selectedPlan]?.prefix || "SPCL"} ✔️`, `manual_manage:view:${issuedCode}`), Markup.button.callback("EDITAR ✏️", `manual_manage:edit:${issuedCode}`)],
+    [Markup.button.callback(`${PLAN_CONFIG[selectedPlan]?.prefix || "SPCL"} ✔️`, `manual_manage:view:${issuedCode}`), Markup.button.callback("EDIT ✏️", `manual_manage:edit:${issuedCode}`)],
     ...(username && selectedPlan === "special" ? [
       [Markup.button.callback("✉ SEND NOTICE", `manual_notify:${issuedCode}`), Markup.button.callback("↻ RESEND", `manual_notice:askresend:${issuedCode}`)],
       [Markup.button.callback("⏰ SCHEDULE", `manual_notice:choose:${issuedCode}`), Markup.button.callback("✖ CANCEL NOTICE", `manual_notice:cancel:${issuedCode}`)],
       [Markup.button.callback("💬 MESSAGE", `manual_manage:messages:${issuedCode}`), Markup.button.callback("◉ WHEN ACTIVE", `manual_notice:when:${issuedCode}`)],
       [Markup.button.callback("📋 STATUS", `manual_notice:status:${issuedCode}`)],
-    ] : username ? [[Markup.button.callback("✉ Enviar aviso", `manual_notify:${issuedCode}`), Markup.button.callback("💬 MESSAGE", `manual_manage:messages:${issuedCode}`)]] : []),
+    ] : username ? [[Markup.button.callback("✉ SEND NOTICE", `manual_notify:${issuedCode}`), Markup.button.callback("💬 MESSAGE", `manual_manage:messages:${issuedCode}`)]] : []),
     [Markup.button.callback("DELETE ❌", `manual_manage:delete:${issuedCode}`)],
   ]);
   return Markup.inlineKeyboard([[button("SPCL", "special"), button("BSIC", "basic")], [button("PRX0", "pro"), button("VIPX", "vip")]]);
@@ -2913,10 +2913,10 @@ function manualAccessKeyboard(selectedPlan = "", username = "", issuedCode = "")
 function manualAccessText(record) {
   const f = record.features || {};
   const mark = v => v ? "✔️" : "✖️";
-  return [record.code, record.telegramUsername ? `Usuario: @${record.telegramUsername}` : "", "Código ya asignado.", "",
-    `ONCAM · MYROOM: ${mark(f.oncam)}`, `GRABACIÓN: ${mark(f.rec)}`, `STAGE: ${mark(f.stage)}`,
+  return [record.code, record.telegramUsername ? `Guest: @${record.telegramUsername}` : "", "Code already assigned.", "",
+    `ONCAM · MYROOM: ${mark(f.oncam)}`, `RECORDING: ${mark(f.rec)}`, `STAGE: ${mark(f.stage)}`,
     `CHAT: ${mark(f.chat)}`, `MULTIMEDIA: ${mark(f.multimedia)}`,
-    `Duración: ${record.unlimited ? "Ilimitada" : record.days + " días"}`].filter(v => v !== "").join("\n");
+    `Duration: ${record.unlimited ? "Unlimited" : record.days + " days"}`].filter(v => v !== "").join("\n");
 }
 async function findManualAccess(username) {
   const client = await ensureRedis();
@@ -2938,9 +2938,9 @@ async function showManualAccess(ctx, inputUsername) {
   if (!isAdmin(ctx)) return ctx.reply("❌ Unauthorized.");
   const arg = typeof inputUsername === "string" ? inputUsername : getCommandArg(ctx);
   if (typeof inputUsername !== "string") {
-    if (ctx.chat?.type !== "private") return ctx.reply("Abre el chat privado del bot para agregar usuarios.");
+    if (ctx.chat?.type !== "private") return ctx.reply("Open the bot's private chat to add guests.");
     const mode = ctx.state?.accessEntryMode;
-    if (!mode) return ctx.reply("No se pudo abrir Agregar usuarios. Intenta /access de nuevo.");
+    if (!mode) return ctx.reply("Couldn't open ADD GUESTS. Run /access again.");
     await mode.enter(ctx);
     if (!arg) return;
   }
@@ -2949,7 +2949,7 @@ async function showManualAccess(ctx, inputUsername) {
   if (target) await ctx.state?.accessEntryMode?.remember?.(ctx, target.normalized);
   const existing = target ? await findManualAccess(target.normalized) : null;
   if (existing) return ctx.reply(manualAccessText(existing), manualAccessKeyboard(existing.planId, target.normalized, existing.code));
-  return ctx.reply(`Selecciona el código que deseas otorgar${target ? " a " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
+  return ctx.reply(`Choose the access tier to grant${target ? " to " + target.display : ""}:`, manualAccessKeyboard("", target?.normalized || ""));
 }
 async function handleManualAccess(ctx) {
   if (!isAdmin(ctx)) return ctx.answerCbQuery("❌ Unauthorized.");
@@ -2959,7 +2959,7 @@ async function handleManualAccess(ctx) {
   const message = ctx.callbackQuery.message;
   if (!message) return;
   const client = await ensureRedis();
-  if (!client) return ctx.reply("No se pudo conectar a Redis.");
+  if (!client) return ctx.reply("Couldn't connect to Redis.");
   const requestKey = `${CODE_ENGINE_NAMESPACE}:manual:${message.chat.id}:${message.message_id}`;
   const token = crypto.randomUUID();
   const lockKey = username ? `${CODE_ENGINE_NAMESPACE}:manual-lock:${username}` : requestKey + ":lock";
@@ -2971,8 +2971,8 @@ async function handleManualAccess(ctx) {
     if (existing && (!replacing || existing.code !== replacing)) {
       return ctx.editMessageText(manualAccessText(existing), manualAccessKeyboard(existing.planId, username, existing.code));
     }
-    if (previous && !replacing) return ctx.reply(`Código ya generado: ${previous}`);
-    if (replacing && !existing) return ctx.reply("El código anterior cambió. Abre /access de nuevo.");
+    if (previous && !replacing) return ctx.reply(`Code already generated: ${previous}`);
+    if (replacing && !existing) return ctx.reply("That code was updated. Open /access again.");
     const record = await generateAccessCode(planId, "admin_manual", "", null, username || null);
     if (existing) {
       await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, existing.code);
@@ -2983,7 +2983,7 @@ async function handleManualAccess(ctx) {
     return ctx.editMessageText(manualAccessText(record), manualAccessKeyboard(planId, username, record.code));
   } catch (error) {
     logger.error("MANUAL ACCESS ERROR", { message: error?.message });
-    return ctx.reply("No se pudo completar el cambio. Abre /access para comprobar el estado.");
+    return ctx.reply("That change didn't go through. Open /access to check the status.");
   } finally {
     await client.eval("if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) end return 0", 1, lockKey, token);
   }
@@ -3004,14 +3004,14 @@ async function handleManualManage(ctx) {
   const [, action, code] = ctx.match;
   const client = await ensureRedis();
   if (action === "exit") {
-    if (!client) return ctx.reply("No se pudo cerrar el panel. Intenta de nuevo.");
+    if (!client) return ctx.reply("Couldn't close the panel. Give it another go.");
     const botId = ctx.state?.accessEntryMode === accessEntryModes.get(adminBot) ? "admin" : "user";
     await client.del(`${CODE_ENGINE_NAMESPACE}:add-users:${botId}:${ctx.chat.id}:${ctx.from.id}`);
     await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
-    return ctx.reply("Modo agregar usuarios cerrado.", { reply_markup: { remove_keyboard: true } });
+    return ctx.reply("Guest-add mode closed.", { reply_markup: { remove_keyboard: true } });
   }
   let record = await getAccessCode(code);
-  if (!client || record?.source !== "admin_manual" || record.status !== "active") return ctx.reply("Código inactivo. Abre /access para consultar el estado.");
+  if (!client || record?.source !== "admin_manual" || record.status !== "active") return ctx.reply("That code's inactive. Open /access to check the status.");
   const username = String(record.telegramUsername || "").toLowerCase();
   if (action.startsWith("toggle_")) {
     const field = action.slice(7);
@@ -3021,25 +3021,25 @@ async function handleManualManage(ctx) {
   if (action === "code") {
     const m = ctx.callbackQuery.message;
     await client.set(`${CODE_ENGINE_NAMESPACE}:manual:${m.chat.id}:${m.message_id}`, `replace:${code}`);
-    return ctx.editMessageText(`@${username} · Código actual: ${code}\nSelecciona el nuevo código:`, manualAccessKeyboard("", username));
+    return ctx.editMessageText(`@${username} · Current code: ${code}\nChoose a new code:`, manualAccessKeyboard("", username));
   }
-  if (action === "delete") return ctx.editMessageText(`¿Eliminar el acceso ${code} de @${username}?`, Markup.inlineKeyboard([
+  if (action === "delete") return ctx.editMessageText(`Remove access for ${code} from @${username}?`, Markup.inlineKeyboard([
     [Markup.button.callback("ELIMINAR ❌", `manual_manage:confirm_delete:${code}`), Markup.button.callback("CANCELAR", `manual_manage:view:${code}`)]
   ]));
   if (action === "confirm_delete") {
     await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, code);
     await client.eval(`local v=redis.call('GET',KEYS[1]); if not v then return 0 end; local r=cjson.decode(v); r.status='revoked'; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1`, 1, getCodeKey(code));
-    return ctx.editMessageText(`Acceso eliminado: ${code}\n@${username}`, manualAccessKeyboard("", username));
+    return ctx.editMessageText(`Access removed: ${code}\n@${username}`, manualAccessKeyboard("", username));
   }
   if (action === "messages") {
-    if (!username) return ctx.reply("Este código no tiene un usuario asignado.");
+    if (!username) return ctx.reply("This code isn't assigned to a guest yet.");
     const recipientId = await resolveNoticeRecipient(username, client);
-    if (!recipientId) return ctx.reply("No hay un chat verificado para @" + username + ". El usuario debe iniciar @User18Fx_bot.");
+    if (!recipientId) return ctx.reply("No verified DM for @" + username + ". The guest must start @User18Fx_bot first.");
     return openAdminMessageMenu(ctx, recipientId);
   }
   if (action === "text") {
-    if (!username) return ctx.reply("Este código no tiene un usuario asignado.");
-    const prompt = await ctx.reply(`Escribe el mensaje para @${username}. Responde a este mensaje; /cancel para cancelar.`, {reply_markup:{force_reply:true,selective:true}});
+    if (!username) return ctx.reply("This code isn't assigned to a guest yet.");
+    const prompt = await ctx.reply(`Write a message for @${username}. Reply here to send it, or use /cancel to back out.`, {reply_markup:{force_reply:true,selective:true}});
     await client.set(`${CODE_ENGINE_NAMESPACE}:manual-text:${ctx.botInfo.id}:${ctx.chat.id}:${ctx.from.id}:${prompt.message_id}`, code, "EX", 600);
     return;
   }
@@ -3055,19 +3055,19 @@ async function manualTextMiddleware(ctx, next) {
   const key = `${CODE_ENGINE_NAMESPACE}:manual-text:${ctx.botInfo.id}:${ctx.chat.id}:${ctx.from.id}:${replyId}`;
   const code = await client.get(key);
   if (!code) return next();
-  if (ctx.message.text === "/cancel") { await client.del(key); return ctx.reply("Envío cancelado."); }
+  if (ctx.message.text === "/cancel") { await client.del(key); return ctx.reply("Send canceled."); }
   const record = await getAccessCode(code);
-  if (record?.status !== "active") return ctx.reply("El acceso ya no está activo.");
+  if (record?.status !== "active") return ctx.reply("That access is no longer active.");
   const recipient = await resolveNoticeRecipient(record.telegramUsername, client);
   if (!recipient) return ctx.reply(NOTICE_RESULTS.unreachable);
   if (await client.set(key + ":sending", "1", "EX", 600, "NX") !== "OK") return ctx.reply("Este mensaje ya fue procesado.");
   try {
     await bot.telegram.sendMessage(recipient, ctx.message.text);
     await client.del(key);
-    return ctx.reply("Mensaje enviado.");
+    return ctx.reply("Message sent, babe.");
   } catch (error) {
     logger.error("MANUAL TEXT ERROR", { message: error?.message });
-    return ctx.reply("No se confirmó la entrega. Revisa el chat antes de intentar otro envío.");
+    return ctx.reply("Delivery wasn't confirmed. Check the chat before sending again.");
   }
 }
 async function controlSpclNotice(ctx) {
@@ -3134,7 +3134,7 @@ async function controlSpclNotice(ctx) {
       redis: client, telegram: bot.telegram, namespace: CODE_ENGINE_NAMESPACE,
       username, access: { enabled: true, telegramfx_access: true },
       siteUrl: USERFX_SITE_URL, noticeId: code + ":manual-resend:" + ctx.callbackQuery.message.message_id, identityKey: false,
-      text: "USER FX · SPECIAL ACCESS\n\nYour personal code: " + code + "\nOpen USER FX and enter your code to continue.",
+      text: "🔐 USER FX · YOUR SPCL ACCESS IS LIVE\n\nHey babe, your code just dropped: " + code + "\nSlide into USER FX and enter it to get in. Keep it private.",
       resolveRecipient: () => Promise.resolve(recipientId),
       onDelivered: (receipt) => notifySpclDelivered({ ...receipt, code, username, mode: "resend" }),
     });
@@ -3259,7 +3259,7 @@ bot.command("revoke", async (ctx) => {
     const parsed = normalizeTelegramFxUsername(getCommandArg(ctx));
     if (!parsed) return await ctx.reply("Uso: /revoke @username");
     await revokeTelegramFxAccess(parsed.normalized, ctx.from);
-    await ctx.reply(`⛔ Acceso revocado para ${parsed.display}.`);
+    await ctx.reply(`⛔ Access revoked for ${parsed.display}.`);
   } catch (error) {
     logger.error("Tᴛᴇʟᴇɢʀᴀᴍꜰx ʀᴇᴠᴏᴋᴇ ᴄᴏᴍᴍᴀɴᴅ ᴇʀʀᴏʀ", {
       ...getTelegramError(error),
@@ -3273,7 +3273,7 @@ bot.command("users", async (ctx) => {
   try {
     const rows = await listTelegramFxUsers(50);
     if (!Array.isArray(rows) || !rows.length) {
-      return await ctx.reply("No hay usuarios TelegramFX todavía.");
+      return await ctx.reply("No TelegramFX guests yet.");
     }
     const text = rows
       .map((row, index) => {
@@ -3281,13 +3281,13 @@ bot.command("users", async (ctx) => {
         return `${index + 1}. ${row.username || "@unknown"} · ${mask ? "✅" : "⛔"} · ${mask.toString(2).padStart(5, "0")}`;
       })
       .join("\n");
-    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUsa /permissions @username para editar.`, Markup.inlineKeyboard([[Markup.button.callback("✉ Avisar a pendientes", "tfx_notify_batch:0")]]));
+    await ctx.reply(`👥 TELEGRAMFX USERS\n\n${text}\n\nUse /permissions @username to edit.`, Markup.inlineKeyboard([[Markup.button.callback("✉ NOTIFY PENDING", "tfx_notify_batch:0")]]));
   } catch (error) {
     logger.error("TELEGRAMFX USERS ERROR", {
       ...getTelegramError(error),
       stack: getErrorStack(error),
     });
-    await ctx.reply("✘ No se pudo cargar la lista.");
+    await ctx.reply("✘ Couldn't load the guest list.");
   }
 });
 
@@ -3326,12 +3326,12 @@ async function notifyRegisteredAccess(username) {
   });
 }
 const NOTICE_RESULTS = {
-  sent: "Aviso enviado.", already: "Este usuario ya recibió el aviso o tiene un envío pendiente.",
-  inactive: "El usuario no tiene acceso web activo. Guarda sus permisos primero.",
-  unreachable: "No hay un chat privado verificado. Comparte https://t.me/User18Fx_bot y pide al usuario que lo inicie.",
-  blocked: "Telegram rechazó el envío: el usuario bloqueó el bot o no permite contacto.",
-  failed: "Telegram rechazó el envío. Puedes reintentarlo después.",
-  uncertain: "Telegram no confirmó la entrega. No se repetirá automáticamente para evitar duplicados.",
+  sent: "Notice delivered to Telegram.", already: "This guest already got the notice or has a send in progress.",
+  inactive: "This guest has no active web access. Save their permissions first.",
+  unreachable: "No verified DM yet. Share https://t.me/User18Fx_bot and ask the guest to press START.",
+  blocked: "Telegram declined delivery. The guest may have blocked the bot.",
+  failed: "Telegram declined delivery. You can try again later.",
+  uncertain: "Telegram did not confirm delivery. No automatic retry, to avoid duplicates.",
 };
 async function handleAccessNotice(ctx) {
   if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized");
@@ -3341,12 +3341,12 @@ async function handleAccessNotice(ctx) {
     return ctx.reply(`@${username}: ${NOTICE_RESULTS[await notifyRegisteredAccess(username)]}`);
   } catch (error) {
     logger.error("ACCESS NOTICE ERROR", { message: error?.message });
-    return ctx.reply("No se pudo completar el aviso. Revisa el estado antes de repetir.");
+    return ctx.reply("Couldn't finish that notice. Check its status before trying again.");
   }
 }
 async function showAccessNotices(ctx) {
   if (!isAdmin(ctx)) return ctx.reply("Unauthorized");
-  return ctx.reply("Avisar a usuarios con acceso web activo que aún no recibieron el aviso. Se procesan 10 por lote; los envíos confirmados no se repiten.", Markup.inlineKeyboard([[Markup.button.callback("✉ Avisar a pendientes", "tfx_notify_batch:0")]]));
+  return ctx.reply("Notify guests with active web access who haven't received a notice yet. Up to 10 per batch, and confirmed sends won't repeat.", Markup.inlineKeyboard([[Markup.button.callback("✉ NOTIFY PENDING", "tfx_notify_batch:0")]]));
 }
 async function handleAccessNoticeBatch(ctx) {
   if (!isAdmin(ctx)) return ctx.answerCbQuery("Unauthorized");
@@ -3370,10 +3370,10 @@ async function handleAccessNoticeBatch(ctx) {
     }
     const more = rows?.length > 10;
     const next = more ? rows[9].username_normalized : null;
-    await ctx.reply(`Avisos enviados: ${results.sent || 0}. Ya procesados: ${results.already || 0}. Sin envío confirmado: ${unresolved.length}.\n${unresolved.join("\n")}\n${more ? "Continúa con el siguiente lote." : "Lista recorrida. Los usuarios sin chat verificado deben iniciar el bot; después puedes volver a revisar pendientes."}`, more ? Markup.inlineKeyboard([[Markup.button.callback("Siguiente lote", `tfx_notify_batch:${next}`)]]) : {});
+    await ctx.reply(`Notices sent: ${results.sent || 0}. Already processed: ${results.already || 0}. Without confirmed delivery: ${unresolved.length}.\n${unresolved.join("\n")}\n${more ? "Keep going with the next batch." : "Lista recorrida. Los usuarios sin chat verificado deben iniciar el bot; después puedes volver a revisar pendientes."}`, more ? Markup.inlineKeyboard([[Markup.button.callback("Siguiente lote", `tfx_notify_batch:${next}`)]]) : {});
   } catch (error) {
     logger.error("ACCESS NOTICE BATCH ERROR", { message: error?.message });
-    return ctx.reply("El lote no terminó. Usa /notify_access para revisar pendientes; los avisos confirmados no se repetirán.");
+    return ctx.reply("Batch incomplete. Use /notify_access to review pending guests. Confirmed notices won't repeat.");
   }
 }
 async function openTelegramFxMessageMenu(ctx) {
@@ -3384,7 +3384,7 @@ async function openTelegramFxMessageMenu(ctx) {
   const recipientId = await resolveNoticeRecipient(target, client);
   if (!recipientId) {
     await ctx.answerCbQuery("User unavailable", { show_alert: true });
-    return ctx.reply("@" + target + " no tiene un chat privado verificado con @User18Fx_bot.");
+    return ctx.reply("@" + target + " has no verified private chat with @User18Fx_bot.");
   }
   return openAdminMessageMenu(ctx, recipientId, true);
 }
@@ -3405,7 +3405,7 @@ async function handleManualNotice(ctx) {
     const record = await getAccessCode(code);
     const username = normalizeTelegramFxUsername(record?.telegramUsername || "")?.normalized;
     if (!client || record?.source !== "admin_manual" || record.status !== "active" || !username) {
-      return ctx.reply("No hay un destinatario válido para este código.");
+      return ctx.reply("No valid recipient for this code.");
     }
     const cancellation = await cancelManualNotice(client, CODE_ENGINE_NAMESPACE, code);
     if (["sending", "busy"].includes(cancellation)) return ctx.reply("Notice in progress. Check status first.");
@@ -3413,7 +3413,7 @@ async function handleManualNotice(ctx) {
       redis: client, telegram: bot.telegram, namespace: CODE_ENGINE_NAMESPACE,
       username, access: { enabled: true, telegramfx_access: true },
       siteUrl: USERFX_SITE_URL, noticeId: code,
-      text: `You've been granted ${record.plan} access to USER FX. Your personal access code is ${record.code}. Open the website and choose ALREADY GOT CODE to enter.`,
+      text: `Babe, you're cleared for ${record.plan} access on USER FX. Your private code is ${record.code}. Open USER FX, tap ALREADY GOT CODE, and slide in. Don't share your key.`,
       identityKey: false,
       resolveRecipient: (target) => resolveNoticeRecipient(target, client),
       onDelivered: record.planId === "special"
@@ -3424,7 +3424,7 @@ async function handleManualNotice(ctx) {
     return ctx.reply(`@${username}: ${NOTICE_RESULTS[result]}`);
   } catch (error) {
     logger.error("MANUAL NOTICE ERROR", { message: error?.message });
-    return ctx.reply("No se pudo confirmar el aviso.");
+    return ctx.reply("Couldn't confirm the notice.");
   }
 }
 for (const targetBot of [bot, adminBot]) {
