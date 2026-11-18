@@ -7,6 +7,7 @@ import { SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
+import "./TelegramIdentityDialog.css";
 import RoomIntro from "./RoomIntro";
 import FxSceneLoader from "./FxSceneLoader";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
@@ -66,99 +67,7 @@ const LANDING_STYLES = String.raw`
 .fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 #ff7b00; }
 .fx-telegram-launch:focus-visible { outline: 2px solid #3fd8d0; outline-offset: 4px; }
 .fx-telegram-launch--hero { width: 56px; height: 56px; margin-top: 20px; font-size: 27px; }
-.fx-telegram-dialog-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 10020;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(2,5,12,.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-.fx-telegram-dialog {
-  position: relative;
-  width: min(100%,430px);
-  max-height: min(90dvh,650px);
-  overflow-y: auto;
-  padding: clamp(22px,5vw,36px);
-  border: 1px solid rgba(63,216,208,.38);
-  border-radius: 15px;
-  background: radial-gradient(circle at 15% 0%,rgba(63,216,208,.12),transparent 57%),linear-gradient(155deg,#131c29,#070a11 75%);
-  box-shadow: 0 25px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
-  color: #f1f6ff;
-  font-family: "Syne","Funnel Display",system-ui,sans-serif;
-}
-.fx-telegram-dialog-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 8px;
-  background: rgba(255,255,255,.04);
-  color: #f4f6f8;
-  font-size: 20px;
-  cursor: pointer;
-}
-.fx-telegram-dialog-icon {
-  display: grid;
-  place-items: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(63,216,208,.5);
-  border-radius: 12px;
-  background: rgba(63,216,208,.1);
-  font-size: 26px;
-}
-.fx-telegram-dialog-kicker { color: #3fd8d0; font-size: 10px; font-weight: 800; letter-spacing: .22em; }
-.fx-telegram-dialog h2 { margin: 10px 0 8px; font-size: clamp(22px,5vw,30px); font-weight: 750; line-height: 1.1; }
-.fx-telegram-dialog-desc { margin: 0 0 25px; color: #a7b7c7; font-size: 13px; line-height: 1.6; }
-.fx-telegram-dialog-form { display: flex; flex-direction: column; gap: 11px; }
-.fx-telegram-dialog-form label { color: #9db8c8; font-size: 10px; font-weight: 700; letter-spacing: .15em; }
-.fx-telegram-dialog-field {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 52px;
-  padding: 0 15px;
-  border: 1px solid rgba(75,174,210,.55);
-  border-radius: 8px;
-  background: rgba(2,9,16,.8);
-}
-.fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
-.fx-telegram-dialog-field span { color: #3fd8d0; font-size: 20px; font-weight: 800; }
-.fx-telegram-dialog-field input {
-  flex: 1;
-  width: 100%;
-  min-width: 0;
-  height: 50px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #f6f7fa;
-  font: 600 16px "IBM Plex Mono",ui-monospace,monospace;
-}
-.fx-telegram-dialog-field input::placeholder { color: #66869c; }
-.fx-telegram-dialog-submit {
-  min-height: 48px;
-  margin-top: 4px;
-  border: 0;
-  border-radius: 8px;
-  background: linear-gradient(125deg,#3fd8d0,#1596bb);
-  color: #051016;
-  font: 800 12px "Syne",system-ui,sans-serif;
-  letter-spacing: .1em;
-  cursor: pointer;
-}
-.fx-telegram-dialog-submit:disabled { opacity: .55; cursor: progress; }
-.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; line-height: 1.5; }
-.fx-telegram-dialog-bot { display: inline-block; margin-top: 20px; color: #87c4e8; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+/* Telegram identity dialog styling is imported from TelegramIdentityDialog.css. */
 
 /* Room videos: a single 2x2 surface, zero space between tiles.
    Individual tiles are revealed in order by the section's scroll timeline. */
