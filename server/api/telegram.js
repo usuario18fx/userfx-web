@@ -1,6 +1,7 @@
 import { accessEntryMode } from "../../lib/access-entry-mode.js";
 import { sendAccessNotice } from "../../lib/access-notices.js";
 import { sendSpclDeliveryReceipt } from "../../lib/spcl-delivery-receipt.js";
+import { fxBotTone, fxStyleReplyMarkup } from "../../lib/fx-telegram-tone.js";
 import { getManualNotice, queueManualNotice, cancelManualNotice, processWaitingNotice, scheduledNoticeKey } from "../../lib/manual-spcl-notices.js";
 import { PLAN_DAYS, PLAN_STARS } from "../../lib/access-plans.js";
 import { issueFxChatLink, appendFxChatMessage, getFxChatAdminReplyTarget, revokeFxChatByTelegram, hasFxChatConsent, fxChatReply } from "../../lib/fx-chat.js";
@@ -253,114 +254,9 @@ for (const [targetBot, botId] of [[bot, "user"], [adminBot, "admin"]]) {
   });
 }
 
-// USER BOT VOICE · NATIVE GEN-Z ENGLISH + SMALL CAPS
-// Applies to every outgoing USER-bot message/caption/button.
-// Preserves HTML, URLs, @usernames and private access codes.
-// ======================================================
-const FX_SMALL_CAPS = Object.freeze({
-  a: "ᴀ",
-  b: "ʙ",
-  c: "ᴄ",
-  d: "ᴅ",
-  e: "ᴇ",
-  f: "ꜰ",
-  g: "ɢ",
-  h: "ʜ",
-  i: "ɪ",
-  j: "ᴊ",
-  k: "ᴋ",
-  l: "ʟ",
-  m: "ᴍ",
-  n: "ɴ",
-  o: "ᴏ",
-  p: "ᴘ",
-  q: "ǫ",
-  r: "ʀ",
-  s: "ꜱ",
-  t: "ᴛ",
-  u: "ᴜ",
-  v: "ᴠ",
-  w: "ᴡ",
-  x: "x",
-  y: "ʏ",
-  z: "ᴢ",
-});
-
-function fxGenZRewrite(value = "") {
-  return String(value)
-    .replace(/\bPlease try again\b/gi, "Run it back in a sec")
-    .replace(/\bPlease\b/gi, "Just")
-    .replace(/\bUnable to\b/gi, "Couldn't")
-    .replace(/\bYou already have\b/gi, "You've already got")
-    .replace(/\bYou need to\b/gi, "You'll need to")
-    .replace(/\bYou need\b/gi, "You'll need")
-    .replace(/\bThank you\b/gi, "Appreciate you")
-    .replace(/\bTry again\b/gi, "Run it back")
-    .replace(/\bSomething went wrong\b/gi, "That didn't land")
-    .replace(/\bInvalid code\b/gi, "That code isn't hitting")
-    .replace(/\bAccess denied\b/gi, "You're not cleared for this yet")
-    .replace(/\bNot authorized\b/gi, "You're not cleared for this yet")
-    .replace(/\bRequest sent\b/gi, "You're in — request sent")
-    .replace(/\bPayment confirmed\b/gi, "Payment locked in")
-    .replace(/\bPayment received\b/gi, "Payment locked in")
-    .replace(/\bExpired\b/gi, "That one timed out")
-    .replace(/\bCode expired\b/gi, "That code timed out");
-}
-
-function fxSmallCapsSegment(value = "") {
-  return String(value).replace(/[A-Za-z]/g, (char) => {
-    const lower = char.toLowerCase();
-    return FX_SMALL_CAPS[lower] || char;
-  });
-}
-
-function fxBotTone(value = "") {
-  const text = fxGenZRewrite(value);
-
-  const protectedToken = /(<[^>]+>|https?:\/\/[^\s<]+|t\.me\/[^\s<]+|@[A-Za-z0-9_]+|(?:TGMX|SPCL|BSIC|PRX0|VIPX)-[A-HJ-NP-Z2-9]{4}|FXCHAT-[A-F0-9]{20})/g;
-
-  return text
-    .split(protectedToken)
-    .map((part) => {
-      if (!part) return part;
-
-      protectedToken.lastIndex = 0;
-      if (protectedToken.test(part)) {
-        protectedToken.lastIndex = 0;
-        return part;
-      }
-
-      protectedToken.lastIndex = 0;
-      return fxSmallCapsSegment(part);
-    })
-    .join("");
-}
-
-function fxStyleReplyMarkup(replyMarkup) {
-  if (!replyMarkup || typeof replyMarkup !== "object") {
-    return replyMarkup;
-  }
-
-  const clone = typeof structuredClone === "function" ? structuredClone(replyMarkup) : JSON.parse(JSON.stringify(replyMarkup));
-
-  const styleButton = (button) => {
-    if (button && typeof button.text === "string") {
-      button.text = visibleSpecialText(fxBotTone(button.text));
-    }
-    return button;
-  };
-
-  if (Array.isArray(clone.inline_keyboard)) {
-    clone.inline_keyboard = clone.inline_keyboard.map((row) => row.map(styleButton));
-  }
-
-  if (Array.isArray(clone.keyboard)) {
-    clone.keyboard = clone.keyboard.map((row) => row.map(styleButton));
-  }
-
-  return clone;
-}
-
+// Shared USER FX voice applies to BOTH Telegram bots.
+// Preserve codes, URLs, usernames and slash commands in all bot-authored copy.
+// The admin reply keyboard stays unchanged because it emits text commands.
 const fxOriginalUserCallApi = bot.telegram.callApi.bind(bot.telegram);
 
 bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
@@ -391,6 +287,20 @@ bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
     }
     return result;
   });
+};
+
+const fxOriginalAdminCallApi = adminBot.telegram.callApi.bind(adminBot.telegram);
+adminBot.telegram.callApi = function fxStyledAdminCallApi(method, payload = {}, signal) {
+  const nextPayload = { ...payload };
+  for (const field of ["text", "caption", "title", "description"]) {
+    if (typeof nextPayload[field] === "string") {
+      nextPayload[field] = visibleSpecialText(fxBotTone(nextPayload[field]));
+    }
+  }
+  if (nextPayload.reply_markup && typeof nextPayload.reply_markup === "object") {
+    nextPayload.reply_markup = fxStyleReplyMarkup(nextPayload.reply_markup, { styleKeyboard: false });
+  }
+  return fxOriginalAdminCallApi(method, nextPayload, signal);
 };
 // ======================================================
 // TOKEN VALIDATION
