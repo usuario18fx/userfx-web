@@ -956,7 +956,7 @@ async function generateIdentityCode(ctx, options = {}) {
   }
   const access = await getTelegramFxAccess(parsedUsername.normalized);
   if (!access || !access.enabled || !access.telegramfx_access) {
-    await ctx.reply("⛔ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ᴀᴄᴄᴏᴜɴᴛ ᴅᴏᴇꜱɴ’ᴛ ʜᴀᴠᴇ ᴀᴄᴛɪᴠᴇ ꜱᴘᴄʟ ᴀᴄᴄᴇꜱꜱ. ʏᴏᴜ ᴄᴀɴ ʀᴇǫᴜᴇꜱᴛ ɪᴛ ʙʏ ꜱᴇɴᴅɪɴɢ ᴍᴇ ᴀ ᴅᴍ..", getSpclRequestKeyboard());
+    await ctx.reply("⛔ Hey babe, your Telegram isn't cleared for SPCL yet. Slide into my DMs to request access.", getSpclRequestKeyboard());
     return null;
   }
   const client = await ensureRedis();
@@ -1359,7 +1359,7 @@ Choose your vibe below and secure your private pass.`,
 async function sendVipPanel(ctx) {
   try {
     await ctx.reply(
-      `👑 VIP ACCESS\nCamera · Private chat · Recording · Multimedia · Stage\nUnlimited entries while active\nValid for ${PLAN_DAYS.vip} days from first activation`,
+      `👑 VIP ACCESS · ALL THE EXTRAS\nCamera · private chat · recording · multimedia · stage\nUnlimited entries while active, babe\nYour pass lasts ${PLAN_DAYS.vip} days from first activation`,
       getStarsVipKeyboard(),
     );
   } catch (error) {
@@ -1368,7 +1368,7 @@ async function sendVipPanel(ctx) {
 async function sendBasicPanel(ctx) {
   try {
     await ctx.reply(
-      `🌹ʙᴀꜱɪᴄ ᴀᴄᴄᴇꜱꜱ\nᴄᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ\nUnlimited entries while active\nValid for ${PLAN_DAYS.basic} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
+      `🌹 BASIC ACCESS · YOUR FIRST MOVE\nᴄᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ\nUnlimited entries while active\nValid for ${PLAN_DAYS.basic} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
       getStarsBasicKeyboard(),
     );
   } catch (error) {
@@ -1377,7 +1377,7 @@ async function sendBasicPanel(ctx) {
 async function sendProPanel(ctx) {
   try {
     await ctx.reply(
-      `🔥 PRO ACCESS\nᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ · ʀᴇᴄᴏʀᴅɪɴɢ · ᴍᴜʟᴛɪᴍᴇᴅɪᴀ\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
+      `🔥 PRO ACCESS · LEVEL UP\nᴀᴍᴇʀᴀ ᴀᴄᴄᴇꜱꜱ · ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ · ʀᴇᴄᴏʀᴅɪɴɢ · ᴍᴜʟᴛɪᴍᴇᴅɪᴀ\nUnlimited entries while active\nValid for ${PLAN_DAYS.pro} ᴅᴀʏꜱ ꜰʀᴏᴍ ꜰɪʀꜱᴛ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ`,
       getStarsProKeyboard(),
   );
   } catch (error) {
@@ -2521,12 +2521,12 @@ bot.command("visitorstats", async (ctx) => {
 // Telegram Bot API does not disclose a user's true online status.
 // ======================================================
 const ADMIN_MESSAGE_TEMPLATES = Object.freeze({
-  talk: { label: "💬 KEEP TALKING", text: "👀 I'm here. Wanna keep talking? Send another pic or video whenever you're ready." },
-  more: { label: "📸 SEND MORE", text: "📸 Wanna send another pic or a short video? I'm checking this out." },
-  wait: { label: "⏳ HOLD ON", text: "⏳ Give me a little time. I'll get back to you right here." },
-  call: { label: "📞 VIDEOCALL", text: "📞 Wanna take this to a videocall? I'll send the call options when they're ready." },
-  thanks: { label: "✔ THANKS", text: "✔ Got it. Thanks for sharing. I'll keep you posted." },
-  decline: { label: "✖ NOT NOW", text: "I'm gonna pass for now. Thanks for reaching out." },
+  talk: { label: "💬 KEEP TALKING", text: "Hey babe, I'm here. Wanna keep the vibe going? Send another pic or clip when you're ready." },
+  more: { label: "📸 SEND MORE", text: "Got more to show me, babe? A pic or quick clip works." },
+  wait: { label: "⏳ HOLD ON", text: "One sec, babe. I'll hit you back right here." },
+  call: { label: "📞 VIDEOCALL", text: "Wanna make it a 1-on-1 videocall? I'll drop the options when they're ready." },
+  thanks: { label: "✔ THANKS", text: "Got it, babe. Appreciate you. I'll keep you posted." },
+  decline: { label: "✖ NOT NOW", text: "I'm gonna pass for now, babe. Appreciate you reaching out." },
 });
 
 function formatAdminRecipient(userId, contact) {
@@ -2567,7 +2567,7 @@ async function deliverAdminMessage(userId, text) {
   const client = await ensureRedis();
   if (!client) return { ok: false, reason: "Redis unavailable." };
   const contact = await getAdminMessageContact(userId, client);
-  if (!contact) return { ok: false, reason: "Destinatario no registrado, bloqueado o dado de baja. Debe iniciar @User18Fx_bot." };
+  if (!contact) return { ok: false, reason: "Guest not registered, blocked, or opted out. They need to start @User18Fx_bot first." };
   try {
     await bot.telegram.sendMessage(String(userId), text, { disable_web_page_preview: true });
     return { ok: true, contact };
