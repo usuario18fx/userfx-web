@@ -28,22 +28,26 @@ const LANDING_STYLES = String.raw`
 
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
-
 /* Telegram profile button · gold/orange star control from PrivateRoom, with user glyph only. */
+
+
 .fx-telegram-launch {
   display: inline-grid;
   position: relative;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 30px;
   flex: 0 0 46px;
   padding: 0;
   border: 0;
   border-radius: 8px;
-  background: linear-gradient(15deg,#ffc014,#ffa600,#ff7b00,#754200,#ffc014,#ffa600,#ff7b00,#ffa705) no-repeat;
+  overflow: hidden;
+  background: linear-gradient(15deg,
+    #0062d1, #001ba3, #0084b8,
+    #0064bb, #0062d1, #001ba3,
+    #004a94) no-repeat;
   background-size: 350% 350%;
   background-position: left center;
-  box-shadow: 0 3px 1px 0 #ff7b00, inset 0 1px 0 rgba(255,255,255,.35),0 0 20px rgba(255,149,0,.17);
   color: #10141a;
   font-size: 23px;
   line-height: 1;
@@ -52,19 +56,26 @@ const LANDING_STYLES = String.raw`
 }
 .fx-telegram-launch img {
   display: block;
-  width: 86%;
-  height: 86%;
+  position: relative;
+  left: 0;
+  width: 90%;
+  height: 102%;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  transform: translateX(1px);
 }
+
 .fx-telegram-launch:hover {
   background-position: right center;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 1px #ff7b00,0 0 25px rgba(255,149,0,.36);
+  transform: translateY(0px);
+  box-shadow: 0 5px 1px #0099ff,0 0 25px rgba(0, 140, 255, 0.36);
 }
-.fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 #ff7b00; }
-.fx-telegram-launch:focus-visible { outline: 2px solid #3fd8d0; outline-offset: 4px; }
+.fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 linear-gradient(15deg,
+      #2680a9, #006593, #004768,
+      #2680a9, #006593, #004d71,
+      #002d5b) no-repeat;; }
+.fx-telegram-launch:focus-visible { outline: 2px solid #0022a9; outline-offset: 4px; }
 .fx-telegram-launch--hero { width: 56px; height: 56px; margin-top: 20px; font-size: 27px; }
 .fx-telegram-dialog-scrim {
   position: fixed;
@@ -774,7 +785,136 @@ const LANDING_STYLES = String.raw`
   .fx-footer-rating-crown {
     transition: none;
   }
+  .fx-telegram-dialog {
+  position: relative;
+  width: min(100%,400px);
+  max-height: min(90dvh,650px);
+  overflow-y: auto;
+  padding: clamp(22px,5vw,32px);
+  border: 1px solid rgba(63,216,208,.38);
+  border-radius: 15px;
+  background: radial-gradient(circle at 15% 0%,rgba(63,216,208,.12),transparent 57%),linear-gradient(155deg,#131c29,#070a11 75%);
+  box-shadow: 0 25px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
+  color: #f1f6ff;
+  /* Fuente de ancho normal: Syne se ve expandida en pesos altos */
+  font-family: "Funnel Display","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-stretch: normal;
 }
+.fx-telegram-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(63,216,208,.5);
+  border-radius: 12px;
+  background: rgba(63,216,208,.1);
+  font-size: 22px;
+}
+.fx-telegram-dialog-kicker {
+  color: #3fd8d0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+}
+.fx-telegram-dialog h2 {
+  margin: 10px 0 8px;
+  font-size: clamp(24px,5vw,28px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+}
+.fx-telegram-dialog-desc {
+  margin: 0 0 22px;
+  color: #a7b7c7;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.fx-telegram-dialog-form label {
+  color: #9db8c8;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+}
+.fx-telegram-dialog-field span {
+  color: #3fd8d0;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "IBM Plex Mono",ui-monospace,monospace;
+}
+.fx-telegram-dialog-field input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f6f7fa;
+  font: 500 15px "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.fx-telegram-dialog-submit {
+  min-height: 46px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(125deg,#3fd8d0,#1596bb);
+  color: #051016;
+  font: 700 13px "Funnel Display","Inter",system-ui,sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; line-height: 1.5; font-weight: 500; }
+.fx-telegram-dialog-bot { display: inline-block; margin-top: 18px; color: #87c4e8; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+}
+/* ===== Telegram dialog: tipografía normal (no expandida) ===== */
+.fx-telegram-dialog,
+.fx-telegram-dialog h2,
+.fx-telegram-dialog p,
+.fx-telegram-dialog label,
+.fx-telegram-dialog a,
+.fx-telegram-dialog button,
+.fx-telegram-dialog .fx-telegram-dialog-kicker {
+  font-family: "Inter","Funnel Display",system-ui,-apple-system,"Segoe UI",sans-serif !important;
+  font-stretch: 100% !important;
+  font-variation-settings: normal !important;
+}
+
+.fx-telegram-dialog .fx-telegram-dialog-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+}
+.fx-telegram-dialog h2 {
+  margin: 10px 0 8px;
+  font-size: clamp(24px,5vw,28px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+}
+.fx-telegram-dialog .fx-telegram-dialog-desc {
+  font-size: 14px;
+  line-height: 1.55;
+}
+.fx-telegram-dialog .fx-telegram-dialog-form label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+}
+.fx-telegram-dialog .fx-telegram-dialog-submit {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+/* El @ y el input en monoespaciada, como el resto del campo */
+.fx-telegram-dialog .fx-telegram-dialog-field span,
+.fx-telegram-dialog .fx-telegram-dialog-field input {
+  font-family: "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace !important;
+  font-stretch: 100% !important;
+}
+.fx-telegram-dialog .fx-telegram-dialog-field span { font-size: 18px; font-weight: 600; }
+.fx-telegram-dialog .fx-telegram-dialog-field input { font-size: 15px; font-weight: 500; }
 
 `;
 
@@ -850,6 +990,22 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
       }}
     >
       <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }} />
+      {item.id === 3 && (
+        <video
+  className="fx-footer-experiment-default-video"
+  src="/assets/footer/footer3-1.mp4"
+  poster="/assets/footer/footer3-3.png"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+  aria-hidden="true"
+  onLoadedData={(event) => { event.currentTarget.style.opacity = "1"; }}
+  onError={(event) => { event.currentTarget.style.opacity = "0"; }}
+  style={{ position: "absolute", inset: 0, display: "block", width: "100%", height: "100%", objectFit: "cover", zIndex: 1, opacity: 0, pointerEvents: "none", transition: "opacity .25s ease" }}
+/>
+      )}
       <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
       <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
@@ -1097,17 +1253,31 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
         <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
           ×
         </button>
-        <div className="fx-telegram-dialog-icon" aria-hidden="true">👤</div>
-        <span className="fx-telegram-dialog-kicker">USER FX · TELEGRAM IDENTITY</span>
-        <h2 id="fx-telegram-dialog-title">Your Telegram username</h2>
-        <p className="fx-telegram-dialog-desc">Enter your @username to check access and continue to the private room.</p>
+        <div className="fx-telegram-dialog-icon" aria-hidden="true">
+👤
+</div>
+        <span className="fx-telegram-dialog-kicker">
+USER FX · TELEGRAM IDENTITY
+</span>
+        <h2 id="fx-telegram-dialog-title">
+Your Telegram username
+</h2>
+        <p className="fx-telegram-dialog-desc">
+Enter your @username to check access and continue to the private room.
+</p>
         <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-          <label htmlFor="fx-telegram-dialog-username">TELEGRAM USERNAME</label>
+          <label htmlFor="fx-telegram-dialog-username">
+TELEGRAM USERNAME
+</label>
           <div className="fx-telegram-dialog-field">
-            <span aria-hidden="true">@</span>
+            <span aria-hidden="true">
+@
+</span>
             <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
           </div>
-          {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
+          {error && <p className="fx-telegram-dialog-error" role="alert">
+{error}
+</p>}
           <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
             {loading ? "CHECKING…" : "VERIFY USER"}
           </button>
