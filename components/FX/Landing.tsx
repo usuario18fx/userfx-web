@@ -1027,24 +1027,35 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
         <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
           ×
         </button>
-        <div className="fx-telegram-dialog-icon" aria-hidden="true">👤</div>
-        <span className="fx-telegram-dialog-kicker">USER FX · TELEGRAM IDENTITY</span>
-        <h2 id="fx-telegram-dialog-title">Your Telegram username</h2>
-        <p className="fx-telegram-dialog-desc">Enter your @username to check access and continue to the private room.</p>
-        <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-          <label htmlFor="fx-telegram-dialog-username">TELEGRAM USERNAME</label>
-          <div className="fx-telegram-dialog-field">
-            <span aria-hidden="true">@</span>
-            <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+        <aside className="fx-telegram-dialog-brand" aria-hidden="true">
+          <div className="fx-telegram-dialog-brand-icon">
+            <CrownIcon className="fx-telegram-dialog-brand-crown" />
           </div>
-          {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
-          <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
-            {loading ? "CHECKING…" : "VERIFY USER"}
-          </button>
-        </form>
-        <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
-          Need access? Open Telegram bot ↗
-        </a>
+          <div className="fx-telegram-dialog-brand-name">
+            <strong>USER FX</strong>
+            <span>PRIVATE ROOM</span>
+          </div>
+          <p>A private world. Entirely yours.</p>
+        </aside>
+        <div className="fx-telegram-dialog-content">
+          <span className="fx-telegram-dialog-kicker">USER FX · TELEGRAM IDENTITY</span>
+          <h2 id="fx-telegram-dialog-title">Your Telegram username</h2>
+          <p className="fx-telegram-dialog-desc">Enter your @username to check access and continue to the private room.</p>
+          <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
+            <label htmlFor="fx-telegram-dialog-username">TELEGRAM USERNAME</label>
+            <div className="fx-telegram-dialog-field">
+              <span aria-hidden="true">@</span>
+              <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+            </div>
+            {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
+            <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
+              {loading ? "CHECKING…" : "VERIFY USER"}
+            </button>
+          </form>
+          <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+            Need access? Open Telegram bot ↗
+          </a>
+        </div>
       </section>
     </div>
   );
