@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useRef, useState, type FormEvent } from "react";
 import "./FxChat.css";
+import "./FxChatTelegram.css";
 
 const TERMS_VERSION = "2026-11-08-v1";
 const BOT_LINK = "https://t.me/User18Fx_bot?start=webchat";
+const BOT_CHAT_URL = "https://t.me/User18Fx_bot";
 
 type ChatMessage = {
   id: string;
@@ -37,6 +39,22 @@ function clock(iso: string) {
   catch { return ""; }
 }
 
+function localDay(iso: string) {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? iso.slice(0, 10) : date.toDateString();
+}
+
+function dayCaption(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const today = new Date();
+  if (date.toDateString() === today.toDateString()) return "ᴛᴏᴅᴀʏ";
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return "ʏᴇꜱᴛᴇʀᴅᴀʏ";
+  return date.toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function FxChat() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,6 +66,7 @@ export default function FxChat() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const scroll = useRef<HTMLDivElement>(null);
+  const followNewMessages = useRef(true);
 
   useEffect(() => {
     if (!open) return;
@@ -77,7 +96,12 @@ export default function FxChat() {
           setLinked(false);
           setMessages([]);
         } else {
-          setMessages(response.messages || []);
+          const incoming = response.messages || [];
+          setMessages((current) =>
+            current.length === incoming.length && current.every((item, index) => item.id === incoming[index].id)
+              ? current
+              : incoming
+          );
         }
       }).catch(() => {
         // Network interruptions should not clear an authenticated conversation.
@@ -87,7 +111,9 @@ export default function FxChat() {
   }, [open, linked]);
 
   useEffect(() => {
-    if (open && linked) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" });
+    if (open && linked && followNewMessages.current) {
+      scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "auto" });
+    }
   }, [messages, open, linked]);
 
   async function handleLink(event: FormEvent<HTMLFormElement>) {
@@ -97,6 +123,7 @@ export default function FxChat() {
     setError("");
     try {
       const result = await callChat("POST", { action: "link", code: linkCode, accepted: true, termsVersion: TERMS_VERSION });
+      followNewMessages.current = true;
       setLinked(Boolean(result.linked));
       const fresh = await callChat("GET");
       setMessages(fresh.messages || []);
@@ -116,6 +143,7 @@ export default function FxChat() {
     setError("");
     try {
       const result = await callChat("POST", { action: "send", message });
+      followNewMessages.current = true;
       setMessages(result.messages || []);
       setDraft("");
     } catch (e) {
@@ -159,13 +187,25 @@ export default function FxChat() {
         <span className="fx-web-chat-pulse" aria-hidden="true" />
       </button>
       {open && (
-        <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
+        <section id="fx-web-chat-panel" className={"fx-web-chat-window" + (linked ? " is-telegram-connected" : "")} aria-label="Chat USER FX">
           <header className="fx-web-chat-header">
-            <div className="fx-web-chat-header-mark">FX</div>
+            <div className="fx-web-chat-header-mark" aria-hidden="true">
+              FX
+              {linked && <span className="fx-web-chat-presence" />}
+            </div>
             <div className="fx-web-chat-heading">
               <strong>USER FX</strong>
-              <small>{linked ? "BOT + TELEGRAM CONNECTED" : "CHAT · TELEGRAM"}</small>
+              <small>{linked ? "ᴛᴇʟᴇɢʀᴀᴍ · ꜱʏɴᴄᴇᴅ" : "ᴄʜᴀᴛ · ᴛᴇʟᴇɢʀᴀᴍ"}</small>
             </div>
+            {linked && (
+              <a className="fx-web-chat-open-telegram" href={BOT_CHAT_URL} target="_blank" rel="noopener noreferrer" aria-label="Open original Telegram chat" title="Open original Telegram chat">
+                <span>ᴏᴘᴇɴ</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14 4h6v6M20 4l-9 9" />
+                  <path d="M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5" />
+                </svg>
+              </a>
+            )}
             <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </header>
           {loading ? (
@@ -188,7 +228,7 @@ export default function FxChat() {
               </div>
               <label className="fx-web-chat-consent">
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-                <span>I agree to sync this chat with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
+                <span>I agree to sync my text messages with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
               </label>
               <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")}
                 href={accepted ? BOT_LINK : undefined}
@@ -206,25 +246,70 @@ export default function FxChat() {
             </div>
           ) : (
             <>
-              <div className="fx-web-chat-message-list" ref={scroll} role="log" aria-live="polite" aria-relevant="additions">
-                {messages.length === 0 && (
-                  <p className="fx-web-chat-empty">Connected. Ask about plans, access codes, or support.</p>
-                )}
-                {messages.map((msg) => (
-                  <div key={msg.id} className={"fx-web-chat-bubble " + (msg.role === "user" ? "is-user" : "is-bot")}>
-                    <span className="fx-web-chat-author">{msg.role === "user" ? "YOU" : msg.role === "support" ? "USER FX SUPPORT" : "FX BOT"}</span>
-                    <p>{msg.text}</p>
-                    <time dateTime={msg.at}>{clock(msg.at)}</time>
-                  </div>
-                ))}
+              <div className="fx-web-chat-chat-surface">
+                <div className="fx-web-chat-session-notice" role="status">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <span>ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ · ᴛᴇxᴛ ꜱʏɴᴄ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ</span>
+                </div>
+                <div
+                  className="fx-web-chat-message-list"
+                  ref={scroll}
+                  role="log"
+                  aria-label="Synced Telegram conversation"
+                  aria-live="polite"
+                  aria-relevant="additions"
+                  onScroll={(event) => {
+                    const element = event.currentTarget;
+                    followNewMessages.current = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+                  }}
+                >
+                  {messages.length === 0 && (
+                    <p className="fx-web-chat-empty">Hey babe, you're connected. Drop a message and let's get into it.</p>
+                  )}
+                  {messages.map((msg, index) => (
+                    <Fragment key={msg.id}>
+                      {(index === 0 || localDay(msg.at) !== localDay(messages[index - 1].at)) && (
+                        <div className="fx-web-chat-date-divider">{dayCaption(msg.at)}</div>
+                      )}
+                      <div className={"fx-web-chat-row" + (msg.role === "user" ? " is-outgoing" : "")} role="listitem">
+                        <div className={"fx-web-chat-bubble" + (msg.role === "user" ? " is-user" : msg.role === "support" ? " is-support" : " is-bot")}>
+                          <span className="fx-web-chat-author">
+                            {msg.role === "user" ? "ʏᴏᴜ" : msg.role === "support" ? "ᴜꜱᴇʀ ꜰx · ꜱᴜᴘᴘᴏʀᴛ" : "ꜰx ʙᴏᴛ"}
+                          </span>
+                          <p>{msg.text}</p>
+                          <div className="fx-web-chat-message-meta">
+                            <time dateTime={msg.at}>{clock(msg.at)}</time>
+                            {msg.role === "user" && (
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-label="Synced" role="img">
+                                <path d="m5 12 4 4 10-10" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Fragment>
+                  ))}
+                </div>
               </div>
               <form className="fx-web-chat-compose" onSubmit={handleSend}>
-                <input type="text" aria-label="Type a message" placeholder="Type a message…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
-                <button type="submit" disabled={busy || !draft.trim()} aria-label="Send message">➤</button>
+                <a className="fx-web-chat-attachment" href={BOT_CHAT_URL} target="_blank" rel="noopener noreferrer" aria-label="Send photos, files or voice messages in Telegram" title="Media opens in original Telegram chat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M20 11.5 11.8 20a5 5 0 0 1-7.1-7.1L14.2 3.5a3.3 3.3 0 0 1 4.7 4.7l-9.4 9.4a1.6 1.6 0 0 1-2.3-2.3l8.5-8.5" />
+                  </svg>
+                </a>
+                <input type="text" aria-label="Type a message" placeholder="Message…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
+                <button type="submit" disabled={busy || !draft.trim()} aria-label={busy ? "Sending message" : "Send message"}>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M2.3 20.2 22 12 2.3 3.8 2 10l13 2-13 2 .3 6.2Z" />
+                  </svg>
+                </button>
               </form>
               <div className="fx-web-chat-bottom">
-                <span>Messages are synced · Keep your private codes safe</span>
-                <button type="button" onClick={disconnect} disabled={busy}>Disconnect</button>
+                <span>ᴍᴇꜱꜱᴀɢᴇꜱ ꜱʏɴᴄ ᴇᴠᴇʀʏ ꜰᴇᴡ ꜱᴇᴄᴏɴᴅꜱ</span>
+                <button type="button" onClick={disconnect} disabled={busy}>ᴅɪꜱᴄᴏɴɴᴇᴄᴛ</button>
               </div>
             </>
           )}

@@ -1,0 +1,346 @@
+/* USER FX · Telegram-inspired linked conversation
+   Native USER FX frontend, not an embedded Telegram client.
+   Applied only when the user has an authenticated chat session. */
+
+#fx-chat-dock .fx-web-chat-window.is-telegram-connected {
+  border: 1px solid rgba(63, 216, 208, .35);
+  border-radius: 18px;
+  background: #0a1420;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .76), 0 0 0 1px rgba(63, 216, 208, .06);
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-header {
+  flex: 0 0 auto;
+  min-height: 70px;
+  padding: 12px 13px;
+  gap: 11px;
+  background: linear-gradient(115deg, #16283b, #0e1a2c);
+  border-bottom: 1px solid rgba(104, 159, 189, .22);
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-header-mark {
+  position: relative;
+  flex: 0 0 auto;
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  border: 1px solid rgba(80, 214, 219, .44);
+  background: radial-gradient(circle at 28% 23%, #277d9b, #0e3a56 57%, #06131e);
+  color: #e9ffff;
+  letter-spacing: -.08em;
+  box-shadow: 0 2px 12px rgba(21, 187, 211, .16);
+}
+
+#fx-chat-dock .fx-web-chat-presence {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #16283b;
+  border-radius: 50%;
+  background: #3fd8d0;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-heading strong {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-heading small {
+  font: 600 10px/1.25 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .025em;
+  color: #8acbd5;
+}
+
+#fx-chat-dock .fx-web-chat-open-telegram {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 33px;
+  height: 33px;
+  padding: 0 9px;
+  font: 700 10px/1 "IBM Plex Mono", ui-monospace, monospace;
+  border-radius: 10px;
+  border: 1px solid rgba(124, 175, 206, .28);
+  color: #a7deed;
+  background: rgba(32, 74, 100, .33);
+  text-decoration: none;
+  transition: color .2s ease, background .2s ease;
+}
+
+#fx-chat-dock .fx-web-chat-open-telegram:hover,
+#fx-chat-dock .fx-web-chat-open-telegram:focus-visible {
+  color: white;
+  background: #1b6580;
+}
+
+#fx-chat-dock .fx-web-chat-open-telegram svg {
+  width: 17px;
+  height: 17px;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-close {
+  width: 31px;
+  height: 32px;
+  color: #b7d2df;
+  border-radius: 9px;
+  font-size: 23px;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-close:hover {
+  background: rgba(134, 180, 205, .12);
+}
+
+#fx-chat-dock .fx-web-chat-chat-surface {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 80% 18%, rgba(41, 115, 149, .11), transparent 50%),
+    radial-gradient(ellipse at 8% 82%, rgba(63, 216, 208, .075), transparent 53%),
+    repeating-linear-gradient(132deg, transparent 0 58px, rgba(100, 159, 181, .026) 59px, transparent 60px),
+    #0a141e;
+}
+
+#fx-chat-dock .fx-web-chat-session-notice {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 13px 15px 0;
+  color: #9ac7cf;
+  font: 600 10px/1.45 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .015em;
+  text-align: center;
+}
+
+#fx-chat-dock .fx-web-chat-session-notice svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: #63d4cc;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-message-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 13px 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 172, 182, .55) transparent;
+}
+
+#fx-chat-dock .fx-web-chat-date-divider {
+  align-self: center;
+  flex: none;
+  margin: 10px 0 9px;
+  padding: 6px 12px;
+  border: 1px solid rgba(76, 125, 154, .22);
+  border-radius: 999px;
+  background: rgba(24, 48, 65, .79);
+  color: #b5d3dc;
+  font: 600 10px/1 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+#fx-chat-dock .fx-web-chat-row {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+#fx-chat-dock .fx-web-chat-row.is-outgoing {
+  justify-content: flex-end;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bubble {
+  position: relative;
+  align-self: auto;
+  width: fit-content;
+  max-width: 85%;
+  padding: 9px 12px 7px;
+  border: 1px solid rgba(85, 145, 176, .29);
+  border-radius: 15px 15px 15px 5px;
+  background: #152a3c;
+  color: #f0f6fd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .22);
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bubble.is-user {
+  align-self: auto;
+  border-color: rgba(48, 184, 187, .24);
+  border-radius: 15px 15px 5px 15px;
+  background: linear-gradient(130deg, #1b5964, #16515b);
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bubble.is-support {
+  border-color: rgba(210, 174, 105, .38);
+  background: #302c2a;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-author {
+  display: block;
+  color: #71d8e3;
+  font: 800 10px/1.3 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .06em;
+}
+
+#fx-chat-dock .is-telegram-connected .is-support .fx-web-chat-author {
+  color: #e3c083;
+}
+
+#fx-chat-dock .is-telegram-connected .is-user .fx-web-chat-author {
+  color: #b4f4ee;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bubble p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 5px 0 2px;
+  font: 400 12.5px/1.55 "Funnel Sans", Inter, system-ui, sans-serif;
+}
+
+#fx-chat-dock .fx-web-chat-message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding-top: 1px;
+  color: #a0b9c8;
+}
+
+#fx-chat-dock .fx-web-chat-message-meta time {
+  display: inline;
+  color: inherit;
+  font: 500 9px/1 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+#fx-chat-dock .fx-web-chat-message-meta svg {
+  width: 13px;
+  height: 13px;
+  color: #7be2e1;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-empty {
+  align-self: center;
+  margin: auto;
+  max-width: 245px;
+  color: #b5d3dd;
+  text-align: center;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose {
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 11px 8px;
+  border-top: 1px solid rgba(105, 158, 188, .16);
+  background: #0d1928;
+}
+
+#fx-chat-dock .fx-web-chat-attachment {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 33px;
+  height: 37px;
+  border-radius: 10px;
+  color: #9cb8cc;
+  text-decoration: none;
+}
+
+#fx-chat-dock .fx-web-chat-attachment:hover,
+#fx-chat-dock .fx-web-chat-attachment:focus-visible {
+  color: #eafcfc;
+  background: rgba(92, 158, 184, .14);
+}
+
+#fx-chat-dock .fx-web-chat-attachment svg {
+  width: 20px;
+  height: 20px;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(84, 137, 163, .3);
+  border-radius: 20px;
+  background: #142638;
+  color: #eff9ff;
+  font-size: 12.5px;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose input::placeholder {
+  color: #8ba9b9;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose button {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #3bc7cf;
+  color: #041722;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose button:not(:disabled):hover {
+  background: #6be1e0;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-compose button svg {
+  width: 18px;
+  height: 18px;
+  transform: translateX(1px);
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bottom {
+  flex: 0 0 auto;
+  padding: 2px 13px 11px;
+  background: #0d1928;
+  color: #94aec0;
+  font-size: 9px;
+}
+
+#fx-chat-dock .is-telegram-connected .fx-web-chat-bottom button {
+  font-size: 9px;
+}
+
+@media (max-width: 460px) {
+  #fx-chat-dock .fx-web-chat-window.is-telegram-connected {
+    border-radius: 14px;
+    height: min(660px, calc(100dvh - 92px - env(safe-area-inset-bottom)));
+  }
+
+  #fx-chat-dock .is-telegram-connected .fx-web-chat-bubble {
+    max-width: 91%;
+  }
+  #fx-chat-dock .fx-web-chat-open-telegram {
+    width: 33px;
+    padding: 0;
+  }
+  #fx-chat-dock .fx-web-chat-open-telegram span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fx-chat-dock .fx-web-chat-open-telegram {
+    transition: none;
+  }
+}
