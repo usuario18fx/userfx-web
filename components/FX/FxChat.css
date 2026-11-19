@@ -75,3 +75,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) { .fx-web-chat-message-list { scroll-behavior: auto; } .fx-web-chat-icon circle { animation: none; } }
+
+/* The chat stays mounted, but its launcher moves into the private-room header. */
+#fx-chat-dock.is-room { z-index: 14500; }
+#fx-chat-dock.is-room .fx-web-chat-window { top: 68px; bottom: auto; left: auto; right: max(16px, env(safe-area-inset-right)); height: min(640px, calc(100dvh - 84px)); }
+@media (max-width: 768px) { #fx-chat-dock.is-room .fx-web-chat-window { top: 112px; right: 8px; left: 8px; width: auto; height: min(570px, calc(100dvh - 124px)); } }
