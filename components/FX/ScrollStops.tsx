@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { STOP_T, stepIndex, type StepKey } from "./tourTimeline";
 import { travelToPosition } from "./Motion";
 import "./ScrollStops.css";
+import "./ScrollStopsRailV2.css";
 
 const STOPS = [
   { label: "Welcome", key: "welcome" as StepKey },
@@ -102,6 +103,9 @@ export default function ScrollStops() {
 
   return (
     <nav ref={navRef} className={`fx-story-stops${compact ? " is-compact" : ""}${mobileOpen ? " is-mobile-open" : ""}`} aria-label="USER FX section navigation">
+      <div className="fx-story-stops-progress" aria-hidden="true">
+        {String(active + 1).padStart(2, "0")}<span>/08</span>
+      </div>
       <button type="button" className="fx-story-stops-mobile-toggle" aria-label={`Navigate sections, currently ${STOPS[active].label}, ${active + 1} of ${STOPS.length}`} aria-expanded={mobileOpen} aria-controls="fx-story-stops-options" onClick={() => setMobileOpen((current) => !current)}>
         <span className="fx-story-stops-mobile-number">
           {String(active + 1).padStart(2, "0")}<span aria-hidden="true">/08</span>

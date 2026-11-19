@@ -1,0 +1,206 @@
+/* USER FX · line-based scroll navigation V2
+   Replaces the eight distracting dots with a compact segmented axis.
+   Mobile retains the expandable section selector. */
+
+body[data-locked="true"] .fx-story-stops {
+  display: none !important;
+}
+
+.fx-story-stops-progress {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .fx-story-stops,
+  .fx-story-stops.is-compact {
+    position: fixed;
+    top: 50%;
+    bottom: auto;
+    right: clamp(10px, 1.4vw, 24px);
+    left: auto;
+    transform: translateY(-50%);
+    z-index: 38;
+    width: 36px;
+    min-width: 36px;
+    height: auto;
+    padding: 12px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(63, 216, 208, .25);
+    border-radius: 22px;
+    background: rgba(4, 12, 19, .77);
+    box-shadow: 0 9px 28px rgba(0, 0, 0, .4);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .fx-story-stops-progress,
+  .fx-story-stops.is-compact .fx-story-stops-progress {
+    display: block;
+    width: 100%;
+    padding-bottom: 6px;
+    text-align: center;
+    color: #82e5e4;
+    font: 700 9px/1.1 "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.07em;
+    border-bottom: 1px solid rgba(63, 216, 208, .2);
+  }
+
+  .fx-story-stops-progress span {
+    color: rgba(143, 181, 187, .57);
+  }
+
+  .fx-story-stops-mobile-toggle,
+  .fx-story-stops.is-compact .fx-story-stops-mobile-toggle {
+    display: none;
+  }
+
+  .fx-story-stops-list,
+  .fx-story-stops.is-compact .fx-story-stops-list,
+  .fx-story-stops.is-compact.is-mobile-open .fx-story-stops-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    top: auto;
+    bottom: auto;
+    right: auto;
+    width: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .fx-story-stops-list::before {
+    content: "";
+    position: absolute;
+    inset: 7px auto;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, transparent, rgba(63, 216, 208, .32) 16%, rgba(63, 216, 208, .32) 84%, transparent);
+    pointer-events: none;
+  }
+
+  .fx-story-stop,
+  .fx-story-stops.is-compact .fx-story-stop {
+    display: grid;
+    position: relative;
+    place-items: center;
+    flex: 0 0 27px;
+    width: 26px;
+    height: 27px;
+    min-height: 27px;
+    padding: 0;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    transform: none;
+    cursor: pointer;
+  }
+
+  .fx-story-stop-dot,
+  .fx-story-stops.is-compact .fx-story-stop-dot {
+    order: 0;
+    display: block;
+    flex: 0 0 auto;
+    width: 3px;
+    height: 15px;
+    border-radius: 4px;
+    background: #578c94;
+    box-shadow: none;
+    opacity: .72;
+    transform: none;
+    transition: width .2s ease, height .2s ease, background .2s ease, box-shadow .2s ease, opacity .2s ease;
+  }
+
+  .fx-story-stop:hover .fx-story-stop-dot,
+  .fx-story-stops.is-compact .fx-story-stop:hover .fx-story-stop-dot {
+    width: 4px;
+    height: 20px;
+    background: #b3f8f5;
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(63, 216, 208, .32);
+  }
+
+  .fx-story-stop.is-active .fx-story-stop-dot,
+  .fx-story-stops.is-compact .fx-story-stop.is-active .fx-story-stop-dot {
+    flex-basis: auto;
+    width: 5px;
+    height: 25px;
+    background: #3fd8d0;
+    opacity: 1;
+    box-shadow: 0 0 9px rgba(63, 216, 208, .6);
+  }
+
+  .fx-story-stop-label,
+  .fx-story-stops.is-compact .fx-story-stop-label {
+    position: absolute;
+    order: 0;
+    display: block;
+    top: 50%;
+    right: 37px;
+    left: auto;
+    width: max-content;
+    max-width: 190px;
+    padding: 8px 11px;
+    transform: translate(5px, -50%);
+    border: 1px solid rgba(63, 216, 208, .3);
+    border-radius: 8px;
+    background: rgba(5, 12, 20, .97);
+    color: #d5f8fa;
+    font: 600 11px/1.2 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    text-align: right;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+
+  .fx-story-stop:hover .fx-story-stop-label,
+  .fx-story-stop:focus-visible .fx-story-stop-label,
+  .fx-story-stops.is-compact .fx-story-stop:hover .fx-story-stop-label,
+  .fx-story-stops.is-compact .fx-story-stop:focus-visible .fx-story-stop-label {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .fx-story-stops-progress {
+    display: none;
+  }
+
+  .fx-story-stops-mobile-toggle {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .fx-story-stops-list {
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #3fd8d0 rgba(4, 12, 20, .8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-story-stop-dot,
+  .fx-story-stop-label {
+    transition: none !important;
+  }
+}
