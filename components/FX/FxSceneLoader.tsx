@@ -15,7 +15,6 @@ const RETREAT_DURATION_MS = 4100;
 export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
   const [percent, setPercent] = useState(1);
   const [leaving, setLeaving] = useState(false);
-  const [modelReady, setModelReady] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const completeRef = useRef(onComplete);
   completeRef.current = onComplete;
@@ -48,14 +47,24 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
     let raf = 0;
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" });
+      renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+        powerPreference: "low-power",
+      });
     } catch {
       return;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    mount.appendChild(renderer.domElement);
+    // setSize(..., false) no toca el CSS del canvas: lo forzamos a ocupar el stage
+    // para que no se desborde (con pixelRatio 1.5 se veía 1.5x más grande y corrido).
+    const canvas = renderer.domElement;
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    mount.appendChild(canvas);
 
     const scene = new THREE.Scene();
     scene.add(new THREE.AmbientLight("#d6edff", 2.3));
@@ -65,6 +74,7 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
     const rim = new THREE.DirectionalLight("#168dff", 2.2);
     rim.position.set(-4, 2, -4);
     scene.add(rim);
+
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 60);
     const resize = () => {
       const w = mount.clientWidth || 600;
@@ -72,30 +82,40 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       const fitZ = 9 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect);
-      camera.position.set(0, .88, Math.max(7.6, fitZ * 1.15));
-      camera.lookAt(0, .88, 0);
+      camera.position.set(0, 0.88, Math.max(7.6, fitZ * 1.15));
+      camera.lookAt(0, 0.88, 0);
       camera.updateProjectionMatrix();
     };
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(mount);
+
     let statue: THREE.Group | null = null;
+    // Momento en que el logo aparece: el pulso de zoom cuenta desde aquí.
+    let shownAt = 0;
+
     const loadAccent = (path: string, x: number, y: number, z: number, maxSize: number) => {
-      new GLTFLoader().load(path, (gltf) => {
-        if (disposed) return;
-        const accent = gltf.scene;
-        const bounds = new THREE.Box3().setFromObject(accent);
-        const size = bounds.getSize(new THREE.Vector3());
-        const center = bounds.getCenter(new THREE.Vector3());
-        accent.position.sub(center);
-        const scale = maxSize / Math.max(size.x, size.y, size.z, 0.001);
-        const pivot = new THREE.Group();
-        pivot.add(accent);
-        pivot.scale.setScalar(scale);
-        pivot.position.set(x, y, z);
-        scene.add(pivot);
-      }, undefined, () => {});
+      new GLTFLoader().load(
+        path,
+        (gltf) => {
+          if (disposed) return;
+          const accent = gltf.scene;
+          const bounds = new THREE.Box3().setFromObject(accent);
+          const size = bounds.getSize(new THREE.Vector3());
+          const center = bounds.getCenter(new THREE.Vector3());
+          accent.position.sub(center);
+          const scale = maxSize / Math.max(size.x, size.y, size.z, 0.001);
+          const pivot = new THREE.Group();
+          pivot.add(accent);
+          pivot.scale.setScalar(scale);
+          pivot.position.set(x, y, z);
+          scene.add(pivot);
+        },
+        undefined,
+        (err) => console.warn(`[FxSceneLoader] No se pudo cargar ${path}`, err),
+      );
     };
+
     new GLTFLoader().load(
       "/logoFX.glb",
       (gltf) => {
@@ -105,32 +125,35 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         statue.position.sub(center);
-        const fit = Math.min(7.1 / Math.max(size.x, .001), 2.7 / Math.max(size.y, .001), 2 / Math.max(size.z, .001));
+        const fit = Math.min(
+          7.1 / Math.max(size.x, 0.001),
+          2.7 / Math.max(size.y, 0.001),
+          2 / Math.max(size.z, 0.001),
+        );
         const hero = new THREE.Group();
         hero.add(statue);
         hero.scale.setScalar(fit);
         hero.userData.baseScale = fit;
         statue = hero;
         scene.add(hero);
-        setModelReady(true);
-        loadAccent("/assets/logos.glb/iconCorona.glb", 2.2, 1.65, -0.35, 1.2);
-        loadAccent("/assets/logos.glb/iconRosa.glb", -2.1, -0.5, 0.35, 1.1);
+        shownAt = performance.now();
       },
       undefined,
-      () => {},
+      (err) => console.warn("[FxSceneLoader] No se pudo cargar /logoFX.glb", err),
     );
-    const start = performance.now();
+
     const tick = (now: number) => {
       if (disposed) return;
       if (statue) {
-        const t = Math.min(1, (now - start) / INTRO_DURATION_MS);
-        const zoom = 1 + 0.30 * Math.sin(Math.min(1, t * 1.6) * Math.PI);
+        const t = Math.min(1, (now - shownAt) / INTRO_DURATION_MS);
+        const zoom = 1 + 0.3 * Math.sin(Math.min(1, t * 1.6) * Math.PI);
         statue.scale.setScalar((statue.userData.baseScale as number) * zoom);
         renderer.render(scene, camera);
-      }
+    }
       raf = window.requestAnimationFrame(tick);
     };
     raf = window.requestAnimationFrame(tick);
+
     return () => {
       disposed = true;
       window.cancelAnimationFrame(raf);
@@ -149,34 +172,14 @@ export default function FxSceneLoader({ onComplete, sceneReady }: Props) {
   return (
     <div className={"fx-scene-loader" + (leaving ? " is-leaving" : "")} role="status" aria-label="USER FX loading screen">
       <div className="fx-scene-loader-content">
-        <span className="fx-scene-loader-scroll" aria-hidden="true">
-          SCROLL TO ENTER
-        </span>
-        <span className="fx-scene-loader-welcome">
-          WELCOME
-        </span>
-        <h1 className="fx-scene-loader-brand" aria-label="USER FX">
-          <span className="fx-scene-loader-brand-user">
-            USER
-          </span>
-          <span className="fx-scene-loader-brand-fx">
-            FX
-          </span>
-        </h1>
-        <div ref={stageRef} className="fx-scene-loader-3d" aria-hidden="true">
-          {!modelReady && (
-            <span className="fx-scene-loader-3d-fallback">
-              USER FX
-            </span>
-          )}
-        </div>
+        <div ref={stageRef} className="fx-scene-loader-stage" style={{ position: "relative", width: "100%", height: 230, overflow: "hidden" }} aria-hidden="true" />
         <div className="fx-scene-loader-subtitle">
           <span>
-            PRIVATE WORLD
-          </span>
+PRIVATE WORLD
+</span>
         </div>
         <div className="fx-scene-loader-progress-row">
-          <div className="fx-scene-loader-progress" role="progressbar" aria-label="USER FX opening sequence" aria-valuemin={1} aria-valuemax={100} aria-valuenow={percent}>
+          <div className="fx-scene-loader-progress" role="progressbar" aria-label="USER FX opening sequence" aria-valuemin={1} aria-valuemax={100} aria-valuenow={percent} >
             <span className="fx-scene-loader-progress-fill" style={{ width: `${percent}%` }} />
           </div>
           <output className="fx-scene-loader-percent" aria-live="off">

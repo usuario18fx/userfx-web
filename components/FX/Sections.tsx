@@ -233,13 +233,11 @@ export function SectionMethod() {
       <span className="pv-title-line" />
       {" "}
     </>
-  );
-
+    );
   return (
     <ProtocolVault id="protocol" eyebrowIndex="02" eyebrow="ACCESS PROTOCOL" title={methodTitle} intro="Four steps. Four photographs. The crown turns behind everything and falls into the four private rooms." steps={steps} roomTags={["SPCL", "BSIC", "PRX0", "VIPX"]} />
   );
-}
-
+  }
 /* ---------- Pricing Card Component ---------- */
 function PricingCard({ plan, view }: { plan: any, view: "stars" | "window" }) {
   const videoSrc = getPlanVideo(plan.id);
@@ -248,114 +246,100 @@ function PricingCard({ plan, view }: { plan: any, view: "stars" | "window" }) {
 
   return (
     <motion.li
-      variants={wipe(40)}
-      whileHover={{ y: -6, scale: 1.02 }}
+      variants={plan.featured ? {
+        hidden: { opacity: 0, y: 34, scale: 1, clipPath: "inset(16% 0% 0% 0% round 40px)" },
+        show: { opacity: 1, y: -6, scale: 1.02, clipPath: "inset(0% 0% 0% 0% round 40px)", transition: { duration: 1, ease: EASE } },
+      } : wipe(40)}
+      whileHover={{ y: plan.featured ? -24 : -16, scale: plan.featured ? 1.055 : 1.035 }}
       onMouseEnter={(e) => setPlanPreview(e.currentTarget, true)}
       onMouseLeave={(e) => setPlanPreview(e.currentTarget, false)}
       onFocusCapture={(e) => setPlanPreview(e.currentTarget, true)}
       onBlurCapture={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-          setPlanPreview(e.currentTarget, false);
-        }
-      }}
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {setPlanPreview(e.currentTarget, false);
+      }}}
       transition={{ duration: 0.3, ease: EASE }}
-      className={`fx-plan-card ${plan.featured ? "is-featured" : ""}`}
-    >
+      className={`fx-plan-card plan-${plan.id} ${plan.featured ? "is-featured" : ""}`}>
       {/* Fondo de video */}
       <div className="fx-plan-bg">
         {videoSrc && (
-          <video src={videoSrc} className="fx-plan-hover-video" muted loop playsInline autoPlay={plan.id === "pro"} preload={plan.id === "pro" ? "auto" : "metadata"} aria-hidden="true" />
+      <video src={videoSrc} className="fx-plan-hover-video" muted loop playsInline autoPlay={plan.id === "pro"} preload={plan.id === "pro" ? "auto" : "metadata"} aria-hidden="true" />
         )}
-        <div className="fx-plan-video-shade" />
+      <div className="fx-plan-video-shade" />
       </div>
-
       {/* Contenido de la tarjeta */}
       <div className="fx-plan-content">
-        
         {/* HEADER: Icono y Título */}
-        <div className="fx-plan-header">
-          <div className="fx-plan-icon-wrap">
-            <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-prefix-illustration" />
-          </div>
-          <div className="fx-plan-title-group">
-            <h3 className="fx-plan-name">
-{plan.name}
-</h3>
-            <span className="fx-plan-prefix">
-{plan.prefix}
-</span>
-          </div>
-        </div>
-
-        {/* BODY: Descripción y Precio */}
-        <div className="fx-plan-body">
-          <p className="fx-plan-tagline">
-{plan.tagline}
-</p>
-          
-          <div className="fx-plan-price-wrap">
-            <motion.span
-              key={`${plan.id}-${price}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: EASE }}
-              className="fx-plan-price"
-            >
-              {price}
-            </motion.span>
-            <span className="fx-plan-meta">
-              {sub} · {plan.session}
-            </span>
-          </div>
-        </div>
-
-        {/* FOOTER: Beneficios y Botón */}
-        <div className="fx-plan-footer">
-          <details className="fx-plan-details group">
-            <summary className="fx-plan-summary">
-              <span>
-BENEFITS
-</span>
-              <span aria-hidden="true" className="group-open:rotate-45 transition-transform">
-+
-</span>
-            </summary>
-            <ul className="fx-plan-features">
-              {plan.features.map((feature: string) => (
-                <li key={feature}>
-                  <span className="bullet">
-•
-</span>
-                  <span>
-{feature}
-</span>
-                </li>
-              ))}
-            </ul>
-          </details>
-
-          <Magnetic strength={0.1}>
-            <a href={`https://t.me/User18Fx_bot?start=${plan.id}`} target="_blank" rel="noreferrer noopener" className="fx-plan-cta group" aria-label={`Get ${plan.name} code via Telegram`}>
-              <span className="fx-plan-led-viewport" aria-hidden="true">
-                <span className="fx-plan-led-track">
-                  <span className="fx-plan-led-text">
-                    {`GET ${plan.id.toUpperCase()}-CODE`}
-                  </span>
-                  <span className="fx-plan-led-text">
-                    {`GET ${plan.id.toUpperCase()}-CODE`}
-                  </span>
-                </span>
-              </span>
-              <Glyph name="caret" className="fx-plan-led-arrow h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
-            </a>
-          </Magnetic>
-        </div>
-
+      <div className="fx-plan-header">
+      <div className="fx-plan-icon-wrap">
+      <img src={plan.id === "basic" ? FX.basic : plan.id === "pro" ? FX.pro : FX.vip} alt="" loading="lazy" className="fx-prefix-illustration" />
       </div>
-    </motion.li>
-  );
-}
-
+      <div className="fx-plan-title-group">
+      <h3 className="fx-plan-name">
+         {plan.name}
+      </h3>
+      <span className="fx-plan-prefix">
+         {plan.prefix}
+      </span>
+      </div>
+      </div>
+{/* BODY: Descripción y Precio */}
+      <div className="fx-plan-body">
+      <p className="fx-plan-tagline">
+        {plan.tagline}
+      </p>    
+      <div className="fx-plan-price-wrap">
+      <motion.span key={`${plan.id}-${price}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: EASE }} className="fx-plan-price">
+        {price}
+      </motion.span>
+      <span className="fx-plan-meta">
+        {sub} · {plan.session}
+      </span>
+      </div>
+      </div>
+{/* FOOTER: Beneficios y Botón */}
+      <div className="fx-plan-footer">
+      <details className="fx-plan-details group">
+      <summary className="fx-plan-summary">
+      <span>
+       BENEFITS
+      </span>
+      <span aria-hidden="true" className="group-open:rotate-45 transition-transform"> 
+      +
+      </span>
+      </summary>
+      <ul className="fx-plan-features">
+              {plan.features.map((feature: string) => (
+      <li key={feature}>
+      <span className="bullet">
+       •
+      </span>
+      <span>
+       {feature}
+      </span>
+      </li>
+      ))}
+      </ul>
+      </details>
+      <Magnetic strength={0.1}>
+      <a href={`https://t.me/User18Fx_bot?start=${plan.id}`} target="_blank" rel="noreferrer noopener" className={`fx-plan-cta fx-plan-cta--${plan.id} group`} aria-label={`Get ${plan.name} code via Telegram`}>
+      <span className="fx-plan-cta-copy">
+      <span className="fx-plan-cta-eyebrow">
+        TELEGRAM STARS
+      </span>
+      <strong className="fx-plan-cta-label">
+       { `GET ${plan.name.toUpperCase()} CODE` }
+      </strong>
+      </span>
+      <span className="fx-plan-cta-icon" aria-hidden="true">
+      <Glyph name="caret" className="h-4 w-4" />
+      </span>
+      </a>
+      </Magnetic>
+      </div>
+      </div>
+      </motion.li>
+        );
+        }
 export function SectionPricing() {
   const radioValues = ["stars", "window"] as const;
   const [view, setView] = useState<(typeof radioValues)[number]>("stars");
@@ -363,16 +347,14 @@ export function SectionPricing() {
 
   return (
     <Shell id="access">
-      <Drift className="left-[30%] top-[6%] h-[28rem] w-[28rem]" distance={110} />
-
-      <RevealGroup className="mb-8 space-y-5">
-        <SectionIndex index="04" label="Choose your code" />
-        <Title>
+    <Drift className="left-[30%] top-[6%] h-[28rem] w-[28rem]" distance={110} />
+    <RevealGroup className="mb-8 space-y-5">
+    <SectionIndex index="04" label="Choose your code" />
+    <Title>
          Your access. Your level.
-</Title>
-
-        <Reveal>
-          <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1" >
+    </Title>
+    <Reveal>
+    <div role="radiogroup" aria-label="Compare access by" className="glass relative inline-flex rounded-full p-1" >
             {radioValues.map((value, i) => (
               <button key={value} ref={(element) => { radios.current[i] = element; }} type="button" role="radio" aria-checked={view === value} tabIndex={view === value ? 0 : -1} onClick={() => setView(value)} onKeyDown={(event) => { const isPrev = event.key === "ArrowLeft" || event.key === "ArrowUp"; const isNext = event.key === "ArrowRight" || event.key === "ArrowDown";  if (!isPrev && !isNext && event.key !== "Home" && event.key !== "End") { return; }  event.preventDefault();  const next = event.key === "Home" ? 0 : event.key === "End" ? radioValues.length - 1 : isPrev ? (i - 1 + radioValues.length) % radioValues.length : (i + 1) % radioValues.length;  setView(radioValues[next]); radios.current[next]?.focus(); }} className="relative rounded-full px-6 py-2.5 text-sm font-semibold" >
                 {view === value && (
@@ -391,40 +373,35 @@ export function SectionPricing() {
         </Reveal>
       </RevealGroup>
 
-      <RevealGroup>
-        <ul className="fx-pricing-grid">
+         <RevealGroup>
+         <ul className="fx-pricing-grid">
           {PLANS.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} view={view} />
+         <PricingCard key={plan.id} plan={plan} view={view} />
           ))}
-        </ul>
-
-        <Reveal className="mt-7 flex flex-wrap items-center justify-between gap-4 text-sm text-ink/55">
-          <span>
-          🜲 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 ▪ 𒅂 🜲
-          </span>
-        </Reveal>
-      </RevealGroup>
-    </Shell>
-  );
-}
-
+         </ul>
+         <Reveal className="mt-7 flex flex-wrap items-center justify-between gap-4 text-sm text-ink/55">
+         <span>
+          🜲 ▪ 🜲 𒅂
+         </span>
+         </Reveal>
+         </RevealGroup>
+         </Shell>
+         );
+         }
 export function SectionFaq() {
   const [expanded, setExpanded] = useState<number | null>(0);
-
   return (
-    <Shell id="faq">
-      <Drift className="-right-[4%] top-[20%] h-[22rem] w-[22rem]" distance={80} />
-
-      <RevealGroup className="grid gap-12 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-20">
+        <Shell id="faq">
+        <Drift className="-right-[4%] top-[20%] h-[22rem] w-[22rem]" distance={80} />
+        <RevealGroup className="grid gap-12 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-20">
         <div className="space-y-7 lg:sticky lg:top-28 lg:self-start">
-          <SectionIndex index="05" label="Before you get in" />
-          <Title>
-Good questions. Clear answers.
-</Title>
+        <SectionIndex index="05" label="Before you get in" />
+        <Title>
+         Good questions. Clear answers.
+        </Title>
         </div>
-
         <Reveal>
-          <ul className="fx-faq relative">
+        <ul className="fx-faq relative">
             {FAQS.map((item, i) => (
               <li key={item.q} className="group border-b border-ink/12 first:border-t">
                 <button

@@ -338,8 +338,8 @@ export default function ProtocolVault({
 
   const roseOpacity = useTransform(
     smooth,
-    [0, config.photosStart, config.rise[0], 1],
-    [0.70, 0.55, 0.65, 0.50]
+    [0, config.photosStart, config.descend[0], config.rise[0], 1],
+    [0, 0.04, 0.20, 0.40, 0.50]
   );
 
   const photoLift = useTransform(

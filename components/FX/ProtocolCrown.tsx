@@ -99,6 +99,101 @@ function crownGeometry(count: number) {
   return { geometry, original: positions.slice(), scatter, phase };
 }
 
+// FX_CROWN_PAINTED_OUTLINE_V1 · Contorno iluminado debajo de las particulas.
+const CROWN_EDGE: ReadonlyArray<readonly [number, number]> = [
+  [-1.79, -0.94], [-1.79, 0.44], [-1.37, -0.06],
+  [-1.05, 0.79], [-0.43, 0.10], [0, 1.47],
+  [0.43, 0.10], [1.05, 0.79], [1.37, -0.06],
+  [1.79, 0.44], [1.79, -0.94], [-1.79, -0.94],
+];
+
+function makePaintedCrownOutline() {
+  const path = new THREE.CurvePath<THREE.Vector3>();
+  for (let i = 1; i < CROWN_EDGE.length; i++) {
+    const [ax, ay] = CROWN_EDGE[i - 1];
+    const [bx, by] = CROWN_EDGE[i];
+    path.add(new THREE.LineCurve3(
+      new THREE.Vector3(ax, ay, 1.07),
+      new THREE.Vector3(bx, by, 1.07),
+    ));
+  }
+  const glowGeometry = new THREE.TubeGeometry(path, 180, 0.042, 5, false);
+  const edgeGeometry = new THREE.TubeGeometry(path, 180, 0.013, 5, false);
+  const glowMaterial = new THREE.MeshBasicMaterial({
+    color: "#3fd8d0", transparent: true, opacity: 0.20,
+    depthTest: false, depthWrite: false, toneMapped: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const edgeMaterial = new THREE.MeshBasicMaterial({
+    color: "#7afff5", transparent: true, opacity: 0.94,
+    depthTest: false, depthWrite: false, toneMapped: false,
+  });
+  const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+  const edge = new THREE.Mesh(edgeGeometry, edgeMaterial);
+  glow.renderOrder = 0;
+  edge.renderOrder = 1;
+  return {
+    glow, edge, glowMaterial, edgeMaterial,
+    dispose: () => {
+      glowGeometry.dispose();
+      edgeGeometry.dispose();
+      glowMaterial.dispose();
+      edgeMaterial.dispose();
+    },
+  };
+}
+
+
+// FX_CROWN_RESTORE_V3: contorno 3D independiente, pintado debajo de las particulas.
+function createFxCrownContour() {
+  const outline = new THREE.Group();
+  const materials: THREE.LineBasicMaterial[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
+  const add = (coordinates: number[], opacity: number, closed: boolean) => {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(coordinates, 3));
+    const material = new THREE.LineBasicMaterial({
+      color: '#49e6ee',
+      transparent: true,
+      opacity,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const line = closed ? new THREE.LineLoop(geometry, material) : new THREE.Line(geometry, material);
+    line.renderOrder = -1;
+    outline.add(line);
+    materials.push(material);
+    geometries.push(geometry);
+  };
+
+  const crest: number[] = [];
+  const rim: number[] = [];
+  const orbit: number[] = [];
+  for (let i = 0; i < 420; i++) {
+    const a = (i / 420) * Math.PI * 2;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    const peak = Math.pow((Math.cos(7 * (a - Math.PI / 2)) + 1) / 2, 5);
+    crest.push(1.79 * c, 0.05 + 1.42 * peak, 1.05 * s);
+    rim.push(1.79 * c, -1.0, 1.05 * s);
+    orbit.push(2.08 * c, -1.2, 1.27 * s);
+  }
+  // Silueta frontal clara incluso cuando quedan pocas particulas.
+  const front = [
+    [-1.75, -0.96, 1.07], [-1.65, 0.30, 1.07],
+    [-1.13, -0.12, 1.07], [-0.65, 1.08, 1.07],
+    [-0.02, 0.23, 1.07], [0.42, 1.47, 1.07],
+    [0.91, 0.20, 1.07], [1.44, 0.86, 1.07],
+    [1.75, -0.96, 1.07],
+  ].flat();
+  add(crest, 0.46, true);
+  add(rim, 0.82, true);
+  add(front, 0.98, false);
+  add(orbit, 0.40, true);
+  return { outline, materials, geometries, baseOpacity: [0.46, 0.82, 0.98, 0.40] };
+}
+
 export default function ProtocolCrown({ progress, tl, active, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
@@ -118,7 +213,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
     // Draw the canvas 2D only when WebGL is unavailable; never overlay both particle layers.
     // This prevents an entirely blank Protocol background on GPU-limited devices.
-    const fallbackData = crownGeometry(window.innerWidth < 700 ? 10500 : 17000);
+    const fallbackData = crownGeometry(window.innerWidth < 700 ? 1200 : 2600);
     const fOriginal = fallbackData.original;
     const fScatter = fallbackData.scatter;
     const fColors = fallbackData.geometry.getAttribute("color").array as Float32Array;
@@ -148,7 +243,45 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       const cos = Math.cos(turn), sin = Math.sin(turn);
       const free = broken * broken;
       fallbackContext.save();
+      // Pintar el mismo borde antes que los puntos (modo sin WebGL).
+      fallbackContext.beginPath();
+      for (let j = 0; j < CROWN_EDGE.length; j++) {
+        const [x, y] = CROWN_EDGE[j];
+        const z = 1.07;
+        const rx = x * cos - z * sin;
+        const rz = x * sin + z * cos;
+        const perspective = 5.8 / (5.8 - rz * 0.28);
+        const px = cx + rx * scale * perspective;
+        const py = cy - y * scale * perspective;
+        if (j === 0) fallbackContext.moveTo(px, py);
+        else fallbackContext.lineTo(px, py);
+      }
+      fallbackContext.strokeStyle = "#3fd8d0";
+      fallbackContext.lineWidth = 2;
+      fallbackContext.globalAlpha = opacity * (1 - broken);
+      fallbackContext.shadowColor = "#39d3d0";
+      fallbackContext.shadowBlur = 8;
+      fallbackContext.stroke();
+      fallbackContext.shadowBlur = 0;
       fallbackContext.globalCompositeOperation = "lighter";
+      // Borde 2D si WebGL no esta disponible.
+      fallbackContext.globalAlpha = opacity * 0.94;
+      fallbackContext.strokeStyle = '#49e6ee';
+      fallbackContext.lineWidth = 2;
+      fallbackContext.beginPath();
+      const frontal = [
+        [-1.75,-0.96],[-1.65,0.30],[-1.13,-0.12],[-0.65,1.08],
+        [-0.02,0.23],[0.42,1.47],[0.91,0.20],[1.44,0.86],[1.75,-0.96]
+      ];
+      frontal.forEach(([x,y], index) => {
+        if (index === 0) fallbackContext.moveTo(cx + x * scale, cy - y * scale);
+        else fallbackContext.lineTo(cx + x * scale, cy - y * scale);
+      });
+      fallbackContext.stroke();
+      fallbackContext.beginPath();
+      fallbackContext.ellipse(cx, cy + scale, scale * 1.95, scale * 0.2, 0, 0, Math.PI * 2);
+      fallbackContext.stroke();
+
       for (let i = 0; i < fOriginal.length; i += 3) {
         const x = fOriginal[i] + fScatter[i] * free;
         const y = fOriginal[i + 1] + fScatter[i + 1] * free * 0.35 - 5.5 * free * free;
@@ -174,7 +307,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     let fallbackFrame = 0;
     const fallbackLoop = (ms: number) => {
       fallbackFrame = requestAnimationFrame(fallbackLoop);
-      if (useFallback && !document.hidden && ms - lastFallbackFrame > 40) {
+      if (useFallback && activeRef.current && !document.hidden && ms - lastFallbackFrame > 40) {
         lastFallbackFrame = ms;
         renderFallback(ms);
       }
@@ -216,8 +349,12 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
     const group = new THREE.Group();
     scene.add(group);
+    const fxContour = createFxCrownContour();
+    group.add(fxContour.outline);
+    const crownOutline = makePaintedCrownOutline();
+    group.add(crownOutline.glow, crownOutline.edge);
     const isMobile = window.matchMedia("(max-width: 700px)").matches;
-    const data = crownGeometry(isMobile ? 12000 : 30000);
+    const data = crownGeometry(isMobile ? 1200 : 2600);
     const material = new THREE.PointsMaterial({
       size: isMobile ? 0.022 : 0.017,
       vertexColors: true,
@@ -229,6 +366,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       blending: THREE.AdditiveBlending,
     });
     const points = new THREE.Points(data.geometry, material);
+    points.renderOrder = 3;
     points.frustumCulled = false;
     group.add(points);
 
@@ -237,12 +375,13 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       size: isMobile ? 0.055 : 0.047,
       vertexColors: true,
       transparent: true,
-      opacity: 0.075,
+      opacity: 0.035,
       depthWrite: false,
       sizeAttenuation: true,
       blending: THREE.AdditiveBlending,
     });
     const halo = new THREE.Points(data.geometry, haloMaterial);
+    halo.renderOrder = 2;
     halo.frustumCulled = false;
     group.add(halo);
 
@@ -255,7 +394,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       camera.aspect = w / h;
       camera.position.z = w < 700 ? 10.8 : 7.7;
       camera.updateProjectionMatrix();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5));
       renderer.setSize(w, h, false);
     };
     resize();
@@ -266,7 +405,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
 
     const render = (ms: number) => {
       frame = requestAnimationFrame(render);
-      if (!visible || useFallback) return;
+      if (!visible || !activeRef.current || useFallback) return;
       const p = clamp(typeof progress === "number" ? progress : progress.get());
       const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
       const descend = range(p, timeline.descend);
@@ -299,6 +438,11 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
         (rise - descend) * 1.0, 0);
       material.opacity = 0.92 * opacity;
       haloMaterial.opacity = 0.075 * opacity * (1 - broken);
+      fxContour.materials.forEach((material, index) => {
+        material.opacity = fxContour.baseOpacity[index] * opacity * (1 - broken * 0.9);
+      });
+      crownOutline.edgeMaterial.opacity = 0.94 * opacity * (1 - broken);
+      crownOutline.glowMaterial.opacity = 0.20 * opacity * (1 - broken);
       renderer.render(scene, camera);
     };
     frame = requestAnimationFrame(render);
@@ -313,14 +457,17 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       data.geometry.dispose();
       material.dispose();
       haloMaterial.dispose();
+      fxContour.geometries.forEach((geometry) => geometry.dispose());
+      fxContour.materials.forEach((material) => material.dispose());
+      crownOutline.dispose();
       renderer.dispose();
     };
   }, [progress, timeline]);
 
   return (
     <div className="pv-crown-layer" aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{ display: "none", opacity: 1, position: "absolute", inset: 0 }} />
-      <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{ position: "absolute", inset: 0 }} />
+      <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{display: "none", opacity: 1, position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+      <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{position: "absolute", inset: 0, width: "100%", height: "100%" }} />
     </div>
   );
 }

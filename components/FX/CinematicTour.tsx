@@ -50,11 +50,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Reflector } from "three/examples/jsm/objects/Reflector.js";
 import { CSS3DObject, CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 import { ENTER_AT, STEPS, stepIndex, STOP_T, type StepKey } from "./tourTimeline";
+// Icono GLB de la rosa (reemplaza al <img src="/assets/rosaIcon.png">). Ajusta la ruta si lo guardas en otra carpeta.
+import FxGlbIcon from "./FxGlbIcon";
 import "./CinematicTour.css";
-
-// Keep the WELCOME title visible across the corridor and fade it only as the gallery begins.
-const WELCOME_FADE_FROM = STOP_T[stepIndex("enter-room")];
-const WELCOME_FADE_TO = STOP_T[stepIndex("gallery-a")];
 
 // Videos de la pantalla de la laptop (bucle 24/7): "gallery" en el bloque 1, "multimedia" en el 3.
 const LAPTOP_VIDEOS = {
@@ -62,8 +60,15 @@ const LAPTOP_VIDEOS = {
   multimedia: "/assets/my-room/multimedia.mp4",
 } as const;
 type LaptopMode = keyof typeof LAPTOP_VIDEOS;
-
-// ─── AJUSTES FINOS (afinar aquí, no hay que tocar el resto) ────────────────
+// sube la corona y el "SCROLL DOWN TO ENTER"
+const WELCOME_LIFT_PX = 37;
+//baja el bloque de título (USER FX + WELCOME + PRIVATE WORLD), todo junto.
+const TITLE_DROP_PX = 20;
+//sube solo el "SCROLL DOWN TO ENTER".
+const SCROLL_EXTRA_LIFT_PX = 33;
+// baja solo el "USER FX"
+const USERFX_EXTRA_DROP_PX = 12;
+// ──────────────────
 const TUNING = {
   // Llegada del scroll (muelle amortiguado)
   smoothTime: 0.32,        // s: menor = más directo, mayor = más cinematográfico
@@ -367,6 +372,20 @@ const stopEnvelope = (p: number) => envelopeAt(p);
 const lockEnvelope = (p: number) => envelopeAt(p, (f) => f.id.endsWith("-lock"));
 
 // ─── COMPONENTE ────────────────────────────────────────────────────────────
+// USERFX: los cuatro títulos se desvanecen por etapas según el scroll.
+function fxStagedFade(progress: number, start: number, end: number) {
+  const phase = Math.max(0, Math.min(1, progress / Math.max(0.0001, 0.18)));
+  const t = Math.max(0, Math.min(1, (phase - start) / Math.max(0.0001, end - start)));
+  return 1 - t * t * (3 - 2 * t);
+}
+
+// USERFX: desvanecimiento en orden SCROLL > WELCOME > USER FX > PRIVATE WORLD.
+function fxCoverStep(progress: number, from: number, to: number) {
+  const p = Math.max(0, Math.min(1, progress / Math.max(0.0001, 0.18)));
+  const t = Math.max(0, Math.min(1, (p - from) / Math.max(0.0001, to - from)));
+  return 1 - t * t * (3 - 2 * t);
+}
+
 export default function CinematicTour({
   progress,
   onModeChange,
@@ -629,49 +648,6 @@ export default function CinematicTour({
         wakeRender.current?.();
       }, undefined, () => {});
     };
-
-    // USER FX logo sculpture: reuse the existing GLB, not a second WELCOME model.
-    const logoPlinth = box(3.42, 0.09, 0.48, 0, -0.015, 4.10,
-      new THREE.MeshStandardMaterial({ color: "#223644", metalness: 0.45, roughness: 0.4 }));
-    logoPlinth.receiveShadow = true;
-    new GLTFLoader().load(
-      "/logoFX.glb",
-      (gltf) => {
-        if (abort.signal.aborted) return;
-        const logo = gltf.scene;
-        const bounds = new THREE.Box3().setFromObject(logo);
-        const size = bounds.getSize(new THREE.Vector3());
-        const center = bounds.getCenter(new THREE.Vector3());
-        logo.position.sub(center);
-        const fit = Math.min(3.1 / Math.max(size.x, 0.001), 1.55 / Math.max(size.y, 0.001), 0.45 / Math.max(size.z, 0.001));
-        const sculpture = new THREE.Group();
-        sculpture.add(logo);
-        sculpture.scale.setScalar(fit);
-        sculpture.position.set(0, 0.93, 4.10);
-        scene.add(sculpture);
-        const loadOrnament = (file: string, x: number, y: number, z: number, diameter: number) => {
-          new GLTFLoader().load(file, (ornamentGltf) => {
-            if (abort.signal.aborted) return;
-            const ornament = ornamentGltf.scene;
-            const box = new THREE.Box3().setFromObject(ornament);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            ornament.position.sub(center);
-            const rig = new THREE.Group();
-            rig.add(ornament);
-            rig.scale.setScalar(diameter / Math.max(size.x, size.y, size.z, 0.001));
-            rig.position.set(x, y, z);
-            scene.add(rig);
-            wakeRender.current?.();
-          }, undefined, () => {});
-        };
-        loadOrnament("/assets/logos.glb/iconCorona.glb", 0.88, 2.07, 4.08, 0.78);
-        loadOrnament("/assets/logos.glb/iconRosa.glb", -0.90, 0.23, 4.35, 0.78);
-        wakeRender.current?.();
-      },
-      undefined,
-      () => {},
-    );
 
     // ── Corredor ──
     const bronze = mat("#15bcef", 0.32, 0.68);
@@ -2219,33 +2195,40 @@ export default function CinematicTour({
   }, []);
 
   return (
-    <div
-      ref={host}
-      className="cinematic-tour"
-      role="img"
-      aria-label="Recorrido 3D por la habitación de USER FX"
-    >
-      <div className="ct-cover" style={{ opacity: Math.max(0, Math.min(1, (WELCOME_FADE_TO - progress) / Math.max(0.001, WELCOME_FADE_TO - WELCOME_FADE_FROM))), visibility: progress >= WELCOME_FADE_TO ? "hidden" : "visible" }} aria-hidden={progress >= WELCOME_FADE_TO}>
-        <div className="ct-cover-hint" aria-label="Continue scrolling to enter">
-          <span className="ct-gesture-desktop" aria-hidden="true">
-            <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-              <rect x="5" y="2" width="14" height="28" rx="7" />
-              <path className="ct-gesture-wheel" d="M12 8v8" />
-            </svg>
-          </span>
-          <span className="ct-gesture-mobile" aria-hidden="true">
-            <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 28V14a2 2 0 0 1 4 0v6-11a2 2 0 0 1 4 0v11-8a2 2 0 0 1 4 0v12c0 5-3 8-8 8-3 0-5-1-7-5l-2-5a2 2 0 0 1 4-2l1 2" />
-            </svg>
-          </span>
-          <span className="ct-gesture-copy ct-desktop-copy">
-            SCROLL DOWN TO ENTER
-          </span>
-          <span className="ct-gesture-copy ct-mobile-copy">
-            SWIPE DOWN TO ENTER
-          </span>
+    <div ref={host} className="cinematic-tour" role="img" aria-label="Recorrido 3D por la habitación de USER FX">
+      <div className="fx-welcome-restored" aria-hidden={progress >= 0.18} style={{ ...({ position: "absolute", inset: 0, zIndex: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "clamp(10px, 2vh, 22px)", padding: "clamp(20px, 5vw, 72px)", boxSizing: "border-box", textAlign: "center", pointerEvents: "none", opacity: 1, visibility: progress >= 0.18 ? "hidden" : "visible", transition: "opacity 0.35s ease", }), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "clamp(2px, 0.6vh, 8px)", padding: "clamp(12px, 2vh, 24px) clamp(16px, 4vw, 60px)", paddingTop: "clamp(96px, 14vh, 140px)", width: "100%", maxWidth: "100%", overflow: "hidden", textAlign: "center", boxSizing: "border-box", opacity: 1 }} >
+        <div style={{ ...({ opacity: fxStagedFade(progress, 0.49, 0.72), fontFamily: '"Orbitron", system-ui, sans-serif', letterSpacing: ".32em", fontSize: "clamp(14px, 2vw, 24px)", fontWeight: 700, color: "#e8f4ff", textShadow: "0 2px 15px #000" }), fontSize: "clamp(14px, 1.7vw, 24px)", fontWeight: 700, letterSpacing: "0.28em", lineHeight: 1, marginBottom: "-0.1em", transform: `translateY(${TITLE_DROP_PX + USERFX_EXTRA_DROP_PX}px)`, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.50, 0.74), transition: "none" }}>
+          USER FX
+        </div>
+        <h1 className="ct-cover-title" style={{ ...({ margin: 0, fontSize: "clamp(48px, 9vw, 135px)", lineHeight: 1, maxWidth: "100%" }), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: "100%", gap: "clamp(0px, 0.3vh, 4px)", fontSize: "clamp(36px, min(7.2vw, 12vh), 116px)", fontWeight: 800, lineHeight: 0.98, letterSpacing: "-0.035em", textAlign: "center", whiteSpace: "normal", margin: 0, padding: 0, animation: "none", transform: `translateY(${TITLE_DROP_PX}px)` }}>
+          <span className="ct-chrome" style={{ ...({ opacity: fxStagedFade(progress, 0.24, 0.46) }), display: "block", width: "auto", maxWidth: "100%", fontSize: "1em", lineHeight: 0.92, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.25, 0.49), transition: "none" }}>
+WELCOME
+</span>
+          <span className="ct-blue" style={{ ...({ opacity: fxStagedFade(progress, 0.75, 1.00) }), display: "block", width: "auto", maxWidth: "100%", fontSize: "clamp(16px, min(3.3vw, 4.5vh), 50px)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "0.07em", whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.75, 1.00), transition: "none" }}>
+PRIVATE WORLD
+</span>
+        </h1>
+        {/* Corona en 3D (.glb). Su tamaño depende del ancho Y del alto de la ventana para que todo el bloque quepa. */}
+        <FxGlbIcon
+          src="/assets/logos.glb/iconCorona.glb"
+          className="fx-welcome-rose-icon"
+          paused={progress >= 0.18}
+          style={{
+            display: "block",
+            width: "400px",
+            maxWidth: "60vw",
+            alignSelf: "center",
+            opacity: fxCoverStep(progress, 0.75, 1.00),
+            marginTop: "-16px", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
+            filter: "drop-shadow(0 5px 14px rgba(0, 0, 0, 0.4))",
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ ...({ opacity: 0.5 * fxStagedFade(progress, 0.00, 0.20), fontFamily: '"Orbitron", system-ui, sans-serif', fontSize: "clamp(11px, 1.2vw, 16px)", letterSpacing: ".2em", fontWeight: 700, color: "#c6e6f7", textShadow: "0 2px 12px #000", marginTop: "clamp(18px, 4vh, 44px)" }), marginTop: "-48px", fontSize: "15px", lineHeight: 1.4, whiteSpace: "nowrap", letterSpacing: "0.16em", opacity: 0.65 * fxCoverStep(progress, 0.00, 0.24), transform: `translateY(-${WELCOME_LIFT_PX + SCROLL_EXTRA_LIFT_PX}px)`, transition: "none" }}>
+          SCROLL DOWN TO ENTER
         </div>
       </div>
+
       {/* La interfaz de cada pantalla vive dentro del 3D (CSS3D); React la monta con portales. */}
       {hosts.laptop && laptopScreen ? createPortal(laptopScreen, hosts.laptop) : null}
       {hosts.tv && tvScreen ? createPortal(tvScreen, hosts.tv) : null}

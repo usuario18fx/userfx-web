@@ -15,6 +15,7 @@ import { ENTER_URL } from "@/lib/content";
 
 // All landing and footer presentation lives in this file.
 // Tune the footer scroll brake in FooterBar(), and dimensions/colors below.
+// Telegram dialog styles live in TELEGRAM_DIALOG_STYLES (further down).
 const LANDING_STYLES = String.raw`
 /* Only the landing preview: prevent transforms / 3D canvases from growing document width. */
 .fx-landing{position:relative;z-index:1;width:100%;max-width:100%;min-width:0;overflow-x:clip;background:#05070b;box-shadow:0 14px 38px rgba(0,0,0,.42)}
@@ -25,12 +26,9 @@ const LANDING_STYLES = String.raw`
 .fx-landing .ufx-footer-title{max-width:100%;font-size:clamp(40px,5.7vw,94px);overflow-wrap:normal}
 .fx-landing .ufx-footer-emblem-ring{max-width:min(100%,450px)}
 @media(max-width:900px){.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr)}.fx-landing .ufx-footer-title{font-size:clamp(38px,8vw,72px)}}
-
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
 .fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
 /* Telegram profile button · gold/orange star control from PrivateRoom, with user glyph only. */
-
-
 .fx-telegram-launch {
   display: inline-grid;
   position: relative;
@@ -65,112 +63,14 @@ const LANDING_STYLES = String.raw`
   user-select: none;
   transform: translateX(1px);
 }
-
 .fx-telegram-launch:hover {
   background-position: right center;
   transform: translateY(0px);
   box-shadow: 0 5px 1px #0099ff,0 0 25px rgba(0, 140, 255, 0.36);
 }
-.fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 linear-gradient(15deg,
-      #2680a9, #006593, #004768,
-      #2680a9, #006593, #004d71,
-      #002d5b) no-repeat;; }
+.fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 #006593; }
 .fx-telegram-launch:focus-visible { outline: 2px solid #0022a9; outline-offset: 4px; }
 .fx-telegram-launch--hero { width: 56px; height: 56px; margin-top: 20px; font-size: 27px; }
-.fx-telegram-dialog-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 10020;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(2,5,12,.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-.fx-telegram-dialog {
-  position: relative;
-  width: min(100%,430px);
-  max-height: min(90dvh,650px);
-  overflow-y: auto;
-  padding: clamp(22px,5vw,36px);
-  border: 1px solid rgba(63,216,208,.38);
-  border-radius: 15px;
-  background: radial-gradient(circle at 15% 0%,rgba(63,216,208,.12),transparent 57%),linear-gradient(155deg,#131c29,#070a11 75%);
-  box-shadow: 0 25px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
-  color: #f1f6ff;
-  font-family: "Syne","Funnel Display",system-ui,sans-serif;
-}
-.fx-telegram-dialog-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 8px;
-  background: rgba(255,255,255,.04);
-  color: #f4f6f8;
-  font-size: 20px;
-  cursor: pointer;
-}
-.fx-telegram-dialog-icon {
-  display: grid;
-  place-items: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(63,216,208,.5);
-  border-radius: 12px;
-  background: rgba(63,216,208,.1);
-  font-size: 26px;
-}
-.fx-telegram-dialog-kicker { color: #3fd8d0; font-size: 10px; font-weight: 800; letter-spacing: .22em; }
-.fx-telegram-dialog h2 { margin: 10px 0 8px; font-size: clamp(22px,5vw,30px); font-weight: 750; line-height: 1.1; }
-.fx-telegram-dialog-desc { margin: 0 0 25px; color: #a7b7c7; font-size: 13px; line-height: 1.6; }
-.fx-telegram-dialog-form { display: flex; flex-direction: column; gap: 11px; }
-.fx-telegram-dialog-form label { color: #9db8c8; font-size: 10px; font-weight: 700; letter-spacing: .15em; }
-.fx-telegram-dialog-field {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 52px;
-  padding: 0 15px;
-  border: 1px solid rgba(75,174,210,.55);
-  border-radius: 8px;
-  background: rgba(2,9,16,.8);
-}
-.fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
-.fx-telegram-dialog-field span { color: #3fd8d0; font-size: 20px; font-weight: 800; }
-.fx-telegram-dialog-field input {
-  flex: 1;
-  width: 100%;
-  min-width: 0;
-  height: 50px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #f6f7fa;
-  font: 600 16px "IBM Plex Mono",ui-monospace,monospace;
-}
-.fx-telegram-dialog-field input::placeholder { color: #66869c; }
-.fx-telegram-dialog-submit {
-  min-height: 48px;
-  margin-top: 4px;
-  border: 0;
-  border-radius: 8px;
-  background: linear-gradient(125deg,#3fd8d0,#1596bb);
-  color: #051016;
-  font: 800 12px "Syne",system-ui,sans-serif;
-  letter-spacing: .1em;
-  cursor: pointer;
-}
-.fx-telegram-dialog-submit:disabled { opacity: .55; cursor: progress; }
-.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; line-height: 1.5; }
-.fx-telegram-dialog-bot { display: inline-block; margin-top: 20px; color: #87c4e8; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
-
 /* Room videos: a single 2x2 surface, zero space between tiles.
    Individual tiles are revealed in order by the section's scroll timeline. */
 .fx-landing #identity.fx-room-video-section {
@@ -183,7 +83,6 @@ const LANDING_STYLES = String.raw`
     radial-gradient(ellipse at 50% 70%, rgba(9, 31, 54, .46), transparent 72%),
     #05080d;
 }
-
 .fx-landing #identity .fx-room-video-stage {
   position: sticky;
   top: var(--fx-nav-h, 64px);
@@ -193,7 +92,6 @@ const LANDING_STYLES = String.raw`
   height: calc(100svh - var(--fx-nav-h, 64px));
   overflow: hidden;
 }
-
 .fx-landing #identity .fx-room-crown-debris {
   position: absolute;
   inset: 0;
@@ -203,7 +101,6 @@ const LANDING_STYLES = String.raw`
   overflow: hidden;
   pointer-events: none;
 }
-
 .fx-landing #identity .fx-room-crown-debris .fx-crown3d-stage {
   position: relative;
   width: min(100%, 1440px);
@@ -211,18 +108,15 @@ const LANDING_STYLES = String.raw`
   background: transparent;
   pointer-events: none;
 }
-
 .fx-landing #identity .fx-room-crown-debris .fx-crown3d-stage canvas {
   background: transparent;
   pointer-events: none;
 }
-
 .fx-landing-access-modal .pvr-direct-gate {
   background: rgba(3, 6, 13, .86);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
-
 .fx-landing #identity .fx-room-video-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -235,7 +129,6 @@ const LANDING_STYLES = String.raw`
   overflow: hidden;
   list-style: none;
 }
-
 .fx-landing #identity .fx-room-video-item {
   position: relative;
   min-width: 0;
@@ -247,7 +140,6 @@ const LANDING_STYLES = String.raw`
   outline-offset: -1px;
   will-change: opacity, transform, clip-path;
 }
-
 .fx-landing #identity .fx-room-video-figure {
   position: relative;
   width: 100%;
@@ -258,7 +150,6 @@ const LANDING_STYLES = String.raw`
   overflow: hidden;
   background: #02050a;
 }
-
 .fx-landing #identity .fx-room-video-player {
   display: block;
   width: 100%;
@@ -274,7 +165,6 @@ const LANDING_STYLES = String.raw`
   border-radius: 0;
   box-shadow: none;
 }
-
 .fx-landing #identity .fx-room-code-card {
   position: absolute;
   z-index: 2;
@@ -288,13 +178,12 @@ const LANDING_STYLES = String.raw`
   margin: 0;
   padding: 5px 9px;
   border: 1px solid rgba(231, 219, 203, .20);
-  border-radius: 9px;
+  border-radius: 7px;
   color: #f0eadf;
   background: rgba(7, 12, 19, .82);
   backdrop-filter: blur(7px);
   pointer-events: none;
 }
-
 .fx-landing #identity .fx-room-code-icon {
   display: block;
   width: 28px;
@@ -302,7 +191,6 @@ const LANDING_STYLES = String.raw`
   flex: 0 0 28px;
   object-fit: contain;
 }
-
 .fx-landing #identity .fx-room-code-text {
   display: flex;
   flex-direction: column;
@@ -310,41 +198,34 @@ const LANDING_STYLES = String.raw`
   min-width: 0;
   line-height: 1.1;
 }
-
 .fx-landing #identity .fx-room-code-prefix {
   color: #f0eadf;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: .08em;
 }
-
 .fx-landing #identity .fx-room-code-level {
   color: rgba(236, 228, 216, .72);
   font-size: 9px;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
-
 .fx-landing #identity.is-reduced {
   height: auto;
   padding: 28px 0;
 }
-
 .fx-landing #identity.is-reduced .fx-room-video-stage {
   position: relative;
   top: auto;
   height: auto;
 }
-
 .fx-landing #identity.is-reduced .fx-room-video-item {
   will-change: auto;
 }
-
 @media (max-width: 600px) {
   .fx-landing #identity .fx-room-video-grid {
     width: 100%;
   }
-
   .fx-landing #identity .fx-room-code-card {
     top: 3px;
     left: 3px;
@@ -354,31 +235,36 @@ const LANDING_STYLES = String.raw`
     padding: 3px 4px;
     border-radius: 5px;
   }
-
   .fx-landing #identity .fx-room-code-icon {
     width: 19px;
     height: 19px;
     flex-basis: 19px;
   }
-
   .fx-landing #identity .fx-room-code-prefix {
     font-size: 10px;
   }
-
   .fx-landing #identity .fx-room-code-level {
     font-size: 7px;
-  }
-}
-
+  }}
 @media(min-width:768px) {
  .fx-landing #access { scroll-margin-top:5rem; padding-block:clamp(.8rem,2vh,2rem); }
  .fx-landing #access h2 { font-size:clamp(2rem,6vh,4rem); max-width:none; line-height:1; }
  .fx-landing #access .mb-14 { margin-bottom:1.3rem; }
  .fx-landing #access .space-y-7 > * + * { margin-block-start:.65rem; }
-
 }
-
-
+.fx-footer-experiment-default-video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+.fx-footer-experiment-video {
+  z-index: 2;
+}
 /* Curtain reveal: page content slides over the fixed footer.
    The stage is sized by ResizeObserver, independently of viewport width. */
 .fx-footer-reveal {
@@ -400,7 +286,7 @@ const LANDING_STYLES = String.raw`
   border-right: 1px solid rgba(179, 210, 191, 0.22);
   border-bottom: 1px solid rgba(179, 210, 191, 0.32);
   border-left: 1px solid rgba(179, 210, 191, 0.22);
-  border-radius: 0 0 14px 14px;
+  border-radius: 0 0 7px 7px;
   background: #020c0b;
   color: #f2eee2;
   box-shadow: 0 -20px 38px rgba(0, 0, 0, .16);
@@ -428,15 +314,16 @@ const LANDING_STYLES = String.raw`
   padding: 10px 4px;
   border: 0;
   background: transparent;
-  color: #c6b88a;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Fredoka", sans-serif;
+  color: #84c4ca;
   font-size: clamp(12px, .95vw, 16px);
   cursor: pointer;
 }
 .fx-footer-bar-rating-trigger-icon {
   width: 24px;
   height: 24px;
-  color: #d3ba81;
+  font-family: "Fredoka", sans-serif;
+  color: #00929f;
 }
 .fx-footer-crown-rating {
   position: absolute;
@@ -455,8 +342,8 @@ const LANDING_STYLES = String.raw`
 .fx-footer-crown-rating-title {
   display: block;
   margin-bottom: 10px;
-  color: #e7ddc6;
-  font-family: "Syne", system-ui, sans-serif;
+  font-family: "Fredoka", sans-serif;
+  color: #afd1d4;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .18em;
@@ -498,7 +385,7 @@ const LANDING_STYLES = String.raw`
 .fx-footer-rating-crown:hover,
 .fx-footer-rating-crown:focus-visible {
   transform: translateY(-4px);
-  filter: drop-shadow(0 0 8px #0ba1ff);
+  filter: drop-shadow(0 0 8px #0bb6ff);
 }
 .fx-footer-crown-rating-caption {
   display: block;
@@ -534,14 +421,14 @@ const LANDING_STYLES = String.raw`
   flex: none;
   width: 42px;
   height: 42px;
-  color: #bfab81;
+  color: #0f96b8;
 }
 .fx-footer-bar-name {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 2px;
-  font-family: "Syne", system-ui, sans-serif;
+  font-family: "Fredoka", sans-serif;
   font-size: clamp(11px, 1vw, 15px);
   letter-spacing: .1em;
   white-space: nowrap;
@@ -556,10 +443,9 @@ const LANDING_STYLES = String.raw`
 .fx-footer-bar-motto {
   justify-self: center;
   margin: 0;
-  color: #a9a58f;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Fredoka", sans-serif;
+  color: #00929f;
   font-size: clamp(17px, 1.35vw, 25px);
-  font-style: italic;
   font-weight: 400;
   text-align: center;
   white-space: nowrap;
@@ -572,14 +458,14 @@ const LANDING_STYLES = String.raw`
   padding: 12px 0 12px 10px;
   border: 0;
   background: transparent;
-  color: #e1d5bd;
-  font-family: Georgia, "Times New Roman", serif;
+  color: #20a3aea4;
+  font-size: clamp(17px, 1.35vw, 25px);
   font-size: clamp(12px, .95vw, 16px);
   cursor: pointer;
 }
 .fx-footer-bar-return svg {
   flex: none;
-  color: #84e0bc;
+  color: #00e6fa;
   transition: transform .2s ease;
 }
 .fx-footer-bar-return:hover svg,
@@ -611,8 +497,7 @@ const LANDING_STYLES = String.raw`
   }
   .fx-footer-bar-return {
     gap: 10px;
-  }
-}
+  }}
 @media (max-width: 460px) {
   .fx-footer-bar-name {
     flex-direction: column;
@@ -645,8 +530,7 @@ const LANDING_STYLES = String.raw`
   }
   .fx-footer-bar-motto {
     font-size: 20px;
-  }
-}
+  }}
 /* Four experiments: editorial still images with video-on-hover / tap. */
 .fx-footer-experiments {
   width: 100%;
@@ -660,7 +544,7 @@ const LANDING_STYLES = String.raw`
   justify-content: space-between;
   gap: 18px;
   margin-bottom: 16px;
-  color: #e1d5bd;
+  color: #78b7bd;
 }
 .fx-footer-experiments-heading strong {
   font: 500 clamp(17px, 1.6vw, 24px)/1.2 "Syne", sans-serif;
@@ -779,69 +663,167 @@ const LANDING_STYLES = String.raw`
   .fx-footer-experiment,
   .fx-footer-experiment-poster,
   .fx-footer-experiment-video { transition: none; }
-}
-@media (prefers-reduced-motion: reduce) {
   .fx-footer-bar-return svg,
-  .fx-footer-rating-crown {
-    transition: none;
-  }
-  .fx-telegram-dialog {
-  position: relative;
-  width: min(100%,400px);
-  max-height: min(90dvh,650px);
-  overflow-y: auto;
-  padding: clamp(22px,5vw,32px);
-  border: 1px solid rgba(63,216,208,.38);
-  border-radius: 15px;
-  background: radial-gradient(circle at 15% 0%,rgba(63,216,208,.12),transparent 57%),linear-gradient(155deg,#131c29,#070a11 75%);
-  box-shadow: 0 25px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
-  color: #f1f6ff;
-  /* Fuente de ancho normal: Syne se ve expandida en pesos altos */
-  font-family: "Funnel Display","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-stretch: normal;
-}
-.fx-telegram-dialog-icon {
+  .fx-footer-rating-crown { transition: none; }
+}`;
+// Telegram identity dialog · two-column layout (brand panel + form).
+const TELEGRAM_DIALOG_STYLES = String.raw`
+.fx-telegram-dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(63,216,208,.5);
-  border-radius: 12px;
-  background: rgba(63,216,208,.1);
-  font-size: 22px;
+  padding: 20px;
+  background: rgba(2,5,12,.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
+.fx-telegram-dialog {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  width: min(100%, 820px);
+  max-height: min(92dvh, 560px);
+  overflow: hidden;
+  border: 1px solid rgba(63,216,208,.38);
+  border-radius: 7px;
+  background: linear-gradient(155deg, #131c29, #070a11 75%);
+  box-shadow: 0 25px 100px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.06);
+  color: #f1f6ff;
+}
+.fx-telegram-dialog,
+.fx-telegram-dialog h2,
+.fx-telegram-dialog p,
+.fx-telegram-dialog label,
+.fx-telegram-dialog a,
+.fx-telegram-dialog button {
+  font-family: "Fredoka", sans-serif;
+-apple-system,"Segoe UI",sans-serif;
+  font-stretch: 100%;
+}
+/* Left column: brand */
+.fx-telegram-dialog-aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+  padding: clamp(24px, 3.4vw, 38px);
+  border-right: 1px solid rgba(63,216,208,.22);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(63,216,208,.22), transparent 60%),
+    radial-gradient(circle at 90% 100%, rgba(21,150,187,.18), transparent 55%),
+    #08121b;
+}
+.fx-telegram-dialog-emblem {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(63,216,208,.5);
+  border-radius: 8px;
+  background: rgba(63,216,208,.1);
+  color: #3fd8d0;
+}
+.fx-telegram-dialog-emblem svg { width: 38px; height: 38px; }
+.fx-telegram-dialog-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fx-telegram-dialog-brand strong {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+.fx-telegram-dialog-brand span {
+  color: #7fa7b5;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+}
+.fx-telegram-dialog-motto {
+  margin: 0;
+  color: #b9c9d6;
+ font-family: "Fredoka", sans-serif !important;
+  font-size: clamp(17px, 1.7vw, 21px);
+  font-style: italic;
+  line-height: 1.35;
+}
+/* Right column: form */
+.fx-telegram-dialog-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(26px, 4vw, 44px);
+  overflow-y: auto;
+}
+.fx-telegram-dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  background: rgba(255,255,255,.04);
+  color: #f4f6f8;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.fx-telegram-dialog-close:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.32); }
+.fx-telegram-dialog-close:focus-visible { outline: 2px solid #3fd8d0; outline-offset: 3px; }
+
 .fx-telegram-dialog-kicker {
   color: #3fd8d0;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: .12em;
+  letter-spacing: .14em;
 }
 .fx-telegram-dialog h2 {
   margin: 10px 0 8px;
-  font-size: clamp(24px,5vw,28px);
+  font-size: clamp(24px, 3.2vw, 30px);
   font-weight: 600;
   letter-spacing: -.01em;
   line-height: 1.15;
 }
 .fx-telegram-dialog-desc {
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   color: #a7b7c7;
   font-size: 14px;
   line-height: 1.55;
 }
+.fx-telegram-dialog-form { display: flex; flex-direction: column; gap: 11px; }
 .fx-telegram-dialog-form label {
   color: #9db8c8;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: .1em;
 }
-.fx-telegram-dialog-field span {
-  color: #3fd8d0;
-  font-size: 18px;
-  font-weight: 600;
-  font-family: "IBM Plex Mono",ui-monospace,monospace;
+.fx-telegram-dialog-field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 52px;
+  padding: 0 15px;
+  border: 1px solid rgba(75,174,210,.55);
+  border-radius: 8px;
+  background: rgba(2,9,16,.8);
 }
+.fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
+.fx-telegram-dialog-field span,
+.fx-telegram-dialog-field input {
+font-family: "Fredoka", sans-serif;
+}
+.fx-telegram-dialog-field span { color: #3fd8d0; font-size: 18px; font-weight: 600; }
 .fx-telegram-dialog-field input {
   flex: 1;
   width: 100%;
@@ -851,71 +833,56 @@ const LANDING_STYLES = String.raw`
   outline: 0;
   background: transparent;
   color: #f6f7fa;
-  font: 500 15px "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size: 15px;
+  font-weight: 500;
 }
+.fx-telegram-dialog-field input::placeholder { color: #66869c; }
 .fx-telegram-dialog-submit {
-  min-height: 46px;
+  min-height: 48px;
   margin-top: 4px;
   border: 0;
   border-radius: 8px;
-  background: linear-gradient(125deg,#3fd8d0,#1596bb);
+  background: linear-gradient(125deg, #3fd8d0, #1596bb);
   color: #051016;
-  font: 700 13px "Funnel Display","Inter",system-ui,sans-serif;
-  letter-spacing: .08em;
-  cursor: pointer;
-}
-.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; line-height: 1.5; font-weight: 500; }
-.fx-telegram-dialog-bot { display: inline-block; margin-top: 18px; color: #87c4e8; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
-}
-/* ===== Telegram dialog: tipografía normal (no expandida) ===== */
-.fx-telegram-dialog,
-.fx-telegram-dialog h2,
-.fx-telegram-dialog p,
-.fx-telegram-dialog label,
-.fx-telegram-dialog a,
-.fx-telegram-dialog button,
-.fx-telegram-dialog .fx-telegram-dialog-kicker {
-  font-family: "Inter","Funnel Display",system-ui,-apple-system,"Segoe UI",sans-serif !important;
-  font-stretch: 100% !important;
-  font-variation-settings: normal !important;
-}
-
-.fx-telegram-dialog .fx-telegram-dialog-kicker {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .14em;
-}
-.fx-telegram-dialog h2 {
-  margin: 10px 0 8px;
-  font-size: clamp(24px,5vw,28px);
-  font-weight: 600;
-  letter-spacing: -.01em;
-  line-height: 1.15;
-}
-.fx-telegram-dialog .fx-telegram-dialog-desc {
-  font-size: 14px;
-  line-height: 1.55;
-}
-.fx-telegram-dialog .fx-telegram-dialog-form label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .1em;
-}
-.fx-telegram-dialog .fx-telegram-dialog-submit {
   font-size: 13px;
   font-weight: 700;
   letter-spacing: .08em;
+  cursor: pointer;
 }
-
-/* El @ y el input en monoespaciada, como el resto del campo */
-.fx-telegram-dialog .fx-telegram-dialog-field span,
-.fx-telegram-dialog .fx-telegram-dialog-field input {
-  font-family: "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace !important;
-  font-stretch: 100% !important;
+.fx-telegram-dialog-submit:disabled { opacity: .55; cursor: progress; }
+.fx-telegram-dialog-submit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.fx-telegram-dialog-error { margin: 0; color: #ff929e; font-size: 12px; font-weight: 500; line-height: 1.5; }
+.fx-telegram-dialog-bot {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 18px;
+  color: #87c4e8;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
-.fx-telegram-dialog .fx-telegram-dialog-field span { font-size: 18px; font-weight: 600; }
-.fx-telegram-dialog .fx-telegram-dialog-field input { font-size: 15px; font-weight: 500; }
-
+/* Mobile: stacked columns, brand becomes a top strip */
+@media (max-width: 680px) {
+  .fx-telegram-dialog {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(100%, 420px);
+    max-height: 92dvh;
+  }
+  .fx-telegram-dialog-aside {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 16px 64px 16px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(63,216,208,.22);
+  }
+  .fx-telegram-dialog-emblem { width: 46px; height: 46px; border-radius: 7px; }
+  .fx-telegram-dialog-emblem svg { width: 28px; height: 28px; }
+  .fx-telegram-dialog-motto { display: none; }
+  .fx-telegram-dialog-main { justify-content: flex-start; padding: 22px 20px 24px; }
+}
 `;
 
 const RATING_STORAGE_KEY = "userfx_landing_crown_rating";
@@ -923,28 +890,27 @@ const RATING_STORAGE_KEY = "userfx_landing_crown_rating";
 function CrownIcon({ className = "" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 46 44" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5 33 2 15l12 9L23 6l9 18 12-9-3 18H5Z" />
-      <path d="M7 38h32M6 42h34" />
-      <path d="M23 2v1M2 12v1M44 12v1" />
+    <path d="M5 33 2 15l12 9L23 6l9 18 12-9-3 18H5Z" />
+    <path d="M7 38h32M6 42h34" />
+    <path d="M23 2v1M2 12v1M44 12v1" />
     </svg>
   );
-}
-
+  }
 const FOOTER_EXPERIMENTS = [
-  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/my-room/room1.mp4" },
-  { id: 2, title: "EXPERIMENT 02", poster: "/assets/footer/footer2.png", video: "/assets/my-room/room2.mp4" },
-  { id: 3, title: "EXPERIMENT 03", poster: "/assets/footer/footer3-3.png", video: "/assets/footer/footer3.mp4" },
-  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/my-room/room2.mp4" },
+  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer01.mp4" },
+  { id: 3, title: "EXPERIMENT 02", poster: "/assets/footer/footer3-3.png", backgroundVideo: "/assets/footer/footer3-1.mp4", video: "/assets/footer/footer3.mp4" },
+   { id: 2, title: "EXPERIMENT 03", poster: "/assets/footer/footer2.png", video: "/assets/my-room/room2.mp4" },
+  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/my-room/footer04.mp4" },
 ] as const;
-
 function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const requestedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
-
+  const [backgroundFailed, setBackgroundFailed] = useState(false);
+  const backgroundVideo = "backgroundVideo" in item ? item.backgroundVideo : null;
   const start = () => {
-    const video = videoRef.current;
+  const video = videoRef.current;
     if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     requestedRef.current = true;
     setFailed(false);
@@ -957,68 +923,39 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
         setFailed(true);
         requestedRef.current = false;
         console.warn("[USER FX] Experiment video unavailable:", item.video, video.error);
-      }
-    });
+  }});
   };
-
   const stop = () => {
     requestedRef.current = false;
-    const video = videoRef.current;
-    if (video) {
-      video.pause();
-      try { video.currentTime = 0; } catch {}
-    }
-    setPlaying(false);
+  const video = videoRef.current;
+    if (video) {video.pause();
+    try { video.currentTime = 0; } catch {}
+    }setPlaying(false);
   };
-
   return (
-    <div
-      className="fx-footer-experiment"
-      role="button"
-      tabIndex={0}
-      aria-label={`Preview ${item.title}`}
-      onMouseEnter={start}
-      onMouseLeave={stop}
-      onFocus={start}
-      onBlur={stop}
-      onClick={() => playing ? stop() : start()}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          playing ? stop() : start();
-        }
-      }}
-    >
-      <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }} />
-      {item.id === 3 && (
-        <video
-  className="fx-footer-experiment-default-video"
-  src="/assets/footer/footer3-1.mp4"
-  poster="/assets/footer/footer3-3.png"
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="metadata"
-  aria-hidden="true"
-  onLoadedData={(event) => { event.currentTarget.style.opacity = "1"; }}
-  onError={(event) => { event.currentTarget.style.opacity = "0"; }}
-  style={{ position: "absolute", inset: 0, display: "block", width: "100%", height: "100%", objectFit: "cover", zIndex: 1, opacity: 0, pointerEvents: "none", transition: "opacity .25s ease" }}
-/>
-      )}
-      <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
-      <span className="fx-footer-experiment-index">
+    <div className="fx-footer-experiment" role="button" tabIndex={0} aria-label={`Preview ${item.title}`} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={()=> playing ? stop() : start()} onKeyDown={(event) => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault();playing ? stop() : start();
+    }}}>
+    <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }}/>
+    {backgroundVideo && (
+    <video className="fx-footer-experiment-default-video" src={backgroundVideo} poster={item.poster} autoPlay muted loop playsInline preload="auto" aria-hidden="true" onError={() => setBackgroundFailed(true)} style={{ opacity: backgroundFailed ? 0 : 1 }}/>
+    )}
+    {item.id === 3 && (
+    <video className="fx-footer-experiment-default-video" src="/assets/footer/footer3-1.mp4" poster="/assets/footer/footer3.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" onLoadedData={(event) => { event.currentTarget.style.opacity = "1"; }} onError={(event) => { event.currentTarget.style.opacity = "0"; }} style={{ position: "absolute", inset: 0, display: "block", width: "100%", height: "100%", objectFit: "cover", zIndex: 1, opacity: 1, pointerEvents: "none", transition: "opacity .25s ease" }} />
+    )}
+    <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
+    <span className="fx-footer-experiment-index">
         {String(item.id).padStart(2, "0")} / 04
-      </span>
-      <span className="fx-footer-experiment-title">
-{item.title}
-</span>
-      <span className="fx-footer-experiment-action">
+    </span>
+    <span className="fx-footer-experiment-title">
+        {item.title}
+    </span>
+    <span className="fx-footer-experiment-action">
         {failed ? "VIDEO UNAVAILABLE" : playing ? "PLAYING" : "PREVIEW"}
-      </span>
+    </span>
     </div>
-  );
-}
+    );
+    }
 function FooterBar() {
   const revealRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
@@ -1060,109 +997,104 @@ function FooterBar() {
         footer.style.transform = `translate3d(0, ${((1 - eased) * 102).toFixed(3)}%, 0)`;
         footer.style.pointerEvents = raw > 0.9 ? "auto" : "none";
         footer.style.visibility = raw <= 0 ? "hidden" : "visible";
-      });
+    });
     };
     const observer = new ResizeObserver(measure);
-    observer.observe(footer);
-    window.addEventListener("resize", measure, { passive: true });
-    window.addEventListener("scroll", update, { passive: true });
+    observer.observe(footer); window.addEventListener("resize", measure, { passive: true });
+                              window.addEventListener("scroll", update, { passive: true });
     measure();
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", update);
+    return () => { observer.disconnect();
+                   window.removeEventListener("resize", measure);
+                   window.removeEventListener("scroll", update);
       if (frame) window.cancelAnimationFrame(frame);
-    };
+  };
   }, []);
-
   function backToBeginning() {
     setRatingOpen(false);
     const beginning = document.getElementById("home");
     if (beginning) {
       beginning.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
-    }
+  }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-
   function selectRating(value: number) {
     setRating(value);
     try {
       localStorage.setItem(RATING_STORAGE_KEY, String(value));
-    } catch {
-      // Rating remains available for this session.
-    }
-  }
+  } catch {
+// Rating remains available for this session.
+  }}
 
   return (
-    <div className="fx-footer-reveal" ref={revealRef}>
+      <div className="fx-footer-reveal" ref={revealRef}>
       <footer ref={footerRef} className="fx-footer-bar" aria-label="USER FX footer">
       <section className="fx-footer-experiments" aria-label="USER FX experiments">
-        <div className="fx-footer-experiments-heading">
-          <strong>
-            Experiments
-          </strong>
-          <span>
-            HOVER OR TAP TO PREVIEW
-          </span>
-        </div>
-        <div className="fx-footer-experiments-grid">
-          {FOOTER_EXPERIMENTS.map((item) => (
-            <FooterExperiment key={item.id} item={item} />
-          ))}
-        </div>
+      <div className="fx-footer-experiments-heading">
+      <strong>
+              Experiments
+      </strong>
+      <span>
+              HOVER OR TAP TO PREVIEW
+      </span>
+      </div>
+      <div className="fx-footer-experiments-grid">
+        {FOOTER_EXPERIMENTS.map((item) => (
+      <FooterExperiment key={item.id} item={item} />
+        ))}
+      </div>
       </section>
       <div className="fx-footer-bar-inner">
-        <a className="fx-footer-bar-brand" href="#home" aria-label="USER FX, back to beginning">
-          <CrownIcon className="fx-footer-bar-crown" />
-          <span className="fx-footer-bar-name">
-            <strong>
-              USER FX
-            </strong>
-            <span>
-              PRIVATE ROOM
-            </span>
-          </span>
-        </a>
-        <p className="fx-footer-bar-motto">
-          A private world. Entirely yours.
-        </p>
-        <div className="fx-footer-bar-actions">
-          <div className="fx-footer-bar-rating">
-            <button type="button" className="fx-footer-bar-rating-toggle" aria-expanded={ratingOpen} aria-controls="fx-footer-crown-rating" aria-label="Rate USER FX with crowns" onClick={() => setRatingOpen((open) => !open)}>
-              <CrownIcon className="fx-footer-bar-rating-trigger-icon" />
-              <span>
-                Rate
-              </span>
-            </button>
-            {ratingOpen && (
-              <div id="fx-footer-crown-rating" className="fx-footer-crown-rating" role="group" aria-label="Rate USER FX from one to five crowns">
-                <span className="fx-footer-crown-rating-title">
-                  RATE USER FX
+      <a className="fx-footer-bar-brand" href="#home" aria-label="USER FX, back to beginning">
+      <CrownIcon className="fx-footer-bar-crown" />
+      <span className="fx-footer-bar-name">
+      <strong>      
+        USER FX
+      </strong>        
+      <span>
+        PRIVATE ROOM
+      </span>
+      </span>
+      </a>
+      <p className="fx-footer-bar-motto">
+        A private world. Entirely yours.
+      </p>
+      <div className="fx-footer-bar-actions">
+      <div className="fx-footer-bar-rating">
+      <button type="button" className="fx-footer-bar-rating-toggle" aria-expanded={ratingOpen} aria-controls="fx-footer-crown-rating" aria-label="Rate USER FX with crowns" onClick={() => setRatingOpen((open) => !open)}>
+      <CrownIcon className="fx-footer-bar-rating-trigger-icon" />
+      <span>
+                  Rate
                 </span>
-                <div className="fx-footer-crown-rating-options" onMouseLeave={() => setHoverRating(0)}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <button key={value} type="button" className={`fx-footer-rating-crown ${rating === 0 && hoverRating === 0 ? "is-initial" : value <= (hoverRating || rating) ? "is-selected" : "is-unselected"}`} onMouseEnter={() => setHoverRating(value)} onFocus={() => setHoverRating(value)} onBlur={() => setHoverRating(0)} onClick={() => selectRating(value)} aria-label={`Rate ${value} out of 5`} aria-pressed={rating === value}>
-                      <CrownIcon />
-                    </button>
-                  ))}
+              </button>
+              {ratingOpen && (
+                <div id="fx-footer-crown-rating" className="fx-footer-crown-rating" role="group" aria-label="Rate USER FX from one to five crowns">
+                  <span className="fx-footer-crown-rating-title">
+                    RATE USER FX
+                  </span>
+                  <div className="fx-footer-crown-rating-options" onMouseLeave={() => setHoverRating(0)}>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button key={value} type="button" className={`fx-footer-rating-crown ${rating === 0 && hoverRating === 0 ? "is-initial" : value <= (hoverRating || rating) ? "is-selected" : "is-unselected"}`} onMouseEnter={() => setHoverRating(value)} onFocus={() => setHoverRating(value)} onBlur={() => setHoverRating(0)} onClick={() => selectRating(value)} aria-label={`Rate ${value} out of 5`} aria-pressed={rating === value}>
+                        <CrownIcon />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="fx-footer-crown-rating-caption" role="status">
+                    {rating ? `${rating} / 5 · RATING SAVED` : "SELECT YOUR RATING"}
+                  </span>
                 </div>
-                <span className="fx-footer-crown-rating-caption" role="status">
-                  {rating ? `${rating} / 5 · RATING SAVED` : "SELECT YOUR RATING"}
-                </span>
-              </div>
-            )}
+              )}
+            </div>
+            <button type="button" className="fx-footer-bar-return" onClick={backToBeginning}>
+              <span>
+                Back to the beginning
+              </span>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 20V4M6.5 9.5 12 4l5.5 5.5" />
+              </svg>
+            </button>
           </div>
-          <button type="button" className="fx-footer-bar-return" onClick={backToBeginning}>
-            <span>
-              Back to the beginning
-            </span>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 20V4M6.5 9.5 12 4l5.5 5.5" />
-            </svg>
-          </button>
         </div>
-      </div>
       </footer>
     </div>
   );
@@ -1249,42 +1181,57 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
 
   return (
     <div className="fx-telegram-dialog-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <section ref={dialogRef} className="fx-telegram-dialog" role="dialog" aria-modal="true" aria-labelledby="fx-telegram-dialog-title">
-        <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
+          <section ref={dialogRef} className="fx-telegram-dialog" role="dialog" aria-modal="true" aria-labelledby="fx-telegram-dialog-title">
+          <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
           ×
-        </button>
-        <div className="fx-telegram-dialog-icon" aria-hidden="true">
-👤
-</div>
-        <span className="fx-telegram-dialog-kicker">
-USER FX · TELEGRAM IDENTITY
-</span>
-        <h2 id="fx-telegram-dialog-title">
-Your Telegram username
-</h2>
-        <p className="fx-telegram-dialog-desc">
-Enter your @username to check access and continue to the private room.
-</p>
-        <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-          <label htmlFor="fx-telegram-dialog-username">
-TELEGRAM USERNAME
-</label>
-          <div className="fx-telegram-dialog-field">
-            <span aria-hidden="true">
-@
-</span>
-            <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+          </button>
+          <aside className="fx-telegram-dialog-aside" aria-hidden="true">
+          <div className="fx-telegram-dialog-emblem">
+            <CrownIcon />
           </div>
-          {error && <p className="fx-telegram-dialog-error" role="alert">
+          <div className="fx-telegram-dialog-brand">
+          <strong>
+           USER FX
+          </strong>
+          <span>
+           PRIVATE ROOM
+          </span>
+          </div>
+          <p className="fx-telegram-dialog-motto">
+           A private world. Entirely yours.
+          </p>
+          </aside>
+          <div className="fx-telegram-dialog-main">
+          <span className="fx-telegram-dialog-kicker">
+           USER FX TELEGRAM IDENTITY
+          </span>
+          <h2 id="fx-telegram-dialog-title">
+           Your Telegram username
+          </h2>
+          <p className="fx-telegram-dialog-desc">
+          Enter your @username to check access and continue to the  private room.
+          </p>
+          <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
+          <label htmlFor="fx-telegram-dialog-username">
+           TELEGRAM USERNAME
+          </label>
+          <div className="fx-telegram-dialog-field">
+          <span aria-hidden="true">
+          @
+          </span>
+          <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+            </div>
+            {error && <p className="fx-telegram-dialog-error" role="alert">
 {error}
 </p>}
-          <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
-            {loading ? "CHECKING…" : "VERIFY USER"}
-          </button>
-        </form>
-        <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
-          Need access? Open Telegram bot ↗
-        </a>
+            <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
+              {loading ? "CHECKING…" : "VERIFY USER"}
+            </button>
+          </form>
+          <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+            Need access? Open Telegram bot ↗
+          </a>
+        </div>
       </section>
     </div>
   );
@@ -1359,8 +1306,8 @@ export default function Landing() {
   return (
     <MenuProvider>
       <style>
-{LANDING_STYLES}
-</style>
+        {LANDING_STYLES + TELEGRAM_DIALOG_STYLES}
+      </style>
       {showIntro && (
         <FxSceneLoader sceneReady={sceneReady || sceneTimedOut} onComplete={() => setIntroComplete(true)} />
       )}

@@ -10,7 +10,6 @@
   min-height: 280px;
   padding: 54px 20px 82px;
   border-top: 1px solid rgba(42, 171, 238, .20);
-  background: radial-gradient(ellipse at 50% 90%, rgba(29, 112, 164, .14), transparent 62%), #05070b;
 }
 .fx-identity-intro {
   margin: 0;
@@ -23,10 +22,11 @@
 .fx-identity-panel {
   width: min(100%, 440px);
   padding: 10px;
-  border: 1px solid rgba(42, 171, 238, .53);
+  border: 1px solid #2aabee87;
   border-radius: 7px;
-  background: radial-gradient(circle at 8% 10%, rgba(42, 171, 238, .14), transparent 40%), linear-gradient(180deg, #10161a, #080a0d);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, .34);
+  background:linear-gradient(180deg,
+  #10161a73,#080a0d99);
+  box-shadow: 0 18px 45px #00000057;
 }
 .fx-identity-heading {
   display: flex;
@@ -35,6 +35,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 9px;
+   background: url('/wallpaperGeneral.png') center / cover;
 }
 .fx-identity-pill {
   display: inline-flex;
@@ -57,15 +58,15 @@
   grid-template-columns: 38px 16px minmax(0, 1fr) 110px;
   align-items: center;
   height: 46px;
-  border: 1px solid rgba(42, 171, 238, .48);
-  background: rgba(2, 7, 11, .85);
+  border: 1px solid #2aabee7a;
+  background: #02070bd9;
 }
 .fx-identity-icon {
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
-  border-right: 1px solid rgba(42, 171, 238, .42);
+  border-right: 1px solid #2aabee6b;
 }
 .fx-identity-icon img {
   width: 23px;
@@ -131,4 +132,24 @@
   .fx-identity-pill { font-size: 8px; }
   .fx-identity-form { grid-template-columns: 30px 13px minmax(0, 1fr) 92px; }
   .fx-identity-form button { font-size: 8px; }
+}
+.fx-identity-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  min-height: 280px;
+  padding: 54px 20px 82px;
+  border-top: 1px solid #2aabee33;
+  background: linear-gradient(00000026,#00000066);
+}
+/* FX identity section wallpaper */
+.fx-landing .fx-identity-footer {
+  background: linear-gradient(185deg, #06282e47, #02282ea6),
+  url("/wallpaper1.png") center center / cover no-repeat;
+  background-color: #021011;
 }

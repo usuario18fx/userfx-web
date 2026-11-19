@@ -58,9 +58,14 @@ const BOT_CONTACT_RETENTION_SECONDS = 30 * 24 * 60 * 60;
 // ======================================================
 // MEDIA
 // ======================================================
-          const ASSETS_BASE_URL = `${USERFX_SITE_URL.replace(/\/$/, "")}/assets`;
+const ASSETS_BASE_URL = `${USERFX_SITE_URL.replace(/\/$/, "")}/assets`;
 const ASSET_WELCOME_VIDEO = `${ASSETS_BASE_URL}/FX-Y24V01.mp4`;
-const ASSET_VIDEOCALL_IMAGE = `${ASSETS_BASE_URL}/videocall.jpg`;
+ `${ASSETS_BASE_URL}/videocall.png`;
+
+
+const ASSET_VIDEOCALL_IMAGE = `${ASSETS_BASE_URL}/videocall.png`;
+const ASSET_VIDEOCALL_FALLBACK_IMAGE = `${ASSETS_BASE_URL}/assets/videocall.png`;
+ 
 const ASSET_CHANNELS_VIDEO = `${ASSETS_BASE_URL}/videoSMKLFX.mp4`;
 const ASSET_SMOKELANDIA_VIDEO = `${ASSETS_BASE_URL}/introSMKL.mp4`;
 const ASSET_USERFX_VIDEO = `${ASSETS_BASE_URL}/introFX.mp4`;
@@ -726,7 +731,7 @@ const REQUEST_STATUS = {
 // ======================================================
 const BTN_VIDEOCALL = "ᴠɪᴅᴇᴏᴄᴀʟʟ";
 const BTN_VIP = "👑 ᴠɪᴘ";
-const BTN_SPCL = "✦ ꜱᴘᴇᴄɪᴀʟ";
+const BTN_SPCL = "🜲 ꜱᴘᴇᴄɪᴀʟ";
 const BTN_BASIC = "🌹 ʙᴀꜱɪᴄ";
 const BTN_PRO = "🔥 ᴘʀᴏ";
 const BTN_CHANNELS = "ᴄʜᴀɴɴᴇʟꜱ";
@@ -1500,6 +1505,21 @@ const VIDEOCALL_INVITE_TEXT = `ʜᴏʟᴅ ᴜᴘ...
 ɪ'ᴍ ᴅᴏᴡɴ ᴛᴏ ᴠɪᴅᴇᴏ ᴄᴀʟʟ ᴡɪᴛʜ ʏᴏᴜ, ʙᴜᴛ ʟᴇᴍᴍᴇ ɢʀᴀʙ ꜱᴏᴍᴇ ᴡᴀᴛᴇʀ ʀᴇᴀʟ ǫᴜɪᴄᴋ. ɢɪᴍᴍᴇ 2 ᴍɪɴꜱ ᴀɴᴅ ɪ'ʟʟ ꜱᴇɴᴅ ʏᴏᴜ ᴛʜᴇ ʟɪɴᴋ.
 ᴡᴀɴɴᴀ ꜱᴡᴀᴘ ᴘɪᴄꜱ ɪɴ ᴛʜᴇ ᴍᴇᴀɴᴛɪᴍᴇ?`;
 
+async function sendVideocallInvite(ctx) {
+  const photoOptions = { caption: VIDEOCALL_INVITE_TEXT, ...getPendingPhotoKeyboard() };
+  try {
+    await ctx.replyWithPhoto(ASSET_VIDEOCALL_IMAGE, photoOptions);
+  } catch (error) {
+    logger.warn("VIDEOCALL PNG UNAVAILABLE; USING JPG FALLBACK", getTelegramError(error));
+    try {
+      await ctx.replyWithPhoto(ASSET_VIDEOCALL_FALLBACK_IMAGE, photoOptions);
+    } catch (fallbackError) {
+      logger.error("VIDEOCALL INVITE IMAGE FAILED", getTelegramError(fallbackError));
+      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+    }
+  }
+}
+
 async function openVideocallFlow(ctx) {
   const userId = String(ctx.from?.id || "");
   if (!userId || ctx.chat?.type !== "private") {
@@ -1510,7 +1530,7 @@ async function openVideocallFlow(ctx) {
     const existing = await getVideoRequest(userId);
     if (existing?.status === REQUEST_STATUS.WAITING_CONSENT) {
       await setVideoRequest(userId, { ...existing, status: REQUEST_STATUS.WAITING_PHOTO });
-      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+      await sendVideocallInvite(ctx);
       return;
     }
     if (existing && [REQUEST_STATUS.WAITING_PHOTO, REQUEST_STATUS.AWAITING_ADMIN, REQUEST_STATUS.AWAITING_PAYMENT].includes(existing.status)) {
@@ -1530,7 +1550,7 @@ async function openVideocallFlow(ctx) {
       replySent: false,
       createdAt: Date.now(),
     });
-    await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+    await sendVideocallInvite(ctx);
     await adminBot.telegram.sendMessage(
       ADMIN_CHAT_ID,
       `📞 <b>NEW PRIVATE MEDIA REQUEST</b>\nUsername: ${escapeHtml(user.username)}\nID: ${escapeHtml(userId)}\nAwaiting first photo/video.`,
@@ -1557,7 +1577,7 @@ bot.action(/^exchange_consent_(\d+)$/, async (ctx) => {
   await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
   await ctx.answerCbQuery("✔ ᴄᴏɴᴛɪɴᴜᴇ.");
   await ctx.editMessageReplyMarkup({ inline_keyboard: [] }).catch(() => {});
-  await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+  await sendVideocallInvite(ctx);
 });
 bot.action(/^exchange_cancel_(\d+)$/, async (ctx) => {
   const userId = String(ctx.from?.id || "");
@@ -1583,7 +1603,7 @@ async function sendPendingVideocallPanel(ctx) {
     }
     if (pending.status === REQUEST_STATUS.WAITING_CONSENT) {
       await setVideoRequest(userId, { ...pending, status: REQUEST_STATUS.WAITING_PHOTO });
-      await ctx.reply(VIDEOCALL_INVITE_TEXT, getPendingPhotoKeyboard());
+      await sendVideocallInvite(ctx);
       return;
     }
     if (pending.status === REQUEST_STATUS.WAITING_PHOTO) {
@@ -1725,17 +1745,17 @@ async function handleSuccessfulPayment(ctx) {
       await ctx.reply(
         `✔ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴠᴇᴅ
               📞ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴꜱ ᴜɴʟᴏᴄᴋᴇᴅ.`,
-        { reply_markup: getVideocallInlineKeyboard() },
-      );
-    } catch (error) {
+  { reply_markup: getVideocallInlineKeyboard() },
+  );
+  } catch (error) {
       await releasePaymentClaim(chargeId);
       logger.error("𝚅𝙸𝙳𝙴𝙾𝙲𝙰𝙻𝙻 𝙿𝙰𝚈𝙼𝙴𝙽𝚃 𝙷𝙰𝙽𝙳𝙻𝙴 𝙴𝚁𝚁𝙾𝚁", {
         userId,
         chargeId,
         ...getTelegramError(error),
-      });
+  });
       throw error;
-    }
+  }
     return;
   }
   //// BASIC / PRO / VIP //
@@ -1748,8 +1768,7 @@ async function handleSuccessfulPayment(ctx) {
       const newRank = tierRank(plan.tier);
       const effectiveRecord =
         newRank >= oldRank
-          ? {
-              ...existing,
+          ? {...existing,
               telegramPaymentChargeId: chargeId,
               paidAt: Date.now(),
               tier: plan.tier,
@@ -1758,8 +1777,7 @@ async function handleSuccessfulPayment(ctx) {
               codePrefix: plan.prefix,
               source: "telegram",
             }
-          : {
-              ...existing,
+          : {...existing,
               telegramPaymentChargeId: chargeId,
               paidAt: Date.now(),
               lastPurchasedPlan: plan.id,
@@ -1839,20 +1857,18 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
     .toUpperCase();
   const userId = String(ctx.from?.id || "");
   const parsedUsername = normalizeTelegramFxUsername(ctx.from?.username || syntheticUsernameForId(ctx.from?.id));
-
   try {
     if (!userId || !parsedUsername) {
       await ctx.answerCbQuery("Unable to verify this request.", { show_alert: true });
       return;
-    }
-
+  }
     const access = await getTelegramFxAccess(parsedUsername.normalized);
     if (!access || !access.enabled || !access.telegramfx_access) {
       await ctx.answerCbQuery("Your account is not registered for private access.", {
         show_alert: true,
-      });
+  });
       return;
-    }
+  }
     const client = await ensureRedis();
     if (!client) throw new Error("Redis unavailable");
     const raw = await client.get(getIdentityCodeKey(requestedCode));
@@ -1864,12 +1880,11 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
       if (record && (String(record.userId || "") !== userId || String(record.telegramUsername || "").toLowerCase() !== parsedUsername.normalized)) {
         await ctx.answerCbQuery("Tʜɪꜱ ᴄᴏᴅᴇ ᴅᴏᴇꜱ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ.", { show_alert: true });
         return;
-      }
+  }
       if (record?.status === "consumed") {
         await ctx.answerCbQuery("ᴛʜɪꜱ ɪᴅᴇɴᴛɪᴛʏ ᴄᴏᴅᴇ ᴡᴀꜱ ᴀʟʀᴇᴀᴅʏ ᴜꜱᴇᴅ.", { show_alert: true });
         return;
-      }
-    }
+  }}
     await ctx.answerCbQuery("ꜱᴇɴᴅɪɴɢ ᴀ ɴᴇᴡ ᴄᴏᴅᴇ…");
     await sendIdentityCode(ctx, { replaceExisting: true });
   } catch (error) {
@@ -1878,11 +1893,9 @@ bot.action(/^tgmx_resend_(TGMX-[A-HJ-NP-Z2-9]{4})$/, async (ctx) => {
       code: requestedCode,
       ...getTelegramError(error),
       stack: getErrorStack(error),
-    });
+  });
     await ctx.answerCbQuery("Couldn't generate a new code.", { show_alert: true }).catch(() => {});
-  }
-});
-
+  }});
 // SPCL — Confirm the real Telegram identity before checking server-side access.
 // Never trust a username typed by the visitor or grant a session from a button alone.
 const SPCL_DM_URL = "https://t.me/User18Fx";
@@ -1890,7 +1903,7 @@ function getSpclRequestKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.url("✉ SOLICITAR ACCESO · DM", SPCL_DM_URL)],
   ]);
-}
+  }
 async function openSpclConfirmation(ctx) {
   await trackButtonClick(ctx, "ꜱᴘᴇᴄɪᴀʟ");
   if (ctx.chat?.type !== "private") {
@@ -1898,14 +1911,12 @@ async function openSpclConfirmation(ctx) {
       Markup.inlineKeyboard([[Markup.button.url("OPEN BOT", "https://t.me/User18Fx_bot?start=spcl")]]));
     return;
   }
-
   const username = normalizeTelegramFxUsername(ctx.from?.username || "");
   const id = String(ctx.from?.id || "");
   if (!username || !id) {
     await ctx.reply("Add a @username in Telegram Settings, then tap SPECIAL again.");
     return;
   }
-
   const buttons = Markup.inlineKeyboard([
     [Markup.button.callback("✔️ ᴀᴄᴄᴇᴘᴛ", `spcl_confirm_${id}`), Markup.button.callback("✏️ ᴇᴅɪᴛ", `spcl_edit_${id}`)],
   ]);
@@ -1915,42 +1926,41 @@ async function openSpclConfirmation(ctx) {
   );
 
   await rememberSpclBotMessage(ctx, sent.message_id);
-}
-
+  }
 bot.action(/^spcl_edit_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
     return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
   }
   await ctx.answerCbQuery();
-  const sent = await ctx.reply("✏️ To edit your username, open Telegram Settings → Username, save your changes and tap RECHECK. We verify your real Telegram username.", {
+  const sent = await ctx.reply(
+  "✏️ ᴛᴏ ᴇᴅɪᴛ ʏᴏᴜʀ ᴜꜱᴇʀɴᴀᴍᴇ, ᴏᴘᴇɴ ᴛᴇʟᴇɢʀᴀᴍ ꜱᴇᴛᴛɪɴɢꜱ → ᴜꜱᴇʀɴᴀᴍᴇ, ꜱᴀᴠᴇ ʏᴏᴜʀ ᴄʜᴀɴɢᴇꜱ ᴀɴᴅ ᴛᴀᴘ ʀᴇᴄʜᴇᴄᴋ. ᴡᴇ ᴠᴇʀɪꜰʏ ʏᴏᴜʀ ʀᴇᴀʟ ᴛᴇʟᴇɢʀᴀᴍ ᴜꜱᴇʀɴᴀᴍᴇ.", {
     reply_markup: Markup.inlineKeyboard([[Markup.button.callback("↻ ʀᴇᴄʜᴇᴄᴋ", `spcl_retry_${ctx.from.id}`)]]).reply_markup,
   });
   await rememberSpclBotMessage(ctx, sent.message_id);
-});
-
+  });
 bot.action(/^spcl_retry_(\d+)$/, async (ctx) => {
   if (String(ctx.match?.[1] || "") !== String(ctx.from?.id || "")) {
-    return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true });
+    return ctx.answerCbQuery("This confirmation belongs to another account.", { show_alert: true 
+  });
   }
   await ctx.answerCbQuery();
   await openSpclConfirmation(ctx);
-});
-
+  });
 bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
   const requestedId = String(ctx.match?.[1] || "");
   if (!requestedId || requestedId !== String(ctx.from?.id || "")) {
     await ctx.answerCbQuery("Esta confirmación pertenece a otra cuenta.", { show_alert: true });
     return;
-  }
+    }
   if (ctx.chat?.type !== "private") {
     await ctx.answerCbQuery("Solo en chat privado.", { show_alert: true });
     return;
-  }
+    }
   const username = normalizeTelegramFxUsername(ctx.from?.username || "");
   if (!username) {
     await ctx.answerCbQuery("Primero configura tu @username.", { show_alert: true });
     return;
-  }
+    }
   try {
     await ctx.answerCbQuery("Verificando acceso SPCL…");
     const access = await getTelegramFxAccess(username.normalized);
@@ -1960,7 +1970,7 @@ bot.action(/^spcl_confirm_(\d+)$/, async (ctx) => {
         { parse_mode: "HTML", reply_markup: getSpclRequestKeyboard().reply_markup }
       );
       return;
-    }
+      }
     // Existing Redis identity-code engine: 15-minute, one-time code tied to
     // this Telegram user ID and username; Vault verifies it server-side.
     await sendIdentityCode(ctx, { replaceExisting: true });
@@ -1980,8 +1990,7 @@ bot.action(/^spcl_cancel_(\d+)$/, async (ctx) => {
   }
   await ctx.answerCbQuery("Cancelado");
   await ctx.reply("Verificación SPCL cancelada.", getAccessKeyboard());
-});
-
+  });
 //// USER START //
 async function handleUserStart(ctx) {
   try {
@@ -2344,14 +2353,14 @@ bot.on("text", async (ctx, next) => {
     //// SMOKELANDIA //
     if (text === BTN_SMOKELANDIA) {
       return await sendMediaSafe(ctx, "video", ASSET_SMOKELANDIA_VIDEO, {
-        reply_markup: { inline_keyboard: [[{ text: "↗ CLICK HERE · SMOKELANDIA", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
+        reply_markup: { inline_keyboard: [[{ text: "ɢᴇᴛ ɪɴ ↗︎", url: "https://t.me/+79Y_XpV5rak2Zjgx" }]] },
       });
     }
     //// USERFX SITE //
     if (text === BTN_USERFX_SITE) {
       return await sendMediaSafe(ctx, "video", ASSET_USERFX_VIDEO, {
         reply_markup: {
-          inline_keyboard: [[{ text: "↗ CLICK HERE · USER FX", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
+          inline_keyboard: [[{ text: "ɢᴇᴛ ɪɴ ↗︎", url: "https://t.me/+Smfuo6ObfVFkOTFh" }]],
         },
       });
     }

@@ -614,3 +614,21 @@
 .pv-rose--particles .fx-rose-particles-widget { height: 100%; min-height: 0; }
 .pv-rose--particles .fx-rose-particles-canvas { position: absolute; inset: 0; pointer-events: none; }
 .pv-rose--particles .fx-rose-particles-trigger { pointer-events: auto; bottom: 16%; }
+
+/* Ajuste de encuadre: primera foto izquierda */
+.pv-pics-half--left .pv-pic:first-child img {
+  object-fit: cover;
+  object-position: 50% 10%;
+}
+/* Segunda foto izquierda */
+.pv-pics-half--left .pv-pic:nth-child(2) img {
+  object-fit: cover;
+  object-position: 50% 10%;
+}
+/* Última foto: subir y aumentar zoom */
+.pv-pics-half--right .pv-pic:nth-child(2) img {
+  object-fit: cover;
+  object-position: 50% 72%;
+  transform: translateY(-3%) scale(1.22);
+  transform-origin: center center;
+}

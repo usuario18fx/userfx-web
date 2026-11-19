@@ -32,7 +32,7 @@
   inset: 0;
   pointer-events: none;
   opacity: .08;
-  background: url('/wallpaperGeneral.png') center / cover;
+  background: url('/wallpaper1.png') center / cover;
   mix-blend-mode: luminosity;
 }
 .ufx-footer-frame > * { position: relative; z-index: 1; }
@@ -62,7 +62,7 @@
   flex-direction: column;
   width: 100%;
   margin: 0;
-  font-family: var(--font-display), 'Arial Narrow', Arial, sans-serif;
+ font-family: "Fredoka", sans-serif;
   font-size: clamp(37px, 6.1vw, 94px);
   line-height: .99;
   font-weight: 700;
@@ -191,8 +191,7 @@
   }
   75% {
     transform: translate3d(-3px, -11px, 0) rotate(-2deg);
-  }
-}
+  }}
 @media (prefers-reduced-motion: reduce) {
   .ufx-footer-crown-anchor {
     transform: none;
@@ -201,8 +200,7 @@
   }
   .ufx-footer-crown {
     animation: none;
-  }
-}
+  }}
 .ufx-footer-visual-label { text-align: center; }
 .ufx-footer-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,191,143,.48), transparent); }
 .ufx-footer-info {

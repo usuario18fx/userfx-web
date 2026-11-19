@@ -181,9 +181,6 @@
   background: linear-gradient(90deg, #08041ed9 0%, 
   transparent 55%);
 }
-
-
-
 /* WELCOME cover: layered over the 3D scene, centered on every viewport. */
 .cinematic-tour .ct-cover {
   position: absolute;
@@ -203,7 +200,6 @@
   overflow: hidden;
   transition: opacity 0.45s ease, visibility 0.45s ease;
 }
-
 .cinematic-tour .ct-cover-title {
   animation: ct-cover-type-zoom 1800ms cubic-bezier(.22,.7,.1,1) both;
   display: flex;
@@ -221,20 +217,17 @@
   letter-spacing: -0.045em;
   text-align: center;
 }
-
 .cinematic-tour .ct-cover-brand {
   font: 700 clamp(14px, 2vw, 25px)/1.2 "Fredoka", system-ui, sans-serif;
   letter-spacing: .26em;
   color: #daeeff;
   text-shadow: 0 1px 12px #000;
 }
-
 @keyframes ct-cover-type-zoom {
   0% { transform: scale(1.36); }
   63% { transform: scale(.94); }
   100% { transform: scale(1); }
 }
-
 .cinematic-tour .ct-chrome {
   display: block;
   max-width: 100%;
@@ -248,7 +241,6 @@
   -webkit-text-stroke: 1px rgba(9, 20, 33, 0.65);
   filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.88));
 }
-
 .cinematic-tour .ct-blue {
   display: block;
   max-width: 100%;
@@ -266,7 +258,6 @@
   -webkit-text-stroke: 0.025em rgba(2, 17, 32, 0.9);
   filter: drop-shadow(0 3px 9px rgba(0, 0, 0, 0.95));
 }
-
 .cinematic-tour .ct-cover-hint {
   margin: clamp(26px, 5vh, 50px) 0 0;
   font-family: "Orbitron", system-ui, sans-serif;
@@ -423,4 +414,44 @@
     right: 12px;
     font-size: 10px;
   }
+}
+
+/* USERFX-WELCOME-LAYOUT-FIX */
+.cinematic-tour .fx-welcome-restored {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: clamp(10px, 2vh, 20px) !important;
+  overflow: hidden !important;
+}
+
+.cinematic-tour .fx-welcome-restored .ct-cover-title {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: clamp(8px, 1.5vh, 16px) !important;
+  font-size: clamp(44px, 7vw, 108px) !important;
+  line-height: 1 !important;
+  animation: none !important;
+}
+
+.cinematic-tour .fx-welcome-restored .ct-chrome {
+  display: block !important;
+  font-size: 1em !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+.cinematic-tour .fx-welcome-restored .ct-blue {
+  display: block !important;
+  font-size: 0.36em !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.08em !important;
 }
