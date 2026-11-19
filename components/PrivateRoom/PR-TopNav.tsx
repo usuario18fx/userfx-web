@@ -122,6 +122,10 @@ import { AdminModeSwitch, useAdminMode } from "./PR-AdminMode";
             <span className="pvr-cam-label">{cameraLive ? "ONCAM" : "OFFCAM"}</span>
             <span className="pvr-cam-dot" aria-hidden="true" />
           </button>
+          <button type="button" className="pvr-club-messages" aria-label="Open USER FX messages" title="Messages" onClick={() => window.dispatchEvent(new Event("userfx:open-messages"))}>
+            <Icon name="chat" size={17} />
+            <span>MESSAGES</span>
+          </button>
           <button type="button" className="pvr-club-reward" aria-label="Rewards" onClick={onRewards}>
             <span className="pvr-reward-icon-container">
               <svg className="pvr-reward-box-top" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 20" aria-hidden="true">
