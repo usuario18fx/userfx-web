@@ -595,3 +595,9 @@
 @media (prefers-reduced-motion:reduce) {
   .pvr-club-nav--unified :is(.pvr-club-cam,.pvr-club-reward,.pvr-club-logout,.pvr-reward-star,.pvr-logout-icon svg),.pvr-club-nav--unified .pvr-club-cam::after { transition:none; }
 }
+
+/* USER FX messages · single header launcher. */
+.pvr-club-nav--unified .pvr-club-messages { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:0 11px; border:1px solid rgba(63,216,208,.55); border-radius:8px; background:linear-gradient(160deg,#102e38,#07151d); color:#88e5e9; font:750 9px var(--pvr-body); letter-spacing:.08em; cursor:pointer; }
+.pvr-club-nav--unified .pvr-club-messages:hover,.pvr-club-nav--unified .pvr-club-messages:focus-visible { border-color:#3fd8d0; color:#d8fbff; outline-offset:2px; }
+@media (max-width:1100px) { .pvr-club-nav--unified .pvr-club-messages span { display:none; } .pvr-club-nav--unified .pvr-club-messages { min-width:34px; padding:0 7px; } }
+@media (max-width:500px) { .pvr-club-nav--unified .pvr-club-messages { min-width:30px; min-height:30px; } }
