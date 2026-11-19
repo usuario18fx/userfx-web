@@ -187,13 +187,25 @@ export default function FxChat() {
         <span className="fx-web-chat-pulse" aria-hidden="true" />
       </button>
       {open && (
-        <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
+        <section id="fx-web-chat-panel" className={"fx-web-chat-window" + (linked ? " is-telegram-connected" : "")} aria-label="Chat USER FX">
           <header className="fx-web-chat-header">
-            <div className="fx-web-chat-header-mark">FX</div>
+            <div className="fx-web-chat-header-mark" aria-hidden="true">
+              FX
+              {linked && <span className="fx-web-chat-presence" />}
+            </div>
             <div className="fx-web-chat-heading">
               <strong>USER FX</strong>
-              <small>{linked ? "BOT + TELEGRAM CONNECTED" : "CHAT · TELEGRAM"}</small>
+              <small>{linked ? "ᴛᴇʟᴇɢʀᴀᴍ · ꜱʏɴᴄᴇᴅ" : "ᴄʜᴀᴛ · ᴛᴇʟᴇɢʀᴀᴍ"}</small>
             </div>
+            {linked && (
+              <a className="fx-web-chat-open-telegram" href={BOT_CHAT_URL} target="_blank" rel="noopener noreferrer" aria-label="Open original Telegram chat" title="Open original Telegram chat">
+                <span>ᴏᴘᴇɴ</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14 4h6v6M20 4l-9 9" />
+                  <path d="M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5" />
+                </svg>
+              </a>
+            )}
             <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </header>
           {loading ? (
