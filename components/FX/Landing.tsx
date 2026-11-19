@@ -7,6 +7,7 @@ import { SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
+import RoomEntryTransition from "./RoomEntryTransition";
 import RoomIntro from "./RoomIntro";
 import FxSceneLoader from "./FxSceneLoader";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
@@ -1251,11 +1252,18 @@ export default function Landing() {
   const active = useActiveSection(SECTION_IDS);
   const [accessOpen, setAccessOpen] = useState(false);
   const [telegramOpen, setTelegramOpen] = useState(false);
+  const [roomEntryUsername, setRoomEntryUsername] = useState<string | null>(null);
   const [introComplete, setIntroComplete] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [sceneTimedOut, setSceneTimedOut] = useState(false);
   const showIntro = !introComplete || (!sceneReady && !sceneTimedOut);
   const openTelegram = () => setTelegramOpen(true);
+  const startRoomEntry = (username?: string) => {
+    setTelegramOpen(false);
+    if (!username) { setAccessOpen(true); return; }
+    setAccessOpen(false);
+    setRoomEntryUsername(username);
+  };
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSceneTimedOut(true), 10000);
@@ -1315,7 +1323,7 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-        <SiteFooter onVerified={() => setAccessOpen(true)} />
+        <SiteFooter onVerified={startRoomEntry} />
       </MenuOverlay>
       <div className="fx-landing">
         <main>
@@ -1324,12 +1332,15 @@ export default function Landing() {
           <SectionMethod />
           <SectionPricing />
           <SectionFaq />
-          <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
+          <TelegramIdentityFooter onVerified={startRoomEntry} />
         </main>
       </div>
       <FooterBar />
       {telegramOpen && (
-        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
+        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={startRoomEntry} />
+      )}
+      {roomEntryUsername && (
+        <RoomEntryTransition username={roomEntryUsername} onClose={() => setRoomEntryUsername(null)} />
       )}
       {accessOpen && (
         <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">

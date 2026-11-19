@@ -24,7 +24,7 @@ const COLUMNS = [
   ] },
 ] as const;
 type FooterProps = {
-  onVerified: () => void;
+  onVerified: (username?: string) => void;
 };
 type TelegramUser = {
   id: string;
@@ -162,7 +162,7 @@ function TelegramSignIn({ onVerified }: FooterProps) {
               {user.username ? `@${user.username}` : user.first_name || "Telegram connected"}
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={onVerified} className="rounded-lg bg-[#2aabee] px-4 py-2 text-xs font-semibold text-[#06111a]">
+              <button type="button" onClick={() => onVerified(user.username ? `@${user.username}` : undefined)} className="rounded-lg bg-[#2aabee] px-4 py-2 text-xs font-semibold text-[#06111a]">
                 ENTER YOUR CODE
               </button>
               <button type="button" onClick={() => void logout()} disabled={busy} className="rounded-lg border border-white/20 px-4 py-2 text-xs text-white/75 transition-colors hover:border-white/50 hover:text-white disabled:opacity-50">
@@ -197,7 +197,7 @@ Verifying with Telegram…
 Check access using your @username instead
 </summary>
           <div className="pt-4">
-            <TelegramIdentityFooter instanceId="telegram-identity-menu" onVerified={onVerified} />
+            <TelegramIdentityFooter instanceId="telegram-identity-menu" onVerified={(username) => onVerified(username)} />
           </div>
         </details>
       </div>
@@ -209,9 +209,9 @@ Check access using your @username instead
             }
 export default function SiteFooter({ onVerified }: FooterProps) {
   const { close } = useMenu();
-  const openAccess = () => {
+  const openAccess = (username?: string) => {
     close();
-    onVerified();
+    onVerified(username);
   };
   return (
              <footer id="contact" className="fx-site-footer relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-transparent to-black/40">

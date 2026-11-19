@@ -150,6 +150,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   const [checking, setChecking] = useState(!forceGate);
 
   const [authenticated, setAuthenticated] = useState(false);
+  const [enteringRoom, setEnteringRoom] = useState(false);
 
   const [prefix, setPrefix] = useState("BSIC");
 
@@ -700,6 +701,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         rememberTelegramUsername(rememberedUsername);
         setNotice(`USERNAME REMEMBERED · ${rememberedUsername} · ACCESS GRANTED`);
 
+        setEnteringRoom(true);
         window.setTimeout(() => {
           setAuthenticated(true);
         }, 650);
@@ -766,6 +768,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         setNotice("ACCESS GRANTED · SESSION ACTIVE");
       }
 
+      setEnteringRoom(true);
       window.setTimeout(() => {
         setAuthenticated(true);
       }, 650);
@@ -935,6 +938,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
       rememberTelegramUsername(normalizedUsername);
       setNotice(`USERNAME REMEMBERED · ${normalizedUsername} · SESSION ACTIVE`);
 
+      setEnteringRoom(true);
       window.setTimeout(() => {
         setAuthenticated(true);
       }, 650);
@@ -949,7 +953,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   const reducedMotion = useReducedMotion();
 
-  if (checking) {
+  if (checking || (enteringRoom && !authenticated)) {
     return (
       <main className="pvr-direct-checking">
         <span>
@@ -957,7 +961,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         </span>
 
         <strong>
-        CHECKING PRIVATE ACCESS…
+        ᴘʀᴇᴘᴀʀɪɴɢ ʏᴏᴜʀ ʀᴏᴏᴍ…
         </strong>
       </main>
     );
