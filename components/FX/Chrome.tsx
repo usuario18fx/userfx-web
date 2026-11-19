@@ -7,13 +7,14 @@ import {
   useState,
   type ReactNode,
   type CSSProperties,
+  type MouseEvent,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FX } from "@/lib/assets";
 import { NAV, ENTER_URL } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
-import { setSmoothScroll } from "./Motion";
+import { jumpToPosition, setSmoothScroll } from "./Motion";
 
 const Context = createContext({ open: false, toggle: () => {}, close: () => {} });
 export function useMenu() {
@@ -149,6 +150,16 @@ const row = {
 export function MenuOverlay({ children }: { children?: ReactNode }) {
   const { open, close } = useMenu();
   const ref = useRef<HTMLDivElement>(null);
+  const navigateToSection = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
+    const target = document.getElementById(id);
+    close();
+    if (!target) return;
+    window.requestAnimationFrame(() => {
+      jumpToPosition(target.getBoundingClientRect().top + window.scrollY - 72);
+    });
+  };
+
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
@@ -163,7 +174,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
+        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
           <div className="flex min-h-24 items-center justify-between gap-3">
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
@@ -179,7 +190,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
                 key={item.id}
                 variants={row}
                 href={`#${item.id}`}
-                onClick={close}
+                onClick={(event) => navigateToSection(event, item.id)}
                 className="group relative flex items-center justify-between overflow-hidden border-b border-white/15 py-[20px] md:py-[24px]">
                 {/* línea dorada que barre la fila en hover / foco */}
                 <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
