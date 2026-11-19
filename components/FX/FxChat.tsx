@@ -37,8 +37,14 @@ function clock(iso: string) {
   catch { return ""; }
 }
 
-export default function FxChat() {
+export default function FxChat({ insideRoom = false }: { insideRoom?: boolean }) {
   const [open, setOpen] = useState(false);
+  useEffect(() => { setOpen(false); }, [insideRoom]);
+  useEffect(() => {
+    const toggleMessages = () => setOpen((current) => !current);
+    window.addEventListener("userfx:open-messages", toggleMessages);
+    return () => window.removeEventListener("userfx:open-messages", toggleMessages);
+  }, []);
   const [loading, setLoading] = useState(false);
   const [linked, setLinked] = useState(false);
   const [accepted, setAccepted] = useState(false);
@@ -142,8 +148,8 @@ export default function FxChat() {
   }
 
   return (
-    <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "")} aria-label="USER FX chat">
-      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
+    <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "") + (insideRoom ? " is-room" : "")} aria-label="USER FX chat">
+      {!insideRoom && <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
         <span className="fx-web-chat-symbol" aria-hidden="true">
           <svg className="fx-web-chat-icon" viewBox="0 0 32 32" focusable="false">
             <path d="M4 7.5h15.5a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H10l-6 4v-17a4 4 0 0 1 4-4" />
@@ -157,7 +163,7 @@ export default function FxChat() {
           CHAT
         </span>
         <span className="fx-web-chat-pulse" aria-hidden="true" />
-      </button>
+      </button>}
       {open && (
         <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
           <header className="fx-web-chat-header">
