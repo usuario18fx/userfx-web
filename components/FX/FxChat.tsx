@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useRef, useState, type FormEvent } from "react";
 import "./FxChat.css";
+import "./FxChatTelegram.css";
 
 const TERMS_VERSION = "2026-11-08-v1";
 const BOT_LINK = "https://t.me/User18Fx_bot?start=webchat";
+const BOT_CHAT_URL = "https://t.me/User18Fx_bot";
 
 type ChatMessage = {
   id: string;
@@ -37,6 +39,22 @@ function clock(iso: string) {
   catch { return ""; }
 }
 
+function localDay(iso: string) {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? iso.slice(0, 10) : date.toDateString();
+}
+
+function dayCaption(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const today = new Date();
+  if (date.toDateString() === today.toDateString()) return "ᴛᴏᴅᴀʏ";
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return "ʏᴇꜱᴛᴇʀᴅᴀʏ";
+  return date.toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function FxChat() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,6 +66,7 @@ export default function FxChat() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const scroll = useRef<HTMLDivElement>(null);
+  const followNewMessages = useRef(true);
 
   useEffect(() => {
     if (!open) return;
@@ -77,7 +96,12 @@ export default function FxChat() {
           setLinked(false);
           setMessages([]);
         } else {
-          setMessages(response.messages || []);
+          const incoming = response.messages || [];
+          setMessages((current) =>
+            current.length === incoming.length && current.every((item, index) => item.id === incoming[index].id)
+              ? current
+              : incoming
+          );
         }
       }).catch(() => {
         // Network interruptions should not clear an authenticated conversation.
@@ -87,7 +111,9 @@ export default function FxChat() {
   }, [open, linked]);
 
   useEffect(() => {
-    if (open && linked) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" });
+    if (open && linked && followNewMessages.current) {
+      scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "auto" });
+    }
   }, [messages, open, linked]);
 
   async function handleLink(event: FormEvent<HTMLFormElement>) {
@@ -97,6 +123,7 @@ export default function FxChat() {
     setError("");
     try {
       const result = await callChat("POST", { action: "link", code: linkCode, accepted: true, termsVersion: TERMS_VERSION });
+      followNewMessages.current = true;
       setLinked(Boolean(result.linked));
       const fresh = await callChat("GET");
       setMessages(fresh.messages || []);
@@ -116,6 +143,7 @@ export default function FxChat() {
     setError("");
     try {
       const result = await callChat("POST", { action: "send", message });
+      followNewMessages.current = true;
       setMessages(result.messages || []);
       setDraft("");
     } catch (e) {
@@ -188,7 +216,7 @@ export default function FxChat() {
               </div>
               <label className="fx-web-chat-consent">
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-                <span>I agree to sync this chat with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
+                <span>I agree to sync my text messages with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
               </label>
               <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")}
                 href={accepted ? BOT_LINK : undefined}
