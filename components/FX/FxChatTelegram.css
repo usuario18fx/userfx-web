@@ -55,11 +55,15 @@
 }
 
 #fx-chat-dock .fx-web-chat-open-telegram {
-  display: grid;
+  display: flex;
   flex: 0 0 auto;
-  place-items: center;
-  width: 33px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 33px;
   height: 33px;
+  padding: 0 9px;
+  font: 700 10px/1 "IBM Plex Mono", ui-monospace, monospace;
   border-radius: 10px;
   border: 1px solid rgba(124, 175, 206, .28);
   color: #a7deed;
@@ -325,6 +329,13 @@
 
   #fx-chat-dock .is-telegram-connected .fx-web-chat-bubble {
     max-width: 91%;
+  }
+  #fx-chat-dock .fx-web-chat-open-telegram {
+    width: 33px;
+    padding: 0;
+  }
+  #fx-chat-dock .fx-web-chat-open-telegram span {
+    display: none;
   }
 }
 
