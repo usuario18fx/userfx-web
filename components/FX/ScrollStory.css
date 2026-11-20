@@ -285,7 +285,14 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  display: grid;
+  place-items: center;
   pointer-events: none;
+}
+.fx-rose-stage-particles > [role="button"] {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 /* El hero tiene 3 hijos (título, escenario de la rosa, lateral) en un grid de 2

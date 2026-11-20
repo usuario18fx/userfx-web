@@ -5,6 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { useMenu } from "./Chrome";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import "./ScrollStory.css";
+import Crown4D from "../Crown4D/Crown4D";
 
 export default function ScrollStory({ onOpenTelegram }: { onOpenTelegram: () => void }) {
   const reduced = useReducedMotion();
@@ -80,7 +81,7 @@ export default function ScrollStory({ onOpenTelegram }: { onOpenTelegram: () => 
           </motion.div>
           <div className="fx-rose-stage">
             <div className="fx-rose-stage-particles">
-              {/* Espacio reservado para la rosa de partículas de la portada. */}
+              <Crown4D />
             </div>
           </div>
           <motion.div className="fx-scroll-parallax fx-scroll-parallax--aside" style={reduced ? undefined : { y: asideY, opacity: asideOpacity }}>

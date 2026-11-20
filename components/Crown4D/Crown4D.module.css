@@ -129,7 +129,7 @@
     animation:none;
   }
   .crown{
-    transform: none; /* ↗️ */
+    /* Keep user-initiated drag and keyboard rotations accessible. */
     transition:none;
   }
 }
