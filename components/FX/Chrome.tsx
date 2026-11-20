@@ -15,6 +15,7 @@ import { NAV, ENTER_URL } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { AdminModeSwitch, useAdminMode } from "@/components/PrivateRoom/PR-AdminMode";
 import { jumpToPosition, setSmoothScroll } from "./Motion";
+import FxChat from "./FxChat";
 
 const Context = createContext({ open: false, toggle: () => {}, close: () => {} });
 export function useMenu() {
@@ -122,7 +123,8 @@ export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpe
                 </a>
               ))}
             </nav>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 md:gap-5">
+              <FxChat />
               <button type="button" className="fx-telegram-launch" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
                 <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </button>

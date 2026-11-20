@@ -57,7 +57,7 @@ export default function Experience() {
   ):(
     <Landing />
     )}
-    <FxChat />
+    {privateRoute && <FxChat placement="floating" />}
     </AdminModeProvider>
   );
   }

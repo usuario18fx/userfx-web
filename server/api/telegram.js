@@ -228,7 +228,7 @@ adminBot.use(async (ctx, next) => {
     if (!recipientId) return next();
     const message = ctx.message.text.trim().slice(0, 1000);
     if (!message) return;
-    await bot.telegram.sendMessage(recipientId, "USER FX SUPPORT:\n" + message);
+    await bot.telegram.sendMessage(recipientId, "USER FX SUPPORT:\n" + message, { __fx_support: true });
     await appendFxChatMessage(recipientId, "support", message, "telegram:admin", "admin-webchat:" + adminChatId + ":" + ctx.message.message_id);
     return ctx.reply("Reply delivered to web chat and Telegram.");
   } catch (error) {
@@ -364,7 +364,10 @@ function fxStyleReplyMarkup(replyMarkup) {
 const fxOriginalUserCallApi = bot.telegram.callApi.bind(bot.telegram);
 
 bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
+  const supportRelay = payload.__fx_support === true ||
+    (typeof payload.text === "string" && /^\s*(?:USER FX SUPPORT\s*:|WEBCHAT\b)/i.test(payload.text));
   const nextPayload = { ...payload };
+  delete nextPayload.__fx_support;
 
   for (const field of ["text", "caption", "title", "description"]) {
     if (typeof nextPayload[field] === "string") {
@@ -385,7 +388,7 @@ bot.telegram.callApi = function fxStyledCallApi(method, payload = {}, signal) {
   }
 
   return fxOriginalUserCallApi(nextMethod, nextPayload, signal).then((result) => {
-    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !nextPayload.text.startsWith("USER FX SUPPORT:")) {
+    if (nextMethod === "sendMessage" && nextPayload.chat_id && typeof nextPayload.text === "string" && !supportRelay) {
       void appendFxChatMessage(String(nextPayload.chat_id), "bot", nextPayload.text, "telegram", "tg-bot:" + nextPayload.chat_id + ":" + result?.message_id)
         .catch((error) => logger.warn("FX CHAT BOT MIRROR FAILED", { message: error?.message || "unknown" }));
     }
@@ -2658,7 +2661,9 @@ async function deliverAdminMessage(userId, text) {
   const contact = await getAdminMessageContact(userId, client);
   if (!contact) return { ok: false, reason: "Destinatario no registrado, bloqueado o dado de baja. Debe iniciar @User18Fx_bot." };
   try {
-    await bot.telegram.sendMessage(String(userId), text, { disable_web_page_preview: true });
+    const sent = await bot.telegram.sendMessage(String(userId), text, { disable_web_page_preview: true, __fx_support: true });
+    await appendFxChatMessage(String(userId), "support", text, "telegram:admin", "admin-direct:" + userId + ":" + sent.message_id)
+      .catch((error) => logger.warn("FX CHAT ADMIN MIRROR FAILED", { message: error?.message || "unknown" }));
     return { ok: true, contact };
   } catch (error) {
     const errorCode = Number(error?.response?.error_code || 0);

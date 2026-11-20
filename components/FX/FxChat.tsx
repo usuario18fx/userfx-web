@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import "./FxChat.css";
 
 const TERMS_VERSION = "2026-11-08-v1";
 const BOT_LINK = "https://t.me/User18Fx_bot?start=webchat";
+const PROFILE_IMAGE = "/assets/chat.png";
+const FALLBACK_PROFILE_IMAGE = "/assets/iconos/chat.png";
 
 type ChatMessage = {
   id: string;
@@ -18,6 +21,7 @@ type ChatResponse = {
   messages?: ChatMessage[];
   error?: string;
 };
+type FxChatProps = { placement?: "header" | "floating" };
 
 async function callChat(method: "GET" | "POST" | "DELETE", body?: object): Promise<ChatResponse> {
   const res = await fetch("/api/fx-chat", {
@@ -28,7 +32,7 @@ async function callChat(method: "GET" | "POST" | "DELETE", body?: object): Promi
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const result = await res.json().catch(() => ({})) as ChatResponse;
-  if (!res.ok) throw new Error(result.error || "No se pudo conectar al chat");
+  if (!res.ok) throw new Error(result.error || "Couldn't reach the chat. Try again.");
   return result;
 }
 
@@ -37,29 +41,42 @@ function clock(iso: string) {
   catch { return ""; }
 }
 
-export default function FxChat() {
+function profileFallback(event: React.SyntheticEvent<HTMLImageElement>) {
+  const img = event.currentTarget;
+  if (img.dataset.fallback !== "1") {
+    img.dataset.fallback = "1";
+    img.src = FALLBACK_PROFILE_IMAGE;
+  } else {
+    img.style.opacity = "0";
+  }
+}
+
+export default function FxChat({ placement = "header" }: FxChatProps) {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [linked, setLinked] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [linkCode, setLinkCode] = useState("");
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
   const scroll = useRef<HTMLDivElement>(null);
 
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
-    if (!open) return;
     let cancelled = false;
-    setLoading(true);
+    if (open) setLoading(true);
     void callChat("GET").then((response) => {
       if (cancelled) return;
       setLinked(Boolean(response.linked));
       setMessages(response.messages || []);
       setError("");
     }).catch((e) => {
-      if (!cancelled) setError(e.message);
+      if (!cancelled && open) setError(e instanceof Error ? e.message : "Connection unavailable");
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });
@@ -67,7 +84,7 @@ export default function FxChat() {
   }, [open]);
 
   useEffect(() => {
-    if (!open || !linked) return;
+    if (!linked || confirmDelete) return;
     let alive = true;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
@@ -80,15 +97,19 @@ export default function FxChat() {
           setMessages(response.messages || []);
         }
       }).catch(() => {
-        // Network interruptions should not clear an authenticated conversation.
+        // Preserve the conversation during temporary network errors.
       });
-    }, 3500);
+    }, open ? 3500 : 9000);
     return () => { alive = false; window.clearInterval(timer); };
-  }, [open, linked]);
+  }, [open, linked, confirmDelete]);
 
   useEffect(() => {
     if (open && linked) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" });
   }, [messages, open, linked]);
+
+  useEffect(() => {
+    if (!open) setConfirmDelete(false);
+  }, [open]);
 
   async function handleLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -97,8 +118,8 @@ export default function FxChat() {
     setError("");
     try {
       const result = await callChat("POST", { action: "link", code: linkCode, accepted: true, termsVersion: TERMS_VERSION });
-      setLinked(Boolean(result.linked));
       const fresh = await callChat("GET");
+      setLinked(Boolean(fresh.linked ?? result.linked));
       setMessages(fresh.messages || []);
       setLinkCode("");
     } catch (e) {
@@ -119,118 +140,124 @@ export default function FxChat() {
       setMessages(result.messages || []);
       setDraft("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo enviar");
+      setError(e instanceof Error ? e.message : "Message couldn't be sent");
     } finally {
       setBusy(false);
     }
   }
 
-  async function disconnect() {
-    if (busy || !window.confirm("Disconnect Telegram and clear synced web chat history?")) return;
+  async function deleteConversation() {
+    if (busy) return;
     setBusy(true);
+    setError("");
     try {
       await callChat("DELETE");
       setLinked(false);
       setAccepted(false);
       setMessages([]);
-      setError("");
+      setLinkCode("");
+      setDraft("");
+      setConfirmDelete(false);
+      setOpen(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo desvincular");
+      setError(e instanceof Error ? e.message : "Couldn't delete the chat");
+      setConfirmDelete(false);
     } finally {
       setBusy(false);
     }
   }
 
-  return (
-    <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "")} aria-label="USER FX chat">
-      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel">
-        <span className="fx-web-chat-symbol" aria-hidden="true">
-          <svg className="fx-web-chat-icon" viewBox="0 0 32 32" focusable="false">
-            <path d="M4 7.5h15.5a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H10l-6 4v-17a4 4 0 0 1 4-4" />
-            <path d="M13.5 4H25a4 4 0 0 1 4 4v11l-5.5-3.5" />
-            <circle cx="10" cy="16" r="1.2" />
-            <circle cx="15" cy="16" r="1.2" />
-            <circle cx="20" cy="16" r="1.2" />
-          </svg>
-        </span>
-        <span className="fx-web-chat-label">
-          CHAT
-        </span>
-        <span className="fx-web-chat-pulse" aria-hidden="true" />
-      </button>
-      {open && (
-        <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="Chat USER FX">
-          <header className="fx-web-chat-header">
-            <div className="fx-web-chat-header-mark">FX</div>
-            <div className="fx-web-chat-heading">
-              <strong>USER FX</strong>
-              <small>{linked ? "BOT + TELEGRAM CONNECTED" : "CHAT · TELEGRAM"}</small>
+  const windowContent = open ? (
+    <section id="fx-web-chat-panel" className="fx-web-chat-window" aria-label="USER FX chat" data-lenis-prevent>
+      <header className="fx-web-chat-header">
+        <img className="fx-web-chat-header-avatar" src={PROFILE_IMAGE} alt="USER FX" onError={profileFallback} />
+        <div className="fx-web-chat-heading">
+          <strong>ᴜꜱᴇʀ Ŧх</strong>
+          <small><span className={"fx-web-chat-status-dot" + (linked ? " is-connected" : "")} />{linked ? "ꜱʏɴᴄᴇᴅ ᴡɪᴛʜ ᴛᴇʟᴇɢʀᴀᴍ" : "ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ"}</small>
+        </div>
+        <div className="fx-web-chat-header-actions">
+          <button type="button" className="fx-web-chat-minimize" onClick={() => setOpen(false)} aria-label="Minimize chat" title="Minimize chat">−</button>
+          <button type="button" className="fx-web-chat-close" onClick={() => setConfirmDelete(true)} aria-label="Delete chat and disconnect" title="Delete chat">×</button>
+        </div>
+      </header>
+      {loading ? (
+        <div className="fx-web-chat-center" role="status">ᴄᴏɴɴᴇᴄᴛɪɴɢ…</div>
+      ) : !linked ? (
+        <div className="fx-web-chat-gate">
+          <strong>ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ</strong>
+          <p>ꜱʏɴᴄ ʏᴏᴜʀ ᴄʜᴀᴛ ᴡɪᴛʜ ᴜꜱᴇʀ Ŧх. ʟɪɴᴋ ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ ᴛᴏ ꜱᴛᴀʀᴛ.</p>
+          <div className="fx-web-chat-paths" aria-label="Two ways to get your code">
+            <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+              <small>ᴏᴘᴛɪᴏɴ 01 · ᴛᴇʟᴇɢʀᴀᴍ ꜱᴛᴀʀꜱ</small>
+              <strong>ɢᴇᴛ ᴀ ᴄᴏᴅᴇ</strong>
+              <span>ꜱᴇᴄᴜʀᴇ ᴄʜᴇᴄᴋᴏᴜᴛ ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ</span>
+            </a>
+            <div>
+              <small>ᴏᴘᴛɪᴏɴ 02 · ᴡᴇʙ ᴄʜᴀᴛ</small>
+              <strong>ᴄʜᴀᴛ ᴡɪᴛʜ ꜰx</strong>
+              <span>ʟɪᴠᴇ ᴄʜᴀᴛ ᴀꜰᴛᴇʀ ᴄᴏɴɴᴇᴄᴛɪɴɢ</span>
             </div>
-            <button type="button" className="fx-web-chat-close" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
-          </header>
-          {loading ? (
-            <div className="fx-web-chat-center" role="status">Connecting…</div>
-          ) : !linked ? (
-            <div className="fx-web-chat-gate">
-              <strong>Connect your Telegram</strong>
-              <p>Chat here and keep the conversation synced with Telegram. Link your account and accept the terms first.</p>
-              <div className="fx-web-chat-paths" aria-label="Two ways to get your code">
-                <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
-                  <small>OPTION 01 · TELEGRAM STARS</small>
-                  <strong>GET A CODE</strong>
-                  <span>Secure checkout and delivery through Telegram</span>
-                </a>
-                <div>
-                  <small>OPTION 02 · WEB CHAT</small>
-                  <strong>CHAT WITH FX</strong>
-                  <span>Live chat synced once your account is linked</span>
+          </div>
+          <label className="fx-web-chat-consent">
+            <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+            <span>I agree to sync this chat with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
+          </label>
+          <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")} href={accepted ? BOT_LINK : undefined} target="_blank" rel="noopener noreferrer" aria-disabled={!accepted} onClick={(e) => { if (!accepted) e.preventDefault(); }}>
+            01 · ᴏᴘᴇɴ @ᴜꜱᴇʀ18ꜰx_ʙᴏᴛ
+          </a>
+          <p className="fx-web-chat-steps">ᴛᴀᴘ ꜱᴛᴀʀᴛ ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ 10-ᴍɪɴᴜᴛᴇ ʟɪɴᴋ ᴄᴏᴅᴇ.</p>
+          <form onSubmit={handleLink} className="fx-web-chat-link-form">
+            <input type="text" value={linkCode} onChange={(e) => setLinkCode(e.target.value.toUpperCase())} placeholder="FXCHAT-..." maxLength={27} aria-label="Link code" autoComplete="off" spellCheck={false} />
+            <button type="submit" disabled={!accepted || busy || linkCode.trim().length < 27}>02 · ʟɪɴᴋ ᴀᴄᴄᴏᴜɴᴛ</button>
+          </form>
+        </div>
+      ) : (
+        <>
+          <div className="fx-web-chat-message-list" ref={scroll} role="log" aria-live="polite" aria-relevant="additions">
+            {messages.length === 0 && (
+              <p className="fx-web-chat-empty">ʜᴇʏ, ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴜꜱᴇʀ Ŧх. ᴛʜᴇ ᴄʜᴀᴛ'ꜱ ᴀʟʟ ʏᴏᴜʀꜱ.</p>
+            )}
+            {messages.map((msg) => (
+              <div key={msg.id} className={"fx-web-chat-message-row " + (msg.role === "user" ? "is-user" : "is-received")}>
+                {msg.role !== "user" && <img className="fx-web-chat-message-avatar" src={PROFILE_IMAGE} alt="" onError={profileFallback} />}
+                <div className={"fx-web-chat-bubble " + (msg.role === "user" ? "is-user" : msg.role === "support" ? "is-support" : "is-bot")}>
+                  {msg.role !== "user" && <span className="fx-web-chat-author">{msg.role === "support" ? "ᴜꜱᴇʀ Ŧх · ꜱᴜᴘᴘᴏʀᴛ" : "ᴜꜱᴇʀ Ŧх · ʙᴏᴛ"}</span>}
+                  <p>{msg.text}</p>
+                  <time dateTime={msg.at}>{clock(msg.at)}{msg.role === "user" ? " ✓✓" : ""}</time>
                 </div>
               </div>
-              <label className="fx-web-chat-consent">
-                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-                <span>I agree to sync this chat with Telegram, store up to 100 messages for 30 days, and use my Telegram identity for this conversation. I can withdraw permission at any time. <a href="/chat-terms" target="_blank" rel="noopener noreferrer">Chat terms</a> y <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy</a>.</span>
-              </label>
-              <a className={"fx-web-chat-telegram" + (!accepted ? " is-disabled" : "")}
-                href={accepted ? BOT_LINK : undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-disabled={!accepted}
-                onClick={(e) => { if (!accepted) e.preventDefault(); }}>
-                1. OPEN @USER18FX_BOT
-              </a>
-              <p className="fx-web-chat-steps">Tap START in Telegram to get a temporary FXCHAT code, valid for 10 minutes.</p>
-              <form onSubmit={handleLink} className="fx-web-chat-link-form">
-                <input type="text" value={linkCode} onChange={(e) => setLinkCode(e.target.value.toUpperCase())} placeholder="FXCHAT-..." maxLength={27} aria-label="Link code" autoComplete="off" spellCheck={false} />
-                <button type="submit" disabled={!accepted || busy || linkCode.trim().length < 27}>2. LINK ACCOUNT</button>
-              </form>
-            </div>
-          ) : (
-            <>
-              <div className="fx-web-chat-message-list" ref={scroll} role="log" aria-live="polite" aria-relevant="additions">
-                {messages.length === 0 && (
-                  <p className="fx-web-chat-empty">Connected. Ask about plans, access codes, or support.</p>
-                )}
-                {messages.map((msg) => (
-                  <div key={msg.id} className={"fx-web-chat-bubble " + (msg.role === "user" ? "is-user" : "is-bot")}>
-                    <span className="fx-web-chat-author">{msg.role === "user" ? "YOU" : msg.role === "support" ? "USER FX SUPPORT" : "FX BOT"}</span>
-                    <p>{msg.text}</p>
-                    <time dateTime={msg.at}>{clock(msg.at)}</time>
-                  </div>
-                ))}
-              </div>
-              <form className="fx-web-chat-compose" onSubmit={handleSend}>
-                <input type="text" aria-label="Type a message" placeholder="Type a message…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
-                <button type="submit" disabled={busy || !draft.trim()} aria-label="Send message">➤</button>
-              </form>
-              <div className="fx-web-chat-bottom">
-                <span>Messages are synced · Keep your private codes safe</span>
-                <button type="button" onClick={disconnect} disabled={busy}>Disconnect</button>
-              </div>
-            </>
-          )}
-          {error && <p className="fx-web-chat-error" role="alert">{error}</p>}
-        </section>
+            ))}
+          </div>
+          <form className="fx-web-chat-compose" onSubmit={handleSend}>
+            <input type="text" aria-label="Type a message" placeholder="ᴡʀɪᴛᴇ ᴀ ᴍᴇꜱꜱᴀɢᴇ…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
+            <button type="submit" disabled={busy || !draft.trim()} aria-label="Send message">➤</button>
+          </form>
+          <div className="fx-web-chat-bottom"><span>ʟɪᴠᴇ ᴄʜᴀᴛ · ᴛᴇʟᴇɢʀᴀᴍ ꜱʏɴᴄ ᴀᴄᴛɪᴠᴇ</span></div>
+        </>
       )}
+      {error && <p className="fx-web-chat-error" role="alert">{error}</p>}
+      {confirmDelete && (
+        <div className="fx-web-chat-confirm-backdrop">
+          <div className="fx-web-chat-confirm" role="dialog" aria-modal="true" aria-labelledby="fx-chat-delete-title" onKeyDown={(e) => { if (e.key === "Escape") setConfirmDelete(false); }}>
+            <strong id="fx-chat-delete-title">ᴅᴇʟᴇᴛᴇ ᴛʜɪꜱ ᴄʜᴀᴛ?</strong>
+            <p>ʏᴏᴜʀ ᴡᴇʙ ᴄʜᴀᴛ ʜɪꜱᴛᴏʀʏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴀɴᴅ ᴛᴇʟᴇɢʀᴀᴍ ᴡɪʟʟ ʙᴇ ᴅɪꜱᴄᴏɴɴᴇᴄᴛᴇᴅ. ᴍᴇꜱꜱᴀɢᴇꜱ ɪɴ ᴛᴇʟᴇɢʀᴀᴍ ᴡɪʟʟ ʀᴇᴍᴀɪɴ ᴛʜᴇʀᴇ. ᴄᴏɴᴛɪɴᴜᴇ?</p>
+            <div className="fx-web-chat-confirm-actions">
+              <button type="button" autoFocus onClick={() => setConfirmDelete(false)} disabled={busy}>ᴋᴇᴇᴘ ᴄʜᴀᴛ</button>
+              <button type="button" className="is-danger" onClick={() => { void deleteConversation(); }} disabled={busy}>{busy ? "ᴅᴇʟᴇᴛɪɴɢ…" : "ᴅᴇʟᴇᴛᴇ & ʀᴇꜱᴛᴀʀᴛ"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  ) : null;
+
+  return (
+    <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "") + (linked ? " is-active" : "")} data-placement={placement} aria-label="USER FX chat">
+      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Minimize USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel" title="USER FX chat">
+        <img className="fx-web-chat-launcher-image" src={PROFILE_IMAGE} alt="" onError={profileFallback} />
+        {linked && <span className="fx-web-chat-pulse" aria-hidden="true" />}
+      </button>
+      {mounted && windowContent ? createPortal(windowContent, document.body) : null}
     </div>
   );
 }

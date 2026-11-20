@@ -153,7 +153,7 @@ ORDINARY.
 â†“
 </span></div>}
 </div>
-<FxChat />
+<FxChat placement="floating" />
 </main>
 );
 }
