@@ -194,15 +194,118 @@ function createFxCrownContour() {
   return { outline, materials, geometries, baseOpacity: [0.46, 0.82, 0.98, 0.40] };
 }
 
+type CrownInteraction = {
+  hoverX: number;
+  hoverY: number;
+  targetX: number;
+  targetY: number;
+  dragX: number;
+  dragY: number;
+  pointerId: number | null;
+  lastX: number;
+  lastY: number;
+};
+
+function advanceInteraction(motion: CrownInteraction) {
+  motion.hoverX += (motion.targetX - motion.hoverX) * 0.12;
+  motion.hoverY += (motion.targetY - motion.hoverY) * 0.12;
+  if (motion.pointerId === null) {
+    motion.dragX *= 0.94;
+    motion.dragY *= 0.94;
+  }
+}
+
 export default function ProtocolCrown({ progress, tl, active, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(active ?? true);
   const timeline = tl ?? DEFAULT_TL;
+  const interactionRef = useRef<CrownInteraction>({
+    hoverX: 0,
+    hoverY: 0,
+    targetX: 0,
+    targetY: 0,
+    dragX: 0,
+    dragY: 0,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
+  });
 
   useEffect(() => {
     activeRef.current = active ?? true;
   }, [active]);
+
+  // The actual WebGL crown is beneath the scroll narrative and has no
+  // hit-testing of its own. Listen globally, but only react while it is visible.
+  useEffect(() => {
+    const motion = interactionRef.current;
+    const moveTo = (clientX: number, clientY: number) => {
+      if (!activeRef.current) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
+      if (x < 0 || x > 1 || y < 0 || y > 1) {
+        if (motion.pointerId === null) {
+          motion.targetX = 0;
+          motion.targetY = 0;
+        }
+        return;
+      }
+      motion.targetX = Math.max(-0.25, Math.min(0.25, (0.48 - y) * 0.55));
+      motion.targetY = Math.max(-0.45, Math.min(0.45, (x - 0.55) * 0.85));
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (!activeRef.current || (event.pointerType === "mouse" && event.button !== 0)) return;
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const x = (event.clientX - rect.left) / Math.max(1, rect.width);
+      const y = (event.clientY - rect.top) / Math.max(1, rect.height);
+      // Drag only near the visible crown, not over text/navigation elsewhere.
+      if (Math.abs(x - 0.55) > 0.3 || Math.abs(y - 0.48) > 0.35) return;
+      motion.pointerId = event.pointerId;
+      motion.lastX = event.clientX;
+      motion.lastY = event.clientY;
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      moveTo(event.clientX, event.clientY);
+      if (motion.pointerId !== event.pointerId) return;
+      motion.dragY += (event.clientX - motion.lastX) * 0.011;
+      motion.dragX += (event.clientY - motion.lastY) * 0.006;
+      motion.lastX = event.clientX;
+      motion.lastY = event.clientY;
+    };
+    const onPointerEnd = (event: PointerEvent) => {
+      if (motion.pointerId === event.pointerId) motion.pointerId = null;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches.item(0);
+      if (touch) moveTo(touch.clientX, touch.clientY);
+    };
+    const onPointerLeave = () => {
+      if (motion.pointerId === null) {
+        motion.targetX = 0;
+        motion.targetY = 0;
+      }
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerup", onPointerEnd);
+    window.addEventListener("pointercancel", onPointerEnd);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    document.addEventListener("pointerleave", onPointerLeave);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerEnd);
+      window.removeEventListener("pointercancel", onPointerEnd);
+      window.removeEventListener("touchmove", onTouchMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -239,7 +342,10 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.34);
       const cx = fallbackW * (fallbackW < 700 ? 0.51 : 0.56);
       const cy = fallbackH * 0.48 + (range(p, timeline.rise) - range(p, timeline.descend)) * scale * 0.25;
-      const turn = -0.20 + Math.sin(ms * 0.00012) * 0.11 + p * 0.30;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const motion = interactionRef.current;
+      advanceInteraction(motion);
+      const turn = -0.20 + (reduced ? 0 : ms * 0.00034) + p * 0.30 + motion.hoverY + motion.dragY;
       const cos = Math.cos(turn), sin = Math.sin(turn);
       const free = broken * broken;
       fallbackContext.save();
@@ -431,8 +537,12 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
         }
       }
       v.needsUpdate = true;
-      group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.14) * 0.12) + p * 0.3;
-      group.rotation.x = -0.055;
+      // The previous 0.12-radian sway took ~45 seconds and looked static.
+      // A continuous 20-second turn plus independent pointer tilt is visible.
+      const motion = interactionRef.current;
+      advanceInteraction(motion);
+      group.rotation.y = -0.18 + (reduced ? 0 : time * 0.34) + p * 0.3 + motion.hoverY + motion.dragY;
+      group.rotation.x = -0.055 + motion.hoverX + motion.dragX;
       group.rotation.z = -0.07;
       group.position.set(w < 700 ? 0 : 0.55,
         (rise - descend) * 1.0, 0);

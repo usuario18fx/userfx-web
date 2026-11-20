@@ -99,12 +99,11 @@
   animation-delay:0.9s;
 }
 @keyframes crownFloat{
-  0%,
-  100%{
-    transform: translateY(0) rotateZ(-0.4deg); /* ↗️ */
+  0%, 100%{
+    transform: translateY(0) rotateY(-9deg) rotateZ(-0.8deg);
   }
   50%{
-    transform: translateY(-13px) rotateZ(0.4deg); /* ↗️ */
+    transform: translateY(-16px) rotateY(9deg) rotateZ(0.8deg);
   }
 }
 @keyframes sparkle{

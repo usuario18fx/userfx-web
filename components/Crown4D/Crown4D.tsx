@@ -150,6 +150,13 @@ const finishDrag = (event: PointerEvent<HTMLDivElement>) => {
   gestureRef.current = null;
   delete event.currentTarget.dataset.dragging;
   if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  // A single tap on a phone triggers the 360° demonstration.
+  // A drag keeps the existing spin-and-spring interaction.
+  const distance = Math.hypot(event.clientX - gesture.startX, event.clientY - gesture.startY);
+  if (event.type === "pointerup" && event.pointerType !== "mouse" && distance < 9) {
+    flipCrown();
+    return;
+  }
   returnHome(gesture.vx, gesture.vy);
 };
 
