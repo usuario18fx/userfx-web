@@ -7,6 +7,8 @@ import {
   fxChatReply,
   getFxChatSession,
   readFxChatHistory,
+  getFxChatUnreadCount,
+  markFxChatRead,
   revokeFxChat,
   serializeFxChatCookie,
   setFxChatAdminReplyTarget,
@@ -74,11 +76,13 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const session = await getFxChatSession(req);
       if (!session) return res.status(200).json({ ok: true, linked: false, termsVersion: FX_CHAT_TERMS_VERSION });
+      const messages = await readFxChatHistory(session.userId);
       return res.status(200).json({
         ok: true,
         linked: true,
         termsVersion: FX_CHAT_TERMS_VERSION,
-        messages: await readFxChatHistory(session.userId),
+        messages,
+        unread: await getFxChatUnreadCount(session.userId, messages),
       });
     }
 
@@ -99,9 +103,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, linked: true });
     }
 
-    if (body.action !== "send") return res.status(400).json({ error: "invalid_action" });
     const session = await getFxChatSession(req);
     if (!session) return res.status(401).json({ error: "link_required" });
+    if (body.action === "read") {
+      const seenAt = Number(body.seenAt);
+      if (!Number.isSafeInteger(seenAt) || seenAt <= 0 || seenAt > Date.now() + 1000) {
+        return res.status(400).json({ error: "invalid_read_cursor" });
+      }
+      return res.status(200).json({
+        ok: true,
+        linked: true,
+        unread: await markFxChatRead(session.userId, seenAt),
+      });
+    }
+    if (body.action !== "send") return res.status(400).json({ error: "invalid_action" });
     const message = String(body.message || "").trim();
     if (!message || message.length > 1000) return res.status(400).json({ error: "message_length" });
     if (/\b(?:BSIC|PRX0|VIPX|SPCL|TGMX|FXCHAT)-[A-HJ-NP-Z0-9]{4,24}\b/i.test(message)) {
@@ -119,7 +134,13 @@ export default async function handler(req, res) {
     await appendFxChatMessage(session.userId, "user", message, "web");
     await appendFxChatMessage(session.userId, "bot", answer, "web");
     await informAdmin(session.userId, message);
-    return res.status(200).json({ ok: true, messages: await readFxChatHistory(session.userId) });
+    const messages = await readFxChatHistory(session.userId);
+    return res.status(200).json({
+      ok: true,
+      linked: true,
+      messages,
+      unread: await getFxChatUnreadCount(session.userId, messages),
+    });
   } catch (error) {
     console.error("[fx-chat]", error?.message || "request_failed");
     return res.status(500).json({ error: "chat_unavailable" });

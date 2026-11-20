@@ -19,6 +19,7 @@ type ChatMessage = {
 type ChatResponse = {
   linked?: boolean;
   messages?: ChatMessage[];
+  unread?: number;
   error?: string;
 };
 type FxChatProps = { placement?: "header" | "floating" };
@@ -60,10 +61,13 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
   const [linkCode, setLinkCode] = useState("");
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [unread, setUnread] = useState(0);
+  const [sending, setSending] = useState(false);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
   const scroll = useRef<HTMLDivElement>(null);
+  const readInFlight = useRef(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -74,6 +78,7 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
       if (cancelled) return;
       setLinked(Boolean(response.linked));
       setMessages(response.messages || []);
+      setUnread(response.linked ? (response.unread || 0) : 0);
       setError("");
     }).catch((e) => {
       if (!cancelled && open) setError(e instanceof Error ? e.message : "Connection unavailable");
@@ -93,8 +98,10 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
         if (!response.linked) {
           setLinked(false);
           setMessages([]);
+          setUnread(0);
         } else {
           setMessages(response.messages || []);
+          setUnread(response.unread || 0);
         }
       }).catch(() => {
         // Preserve the conversation during temporary network errors.
@@ -111,6 +118,21 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
     if (!open) setConfirmDelete(false);
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !linked || loading || unread === 0 || confirmDelete || readInFlight.current) return;
+    const latestVisible = messages.reduce((last, msg) => {
+      if (msg.role === "user") return last;
+      const at = Date.parse(msg.at);
+      return Number.isFinite(at) ? Math.max(last, at) : last;
+    }, 0);
+    if (!latestVisible) return;
+    readInFlight.current = true;
+    void callChat("POST", { action: "read", seenAt: latestVisible })
+      .then((response) => { setUnread(response.unread || 0); })
+      .catch(() => { /* Retry on the next successful sync. */ })
+      .finally(() => { readInFlight.current = false; });
+  }, [open, linked, loading, unread, confirmDelete, messages]);
+
   async function handleLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!accepted || busy) return;
@@ -121,6 +143,7 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
       const fresh = await callChat("GET");
       setLinked(Boolean(fresh.linked ?? result.linked));
       setMessages(fresh.messages || []);
+      setUnread(fresh.unread || 0);
       setLinkCode("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Invalid or expired code");
@@ -134,14 +157,17 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
     const message = draft.trim();
     if (!message || busy) return;
     setBusy(true);
+    setSending(true);
     setError("");
     try {
       const result = await callChat("POST", { action: "send", message });
       setMessages(result.messages || []);
+      setUnread(result.unread || 0);
       setDraft("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Message couldn't be sent");
     } finally {
+      setSending(false);
       setBusy(false);
     }
   }
@@ -155,6 +181,8 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
       setLinked(false);
       setAccepted(false);
       setMessages([]);
+      setUnread(0);
+      setSending(false);
       setLinkCode("");
       setDraft("");
       setConfirmDelete(false);
@@ -227,6 +255,15 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
                 </div>
               </div>
             ))}
+            {sending && (
+              <div className="fx-web-chat-message-row is-received fx-web-chat-typing-row" role="status" aria-label="FX is typing">
+                <img className="fx-web-chat-message-avatar" src={PROFILE_IMAGE} alt="" onError={profileFallback} />
+                <div className="fx-web-chat-bubble is-bot fx-web-chat-typing-bubble">
+                  <span className="fx-web-chat-author">ꜰx ɪꜱ ᴛʏᴘɪɴɢ</span>
+                  <span className="fx-web-chat-typing-dots" aria-hidden="true"><i /><i /><i /></span>
+                </div>
+              </div>
+            )}
           </div>
           <form className="fx-web-chat-compose" onSubmit={handleSend}>
             <input type="text" aria-label="Type a message" placeholder="ᴡʀɪᴛᴇ ᴀ ᴍᴇꜱꜱᴀɢᴇ…" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)} disabled={busy} />
@@ -253,9 +290,12 @@ export default function FxChat({ placement = "header" }: FxChatProps) {
 
   return (
     <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "") + (linked ? " is-active" : "")} data-placement={placement} aria-label="USER FX chat">
-      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Minimize USER FX chat" : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel" title="USER FX chat">
+      <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Minimize USER FX chat" : unread > 0 ? `Open USER FX chat, ${unread} unread messages` : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel" title={unread > 0 ? `${unread} unread messages` : "USER FX chat"}>
         <img className="fx-web-chat-launcher-image" src={PROFILE_IMAGE} alt="" onError={profileFallback} />
         {linked && <span className="fx-web-chat-pulse" aria-hidden="true" />}
+        {!open && linked && unread > 0 && (
+          <span className="fx-web-chat-unread" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>
+        )}
       </button>
       {mounted && windowContent ? createPortal(windowContent, document.body) : null}
     </div>
