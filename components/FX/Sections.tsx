@@ -394,10 +394,10 @@ export function SectionFaq() {
         <Shell id="faq">
         <Drift className="-right-[4%] top-[20%] h-[22rem] w-[22rem]" distance={80} />
         <RevealGroup className="grid gap-12 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-20">
-        <div className="space-y-7 lg:sticky lg:top-28 lg:self-start">
+        <div className="spacqe-y-7 lg:sticky lg:top-28 lg:self-start">
         <SectionIndex index="05" label="Before you get in" />
         <Title>
-         Good questions. Clear answers.
+         Questions.
         </Title>
         </div>
         <Reveal>
