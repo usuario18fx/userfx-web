@@ -70,8 +70,7 @@ const ASSET_CHANNELS_VIDEO = `${ASSETS_BASE_URL}/videoSMKLFX.mp4`;
 const ASSET_SMOKELANDIA_VIDEO = `${ASSETS_BASE_URL}/introSMKL.mp4`;
 const ASSET_USERFX_VIDEO = `${ASSETS_BASE_URL}/introFX.mp4`;
 const ASSET_GETCODE_IMAGE = `${ASSETS_BASE_URL}/USERFX-ID18V20.jpg`;
-const VIDEOCALL_REPLY_MEDIA_URL = process.env.VIDEOCALL_REPLY_MEDIA_URL || ASSET_USERFX_VIDEO;
-const VIDEOCALL_REPLY_MEDIA_TYPE = String(process.env.VIDEOCALL_REPLY_MEDIA_TYPE || (/\.(mp4|mov|m4v|webm)(?:\?|$)/i.test(VIDEOCALL_REPLY_MEDIA_URL) ? "video" : "photo")).toLowerCase() === "video" ? "video" : "photo";
+const VIDEOCALL_REPLY_IMAGE = `${ASSETS_BASE_URL}/videocall2.png`;
 // ======================================================
 // VAULT WEBSITE RELAY
 // ======================================================
@@ -2140,20 +2139,26 @@ function isAcceptableMedia(ctx) {
   return mime.startsWith("image/") || mime.startsWith("video/");
 }
 async function sendExchangeReplyMedia(ctx) {
-  const caption = `👀 ᴏᴋᴀʏ, ɪ ꜱᴇᴇ ʏᴏᴜ.
-
-ʜᴇʀᴇ'ꜱ ᴀ ʟɪᴛᴛʟᴇ ꜱᴏᴍᴇᴛʜɪɴɢ ʙᴀᴄᴋ. ᴡᴀɴɴᴀ ᴋᴇᴇᴘ ᴛʜᴇ ᴠɪʙᴇ ɢᴏɪɴɢ? ʏᴏᴜ ᴄᴀɴ ꜱᴇɴᴅ ᴀɴᴏᴛʜᴇʀ ᴘɪᴄ ᴏʀ ᴠɪᴅᴇᴏ.`;
+  const options = { reply_markup: getVideocallInlineKeyboard() };
   try {
-    if (VIDEOCALL_REPLY_MEDIA_TYPE === "video") {
-      await ctx.replyWithVideo(VIDEOCALL_REPLY_MEDIA_URL, { caption });
-    } else {
-      await ctx.replyWithPhoto(VIDEOCALL_REPLY_MEDIA_URL, { caption });
-    }
+    await ctx.replyWithPhoto(VIDEOCALL_REPLY_IMAGE, options);
     return true;
   } catch (error) {
-    logger.error("VIDEOCALL AUTO MEDIA FAILED", { userId: String(ctx.from?.id || ""), ...getTelegramError(error) });
-    await ctx.reply("👀 ɢᴏᴛ ʏᴏᴜʀꜱ. ɪ'ᴍ ʜᴀᴠɪɴɢ ᴛʀᴏᴜʙʟᴇ ꜱᴇɴᴅɪɴɢ ᴍʏ ᴍᴇᴅɪᴀ ʀɪɢʜᴛ ɴᴏᴡ, ʙᴜᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ꜱᴛɪʟʟ ᴏᴘᴇɴ.").catch(() => {});
-    return false;
+    logger.warn("VIDEOCALL2 IMAGE UNAVAILABLE; USING EXISTING IMAGE", {
+      userId: String(ctx.from?.id || ""),
+      ...getTelegramError(error),
+    });
+    try {
+      await ctx.replyWithPhoto(ASSET_VIDEOCALL_IMAGE, options);
+      return true;
+    } catch (fallbackError) {
+      logger.error("VIDEOCALL REPLY IMAGE FAILED", {
+        userId: String(ctx.from?.id || ""),
+        ...getTelegramError(fallbackError),
+      });
+      await ctx.reply("📞 ᴘɪᴄᴋ ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴ", options).catch(() => {});
+      return false;
+    }
   }
 }
 async function handleMedia(ctx) {
@@ -2202,16 +2207,12 @@ Item: ${mediaCount}`,
       lastMediaAt: Date.now(),
       firstMediaAt: pending.firstMediaAt || Date.now(),
     });
-    if (firstMedia) {
-      await ctx.reply("📸 ɢᴏᴛ ɪᴛ. ᴍʏ ᴛᴜʀɴ ɴᴏᴡ…");
-      const delivered = await sendExchangeReplyMedia(ctx);
-      await setVideoRequest(userId, {
-        ...(await getVideoRequest(userId)),
-        replySent: delivered,
-      });
-    } else {
-      await ctx.reply("👀 ɢᴏᴛ ᴛʜᴀᴛ ᴏɴᴇ ᴛᴏᴏ. ᴡᴇ ᴄᴀɴ ᴋᴇᴇᴘ ɪᴛ ᴛᴏ ᴘɪᴄꜱ/ᴠɪᴅᴇᴏꜱ ᴡʜɪʟᴇ ɪ ᴄʜᴇᴄᴋ ᴛʜᴇ ᴄᴀʟʟ.");
-    }
+    await ctx.reply("ɢᴏᴛ ɪᴛ. ᴍʏ ᴛᴜʀɴ ɴᴏᴡ…");
+    const delivered = await sendExchangeReplyMedia(ctx);
+    await setVideoRequest(userId, {
+      ...(await getVideoRequest(userId)),
+      replySent: delivered,
+    });
   } catch (error) {
     logger.error("MEDIA HANDLER ERROR", { userId, ...getTelegramError(error), stack: getErrorStack(error) });
     await ctx.reply("✘ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ. ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ.").catch(() => {});
