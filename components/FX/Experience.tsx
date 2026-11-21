@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AdminModeProvider } from "@/components/PrivateRoom/PR-AdminMode";
 import Landing from "./Landing";
 import FxChat from "./FxChat";
-const Portal = dynamic(() => import("../../app.jsx").then((module) => module.UserFXApp), {
+const Portal = dynamic(() => import("../PrivateRoom/PrivateRoomRouter").then((module) => module.UserFXApp), {
   ssr: false,
   loading: () => (
     <div className="grid min-h-svh place-items-center text-gold" role="status">
