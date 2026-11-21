@@ -6,8 +6,9 @@ import "./FxChat.css";
 
 const TERMS_VERSION = "2026-11-08-v1";
 const BOT_LINK = "https://t.me/User18Fx_bot?start=webchat";
-const PROFILE_IMAGE = "/assets/my-room/chat.png";
-const FALLBACK_PROFILE_IMAGE = "/assets/my-room/profileChat.png";
+const PROFILE_IMAGE = "/assets/my-room/profileChat.png";
+const FALLBACK_PROFILE_IMAGE = "/assets/my-room/chat.png";
+const CHAT_LAUNCHER_IMAGE = "/assets/my-room/chat.png";
 
 type ChatMessage = {
   id: string;
@@ -43,7 +44,7 @@ function profileFallback(event: React.SyntheticEvent<HTMLImageElement>) {
   const img = event.currentTarget;
   if (img.dataset.fallback !== "1") {
     img.dataset.fallback = "1";
-    img.src = FALLBACK_PROFILE_IMAGE;
+    img.src = img.src.includes("/chat.png") ? PROFILE_IMAGE : FALLBACK_PROFILE_IMAGE;
   } else {
     img.style.opacity = "0";
   }}
@@ -347,7 +348,7 @@ privacy
   return (
     <div id="fx-chat-dock" className={"fx-web-chat" + (open ? " is-open" : "") + (linked ? " is-active" : "")} data-placement={placement} aria-label="USER FX chat">
       <button type="button" className="fx-web-chat-launcher" onClick={() => setOpen((current) => !current)} aria-label={open ? "Minimize USER FX chat" : unread > 0 ? `Open USER FX chat, ${unread} unread messages` : "Open USER FX chat"} aria-expanded={open} aria-controls="fx-web-chat-panel" title={unread > 0 ? `${unread} unread messages` : "USER FX chat"}>
-        <img className="fx-web-chat-launcher-image" src={PROFILE_IMAGE} alt="" onError={profileFallback} />
+        <img className="fx-web-chat-launcher-image" src={CHAT_LAUNCHER_IMAGE} alt="" onError={profileFallback} />
         {linked && <span className="fx-web-chat-pulse" aria-hidden="true" />}
         {!open && linked && unread > 0 && (
           <span className="fx-web-chat-unread" aria-hidden="true">
