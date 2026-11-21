@@ -735,17 +735,42 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
 /* Left column: brand */
 .fx-telegram-dialog-aside {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 24px;
   min-width: 0;
   padding: clamp(24px, 3.4vw, 38px);
+  overflow: hidden;
   border-right: 1px solid rgba(63,216,208,.22);
+  background: #08121b url("/wallpaperVideo.png") center / cover no-repeat;
+}
+/* The same asset as the PRO price card, without its billing labels. */
+.fx-telegram-dialog-aside-video {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 48% center;
+  opacity: .82;
+  pointer-events: none;
+}
+.fx-telegram-dialog-aside::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 20% 0%, rgba(63,216,208,.22), transparent 60%),
-    radial-gradient(circle at 90% 100%, rgba(21,150,187,.18), transparent 55%),
-    #08121b;
+    linear-gradient(180deg, rgba(3,9,22,.52),rgba(1,5,14,.76)),
+    linear-gradient(90deg,rgba(5,15,33,.42),rgba(5,15,33,.08));
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-telegram-dialog-aside-video { display: none; }
 }
 .fx-telegram-dialog-emblem {
   display: grid;
@@ -797,6 +822,10 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   min-width: 0;
   padding: clamp(26px, 4vw, 44px);
   overflow-y: auto;
+  /* Right-hand artwork stays behind the real, accessible Telegram form. */
+  background:
+    linear-gradient(155deg,rgba(5,12,25,.87),rgba(5,10,19,.93) 65%,rgba(4,8,17,.96)),
+    url("/wallpaperModal.png") center / cover no-repeat;
 }
 .fx-telegram-dialog-close {
   position: absolute;
@@ -1265,6 +1294,17 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           ×
           </button>
           <aside className="fx-telegram-dialog-aside" aria-hidden="true">
+          <video
+            className="fx-telegram-dialog-aside-video"
+            src="/assets/FX-Y24V01.mp4"
+            poster="/wallpaperVideo.png"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          />
           <div className="fx-telegram-dialog-emblem">
             <img src="/assets/room-priv-user-lock.webp" alt="" />
           </div>
