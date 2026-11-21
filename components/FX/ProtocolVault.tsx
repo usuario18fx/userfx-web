@@ -263,7 +263,7 @@ function VideoQuadrant({
   return (
     <motion.figure className="pv-room" style={flat ? undefined : { clipPath }}>
       <div className="pv-room-media">
-        <video ref={videoRef} src={src} className={`pv-room-video${ready ? " is-live" : ""}`} muted loop playsInline preload="auto" disablePictureInPicture onCanPlay={() => setReady(true)} aria-label={`Room ${index + 1}`} />
+        <video ref={videoRef} src={src} className={`pv-room-video${ready ? " is-live" : ""}`} muted loop playsInline preload={enabled ? "metadata" : "none"} disablePictureInPicture onCanPlay={() => setReady(true)} aria-label={`Room ${index + 1}`} />
       </div>
       <div className="pv-room-shade" aria-hidden="true" />
       <figcaption className="pv-room-tag">

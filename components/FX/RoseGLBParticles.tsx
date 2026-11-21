@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
-const SOURCE = "/assets/logo.glb/rosa.glb";
+const SOURCE = "/assets/logos.glb/rosa.glb";
 const DESKTOP_PARTICLES = 24000;
 const MOBILE_PARTICLES = 11500;
 

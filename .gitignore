@@ -7,3 +7,9 @@ out/
 *.tsbuildinfo
 private-album-source/
 .env.local
+
+# Ignore generated editor backups and retired working copies
+.fx-safety/
+*.bak
+*.backup-*
+tsconfig.safe-*.txt

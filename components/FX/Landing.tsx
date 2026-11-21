@@ -1007,8 +1007,8 @@ function CrownIcon({ className = "" }: { className?: string }) {
 const FOOTER_EXPERIMENTS = [
   { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer01.mp4" },
   { id: 3, title: "EXPERIMENT 02", poster: "/assets/footer/footer3-3.png", backgroundVideo: "/assets/footer/footer3-1.mp4", video: "/assets/footer/footer3.mp4" },
-   { id: 2, title: "EXPERIMENT 03", poster: "/assets/footer/footer2.png", video: "/assets/my-room/room2.mp4" },
-  { id: 4, title: "EXPERIMENT 04", poster: "/assets/footer/footer4.png", video: "/assets/my-room/footer04.mp4" },
+   { id: 2, title: "EXPERIMENT 03", poster: "/iconFX.png", video: "/assets/my-room/room2.mp4" },
+  { id: 4, title: "EXPERIMENT 04", poster: "/assets/my-room/fx-ia.png", video: "/assets/my-room/footer04.mp4" },
 ] as const;
 function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -1047,9 +1047,6 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
     <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }}/>
     {backgroundVideo && (
     <video className="fx-footer-experiment-default-video" src={backgroundVideo} poster={item.poster} autoPlay muted loop playsInline preload="auto" aria-hidden="true" onError={() => setBackgroundFailed(true)} style={{ opacity: backgroundFailed ? 0 : 1 }}/>
-    )}
-    {item.id === 3 && (
-    <video className="fx-footer-experiment-default-video" src="/assets/footer/footer3-1.mp4" poster="/assets/footer/footer3.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" onLoadedData={(event) => { event.currentTarget.style.opacity = "1"; }} onError={(event) => { event.currentTarget.style.opacity = "0"; }} style={{ position: "absolute", inset: 0, display: "block", width: "100%", height: "100%", objectFit: "cover", zIndex: 1, opacity: 1, pointerEvents: "none", transition: "opacity .25s ease" }} />
     )}
     <video ref={videoRef} className="fx-footer-experiment-video" src={item.video} muted loop playsInline preload="metadata" aria-hidden="true" onCanPlay={() => { if (requestedRef.current && videoRef.current?.paused) { void videoRef.current.play().catch(() => {}); } }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { requestedRef.current = false; setFailed(true); setPlaying(false); console.warn("[USER FX] Experiment video failed:", item.video); }} style={{ opacity: playing && !failed ? 1 : 0, transition: "opacity .25s ease" }} />
     <span className="fx-footer-experiment-index">
