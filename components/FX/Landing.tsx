@@ -720,14 +720,21 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
 .fx-telegram-dialog-emblem {
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
-  border: 1px solid rgba(63,216,208,.5);
-  border-radius: 8px;
-  background: rgba(63,216,208,.1);
-  color: #3fd8d0;
+  width: 84px;
+  height: 84px;
+  padding: 4px;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #020910;
+  box-shadow: inset 0 0 0 1px rgba(63,216,208,.22);
 }
-.fx-telegram-dialog-emblem svg { width: 38px; height: 38px; }
+.fx-telegram-dialog-emblem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 11px;
+}
 .fx-telegram-dialog-brand {
   display: flex;
   flex-direction: column;
@@ -808,27 +815,61 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   font-weight: 600;
   letter-spacing: .1em;
 }
-.fx-telegram-dialog-field {
+.fx-telegram-dialog-identity-panel {
+  padding: 9px;
+  border: 1px solid rgba(42,171,238,.55);
+  border-radius: 8px;
+  background: radial-gradient(circle at 14% 0%,rgba(42,171,238,.14),transparent 55%),#09131d;
+}
+.fx-telegram-dialog-identity-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 7px;
-  min-height: 52px;
-  padding: 0 15px;
-  border: 1px solid rgba(75,174,210,.55);
-  border-radius: 8px;
-  background: rgba(2,9,16,.8);
+  margin-bottom: 9px;
+  color: #93d7f1;
+  font-family: "Fredoka", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+.fx-telegram-dialog-identity-head strong {
+  display: inline-flex;
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #2aabee;
+  color: #04131e;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+.fx-telegram-dialog-field {
+  display: grid;
+  grid-template-columns: 40px 22px minmax(0,1fr) 115px;
+  gap: 0;
+  align-items: center;
+  min-height: 50px;
+  border: 1px solid rgba(42,171,238,.6);
+  border-radius: 4px;
+  background: rgba(1,8,15,.93);
 }
 .fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
-.fx-telegram-dialog-field span,
-.fx-telegram-dialog-field input {
-font-family: "Fredoka", sans-serif;
+.fx-telegram-dialog-telegram-icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 50px;
+  border-right: 1px solid rgba(42,171,238,.45);
 }
-.fx-telegram-dialog-field span { color: #3fd8d0; font-size: 18px; font-weight: 600; }
+.fx-telegram-dialog-telegram-icon img { width: 23px; height: 23px; object-fit: contain; }
+.fx-telegram-dialog-field span,
+.fx-telegram-dialog-field input { font-family: "Fredoka", sans-serif; }
+.fx-telegram-dialog-at { color: #2aabee; font-size: 19px; font-weight: 700; text-align: center; }
 .fx-telegram-dialog-field input {
-  flex: 1;
   width: 100%;
   min-width: 0;
   height: 50px;
+  padding: 0 5px;
   border: 0;
   outline: 0;
   background: transparent;
@@ -838,15 +879,18 @@ font-family: "Fredoka", sans-serif;
 }
 .fx-telegram-dialog-field input::placeholder { color: #66869c; }
 .fx-telegram-dialog-submit {
-  min-height: 48px;
-  margin-top: 4px;
+  min-width: 0;
+  height: 40px;
+  margin: 0 5px 0 0;
+  padding: 4px 6px;
   border: 0;
-  border-radius: 8px;
-  background: linear-gradient(125deg, #3fd8d0, #1596bb);
-  color: #051016;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  border-radius: 6px;
+  background: linear-gradient(125deg, #35baf5, #1379b8);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  line-height: 1.15;
   cursor: pointer;
 }
 .fx-telegram-dialog-submit:disabled { opacity: .55; cursor: progress; }
@@ -878,8 +922,13 @@ font-family: "Fredoka", sans-serif;
     border-right: 0;
     border-bottom: 1px solid rgba(63,216,208,.22);
   }
-  .fx-telegram-dialog-emblem { width: 46px; height: 46px; border-radius: 7px; }
-  .fx-telegram-dialog-emblem svg { width: 28px; height: 28px; }
+  .fx-telegram-dialog-emblem { width: 56px; height: 56px; border-radius: 11px; }
+  .fx-telegram-dialog-identity-head { font-size: 9px; }
+  .fx-telegram-dialog-identity-head strong { font-size: 9px; }
+  .fx-telegram-dialog-field { grid-template-columns: 32px 19px minmax(0,1fr) 85px; }
+  .fx-telegram-dialog-submit { font-size: 9px; }
+  .fx-telegram-dialog-field input { font-size: 13px; }
+  .fx-telegram-dialog-telegram-icon { height: 48px; }
   .fx-telegram-dialog-motto { display: none; }
   .fx-telegram-dialog-main { justify-content: flex-start; padding: 22px 20px 24px; }
 }
@@ -1187,7 +1236,7 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           </button>
           <aside className="fx-telegram-dialog-aside" aria-hidden="true">
           <div className="fx-telegram-dialog-emblem">
-            <CrownIcon />
+            <img src="/assets/room-priv-user-lock.webp" alt="" />
           </div>
           <div className="fx-telegram-dialog-brand">
           <strong>
@@ -1212,21 +1261,26 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           Enter your @username to check access and continue to the  private room.
           </p>
           <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-          <label htmlFor="fx-telegram-dialog-username">
-           TELEGRAM USERNAME
-          </label>
-          <div className="fx-telegram-dialog-field">
-          <span aria-hidden="true">
-          @
-          </span>
-          <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+            <label htmlFor="fx-telegram-dialog-username">
+              TELEGRAM USERNAME
+            </label>
+            <div className="fx-telegram-dialog-identity-panel">
+              <div className="fx-telegram-dialog-identity-head" aria-hidden="true">
+                <strong>·TELEGRAM IDENTITY·</strong>
+                <span>ENTER YOUR USERNAME</span>
+              </div>
+              <div className="fx-telegram-dialog-field">
+                <span className="fx-telegram-dialog-telegram-icon" aria-hidden="true">
+                  <img src="/assets/iconos/telegram.png" alt="" />
+                </span>
+                <span className="fx-telegram-dialog-at" aria-hidden="true">@</span>
+                <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+                <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
+                  {loading ? "CHECKING…" : "VERIFY USER"}
+                </button>
+              </div>
             </div>
-            {error && <p className="fx-telegram-dialog-error" role="alert">
-{error}
-</p>}
-            <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
-              {loading ? "CHECKING…" : "VERIFY USER"}
-            </button>
+            {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
           </form>
           <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
             Need access? Open Telegram bot ↗
