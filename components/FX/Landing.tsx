@@ -1,15 +1,3 @@
-  /* Brick background behind Telegram form */
-  background:
-    linear-gradient(#0653538c, #00060616),
-    url("/wallLadrillos.png") center / cover no-repeat;
-        <RoomIntro onSceneReady={() => setSceneReady(true)} />
-          <ScrollStory onOpenTelegram={openTelegram} />
-          <SectionMethod />
-          <SectionPricing />
-          <SectionFaq />
-          <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
-        </main>
-        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -834,24 +822,10 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   min-width: 0;
   padding: clamp(26px, 4vw, 44px);
   overflow-y: auto;
-<<<<<<< HEAD
-  /* Right-hand artwork stays behind the real, accessible Telegram form. */
+  /* Brick background behind the Telegram form. */
   background:
-    linear-gradient(155deg,rgba(5,12,25,.87),rgba(5,10,19,.93) 65%,rgba(4,8,17,.96)),
-    url("/wallpaperModal.png") center / cover no-repeat;
-=======
-   }
-.fx-telegram-dialog-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  overflow-y: auto;
-  padding: clamp(26px, 4vw, 44px);
- background:
-  linear-gradient(#0653538c, #00060616),
-  url("/wallLadrillos.png") center/cover no-repeat;
->>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
+    linear-gradient(#0653538c, #00060616),
+    url("/wallLadrillos.png") center / cover no-repeat;
 }
 .fx-telegram-dialog-close {
   position: absolute;
@@ -1503,7 +1477,6 @@ export default function Landing() {
         <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
       </MenuOverlay>
       <div className="fx-landing">
-<<<<<<< HEAD
         <main>
           <RoomIntro onSceneReady={() => setSceneReady(true)} />
           <ScrollStory onOpenTelegram={openTelegram} />
@@ -1512,16 +1485,6 @@ export default function Landing() {
           <SectionFaq />
           <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
         </main>
-=======
-      <main>
-      <RoomIntro onSceneReady={() => setSceneReady(true)} />
-      <ScrollStory onOpenTelegram={openTelegram} />
-      <SectionMethod />
-      <SectionPricing />
-      <SectionFaq />
-      <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
-      </main>
->>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
       </div>
       <FooterBar />
       {identityNotice && (
@@ -1532,11 +1495,7 @@ export default function Landing() {
         </div>
       )}
       {telegramOpen && (
-<<<<<<< HEAD
         <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
-=======
-      <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
->>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
       )}
       {accessOpen && (
       <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
