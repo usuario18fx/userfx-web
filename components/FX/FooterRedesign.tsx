@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import "./FooterTelegramCard.css";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import { useMenu } from "./Chrome";
 import { motion } from "framer-motion";
@@ -25,87 +26,39 @@ const COLUMNS = [
 ] as const;
 type FooterProps = {
   onVerified: () => void;
+  onEnterCode?: () => void;
 };
 type TelegramUser = {
   id: string;
   first_name: string;
   username: string;
 };
-type TelegramPayload = TelegramUser & {
-  auth_date: number;
-  hash: string;
-  last_name?: string;
-  photo_url?: string;
-};
-type TelegramWindow = Window & {
-  userFxTelegramAuth?: (data: TelegramPayload) => void;
-};
-function TelegramSignIn({ onVerified }: FooterProps) {
-  const mount = useRef<HTMLDivElement>(null);
+
+function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [ready, setReady] = useState(false);
-  const [configured, setConfigured] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
   useEffect(() => {
     let active = true;
     void fetch("/api/telegram-auth", { credentials: "same-origin", cache: "no-store" })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Unable to verify your Telegram session.");
+        if (!response.ok) throw new Error("Could not check your Telegram session.");
         return response.json();
       })
       .then((data) => {
         if (!active) return;
-        setConfigured(Boolean(data.configured));
         if (data.authenticated && data.user) setUser(data.user as TelegramUser);
       })
       .catch((reason) => {
-        if (active) setError(reason instanceof Error ? reason.message : "Unable to check Telegram session.");
+        if (active) setError(reason instanceof Error ? reason.message : "Telegram connection unavailable.");
       })
-      .finally(() => { if (active) setReady(true); });
+      .finally(() => {
+        if (active) setReady(true);
+      });
     return () => { active = false; };
   }, []);
-  useEffect(() => {
-    if (!ready || !configured || user || !mount.current) return;
-    const element = mount.current;
-    const win = window as TelegramWindow;
-    win.userFxTelegramAuth = async (payload: TelegramPayload) => {
-      setBusy(true);
-      setError("");
-      try {
-        const response = await fetch("/api/telegram-auth", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-        if (!response.ok || !result.authenticated) {
-          throw new Error(result.error || "Telegram authentication failed.");
-      }
-        setUser(result.user as TelegramUser);
-      } catch (reason) {
-        setError(reason instanceof Error ? reason.message : "Telegram authentication failed.");
-      } finally {
-        setBusy(false);
-      }};
-    element.replaceChildren();
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://telegram.org/js/telegram-widget.js?22";
-    script.setAttribute("data-telegram-login", "User18Fx_bot");
-    script.setAttribute("data-size", "large");
-    script.setAttribute("data-userpic", "false");
-    script.setAttribute("data-radius", "6");
-    script.setAttribute("data-onauth", "userFxTelegramAuth(user)");
-    script.onerror = () => setError("Telegram login could not load. Open the bot instead.");
-    element.appendChild(script);
-
-    return () => {
-      delete win.userFxTelegramAuth;
-      element.replaceChildren();
-    };
-  }, [ready, configured, user]);
 
   async function logout() {
     setBusy(true);
@@ -121,93 +74,75 @@ function TelegramSignIn({ onVerified }: FooterProps) {
       setError(reason instanceof Error ? reason.message : "Sign out failed.");
     } finally {
       setBusy(false);
-    }}
+    }
+  }
+
   return (
-    <div className="max-w-md fx-footer-bot-identity">
-    <p className="mb-5 flex items-center gap-3 font-wide text-[10px] uppercase tracking-[.28em]" style={{ color: ACCENT }}>
-    <span className="relative flex h-1.5 w-1.5">
-    <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
-    <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
-    </span>
+    <div className="fx-footer-telegram-area">
+      <p className="mb-5 flex items-center gap-3 font-wide text-[10px] uppercase tracking-[.28em]" style={{ color: ACCENT }}>
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
+        </span>
         THE INNER CIRCLE
-    </p>
-    <h2 className="fx-footer-heading text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white md:text-5xl">
-      Your private 
-    <span className="text-white/40">
-     identity.
-    </span>
-    </h2>
-    <p className="mt-4 text-sm leading-relaxed text-white/55">
-      Sign in with Telegram to connect your identity to USER FX.
-    </p>
-    <div className="mt-8 rounded-2xl border border-[#6fb8c8]/25 bg-white/[.035] p-5 backdrop-blur-md">
-    <div className="mb-4 flex items-center gap-3">
-    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#6fb8c8]/30 bg-[#6fb8c8]/10">
-    <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" fill="#73bed2">
-    <path d="m21.4 4.6-3.2 15.1c-.2 1.1-.9 1.4-1.8.9l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.3l-11.2 7-4.8-1.5c-1-.3-1-1 .2-1.5L19.9 3c.9-.4 1.8.2 1.5 1.6Z" />
-    </svg>
-    </span>
-          <div>
-            <p className="text-sm font-semibold text-white">
-              Telegram · USER FX
-            </p>
-            <p className="mt-1 text-xs text-white/45">
-              {user ? "Identity verified" : "Secure access with your account"}
-            </p>
+      </p>
+      <h2 className="fx-footer-heading text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white md:text-5xl">
+        Your private <span className="text-white/40">identity.</span>
+      </h2>
+      <p className="mt-4 text-sm leading-relaxed text-white/55">
+        Your account, your space. Check access with Telegram.
+      </p>
+      <section className="fx-footer-tg-card" aria-label="USER FX Telegram access">
+        <div className="fx-footer-tg-head">
+          <div className="fx-footer-tg-avatar">
+            <img src="/assets/room-priv-user-lock.webp" alt="" />
           </div>
+          <div className="fx-footer-tg-heading">
+            <span className="fx-footer-tg-kicker">USER FX · PRIVATE IDENTITY</span>
+            <strong>Telegram Access</strong>
+            <small>{user ? "Secure Telegram session connected" : "Your username. Your private access."}</small>
+          </div>
+          <span className="fx-footer-tg-state">{user ? "CONNECTED" : "PRIVATE"}</span>
         </div>
-        {user ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <p className="text-sm text-[#91d5e6]">
-              {user.username ? `@${user.username}` : user.first_name || "Telegram connected"}
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={onVerified} className="rounded-lg bg-[#2aabee] px-4 py-2 text-xs font-semibold text-[#06111a]">
-                ENTER YOUR CODE
-              </button>
-              <button type="button" onClick={() => void logout()} disabled={busy} className="rounded-lg border border-white/20 px-4 py-2 text-xs text-white/75 transition-colors hover:border-white/50 hover:text-white disabled:opacity-50">
-                Sign out
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="border-t border-white/10 pt-4">
-            {!ready && <p className="text-xs text-white/45">
-Checking your session…
-</p>}
-            {ready && configured && <div ref={mount} className="min-h-[44px]" aria-label="Sign in with Telegram" />}
-            {ready && !configured && <p className="text-xs text-amber-200/80">
-Telegram login is not available on this site yet. You can open the bot directly.
-</p>}
-            <a href="https://t.me/User18Fx_bot?start=identity" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs text-[#91d5e6] transition-colors hover:text-white">
-              Open @User18Fx_bot <span aria-hidden="true">
-↗
-</span>
-            </a>
+
+        {user && (
+          <div className="fx-footer-tg-session">
+            <span>{user.username ? "@" + user.username : user.first_name || "Telegram connected"}</span>
+            <button type="button" onClick={() => void logout()} disabled={busy}>SIGN OUT</button>
           </div>
         )}
-        {busy && <p className="mt-3 text-xs text-white/55" role="status">
-Verifying with Telegram…
-</p>}
-        {error && <p className="mt-3 text-xs text-red-300" role="alert">
-{error}
-</p>}
-        <details className="mt-4 border-t border-white/10 pt-3">
-          <summary className="cursor-pointer text-xs text-[#91d5e6]">
-Check access using your @username instead
-</summary>
-          <div className="pt-4">
-            <TelegramIdentityFooter instanceId="telegram-identity-menu" onVerified={onVerified} />
+
+        <div className="fx-footer-tg-actions">
+          <a href="https://t.me/User18Fx_bot?start=identity" target="_blank" rel="noopener noreferrer" className="fx-footer-tg-primary">
+            <img src="/assets/iconos/telegram.png" alt="" />
+            OPEN TELEGRAM BOT
+            <span aria-hidden="true">↗</span>
+          </a>
+          <button type="button" className="fx-footer-tg-secondary" onClick={onEnterCode || onVerified}>
+            I HAVE A CODE
+          </button>
+        </div>
+
+        <div className="fx-footer-tg-username">
+          <div className="fx-footer-tg-check-title">
+            <strong>· TELEGRAM IDENTITY ·</strong>
+            <span>CHECK YOUR USERNAME</span>
           </div>
-        </details>
-      </div>
-      <p className="mt-3 pl-1 text-xs text-white/35">
-        Connecting Telegram verifies your identity. Your private room still requires a valid access code.
-      </p>
+          <TelegramIdentityFooter instanceId="fx-footer-telegram-check" onVerified={onVerified} />
+        </div>
+
+        {!ready && <p className="fx-footer-tg-message" role="status">CHECKING YOUR SESSION…</p>}
+        {busy && <p className="fx-footer-tg-message" role="status">DISCONNECTING TELEGRAM…</p>}
+        {error && <p className="fx-footer-tg-error" role="alert">{error}</p>}
+        <p className="fx-footer-tg-disclaimer">
+          Username checks do not grant entry. A valid access code is still required for your private room.
+        </p>
+      </section>
     </div>
   );
-            }
-export default function SiteFooter({ onVerified }: FooterProps) {
+}
+
+export default function SiteFooter({ onVerified, onEnterCode }: FooterProps) {
   const { close } = useMenu();
   const openAccess = () => {
     close();
@@ -218,7 +153,7 @@ export default function SiteFooter({ onVerified }: FooterProps) {
             <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-0 h-[480px] w-[480px] rounded-full opacity-[.12] blur-[120px]" style={{ background: ACCENT }} />
             <div className="relative mx-auto w-full max-w-[1440px] px-6 pb-10 pt-20 md:px-10 md:pt-28">
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease: EASE }} className="grid gap-16 lg:grid-cols-[1.2fr_1fr]">
-            <TelegramSignIn onVerified={openAccess} />
+            <TelegramSignIn onVerified={openAccess} onEnterCode={onEnterCode ? () => { close(); onEnterCode(); } : openAccess} />
             <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3">
             {COLUMNS.map((col) => (
             <div key={col.title}>

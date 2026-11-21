@@ -17,6 +17,36 @@ import { ENTER_URL } from "@/lib/content";
 // Tune the footer scroll brake in FooterBar(), and dimensions/colors below.
 // Telegram dialog styles live in TELEGRAM_DIALOG_STYLES (further down).
 const LANDING_STYLES = String.raw`
+.fx-identity-verified-toast {
+  position: fixed;
+  z-index: 10022;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(540px, calc(100vw - 32px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border: 1px solid rgba(63,216,208,.5);
+  border-radius: 12px;
+  background: #091621;
+  box-shadow: 0 12px 42px rgba(0,0,0,.55);
+  color: #cce8ef;
+  font: 700 11px "Fredoka", sans-serif;
+  letter-spacing: .05em;
+}
+.fx-identity-verified-toast > span { flex: 1; }
+.fx-identity-verified-toast button {
+  border: 1px solid rgba(63,216,208,.38);
+  border-radius: 6px;
+  padding: 7px 9px;
+  background: #132937;
+  color: #86e9eb;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}
 /* Only the landing preview: prevent transforms / 3D canvases from growing document width. */
 .fx-landing{position:relative;z-index:1;width:100%;max-width:100%;min-width:0;overflow-x:clip;background:#05070b;box-shadow:0 14px 38px rgba(0,0,0,.42)}
 .fx-landing>main{width:100%;max-width:100%;min-width:0}
@@ -1305,11 +1335,43 @@ export default function Landing() {
   const active = useActiveSection(SECTION_IDS);
   const [accessOpen, setAccessOpen] = useState(false);
   const [telegramOpen, setTelegramOpen] = useState(false);
+  const [identityNotice, setIdentityNotice] = useState("");
   const [introComplete, setIntroComplete] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [sceneTimedOut, setSceneTimedOut] = useState(false);
   const showIntro = !introComplete || (!sceneReady && !sceneTimedOut);
   const openTelegram = () => setTelegramOpen(true);
+
+  // A username eligibility check is not a room access grant.
+  // Close identity modals after Telegram verification; only a server-authenticated
+  // access session may navigate straight into the private room.
+  const handleTelegramVerified = async () => {
+    setTelegramOpen(false);
+    setAccessOpen(false);
+    try {
+      const response = await fetch("/api/access-session", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      const session = await response.json().catch(() => ({}));
+      if (response.ok && session.authenticated === true) {
+        setIdentityNotice("");
+        window.location.hash = "#/private-room";
+        return;
+      }
+    } catch {
+      // No authenticated room session: leave the private room locked.
+    }
+    setIdentityNotice("USERNAME CHECKED · ENTER YOUR CODE WHEN YOU'RE READY");
+  };
+
+  useEffect(() => {
+    if (!identityNotice) return;
+    const timer = window.setTimeout(() => setIdentityNotice(""), 6500);
+    return () => window.clearTimeout(timer);
+  }, [identityNotice]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSceneTimedOut(true), 10000);
@@ -1369,7 +1431,7 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-        <SiteFooter onVerified={() => setAccessOpen(true)} />
+        <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
       </MenuOverlay>
       <div className="fx-landing">
         <main>
@@ -1378,12 +1440,19 @@ export default function Landing() {
           <SectionMethod />
           <SectionPricing />
           <SectionFaq />
-          <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
+          <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
         </main>
       </div>
       <FooterBar />
+      {identityNotice && (
+        <div className="fx-identity-verified-toast" role="status">
+          <span>{identityNotice}</span>
+          <button type="button" onClick={() => { setIdentityNotice(""); setAccessOpen(true); }}>ENTER CODE</button>
+          <button type="button" onClick={() => setIdentityNotice("")} aria-label="Dismiss notice">×</button>
+        </div>
+      )}
       {telegramOpen && (
-        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
+        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
       )}
       {accessOpen && (
         <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
