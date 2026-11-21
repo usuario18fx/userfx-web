@@ -13,3 +13,37 @@ private-album-source/
 *.bak
 *.backup-*
 tsconfig.safe-*.txt
+# USERFX LOCAL CLEANUP
+# Dependencies and builds
+node_modules/
+.turbo/
+.vercel/
+dist/
+build/
+coverage/
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+# Backups
+*.backup
+*.backup.*
+*.old
+*.orig
+*.rej
+backup/
+backups/
+*-backup/
+# Duplicate copies
+* - copia.*
+* - Copy.*
+* (copy).*
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.log
+*~
+.DS_Store
+Thumbs.db

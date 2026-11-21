@@ -1,3 +1,15 @@
+  /* Brick background behind Telegram form */
+  background:
+    linear-gradient(#0653538c, #00060616),
+    url("/wallLadrillos.png") center / cover no-repeat;
+        <RoomIntro onSceneReady={() => setSceneReady(true)} />
+          <ScrollStory onOpenTelegram={openTelegram} />
+          <SectionMethod />
+          <SectionPricing />
+          <SectionFaq />
+          <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
+        </main>
+        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -822,10 +834,24 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   min-width: 0;
   padding: clamp(26px, 4vw, 44px);
   overflow-y: auto;
+<<<<<<< HEAD
   /* Right-hand artwork stays behind the real, accessible Telegram form. */
   background:
     linear-gradient(155deg,rgba(5,12,25,.87),rgba(5,10,19,.93) 65%,rgba(4,8,17,.96)),
     url("/wallpaperModal.png") center / cover no-repeat;
+=======
+   }
+.fx-telegram-dialog-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow-y: auto;
+  padding: clamp(26px, 4vw, 44px);
+ background:
+  linear-gradient(#0653538c, #00060616),
+  url("/wallLadrillos.png") center/cover no-repeat;
+>>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
 }
 .fx-telegram-dialog-close {
   position: absolute;
@@ -836,20 +862,24 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   place-items: center;
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 8px;
-  background: rgba(255,255,255,.04);
+  border:2px solid #005e63;
+  border-radius: 4px;
+  background: #00767e3e;
   color: #f4f6f8;
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
   transition: background .2s ease, border-color .2s ease;
 }
-.fx-telegram-dialog-close:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.32); }
-.fx-telegram-dialog-close:focus-visible { outline: 2px solid #3fd8d0; outline-offset: 3px; }
-
+.fx-telegram-dialog-close:hover { 
+color: #00e5f552;
+background: #00000052; 
+border-color: #00e5f552; 
+}
+.fx-telegram-dialog-close:focus-visible { outline: 2px solid #2c3333; outline-offset: 3px; 
+}
 .fx-telegram-dialog-kicker {
-  color: #3fd8d0;
+  color: #00d1cd;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: .14em;
@@ -877,7 +907,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
 .fx-telegram-dialog-identity-panel {
   padding: 9px;
   border: 1px solid rgba(42,171,238,.55);
-  border-radius: 8px;
+  border-radius: 2px;
   background: radial-gradient(circle at 14% 0%,rgba(42,171,238,.14),transparent 55%),#09131d;
 }
 .fx-telegram-dialog-identity-head {
@@ -896,7 +926,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
 .fx-telegram-dialog-identity-head strong {
   display: inline-flex;
   padding: 6px 9px;
-  border-radius: 20px;
+  border-radius: 5px;
   background: #2aabee;
   color: #04131e;
   font-size: 10px;
@@ -983,14 +1013,19 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   }
   .fx-telegram-dialog-emblem { width: 56px; height: 56px; border-radius: 11px; }
   .fx-telegram-dialog-identity-head { font-size: 9px; }
-  .fx-telegram-dialog-identity-head strong { font-size: 9px; }
-  .fx-telegram-dialog-field { grid-template-columns: 32px 19px minmax(0,1fr) 85px; }
-  .fx-telegram-dialog-submit { font-size: 9px; }
-  .fx-telegram-dialog-field input { font-size: 13px; }
-  .fx-telegram-dialog-telegram-icon { height: 48px; }
+  .fx-telegram-dialog-identity-head strong { font-size: 9px; 
+  }
+  .fx-telegram-dialog-field { grid-template-columns: 32px 19px minmax(0,1fr) 85px; 
+  }
+  .fx-telegram-dialog-submit { font-size: 9px; 
+  }
+  .fx-telegram-dialog-field input { font-size: 13px; 
+  }
+  .fx-telegram-dialog-telegram-icon { height: 48px; 
+  }
   .fx-telegram-dialog-motto { display: none; }
-  .fx-telegram-dialog-main { justify-content: flex-start; padding: 22px 20px 24px; }
-}
+  .fx-telegram-dialog-main { justify-content: flex-start; padding: 22px 20px 24px; 
+  }}
 `;
 
 const RATING_STORAGE_KEY = "userfx_landing_crown_rating";
@@ -1040,6 +1075,9 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
     try { video.currentTime = 0; } catch {}
     }setPlaying(false);
   };
+  const PLAN_HOVER_VIDEOS = {
+  telegram: "/assets/FX-Y24V01.mp4",
+} as const;
   return (
     <div className="fx-footer-experiment" role="button" tabIndex={0} aria-label={`Preview ${item.title}`} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={()=> playing ? stop() : start()} onKeyDown={(event) => {
     if (event.key === "Enter" || event.key === " ") { event.preventDefault();playing ? stop() : start();
@@ -1137,10 +1175,10 @@ function FooterBar() {
       <section className="fx-footer-experiments" aria-label="USER FX experiments">
       <div className="fx-footer-experiments-heading">
       <strong>
-              Experiments
+        Experiments
       </strong>
       <span>
-              HOVER OR TAP TO PREVIEW
+        HOVER OR TAP TO PREVIEW
       </span>
       </div>
       <div className="fx-footer-experiments-grid">
@@ -1277,15 +1315,13 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
         // The access gate can still continue without local storage.
       }
       onVerified(verified);
-    } catch (reason) {
+      } catch (reason) {
       setError(reason instanceof Error ? reason.message : "TELEGRAM VERIFICATION FAILED");
-    } finally {
+      } finally {
       setLoading(false);
-    }
-  };
-
+      }};
   return (
-    <div className="fx-telegram-dialog-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+          <div className="fx-telegram-dialog-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
           <section ref={dialogRef} className="fx-telegram-dialog" role="dialog" aria-modal="true" aria-labelledby="fx-telegram-dialog-title">
           <button type="button" className="fx-telegram-dialog-close" onClick={onClose} aria-label="Close Telegram username input">
           ×
@@ -1328,46 +1364,50 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           Enter your @username to check access and continue to the  private room.
           </p>
           <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-            <label htmlFor="fx-telegram-dialog-username">
-              TELEGRAM USERNAME
-            </label>
-            <div className="fx-telegram-dialog-identity-panel">
-              <div className="fx-telegram-dialog-identity-head" aria-hidden="true">
-                <strong>·TELEGRAM IDENTITY·</strong>
-                <span>ENTER YOUR USERNAME</span>
-              </div>
-              <div className="fx-telegram-dialog-field">
-                <span className="fx-telegram-dialog-telegram-icon" aria-hidden="true">
-                  <img src="/assets/iconos/telegram.png" alt="" />
-                </span>
-                <span className="fx-telegram-dialog-at" aria-hidden="true">@</span>
-                <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
-                <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
-                  {loading ? "CHECKING…" : "VERIFY USER"}
-                </button>
-              </div>
-            </div>
-            {error && <p className="fx-telegram-dialog-error" role="alert">{error}</p>}
+          <label htmlFor="fx-telegram-dialog-username">  
+          TELEGRAM USERNAME
+          </label>
+          <div className="fx-telegram-dialog-identity-panel">
+          <div className="fx-telegram-dialog-identity-head" aria-hidden="true">
+          <strong>
+           TELEGRAM IDENTITY
+          </strong>
+          <span>
+           ENTER YOUR USERNAME
+          </span>
+          </div>
+          <div className="fx-telegram-dialog-field">
+          <span className="fx-telegram-dialog-telegram-icon" aria-hidden="true">
+          <img src="/assets/iconos/telegram.png" alt="" />
+          </span>
+          <span className="fx-telegram-dialog-at" aria-hidden="true">
+            @
+          </span>
+          <input ref={inputRef} id="fx-telegram-dialog-username" type="text" value={username} onChange={(event) => { setUsername(event.target.value.replace(/^@+/, "")); setError(""); }} placeholder="username" maxLength={33} autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={loading} />
+          <button className="fx-telegram-dialog-submit" type="submit" disabled={loading}>
+           {loading ? "CHECKING…" : "VERIFY USER"}
+          </button>
+          </div>
+          </div>
+            {error && <p className="fx-telegram-dialog-error" role="alert">
+            {error}
+          </p>}
           </form>
           <a className="fx-telegram-dialog-bot" href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
             Need access? Open Telegram bot ↗
           </a>
-        </div>
-      </section>
-    </div>
-  );
-}
-
+          </div>
+          </section>
+          </div>
+          );
+           }
 const SECTION_IDS = ["home", "protocol", "spaces", "access"] as const;
-
 function EnterAuthorizedRoom() {
   useEffect(() => {
     window.location.hash = "#/private-room";
   }, []);
-
   return null;
 }
-
 export default function Landing() {
   const active = useActiveSection(SECTION_IDS);
   const [accessOpen, setAccessOpen] = useState(false);
@@ -1422,32 +1462,25 @@ export default function Landing() {
       const link = target.closest<HTMLAnchorElement>("a[href]");
       if (link?.getAttribute("href") !== ENTER_URL) return;
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
       event.preventDefault();
       event.stopPropagation();
       setAccessOpen(true);
     };
-
     document.addEventListener("click", onAccessClick, true);
     return () => document.removeEventListener("click", onAccessClick, true);
   }, []);
-
   useEffect(() => {
     if (!accessOpen && !telegramOpen) return;
-
     const previousOverflow = document.body.style.overflow;
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
     setSmoothScroll(false);
-
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (telegramOpen) setTelegramOpen(false);
+      if (telegramOpen) setTelegramOpen(false);
         else setAccessOpen(false);
-      }
-    };
+      }};
     document.addEventListener("keydown", onEscape);
-
     return () => {
       document.removeEventListener("keydown", onEscape);
       document.body.style.overflow = previousOverflow;
@@ -1455,14 +1488,13 @@ export default function Landing() {
       previousFocus?.focus();
     };
   }, [accessOpen, telegramOpen]);
-
   return (
-    <MenuProvider>
+      <MenuProvider>
       <style>
         {LANDING_STYLES + TELEGRAM_DIALOG_STYLES}
       </style>
       {showIntro && (
-        <FxSceneLoader sceneReady={sceneReady || sceneTimedOut} onComplete={() => setIntroComplete(true)} />
+      <FxSceneLoader sceneReady={sceneReady || sceneTimedOut} onComplete={() => setIntroComplete(true)} />
       )}
       <SmoothScroll />
       <ScrollStops />
@@ -1471,6 +1503,7 @@ export default function Landing() {
         <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
       </MenuOverlay>
       <div className="fx-landing">
+<<<<<<< HEAD
         <main>
           <RoomIntro onSceneReady={() => setSceneReady(true)} />
           <ScrollStory onOpenTelegram={openTelegram} />
@@ -1479,6 +1512,16 @@ export default function Landing() {
           <SectionFaq />
           <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
         </main>
+=======
+      <main>
+      <RoomIntro onSceneReady={() => setSceneReady(true)} />
+      <ScrollStory onOpenTelegram={openTelegram} />
+      <SectionMethod />
+      <SectionPricing />
+      <SectionFaq />
+      <TelegramIdentityFooter onVerified={() => setAccessOpen(true)} />
+      </main>
+>>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
       </div>
       <FooterBar />
       {identityNotice && (
@@ -1489,15 +1532,19 @@ export default function Landing() {
         </div>
       )}
       {telegramOpen && (
+<<<<<<< HEAD
         <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
+=======
+      <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => { setTelegramOpen(false); setAccessOpen(true); }} />
+>>>>>>> 092243a9 (chore: clean backups duplicates and temporary files)
       )}
       {accessOpen && (
-        <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
-          <AccessGate forceOpen onRequestClose={() => setAccessOpen(false)}>
-            <EnterAuthorizedRoom />
-          </AccessGate>
-        </div>
+      <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
+      <AccessGate forceOpen onRequestClose={() => setAccessOpen(false)}>
+      <EnterAuthorizedRoom />
+      </AccessGate>
+      </div>
       )}
-    </MenuProvider>
-  );
-}
+      </MenuProvider>
+      );
+      }

@@ -17,37 +17,48 @@
   right: 104px;
 }
 .fx-web-chat-launcher {
+  display: inline-grid;
   position: relative;
-  display: grid;
   place-items: center;
-  width: 57px;
-  height: 33px;
-  padding: 3px;
-  border: 1px solid rgba(90, 172, 216, 0.42);
-  border-radius: 11px;
-  background: linear-gradient(160deg, #172b40, #061827);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.36);
+  width: 42px;
+  height: 30px;
+  left: 20px;
+  flex: 0 0 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(15deg,
+    #0062d1, #001ba3, #0084b8,
+    #0064bb, #0062d1, #001ba3,
+    #004a94) no-repeat;
+  background-size: 350% 350%;
+  background-position: left center;
+  color: #10141a;
+  font-size: 23px;
+  line-height: 1;
   cursor: pointer;
-  transition:
-    transform 0.22s ease,
-    background 0.22s ease,
-    box-shadow 0.22s ease;
+  transition: background-position .35s ease,transform .25s ease,box-shadow .25s ease;
 }
 .fx-web-chat-launcher:hover {
   background-position: right center;
   transform: translateY(0px);
-  box-shadow: 0 5px 1px #0099ff,0 0 25px rgba(0, 140, 255, 0.36);
+  box-shadow: 0 5px 1px #0099ff,0 0 25px #008cff5c;
   }
 .fx-web-chat-launcher:focus-visible {
   outline: 2px solid #39d3d0;
   outline-offset: 3px;
 }
 .fx-web-chat-launcher-image {
-  width: 100%;
-  height: 100%;
-  transform: scale(1.15); 
-  border-radius: 8px;
-  object-fit: cover;
+  display: block;
+  position: relative;
+  left: 0;
+  width: 90%;
+  height: 102%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transform: translateX(1px) translateY(-2px) scale(1.22);
 }
 .fx-web-chat.is-active .fx-web-chat-launcher {
   border-color: #4fcbed00;
@@ -68,16 +79,12 @@
   border-color: #66d9ff00;
 }
 @keyframes fx-chat-active-glow {
-  0%,
-  100% {
-    box-shadow: 0 2px 12px rgba(35, 121, 183, 0.3);
+  0%,100% { box-shadow: 0 2px 12px rgba(35, 121, 183, 0.3);
   }
-  50% {
-    box-shadow:
+  50% { box-shadow:
       0 0 0 4px rgba(53, 173, 219, 0.15),
       0 2px 23px rgba(40, 174, 238, 0.55);
-  }
-}
+  }}
 #fx-web-chat-panel {
   position: fixed;
   z-index: 10010;
@@ -98,24 +105,17 @@
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   animation: fx-chat-bounce-in 0.52s cubic-bezier(0.18, 1.36, 0.38, 1) both;
   transform-origin: 90% 0;
+  gap: 6px;
 }
 @keyframes fx-chat-bounce-in {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -20px, 0) scale(0.87);
+  0% { opacity: 0; transform: translate3d(0, -20px, 0) scale(0.87);
   }
-  60% {
-    opacity: 1;
-    transform: translate3d(0, 5px, 0) scale(1.025);
+  60% { opacity: 1; transform: translate3d(0, 5px, 0) scale(1.025);
   }
-  82% {
-    transform: translate3d(0, -2px, 0) scale(0.993);
+  82% {transform: translate3d(0, -2px, 0) scale(0.993);
   }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1);
+  }}
 #fx-web-chat-panel * {
   box-sizing: border-box;
 }
@@ -545,8 +545,7 @@
   }
   .fx-web-chat-bubble {
     max-width: 85%;
-  }
-}
+  }}
 @media (prefers-reduced-motion: reduce) {
   #fx-web-chat-panel {
     animation: none;
@@ -559,9 +558,7 @@
   }
   .fx-web-chat-message-list {
     scroll-behavior: auto;
-  }
-}
-
+  }}
 /* Synced unread count: only bot/support messages received after the read cursor. */
 .fx-web-chat-unread {
   position: absolute;
@@ -584,15 +581,10 @@
   animation: fx-chat-unread-pop 0.42s cubic-bezier(0.2, 1.5, 0.42, 1) both;
 }
 @keyframes fx-chat-unread-pop {
-  from {
-    transform: scale(0.5);
-    opacity: 0.4;
+  from {transform: scale(0.5); opacity: 0.4;
   }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+  to { transform: scale(1); opacity: 1;
+  }}
 .fx-web-chat-typing-row {
   animation: fx-chat-typing-enter 0.22s ease-out both;
 }
@@ -620,25 +612,14 @@
   animation-delay: 0.3s;
 }
 @keyframes fx-chat-typing-dot {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.35;
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35;
   }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
-}
+  30% {transform: translateY(-4px); opacity: 1;
+  }}
 @keyframes fx-chat-typing-enter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
+  from { opacity: 0; transform: translateY(6px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  to { opacity: 1; transform: translateY(0);
   }}
 @media (prefers-reduced-motion: reduce) {
   .fx-web-chat-unread,
