@@ -2212,6 +2212,7 @@ PRIVATE WORLD
         <FxGlbIcon
           src="/assets/logos.glb/iconCorona.glb"
           className="fx-welcome-rose-icon"
+          interactive
           paused={progress >= 0.18}
           style={{
             display: "block",
@@ -2221,7 +2222,7 @@ PRIVATE WORLD
             opacity: fxCoverStep(progress, 0.75, 1.00),
             marginTop: "-16px", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
             filter: "drop-shadow(0 5px 14px rgba(0, 0, 0, 0.4))",
-            pointerEvents: "none",
+            pointerEvents: "auto",
           }}
         />
         <div style={{ ...({ opacity: 0.5 * fxStagedFade(progress, 0.00, 0.20), fontFamily: '"Orbitron", system-ui, sans-serif', fontSize: "clamp(11px, 1.2vw, 16px)", letterSpacing: ".2em", fontWeight: 700, color: "#c6e6f7", textShadow: "0 2px 12px #000", marginTop: "clamp(18px, 4vh, 44px)" }), marginTop: "-48px", fontSize: "15px", lineHeight: 1.4, whiteSpace: "nowrap", letterSpacing: "0.16em", opacity: 0.65 * fxCoverStep(progress, 0.00, 0.24), transform: `translateY(-${WELCOME_LIFT_PX + SCROLL_EXTRA_LIFT_PX}px)`, transition: "none" }}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
@@ -19,6 +19,8 @@ type Props = {
   swayAmount?: number;
   /** Si es true no se renderiza (útil cuando el icono ya está invisible por opacity/visibility). */
   paused?: boolean;
+  /** Allow visitors to rotate the real 3D model using mouse, touch or keyboard. */
+  interactive?: boolean;
 };
 
 export default function FxGlbIcon({
@@ -29,10 +31,75 @@ export default function FxGlbIcon({
   sway = true,
   swayAmount = 0.45,
   paused = false,
+  interactive = false,
 }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  const spinRef = useRef({
+    pointerId: null as number | null,
+    lastX: 0,
+    lastY: 0,
+    yaw: 0,
+    pitch: 0,
+    velocityYaw: 0,
+    velocityPitch: 0,
+  });
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!interactive || (event.pointerType === "mouse" && event.button !== 0)) return;
+    const spin = spinRef.current;
+    if (spin.pointerId !== null) return;
+    spin.pointerId = event.pointerId;
+    spin.lastX = event.clientX;
+    spin.lastY = event.clientY;
+    spin.velocityYaw = 0;
+    spin.velocityPitch = 0;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const spin = spinRef.current;
+    if (!interactive || spin.pointerId !== event.pointerId) return;
+    const dx = event.clientX - spin.lastX;
+    const dy = event.clientY - spin.lastY;
+    spin.lastX = event.clientX;
+    spin.lastY = event.clientY;
+    spin.yaw += dx * 0.014;
+    spin.pitch = THREE.MathUtils.clamp(spin.pitch + dy * 0.008, -0.72, 0.72);
+    spin.velocityYaw = dx * 0.010;
+    spin.velocityPitch = dy * 0.004;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const finishPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const spin = spinRef.current;
+    if (spin.pointerId !== event.pointerId) return;
+    spin.pointerId = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    event.stopPropagation();
+  };
+
+  const handleKeyboard = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (!interactive) return;
+    const spin = spinRef.current;
+    switch (event.key) {
+      case "ArrowLeft": spin.yaw -= 0.25; break;
+      case "ArrowRight": spin.yaw += 0.25; break;
+      case "ArrowUp": spin.pitch = THREE.MathUtils.clamp(spin.pitch - 0.20, -0.72, 0.72); break;
+      case "ArrowDown": spin.pitch = THREE.MathUtils.clamp(spin.pitch + 0.20, -0.72, 0.72); break;
+      case "Home": spin.yaw = 0; spin.pitch = 0; break;
+      default: return;
+    }
+    spin.velocityYaw = 0;
+    spin.velocityPitch = 0;
+    event.preventDefault();
+  };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -119,8 +186,21 @@ export default function FxGlbIcon({
     const tick = (now: number) => {
       if (disposed) return;
       if (model && visible && !pausedRef.current) {
-        if (sway && !reduceMotion) {
-          model.rotation.y = Math.sin(((now - start) / 1000) * 0.9) * swayAmount;
+        const elapsed = (now - start) / 1000;
+        if (interactive) {
+          const spin = spinRef.current;
+          if (spin.pointerId === null) {
+            spin.yaw += spin.velocityYaw;
+            spin.pitch = THREE.MathUtils.clamp(spin.pitch + spin.velocityPitch, -0.72, 0.72);
+            spin.velocityYaw *= 0.90;
+            spin.velocityPitch *= 0.85;
+          }
+          // Keep the GLB intact; rotate its pivot, not an overlaid image.
+          const gentleSway = sway && !reduceMotion ? Math.sin(elapsed * 0.9) * Math.min(swayAmount, 0.14) : 0;
+          model.rotation.y = spin.yaw + gentleSway;
+          model.rotation.x = spin.pitch;
+        } else if (sway && !reduceMotion) {
+          model.rotation.y = Math.sin(elapsed * 0.9) * swayAmount;
         }
         renderer.render(scene, camera);
       }
@@ -142,9 +222,27 @@ export default function FxGlbIcon({
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [src, sway, swayAmount]);
+  }, [src, sway, swayAmount, interactive]);
 
   return (
-    <div ref={mountRef} className={className} style={{ aspectRatio, ...style }} aria-hidden="true" />
+    <div
+      ref={mountRef}
+      className={className}
+      style={{
+        aspectRatio,
+        ...style,
+        ...(interactive ? { pointerEvents: "auto" as const, touchAction: "none" as const, cursor: "grab" } : {}),
+      }}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-hidden={interactive ? undefined : true}
+      aria-label={interactive ? "Rotate the USER FX crown by dragging or using arrow keys" : undefined}
+      onPointerDown={interactive ? handlePointerDown : undefined}
+      onPointerMove={interactive ? handlePointerMove : undefined}
+      onPointerUp={interactive ? finishPointer : undefined}
+      onPointerCancel={interactive ? finishPointer : undefined}
+      onLostPointerCapture={interactive ? finishPointer : undefined}
+      onKeyDown={interactive ? handleKeyboard : undefined}
+    />
   );
 }
