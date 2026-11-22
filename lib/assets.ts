@@ -30,8 +30,8 @@ const FX_BASE = (process.env.NEXT_PUBLIC_FX_ASSET_BASE ?? "").trim().replace(/\/
 const fx = (path: string) => `${FX_BASE}${path}`;
 export const FX = {
   logo: fx("/assets/userfx-logo-sin.png"),
-  emblem: fx("/iconFX.png"),
-  foliage: fx("/iconFX.png"),
+  emblem: fx("/assets/logoFX.png"),
+  foliage: fx("/assets/logoFX.png"),
   wallpaper: fx("/wallpaperGeneral.png"),
   film: fx("/assets/video01.mp4"),
   poster: fx("/assets/userfx-logo-sin.png"),
@@ -40,10 +40,9 @@ export const FX = {
   vip: fx("/assets/iconos/corona.png"),
   special: fx("/assets/userfx-logo-sin.png"),
 };
-
 // Three.js models in public/. These are GLB files, not <img> sources.
 export const FX_MODELS = {
-  logo: "/iconFX.glb",
+  logo: "/assets/logoFX.png",
   rose: "/assets/logos.glb/rosa.glb",
   crown: "/assets/logos.glb/crown-Blue2.glb",
   roomLogo: "/logoFX.glb",

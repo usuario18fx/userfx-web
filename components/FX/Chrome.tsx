@@ -42,22 +42,22 @@ export function MenuProvider({ children }: { children: ReactNode }) {
     <Context.Provider value={{ open, toggle: () => setOpen((v) => !v), close: () => setOpen(false) }}>
       {children}
     </Context.Provider>
-  );
-}
+         );
+         }
 export function Brand({ style }: { style?: CSSProperties }) {
   const admin = useAdminMode();
   return (
-    <div className="flex items-center gap-3" style={style}>
-      <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV ROOM · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
-        <img src={FX.logo} alt="" width={32} height={26} className="object-contain" onError={(event) => { const img = event.currentTarget; if (img.dataset.fxLogoFallback !== "1") { img.dataset.fxLogoFallback = "1"; img.src = "/iconFX.png"; } else { img.style.display = "none"; } }} />
+        <div className="flex items-center gap-3" style={style}>
+        <button type="button" className="fx-brand flex items-center gap-2" aria-label="UserFX · PRIV ROOM · User/Admin" onClick={() => { if (!admin.revealSwitch()) window.location.hash = "#/"; }}>
+        <img src={FX.logo} alt="" width={32} height={26} className="object-contain" onError={(event) => { const img = event.currentTarget; if (img.dataset.fxLogoFallback !== "1") { img.dataset.fxLogoFallback = "1"; img.src = "/logoFX.png"; } else { img.style.display = "none"; } }} />
         <span className="font-wide text-[10px] uppercase tracking-[-.06em]">
-USER FX
-</span>
-      </button>
-      <AdminModeSwitch />
-    </div>
-  );
-}
+         USER FX
+        </span>
+        </button>
+        <AdminModeSwitch />
+        </div>
+         );
+         }
 export function MenuButton({
   width,
   gap,

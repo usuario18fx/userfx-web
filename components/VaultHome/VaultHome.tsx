@@ -38,7 +38,7 @@ const STEPS = [
   { n: "04", title: "UNLOCK THE VAULT", text: "Return to the vault, enter your complete access code, and unlock the private experience included with your plan." },
 ];
 const PROTOCOL_ORNAMENTS = [
-  { src: "/iconFX.png", className: "vx-IconFX" },
+  { src: "/assets/logoFX.png", className: "vx-IconFX" },
   { src: "/icon7.png", className: "vx-Icon7" },
 ];
 const FAQS = [
@@ -651,7 +651,7 @@ export default function VaultHome() {
               <Scramble text="SUPPORT" hover />
               </button>
               <button type="button" onClick={() => openLink("https://t.me/+U1V9FZh0neUxYWFh")} aria-label="Open vault videos">
-              <img src="/iconFX.png" alt="USER FX" className="vx-LogoFx" draggable={false} />
+              <img src="/assets/logoFX.png" alt="USER FX" className="vx-LogoFx" draggable={false} />
               <Scramble text="CHANNEL" hover />
               </button>
               </nav>

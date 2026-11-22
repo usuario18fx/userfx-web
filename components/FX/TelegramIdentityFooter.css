@@ -40,8 +40,8 @@
 .fx-identity-pill {
   display: inline-flex;
   padding: 5px 7px;
-  border-radius: 14px;
-  background: #2aabee;
+  border-radius: 6px;
+  background:#2aabee;
   color: #03131d;
   font-size: 10px;
   font-weight: 900;

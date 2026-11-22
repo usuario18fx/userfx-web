@@ -29,7 +29,7 @@ const LANDING_STYLES = String.raw`
   gap: 12px;
   padding: 12px 15px;
   border: 1px solid rgba(63,216,208,.5);
-  border-radius: 12px;
+  border-radius: 6px;
   background: #091621;
   box-shadow: 0 12px 42px rgba(0,0,0,.55);
   color: #cce8ef;
@@ -39,7 +39,7 @@ const LANDING_STYLES = String.raw`
 .fx-identity-verified-toast > span { flex: 1; }
 .fx-identity-verified-toast button {
   border: 1px solid rgba(63,216,208,.38);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 7px 9px;
   background: #132937;
   color: #86e9eb;
@@ -48,16 +48,32 @@ const LANDING_STYLES = String.raw`
   white-space: nowrap;
 }
 /* Only the landing preview: prevent transforms / 3D canvases from growing document width. */
-.fx-landing{position:relative;z-index:1;width:100%;max-width:100%;min-width:0;overflow-x:clip;background:#05070b;box-shadow:0 14px 38px rgba(0,0,0,.42)}
+.fx-landing{position:relative;z-index:1;width:100%;max-width:100%;min-width:0;overflow-x:clip;background:#05070b;box-shadow:0 14px 38px rgba(0,0,0,.42)
+}
 .fx-landing>main{width:100%;max-width:100%;min-width:0}
-.fx-landing .ufx-footer,.fx-landing .ufx-footer-frame,.fx-landing .ufx-footer-hero{max-width:100%;min-width:0}
-.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr) minmax(0,.8fr)}
-.fx-landing .ufx-footer-hero-copy,.fx-landing .ufx-footer-visual{min-width:0;max-width:100%}
+.fx-landing .ufx-footer,.fx-landing .ufx-footer-frame,
+.fx-landing .ufx-footer-hero{max-width:100%;min-width:0
+}
+.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr) minmax(0,.8fr)
+}
+.fx-landing,
+.ufx-footer-hero-copy,
+.fx-landing,
+.ufx-footer-visual{
+min-width:0;max-width:100%
+}
 .fx-landing .ufx-footer-title{max-width:100%;font-size:clamp(40px,5.7vw,94px);overflow-wrap:normal}
 .fx-landing .ufx-footer-emblem-ring{max-width:min(100%,450px)}
-@media(max-width:900px){.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr)}.fx-landing .ufx-footer-title{font-size:clamp(38px,8vw,72px)}}
+@media(max-width:900px){.fx-landing .ufx-footer-hero{grid-template-columns:minmax(0,1fr)}.fx-landing .ufx-footer-title{font-size:clamp(38px,8vw,72px)
+}}
 .fx-telegram-entry { padding: 3rem 1rem; text-align: center; }
-.fx-telegram-entry input[type=submit] { cursor:pointer; border:0; border-radius:2rem; padding:.9rem 2rem; background:#3fd8d0; color:#08090d; font-weight:650; }
+.fx-telegram-entry input[type=submit] { cursor:pointer; border:0;
+border-radius:2rem;
+padding:.9rem 2rem;
+background:#3fd8d0;
+color:#08090d;
+font-weight:650;
+}
 /* Telegram profile button · gold/orange star control from PrivateRoom, with user glyph only. */
 .fx-telegram-launch {
   display: inline-grid;
@@ -208,7 +224,7 @@ const LANDING_STYLES = String.raw`
   margin: 0;
   padding: 5px 9px;
   border: 1px solid rgba(231, 219, 203, .20);
-  border-radius: 7px;
+  border-radius: 4px;
   color: #f0eadf;
   background: rgba(7, 12, 19, .82);
   backdrop-filter: blur(7px);
@@ -779,7 +795,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   height: 84px;
   padding: 4px;
   overflow: hidden;
-  border-radius: 15px;
+  border-radius: 7px;
   background: #020910;
   box-shadow: inset 0 0 0 1px rgba(63,216,208,.22);
 }
@@ -788,7 +804,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 11px;
+  border-radius: 8px;
 }
 .fx-telegram-dialog-brand {
   display: flex;
@@ -823,10 +839,10 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   padding: clamp(26px, 4vw, 44px);
   overflow-y: auto;
   /* Brick background behind the Telegram form. */
-  background:
-    linear-gradient(#0653538c, #00060616),
-    url("/wallLadrillos.png") center / cover no-repeat;
-}
+  background: linear-gradient( #00626242, #002e2e2e);
+  justify-content: flex-start;
+  padding: 22px 20px 24px;
+  }
 .fx-telegram-dialog-close {
   position: absolute;
   top: 14px;
@@ -845,12 +861,13 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   cursor: pointer;
   transition: background .2s ease, border-color .2s ease;
 }
-.fx-telegram-dialog-close:hover { 
+.fx-telegram-dialog-close:hover {
 color: #00e5f552;
-background: #00000052; 
-border-color: #00e5f552; 
+background: #00000052;
+border-color: #00e5f552;
 }
-.fx-telegram-dialog-close:focus-visible { outline: 2px solid #2c3333; outline-offset: 3px; 
+.fx-telegram-dialog-close:focus-visible {
+outline: 2px solid #2c3333; outline-offset: 3px;
 }
 .fx-telegram-dialog-kicker {
   color: #00d1cd;
@@ -871,7 +888,7 @@ border-color: #00e5f552;
   font-size: 14px;
   line-height: 1.55;
 }
-.fx-telegram-dialog-form { display: flex; flex-direction: column; gap: 11px; }
+.fx-telegram-dialog-form { display: flex;   flex-direction: column; gap: 11px; }
 .fx-telegram-dialog-form label {
   color: #9db8c8;
   font-size: 11px;
@@ -880,9 +897,9 @@ border-color: #00e5f552;
 }
 .fx-telegram-dialog-identity-panel {
   padding: 9px;
-  border: 1px solid rgba(42,171,238,.55);
+  border: 1px solid #2aabee8c;
   border-radius: 2px;
-  background: radial-gradient(circle at 14% 0%,rgba(42,171,238,.14),transparent 55%),#09131d;
+  background:radial-gradient(circle at 55% 0%, #00a1f790,transparent 55%),#09131d url("/wallLadrillos.png") center/cover no-repeat;
 }
 .fx-telegram-dialog-identity-head {
   display: flex;
@@ -916,7 +933,8 @@ border-color: #00e5f552;
   border-radius: 4px;
   background: rgba(1,8,15,.93);
 }
-.fx-telegram-dialog-field:focus-within { border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
+.fx-telegram-dialog-field:focus-within {
+border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
 .fx-telegram-dialog-telegram-icon {
   display: grid;
   place-items: center;
@@ -981,29 +999,29 @@ border-color: #00e5f552;
     align-items: center;
     justify-content: flex-start;
     gap: 14px;
-    padding: 16px 64px 16px 20px;
+    padding: 16px 64px 16px 22px;
     border-right: 0;
-    border-bottom: 1px solid rgba(63,216,208,.22);
+    border-bottom: 1px solid #3fd8d038;
   }
-  .fx-telegram-dialog-emblem { width: 56px; height: 56px; border-radius: 11px; }
+  .fx-telegram-dialog-emblem {
+  width: 45px;
+  height: 56px;
+  border-radius: 5px; }
   .fx-telegram-dialog-identity-head { font-size: 9px; }
-  .fx-telegram-dialog-identity-head strong { font-size: 9px; 
+  .fx-telegram-dialog-identity-head strong { font-size: 9px;
   }
-  .fx-telegram-dialog-field { grid-template-columns: 32px 19px minmax(0,1fr) 85px; 
+  .fx-telegram-dialog-field { grid-template-columns: 32px 19px minmax(0,1fr) 85px;
   }
-  .fx-telegram-dialog-submit { font-size: 9px; 
+  .fx-telegram-dialog-submit { font-size: 9px;
   }
-  .fx-telegram-dialog-field input { font-size: 13px; 
+  .fx-telegram-dialog-field input { font-size: 13px;
   }
-  .fx-telegram-dialog-telegram-icon { height: 48px; 
+  .fx-telegram-dialog-telegram-icon { height: 48px;
   }
-  .fx-telegram-dialog-motto { display: none; }
-  .fx-telegram-dialog-main { justify-content: flex-start; padding: 22px 20px 24px; 
+  .fx-telegram-dialog-motto { display: none;
   }}
 `;
-
 const RATING_STORAGE_KEY = "userfx_landing_crown_rating";
-
 function CrownIcon({ className = "" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 46 44" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1014,10 +1032,10 @@ function CrownIcon({ className = "" }: { className?: string }) {
   );
   }
 const FOOTER_EXPERIMENTS = [
-  { id: 1, title: "EXPERIMENT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer01.mp4" },
-  { id: 3, title: "EXPERIMENT 02", poster: "/assets/footer/footer3-3.png", backgroundVideo: "/assets/footer/footer3-1.mp4", video: "/assets/footer/footer3.mp4" },
-   { id: 2, title: "EXPERIMENT 03", poster: "/iconFX.png", video: "/assets/my-room/room2.mp4" },
-  { id: 4, title: "EXPERIMENT 04", poster: "/assets/my-room/fx-ia.png", video: "/assets/my-room/footer04.mp4" },
+  { id: 1, title: "PROYECT 01", poster: "/assets/footer/footer1.png", video: "/assets/footer/footer01.mp4" },
+  { id: 3, title: "PROYECT 02", poster: "/assets/footer/footer3-3.png", backgroundVideo: "/assets/footer/footer3-1.mp4",video: "/assets/footer/footer3.mp4" },
+   { id: 2, title: "PROYECT 03", poster: "/assets/iconCorona.png", video: "/assets/my-room/room2.mp4" },
+  { id: 4, title: "PROYECT 04", poster: "/assets/my-room/fx-ia.png", video: "/assets/my-room/footer04.mp4" },
 ] as const;
 function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -1142,7 +1160,6 @@ function FooterBar() {
   } catch {
 // Rating remains available for this session.
   }}
-
   return (
       <div className="fx-footer-reveal" ref={revealRef}>
       <footer ref={footerRef} className="fx-footer-bar" aria-label="USER FX footer">
@@ -1165,9 +1182,9 @@ function FooterBar() {
       <a className="fx-footer-bar-brand" href="#home" aria-label="USER FX, back to beginning">
       <CrownIcon className="fx-footer-bar-crown" />
       <span className="fx-footer-bar-name">
-      <strong>      
+      <strong>
         USER FX
-      </strong>        
+      </strong>
       <span>
         PRIVATE ROOM
       </span>
@@ -1216,16 +1233,11 @@ function FooterBar() {
     </div>
   );
 }
-
-
 const AccessGate = dynamic(() => import("@/components/PrivateRoom/PR-DirectGate"), { ssr: false });
-
-
 type TelegramDialogProps = {
   onClose: () => void;
   onVerified: (username: string) => void;
 };
-
 function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1301,19 +1313,9 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           ×
           </button>
           <aside className="fx-telegram-dialog-aside" aria-hidden="true">
-          <video
-            className="fx-telegram-dialog-aside-video"
-            src="/assets/FX-Y24V01.mp4"
-            poster="/wallpaperVideo.png"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden="true"
-          />
+          <video className="fx-telegram-dialog-aside-video" src="/assets/FX-Y24V01.mp4" poster="/wallpaperVideo.png" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
           <div className="fx-telegram-dialog-emblem">
-            <img src="/assets/room-priv-user-lock.webp" alt="" />
+          <img src="/assets/room-priv-user-lock.webp" alt="" />
           </div>
           <div className="fx-telegram-dialog-brand">
           <strong>
@@ -1338,7 +1340,7 @@ function TelegramIdentityDialog({ onClose, onVerified }: TelegramDialogProps) {
           Enter your @username to check access and continue to the  private room.
           </p>
           <form className="fx-telegram-dialog-form" onSubmit={handleSubmit}>
-          <label htmlFor="fx-telegram-dialog-username">  
+          <label htmlFor="fx-telegram-dialog-username">
           TELEGRAM USERNAME
           </label>
           <div className="fx-telegram-dialog-identity-panel">
@@ -1392,7 +1394,6 @@ export default function Landing() {
   const [sceneTimedOut, setSceneTimedOut] = useState(false);
   const showIntro = !introComplete || (!sceneReady && !sceneTimedOut);
   const openTelegram = () => setTelegramOpen(true);
-
   // A username eligibility check is not a room access grant.
   // Close identity modals after Telegram verification; only a server-authenticated
   // access session may navigate straight into the private room.
@@ -1405,30 +1406,27 @@ export default function Landing() {
         credentials: "same-origin",
         cache: "no-store",
         headers: { Accept: "application/json" },
-      });
+    });
       const session = await response.json().catch(() => ({}));
       if (response.ok && session.authenticated === true) {
         setIdentityNotice("");
         window.location.hash = "#/private-room";
         return;
-      }
+    }
     } catch {
       // No authenticated room session: leave the private room locked.
     }
     setIdentityNotice("USERNAME CHECKED · ENTER YOUR CODE WHEN YOU'RE READY");
-  };
-
+    };
   useEffect(() => {
     if (!identityNotice) return;
     const timer = window.setTimeout(() => setIdentityNotice(""), 6500);
     return () => window.clearTimeout(timer);
-  }, [identityNotice]);
-
+    }, [identityNotice]);
   useEffect(() => {
     const timer = window.setTimeout(() => setSceneTimedOut(true), 10000);
     return () => window.clearTimeout(timer);
-  }, []);
-
+    }, []);
   useEffect(() => {
     const onAccessClick = (event: MouseEvent) => {
       const target = event.target;
@@ -1442,7 +1440,7 @@ export default function Landing() {
     };
     document.addEventListener("click", onAccessClick, true);
     return () => document.removeEventListener("click", onAccessClick, true);
-  }, []);
+    }, []);
   useEffect(() => {
     if (!accessOpen && !telegramOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -1461,7 +1459,7 @@ export default function Landing() {
       setSmoothScroll(true);
       previousFocus?.focus();
     };
-  }, [accessOpen, telegramOpen]);
+    }, [accessOpen, telegramOpen]);
   return (
       <MenuProvider>
       <style>
@@ -1474,28 +1472,34 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-        <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
+      <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
       </MenuOverlay>
       <div className="fx-landing">
-        <main>
-          <RoomIntro onSceneReady={() => setSceneReady(true)} />
-          <ScrollStory onOpenTelegram={openTelegram} />
-          <SectionMethod />
-          <SectionPricing />
-          <SectionFaq />
-          <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
-        </main>
+      <main>
+      <RoomIntro onSceneReady={() => setSceneReady(true)} />
+      <ScrollStory onOpenTelegram={openTelegram} />
+      <SectionMethod />
+      <SectionPricing />
+      <SectionFaq />
+      <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
+      </main>
       </div>
       <FooterBar />
       {identityNotice && (
-        <div className="fx-identity-verified-toast" role="status">
-          <span>{identityNotice}</span>
-          <button type="button" onClick={() => { setIdentityNotice(""); setAccessOpen(true); }}>ENTER CODE</button>
-          <button type="button" onClick={() => setIdentityNotice("")} aria-label="Dismiss notice">×</button>
-        </div>
+      <div className="fx-identity-verified-toast" role="status">
+      <span>
+        {identityNotice}
+      </span>
+      <button type="button" onClick={() => { setIdentityNotice(""); setAccessOpen(true); }}>
+        ENTER CODE
+      </button>
+      <button type="button" onClick={() => setIdentityNotice("")} aria-label="Dismiss notice">
+       ×
+      </button>
+      </div>
       )}
       {telegramOpen && (
-        <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
+      <TelegramIdentityDialog onClose={() => setTelegramOpen(false)} onVerified={() => void handleTelegramVerified()} />
       )}
       {accessOpen && (
       <div className="fx-landing-access-modal" role="dialog" aria-modal="true" aria-label="ROOM access">
