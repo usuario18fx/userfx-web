@@ -351,6 +351,8 @@
   outline-offset: 4px;
 }
 /* --- FAQ SECTION --- */
+/* Remove the empty space between the last FAQ row and Telegram footer. */
+#faq { padding-bottom: 0; }
 #faq .fx-faq {
   width: 100%;
   min-width: 0;
