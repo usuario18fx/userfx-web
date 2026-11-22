@@ -1227,10 +1227,8 @@ export default function CinematicTour({
       if (!laptopCtx || unsafeLaptopVideo || laptopVideo.readyState < 2) return;
       try {
         laptopCtx.drawImage(laptopVideo, 0, 0, laptopCanvas.width, laptopCanvas.height);
-        if (!verifiedLaptop.has(laptopMode)) {
-          laptopCtx.getImageData(0, 0, 1, 1);
-          verifiedLaptop.add(laptopMode);
-        }
+        laptopCtx.getImageData(0, 0, 1, 1);
+        verifiedLaptop.add(laptopMode);
         laptopVideoTexture.needsUpdate = true;
       } catch (error) {
         // Resetting dimensions restores origin-clean state after a tainted draw.
@@ -1713,6 +1711,17 @@ export default function CinematicTour({
       tvCtx.font = "bold 32px monospace";
       tvCtx.fillText(timer, 205, 56);
       tvCtx.restore();
+      try {
+        tvCtx.getImageData(0, 0, 1, 1);
+      } catch (error) {
+        unsafeTvVideos.add(video);
+        tvCanvas.width = 1280;
+        tvCanvas.height = 720;
+        tvCtx.fillStyle = "#05080d";
+        tvCtx.fillRect(0, 0, 1280, 720);
+        transitionStart = -1;
+        console.warn("[CinematicTour] Unsafe TV canvas reset:", error);
+      }
       tvTexture.needsUpdate = true;
     };
     const updateTv = (p: number, now: number) => {

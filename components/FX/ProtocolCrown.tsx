@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import * as THREE from "three";
 import type { MotionValue } from "framer-motion";
 
@@ -12,8 +12,8 @@ export type CrownTL = {
 };
 
 type Props =
-  | { progress: MotionValue<number>; tl: CrownTL; active: boolean; step?: never; className?: string }
-  | { progress: number; step: number; className?: string; tl?: never; active?: never };
+  | { progress: MotionValue<number>; tl: CrownTL; active: boolean; step?: never; className?: string; interactive?: boolean }
+  | { progress: number; step: number; className?: string; tl?: never; active?: never; interactive?: boolean };
 
 const DEFAULT_TL: CrownTL = {
   descend: [0, 0.25],
@@ -179,19 +179,10 @@ function createFxCrownContour() {
     rim.push(1.79 * c, -1.0, 1.05 * s);
     orbit.push(2.08 * c, -1.2, 1.27 * s);
   }
-  // Silueta frontal clara incluso cuando quedan pocas particulas.
-  const front = [
-    [-1.75, -0.96, 1.07], [-1.65, 0.30, 1.07],
-    [-1.13, -0.12, 1.07], [-0.65, 1.08, 1.07],
-    [-0.02, 0.23, 1.07], [0.42, 1.47, 1.07],
-    [0.91, 0.20, 1.07], [1.44, 0.86, 1.07],
-    [1.75, -0.96, 1.07],
-  ].flat();
   add(crest, 0.46, true);
   add(rim, 0.82, true);
-  add(front, 0.98, false);
   add(orbit, 0.40, true);
-  return { outline, materials, geometries, baseOpacity: [0.46, 0.82, 0.98, 0.40] };
+  return { outline, materials, geometries, baseOpacity: [0.46, 0.82, 0.40] };
 }
 
 type CrownInteraction = {
@@ -201,6 +192,10 @@ type CrownInteraction = {
   targetY: number;
   dragX: number;
   dragY: number;
+  velocityX: number;
+  velocityY: number;
+  posX: number;
+  posY: number;
   pointerId: number | null;
   lastX: number;
   lastY: number;
@@ -210,12 +205,14 @@ function advanceInteraction(motion: CrownInteraction) {
   motion.hoverX += (motion.targetX - motion.hoverX) * 0.12;
   motion.hoverY += (motion.targetY - motion.hoverY) * 0.12;
   if (motion.pointerId === null) {
-    motion.dragX *= 0.94;
-    motion.dragY *= 0.94;
+    motion.dragX = (motion.dragX + motion.velocityX) * 0.92;
+    motion.dragY = (motion.dragY + motion.velocityY) * 0.92;
+    motion.velocityX *= 0.84;
+    motion.velocityY *= 0.84;
   }
 }
 
-export default function ProtocolCrown({ progress, tl, active, className }: Props) {
+export default function ProtocolCrown({ progress, tl, active, className, interactive = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(active ?? true);
@@ -227,6 +224,10 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
     targetY: 0,
     dragX: 0,
     dragY: 0,
+    velocityX: 0,
+    velocityY: 0,
+    posX: 0,
+    posY: 0,
     pointerId: null,
     lastX: 0,
     lastY: 0,
@@ -239,6 +240,7 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
   // The actual WebGL crown is beneath the scroll narrative and has no
   // hit-testing of its own. Listen globally, but only react while it is visible.
   useEffect(() => {
+    if (interactive) return;
     const motion = interactionRef.current;
     const moveTo = (clientX: number, clientY: number) => {
       if (!activeRef.current) return;
@@ -255,26 +257,36 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
         }
         return;
       }
-      motion.targetX = Math.max(-0.25, Math.min(0.25, (0.48 - y) * 0.55));
-      motion.targetY = Math.max(-0.45, Math.min(0.45, (x - 0.55) * 0.85));
+      motion.targetX = Math.max(-0.4, Math.min(0.4, (0.48 - y) * 0.8));
+      motion.targetY = Math.max(-0.7, Math.min(0.7, (x - 0.55) * 1.2));
     };
     const onPointerDown = (event: PointerEvent) => {
       if (!activeRef.current || (event.pointerType === "mouse" && event.button !== 0)) return;
+      const target = event.target;
+      if (!(target instanceof Element) ||
+          !target.closest(".pv") ||
+          target.closest('a, button, input, textarea, select, [role="button"]')) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
       const x = (event.clientX - rect.left) / Math.max(1, rect.width);
       const y = (event.clientY - rect.top) / Math.max(1, rect.height);
       // Drag only near the visible crown, not over text/navigation elsewhere.
       if (Math.abs(x - 0.55) > 0.3 || Math.abs(y - 0.48) > 0.35) return;
+      if (event.cancelable && event.pointerType === "mouse")
+        event.preventDefault();
       motion.pointerId = event.pointerId;
+      motion.velocityX = 0;
+      motion.velocityY = 0;
       motion.lastX = event.clientX;
       motion.lastY = event.clientY;
     };
     const onPointerMove = (event: PointerEvent) => {
       moveTo(event.clientX, event.clientY);
       if (motion.pointerId !== event.pointerId) return;
-      motion.dragY += (event.clientX - motion.lastX) * 0.011;
-      motion.dragX += (event.clientY - motion.lastY) * 0.006;
+      motion.velocityY = Math.max(-0.24, Math.min(0.24, (event.clientX - motion.lastX) * 0.017));
+      motion.velocityX = Math.max(-0.16, Math.min(0.16, (event.clientY - motion.lastY) * 0.011));
+      motion.dragY = THREE.MathUtils.clamp(motion.dragY + motion.velocityY, -1.35, 1.35);
+      motion.dragX = THREE.MathUtils.clamp(motion.dragX + motion.velocityX, -0.65, 0.65);
       motion.lastX = event.clientX;
       motion.lastY = event.clientY;
     };
@@ -305,7 +317,70 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       window.removeEventListener("touchmove", onTouchMove);
       document.removeEventListener("pointerleave", onPointerLeave);
     };
-  }, []);
+  }, [interactive]);
+
+
+  // Pointer capture is scoped to the dedicated crown stage only. No global drag or image ghost.
+  const grab = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!interactive || !activeRef.current || (event.pointerType === "mouse" && event.button !== 0)) return;
+    const motion = interactionRef.current;
+    motion.pointerId = event.pointerId;
+    motion.lastX = event.clientX;
+    motion.lastY = event.clientY;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.dataset.grabbing = "true";
+    event.preventDefault();
+  };
+  const move = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!interactive || !activeRef.current) return;
+    const motion = interactionRef.current;
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect || rect.width < 2 || rect.height < 2) return;
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    motion.targetX = THREE.MathUtils.clamp((0.48 - y) * 0.8, -0.35, 0.35);
+    motion.targetY = THREE.MathUtils.clamp((x - 0.55) * 1.05, -0.55, 0.55);
+    if (motion.pointerId !== event.pointerId) return;
+    const dx = event.clientX - motion.lastX;
+    const dy = event.clientY - motion.lastY;
+    const worldPerPixel = 5.4 / rect.height;
+    motion.posX = THREE.MathUtils.clamp(motion.posX + dx * worldPerPixel, -2.2, 2.2);
+    motion.posY = THREE.MathUtils.clamp(motion.posY - dy * worldPerPixel, -1.4, 1.4);
+    motion.dragY = THREE.MathUtils.clamp(motion.dragY + dx * 0.009, -2.1, 2.1);
+    motion.dragX = THREE.MathUtils.clamp(motion.dragX + dy * 0.006, -0.75, 0.75);
+    motion.lastX = event.clientX;
+    motion.lastY = event.clientY;
+  };
+  const release = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const motion = interactionRef.current;
+    if (motion.pointerId !== event.pointerId) return;
+    motion.pointerId = null;
+    delete event.currentTarget.dataset.grabbing;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+  const leave = () => {
+    if (interactionRef.current.pointerId === null) {
+      interactionRef.current.targetX = 0;
+      interactionRef.current.targetY = 0;
+    }
+  };
+  const keys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const motion = interactionRef.current;
+    const amount = 0.18;
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+      event.preventDefault();
+      const horizontal = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
+      const vertical = event.key === "ArrowUp" ? 1 : event.key === "ArrowDown" ? -1 : 0;
+      if (event.shiftKey) {
+        motion.dragY += horizontal * 0.2;
+        motion.dragX -= vertical * 0.14;
+      } else {
+        motion.posX = THREE.MathUtils.clamp(motion.posX + horizontal * amount, -2.2, 2.2);
+        motion.posY = THREE.MathUtils.clamp(motion.posY + vertical * amount, -1.4, 1.4);
+      }
+    }
+    if (event.key === "Escape") { motion.posX = 0; motion.posY = 0; motion.dragX = 0; motion.dragY = 0; }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -340,12 +415,12 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       const opacity = 1 - range(p, timeline.fade);
       if (opacity <= 0) return;
       const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.34);
-      const cx = fallbackW * (fallbackW < 700 ? 0.51 : 0.56);
-      const cy = fallbackH * 0.48 + (range(p, timeline.rise) - range(p, timeline.descend)) * scale * 0.25;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const motion = interactionRef.current;
+      const cx = fallbackW * (fallbackW < 700 ? 0.51 : 0.56) + motion.posX * scale;
+      const cy = fallbackH * 0.48 + (range(p, timeline.rise) - range(p, timeline.descend)) * scale * 0.25 - motion.posY * scale;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       advanceInteraction(motion);
-      const turn = -0.20 + (reduced ? 0 : ms * 0.00034) + p * 0.30 + motion.hoverY + motion.dragY;
+      const turn = -0.20 + (reduced ? 0 : Math.sin(ms * 0.00055) * 0.10) + p * 0.30 + motion.hoverY + motion.dragY;
       const cos = Math.cos(turn), sin = Math.sin(turn);
       const free = broken * broken;
       fallbackContext.save();
@@ -370,27 +445,16 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       fallbackContext.stroke();
       fallbackContext.shadowBlur = 0;
       fallbackContext.globalCompositeOperation = "lighter";
-      // Borde 2D si WebGL no esta disponible.
-      fallbackContext.globalAlpha = opacity * 0.94;
-      fallbackContext.strokeStyle = '#49e6ee';
-      fallbackContext.lineWidth = 2;
-      fallbackContext.beginPath();
-      const frontal = [
-        [-1.75,-0.96],[-1.65,0.30],[-1.13,-0.12],[-0.65,1.08],
-        [-0.02,0.23],[0.42,1.47],[0.91,0.20],[1.44,0.86],[1.75,-0.96]
-      ];
-      frontal.forEach(([x,y], index) => {
-        if (index === 0) fallbackContext.moveTo(cx + x * scale, cy - y * scale);
-        else fallbackContext.lineTo(cx + x * scale, cy - y * scale);
-      });
-      fallbackContext.stroke();
+      // Single 2D outline; ground-ring remains under the particles.
+      fallbackContext.globalAlpha = opacity * 0.35;
+      fallbackContext.strokeStyle = "#2db9bf";
       fallbackContext.beginPath();
       fallbackContext.ellipse(cx, cy + scale, scale * 1.95, scale * 0.2, 0, 0, Math.PI * 2);
       fallbackContext.stroke();
 
       for (let i = 0; i < fOriginal.length; i += 3) {
         const x = fOriginal[i] + fScatter[i] * free;
-        const y = fOriginal[i + 1] + fScatter[i + 1] * free * 0.35 - 5.5 * free * free;
+        const y = Math.max(-2.38 + ((i / 3) % 7) * 0.015, fOriginal[i + 1] + fScatter[i + 1] * free * 0.18 - 3.9 * free);
         const z = fOriginal[i + 2] + fScatter[i + 2] * free;
         const rx = x * cos - z * sin;
         const rz = x * sin + z * cos;
@@ -528,9 +592,8 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
         const j = i / 3;
         const free = broken * broken;
         arr[i] = original[i] + scatter[i] * free;
-        arr[i + 1] = original[i + 1] +
-          scatter[i + 1] * free * 0.35 -
-          5.5 * free * free;
+        arr[i + 1] = Math.max(-2.38 + (j % 7) * 0.015,
+          original[i + 1] + scatter[i + 1] * free * 0.18 - 3.9 * free);
         arr[i + 2] = original[i + 2] + scatter[i + 2] * free;
         if (!reduced && broken < 0.001) {
           arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
@@ -541,11 +604,11 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
       // A continuous 20-second turn plus independent pointer tilt is visible.
       const motion = interactionRef.current;
       advanceInteraction(motion);
-      group.rotation.y = -0.18 + (reduced ? 0 : time * 0.34) + p * 0.3 + motion.hoverY + motion.dragY;
+      group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.55) * 0.10) + p * 0.3 + motion.hoverY + motion.dragY;
       group.rotation.x = -0.055 + motion.hoverX + motion.dragX;
       group.rotation.z = -0.07;
-      group.position.set(w < 700 ? 0 : 0.55,
-        (rise - descend) * 1.0, 0);
+      group.position.set((w < 700 ? 0 : 0.55) + motion.posX,
+        (rise - descend) * 1.0 + motion.posY, 0);
       material.opacity = 0.92 * opacity;
       haloMaterial.opacity = 0.075 * opacity * (1 - broken);
       fxContour.materials.forEach((material, index) => {
@@ -575,9 +638,10 @@ export default function ProtocolCrown({ progress, tl, active, className }: Props
   }, [progress, timeline]);
 
   return (
-    <div className="pv-crown-layer" aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+    <div className="pv-crown-layer" aria-hidden={interactive ? undefined : true} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
       <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{display: "none", opacity: 1, position: "absolute", inset: 0, width: "100%", height: "100%" }} />
       <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+      {interactive && <div className="fx-crown-playground-hit" role="button" tabIndex={0} aria-label="Drag to move and rotate the interactive crown. Arrow keys move, Shift and arrows rotate, Escape resets position." onPointerDown={grab} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onPointerLeave={leave} onDragStart={(event) => event.preventDefault()} onKeyDown={keys} />}
     </div>
   );
 }

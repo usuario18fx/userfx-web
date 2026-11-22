@@ -1,0 +1,60 @@
+/* USER FX · dedicated interactive crown between the hero and GET IN */
+.fx-crown-playground {
+  position: relative;
+  height: 165svh;
+  isolation: isolate;
+  background: #05070b;
+  scroll-margin-top: var(--fx-nav-h, 64px);
+}
+.fx-crown-playground-sticky {
+  position: sticky;
+  top: var(--fx-nav-h, 64px);
+  height: calc(100svh - var(--fx-nav-h, 64px));
+  overflow: hidden;
+  background: radial-gradient(ellipse at 57% 45%, #071c24, #05070b 65%);
+}
+.fx-crown-playground-sticky .pv-crown-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fx-crown-playground-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fx-crown-playground-hit {
+  position: absolute;
+  z-index: 5;
+  left: 15%;
+  top: 8%;
+  width: 75%;
+  height: 78%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+}
+.fx-crown-playground-hit[data-grabbing="true"] { cursor: grabbing; }
+.fx-crown-playground-hit:focus-visible { outline: 1px solid #3fd8d0; outline-offset: -16px; }
+.fx-crown-playground-info {
+  position: absolute;
+  left: clamp(22px, 5vw, 90px);
+  bottom: clamp(24px, 5vh, 65px);
+  display: grid;
+  gap: 8px;
+  z-index: 6;
+  pointer-events: none;
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: .18em;
+  color: #69e4e0;
+  font-size: 14px;
+}
+.fx-crown-playground-info small { font-size: 10px; color: #91acba; letter-spacing: .11em; }
+@media (max-width: 700px) {
+  .fx-crown-playground-hit { left: 8%; top: 15%; width: 84%; height: 60%; }
+  .fx-crown-playground-info { left: 18px; bottom: 20px; font-size: 11px; }
+  .fx-crown-playground-info small { font-size: 9px; max-width: 280px; line-height: 1.6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-crown-playground { height: 100svh; }
+  .fx-crown-playground-sticky { position: relative; top: 0; }
+}

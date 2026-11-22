@@ -6,6 +6,7 @@ import { MenuOverlay, MenuProvider, StickyHeader, useActiveSection } from "./Chr
 import { SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
+import CrownPlayground from "./CrownPlayground";
 import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import RoomIntro from "./RoomIntro";
 import FxSceneLoader from "./FxSceneLoader";
@@ -1476,6 +1477,7 @@ export default function Landing() {
       <main>
       <RoomIntro onSceneReady={() => setSceneReady(true)} />
       <ScrollStory onOpenTelegram={openTelegram} />
+      <CrownPlayground />
       <SectionMethod />
       <SectionPricing />
       <SectionFaq />

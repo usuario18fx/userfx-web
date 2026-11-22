@@ -182,7 +182,7 @@ useEffect(() => () => {
 }, []);
 
 return (
-<div ref={crownRef} className={styles.scene} role="button" tabIndex={0} aria-label="Interactive crown. Drag to spin and throw, double-click or press Enter to flip." onPointerDown={handleDown} onPointerMove={handleMove} onPointerUp={finishDrag} onPointerCancel={finishDrag} onPointerLeave={handleLeave} onDoubleClick={flipCrown} onKeyDown={handleKeyDown}>
+<div ref={crownRef} className={styles.scene} role="button" tabIndex={0} aria-label="Interactive crown. Drag to spin and throw, double-click or press Enter to flip." onDragStart={(event) => event.preventDefault()} onPointerDown={handleDown} onPointerMove={handleMove} onPointerUp={finishDrag} onPointerCancel={finishDrag} onPointerLeave={handleLeave} onDoubleClick={flipCrown} onKeyDown={handleKeyDown}>
 <div className={styles.floating}>
 <div className={styles.crown}>
 <img src="/assets/iconos/corona.png" alt="Corona azul" className={styles.depth} draggable={false} />

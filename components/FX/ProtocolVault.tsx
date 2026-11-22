@@ -10,7 +10,6 @@ import {
   type MotionValue,
 } from "framer-motion";
 
-import ProtocolCrown, { type CrownTL } from "./ProtocolCrown";
 import RoseGLBParticles from "./RoseGLBParticles";
 import "./ProtocolVault.css";
 
@@ -413,13 +412,6 @@ export default function ProtocolVault({
     height / 2 / Math.tan((STEP_ANGLE / 2) * (Math.PI / 180))
   );
 
-  const crownTL: CrownTL = useMemo(() => ({
-    descend: config.descend,
-    rise: config.rise,
-    breakStart: config.breakStart,
-    fade: config.fade,
-  }), [config]);
-
   const head = (
     <div className="pv-left">
       <p className="pv-eyebrow">
@@ -447,21 +439,13 @@ export default function ProtocolVault({
   );
 
   return (
-    <section id={id} ref={host} className={`pv pv--reference${flat ? " pv--flat" : ""}`} style={flat ? undefined : { height: `calc(100svh + ${config.D}svh)` }}>
+    <section id={id} ref={host} onDragStartCapture={(event) => { if (event.target instanceof HTMLImageElement) event.preventDefault(); }} className={`pv pv--reference${flat ? " pv--flat" : ""}`} style={flat ? undefined : { height: `calc(100svh + ${config.D}svh)` }}>
       <div id="spaces" className="pv-inside-anchor" style={{ top: `calc(100svh + ${config.D * config.photosStart}svh)` }} aria-hidden="true" />
 
       <div className="pv-bg" aria-hidden="true" style={flat ? undefined : { visibility: inView ? "visible" : "hidden" }}>
         <motion.div className="pv-rose pv-rose--particles" style={flat ? undefined : { scale: roseScale, opacity: roseOpacity }}>
           <RoseGLBParticles />
         </motion.div>
-
-        {!flat && (
-          <div className="pv-crown-wrap">
-            <div className="pv-crown-stage" aria-hidden="true">
-              <ProtocolCrown progress={smooth} tl={crownTL} active={inView} className="pv-protocol-crown" />
-            </div>
-          </div>
-        )}
 
         <motion.span className="pv-seam" style={flat ? undefined : { opacity: seamOpacity }} />
         <span className="pv-vignette" />
