@@ -737,6 +737,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   background: linear-gradient(155deg, #131c29, #070a11 75%);
   box-shadow: 0 25px 100px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.06);
   color: #f1f6ff;
+   grid-template-columns: 260px minmax(0, 1fr);
 }
 .fx-telegram-dialog,
 .fx-telegram-dialog h2,
@@ -772,7 +773,7 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
   height: 100%;
   object-fit: cover;
   object-position: 48% center;
-  opacity: .82;
+  opacity: 1;
   pointer-events: none;
 }
 .fx-telegram-dialog-aside::before {
@@ -786,25 +787,27 @@ const TELEGRAM_DIALOG_STYLES = String.raw`
     linear-gradient(90deg,rgba(5,15,33,.42),rgba(5,15,33,.08));
 }
 @media (prefers-reduced-motion: reduce) {
-  .fx-telegram-dialog-aside-video { display: none; }
-}
+  .fx-telegram-dialog-aside-video { 
+  display: none; 
+  }}
 .fx-telegram-dialog-emblem {
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
+  width: 80px;
+  height: 73px;
   padding: 4px;
   overflow: hidden;
   border-radius: 7px;
   background: #020910;
-  box-shadow: inset 0 0 0 1px rgba(63,216,208,.22);
+  box-shadow: inset 0 0 0 1px #3fd8d038;
+  transform: translate(-20px) translateY(-26px);
 }
 .fx-telegram-dialog-emblem img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 7px;
 }
 .fx-telegram-dialog-brand {
   display: flex;
@@ -988,12 +991,6 @@ border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
 }
 /* Mobile: stacked columns, brand becomes a top strip */
 @media (max-width: 680px) {
-  .fx-telegram-dialog {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    width: min(100%, 420px);
-    max-height: 92dvh;
-  }
   .fx-telegram-dialog-aside {
     flex-direction: row;
     align-items: center;
@@ -1006,7 +1003,8 @@ border-color: #3fd8d0; box-shadow: 0 0 0 2px rgba(63,216,208,.15); }
   .fx-telegram-dialog-emblem {
   width: 45px;
   height: 56px;
-  border-radius: 5px; }
+  border-radius: 5px; 
+  }
   .fx-telegram-dialog-identity-head { font-size: 9px; }
   .fx-telegram-dialog-identity-head strong { font-size: 9px;
   }
