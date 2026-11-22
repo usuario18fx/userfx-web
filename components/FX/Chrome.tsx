@@ -61,28 +61,10 @@ export function Brand({ style }: { style?: CSSProperties }) {
 export function MenuButton({ className = "" }: { className?: string; width?: string; gap?: string }) {
   const { open, toggle } = useMenu();
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      className={`fx-telegram-launch fx-menu-button shrink-0 ${className}`}
-      aria-label={open ? "Close menu" : "Open menu"}
-      title={open ? "Close menu" : "Open menu"}
-      aria-expanded={open}
-      aria-controls="site-menu"
-    >
-      <span className="relative block h-6 w-6" aria-hidden="true">
-        <motion.span
-          className="absolute left-[2px] top-[7px] h-[2px] w-5 rounded-full bg-white"
-          initial={false}
-          animate={open ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
-          transition={{ duration: 0.28, ease: EASE }}
-        />
-        <motion.span
-          className="absolute left-[2px] top-[15px] h-[2px] w-5 rounded-full bg-white"
-          initial={false}
-          animate={open ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-          transition={{ duration: 0.28, ease: EASE }}
-        />
+    <button type="button" onClick={toggle} className={`fx-telegram-launch fx-menu-button shrink-0 ${className}`} data-open={open ? "true" : "false"} aria-label={open ? "Close menu" : "Open menu"} title={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="site-menu">
+      <span className="fx-menu-glyph" aria-hidden="true">
+        <motion.span className="fx-menu-line fx-menu-line--top" initial={false} animate={open ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
+        <motion.span className="fx-menu-line fx-menu-line--bottom" initial={false} animate={open ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
       </span>
     </button>
   );
@@ -181,7 +163,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
     <AnimatePresence>
       {open && (
         <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
-          <div className="flex min-h-24 items-center justify-between gap-3">
+          <div className="mx-auto flex h-16 min-h-16 w-full max-w-[1440px] items-center justify-between gap-3">
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
               <FxChat />
