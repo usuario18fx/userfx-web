@@ -23,6 +23,7 @@ const DEFAULT_TL: CrownTL = {
 };
 
 const clamp = (v: number) => Math.max(0, Math.min(1, v));
+const PARTICLE_FLOOR_Y = -1.97;
 const ease = (v: number) => {
   const x = clamp(v);
   return x * x * (3 - 2 * x);
@@ -414,7 +415,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
       const opacity = 1 - range(p, timeline.fade);
       if (opacity <= 0) return;
-      const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.34);
+      const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.24);
       const motion = interactionRef.current;
       const cx = fallbackW * (fallbackW < 700 ? 0.51 : 0.56) + motion.posX * scale;
       const cy = fallbackH * 0.48 + (range(p, timeline.rise) - range(p, timeline.descend)) * scale * 0.25 - motion.posY * scale;
@@ -449,12 +450,12 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       fallbackContext.globalAlpha = opacity * 0.35;
       fallbackContext.strokeStyle = "#2db9bf";
       fallbackContext.beginPath();
-      fallbackContext.ellipse(cx, cy + scale, scale * 1.95, scale * 0.2, 0, 0, Math.PI * 2);
+      fallbackContext.ellipse(cx, cy - PARTICLE_FLOOR_Y * scale, scale * 1.95, scale * 0.2, 0, 0, Math.PI * 2);
       fallbackContext.stroke();
 
       for (let i = 0; i < fOriginal.length; i += 3) {
         const x = fOriginal[i] + fScatter[i] * free;
-        const y = Math.max(-2.38 + ((i / 3) % 7) * 0.015, fOriginal[i + 1] + fScatter[i + 1] * free * 0.18 - 3.9 * free);
+        const y = fOriginal[i + 1] + (PARTICLE_FLOOR_Y + ((i / 3) % 7) * 0.008 - fOriginal[i + 1]) * free;
         const z = fOriginal[i + 2] + fScatter[i + 2] * free;
         const rx = x * cos - z * sin;
         const rz = x * sin + z * cos;
@@ -592,8 +593,8 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         const j = i / 3;
         const free = broken * broken;
         arr[i] = original[i] + scatter[i] * free;
-        arr[i + 1] = Math.max(-2.38 + (j % 7) * 0.015,
-          original[i + 1] + scatter[i + 1] * free * 0.18 - 3.9 * free);
+        arr[i + 1] = original[i + 1] +
+          (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - original[i + 1]) * free;
         arr[i + 2] = original[i + 2] + scatter[i + 2] * free;
         if (!reduced && broken < 0.001) {
           arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;

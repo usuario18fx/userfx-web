@@ -58,28 +58,32 @@ export function Brand({ style }: { style?: CSSProperties }) {
         </div>
          );
          }
-export function MenuButton({
-  width,
-  gap,
-  className = "",
-}: {
-  width: string;
-  gap: string;
-  className?: string;
-}) {
+export function MenuButton({ className = "" }: { className?: string }) {
   const { open, toggle } = useMenu();
   return (
     <button
-      className={`group relative flex flex-col justify-center ${className}`}
-      style={{ width, gap, height: `calc(${gap} + 2px)` }}
       type="button"
       onClick={toggle}
+      className={`fx-telegram-launch fx-menu-button shrink-0 ${className}`}
+      aria-label={open ? "Close menu" : "Open menu"}
+      title={open ? "Close menu" : "Open menu"}
       aria-expanded={open}
       aria-controls="site-menu"
-      aria-label={open ? "Close menu" : "Open menu"}>
-      {[0, 1].map((i) => (
-        <motion.span key={i} className="block h-px w-full origin-center bg-ink" animate={ open ? { rotate: i === 0 ? 45 : -45, y: i === 0 ? "50%" : "-50%" } : { rotate: 0, y: "0%" } } transition={{ duration: 0.4, ease: EASE }} />
-      ))}
+    >
+      <span className="relative block h-6 w-6" aria-hidden="true">
+        <motion.span
+          className="absolute left-[2px] top-[7px] h-[2px] w-5 rounded-full bg-white"
+          initial={false}
+          animate={open ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
+          transition={{ duration: 0.28, ease: EASE }}
+        />
+        <motion.span
+          className="absolute left-[2px] top-[15px] h-[2px] w-5 rounded-full bg-white"
+          initial={false}
+          animate={open ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
+          transition={{ duration: 0.28, ease: EASE }}
+        />
+      </span>
     </button>
   );
 }
@@ -128,7 +132,7 @@ export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpe
               <button type="button" className="fx-telegram-launch" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
                 <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </button>
-              <MenuButton width="22.76px" gap="4.56px" />
+              <MenuButton />
             </div>
           </div>
         </motion.header>
@@ -176,85 +180,15 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }} onTouchEnd={(event) => { 
-  const el = event.currentTarget;
-  const startY = Number(el.dataset.fxTouchStartY || 0);
-  const endY = event.changedTouches.item(0)?.clientY ?? startY;
-
-  if (
-    startY - endY < 35 ||
-    el.scrollHeight - el.scrollTop - el.clientHeight > 12
-  ) return;
-
-  
-  const fxMenuToFooterHandoff = () => {
-    const footer = document.querySelector(".fx-footer-reveal");
-
-    if (
-      !footer ||
-      event.currentTarget.dataset.fxFooterHandoff === "1"
-    ) return;
-
-    event.currentTarget.dataset.fxFooterHandoff = "1";
-
-    onClose();
-
-    window.setTimeout(() => {
-      window.scrollTo({
-        top: Math.max(
-          0,
-          document.documentElement.scrollHeight - window.innerHeight
-        ),
-        behavior: "smooth"
-      });
-    }, 180);
-  };
-
-  fxMenuToFooterHandoff();
- }} onTouchStart={(event) => { 
-  event.currentTarget.dataset.fxTouchStartY =
-    String(event.touches.item(0)?.clientY ?? 0);
- }} onWheelCapture={(event) => { 
-  const el = event.currentTarget;
-
-  if (
-    event.deltaY <= 0 ||
-    el.scrollHeight - el.scrollTop - el.clientHeight > 12
-  ) return;
-
-  
-  const fxMenuToFooterHandoff = () => {
-    const footer = document.querySelector(".fx-footer-reveal");
-
-    if (
-      !footer ||
-      event.currentTarget.dataset.fxFooterHandoff === "1"
-    ) return;
-
-    event.currentTarget.dataset.fxFooterHandoff = "1";
-
-    onClose();
-
-    window.setTimeout(() => {
-      window.scrollTo({
-        top: Math.max(
-          0,
-          document.documentElement.scrollHeight - window.innerHeight
-        ),
-        behavior: "smooth"
-      });
-    }, 180);
-  };
-
-  fxMenuToFooterHandoff();
- }}>
+        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
           <div className="flex min-h-24 items-center justify-between gap-3">
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+              <FxChat />
               <a href={ENTER_URL} onClick={close} aria-label="Enter ROOM PRIV" title="ROOM PRIV" className="fx-telegram-launch shrink-0">
                 <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
               </a>
-              <MenuButton width="25px" gap="6px" />
+              <MenuButton />
             </div>
           </div>
           <nav className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]" aria-label="Site menu navigation">
@@ -280,20 +214,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
           {children ? <div className="w-full pt-10">
 {children}
 </div> : null}
-        
-  <div
-    className="fx-menu-footer-bridge mt-10 border-t border-cyan-400/25 pt-9 pb-12 text-center"
-    aria-hidden="true"
-  >
-    <span className="block text-[10px] tracking-[0.28em] text-cyan-300/75">
-      USER FX ? PRIVATE ROOM
-    </span>
-
-    <span className="mt-3 block text-[11px] tracking-[0.12em] text-white/50">
-      KEEP SCROLLING TO THE FOOTER ?
-    </span>
-  </div>
-</motion.div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
