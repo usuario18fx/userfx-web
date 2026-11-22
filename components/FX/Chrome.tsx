@@ -58,7 +58,7 @@ export function Brand({ style }: { style?: CSSProperties }) {
         </div>
          );
          }
-export function MenuButton({ className = "" }: { className?: string }) {
+export function MenuButton({ className = "" }: { className?: string; width?: string; gap?: string }) {
   const { open, toggle } = useMenu();
   return (
     <button
