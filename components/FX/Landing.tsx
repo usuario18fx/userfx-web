@@ -116,6 +116,27 @@ font-weight:650;
   box-shadow: 0 5px 1px #0099ff,0 0 25px rgba(0, 140, 255, 0.36);
 }
 .fx-telegram-launch:active { transform: translateY(1px); box-shadow: 0 1px 0 #006593; }
+/* The menu / close control shares the same electric-blue button shell as chat and profile. */
+.fx-menu-button.fx-telegram-launch {
+  width: 46px;
+  height: 32px;
+  min-width: 46px;
+  flex: 0 0 46px;
+  border: 1px solid rgba(45, 190, 255, .65);
+  border-radius: 8px;
+  background: linear-gradient(145deg, #007bd5 0%, #073a83 42%, #061b42 70%, #087eae 100%);
+  box-shadow: inset 0 1px 0 rgba(145, 233, 255, .36), inset 0 -2px 0 rgba(0, 6, 40, .7), 0 0 0 1px rgba(0, 52, 108, .55);
+}
+.fx-menu-button.fx-telegram-launch:hover,
+.fx-menu-button.fx-telegram-launch[data-open="true"] {
+  background: linear-gradient(145deg, #039de4 0%, #096ca9 40%, #061e52 75%, #0da3c9 100%);
+  box-shadow: inset 0 1px 0 rgba(177, 243, 255, .5), 0 3px 12px rgba(0, 130, 232, .36);
+}
+.fx-menu-button .fx-menu-glyph { position: relative; display: block; width: 24px; height: 24px; }
+.fx-menu-button .fx-menu-line { position: absolute; left: 2px; width: 20px; height: 2px; border-radius: 2px; background: #e6f8ff; box-shadow: 0 0 3px rgba(17, 199, 255, .45); }
+.fx-menu-button .fx-menu-line--top { top: 7px; }
+.fx-menu-button .fx-menu-line--bottom { top: 15px; }
+
 .fx-telegram-launch:focus-visible { outline: 2px solid #0022a9; outline-offset: 4px; }
 .fx-telegram-launch--hero { width: 56px; height: 56px; margin-top: 20px; font-size: 27px; }
 /* Room videos: a single 2x2 surface, zero space between tiles.
