@@ -176,7 +176,78 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
+        <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }} onTouchEnd={(event) => { 
+  const el = event.currentTarget;
+  const startY = Number(el.dataset.fxTouchStartY || 0);
+  const endY = event.changedTouches.item(0)?.clientY ?? startY;
+
+  if (
+    startY - endY < 35 ||
+    el.scrollHeight - el.scrollTop - el.clientHeight > 12
+  ) return;
+
+  
+  const fxMenuToFooterHandoff = () => {
+    const footer = document.querySelector(".fx-footer-reveal");
+
+    if (
+      !footer ||
+      event.currentTarget.dataset.fxFooterHandoff === "1"
+    ) return;
+
+    event.currentTarget.dataset.fxFooterHandoff = "1";
+
+    onClose();
+
+    window.setTimeout(() => {
+      window.scrollTo({
+        top: Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight
+        ),
+        behavior: "smooth"
+      });
+    }, 180);
+  };
+
+  fxMenuToFooterHandoff();
+ }} onTouchStart={(event) => { 
+  event.currentTarget.dataset.fxTouchStartY =
+    String(event.touches.item(0)?.clientY ?? 0);
+ }} onWheelCapture={(event) => { 
+  const el = event.currentTarget;
+
+  if (
+    event.deltaY <= 0 ||
+    el.scrollHeight - el.scrollTop - el.clientHeight > 12
+  ) return;
+
+  
+  const fxMenuToFooterHandoff = () => {
+    const footer = document.querySelector(".fx-footer-reveal");
+
+    if (
+      !footer ||
+      event.currentTarget.dataset.fxFooterHandoff === "1"
+    ) return;
+
+    event.currentTarget.dataset.fxFooterHandoff = "1";
+
+    onClose();
+
+    window.setTimeout(() => {
+      window.scrollTo({
+        top: Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight
+        ),
+        behavior: "smooth"
+      });
+    }, 180);
+  };
+
+  fxMenuToFooterHandoff();
+ }}>
           <div className="flex min-h-24 items-center justify-between gap-3">
             <Brand />
             <div className="flex shrink-0 items-center gap-3 sm:gap-5">
@@ -209,7 +280,20 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
           {children ? <div className="w-full pt-10">
 {children}
 </div> : null}
-        </motion.div>
+        
+  <div
+    className="fx-menu-footer-bridge mt-10 border-t border-cyan-400/25 pt-9 pb-12 text-center"
+    aria-hidden="true"
+  >
+    <span className="block text-[10px] tracking-[0.28em] text-cyan-300/75">
+      USER FX ? PRIVATE ROOM
+    </span>
+
+    <span className="mt-3 block text-[11px] tracking-[0.12em] text-white/50">
+      KEEP SCROLLING TO THE FOOTER ?
+    </span>
+  </div>
+</motion.div>
       )}
     </AnimatePresence>
   );
