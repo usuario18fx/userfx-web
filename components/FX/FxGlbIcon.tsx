@@ -183,17 +183,21 @@ export default function FxGlbIcon({
     );
 
     const start = performance.now();
+    let lastFrame = start;
     const tick = (now: number) => {
       if (disposed) return;
+      const dt = Math.min(0.06, Math.max(0, (now - lastFrame) / 1000));
+      lastFrame = now;
       if (model && visible && !pausedRef.current) {
         const elapsed = (now - start) / 1000;
         if (interactive) {
           const spin = spinRef.current;
           if (spin.pointerId === null) {
-            spin.yaw += spin.velocityYaw;
-            spin.pitch = THREE.MathUtils.clamp(spin.pitch + spin.velocityPitch, -0.72, 0.72);
-            spin.velocityYaw *= 0.90;
-            spin.velocityPitch *= 0.85;
+            // Preserve drag interaction, then smoothly return the crown to its frontal pose.
+            spin.yaw = THREE.MathUtils.damp(Math.atan2(Math.sin(spin.yaw + spin.velocityYaw), Math.cos(spin.yaw + spin.velocityYaw)), 0, 3.2, dt);
+            spin.pitch = THREE.MathUtils.damp(THREE.MathUtils.clamp(spin.pitch + spin.velocityPitch, -0.72, 0.72), 0, 3.2, dt);
+            spin.velocityYaw *= Math.exp(-10 * dt);
+            spin.velocityPitch *= Math.exp(-10 * dt);
           }
           // Keep the GLB intact; rotate its pivot, not an overlaid image.
           const gentleSway = sway && !reduceMotion ? Math.sin(elapsed * 0.9) * Math.min(swayAmount, 0.14) : 0;

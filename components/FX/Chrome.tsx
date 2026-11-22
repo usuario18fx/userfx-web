@@ -61,10 +61,10 @@ export function Brand({ style }: { style?: CSSProperties }) {
 export function MenuButton({ className = "" }: { className?: string; width?: string; gap?: string }) {
   const { open, toggle } = useMenu();
   return (
-    <button type="button" onClick={toggle} className={`fx-telegram-launch fx-menu-button shrink-0 ${className}`} data-open={open ? "true" : "false"} aria-label={open ? "Close menu" : "Open menu"} title={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="site-menu">
-      <span className="fx-menu-glyph" aria-hidden="true">
-        <motion.span className="fx-menu-line fx-menu-line--top" initial={false} animate={open ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
-        <motion.span className="fx-menu-line fx-menu-line--bottom" initial={false} animate={open ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
+    <button type="button" onClick={toggle} className={`fx-telegram-launch fx-menu-button shrink-0 ${className}`} data-open={open ? "true" : "false"} aria-label={open ? "Close menu" : "Open menu"} title={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="site-menu" style={{ display: "inline-grid", placeItems: "center", width: 46, height: 32, minWidth: 46, flex: "0 0 46px", padding: 0, border: "1px solid rgba(45,190,255,.65)", borderRadius: 8, background: "linear-gradient(145deg, #007bd5 0%, #073a83 42%, #061b42 70%, #087eae 100%)", boxShadow: "inset 0 1px 0 rgba(145,233,255,.36), inset 0 -2px 0 rgba(0,6,40,.7), 0 0 0 1px rgba(0,52,108,.55)" }}>
+      <span className="fx-menu-glyph" aria-hidden="true" style={{ position: "relative", display: "block", width: 24, height: 24 }}>
+        <motion.span className="fx-menu-line fx-menu-line--top" style={{ position: "absolute", left: 2, top: 7, width: 20, height: 2, borderRadius: 2, background: "#e6f8ff" }} initial={false} animate={open ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
+        <motion.span className="fx-menu-line fx-menu-line--bottom" style={{ position: "absolute", left: 2, top: 15, width: 20, height: 2, borderRadius: 2, background: "#e6f8ff" }} initial={false} animate={open ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }} transition={{ duration: 0.28, ease: EASE }} />
       </span>
     </button>
   );

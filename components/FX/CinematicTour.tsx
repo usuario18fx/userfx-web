@@ -61,13 +61,13 @@ const LAPTOP_VIDEOS = {
 } as const;
 type LaptopMode = keyof typeof LAPTOP_VIDEOS;
 // sube la corona y el "SCROLL DOWN TO ENTER"
-const WELCOME_LIFT_PX = 70;
+const WELCOME_LIFT_PX = 12;
 //baja el bloque de título (USER FX + WELCOME + PRIVATE WORLD), todo junto.
 const TITLE_DROP_PX = -5;
 //sube solo el "SCROLL DOWN TO ENTER".
-const SCROLL_EXTRA_LIFT_PX = 41;
+const SCROLL_EXTRA_LIFT_PX = 4;
 // baja solo el "USER FX"
-const USERFX_EXTRA_DROP_PX = 12;
+const USERFX_EXTRA_DROP_PX = 5;
 // ──────────────────
 const TUNING = {
   // Llegada del scroll (muelle amortiguado)
@@ -2212,13 +2212,16 @@ export default function CinematicTour({
         <div style={{ ...({ opacity: fxStagedFade(progress, 0.49, 0.72), fontFamily: '"Orbitron", system-ui, sans-serif', letterSpacing: ".32em", fontSize: "clamp(14px, 2vw, 24px)", fontWeight: 700, color: "#e8f4ff", textShadow: "0 2px 15px #000" }), fontSize: "clamp(14px, 1.7vw, 24px)", fontWeight: 700, letterSpacing: "0.28em", lineHeight: 1, marginBottom: "-0.1em", transform: `translateY(${TITLE_DROP_PX + USERFX_EXTRA_DROP_PX}px)`, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.62, 0.79), transition: "none" }}>
           USER FX
         </div>
-        <h1 className="ct-cover-title" style={{ ...({ margin: 0, fontSize: "clamp(48px, 9vw, 135px)", lineHeight: 1, maxWidth: "100%" }), display: "grid", gridTemplateColumns: "1fr", alignItems: "center", justifyItems: "center", width: "100%", maxWidth: "100%", gap: 0, fontSize: "clamp(35px, min(6.8vw, 11vh), 104px)", fontWeight: 800, lineHeight: 0.98, letterSpacing: "-0.035em", textAlign: "center", whiteSpace: "normal", margin: 0, padding: 0, animation: "none", transform: `translateY(${TITLE_DROP_PX}px)` }}>
-          <span className="ct-chrome" style={{ ...({ opacity: fxStagedFade(progress, 0.24, 0.46) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "1em", lineHeight: 0.92, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.40, 0.62), transition: "none" }}>
-WELCOME
-</span>
-          <span className="ct-blue" style={{ ...({ opacity: fxStagedFade(progress, 0.75, 1.00) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "clamp(16px, min(3.3vw, 4.5vh), 50px)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "0.07em", whiteSpace: "nowrap", opacity: fxCoverReveal(progress, 0.25, 0.40) * fxCoverStep(progress, 0.82, 1.00), transition: "none" }}>
-PRIVATE WORLD
-</span>
+        <h1 className="ct-cover-title" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", alignItems: "center", justifyItems: "center", width: "100%", maxWidth: "100%", margin: 0, fontSize: "clamp(36px, min(6.8vw, 11vh), 104px)", lineHeight: 1, letterSpacing: "-0.035em", textAlign: "center", transform: `translateY(${TITLE_DROP_PX}px)` }}>
+          {progress < 0.18 * 0.44 ? (
+            <span className="ct-chrome" style={{ gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", lineHeight: 1, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.24, 0.44), transition: "none" }}>
+              WELCOME
+            </span>
+          ) : (
+            <span className="ct-blue" style={{ gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "clamp(16px, min(3.3vw, 4.5vh), 50px)", lineHeight: 1, whiteSpace: "nowrap", opacity: fxCoverReveal(progress, 0.44, 0.57) * fxCoverStep(progress, 0.82, 1.00), transition: "none" }}>
+              PRIVATE WORLD
+            </span>
+          )}
         </h1>
         {/* Corona en 3D (.glb). Su tamaño depende del ancho Y del alto de la ventana para que todo el bloque quepa. */}
         <FxGlbIcon
@@ -2228,16 +2231,16 @@ PRIVATE WORLD
           paused={progress >= 0.18}
           style={{
             display: "block",
-            width: "400px",
-            maxWidth: "60vw",
+            width: "clamp(230px, 30vw, 350px)",
+            maxWidth: "72vw",
             alignSelf: "center",
             opacity: fxCoverStep(progress, 0.83, 1.00),
-            marginTop: "-8px", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
+            marginTop: "0", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
             filter: "drop-shadow(0 5px 14px rgba(0, 0, 0, 0.4))",
             pointerEvents: "auto",
           }}
         />
-        <div style={{ ...({ opacity: 0.5 * fxStagedFade(progress, 0.00, 0.20), fontFamily: '"Orbitron", system-ui, sans-serif', fontSize: "clamp(11px, 1.2vw, 16px)", letterSpacing: ".2em", fontWeight: 700, color: "#c6e6f7", textShadow: "0 2px 12px #000", marginTop: "clamp(18px, 4vh, 44px)" }), marginTop: "-48px", fontSize: "15px", lineHeight: 1.4, whiteSpace: "nowrap", letterSpacing: "0.16em", opacity: 0.65 * fxCoverStep(progress, 0.00, 0.24), transform: `translateY(-${WELCOME_LIFT_PX + SCROLL_EXTRA_LIFT_PX}px)`, transition: "none" }}>
+        <div style={{ ...({ opacity: 0.5 * fxStagedFade(progress, 0.00, 0.20), fontFamily: '"Orbitron", system-ui, sans-serif', fontSize: "clamp(11px, 1.2vw, 16px)", letterSpacing: ".2em", fontWeight: 700, color: "#c6e6f7", textShadow: "0 2px 12px #000", marginTop: "clamp(18px, 4vh, 44px)" }), marginTop: "clamp(4px, 1vh, 12px)", fontSize: "15px", lineHeight: 1.4, whiteSpace: "nowrap", letterSpacing: "0.16em", opacity: 0.65 * fxCoverStep(progress, 0.00, 0.24), transform: `translateY(-${SCROLL_EXTRA_LIFT_PX}px)`, transition: "none" }}>
           SCROLL DOWN TO ENTER
         </div>
       </div>
