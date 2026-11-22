@@ -81,7 +81,7 @@ export default function TelegramIdentityFooter({ onVerified, instanceId = "teleg
   return (
     <section id={instanceId} className="fx-identity-footer" aria-labelledby={`${instanceId}-title`}>
       <p className="fx-identity-intro">
-        are you a special user? Enter a username, enjoy it!
+        Are you a special user? Enter a username, enjoy it!
       </p>
       <div className="fx-identity-panel">
         <header className="fx-identity-heading">

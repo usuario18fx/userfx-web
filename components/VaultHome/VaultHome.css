@@ -1268,7 +1268,6 @@ video {
   max-width: none;
   padding-left: max(20px, calc(50% - 32rem));
   padding-right: max(20px, calc(50% - 32rem));
-  padding-bottom: 0;
   border-top: none;
   border-bottom: none;
 }
@@ -1674,16 +1673,10 @@ video {
   background: #252323 !important;
 }
 /* PROTOCOLO → CHOOSE YOUR CODE */
-#protocolo.vx-sec {
-  padding-bottom: 0 !important;
-}
-#llaves.vx-sec {
-  padding-top: 0 !important;
-}
 /* CHOOSE YOUR CODE → WHAT'S INSIDE */
 #llaves.vx-sec .vx-insideZone {
   display: flow-root;
-  padding-top: 24px !important;
+  padding-top: 10px !important;
 }
 #llaves.vx-sec .vx-insideBlock {
   margin-top: 0 !important;
