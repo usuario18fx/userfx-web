@@ -2209,14 +2209,14 @@ export default function CinematicTour({
   return (
     <div ref={host} className="cinematic-tour" role="img" aria-label="Recorrido 3D por la habitación de USER FX">
       <div className="fx-welcome-restored" aria-hidden={progress >= 0.18} style={{ ...({ position: "absolute", inset: 0, zIndex: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "clamp(10px, 2vh, 22px)", padding: "clamp(20px, 5vw, 72px)", boxSizing: "border-box", textAlign: "center", pointerEvents: "none", opacity: 1, visibility: progress >= 0.18 ? "hidden" : "visible", transition: "opacity 0.35s ease", }), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "clamp(2px, 0.6vh, 8px)", padding: "clamp(12px, 2vh, 24px) clamp(16px, 4vw, 60px)", paddingTop: "clamp(96px, 14vh, 140px)", width: "100%", maxWidth: "100%", overflow: "hidden", textAlign: "center", boxSizing: "border-box", opacity: 1 }} >
-        <div style={{ ...({ opacity: fxStagedFade(progress, 0.49, 0.72), fontFamily: '"Orbitron", system-ui, sans-serif', letterSpacing: ".32em", fontSize: "clamp(14px, 2vw, 24px)", fontWeight: 700, color: "#e8f4ff", textShadow: "0 2px 15px #000" }), fontSize: "clamp(14px, 1.7vw, 24px)", fontWeight: 700, letterSpacing: "0.28em", lineHeight: 1, marginBottom: "-0.1em", transform: `translateY(${TITLE_DROP_PX + USERFX_EXTRA_DROP_PX}px)`, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.50, 0.74), transition: "none" }}>
+        <div style={{ ...({ opacity: fxStagedFade(progress, 0.49, 0.72), fontFamily: '"Orbitron", system-ui, sans-serif', letterSpacing: ".32em", fontSize: "clamp(14px, 2vw, 24px)", fontWeight: 700, color: "#e8f4ff", textShadow: "0 2px 15px #000" }), fontSize: "clamp(14px, 1.7vw, 24px)", fontWeight: 700, letterSpacing: "0.28em", lineHeight: 1, marginBottom: "-0.1em", transform: `translateY(${TITLE_DROP_PX + USERFX_EXTRA_DROP_PX}px)`, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.62, 0.79), transition: "none" }}>
           USER FX
         </div>
-        <h1 className="ct-cover-title" style={{ ...({ margin: 0, fontSize: "clamp(48px, 9vw, 135px)", lineHeight: 1, maxWidth: "100%" }), display: "grid", gridTemplateColumns: "1fr", alignItems: "center", justifyItems: "center", width: "100%", maxWidth: "100%", gap: 0, fontSize: "clamp(36px, min(7.2vw, 12vh), 116px)", fontWeight: 800, lineHeight: 0.98, letterSpacing: "-0.035em", textAlign: "center", whiteSpace: "normal", margin: 0, padding: 0, animation: "none", transform: `translateY(${TITLE_DROP_PX}px)` }}>
-          <span className="ct-chrome" style={{ ...({ opacity: fxStagedFade(progress, 0.24, 0.46) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "1em", lineHeight: 0.92, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.25, 0.49), transition: "none" }}>
+        <h1 className="ct-cover-title" style={{ ...({ margin: 0, fontSize: "clamp(48px, 9vw, 135px)", lineHeight: 1, maxWidth: "100%" }), display: "grid", gridTemplateColumns: "1fr", alignItems: "center", justifyItems: "center", width: "100%", maxWidth: "100%", gap: 0, fontSize: "clamp(35px, min(6.8vw, 11vh), 104px)", fontWeight: 800, lineHeight: 0.98, letterSpacing: "-0.035em", textAlign: "center", whiteSpace: "normal", margin: 0, padding: 0, animation: "none", transform: `translateY(${TITLE_DROP_PX}px)` }}>
+          <span className="ct-chrome" style={{ ...({ opacity: fxStagedFade(progress, 0.24, 0.46) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "1em", lineHeight: 0.92, whiteSpace: "nowrap", opacity: fxCoverStep(progress, 0.40, 0.62), transition: "none" }}>
 WELCOME
 </span>
-          <span className="ct-blue" style={{ ...({ opacity: fxStagedFade(progress, 0.75, 1.00) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "clamp(16px, min(3.3vw, 4.5vh), 50px)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "0.07em", whiteSpace: "nowrap", opacity: fxCoverReveal(progress, 0.11, 0.29) * fxCoverStep(progress, 0.78, 1.00), transition: "none" }}>
+          <span className="ct-blue" style={{ ...({ opacity: fxStagedFade(progress, 0.75, 1.00) }), gridArea: "1 / 1", display: "block", width: "auto", maxWidth: "100%", fontSize: "clamp(16px, min(3.3vw, 4.5vh), 50px)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "0.07em", whiteSpace: "nowrap", opacity: fxCoverReveal(progress, 0.25, 0.40) * fxCoverStep(progress, 0.82, 1.00), transition: "none" }}>
 PRIVATE WORLD
 </span>
         </h1>
@@ -2231,8 +2231,8 @@ PRIVATE WORLD
             width: "400px",
             maxWidth: "60vw",
             alignSelf: "center",
-            opacity: fxCoverStep(progress, 0.75, 1.00),
-            marginTop: "-16px", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
+            opacity: fxCoverStep(progress, 0.83, 1.00),
+            marginTop: "-8px", transform: `translateY(-${WELCOME_LIFT_PX}px)`,
             filter: "drop-shadow(0 5px 14px rgba(0, 0, 0, 0.4))",
             pointerEvents: "auto",
           }}
