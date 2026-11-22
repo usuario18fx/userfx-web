@@ -429,13 +429,13 @@
 }
 
 .cinematic-tour .fx-welcome-restored .ct-cover-title {
-  display: flex !important;
-  flex-direction: column !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-items: center !important;
   width: 100% !important;
   max-width: 100% !important;
-  gap: clamp(8px, 1.5vh, 16px) !important;
+  gap: 0 !important;
   font-size: clamp(44px, 7vw, 108px) !important;
   line-height: 1 !important;
   animation: none !important;
@@ -454,4 +454,21 @@
   line-height: 1.2 !important;
   white-space: nowrap !important;
   letter-spacing: 0.08em !important;
+}
+
+/* The two headlines occupy one slot: PRIVATE WORLD replaces WELCOME on scroll. */
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-chrome,
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-blue {
+  grid-area: 1 / 1 !important;
+}
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-blue {
+  font-size: clamp(15px, min(3.2vw, 4.5vh), 46px) !important;
+}
+@media (max-width: 600px) {
+  .cinematic-tour .fx-welcome-restored {
+    padding-top: clamp(80px, 11vh, 110px) !important;
+  }
+  .cinematic-tour .fx-welcome-restored .ct-cover-title {
+    font-size: clamp(36px, 10vw, 64px) !important;
+  }
 }
