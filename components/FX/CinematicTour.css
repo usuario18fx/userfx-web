@@ -472,3 +472,22 @@
     font-size: clamp(36px, 10vw, 64px) !important;
   }
 }
+
+
+/* USERFX_PRIVATE_WORLD_BLUE_METALLIC_RESTORE_20261124 */
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-blue {
+  color: #48bfff !important;
+  background-color: transparent !important;
+  background-image: linear-gradient(
+    180deg,
+    #b2edff 0%,
+    #2b9ddd 35%,
+    #005ca1 70%,
+    #3faddf 100%
+  ) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 0.025em rgba(2, 17, 32, 0.9) !important;
+  filter: drop-shadow(0 3px 9px rgba(0, 0, 0, 0.95));
+}
