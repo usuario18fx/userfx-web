@@ -7,7 +7,7 @@ import { SmoothScroll, setSmoothScroll } from "./Motion";
 import ScrollStops from "./ScrollStops";
 import ScrollStory from "./ScrollStory";
 import CrownPlayground from "./CrownPlayground";
-import TelegramIdentityFooter from "./TelegramIdentityFooter";
+import CodeAccessFooter from "./CodeAccessFooter";
 import RoomIntro from "./RoomIntro";
 import FxSceneLoader from "./FxSceneLoader";
 import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
@@ -1502,7 +1502,7 @@ export default function Landing() {
       <SectionMethod />
       <SectionPricing />
       <SectionFaq />
-      <TelegramIdentityFooter onVerified={() => void handleTelegramVerified()} />
+      <CodeAccessFooter onEnterCode={() => setAccessOpen(true)} />
       </main>
       </div>
       <FooterBar />
