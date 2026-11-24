@@ -13,7 +13,7 @@ const COLUMNS = [
     { label: "Inbox", href: "#/private-room/buzon" },
   ] },
   { title: "Access", links: [
-    { label: "Get my code", href: "https://t.me/User18Fx_bot?start=getcode" },
+    { label: "Get my code", href: "#/private-room-access/plans" },
     { label: "Enter a code", href: "#/private-room-access" },
     { label: "Compare access", href: "#access" },
   ] },
@@ -26,6 +26,7 @@ const COLUMNS = [
 type FooterProps = {
   onVerified: () => void;
   onEnterCode?: () => void;
+  onGetCode?: () => void;
 };
 type TelegramUser = {
   id: string;
@@ -33,7 +34,7 @@ type TelegramUser = {
   username: string;
 };
 
-function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
+function TelegramSignIn({ onVerified, onEnterCode, onGetCode }: FooterProps) {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -112,11 +113,11 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
         )}
 
         <div className="fx-footer-tg-actions" role="group" aria-label="Private access options">
-          <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer" className="fx-footer-tg-primary" aria-label="Get a private access code through Telegram">
+          <button type="button" onClick={onGetCode || (() => { window.location.hash = "#/private-room-access/plans"; })} className="fx-footer-tg-primary" aria-label="Choose BASIC, PRO or VIP access plan">
             <img src="/assets/iconos/telegram.png" alt="" />
             GET CODE
             <span aria-hidden="true">↗</span>
-          </a>
+          </button>
           <button type="button" className="fx-footer-tg-secondary" onClick={onEnterCode || onVerified}>
             GOT CODE
           </button>
@@ -133,7 +134,7 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
   );
 }
 
-export default function SiteFooter({ onVerified, onEnterCode }: FooterProps) {
+export default function SiteFooter({ onVerified, onEnterCode, onGetCode }: FooterProps) {
   const { close } = useMenu();
   const openAccess = () => {
     close();
@@ -144,7 +145,7 @@ export default function SiteFooter({ onVerified, onEnterCode }: FooterProps) {
             <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-0 h-[480px] w-[480px] rounded-full opacity-[.12] blur-[120px]" style={{ background: ACCENT }} />
             <div className="relative mx-auto w-full max-w-[1440px] px-6 pb-10 pt-20 md:px-10 md:pt-28">
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease: EASE }} className="grid gap-16 lg:grid-cols-[1.2fr_1fr]">
-            <TelegramSignIn onVerified={openAccess} onEnterCode={onEnterCode ? () => { close(); onEnterCode(); } : openAccess} />
+            <TelegramSignIn onVerified={openAccess} onEnterCode={onEnterCode ? () => { close(); onEnterCode(); } : openAccess} onGetCode={onGetCode ? () => { close(); onGetCode(); } : undefined} />
             <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3">
             {COLUMNS.map((col) => (
             <div key={col.title}>
