@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import "./FooterTelegramCard.css";
-import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import { useMenu } from "./Chrome";
 import { motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
@@ -90,7 +89,7 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
         Your private <span className="text-white/40">identity.</span>
       </h2>
       <p className="mt-4 text-sm leading-relaxed text-white/55">
-        Your account, your space. Check access with Telegram.
+        Your account, your space. Enter with your private code.
       </p>
       <section className="fx-footer-tg-card" aria-label="USER FX Telegram access">
         <div className="fx-footer-tg-head">
@@ -99,8 +98,8 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
           </div>
           <div className="fx-footer-tg-heading">
             <span className="fx-footer-tg-kicker">USER FX · PRIVATE IDENTITY</span>
-            <strong>Telegram Access</strong>
-            <small>{user ? "Secure Telegram session connected" : "Your username. Your private access."}</small>
+            <strong>Private Access</strong>
+            <small>{user ? "Secure Telegram session connected" : "Your code. Your private access."}</small>
           </div>
           <span className="fx-footer-tg-state">{user ? "CONNECTED" : "PRIVATE"}</span>
         </div>
@@ -112,30 +111,22 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
           </div>
         )}
 
-        <div className="fx-footer-tg-actions">
-          <a href="https://t.me/User18Fx_bot?start=identity" target="_blank" rel="noopener noreferrer" className="fx-footer-tg-primary">
+        <div className="fx-footer-tg-actions" role="group" aria-label="Private access options">
+          <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer" className="fx-footer-tg-primary" aria-label="Get a private access code through Telegram">
             <img src="/assets/iconos/telegram.png" alt="" />
-            OPEN TELEGRAM BOT
+            GET CODE
             <span aria-hidden="true">↗</span>
           </a>
           <button type="button" className="fx-footer-tg-secondary" onClick={onEnterCode || onVerified}>
-            I HAVE A CODE
+            GOT CODE
           </button>
-        </div>
-
-        <div className="fx-footer-tg-username">
-          <div className="fx-footer-tg-check-title">
-            <strong>· TELEGRAM IDENTITY ·</strong>
-            <span>CHECK YOUR USERNAME</span>
-          </div>
-          <TelegramIdentityFooter instanceId="fx-footer-telegram-check" onVerified={onVerified} />
         </div>
 
         {!ready && <p className="fx-footer-tg-message" role="status">CHECKING YOUR SESSION…</p>}
         {busy && <p className="fx-footer-tg-message" role="status">DISCONNECTING TELEGRAM…</p>}
         {error && <p className="fx-footer-tg-error" role="alert">{error}</p>}
         <p className="fx-footer-tg-disclaimer">
-          Username checks do not grant entry. A valid access code is still required for your private room.
+          A valid access code is required to unlock your private room.
         </p>
       </section>
     </div>
