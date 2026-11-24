@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import "./FooterTelegramCard.css";
-import TelegramIdentityFooter from "./TelegramIdentityFooter";
 import { useMenu } from "./Chrome";
 import { motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
@@ -14,7 +13,7 @@ const COLUMNS = [
     { label: "Inbox", href: "#/private-room/buzon" },
   ] },
   { title: "Access", links: [
-    { label: "Get my code", href: "https://t.me/User18Fx_bot?start=getcode" },
+    { label: "Get my code", href: "#/private-room-access/plans" },
     { label: "Enter a code", href: "#/private-room-access" },
     { label: "Compare access", href: "#access" },
   ] },
@@ -27,6 +26,7 @@ const COLUMNS = [
 type FooterProps = {
   onVerified: () => void;
   onEnterCode?: () => void;
+  onGetCode?: () => void;
 };
 type TelegramUser = {
   id: string;
@@ -34,7 +34,7 @@ type TelegramUser = {
   username: string;
 };
 
-function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
+function TelegramSignIn({ onVerified, onEnterCode, onGetCode }: FooterProps) {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -90,7 +90,7 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
         Your private <span className="text-white/40">identity.</span>
       </h2>
       <p className="mt-4 text-sm leading-relaxed text-white/55">
-        Your account, your space. Check access with Telegram.
+        Your account, your space. Enter with your private code.
       </p>
       <section className="fx-footer-tg-card" aria-label="USER FX Telegram access">
         <div className="fx-footer-tg-head">
@@ -99,8 +99,8 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
           </div>
           <div className="fx-footer-tg-heading">
             <span className="fx-footer-tg-kicker">USER FX · PRIVATE IDENTITY</span>
-            <strong>Telegram Access</strong>
-            <small>{user ? "Secure Telegram session connected" : "Your username. Your private access."}</small>
+            <strong>Private Access</strong>
+            <small>{user ? "Secure Telegram session connected" : "Your code. Your private access."}</small>
           </div>
           <span className="fx-footer-tg-state">{user ? "CONNECTED" : "PRIVATE"}</span>
         </div>
@@ -112,37 +112,29 @@ function TelegramSignIn({ onVerified, onEnterCode }: FooterProps) {
           </div>
         )}
 
-        <div className="fx-footer-tg-actions">
-          <a href="https://t.me/User18Fx_bot?start=identity" target="_blank" rel="noopener noreferrer" className="fx-footer-tg-primary">
+        <div className="fx-footer-tg-actions" role="group" aria-label="Private access options">
+          <button type="button" onClick={onGetCode || (() => { window.location.hash = "#/private-room-access/plans"; })} className="fx-footer-tg-primary" aria-label="Choose BASIC, PRO or VIP access plan">
             <img src="/assets/iconos/telegram.png" alt="" />
-            OPEN TELEGRAM BOT
+            GET CODE
             <span aria-hidden="true">↗</span>
-          </a>
-          <button type="button" className="fx-footer-tg-secondary" onClick={onEnterCode || onVerified}>
-            I HAVE A CODE
           </button>
-        </div>
-
-        <div className="fx-footer-tg-username">
-          <div className="fx-footer-tg-check-title">
-            <strong>· TELEGRAM IDENTITY ·</strong>
-            <span>CHECK YOUR USERNAME</span>
-          </div>
-          <TelegramIdentityFooter instanceId="fx-footer-telegram-check" onVerified={onVerified} />
+          <button type="button" className="fx-footer-tg-secondary" onClick={onEnterCode || onVerified}>
+            GOT CODE
+          </button>
         </div>
 
         {!ready && <p className="fx-footer-tg-message" role="status">CHECKING YOUR SESSION…</p>}
         {busy && <p className="fx-footer-tg-message" role="status">DISCONNECTING TELEGRAM…</p>}
         {error && <p className="fx-footer-tg-error" role="alert">{error}</p>}
         <p className="fx-footer-tg-disclaimer">
-          Username checks do not grant entry. A valid access code is still required for your private room.
+          A valid access code is required to unlock your private room.
         </p>
       </section>
     </div>
   );
 }
 
-export default function SiteFooter({ onVerified, onEnterCode }: FooterProps) {
+export default function SiteFooter({ onVerified, onEnterCode, onGetCode }: FooterProps) {
   const { close } = useMenu();
   const openAccess = () => {
     close();
@@ -153,7 +145,7 @@ export default function SiteFooter({ onVerified, onEnterCode }: FooterProps) {
             <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-0 h-[480px] w-[480px] rounded-full opacity-[.12] blur-[120px]" style={{ background: ACCENT }} />
             <div className="relative mx-auto w-full max-w-[1440px] px-6 pb-10 pt-20 md:px-10 md:pt-28">
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease: EASE }} className="grid gap-16 lg:grid-cols-[1.2fr_1fr]">
-            <TelegramSignIn onVerified={openAccess} onEnterCode={onEnterCode ? () => { close(); onEnterCode(); } : openAccess} />
+            <TelegramSignIn onVerified={openAccess} onEnterCode={onEnterCode ? () => { close(); onEnterCode(); } : openAccess} onGetCode={onGetCode ? () => { close(); onGetCode(); } : undefined} />
             <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3">
             {COLUMNS.map((col) => (
             <div key={col.title}>

@@ -1,0 +1,455 @@
+.fx-cinematic-canvas {
+  touch-action: pan-y;
+}
+/* ─── Contenedor de scroll: su altura define la duración del recorrido ─── */
+.tour-scroll {
+  position: relative;
+  height: 600vh; /* 500vh–800vh: más alto = recorrido más lento */
+  background:  linear-gradient(180deg,
+  #00A8FF 0%,#0055A6 45%,
+  #002761 100%);
+}
+/* ─── Escenario fijo mientras dura el recorrido ─── */
+.tour-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+/* ─── Canvas 3D ─── */
+.cinematic-tour {
+  position: absolute;
+  inset: 0;
+  background: #14121c;
+}
+.cinematic-tour canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ─── Degradado solo detrás del texto (el 3D se ve a la derecha) ─── */
+.tour-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+  #08041ee0 0%,#08041e8c 35%,
+  transparent 65%);
+  }
+/* ─── Textos: sin fondo propio y sin bloquear clics al canvas ─── */
+.tour-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 clamp(24px, 5vw, 72px) clamp(48px, 9vh, 96px);
+  background: none;
+  color: #fff;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.tour-copy a,
+.tour-copy button {
+  pointer-events: auto;
+}
+.tour-eyebrow {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: #f0b97d;
+}
+.tour-title {
+  margin: 0;
+  font-size: clamp(56px, 11vw, 150px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-shadow: 0 8px 40px #00000080;
+}
+.tour-title b {
+  font-weight: 700;
+  color: #2ea17f;
+}
+.tour-kicker {
+  margin: 28px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+.tour-text {
+  margin: 0;
+  max-width: 460px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #e8e4f2;
+}
+.tour-number {
+  position: absolute;
+  right: clamp(24px, 5vw, 72px);
+  bottom: clamp(48px, 9vh, 96px);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 300;
+  color: #2ea17f;
+}
+/* ─── Indicador de scroll ─── */
+.tour-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #fff;
+  pointer-events: none;
+}
+.tour-hint i {
+  display: block;
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(#fff, transparent);
+  animation: tour-hint-pulse 1.8s ease-in-out infinite;
+}
+@keyframes tour-hint-pulse {
+  0%, 100% { opacity: 0.25; transform: scaleY(0.6); transform-origin: top; }
+  50%      { opacity: 1;    transform: scaleY(1);   transform-origin: top; }
+}
+/* ─── Barra de progreso del recorrido ─── */
+.tour-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+.tour-bar span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #2ea17f;
+  transform-origin: left center;
+}
+/* ─── Móvil ─── */
+@media (max-width: 720px) {
+  .tour-shade {
+    background: linear-gradient(0deg, rgba(8, 4, 30, 0.9) 0%, transparent 70%);
+  }
+  .tour-number { display: none; 
+  }}
+@media (prefers-reduced-motion: reduce) {
+  .tour-hint i { animation: none; }
+}
+/* contenedor del scroll: alto = lo que dure el recorrido */
+.tour-scroll { position: relative; height: 600vh; }
+/* el canvas queda fijo durante todo el recorrido */
+.tour-stage {
+  position: sticky; top: 0;
+  height: 100vh; width: 100%;
+  overflow: hidden;
+}
+.cinematic-tour { position: absolute; inset: 0; }
+.cinematic-tour canvas { display: block; width: 100% !important; height: 100% !important; 
+}
+/* los textos van encima, sin fondo propio */
+.tour-copy {
+  position: absolute; inset: 0;
+  z-index: 2;
+  background: none;           
+  pointer-events: none;    /* para poder hacer clic en laptop y TV */
+}
+.tour-copy a, .tour-copy button { pointer-events: auto; 
+}
+.tour-copy::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #08041ed9 0%, 
+  transparent 55%);
+}
+/* WELCOME cover: layered over the 3D scene, centered on every viewport. */
+.cinematic-tour .ct-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: clamp(24px, 5vw, 80px);
+  color: #e6f6ff;
+  text-align: center;
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+.cinematic-tour .ct-cover-title {
+  animation: ct-cover-type-zoom 1800ms cubic-bezier(.22,.7,.1,1) both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.6vh, 16px);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  font-family: "Fredoka", "Orbitron", system-ui, sans-serif;
+  font-size: clamp(48px, 9vw, 138px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+.cinematic-tour .ct-cover-brand {
+  font: 700 clamp(14px, 2vw, 25px)/1.2 "Fredoka", system-ui, sans-serif;
+  letter-spacing: .26em;
+  color: #daeeff;
+  text-shadow: 0 1px 12px #000;
+}
+@keyframes ct-cover-type-zoom {
+  0% { transform: scale(1.36); }
+  63% { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+.cinematic-tour .ct-chrome {
+  display: block;
+  max-width: 100%;
+  font-size: 1em;
+  line-height: 1;
+  color: #dfe5ed;
+  background: linear-gradient(180deg, #ffffff 0%, #d1dbe6 28%, #748295 54%, #f7f9ff 77%, #9eacbd 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(9, 20, 33, 0.65);
+  filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.88));
+}
+.cinematic-tour .ct-blue {
+  display: block;
+  max-width: 100%;
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: 0.34em;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;
+  color: #48bfff;
+  background: linear-gradient(180deg, #b2edff 0%, #2b9ddd 35%, #005ca1 70%, #3faddf 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.025em rgba(2, 17, 32, 0.9);
+  filter: drop-shadow(0 3px 9px rgba(0, 0, 0, 0.95));
+}
+.cinematic-tour .ct-cover-hint {
+  margin: clamp(26px, 5vh, 50px) 0 0;
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: clamp(11px, 1.15vw, 16px);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d4efff;
+  text-shadow: 0 2px 10px #000;
+}
+@media (max-width: 600px) {
+  .cinematic-tour .ct-cover {
+    padding: 28px 14px;
+  }
+  .cinematic-tour .ct-cover-title {
+    font-size: clamp(40px, 12vw, 82px);
+    gap: 12px;
+  }
+  .cinematic-tour .ct-blue {
+    font-size: 0.33em;
+    letter-spacing: 0.055em;
+    text-indent: 0.055em;
+  }
+  .cinematic-tour .ct-cover-hint {
+    margin-top: 25px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-tour .ct-cover {
+    transition: none;
+  }}
+/* Cover: device-aware gesture, with half-opacity English instructions */
+.cinematic-tour .ct-cover-hint {
+  opacity: .5;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+.cinematic-tour .ct-gesture-copy {
+  display: block;
+  opacity: 1;
+  color: #c1dff2;
+}
+.cinematic-tour .ct-gesture-desktop,
+.cinematic-tour .ct-gesture-mobile {
+  width: 26px;
+  height: 34px;
+  color: #6eabff;
+  opacity: .8;
+}
+.cinematic-tour .ct-gesture-desktop svg,
+.cinematic-tour .ct-gesture-mobile svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cinematic-tour .ct-gesture-mobile,
+.cinematic-tour .ct-mobile-copy {
+  display: none;
+}
+.cinematic-tour .ct-gesture-wheel {
+  animation: ct-scroll-wheel 1.7s ease-in-out infinite;
+}
+@keyframes ct-scroll-wheel {
+  0%, 100% { transform: translateY(0); opacity: .2; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@keyframes ct-finger-swipe {
+  0% { transform: translateY(-9px); opacity: .2; }
+  35%, 70% { opacity: 1; }
+  100% { transform: translateY(10px); opacity: .1; }
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .cinematic-tour .ct-gesture-desktop,
+  .cinematic-tour .ct-desktop-copy {
+    display: none;
+  }
+  .cinematic-tour .ct-gesture-mobile,
+  .cinematic-tour .ct-mobile-copy {
+    display: block;
+  }
+  .cinematic-tour .ct-gesture-mobile svg {
+    animation: ct-finger-swipe 2s ease-in-out infinite;
+  }}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-tour .ct-cover-title { animation: none !important; }
+  .cinematic-tour .ct-gesture-wheel,
+  .cinematic-tour .ct-gesture-mobile svg {
+    animation: none !important;
+  }}
+/* Henry-style interactive HTML projected onto the 3D laptop screen. */
+.cinematic-tour .ct-css3d {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cinematic-tour .ct-screen {
+  position: absolute;
+  overflow: visible;
+  box-sizing: border-box;
+  pointer-events: none;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+}
+.cinematic-tour .ct-screen button,
+.cinematic-tour .ct-screen a,
+.cinematic-tour .ct-screen [data-ct-hit] {
+  pointer-events: auto;
+}
+.cinematic-tour .ct-focus-exit {
+  position: absolute;
+  top: clamp(82px, 12vh, 128px);
+  right: clamp(16px, 4vw, 64px);
+  z-index: 30;
+  padding: 10px 16px;
+  border: 1px solid rgba(105, 206, 242, 0.55);
+  border-radius: 8px;
+  background: rgba(5, 15, 30, 0.90);
+  color: #d7f1ff;
+  font: 700 11px/1.3 "Orbitron", system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.cinematic-tour .ct-focus-exit:hover,
+.cinematic-tour .ct-focus-exit:focus-visible {
+  border-color: #3fd8d0;
+  background: rgba(14, 45, 74, 0.96);
+  outline: 2px solid #3fd8d0;
+  outline-offset: 3px;
+}
+.cinematic-tour .ct-focus-exit[hidden] {
+  display: none !important;
+}
+@media (max-width: 760px) {
+  .cinematic-tour .ct-focus-exit {
+    top: 80px;
+    right: 12px;
+    font-size: 10px;
+  }}
+/* USERFX-WELCOME-LAYOUT-FIX */
+.cinematic-tour .fx-welcome-restored {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: clamp(10px, 2vh, 20px) !important;
+  overflow: hidden !important;
+}
+.cinematic-tour .fx-welcome-restored .ct-cover-title {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 0 !important;
+  font-size: clamp(44px, 7vw, 108px) !important;
+  line-height: 1 !important;
+  animation: none !important;
+}
+.cinematic-tour .fx-welcome-restored .ct-chrome {
+  display: block !important;
+  font-size: 1em !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+.cinematic-tour .fx-welcome-restored .ct-blue {
+  display: block !important;
+  font-size: 0.36em !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.08em !important;
+}
+/* The two headlines occupy one slot: PRIVATE WORLD replaces WELCOME on scroll. */
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-chrome,
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-blue {
+  grid-area: 1 / 1 !important;
+}
+.cinematic-tour .fx-welcome-restored .ct-cover-title > .ct-blue {
+  font-size: clamp(15px, min(3.2vw, 4.5vh), 46px) !important;
+}
+@media (max-width: 600px) {
+  .cinematic-tour .fx-welcome-restored {
+    padding-top: clamp(80px, 11vh, 110px) !important;
+  }
+  .cinematic-tour .fx-welcome-restored .ct-cover-title {
+    font-size: clamp(36px, 10vw, 64px) !important;
+  }}

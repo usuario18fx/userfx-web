@@ -1,0 +1,203 @@
+
+/* USER FX · ᴛᴇʟᴇɢʀᴀᴍ ᴀᴄᴄᴇꜱꜱ
+   Separate from the private-room modal: keep checks functional, no embedded
+   iframe until the login domain is registered in Telegram BotFather. */
+.fx-footer-telegram-area { width: 100%; max-width: 540px; min-width: 0; }
+.fx-footer-tg-card {
+  position: relative;
+  margin-top: 28px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(53,186,245,.31);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 2% 0%, rgba(53,186,245,.16), transparent 48%),
+    linear-gradient(135deg, #101f2a 0%, #0b151f 48%, #070e17 100%);
+  box-shadow: 0 24px 68px #00000050, inset 0 1px 0 #ffffff0a;
+}
+.fx-footer-tg-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 25%;
+  width: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #3fd8d0b0, transparent);
+  pointer-events: none;
+}
+.fx-footer-tg-head {
+  display: grid;
+  grid-template-columns: 72px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 15px;
+}
+.fx-footer-tg-avatar {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #3fd8d04d;
+  border-radius: 17px;
+  background: #040c17;
+}
+.fx-footer-tg-avatar img { display: block; width: 68px; height: 68px; object-fit: contain; }
+.fx-footer-tg-heading { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fx-footer-tg-kicker { color: #3fd8d0; font-size: 9px; font-weight: 750; letter-spacing: .14em; }
+.fx-footer-tg-heading strong { color: #f0f8ff; font-size: clamp(16px,2.5vw,20px); font-weight: 750; line-height: 1.2; }
+.fx-footer-tg-heading small { color: #94afc0; font-size: 11px; line-height: 1.4; }
+.fx-footer-tg-state {
+  align-self: start;
+  border: 1px solid #3fd8d043;
+  border-radius: 100px;
+  padding: 5px 7px;
+  color: #82ddd9;
+  background: #09212b;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+.fx-footer-tg-session {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 17px;
+  padding: 10px 12px;
+  border: 1px solid #62e1ba55;
+  border-radius: 10px;
+  background: #10382c70;
+  color: #9df4d1;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.fx-footer-tg-session button {
+  flex-shrink: 0;
+  border: 1px solid #8dbab275;
+  border-radius: 7px;
+  padding: 7px 9px;
+  background: #0b1b20;
+  color: #dceefa;
+  font-size: 10px;
+  cursor: pointer;
+}
+.fx-footer-tg-actions {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 10px;
+  margin-top: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #8bb3c223;
+}
+.fx-footer-tg-primary, .fx-footer-tg-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .055em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fx-footer-tg-primary {
+  border: 1px solid #39c6ec55;
+  color: #071622;
+  background: linear-gradient(125deg, #36d1d1, #2aabee);
+}
+.fx-footer-tg-primary img { width: 19px; height: 19px; object-fit: contain; }
+.fx-footer-tg-primary:hover { filter: brightness(1.09); }
+.fx-footer-tg-secondary {
+  border: 1px solid #4b7b995b;
+  color: #bce4f4;
+  background: #122431;
+}
+.fx-footer-tg-secondary:hover { border-color: #35baf5; }
+.fx-footer-tg-username { padding-top: 17px; }
+.fx-footer-tg-check-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: #8db6cd;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .06em;
+}
+.fx-footer-tg-check-title strong {
+  padding: 6px 9px;
+  border-radius: 100px;
+  color: #06141e;
+  background: #2aabee;
+  font-size: 9px;
+}
+.fx-footer-tg-card .fx-identity-footer {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.fx-footer-tg-card .fx-identity-intro { display: none; }
+.fx-footer-tg-card .fx-identity-panel {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.fx-footer-tg-card .fx-identity-heading { display: none; }
+.fx-footer-tg-card .fx-identity-form {
+  grid-template-columns: 40px 20px minmax(0,1fr) 112px;
+  min-height: 50px;
+  height: auto;
+  border: 1px solid #2aabee80;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #050e17f2;
+}
+.fx-footer-tg-card .fx-identity-icon { height: 50px; border-right: 1px solid #2aabee4a; }
+.fx-footer-tg-card .fx-identity-at { color: #36c7e6; font-size: 18px; }
+.fx-footer-tg-card .fx-identity-form input {
+  height: 50px;
+  padding: 0 5px 0 0;
+  font-family: "Fredoka", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.fx-footer-tg-card .fx-identity-form button {
+  height: 40px;
+  margin-right: 5px;
+  padding: 0 6px;
+  color: #fff;
+  background: linear-gradient(125deg, #35baf5, #1379b8);
+  font-family: "Fredoka", sans-serif;
+  font-size: 10px;
+}
+.fx-footer-tg-message { margin-top: 12px; color: #99bdd4; font-size: 11px; }
+.fx-footer-tg-error { margin-top: 12px; color: #ff929e; font-size: 11px; }
+.fx-footer-tg-disclaimer { margin: 16px 0 0; color: #85a5b5; font-size: 10px; line-height: 1.5; }
+@media (max-width: 540px) {
+  .fx-footer-tg-card { padding: 14px; }
+  .fx-footer-tg-head { grid-template-columns: 56px minmax(0,1fr); gap: 10px; }
+  .fx-footer-tg-avatar { width: 56px; height: 56px; border-radius: 13px; }
+  .fx-footer-tg-avatar img { width: 54px; height: 54px; }
+  .fx-footer-tg-state { grid-column: 2; justify-self: start; }
+  .fx-footer-tg-actions { grid-template-columns: 1fr; }
+  .fx-footer-tg-check-title { font-size: 9px; }
+  .fx-footer-tg-card .fx-identity-form { grid-template-columns: 31px 16px minmax(0,1fr) 90px; }
+  .fx-footer-tg-card .fx-identity-icon { height: 48px; }
+  .fx-footer-tg-card .fx-identity-form input { height: 48px; font-size: 12px; }
+  .fx-footer-tg-card .fx-identity-form button { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-footer-tg-card *, .fx-footer-tg-card *::before { transition: none !important; }
+}

@@ -109,7 +109,7 @@ export function StickyHeader({ active, onOpenTelegram }: { active: string; onOpe
                 </a>
               ))}
             </nav>
-            <div className="flex items-center gap-3 md:gap-5">
+            <div className="fx-header-right-controls flex items-center">
               <FxChat />
               <button type="button" className="fx-telegram-launch" aria-label="Verify Telegram username" title="Telegram identity" onClick={onOpenTelegram}>
                 <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
@@ -165,7 +165,7 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
         <motion.div ref={ref} role="dialog" aria-modal="true" aria-label="Site menu" id="site-menu" data-lenis-prevent className="fx-menu-scroll fixed inset-0 z-[90] flex h-[100dvh] flex-col overflow-y-auto overscroll-y-contain bg-sky/98 px-6 backdrop-blur-2xl md:px-10" variants={panel} initial="hidden" animate="show" exit="exit" onKeyDown={(e) => { if (e.key !== "Tab") return; const nodes = Array.from( ref.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])") ?? [], ); const first = nodes[0], last = nodes.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }}>
           <div className="mx-auto flex h-16 min-h-16 w-full max-w-[1440px] items-center justify-between gap-3">
             <Brand />
-            <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            <div className="fx-header-right-controls flex shrink-0 items-center">
               <FxChat />
               <a href={ENTER_URL} onClick={close} aria-label="Enter ROOM PRIV" title="ROOM PRIV" className="fx-telegram-launch shrink-0">
                 <img src="/assets/room-priv-user-lock.webp" alt="" aria-hidden="true" />
@@ -173,31 +173,30 @@ export function MenuOverlay({ children }: { children?: ReactNode }) {
               <MenuButton />
             </div>
           </div>
-          <nav className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]" aria-label="Site menu navigation">
+        <nav className="mx-auto flex w-full max-w-[1200px] flex-none flex-col justify-center pt-[28px] pb-[18px]" aria-label="Site menu navigation">
             {NAV.map((item, i) => (
-              <motion.a
-                key={item.id}
+        <motion.a key={item.id}
                 variants={row}
                 href={`#${item.id}`}
                 onClick={(event) => navigateToSection(event, item.id)}
                 className="group relative flex items-center justify-between overflow-hidden border-b border-white/15 py-[20px] md:py-[24px]">
                 {/* línea dorada que barre la fila en hover / foco */}
-                <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
-                <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white/60 transition-all duration-300 group-hover:translate-x-3 group-hover:text-gold group-focus-visible:text-gold md:text-[7vw]">
+        <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
+        <span className="font-display text-[13vw] font-semibold uppercase leading-[.9] tracking-[-.03em] text-white/60 transition-all duration-300 group-hover:translate-x-3 group-hover:text-gold group-focus-visible:text-gold md:text-[7vw]">
                   {item.label}
-                </span>
-                {/* número grande: contorno dorado, se rellena en hover */}
-                <span aria-hidden="true" className="select-none text-[72px] font-light leading-none tracking-[-.08em] text-transparent transition-all duration-300 [-webkit-text-stroke:1px_rgba(206,182,123,.55)] group-hover:-translate-y-1 group-hover:text-gold/90 group-focus-visible:text-gold/90 md:text-[140px]">
+        </span>
+{/* número grande: contorno dorado, se rellena en hover */}
+        <span aria-hidden="true" className="select-none text-[72px] font-light leading-none tracking-[-.08em] text-transparent transition-all duration-300 [-webkit-text-stroke:1px_rgba(206,182,123,.55)] group-hover:-translate-y-1 group-hover:text-gold/90 group-focus-visible:text-gold/90 md:text-[140px]">
                   0{i + 1}
-                </span>
-              </motion.a>
+        </span>
+        </motion.a>
             ))}
-          </nav>
-          {children ? <div className="w-full pt-10">
-{children}
-</div> : null}
+        </nav>
+         {children ? <div className="w-full pt-10">
+         {children}
+        </div> : null}
         </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+        </AnimatePresence>
   );
 }

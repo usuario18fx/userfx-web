@@ -30,7 +30,7 @@ export default function CrownPlayground() {
         <ProtocolCrown progress={scrollYProgress} tl={STAGE_TIMELINE} active={visible} interactive className="fx-crown-playground-canvas" />
         <div className="fx-crown-playground-info" aria-hidden="true">
           <span>ᴄʀᴏᴡɴ ᴜɴʟᴏᴄᴋᴇᴅ</span>
-          <small>ᴅʀᴀɢ ᴛᴏ ᴍᴏᴠᴇ + ʀᴏᴛᴀᴛᴇ · sᴄʀᴏʟʟ ᴛᴏ ʀᴇʟᴇᴀsᴇ</small>
+          <small>ᴄʟɪᴄᴋ ᴛᴏ ᴅʀᴏᴘ · ᴅʀᴀɢ ᴛᴏ ʀᴏᴛᴀᴛᴇ · ᴄʟɪᴄᴋ ᴀɢᴀɪɴ ᴛᴏ ʀᴇʙᴜɪʟᴅ</small>
         </div>
       </div>
     </section>

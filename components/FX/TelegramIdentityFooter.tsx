@@ -83,38 +83,13 @@ export default function TelegramIdentityFooter({ onVerified, instanceId = "teleg
       <p className="fx-identity-intro">
         Are you a special user? Enter a username, enjoy it!
       </p>
-      <div className="fx-identity-panel">
-        <header className="fx-identity-heading">
-          <span className="fx-identity-pill">
-            ·TELEGRAM IDENTITY·
-          </span>
-          <strong id={`${instanceId}-title`}>
-            ENTER YOUR USERNAME
-          </strong>
-        </header>
-        <form className="fx-identity-form" onSubmit={handleSubmit}>
-          <span className="fx-identity-icon" aria-hidden="true">
-            <img src="/assets/iconos/telegram.png" alt="" />
-          </span>
-          <span className="fx-identity-at" aria-hidden="true">
-            @
-          </span>
-          <input type="text" value={username} onChange={(event) => { setUsername(event.target.value); setError(""); setMessage(""); }} placeholder="username" maxLength={32} autoCapitalize="none" autoCorrect="off" autoComplete="username" spellCheck={false} required disabled={loading} aria-label="Telegram username" />
-          <button type="submit" disabled={loading}>
-            {loading ? "CHECKING…" : "VERIFY USER"}
-          </button>
-        </form>
-        {error && (
-          <p className="fx-identity-feedback is-error" role="alert">
-            {error}
-          </p>
-        )}
-        {message && (
-          <p className="fx-identity-feedback" role="status">
-            {message}
-          </p>
-        )}
-      </div>
+      <div className="mx-auto w-full max-w-[720px] rounded-xl border border-cyan-400/40 bg-black/70 px-4 py-5 backdrop-blur-md">
+  <div className="mb-4 text-center text-[12px] tracking-[0.22em] text-cyan-300">??????????????????? ??????????????????</div>
+  <div className="grid grid-cols-2 gap-3">
+    <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer" className="rounded-lg border border-cyan-400/60 bg-cyan-500/15 p-4 text-center text-sm font-semibold text-cyan-200 transition hover:bg-cyan-500/25">???????? ????????????</a>
+    <a href="/vault" className="rounded-lg border border-white/30 bg-white/5 p-4 text-center text-sm font-semibold text-white transition hover:bg-white/10">???????? ????????????</a>
+  </div>
+</div>
     </section>
   );
 }

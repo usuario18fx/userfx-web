@@ -145,7 +145,8 @@ function normalizeSpecialSuffix(value: string) {
 }
 
 export default function PrivateRoomDirectGate({ children, forceOpen = false, onRequestClose }: DirectGateProps) {
-  const forceGate = forceOpen || (typeof window !== "undefined" && window.location.hash === "#/private-room-access");
+  const accessHash = typeof window !== "undefined" ? window.location.hash : "";
+  const forceGate = forceOpen || accessHash.startsWith("#/private-room-access");
 
   const [checking, setChecking] = useState(!forceGate);
 
@@ -165,7 +166,9 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
-  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>("none");
+  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>(
+    forceGate ? (accessHash.startsWith("#/private-room-access/plans") ? "plans" : "none") : "none"
+  );
   useEffect(() => {
     const supplied = new URLSearchParams(window.location.search).get("code");
     const match = String(supplied || "").trim().toUpperCase().match(/^(SPCL|BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
@@ -947,6 +950,9 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
     }
   }
 
+  // Paid codes open directly; SPCL still exposes the identity verification step.
+  const paidCodeFirst = forceGate && prefix !== "SPCL" && !telegramVerified;
+
   const reducedMotion = useReducedMotion();
 
   if (checking) {
@@ -969,7 +975,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   return (
     <motion.main className="pvr-direct-gate" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.3 }}>
-      <motion.section className="pvr-direct-card"
+      <motion.section className={`pvr-direct-card ${paidCodeFirst ? "is-paid-chooser" : ""} ${paidCodeFirst && secondaryMode === "none" ? "is-chooser-home" : ""}`}
         transformTemplate={(_, generated) => `var(--fx-gate-base-transform) ${generated === "none" ? "" : generated}`}
         initial={reducedMotion ? false : { opacity: 0, y: 48, scale: 0.94, filter: "blur(8px)" }}
         animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
@@ -998,19 +1004,24 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
         <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
-            ᴇɴᴛᴇʀ ᴡɪᴛʜ
-            <br />
-            <em>
-            𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌
-            </em>
+            {paidCodeFirst ? (
+              secondaryMode === "plans"
+                ? <>CHOOSE YOUR<br /><em>ACCESS PLAN</em></>
+                : <>ENTER YOUR<br /><em>ACCESS CODE</em></>
+            ) : (
+              <>ᴇɴᴛᴇʀ ᴡɪᴛʜ<br /><em>𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌</em></>
+            )}
           </h1>
 
           <p>
-          𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓
+            {paidCodeFirst
+              ? "Enter the code @User18Fx_bot sent after your Telegram Stars payment."
+              : "Are you a special user? Enter your Telegram username to continue."}
           </p>
         </motion.div>
 
         {/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
+        {!paidCodeFirst && (
         <motion.div key={`${telegramVerified}-${verifiedStage}`} className="fx-gate-step"
           initial={reducedMotion ? false : { opacity: 0, y: 22, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -1182,6 +1193,16 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
               </button>
             )}
 
+            {!returningIdentityRef.current && (
+              <button
+                type="button"
+                className="pvr-direct-open-special-entry"
+                onClick={() => { setVerifiedStage("actions"); setTelegramError(""); }}
+              >
+                I HAVE A SPECIAL CODE
+              </button>
+            )}
+
             {telegramError && (
               <p className="pvr-direct-granted-error" role="alert">
                 {telegramError}
@@ -1198,7 +1219,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
           /* ═════════ YA VERIFICADO, MOSTRAR SPECIAL ACCESS ═════════ */
 
           <section className="pvr-direct-verified-zone">
-            /* ───── PANEL USERNAME VERIFICADO ───── */
+            {/* Verified Telegram username panel */}
             <section className="pvr-direct-telegram-panel is-primary is-verified-panel">
               <header>
                 <span>
@@ -1233,7 +1254,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                 </button>
               </div>
             </section>
-            /* ───── SPECIAL ACCESS BOTÓN + FORM ───── */
+            {/* Special access button and code form */}
             <div className="pvr-direct-special-access">
               <button type="button" className="pvr-direct-special-launcher" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
                 <img src="/assets/iconos/corona.png" alt="" aria-hidden="true" />
@@ -1299,8 +1320,37 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         )}
 
         </motion.div>
+        )}
 
         {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
+
+        {paidCodeFirst && (
+          <>
+            <div className="pvr-direct-secondary-actions" role="group" aria-label="Access code options">
+              <button
+                type="button"
+                className={`pvr-direct-has-code ${secondaryMode === "code" ? "is-active" : ""}`}
+                onClick={() => { setSecondaryMode("code"); setError(""); }}
+                aria-pressed={secondaryMode === "code"}
+              >
+                <span className="pvr-direct-action-text">ALREADY GOT CODE</span>
+              </button>
+              <button
+                type="button"
+                className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`}
+                onClick={() => { setSecondaryMode("plans"); setError(""); }}
+                aria-pressed={secondaryMode === "plans"}
+              >
+                <span className="pvr-direct-action-text">GET MY CODE</span>
+              </button>
+            </div>
+            <p className="pvr-direct-paid-code-note">
+              {secondaryMode === "plans"
+                ? "Choose your plan below. Tap PAY to open Telegram, then return with your code."
+                : "Select your plan prefix and enter the code received after payment."}
+            </p>
+          </>
+        )}
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
           {secondaryMode === "code" && (
@@ -1354,8 +1404,18 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                     maxLength={4}
                     autoCapitalize="characters"
                     autoComplete="off"
+                    onPaste={(event) => {
+                      const pasted = event.clipboardData.getData("text").trim().toUpperCase().replace(/\s+/g, "");
+                      const full = pasted.match(/^(BSIC|PRX0|VIPX|SPCL)-?([A-HJ-NP-Z2-9]{4})$/);
+                      if (!full) return;
+                      event.preventDefault();
+                      setPrefix(full[1]);
+                      setSuffix(full[2]);
+                      setError("");
+                      setNotice("");
+                    }}
                     disabled={loading || attempts >= MAX_ATTEMPTS}
-                    aria-label="Access code suffix"
+                    aria-label="Access code suffix; paste the full code to auto-select its plan"
                   />
                 </div>
 
@@ -1397,7 +1457,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                       setSelectedPlan(plan.id);
                     }
                   }}>
-                  <span className="pvr-direct-plan-emoji" aria-hidden="true" />
+                  <span className="pvr-direct-plan-emoji" aria-hidden="true">{plan.emoji}</span>
 
                   <span className="pvr-direct-plan-info">
                     <strong>{plan.name}</strong>

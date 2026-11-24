@@ -83,11 +83,11 @@
 }
 .fx-footer-tg-actions {
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 20px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #8bb3c223;
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 .fx-footer-tg-primary, .fx-footer-tg-secondary {
   display: inline-flex;
@@ -191,7 +191,8 @@
   .fx-footer-tg-avatar { width: 56px; height: 56px; border-radius: 13px; }
   .fx-footer-tg-avatar img { width: 54px; height: 54px; }
   .fx-footer-tg-state { grid-column: 2; justify-self: start; }
-  .fx-footer-tg-actions { grid-template-columns: 1fr; }
+  .fx-footer-tg-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .fx-footer-tg-primary, .fx-footer-tg-secondary { padding-inline: 7px; font-size: 10px; }
   .fx-footer-tg-check-title { font-size: 9px; }
   .fx-footer-tg-card .fx-identity-form { grid-template-columns: 31px 16px minmax(0,1fr) 90px; }
   .fx-footer-tg-card .fx-identity-icon { height: 48px; }
@@ -200,4 +201,14 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .fx-footer-tg-card *, .fx-footer-tg-card *::before { transition: none !important; }
+}
+
+/* USER FX two-button access: preserve existing dark/teal visual language. */
+.fx-footer-tg-primary:focus-visible,
+.fx-footer-tg-secondary:focus-visible {
+  outline: 2px solid #78dfdb;
+  outline-offset: 3px;
+}
+@media (max-width: 350px) {
+  .fx-footer-tg-actions { grid-template-columns: 1fr; }
 }

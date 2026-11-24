@@ -24,6 +24,11 @@ const DEFAULT_TL: CrownTL = {
 
 const clamp = (v: number) => Math.max(0, Math.min(1, v));
 const PARTICLE_FLOOR_Y = -1.97;
+// FX_CROWN_CLICK_FALL_V1
+const CROWN_SIDE_RADIUS = 1.58; // Rounder when seen from the side (was 1.05)
+const CROWN_RELEASE_MS = 1900; // Particle fall duration
+// FX_CROWN_VISIBLE_FALL_V3
+const FALL_FADE_START = 0.86; // Keep grains visible until they reach the floor
 const ease = (v: number) => {
   const x = clamp(v);
   return x * x * (3 - 2 * x);
@@ -89,7 +94,7 @@ function crownGeometry(count: number) {
     // Two concentric particle layers give the crown real 3D thickness.
     const shell = rnd() < 0.16 ? 0.88 : 1;
     const rx = (1.79 + (rnd() - 0.5) * 0.065) * shell;
-    const rz = (1.05 + (rnd() - 0.5) * 0.055) * shell;
+    const rz = (CROWN_SIDE_RADIUS + (rnd() - 0.5) * 0.055) * shell;
     point(i, rx * c, y, rz * s, highlight);
   }
 
@@ -114,8 +119,8 @@ function makePaintedCrownOutline() {
     const [ax, ay] = CROWN_EDGE[i - 1];
     const [bx, by] = CROWN_EDGE[i];
     path.add(new THREE.LineCurve3(
-      new THREE.Vector3(ax, ay, 1.07),
-      new THREE.Vector3(bx, by, 1.07),
+      new THREE.Vector3(ax, ay, CROWN_SIDE_RADIUS + 0.02),
+      new THREE.Vector3(bx, by, CROWN_SIDE_RADIUS + 0.02),
     ));
   }
   const glowGeometry = new THREE.TubeGeometry(path, 180, 0.042, 5, false);
@@ -144,6 +149,25 @@ function makePaintedCrownOutline() {
   };
 }
 
+
+
+
+// Flat, upper-only silhouette: survives after the 3D particles fall.
+function createUpperTrace() {
+  const pathPoints = CROWN_EDGE.slice(1, 10).map(([x, y]) =>
+    new THREE.Vector3(x, y, CROWN_SIDE_RADIUS + 0.045)
+  );
+  const curve = new THREE.CatmullRomCurve3(pathPoints, false, 'centripetal');
+  const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(160));
+  const material = new THREE.LineBasicMaterial({
+    color: '#7afff5', transparent: true, opacity: 0,
+    depthTest: false, depthWrite: false, toneMapped: false,
+  });
+  const line = new THREE.Line(geometry, material);
+  line.visible = false;
+  line.renderOrder = 8;
+  return { line, material, dispose: () => { geometry.dispose(); material.dispose(); } };
+}
 
 // FX_CROWN_RESTORE_V3: contorno 3D independiente, pintado debajo de las particulas.
 function createFxCrownContour() {
@@ -176,9 +200,9 @@ function createFxCrownContour() {
     const c = Math.cos(a);
     const s = Math.sin(a);
     const peak = Math.pow((Math.cos(7 * (a - Math.PI / 2)) + 1) / 2, 5);
-    crest.push(1.79 * c, 0.05 + 1.42 * peak, 1.05 * s);
-    rim.push(1.79 * c, -1.0, 1.05 * s);
-    orbit.push(2.08 * c, -1.2, 1.27 * s);
+    crest.push(1.79 * c, 0.05 + 1.42 * peak, CROWN_SIDE_RADIUS * s);
+    rim.push(1.79 * c, -1.0, CROWN_SIDE_RADIUS * s);
+    orbit.push(2.08 * c, -1.2, (CROWN_SIDE_RADIUS + 0.23) * s);
   }
   add(crest, 0.46, true);
   add(rim, 0.82, true);
@@ -214,8 +238,12 @@ function advanceInteraction(motion: CrownInteraction) {
 }
 
 export default function ProtocolCrown({ progress, tl, active, className, interactive = false }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
+  const clickReleaseRef = useRef<number | null>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastTapRef = useRef(0);
+  const ignoreClickRef = useRef(false);
   const activeRef = useRef(active ?? true);
   const timeline = tl ?? DEFAULT_TL;
   const interactionRef = useRef<CrownInteraction>({
@@ -321,13 +349,25 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
   }, [interactive]);
 
 
+  const releaseOnClick = () => {
+    if (!interactive || !activeRef.current) return;
+    // The hit area already follows the crown: no second, overly strict canvas gate.
+    const now = performance.now();
+    if (now - lastTapRef.current < 420) return; // Prevent pointerup + click double toggle.
+    lastTapRef.current = now;
+    // Clicking again restores the original shape, allowing another demonstration.
+    clickReleaseRef.current = clickReleaseRef.current === null ? now : null;
+  };
+
   // Pointer capture is scoped to the dedicated crown stage only. No global drag or image ghost.
   const grab = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!interactive || !activeRef.current || (event.pointerType === "mouse" && event.button !== 0)) return;
     const motion = interactionRef.current;
-    motion.pointerId = event.pointerId;
+        motion.pointerId = event.pointerId;
     motion.lastX = event.clientX;
     motion.lastY = event.clientY;
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    ignoreClickRef.current = false;
     event.currentTarget.setPointerCapture(event.pointerId);
     event.currentTarget.dataset.grabbing = "true";
     event.preventDefault();
@@ -352,12 +392,18 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     motion.lastX = event.clientX;
     motion.lastY = event.clientY;
   };
-  const release = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const release = (event: ReactPointerEvent<HTMLDivElement>) => {
     const motion = interactionRef.current;
     if (motion.pointerId !== event.pointerId) return;
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
     motion.pointerId = null;
     delete event.currentTarget.dataset.grabbing;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    ignoreClickRef.current = !start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 9;
+    if (event.type === 'pointerup' && !ignoreClickRef.current) {
+      releaseOnClick();
+    }
   };
   const leave = () => {
     if (interactionRef.current.pointerId === null) {
@@ -365,7 +411,12 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       interactionRef.current.targetY = 0;
     }
   };
-  const keys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const keys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      releaseOnClick();
+      return;
+    }
     const motion = interactionRef.current;
     const amount = 0.18;
     if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
@@ -412,8 +463,11 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const renderFallback = (ms: number) => {
       fallbackContext.clearRect(0, 0, fallbackW, fallbackH);
       const p = clamp(typeof progress === "number" ? progress : progress.get());
-      const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
-      const opacity = 1 - range(p, timeline.fade);
+            const scrollBreak = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
+      const clickFall = clickReleaseRef.current === null ? 0 :
+        clamp((ms - clickReleaseRef.current) / CROWN_RELEASE_MS);
+      const broken = Math.max(scrollBreak, clickFall);
+      const opacity = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
       if (opacity <= 0) return;
       const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.24);
       const motion = interactionRef.current;
@@ -423,13 +477,15 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       advanceInteraction(motion);
       const turn = -0.20 + (reduced ? 0 : Math.sin(ms * 0.00055) * 0.10) + p * 0.30 + motion.hoverY + motion.dragY;
       const cos = Math.cos(turn), sin = Math.sin(turn);
-      const free = broken * broken;
+      const free = clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken;
+      const sideDrift = clickFall > 0 ? 0.12 : 1;
+      const floorVisibility = 1;
       fallbackContext.save();
       // Pintar el mismo borde antes que los puntos (modo sin WebGL).
       fallbackContext.beginPath();
       for (let j = 0; j < CROWN_EDGE.length; j++) {
         const [x, y] = CROWN_EDGE[j];
-        const z = 1.07;
+        const z = CROWN_SIDE_RADIUS + 0.02;
         const rx = x * cos - z * sin;
         const rz = x * sin + z * cos;
         const perspective = 5.8 / (5.8 - rz * 0.28);
@@ -440,23 +496,39 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       }
       fallbackContext.strokeStyle = "#3fd8d0";
       fallbackContext.lineWidth = 2;
-      fallbackContext.globalAlpha = opacity * (1 - broken);
+      fallbackContext.globalAlpha = clickReleaseRef.current === null ? opacity * (1 - broken) : opacity;
       fallbackContext.shadowColor = "#39d3d0";
       fallbackContext.shadowBlur = 8;
-      fallbackContext.stroke();
+            fallbackContext.stroke();
       fallbackContext.shadowBlur = 0;
+      if (false && clickFall > 0.01) {
+        fallbackContext.beginPath();
+        CROWN_EDGE.slice(1, 10).forEach(([x, y], j) => {
+          const z = CROWN_SIDE_RADIUS + 0.045;
+          const rx = x * cos - z * sin;
+          const rz = x * sin + z * cos;
+          const px = cx + rx * scale * (5.8 / (5.8 - rz * 0.28));
+          const py = cy - y * scale * (5.8 / (5.8 - rz * 0.28));
+          if (j === 0) fallbackContext.moveTo(px, py);
+          else fallbackContext.lineTo(px, py);
+        });
+        fallbackContext.globalAlpha = opacity * ease((clickFall - 0.22) / 0.55);
+        fallbackContext.lineWidth = 2;
+        fallbackContext.strokeStyle = '#7afff5';
+        fallbackContext.stroke();
+      }
       fallbackContext.globalCompositeOperation = "lighter";
       // Single 2D outline; ground-ring remains under the particles.
-      fallbackContext.globalAlpha = opacity * 0.35;
+      fallbackContext.globalAlpha = clickReleaseRef.current === null ? opacity * 0.35 * (1 - clickFall) : opacity * 0.35;
       fallbackContext.strokeStyle = "#2db9bf";
       fallbackContext.beginPath();
       fallbackContext.ellipse(cx, cy - PARTICLE_FLOOR_Y * scale, scale * 1.95, scale * 0.2, 0, 0, Math.PI * 2);
       fallbackContext.stroke();
 
       for (let i = 0; i < fOriginal.length; i += 3) {
-        const x = fOriginal[i] + fScatter[i] * free;
+        const x = fOriginal[i] + fScatter[i] * free * sideDrift;
         const y = fOriginal[i + 1] + (PARTICLE_FLOOR_Y + ((i / 3) % 7) * 0.008 - fOriginal[i + 1]) * free;
-        const z = fOriginal[i + 2] + fScatter[i + 2] * free;
+        const z = fOriginal[i + 2] + fScatter[i + 2] * free * sideDrift;
         const rx = x * cos - z * sin;
         const rz = x * sin + z * cos;
         const perspective = 5.8 / (5.8 - rz * 0.28);
@@ -465,7 +537,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         if (px < -2 || px > fallbackW + 2 || py < -2 || py > fallbackH + 2) continue;
         const intensity = (fColors[i] + fColors[i + 1] + fColors[i + 2]) / 3;
         const shade = intensity > 0.73 ? 5 : intensity > 0.44 ? 4 : intensity > 0.27 ? 3 : intensity > 0.17 ? 2 : intensity > 0.11 ? 1 : 0;
-        fallbackContext.globalAlpha = opacity * (shade >= 4 ? 0.88 : 0.58);
+        fallbackContext.globalAlpha = opacity * (shade >= 4 ? 0.88 : 0.58) * floorVisibility;
         fallbackContext.fillStyle = fallbackPalette[shade];
         const size = (shade >= 4 ? 1.5 : 1.0) * perspective;
         fallbackContext.fillRect(px, py, size, size);
@@ -521,9 +593,44 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const group = new THREE.Group();
     scene.add(group);
     const fxContour = createFxCrownContour();
+    fxContour.outline.visible = false; // FX_CROWN_FRONT_FLOOR_V6: hide only faint rear outline
     group.add(fxContour.outline);
-    const crownOutline = makePaintedCrownOutline();
+        const crownOutline = makePaintedCrownOutline();
     group.add(crownOutline.glow, crownOutline.edge);
+    // FX_CROWN_FRONT_FLOOR_V6: subtle dark floor beneath the falling particles.
+    const fxStageFloorCanvas = document.createElement("canvas");
+    fxStageFloorCanvas.width = 256;
+    fxStageFloorCanvas.height = 256;
+    const fxStageFloorCtx = fxStageFloorCanvas.getContext("2d");
+    if (fxStageFloorCtx) {
+      const gradient = fxStageFloorCtx.createRadialGradient(128, 128, 8, 128, 128, 125);
+      gradient.addColorStop(0, "rgba(13, 47, 56, 0.82)");
+      gradient.addColorStop(0.37, "rgba(8, 31, 41, 0.68)");
+      gradient.addColorStop(0.68, "rgba(5, 19, 27, 0.43)");
+      gradient.addColorStop(0.89, "rgba(3, 12, 19, 0.15)");
+      gradient.addColorStop(1, "rgba(2, 9, 15, 0)");
+      fxStageFloorCtx.fillStyle = gradient;
+      fxStageFloorCtx.fillRect(0, 0, 256, 256);
+    }
+    const fxStageFloorTexture = new THREE.CanvasTexture(fxStageFloorCanvas);
+    fxStageFloorTexture.colorSpace = THREE.SRGBColorSpace;
+    const fxStageFloorGeometry = new THREE.CircleGeometry(5.2, 96);
+    const fxStageFloorMaterial = new THREE.MeshBasicMaterial({
+      map: fxStageFloorTexture,
+      transparent: true,
+      opacity: 0.96,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      toneMapped: false,
+    });
+    const fxStageFloor = new THREE.Mesh(fxStageFloorGeometry, fxStageFloorMaterial);
+    fxStageFloor.rotation.x = -Math.PI / 2;
+    fxStageFloor.position.set(0, PARTICLE_FLOOR_Y - 0.045, 0);
+    fxStageFloor.renderOrder = -2;
+    group.add(fxStageFloor);
+
+    const upperTrace = createUpperTrace();
+    group.add(upperTrace.line);
     const isMobile = window.matchMedia("(max-width: 700px)").matches;
     const data = crownGeometry(isMobile ? 1200 : 2600);
     const material = new THREE.PointsMaterial({
@@ -578,10 +685,13 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       frame = requestAnimationFrame(render);
       if (!visible || !activeRef.current || useFallback) return;
       const p = clamp(typeof progress === "number" ? progress : progress.get());
-      const broken = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
+            const scrollBreak = ease((p - timeline.breakStart) / Math.max(0.0001, 1 - timeline.breakStart));
+      const clickFall = clickReleaseRef.current === null ? 0 :
+        clamp((ms - clickReleaseRef.current) / CROWN_RELEASE_MS);
+      const broken = Math.max(scrollBreak, clickFall);
       const descend = range(p, timeline.descend);
       const rise = range(p, timeline.rise);
-      const opacity = 1 - range(p, timeline.fade);
+      const opacity = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
       const time = ms * 0.001;
       const v = data.geometry.getAttribute("position") as THREE.BufferAttribute;
       const arr = v.array as Float32Array;
@@ -591,11 +701,13 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       // Purely independent motion: no spring, wobble or jelly interpolation.
       for (let i = 0; i < arr.length; i += 3) {
         const j = i / 3;
-        const free = broken * broken;
-        arr[i] = original[i] + scatter[i] * free;
+        // Gravity-like descent: visible grains drop first, fade only on landing.
+        const free = clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken;
+        const sideDrift = clickFall > 0 ? 0.12 : 1;
+        arr[i] = original[i] + scatter[i] * free * sideDrift;
         arr[i + 1] = original[i + 1] +
           (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - original[i + 1]) * free;
-        arr[i + 2] = original[i + 2] + scatter[i + 2] * free;
+        arr[i + 2] = original[i + 2] + scatter[i + 2] * free * sideDrift;
         if (!reduced && broken < 0.001) {
           arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
         }
@@ -610,13 +722,16 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       group.rotation.z = -0.07;
       group.position.set((w < 700 ? 0 : 0.55) + motion.posX,
         (rise - descend) * 1.0 + motion.posY, 0);
-      material.opacity = 0.92 * opacity;
+            const floorVisibility = 1;
+      material.opacity = 0.92 * opacity * floorVisibility;
       haloMaterial.opacity = 0.075 * opacity * (1 - broken);
-      fxContour.materials.forEach((material, index) => {
-        material.opacity = fxContour.baseOpacity[index] * opacity * (1 - broken * 0.9);
-      });
-      crownOutline.edgeMaterial.opacity = 0.94 * opacity * (1 - broken);
-      crownOutline.glowMaterial.opacity = 0.20 * opacity * (1 - broken);
+     fxContour.materials.forEach((material, index) => {
+     material.opacity = clickReleaseRef.current === null ? (fxContour.baseOpacity[index] * opacity) : fxContour.baseOpacity[index] * opacity;
+    });
+      crownOutline.edgeMaterial.opacity = clickReleaseRef.current === null ? (0.94 * opacity) : 0.94 * opacity;
+      crownOutline.glowMaterial.opacity = clickReleaseRef.current === null ? (0.20 * opacity) : 0.20 * opacity;
+      upperTrace.line.visible = false;
+      upperTrace.material.opacity = 0;
       renderer.render(scene, camera);
     };
     frame = requestAnimationFrame(render);
@@ -633,7 +748,11 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       haloMaterial.dispose();
       fxContour.geometries.forEach((geometry) => geometry.dispose());
       fxContour.materials.forEach((material) => material.dispose());
+            fxStageFloorGeometry.dispose();
+      fxStageFloorMaterial.dispose();
+      fxStageFloorTexture.dispose();
       crownOutline.dispose();
+      upperTrace.dispose();
       renderer.dispose();
     };
   }, [progress, timeline]);
@@ -642,7 +761,8 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     <div className="pv-crown-layer" aria-hidden={interactive ? undefined : true} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
       <canvas ref={fallbackRef} className={className ?? "pv-crown"} style={{display: "none", opacity: 1, position: "absolute", inset: 0, width: "100%", height: "100%" }} />
       <canvas ref={canvasRef} className={className ?? "pv-crown"} style={{position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-      {interactive && <div className="fx-crown-playground-hit" role="button" tabIndex={0} aria-label="Drag to move and rotate the interactive crown. Arrow keys move, Shift and arrows rotate, Escape resets position." onPointerDown={grab} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onPointerLeave={leave} onDragStart={(event) => event.preventDefault()} onKeyDown={keys} />}
+      {interactive && <div className="fx-crown-playground-hit" role="button" tabIndex={0} aria-label="Click to drop the crown particles to the floor; click again to rebuild. Drag to move or rotate. Enter or Space activates the fall. Arrow keys move; Escape resets the position." onPointerDown={grab} onPointerMove={move} onPointerUp={release} onClick={() => { if (!ignoreClickRef.current) releaseOnClick(); ignoreClickRef.current = false; }} onPointerCancel={release} onPointerLeave={leave} onDragStart={(event) => event.preventDefault()} onKeyDown={keys} />}
     </div>
   );
 }
+// FX_CROWN_EDGE_AND_FLOOR_PERSIST_V5
