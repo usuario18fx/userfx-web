@@ -3251,3 +3251,128 @@
     font-size: 5px;
   }
 }
+
+/* USERFX_GATE_RESTORE_FULL_FUNCTIONAL_LAYOUT_20261123 */
+/* Restore natural layout for the ORIGINAL gate handlers: Telegram eligibility,
+   code entry (BSIC / PRX0 / VIPX / SPCL), plan purchase, Back and Help.
+   No API or access-verification logic is changed here. */
+.pvr-direct-card {
+  height: auto !important;
+  min-height: 420px !important;
+  max-height: calc(100dvh - 32px) !important;
+  padding-bottom: 20px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 165, 116, .45) transparent;
+}
+.fx-gate-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 365px;
+}
+.fx-gate-step,
+.pvr-direct-verified-zone {
+  min-width: 0;
+  flex-shrink: 0;
+}
+/* The footer must participate in flow; absolute positioning caused it
+   to sit on top of GET MY CODE and ALREADY GOT CODE. */
+.pvr-direct-card .pvr-direct-foot {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  min-height: 42px !important;
+  flex-shrink: 0;
+  margin: auto 0 0 !important;
+  padding: 14px 4px 0 !important;
+  transform: none !important;
+}
+/* Open code/plan panels must expand to their real content height.
+   The former 82px cap hid validation errors, attempts and plan details. */
+.pvr-direct-card .pvr-direct-secondary-stage {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.pvr-direct-card .pvr-direct-secondary-stage.is-open {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 14px 0 16px !important;
+  overflow: visible !important;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-secondary-panel,
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-form,
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plans {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-form {
+  gap: 5px;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plans {
+  align-items: stretch;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plan {
+  height: auto !important;
+  min-height: 76px !important;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plan > button {
+  min-height: 30px !important;
+}
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-error,
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-attempts,
+.pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-notice {
+  flex-shrink: 0;
+  line-height: 1.35 !important;
+}
+@media (max-width: 650px) {
+  .pvr-direct-gate {
+    align-items: safe center;
+    overflow-y: auto;
+  }
+  .pvr-direct-card {
+    --fx-gate-base-transform: none;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: min(430px, calc(100vw - 16px)) !important;
+    min-height: 440px !important;
+    max-height: calc(100dvh - 16px) !important;
+    margin: auto 0 !important;
+    padding: 16px 14px 18px !important;
+    transform: none !important;
+  }
+  .fx-gate-content {
+    min-height: 390px;
+  }
+  .pvr-direct-card .pvr-direct-foot {
+    margin-top: auto !important;
+  }
+  .pvr-direct-card .pvr-direct-secondary-stage.is-open {
+    margin: 14px 0 20px !important;
+  }
+  .pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+}
+@media (max-width: 380px) {
+  .pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plans {
+    grid-template-columns: 1fr !important;
+  }
+  .pvr-direct-card .pvr-direct-secondary-stage .pvr-direct-plan {
+    grid-template-columns: 24px minmax(0, 1fr) 60px;
+    min-height: 48px !important;
+  }
+}
