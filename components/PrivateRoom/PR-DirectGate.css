@@ -3437,3 +3437,154 @@
   font-size: 18px;
   line-height: 1;
 }
+
+/* USERFX_PRIVATE_ACTION_BUTTONS_V1 */
+/* Private Room only: prominent GOT CODE / GET CODE buttons. */
+.pvr-direct-card .pvr-direct-secondary-actions {
+  position: relative !important;
+  display: grid !important;
+  width: min(640px, 100%) !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin: 22px auto 16px !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions > button {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 86px !important;
+  padding: 17px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(197,164,105,.82) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  background: linear-gradient(145deg, #101418, #090b0e) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24) !important;
+  transition: border-color .18s ease, box-shadow .18s ease !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions > button.pvr-direct-has-code {
+  color: #f4f3e9 !important;
+  border-color: rgba(129,180,95,.85) !important;
+  background: linear-gradient(150deg, #142119, #090d0c) !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions > button.pvr-direct-get-code {
+  color: #f6deaf !important;
+  background: linear-gradient(145deg, #312518, #0e0b0a) !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions > button.is-active,
+.pvr-direct-card .pvr-direct-secondary-actions > button:hover {
+  border-color: #efd09b !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.11), 0 0 18px rgba(199,164,99,.2) !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions .pvr-direct-action-text {
+  font-size: clamp(13px, 1.5vw, 19px) !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  letter-spacing: .06em !important;
+  text-align: center !important;
+}
+.pvr-direct-card .pvr-direct-secondary-actions > button::before {
+  opacity: 0 !important;
+}
+@media (max-width: 560px) {
+  .pvr-direct-card .pvr-direct-secondary-actions { gap: 8px !important; margin-top: 16px !important; }
+  .pvr-direct-card .pvr-direct-secondary-actions > button { min-height: 68px !important; padding: 12px 7px !important; }
+  .pvr-direct-card .pvr-direct-secondary-actions .pvr-direct-action-text { font-size: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pvr-direct-card .pvr-direct-secondary-actions > button { transition: none !important; }
+}
+/* USERFX_MINIMAL_ACCESS_CHOOSER_V1
+   Design-only adjustments: all original input, plan and verification handlers stay.
+   This class is never used by the separate Telegram identity modal. */
+.pvr-direct-card.is-paid-chooser .pvr-direct-copy,
+.pvr-direct-card.is-paid-chooser .pvr-direct-paid-code-note {
+  display: none !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions {
+  position: relative !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  width: min(600px, 100%) !important;
+  max-width: 100% !important;
+  margin: 28px auto 14px !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button {
+  position: relative !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  min-height: 92px !important;
+  height: auto !important;
+  padding: 16px 12px !important;
+  border: 1px solid rgba(197, 164, 112, .76) !important;
+  border-radius: 10px !important;
+  opacity: 1 !important;
+  background: linear-gradient(155deg, #151619 0%, #090b0f 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(250, 224, 174, .12), 0 8px 24px rgba(0,0,0,.22) !important;
+  text-align: center !important;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button.pvr-direct-get-code {
+  background: linear-gradient(145deg, #33281d, #17120d 80%) !important;
+  color: #e9cc93 !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions .pvr-direct-action-text {
+  font: 800 clamp(13px, 1.4vw, 18px)/1.25 'Fredoka', system-ui, sans-serif !important;
+  letter-spacing: .045em !important;
+  white-space: normal !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button:hover,
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button.is-active {
+  transform: translateY(-2px) !important;
+  border-color: #ead4a5 !important;
+  box-shadow: 0 0 18px rgba(211,170,99,.25), inset 0 1px 0 rgba(255,229,166,.20) !important;
+}
+.pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button:focus-visible {
+  outline: 2px solid #ecd4a5;
+  outline-offset: 4px;
+}
+.pvr-direct-card.is-chooser-home {
+  min-height: 335px !important;
+}
+.pvr-direct-card.is-chooser-home .fx-gate-content {
+  min-height: 290px !important;
+}
+.pvr-direct-card.is-chooser-home .pvr-direct-secondary-stage {
+  display: none !important;
+}
+.pvr-direct-card.is-chooser-home .pvr-direct-secondary-actions {
+  margin-top: clamp(30px, 7vh, 65px) !important;
+  margin-bottom: clamp(26px, 6vh, 56px) !important;
+}
+@media (max-width: 600px) {
+  .pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 9px !important;
+    width: 100% !important;
+    margin-top: 22px !important;
+  }
+  .pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button {
+    min-height: 76px !important;
+    padding: 12px 7px !important;
+  }
+  .pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions .pvr-direct-action-text {
+    font-size: 11px !important;
+  }
+}
+@media (max-width: 330px) {
+  .pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pvr-direct-card.is-paid-chooser .pvr-direct-secondary-actions > button { transition: none !important; }
+}

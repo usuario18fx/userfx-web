@@ -58,3 +58,11 @@
   .fx-crown-playground { height: 100svh; }
   .fx-crown-playground-sticky { position: relative; top: 0; }
 }
+/* FX_CROWN_FRONT_FLOOR_V6: soft depth contrast between backdrop and particle floor. */
+.fx-crown-playground-sticky {
+  background:
+    radial-gradient(ellipse 55% 17% at 57% 77%, rgba(14, 63, 72, 0.22) 0%, transparent 78%),
+    linear-gradient(180deg, rgba(4, 15, 22, 0) 50%, rgba(4, 18, 25, 0.24) 69%, rgba(2, 8, 14, 0.68) 100%),
+    radial-gradient(ellipse at 57% 45%, #071c24, #05070b 65%);
+}
+

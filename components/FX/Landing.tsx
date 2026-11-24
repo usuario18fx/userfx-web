@@ -14,9 +14,6 @@ import { SectionFaq, SectionMethod, SectionPricing } from "./Sections";
 import SiteFooter from "./FooterRedesign";
 import { ENTER_URL } from "@/lib/content";
 
-// All landing and footer presentation lives in this file.
-// Tune the footer scroll brake in FooterBar(), and dimensions/colors below.
-// Telegram dialog styles live in TELEGRAM_DIALOG_STYLES (further down).
 const LANDING_STYLES = String.raw`
 .fx-identity-verified-toast {
   position: fixed;
@@ -1092,7 +1089,9 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
 } as const;
   return (
     <div className="fx-footer-experiment" role="button" tabIndex={0} aria-label={`Preview ${item.title}`} onMouseEnter={start} onMouseLeave={stop} onFocus={start} onBlur={stop} onClick={()=> playing ? stop() : start()} onKeyDown={(event) => {
-    if (event.key === "Enter" || event.key === " ") { event.preventDefault();playing ? stop() : start();
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault();playing 
+    ? stop() 
+    : start();
     }}}>
     <img className="fx-footer-experiment-poster" src={item.poster} alt={item.title} loading="lazy" style={{ opacity: playing ? 0 : 1, transition: "opacity .25s ease" }}/>
     {backgroundVideo && (
@@ -1106,7 +1105,11 @@ function FooterExperiment({ item }: { item: (typeof FOOTER_EXPERIMENTS)[number] 
         {item.title}
     </span>
     <span className="fx-footer-experiment-action">
-        {failed ? "VIDEO UNAVAILABLE" : playing ? "PLAYING" : "PREVIEW"}
+        {failed 
+        ? "VIDEO UNAVAILABLE" 
+        : playing 
+          ? "PLAYING" 
+          : "PREVIEW"}
     </span>
     </div>
     );
@@ -1123,16 +1126,10 @@ function FooterBar() {
       const stored = Number(localStorage.getItem(RATING_STORAGE_KEY));
       if (Number.isInteger(stored) && stored >= 1 && stored <= 5) setRating(stored);
     } catch {
-      // Browsers with disabled storage can still use the rating control.
     }
-
     const stage = revealRef.current;
     const footer = footerRef.current;
     if (!stage || !footer) return;
-
-    // Reserve a real scrolling track. The footer begins entirely below the
-    // viewport and reveals only as the final track is scrolled through.
-    // This produces the reference's slowed "brake" instead of a static footer.
     let travel = 1;
     let frame = 0;
     const measure = () => {
@@ -1156,12 +1153,13 @@ function FooterBar() {
     };
     const observer = new ResizeObserver(measure);
     observer.observe(footer); window.addEventListener("resize", measure, { passive: true });
-                              window.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("scroll", update, { passive: true });
     measure();
     return () => { observer.disconnect();
-                   window.removeEventListener("resize", measure);
-                   window.removeEventListener("scroll", update);
-      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", update);
+    if (frame) 
+      window.cancelAnimationFrame(frame);
   };
   }, []);
   function backToBeginning() {
@@ -1171,7 +1169,7 @@ function FooterBar() {
       beginning.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
   }
-    window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function selectRating(value: number) {
     setRating(value);
@@ -1218,41 +1216,41 @@ function FooterBar() {
       <button type="button" className="fx-footer-bar-rating-toggle" aria-expanded={ratingOpen} aria-controls="fx-footer-crown-rating" aria-label="Rate USER FX with crowns" onClick={() => setRatingOpen((open) => !open)}>
       <CrownIcon className="fx-footer-bar-rating-trigger-icon" />
       <span>
-                  Rate
-                </span>
-              </button>
-              {ratingOpen && (
-                <div id="fx-footer-crown-rating" className="fx-footer-crown-rating" role="group" aria-label="Rate USER FX from one to five crowns">
-                  <span className="fx-footer-crown-rating-title">
-                    RATE USER FX
-                  </span>
-                  <div className="fx-footer-crown-rating-options" onMouseLeave={() => setHoverRating(0)}>
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <button key={value} type="button" className={`fx-footer-rating-crown ${rating === 0 && hoverRating === 0 ? "is-initial" : value <= (hoverRating || rating) ? "is-selected" : "is-unselected"}`} onMouseEnter={() => setHoverRating(value)} onFocus={() => setHoverRating(value)} onBlur={() => setHoverRating(0)} onClick={() => selectRating(value)} aria-label={`Rate ${value} out of 5`} aria-pressed={rating === value}>
-                        <CrownIcon />
-                      </button>
-                    ))}
-                  </div>
-                  <span className="fx-footer-crown-rating-caption" role="status">
-                    {rating ? `${rating} / 5 · RATING SAVED` : "SELECT YOUR RATING"}
-                  </span>
-                </div>
-              )}
-            </div>
-            <button type="button" className="fx-footer-bar-return" onClick={backToBeginning}>
-              <span>
-                Back to the beginning
-              </span>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M12 20V4M6.5 9.5 12 4l5.5 5.5" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        Rate
+      </span>
+      </button>
+        {ratingOpen && (
+      <div id="fx-footer-crown-rating" className="fx-footer-crown-rating" role="group" aria-label="Rate USER FX from one to five crowns">
+      <span className="fx-footer-crown-rating-title">
+        RATE USER FX
+      </span>
+      <div className="fx-footer-crown-rating-options" onMouseLeave={() => setHoverRating(0)}>
+       {[1, 2, 3, 4, 5].map((value) => (
+      <button key={value} type="button" className={`fx-footer-rating-crown ${rating === 0 && hoverRating === 0 ? "is-initial" : value <= (hoverRating || rating) ? "is-selected" : "is-unselected"}`} onMouseEnter={() => setHoverRating(value)} onFocus={() => setHoverRating(value)} onBlur={() => setHoverRating(0)} onClick={() => selectRating(value)} aria-label={`Rate ${value} out of 5`} aria-pressed={rating === value}>
+      <CrownIcon />
+      </button>
+      ))}
+      </div>
+      <span className="fx-footer-crown-rating-caption" role="status">
+       {rating ? `${rating} / 5 · RATING SAVED` : "SELECT YOUR RATING"}
+      </span>
+      </div>
+       )}
+      </div>
+      <button type="button" className="fx-footer-bar-return" onClick={backToBeginning}>
+      <span>
+        Back to the beginning
+      </span>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 20V4M6.5 9.5 12 4l5.5 5.5" />
+      </svg>
+      </button>
+      </div>
+      </div>
       </footer>
-    </div>
-  );
-}
+      </div>
+       );
+       }
 const AccessGate = dynamic(() => import("@/components/PrivateRoom/PR-DirectGate"), { ssr: false });
 type TelegramDialogProps = {
   onClose: () => void;
@@ -1494,7 +1492,7 @@ export default function Landing() {
   return (
       <MenuProvider>
       <style>
-        {LANDING_STYLES + TELEGRAM_DIALOG_STYLES}
+      {LANDING_STYLES}
       </style>
       {showIntro && (
       <FxSceneLoader sceneReady={sceneReady || sceneTimedOut} onComplete={() => setIntroComplete(true)} />

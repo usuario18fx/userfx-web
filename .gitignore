@@ -47,3 +47,5 @@ backups/
 *~
 .DS_Store
 Thumbs.db
+
+*.bak-*

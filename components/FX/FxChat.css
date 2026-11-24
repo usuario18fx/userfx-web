@@ -627,3 +627,10 @@
   .fx-web-chat-typing-dots i {
     animation: none;
   }}
+/* USERFX_EQUAL_HEADER_BUTTON_GAP_V1 */
+/* Match both header and menu-overlay spacing to the shortest gap. */
+.fx-header-right-controls { gap: 10px !important; }
+/* The original launcher had left:20px, making one gap visually smaller. */
+.fx-header-right-controls #fx-chat-dock .fx-web-chat-launcher {
+  left: 0 !important;
+}

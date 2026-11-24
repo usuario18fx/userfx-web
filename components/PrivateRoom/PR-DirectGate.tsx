@@ -167,7 +167,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
   const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>(
-    forceGate ? (accessHash.startsWith("#/private-room-access/plans") ? "plans" : "code") : "none"
+    forceGate ? (accessHash.startsWith("#/private-room-access/plans") ? "plans" : "none") : "none"
   );
   useEffect(() => {
     const supplied = new URLSearchParams(window.location.search).get("code");
@@ -951,7 +951,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   }
 
   // Paid codes open directly; SPCL still exposes the identity verification step.
-  const paidCodeFirst = forceGate && secondaryMode !== "none" && prefix !== "SPCL" && !telegramVerified;
+  const paidCodeFirst = forceGate && prefix !== "SPCL" && !telegramVerified;
 
   const reducedMotion = useReducedMotion();
 
@@ -975,7 +975,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   return (
     <motion.main className="pvr-direct-gate" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.3 }}>
-      <motion.section className="pvr-direct-card"
+      <motion.section className={`pvr-direct-card ${paidCodeFirst ? "is-paid-chooser" : ""} ${paidCodeFirst && secondaryMode === "none" ? "is-chooser-home" : ""}`}
         transformTemplate={(_, generated) => `var(--fx-gate-base-transform) ${generated === "none" ? "" : generated}`}
         initial={reducedMotion ? false : { opacity: 0, y: 48, scale: 0.94, filter: "blur(8px)" }}
         animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
