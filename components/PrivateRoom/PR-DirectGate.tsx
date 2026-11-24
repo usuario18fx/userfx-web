@@ -1380,8 +1380,18 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                     maxLength={4}
                     autoCapitalize="characters"
                     autoComplete="off"
+                    onPaste={(event) => {
+                      const pasted = event.clipboardData.getData("text").trim().toUpperCase().replace(/\s+/g, "");
+                      const full = pasted.match(/^(BSIC|PRX0|VIPX|SPCL)-?([A-HJ-NP-Z2-9]{4})$/);
+                      if (!full) return;
+                      event.preventDefault();
+                      setPrefix(full[1]);
+                      setSuffix(full[2]);
+                      setError("");
+                      setNotice("");
+                    }}
                     disabled={loading || attempts >= MAX_ATTEMPTS}
-                    aria-label="Access code suffix"
+                    aria-label="Access code suffix; paste the full code to auto-select its plan"
                   />
                 </div>
 
