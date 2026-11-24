@@ -115,7 +115,7 @@ export function UserFXApp() {
       if (timer) window.clearTimeout(timer);
     };
   }, []);
-  if (route === "#/private-room-access") {
+  if (route === "#/private-room-access" || route === "#/private-room-access/plans") {
     return (
 <>
 <PrivateRoomDirectGate><PrivateRoomMyRoom /></PrivateRoomDirectGate>
