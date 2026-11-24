@@ -1005,7 +1005,9 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
             {paidCodeFirst ? (
-              <>ENTER YOUR<br /><em>ACCESS CODE</em></>
+              secondaryMode === "plans"
+                ? <>CHOOSE YOUR<br /><em>ACCESS PLAN</em></>
+                : <>ENTER YOUR<br /><em>ACCESS CODE</em></>
             ) : (
               <>ᴇɴᴛᴇʀ ᴡɪᴛʜ<br /><em>𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌</em></>
             )}
