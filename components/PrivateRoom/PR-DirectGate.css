@@ -3376,3 +3376,27 @@
     min-height: 48px !important;
   }
 }
+
+/* USERFX_SPCL_ENTRY_ACTION_RESTORE */
+.pvr-direct-open-special-entry {
+  display: block;
+  width: min(240px, 100%);
+  min-height: 34px;
+  margin: 12px auto 4px;
+  padding: 8px 12px;
+  border: 1px solid rgba(196, 165, 116, .65);
+  border-radius: 5px;
+  background: linear-gradient(135deg, #231d15, #100e0d);
+  color: #ead6ac;
+  font: 800 10px/1.25 'Fredoka', sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.pvr-direct-open-special-entry:hover {
+  border-color: #e0bd81;
+  box-shadow: 0 0 14px rgba(196, 165, 116, .18);
+}
+.pvr-direct-open-special-entry:focus-visible {
+  outline: 2px solid #a5e4ee;
+  outline-offset: 3px;
+}
