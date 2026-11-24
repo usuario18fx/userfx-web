@@ -1182,6 +1182,16 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
               </button>
             )}
 
+            {!returningIdentityRef.current && (
+              <button
+                type="button"
+                className="pvr-direct-open-special-entry"
+                onClick={() => { setVerifiedStage("actions"); setTelegramError(""); }}
+              >
+                I HAVE A SPECIAL CODE
+              </button>
+            )}
+
             {telegramError && (
               <p className="pvr-direct-granted-error" role="alert">
                 {telegramError}
@@ -1198,7 +1208,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
           /* ═════════ YA VERIFICADO, MOSTRAR SPECIAL ACCESS ═════════ */
 
           <section className="pvr-direct-verified-zone">
-            /* ───── PANEL USERNAME VERIFICADO ───── */
+            {/* Verified Telegram username panel */}
             <section className="pvr-direct-telegram-panel is-primary is-verified-panel">
               <header>
                 <span>
@@ -1233,7 +1243,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                 </button>
               </div>
             </section>
-            /* ───── SPECIAL ACCESS BOTÓN + FORM ───── */
+            {/* Special access button and code form */}
             <div className="pvr-direct-special-access">
               <button type="button" className="pvr-direct-special-launcher" onClick={() => openTelegramLink("https://t.me/User18Fx_bot?start=identity")}>
                 <img src="/assets/iconos/corona.png" alt="" aria-hidden="true" />
