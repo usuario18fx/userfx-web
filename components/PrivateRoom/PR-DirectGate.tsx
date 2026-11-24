@@ -145,7 +145,8 @@ function normalizeSpecialSuffix(value: string) {
 }
 
 export default function PrivateRoomDirectGate({ children, forceOpen = false, onRequestClose }: DirectGateProps) {
-  const forceGate = forceOpen || (typeof window !== "undefined" && window.location.hash === "#/private-room-access");
+  const accessHash = typeof window !== "undefined" ? window.location.hash : "";
+  const forceGate = forceOpen || accessHash.startsWith("#/private-room-access");
 
   const [checking, setChecking] = useState(!forceGate);
 
@@ -165,7 +166,9 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
-  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>(forceGate ? "code" : "none");
+  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>(
+    forceGate ? (accessHash.startsWith("#/private-room-access/plans") ? "plans" : "code") : "none"
+  );
   useEffect(() => {
     const supplied = new URLSearchParams(window.location.search).get("code");
     const match = String(supplied || "").trim().toUpperCase().match(/^(SPCL|BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
@@ -948,7 +951,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
   }
 
   // Paid codes open directly; SPCL still exposes the identity verification step.
-  const paidCodeFirst = forceGate && secondaryMode === "code" && prefix !== "SPCL" && !telegramVerified;
+  const paidCodeFirst = forceGate && secondaryMode !== "none" && prefix !== "SPCL" && !telegramVerified;
 
   const reducedMotion = useReducedMotion();
 
@@ -1320,12 +1323,31 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
 
         {paidCodeFirst && (
-          <p className="pvr-direct-paid-code-note">
-            Already paid? Select BASIC, PRO or VIP and enter the 4-character code from your Telegram bot message.
-            <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
-              NEED A CODE? GET CODE
-            </a>
-          </p>
+          <>
+            <div className="pvr-direct-secondary-actions" role="group" aria-label="Access code options">
+              <button
+                type="button"
+                className={`pvr-direct-has-code ${secondaryMode === "code" ? "is-active" : ""}`}
+                onClick={() => { setSecondaryMode("code"); setError(""); }}
+                aria-pressed={secondaryMode === "code"}
+              >
+                <span className="pvr-direct-action-text">ALREADY GOT CODE</span>
+              </button>
+              <button
+                type="button"
+                className={`pvr-direct-get-code ${secondaryMode === "plans" ? "is-active" : ""}`}
+                onClick={() => { setSecondaryMode("plans"); setError(""); }}
+                aria-pressed={secondaryMode === "plans"}
+              >
+                <span className="pvr-direct-action-text">GET MY CODE</span>
+              </button>
+            </div>
+            <p className="pvr-direct-paid-code-note">
+              {secondaryMode === "plans"
+                ? "Choose your plan below. Tap PAY to open Telegram, then return with your code."
+                : "Select your plan prefix and enter the code received after payment."}
+            </p>
+          </>
         )}
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
@@ -1433,7 +1455,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
                       setSelectedPlan(plan.id);
                     }
                   }}>
-                  <span className="pvr-direct-plan-emoji" aria-hidden="true" />
+                  <span className="pvr-direct-plan-emoji" aria-hidden="true">{plan.emoji}</span>
 
                   <span className="pvr-direct-plan-info">
                     <strong>{plan.name}</strong>
