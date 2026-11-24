@@ -3400,3 +3400,30 @@
   outline: 2px solid #a5e4ee;
   outline-offset: 3px;
 }
+
+/* USERFX_PAID_CODE_DIRECT_ROUTE_20261123 */
+.pvr-direct-paid-code-note {
+  width: min(390px, 100%);
+  margin: 18px auto 0;
+  color: #c4b8a7;
+  font: 500 11px/1.5 'Fredoka', system-ui, sans-serif;
+  letter-spacing: .02em;
+  text-align: center;
+}
+.pvr-direct-paid-code-note a {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 9px auto 0;
+  color: #88d8e2;
+  font-weight: 800;
+  font-size: 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pvr-direct-paid-code-note a:hover { color: #b6f6fa; }
+.pvr-direct-paid-code-note a:focus-visible { outline: 2px solid #90dbe7; outline-offset: 3px; }
+.pvr-direct-card .pvr-direct-secondary-stage.is-open .pvr-direct-secondary-panel { overflow: visible !important; }
+@media (max-width: 650px) {
+  .pvr-direct-paid-code-note { margin-top: 14px; font-size: 10px; }
+}
