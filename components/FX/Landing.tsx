@@ -1414,6 +1414,12 @@ export default function Landing() {
   const [sceneTimedOut, setSceneTimedOut] = useState(false);
   const showIntro = !introComplete || (!sceneReady && !sceneTimedOut);
   const openTelegram = () => setTelegramOpen(true);
+  // Paid-code entry uses the actual application route (not the identity modal).
+  const openCodeEntry = () => {
+    setTelegramOpen(false);
+    setAccessOpen(false);
+    window.location.hash = "#/private-room-access";
+  };
   // A username eligibility check is not a room access grant.
   // Close identity modals after Telegram verification; only a server-authenticated
   // access session may navigate straight into the private room.
@@ -1492,7 +1498,7 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-      <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={() => setAccessOpen(true)} />
+      <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={openCodeEntry} />
       </MenuOverlay>
       <div className="fx-landing">
       <main>
@@ -1502,7 +1508,7 @@ export default function Landing() {
       <SectionMethod />
       <SectionPricing />
       <SectionFaq />
-      <CodeAccessFooter onEnterCode={() => setAccessOpen(true)} />
+      <CodeAccessFooter onEnterCode={openCodeEntry} />
       </main>
       </div>
       <FooterBar />
