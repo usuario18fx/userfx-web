@@ -165,7 +165,7 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
   const [prefixMenuOpen, setPrefixMenuOpen] = useState(false);
 
-  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>("none");
+  const [secondaryMode, setSecondaryMode] = useState<SecondaryMode>(forceGate ? "code" : "none");
   useEffect(() => {
     const supplied = new URLSearchParams(window.location.search).get("code");
     const match = String(supplied || "").trim().toUpperCase().match(/^(SPCL|BSIC|PRX0|VIPX)-([A-HJ-NP-Z2-9]{4})$/);
@@ -947,6 +947,9 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
     }
   }
 
+  // Paid codes open directly; SPCL still exposes the identity verification step.
+  const paidCodeFirst = forceGate && secondaryMode === "code" && prefix !== "SPCL" && !telegramVerified;
+
   const reducedMotion = useReducedMotion();
 
   if (checking) {
@@ -998,19 +1001,22 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
 
         <motion.div className="pvr-direct-copy" variants={reducedMotion ? { hidden: {}, show: {} } : gateBlock}>
           <h1>
-            ᴇɴᴛᴇʀ ᴡɪᴛʜ
-            <br />
-            <em>
-            𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌
-            </em>
+            {paidCodeFirst ? (
+              <>ENTER YOUR<br /><em>ACCESS CODE</em></>
+            ) : (
+              <>ᴇɴᴛᴇʀ ᴡɪᴛʜ<br /><em>𝕋𝐄𝐋𝐄𝐆𝐑𝐀𝐌</em></>
+            )}
           </h1>
 
           <p>
-          𝚊𝚛𝚎 𝚢𝚘𝚞 𝚊 𝚜𝚙𝚎𝚌𝚒𝚊𝚕 𝚞𝚜𝚎𝚛? 𝙴𝚗𝚝𝚎𝚛 𝚊 𝚞𝚜𝚎𝚛𝚗𝚊𝚖𝚎, 𝚎𝚗𝚓𝚘𝚢 𝚒𝚝.↓
+            {paidCodeFirst
+              ? "Enter the code @User18Fx_bot sent after your Telegram Stars payment."
+              : "Are you a special user? Enter your Telegram username to continue."}
           </p>
         </motion.div>
 
         {/* ═════════ BLOQUE PRINCIPAL: TELEGRAM ═════════ */}
+        {!paidCodeFirst && (
         <motion.div key={`${telegramVerified}-${verifiedStage}`} className="fx-gate-step"
           initial={reducedMotion ? false : { opacity: 0, y: 22, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -1309,8 +1315,18 @@ export default function PrivateRoomDirectGate({ children, forceOpen = false, onR
         )}
 
         </motion.div>
+        )}
 
         {/* ═════════ PANELES SECUNDARIOS (CÓDIGO / PLANES) ═════════ */}
+
+        {paidCodeFirst && (
+          <p className="pvr-direct-paid-code-note">
+            Already paid? Select BASIC, PRO or VIP and enter the 4-character code from your Telegram bot message.
+            <a href="https://t.me/User18Fx_bot?start=getcode" target="_blank" rel="noopener noreferrer">
+              NEED A CODE? GET CODE
+            </a>
+          </p>
+        )}
 
         <div className={`pvr-direct-secondary-stage ${secondaryMode !== "none" ? "is-open" : ""}`}>
           {secondaryMode === "code" && (
