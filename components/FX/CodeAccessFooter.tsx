@@ -4,10 +4,11 @@ import "./CodeAccessFooter.css";
 
 type CodeAccessFooterProps = {
   onEnterCode: () => void;
+  onGetCode: () => void;
 };
 
 /** Landing-only access choices. This does not authenticate the user. */
-export default function CodeAccessFooter({ onEnterCode }: CodeAccessFooterProps) {
+export default function CodeAccessFooter({ onEnterCode, onGetCode }: CodeAccessFooterProps) {
   return (
     <section className="fx-code-access-section" aria-labelledby="fx-code-access-title">
       <div className="fx-code-access-panel">
@@ -17,18 +18,17 @@ export default function CodeAccessFooter({ onEnterCode }: CodeAccessFooterProps)
           Get your access code or enter the code you already have.
         </p>
         <div className="fx-code-access-actions">
-          <a
+          <button
+            type="button"
             className="fx-code-access-option fx-code-access-option--get"
-            href="https://t.me/User18Fx_bot?start=getcode"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Get your access code from the USER FX Telegram bot"
+            onClick={onGetCode}
+            aria-label="Choose BASIC, PRO, or VIP access plan"
           >
             <span className="fx-code-access-number" aria-hidden="true">01</span>
             <strong>GET CODE</strong>
-            <small>OPEN TELEGRAM BOT</small>
+            <small>CHOOSE ACCESS PLAN</small>
             <span className="fx-code-access-arrow" aria-hidden="true">↗</span>
-          </a>
+          </button>
           <button
             className="fx-code-access-option fx-code-access-option--got"
             type="button"
