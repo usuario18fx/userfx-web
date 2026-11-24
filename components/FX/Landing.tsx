@@ -1420,6 +1420,11 @@ export default function Landing() {
     setAccessOpen(false);
     window.location.hash = "#/private-room-access";
   };
+  const openPlanList = () => {
+    setTelegramOpen(false);
+    setAccessOpen(false);
+    window.location.hash = "#/private-room-access/plans";
+  };
   // A username eligibility check is not a room access grant.
   // Close identity modals after Telegram verification; only a server-authenticated
   // access session may navigate straight into the private room.
@@ -1498,7 +1503,7 @@ export default function Landing() {
       <ScrollStops />
       <StickyHeader active={active} onOpenTelegram={openTelegram} />
       <MenuOverlay>
-      <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={openCodeEntry} />
+      <SiteFooter onVerified={() => void handleTelegramVerified()} onEnterCode={openCodeEntry} onGetCode={openPlanList} />
       </MenuOverlay>
       <div className="fx-landing">
       <main>
@@ -1508,7 +1513,7 @@ export default function Landing() {
       <SectionMethod />
       <SectionPricing />
       <SectionFaq />
-      <CodeAccessFooter onEnterCode={openCodeEntry} />
+      <CodeAccessFooter onEnterCode={openCodeEntry} onGetCode={openPlanList} />
       </main>
       </div>
       <FooterBar />
