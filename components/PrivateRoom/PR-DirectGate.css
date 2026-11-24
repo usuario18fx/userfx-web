@@ -3427,3 +3427,13 @@
 @media (max-width: 650px) {
   .pvr-direct-paid-code-note { margin-top: 14px; font-size: 10px; }
 }
+
+/* Restored plan emojis in original GET MY CODE cards. */
+.pvr-direct-plan > .pvr-direct-plan-emoji {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 18px;
+  line-height: 1;
+}
