@@ -1,0 +1,125 @@
+
+/* USER FX / Access choices at the end of the main landing page. */
+.fx-code-access-section {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(390px, 57vh, 620px);
+  padding: clamp(48px, 7vw, 96px) 18px;
+  background:
+    linear-gradient(185deg, rgba(2, 24, 29, .64), rgba(1, 10, 15, .82)),
+    url('/wallLadrillos.png') center / cover no-repeat,
+    #031013;
+}
+.fx-code-access-panel {
+  position: relative;
+  width: min(100%, 980px);
+  padding: clamp(24px, 4vw, 44px);
+  border: 2px solid rgba(51, 144, 145, .68);
+  border-radius: 22px;
+  background: linear-gradient(155deg, rgba(6, 20, 24, .96), rgba(2, 7, 12, .96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(154, 247, 222, .10);
+}
+.fx-code-access-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 18% auto;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(152, 238, 224, .64), transparent);
+}
+.fx-code-access-eyebrow {
+  margin: 0 0 10px;
+  color: #75bdbd;
+  font: 700 11px/1.4 'Fredoka', sans-serif;
+  letter-spacing: .20em;
+}
+.fx-code-access-panel h2 {
+  margin: 0;
+  color: #f6fafb;
+  font: 750 clamp(29px, 4vw, 48px)/1.08 'Fredoka', sans-serif;
+  letter-spacing: -.025em;
+}
+.fx-code-access-description {
+  margin: 11px 0 28px;
+  color: #b2c0c8;
+  font: 400 clamp(13px, 1.35vw, 17px)/1.5 'Fredoka', sans-serif;
+}
+.fx-code-access-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.5vw, 20px);
+}
+.fx-code-access-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 142px;
+  padding: 24px 22px;
+  border: 1px solid rgba(78, 180, 188, .72);
+  border-radius: 13px;
+  background: linear-gradient(145deg, #06353c, #071e26 75%);
+  color: #eafaff;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(161, 245, 237, .11);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.fx-code-access-option--got {
+  border-color: rgba(131, 160, 169, .42);
+  background: linear-gradient(135deg, #141b20, #0c1117 80%);
+}
+.fx-code-access-option strong {
+  color: #eafaff;
+  font: 800 clamp(18px, 2.4vw, 27px)/1.1 'Fredoka', sans-serif;
+  letter-spacing: .04em;
+}
+.fx-code-access-option small {
+  color: #a0bec8;
+  font: 650 10px/1.2 'Fredoka', sans-serif;
+  letter-spacing: .13em;
+}
+.fx-code-access-number {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  color: #71bebc;
+  font: 700 10px/1 ui-monospace, Consolas, monospace;
+}
+.fx-code-access-arrow {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  color: #65b8bf;
+  font-size: 17px;
+}
+.fx-code-access-option:hover {
+  transform: translateY(-3px);
+  border-color: #80e5de;
+  box-shadow: 0 8px 26px rgba(25, 150, 150, .18), inset 0 1px 0 rgba(161, 245, 237, .14);
+}
+.fx-code-access-option:focus-visible {
+  outline: 2px solid #a5f0e6;
+  outline-offset: 4px;
+}
+.fx-code-access-note {
+  margin: 20px 0 0;
+  color: #869ca5;
+  font: 400 11px/1.5 'Fredoka', sans-serif;
+}
+@media (max-width: 560px) {
+  .fx-code-access-section { padding: 36px 12px; }
+  .fx-code-access-panel { padding: 23px 16px; border-radius: 16px; }
+  .fx-code-access-actions { grid-template-columns: 1fr; }
+  .fx-code-access-option { min-height: 106px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-code-access-option { transition: none; }
+}
