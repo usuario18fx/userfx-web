@@ -438,7 +438,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const canvas = canvasRef.current;
     const fallbackCanvas = fallbackRef.current;
     if (!canvas || !fallbackCanvas) return;
-    const fallbackContext = fallbackCanvas.getContext("2d", { alpha: true });
+    const fallbackContext = fallbackCanvas.getContext("2d", { alpha: true })!;
     if (!fallbackContext) return;
 
     // Draw the canvas 2D only when WebGL is unavailable; never overlay both particle layers.
