@@ -79,11 +79,11 @@ const SCROLL_LIFT_PX = 4;
 // ──────────────────────────
 // POSICIONES INDEPENDIENTES
 const COVER_POSITION = {
-  USER_FX:       { x: 0, y: 67 },
-  WELCOME:       { x: 0, y: 50 },
-  PRIVATE_WORLD: { x: 0, y: 61 },
+  USER_FX:       { x: 0, y: 40 },
+  WELCOME:       { x: 0, y: 30 },
+  PRIVATE_WORLD: { x: 0, y: 49 },
   CROWN:         { x: 0, y: -15 },
-  SCROLL:        { x: 0, y: -95 },
+  SCROLL:        { x: 0, y: -55 },
 } as const;
 
 const TUNING = {
@@ -2260,7 +2260,9 @@ export default function CinematicTour({
           }}
         />
         <div className="fx-cover-scroll-hint" style={{ ...({ opacity: 0.5 * fxStagedFade(progress, 0.00, 0.20), fontFamily: '"Orbitron", system-ui, sans-serif', fontSize: "clamp(11px, 1.2vw, 16px)", letterSpacing: ".2em", fontWeight: 700, color: "#c6e6f7", textShadow: "0 2px 12px #000", marginTop: "clamp(18px, 4vh, 44px)" }), marginTop: "clamp(4px, 1vh, 12px)", fontSize: "15px", lineHeight: 1.4, whiteSpace: "nowrap", letterSpacing: "0.16em", opacity: fxCoverStep(progress, 0.00, 0.24), transform: `translate(${COVER_POSITION.SCROLL.x}px, ${COVER_POSITION.SCROLL.y}px)`, transition: "none" }}>
-          <span className="fx-cover-scroll-pulse">SCROLL DOWN TO ENTER</span>
+          <span className="fx-cover-scroll-pulse">
+SCROLL DOWN TO ENTER
+</span>
         </div>
       </div>
 
