@@ -1,124 +1,75 @@
-/* USER FX / Access choices at the end of the main landing page. */
-.fx-code-access-section {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-height: clamp(390px, 57vh, 620px);
-  padding: clamp(48px, 7vw, 96px) 18px;
-  background:
-    linear-gradient(185deg, rgba(2, 24, 29, .64), rgba(1, 10, 15, .82)),
-    url('/wallLadrillos.png') center / cover no-repeat,
-    #031013;
-}
-.fx-code-access-panel {
-  position: relative;
-  width: min(100%, 980px);
-  padding: clamp(24px, 4vw, 44px);
-  border: 2px solid rgba(51, 144, 145, .68);
-  border-radius: 22px;
-  background: linear-gradient(155deg, rgba(6, 20, 24, .96), rgba(2, 7, 12, .96));
-  box-shadow: 0 24px 70px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(154, 247, 222, .10);
-}
-.fx-code-access-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0 18% auto;
-  height: 2px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(152, 238, 224, .64), transparent);
-}
-.fx-code-access-eyebrow {
-  margin: 0 0 10px;
-  color: #75bdbd;
-  font: 700 11px/1.4 'Fredoka', sans-serif;
-  letter-spacing: .20em;
-}
-.fx-code-access-panel h2 {
-  margin: 0;
-  color: #f6fafb;
-  font: 750 clamp(29px, 4vw, 48px)/1.08 'Fredoka', sans-serif;
-  letter-spacing: -.025em;
-}
-.fx-code-access-description {
-  margin: 11px 0 28px;
-  color: #b2c0c8;
-  font: 400 clamp(13px, 1.35vw, 17px)/1.5 'Fredoka', sans-serif;
-}
-.fx-code-access-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(10px, 1.5vw, 20px);
-}
-.fx-code-access-option {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  min-height: 142px;
-  padding: 24px 22px;
-  border: 1px solid rgba(78, 180, 188, .72);
-  border-radius: 13px;
-  background: linear-gradient(145deg, #06353c, #071e26 75%);
-  color: #eafaff;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(161, 245, 237, .11);
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-}
-.fx-code-access-option--got {
-  border-color: rgba(131, 160, 169, .42);
-  background: linear-gradient(135deg, #141b20, #0c1117 80%);
-}
-.fx-code-access-option strong {
-  color: #eafaff;
-  font: 800 clamp(18px, 2.4vw, 27px)/1.1 'Fredoka', sans-serif;
-  letter-spacing: .04em;
-}
-.fx-code-access-option small {
-  color: #a0bec8;
-  font: 650 10px/1.2 'Fredoka', sans-serif;
-  letter-spacing: .13em;
-}
-.fx-code-access-number {
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  color: #71bebc;
-  font: 700 10px/1 ui-monospace, Consolas, monospace;
-}
-.fx-code-access-arrow {
-  position: absolute;
-  right: 16px;
-  top: 12px;
-  color: #65b8bf;
-  font-size: 17px;
-}
-.fx-code-access-option:hover {
-  transform: translateY(-3px);
-  border-color: #80e5de;
-  box-shadow: 0 8px 26px rgba(25, 150, 150, .18), inset 0 1px 0 rgba(161, 245, 237, .14);
-}
-.fx-code-access-option:focus-visible {
-  outline: 2px solid #a5f0e6;
-  outline-offset: 4px;
-}
-.fx-code-access-note {
-  margin: 20px 0 0;
-  color: #869ca5;
-  font: 400 11px/1.5 'Fredoka', sans-serif;
-}
-@media (max-width: 560px) {
-  .fx-code-access-section { padding: 36px 12px; }
-  .fx-code-access-panel { padding: 23px 16px; border-radius: 16px; }
-  .fx-code-access-actions { grid-template-columns: 1fr; }
-  .fx-code-access-option { min-height: 106px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-code-access-option { transition: none; }
-}
+.fx-code-access-section { position:relative;z-index:1;width:100%;padding:clamp(24px,4vw,60px) clamp(12px,3vw,55px);background:linear-gradient(145deg,#021319cc,#010710e8),url('/wallLadrillos.png') center/cover #021018;font-family:'Fredoka',system-ui,sans-serif }
+.fx-code-access-section *,.fx-code-access-section *::before,.fx-code-access-section *::after { box-sizing:border-box }
+.fx-code-access-panel { display:grid;grid-template-columns:minmax(240px,29%) minmax(0,1fr);max-width:1550px;margin:auto;border:1px solid #398c9680;border-radius:16px;overflow:hidden;background:#03141c;box-shadow:0 24px 70px #0009 }
+.fx-code-access-cinema { position:relative;min-height:410px;overflow:hidden;background:#050e2b;isolation:isolate }
+.fx-code-access-cinema>video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(1.1) }
+.fx-code-access-cinema-shade { position:absolute;inset:0;background:linear-gradient(180deg,#091e843d,#07132c44 45%,#030916ef),linear-gradient(90deg,#073dc13a,transparent);pointer-events:none }
+.fx-code-access-lock { position:absolute;left:25px;top:25px;width:80px;height:80px;object-fit:contain;background:#07132399;border:1px solid #42bfea44;border-radius:12px }
+.fx-code-access-cinema-copy { position:absolute;bottom:40px;left:32px;right:20px;color:#eef8ff;text-shadow:0 2px 12px #000;display:grid;gap:6px }
+.fx-code-access-cinema-copy strong { font-size:24px;font-weight:850;letter-spacing:.08em }
+.fx-code-access-cinema-copy span { color:#b8c8ea;font-weight:750;font-size:12px;letter-spacing:.13em }
+.fx-code-access-cinema-copy em { font-size:22px;margin-top:20px;line-height:1.4 }
+.fx-code-access-content { min-width:0;padding:clamp(20px,3vw,45px);background:linear-gradient(125deg,#042b30f0,#02131cf8 70%),url('/wallLadrillos.png') center/cover }
+.fx-code-access-eyebrow { margin:0 0 10px;color:#55dadf;font-size:12px;font-weight:800;letter-spacing:.16em }
+.fx-code-access-content h2 { margin:0;color:#f3f8fc;font-size:clamp(26px,3vw,47px);line-height:1.06;letter-spacing:-.025em;font-weight:850 }
+.fx-code-access-description { margin:12px 0 21px;color:#abc4cc;font-size:clamp(13px,1.25vw,17px);line-height:1.45 }
+.fx-code-access-actions { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px }
+.fx-code-access-choice { position:relative;min-height:78px;display:flex;align-items:center;justify-content:center;gap:12px;min-width:0;padding:12px 17px;border:1px solid #489eaf77;border-radius:10px;background:linear-gradient(145deg,#073c45b5,#051b26d9);color:#ecfaff;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .2s }
+.fx-code-access-choice-paid { background:linear-gradient(145deg,#24211b,#0c1720);border-color:#a69c7c77 }
+.fx-code-access-choice:hover,.fx-code-access-choice.is-active { border-color:#65e5eb;box-shadow:0 0 25px #007eb322;transform:translateY(-1px) }
+.fx-code-access-choice-paid:hover,.fx-code-access-choice-paid.is-active { border-color:#dfcf91 }
+.fx-code-access-choice img { width:32px;height:32px;object-fit:contain }
+.fx-code-access-choice strong { display:block;font-size:clamp(17px,2vw,27px);font-weight:850 }
+.fx-code-access-choice small { display:block;font-size:10px;color:#9ebac7;letter-spacing:.1em }
+.fx-code-access-index { position:absolute;left:11px;top:9px;font:700 10px ui-monospace,Consolas,monospace;color:#7ac4c4 }
+.fx-code-access-coin { color:#f7d680;font-size:29px }
+.fx-code-access-get-link { display:inline-flex;gap:10px;margin-top:12px;padding:4px 0;border:0;background:none;color:#e5f8ff;text-decoration:underline;text-underline-offset:5px;font:800 13px 'Fredoka',sans-serif;letter-spacing:.1em;cursor:pointer }
+.fx-code-access-get-link:hover,.fx-code-access-get-link.is-active { color:#70e9f6 }
+.fx-code-access-mode { padding-top:14px;min-height:170px }
+.fx-code-access-telegram,.fx-code-access-paid { padding:18px;border:1px solid #378eac77;border-radius:12px;background:linear-gradient(120deg,#06212beb,#05141fec) }
+.fx-code-access-paid { background:linear-gradient(125deg,#291e12ed,#08131ceb);border-color:#c2a36985 }
+.fx-code-access-zone-header { display:flex;gap:12px;align-items:center;margin-bottom:14px }
+.fx-code-access-zone-header>img,.fx-code-access-paid-emblem { display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:8px;background:linear-gradient(135deg,#168bd7,#073a73);padding:7px;object-fit:contain }
+.fx-code-access-paid-emblem { background:#9f8d4d22;border:1px solid #af9d5e;color:#ead490;font-size:26px }
+.fx-code-access-zone-header strong { display:block;color:#fff;font-size:17px;font-weight:800;letter-spacing:.04em }
+.fx-code-access-zone-header small { display:block;color:#b2bdc5;font-size:10px;letter-spacing:.09em;margin-top:2px }
+.fx-code-access-form label { display:block;margin-bottom:7px;color:#b5d1dc;font-size:11px;letter-spacing:.1em;font-weight:750 }
+.fx-code-access-field { display:flex;align-items:center;gap:9px;min-width:0 }
+.fx-code-access-field>span { flex:0 0 auto;color:#50c9e5;font-weight:850;font-size:20px }
+.fx-code-access-field .fx-code-access-prefix { font-size:14px;color:#82ddd5 }
+.fx-code-access-field input,.fx-code-access-field select { height:50px;min-width:0;flex:1;background:#020d17;border:1px solid #468ba97e;border-radius:7px;padding:0 11px;color:#eef8ff;outline:none;font:650 17px 'Fredoka',sans-serif }
+.fx-code-access-field select { flex:0 0 104px;font-size:14px }
+.fx-code-access-field input:focus-visible,.fx-code-access-field select:focus-visible { outline:2px solid #33a9d8;outline-offset:1px }
+.fx-code-access-field button { flex:0 0 auto;height:50px;min-width:85px;border:0;border-radius:8px;padding:0 12px;background:linear-gradient(120deg,#38dcf0,#2792d4);color:#041626;font:850 12px 'Fredoka',sans-serif;cursor:pointer }
+.fx-code-access-paid .fx-code-access-field button { background:linear-gradient(120deg,#ecd8a0,#b38a41);color:#1e180e }
+.fx-code-access-field button:disabled { opacity:.5;cursor:not-allowed }
+.fx-code-access-spcl-form { margin-top:15px }
+.fx-code-access-feedback { margin:10px 0;color:#ffbcb2;font-size:12px }
+.fx-code-access-feedback.is-success { color:#79e8c5 }
+.fx-code-access-attempts { display:block;margin-top:8px;color:#9ea4a9;font-size:10px;letter-spacing:.06em }
+.fx-code-access-support { display:inline-block;margin-top:12px;color:#abddec;text-decoration:underline;text-underline-offset:4px;font-size:12px }
+.fx-code-access-secondary-link { border:0;padding:0;background:transparent;cursor:pointer }
+.fx-code-access-plan-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px }
+.fx-code-access-plan { position:relative;min-height:235px;min-width:0;overflow:hidden;border:1px solid #6c9fba6b;border-radius:12px;isolation:isolate;background:#071320 }
+.fx-code-access-plan--basic { border-color:#dd5b728a }
+.fx-code-access-plan--pro { border-color:#317ee28a }
+.fx-code-access-plan--vip { border-color:#dfc2848a }
+.fx-code-access-plan>img,.fx-code-access-plan>video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.64) saturate(.9) }
+.fx-code-access-plan-shade { position:absolute;inset:0;background:linear-gradient(180deg,#02091133,#020911aa 60%,#020911fa) }
+.fx-code-access-plan-content { position:relative;z-index:1;min-height:235px;height:100%;display:flex;flex-direction:column;padding:14px;color:#f6f9ff }
+.fx-code-access-plan-head { display:flex;justify-content:space-between;gap:4px }
+.fx-code-access-plan-head strong { display:block;font-size:clamp(19px,2vw,29px);line-height:1.1 }
+.fx-code-access-plan-head small { display:block;color:#d2d8e7;letter-spacing:.12em;font-size:10px }
+.fx-code-access-plan-head b { white-space:nowrap;font-size:17px }
+.fx-code-access-plan-content p { margin:auto 0 13px;color:#e0e1e4;font-size:12px }
+.fx-code-access-plan-content>small { color:#b4c4d1;font-size:10px }
+.fx-code-access-plan-actions { display:flex;gap:6px;margin-top:12px }
+.fx-code-access-plan-actions button,.fx-code-access-plan-actions a { flex:1;display:grid;place-items:center;min-height:36px;padding:6px;border:1px solid #9ac5d180;border-radius:6px;background:#051827d6;color:#f0f8ff;font:700 11px 'Fredoka',sans-serif;text-decoration:none;text-align:center;cursor:pointer }
+.fx-code-access-plan-actions a { background:#55cbe9;color:#001923;border-color:#55cbe9 }
+.fx-code-access-all-plans { grid-column:1/-1;justify-self:start;border:0;padding:0;background:none;color:#a7daeb;text-decoration:underline;text-underline-offset:3px;font:700 11px 'Fredoka',sans-serif;cursor:pointer }
+.fx-code-access-note { margin:12px 0 0;color:#7d9da6;font-size:10px;letter-spacing:.1em }
+.fx-code-access-section button:focus-visible,.fx-code-access-section a:focus-visible { outline:2px solid #83e3f5;outline-offset:3px }
+@media(max-width:1100px){.fx-code-access-panel{grid-template-columns:32% 1fr}.fx-code-access-content{padding:22px}.fx-code-access-plan-grid{grid-template-columns:1fr}.fx-code-access-plan,.fx-code-access-plan-content{min-height:175px}}
+@media(max-width:720px){.fx-code-access-panel{grid-template-columns:1fr}.fx-code-access-cinema{min-height:205px;max-height:245px}.fx-code-access-cinema-copy{bottom:18px}.fx-code-access-cinema-copy em{margin-top:4px;font-size:18px}.fx-code-access-lock{width:51px;height:51px;top:14px;left:14px}.fx-code-access-content{padding:21px}.fx-code-access-choice{min-height:71px}}
+@media(max-width:440px){.fx-code-access-choice{flex-direction:column;gap:3px;min-height:85px}.fx-code-access-choice img,.fx-code-access-coin{display:none}.fx-code-access-field button{min-width:70px;padding:0 8px}.fx-code-access-field select{flex-basis:76px}.fx-code-access-field input{padding:0 7px}}
+@media(prefers-reduced-motion:reduce){.fx-code-access-choice{transition:none}}
