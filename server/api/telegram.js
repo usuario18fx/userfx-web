@@ -2142,9 +2142,8 @@ function isAcceptableMedia(ctx) {
   return mime.startsWith("image/") || mime.startsWith("video/");
 }
 async function sendExchangeReplyMedia(ctx) {
-  const options = { reply_markup: getVideocallInlineKeyboard() };
   try {
-    await ctx.replyWithPhoto(VIDEOCALL_REPLY_IMAGE, options);
+    await ctx.replyWithPhoto(VIDEOCALL_REPLY_IMAGE);
     return true;
   } catch (error) {
     logger.warn("VIDEOCALL2 IMAGE UNAVAILABLE; USING EXISTING IMAGE", {
@@ -2152,14 +2151,13 @@ async function sendExchangeReplyMedia(ctx) {
       ...getTelegramError(error),
     });
     try {
-      await ctx.replyWithPhoto(ASSET_VIDEOCALL_IMAGE, options);
+      await ctx.replyWithPhoto(ASSET_VIDEOCALL_IMAGE);
       return true;
     } catch (fallbackError) {
       logger.error("VIDEOCALL REPLY IMAGE FAILED", {
         userId: String(ctx.from?.id || ""),
         ...getTelegramError(fallbackError),
       });
-      await ctx.reply("📞 ᴘɪᴄᴋ ʏᴏᴜʀ ᴠɪᴅᴇᴏᴄᴀʟʟ ᴏᴘᴛɪᴏɴ", options).catch(() => {});
       return false;
     }
   }
@@ -2212,6 +2210,7 @@ Item: ${mediaCount}`,
     });
     await ctx.reply("ɢᴏᴛ ɪᴛ. ᴍʏ ᴛᴜʀɴ ɴᴏᴡ…");
     const delivered = await sendExchangeReplyMedia(ctx);
+    await ctx.reply("ᴏᴋᴀʏ, ɢɪᴠᴇ ᴍᴇ ᴀ ꜱᴇᴄᴏɴᴅ ᴛᴏ ɢᴇᴛ ʀᴇᴀᴅʏ.");
     await setVideoRequest(userId, {
       ...(await getVideoRequest(userId)),
       replySent: delivered,
