@@ -479,6 +479,8 @@ export default function CinematicTour({
     };
     mql?.addEventListener?.("change", onReducedMotionChange);
     const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+    // FX_MOBILE_SCENE_CLEANUP_V1: desktop scene remains untouched.
+    const mobileScenePolish = window.matchMedia("(max-width: 700px)").matches;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#14121c");
@@ -921,6 +923,7 @@ export default function CinematicTour({
       })
     );
     lampBulb.position.set(0, 2.25, 0);
+    lampBulb.visible = !mobileScenePolish;
     floorLamp.add(lampBulb);
     // Luces que iluminan más el cuarto
     const lampRoomLight = new THREE.PointLight("#ffd7a0", 14, 8.5);
@@ -1169,7 +1172,7 @@ export default function CinematicTour({
     laptopGroup.add(keyboardTop);
 
     box(0.27, 0.005, 0.13, 0, 0.595, 0.258, mat("#a4afc1", 0.24, 0.28), laptopGroup);
-    const keyboardGlow = new THREE.PointLight("#54caff", 2.8, 1.7);
+    const keyboardGlow = new THREE.PointLight("#54caff", mobileScenePolish ? 0 : 2.8, 1.7);
     keyboardGlow.position.set(0, 0.78, 0);
     laptopGroup.add(keyboardGlow);
 
@@ -2263,6 +2266,12 @@ export default function CinematicTour({
           <span className="fx-cover-scroll-pulse">
 SCROLL DOWN TO ENTER
 </span>
+          <span className="fx-mobile-swipe-up" aria-hidden="true">
+            <svg viewBox="0 0 32 36" width="24" height="28" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 20V8a2.5 2.5 0 0 1 5 0v10-5a2.5 2.5 0 0 1 5 0v6-3a2.5 2.5 0 0 1 5 0v7c0 7-4 10-10 10h-2c-3 0-5-1.5-7-5l-3-5a2.5 2.5 0 0 1 4-3l3 4" />
+              <path d="M12.5 3.5 15.5 .5 18.5 3.5" opacity=".6" />
+            </svg>
+          </span>
         </div>
       </div>
 
