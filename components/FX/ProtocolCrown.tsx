@@ -241,6 +241,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
   const clickReleaseRef = useRef<number | null>(null);
+  const mobileRegenerationColorRef = useRef(0); // FX_MOBILE_CROWN_COLOR_CYCLE_V1
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
   const ignoreClickRef = useRef(false);
@@ -356,7 +357,11 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     if (now - lastTapRef.current < 420) return; // Prevent pointerup + click double toggle.
     lastTapRef.current = now;
     // Clicking again restores the original shape, allowing another demonstration.
-    clickReleaseRef.current = clickReleaseRef.current === null ? now : null;
+    const rebuilding = clickReleaseRef.current !== null;
+    clickReleaseRef.current = rebuilding ? null : now;
+    if (rebuilding && window.matchMedia("(max-width: 700px)").matches) {
+      mobileRegenerationColorRef.current += 1;
+    }
   };
 
   // Pointer capture is scoped to the dedicated crown stage only. No global drag or image ghost.
@@ -448,6 +453,13 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const fScatter = fallbackData.scatter;
     const fColors = fallbackData.geometry.getAttribute("color").array as Float32Array;
     const fallbackPalette = ["#0b7775", "#149d98", "#22bdb8", "#39d3d0", "#3fd8d0", "#55e0d9"];
+    const mobileCrownFallbackPalettes = [
+      fallbackPalette,
+      ["#0b528b", "#1569b2", "#278ee1", "#43bbff", "#75d4ff", "#a0ecff"],
+      ["#4e237f", "#722ba8", "#9448cf", "#ba65f5", "#da90ff", "#efc3ff"],
+      ["#761d51", "#ab306d", "#db4589", "#ec69aa", "#f58cc4", "#ffc2e2"],
+      ["#765518", "#a37c25", "#cba03c", "#f0c75d", "#ffe29a", "#fff1c5"],
+    ];
     let fallbackW = 1, fallbackH = 1;
     let useFallback = false;
     let lastFallbackFrame = -1000;
@@ -467,7 +479,9 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const clickFall = clickReleaseRef.current === null ? 0 :
         clamp((ms - clickReleaseRef.current) / CROWN_RELEASE_MS);
       const broken = Math.max(scrollBreak, clickFall);
-      const opacity = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
+      const opacityBase = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
+      // Settled mobile grains remain visible on the floor for this section.
+      const opacity = window.innerWidth <= 700 && broken > .85 ? Math.max(.68, opacityBase) : opacityBase;
       if (opacity <= 0) return;
       const scale = Math.min(fallbackW * (fallbackW < 700 ? 0.29 : 0.22), fallbackH * 0.24);
       const motion = interactionRef.current;
@@ -538,7 +552,10 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         const intensity = (fColors[i] + fColors[i + 1] + fColors[i + 2]) / 3;
         const shade = intensity > 0.73 ? 5 : intensity > 0.44 ? 4 : intensity > 0.27 ? 3 : intensity > 0.17 ? 2 : intensity > 0.11 ? 1 : 0;
         fallbackContext.globalAlpha = opacity * (shade >= 4 ? 0.88 : 0.58) * floorVisibility;
-        fallbackContext.fillStyle = fallbackPalette[shade];
+        const palette = window.innerWidth <= 700
+          ? mobileCrownFallbackPalettes[mobileRegenerationColorRef.current % mobileCrownFallbackPalettes.length]
+          : fallbackPalette;
+        fallbackContext.fillStyle = palette[shade];
         const size = (shade >= 4 ? 1.5 : 1.0) * perspective;
         fallbackContext.fillRect(px, py, size, size);
       }
@@ -643,6 +660,9 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       sizeAttenuation: true,
       blending: THREE.AdditiveBlending,
     });
+    const mobileColorsAttribute = data.geometry.getAttribute("color") as THREE.BufferAttribute;
+    const originalMobileColors = (mobileColorsAttribute.array as Float32Array).slice();
+    let paintedMobileCycle = 0;
     const points = new THREE.Points(data.geometry, material);
     points.renderOrder = 3;
     points.frustumCulled = false;
@@ -691,8 +711,28 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const broken = Math.max(scrollBreak, clickFall);
       const descend = range(p, timeline.descend);
       const rise = range(p, timeline.rise);
-      const opacity = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
+      const opacityBase = clickReleaseRef.current === null ? 1 - range(p, timeline.fade) : 1;
+      const opacity = isMobile && broken > .85 ? Math.max(.68, opacityBase) : opacityBase;
       const time = ms * 0.001;
+      // Rebuilding the crown on a phone changes particle colour, not desktop particles.
+      if (isMobile && paintedMobileCycle !== mobileRegenerationColorRef.current) {
+        paintedMobileCycle = mobileRegenerationColorRef.current;
+        const target = mobileColorsAttribute.array as Float32Array;
+        if (paintedMobileCycle === 0) {
+          target.set(originalMobileColors);
+        } else {
+          const hue = [.51, .58, .76, .93, .12][paintedMobileCycle % 5];
+          const dye = new THREE.Color();
+          for (let k = 0; k < target.length; k += 3) {
+            const brightness = Math.max(originalMobileColors[k], originalMobileColors[k + 1], originalMobileColors[k + 2]);
+            dye.setHSL(hue + (k % 13) * .001, .82, .30 + Math.min(.35, brightness * .28));
+            target[k] = dye.r;
+            target[k + 1] = dye.g;
+            target[k + 2] = dye.b;
+          }
+        }
+        mobileColorsAttribute.needsUpdate = true;
+      }
       const v = data.geometry.getAttribute("position") as THREE.BufferAttribute;
       const arr = v.array as Float32Array;
       const original = data.original;
