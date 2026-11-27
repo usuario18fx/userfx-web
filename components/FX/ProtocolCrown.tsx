@@ -242,7 +242,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
   const fallbackRef = useRef<HTMLCanvasElement>(null);
   const clickReleaseRef = useRef<number | null>(null);
   // Mouse-driven motion for the actual settled Three.js grains (not an overlay).
-  const floorMouseRef = useRef({ x: 0, y: 0, dx: 0, dy: 0, active: false });
+  const floorMouseRef = useRef({ x: 0, y: 0, dx: 0, dy: 0, active: false, moved: false });
 
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
@@ -579,19 +579,24 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const rect = canvas.getBoundingClientRect();
       const x = (event.clientX - rect.left) / Math.max(rect.width, 1);
       const y = (event.clientY - rect.top) / Math.max(rect.height, 1);
-      if (x < 0 || x > 1 || y < 0.67 || y > 1) {
+      if (x < 0 || x > 1 || y < 0 || y > 1) {
         floorPointer.active = false;
+        floorPointer.moved = false;
         return;
       }
-      floorPointer.dx = Math.max(-0.4, Math.min(0.4, (x - previousFloorX) * 9));
-      floorPointer.dy = Math.max(-0.4, Math.min(0.4, (y - previousFloorY) * 9));
+      // The raycast below checks the real floor. No artificial screen Y band.
+      const dx = (x - previousFloorX) * rect.width;
+      const dy = (y - previousFloorY) * rect.height;
+      floorPointer.dx = floorPointer.active ? THREE.MathUtils.clamp(dx, -35, 35) : 0;
+      floorPointer.dy = floorPointer.active ? THREE.MathUtils.clamp(dy, -35, 35) : 0;
       floorPointer.x = x;
       floorPointer.y = y;
+      floorPointer.moved = true;
       floorPointer.active = true;
       previousFloorX = x;
       previousFloorY = y;
     };
-    const onFloorMouseLeave = () => { floorPointer.active = false; };
+    const onFloorMouseLeave = () => { floorPointer.active = false; floorPointer.moved = false; };
     window.addEventListener("pointermove", onFloorMouse, { passive: true });
     document.addEventListener("pointerleave", onFloorMouseLeave);
     let renderer: THREE.WebGLRenderer;
@@ -695,6 +700,16 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     halo.frustumCulled = false;
     group.add(halo);
 
+    const floorRaycaster = new THREE.Raycaster();
+    const floorPlane = new THREE.Plane();
+    const floorHit = new THREE.Vector3();
+    const floorCenter = new THREE.Vector3();
+    const floorNormal = new THREE.Vector3();
+    const floorQuaternion = new THREE.Quaternion();
+    const floorCursor = new THREE.Vector3();
+    let floorHitValid = false;
+    let floorImpulseX = 0;
+    let floorImpulseZ = 0;
     let w = 1, h = 1, frame = 0;
     let visible = !document.hidden;
     const resize = () => {
@@ -730,7 +745,30 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const original = data.original;
       const scatter = data.scatter;
 
-      // Purely independent motion: no spring, wobble or jelly interpolation.
+      // Project the pointer onto the actual inclined ground plane, not an
+      // approximate horizontal pixel band. One impulse per pointer movement.
+
+      group.updateMatrixWorld(true);
+      floorHitValid = false;
+      floorImpulseX = 0;
+      floorImpulseZ = 0;
+      if (floorPointer.active && floorPointer.moved && broken > 0.85 && !reduced) {
+        floorRaycaster.setFromCamera(new THREE.Vector2(floorPointer.x * 2 - 1, 1 - floorPointer.y * 2), camera);
+        group.getWorldQuaternion(floorQuaternion);
+        floorNormal.set(0, 1, 0).applyQuaternion(floorQuaternion).normalize();
+        floorCenter.set(0, PARTICLE_FLOOR_Y, 0).applyMatrix4(group.matrixWorld);
+        floorPlane.setFromNormalAndCoplanarPoint(floorNormal, floorCenter);
+        if (floorRaycaster.ray.intersectPlane(floorPlane, floorHit)) {
+          floorCursor.copy(floorHit);
+          group.worldToLocal(floorCursor);
+          floorHitValid = Math.abs(floorCursor.x) < 7 && Math.abs(floorCursor.z) < 6;
+          // Pixel travel maps to a short, controlled sweep of real floor grains.
+          floorImpulseX = THREE.MathUtils.clamp(floorPointer.dx * 0.008, -0.24, 0.24);
+          floorImpulseZ = THREE.MathUtils.clamp(-floorPointer.dy * 0.012, -0.24, 0.24);
+        }
+      }
+      floorPointer.moved = false;
+      // Independent grains: damped sliding without homing back to original positions.
       for (let i = 0; i < arr.length; i += 3) {
         const j = i / 3;
         // Gravity-like descent: visible grains drop first, fade only on landing.
@@ -738,24 +776,28 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         const sideDrift = clickFall > 0 ? 0.12 : 1;
         const baseX = original[i] + scatter[i] * free * sideDrift;
         const baseZ = original[i + 2] + scatter[i + 2] * free * sideDrift;
-        // Stir only grains already on the floor. The original crown stays intact.
-        if (free > 0.82 && floorPointer.active && !reduced) {
-          const cursorX = (floorPointer.x - (w < 700 ? 0.50 : 0.56)) * (w < 700 ? 9.0 : 6.5);
-          const distance = Math.abs(baseX + floorOffsetX[j] - cursorX);
-          if (distance < 0.78) {
-            const strength = (1 - distance / 0.78) * ease((free - 0.82) / 0.18);
-            floorVelocityX[j] += floorPointer.dx * strength * 0.14;
-            floorVelocityZ[j] += (floorPointer.dy * 0.08 + (data.phase[j] % 2 - 1) * 0.004) * strength;
+        if (free > 0.85 && floorHitValid) {
+          const grainX = baseX + floorOffsetX[j];
+          const grainZ = baseZ + floorOffsetZ[j];
+          const dx = grainX - floorCursor.x;
+          const dz = grainZ - floorCursor.z;
+          const radius = 0.73;
+          const distance = Math.hypot(dx, dz);
+          if (distance < radius) {
+            const strength = (1 - distance / radius) * ease((free - 0.85) / 0.15);
+            // Push in pointer travel direction, with a small radial displacement.
+            floorVelocityX[j] += (floorImpulseX + (dx / Math.max(distance, 0.08)) * 0.016) * strength;
+            floorVelocityZ[j] += (floorImpulseZ + (dz / Math.max(distance, 0.08)) * 0.016) * strength;
           }
         }
-        floorVelocityX[j] *= 0.87;
-        floorVelocityZ[j] *= 0.87;
-        floorOffsetX[j] = THREE.MathUtils.clamp((floorOffsetX[j] + floorVelocityX[j]) * 0.993, -1.5, 1.5);
-        floorOffsetZ[j] = THREE.MathUtils.clamp((floorOffsetZ[j] + floorVelocityZ[j]) * 0.993, -0.9, 0.9);
-        arr[i] = baseX + floorOffsetX[j] * ease((free - 0.82) / 0.18);
+        floorVelocityX[j] *= 0.88;
+        floorVelocityZ[j] *= 0.88;
+        floorOffsetX[j] = THREE.MathUtils.clamp(floorOffsetX[j] + floorVelocityX[j], -2.4, 2.4);
+        floorOffsetZ[j] = THREE.MathUtils.clamp(floorOffsetZ[j] + floorVelocityZ[j], -1.8, 1.8);
+        arr[i] = baseX + floorOffsetX[j] * ease((free - 0.85) / 0.15);
         arr[i + 1] = original[i + 1] +
           (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - original[i + 1]) * free;
-        arr[i + 2] = baseZ + floorOffsetZ[j] * ease((free - 0.82) / 0.18);
+        arr[i + 2] = baseZ + floorOffsetZ[j] * ease((free - 0.85) / 0.15);
         if (!reduced && broken < 0.001) {
           arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
         }
