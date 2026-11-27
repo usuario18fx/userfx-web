@@ -241,6 +241,9 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLCanvasElement>(null);
   const clickReleaseRef = useRef<number | null>(null);
+  // Mouse-driven motion for the actual settled Three.js grains (not an overlay).
+  const floorMouseRef = useRef({ x: 0, y: 0, dx: 0, dy: 0, active: false });
+
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
   const ignoreClickRef = useRef(false);
@@ -568,6 +571,29 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     };
     canvas.addEventListener("webglcontextlost", onContextLost);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const floorPointer = floorMouseRef.current;
+    let previousFloorX = 0;
+    let previousFloorY = 0;
+    const onFloorMouse = (event: PointerEvent) => {
+      if (!interactive || !activeRef.current) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / Math.max(rect.width, 1);
+      const y = (event.clientY - rect.top) / Math.max(rect.height, 1);
+      if (x < 0 || x > 1 || y < 0.67 || y > 1) {
+        floorPointer.active = false;
+        return;
+      }
+      floorPointer.dx = Math.max(-0.4, Math.min(0.4, (x - previousFloorX) * 9));
+      floorPointer.dy = Math.max(-0.4, Math.min(0.4, (y - previousFloorY) * 9));
+      floorPointer.x = x;
+      floorPointer.y = y;
+      floorPointer.active = true;
+      previousFloorX = x;
+      previousFloorY = y;
+    };
+    const onFloorMouseLeave = () => { floorPointer.active = false; };
+    window.addEventListener("pointermove", onFloorMouse, { passive: true });
+    document.addEventListener("pointerleave", onFloorMouseLeave);
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
@@ -576,6 +602,8 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     } catch {
       showFallback();
       return () => {
+        window.removeEventListener("pointermove", onFloorMouse);
+        document.removeEventListener("pointerleave", onFloorMouseLeave);
         cancelAnimationFrame(fallbackFrame);
         fallbackObserver.disconnect();
         fallbackData.geometry.dispose();
@@ -643,6 +671,10 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       sizeAttenuation: true,
       blending: THREE.AdditiveBlending,
     });
+    const floorOffsetX = new Float32Array(data.phase.length);
+    const floorOffsetZ = new Float32Array(data.phase.length);
+    const floorVelocityX = new Float32Array(data.phase.length);
+    const floorVelocityZ = new Float32Array(data.phase.length);
     const points = new THREE.Points(data.geometry, material);
     points.renderOrder = 3;
     points.frustumCulled = false;
@@ -704,10 +736,26 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         // Gravity-like descent: visible grains drop first, fade only on landing.
         const free = clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken;
         const sideDrift = clickFall > 0 ? 0.12 : 1;
-        arr[i] = original[i] + scatter[i] * free * sideDrift;
+        const baseX = original[i] + scatter[i] * free * sideDrift;
+        const baseZ = original[i + 2] + scatter[i + 2] * free * sideDrift;
+        // Stir only grains already on the floor. The original crown stays intact.
+        if (free > 0.82 && floorPointer.active && !reduced) {
+          const cursorX = (floorPointer.x - (w < 700 ? 0.50 : 0.56)) * (w < 700 ? 9.0 : 6.5);
+          const distance = Math.abs(baseX + floorOffsetX[j] - cursorX);
+          if (distance < 0.78) {
+            const strength = (1 - distance / 0.78) * ease((free - 0.82) / 0.18);
+            floorVelocityX[j] += floorPointer.dx * strength * 0.14;
+            floorVelocityZ[j] += (floorPointer.dy * 0.08 + (data.phase[j] % 2 - 1) * 0.004) * strength;
+          }
+        }
+        floorVelocityX[j] *= 0.87;
+        floorVelocityZ[j] *= 0.87;
+        floorOffsetX[j] = THREE.MathUtils.clamp((floorOffsetX[j] + floorVelocityX[j]) * 0.993, -1.5, 1.5);
+        floorOffsetZ[j] = THREE.MathUtils.clamp((floorOffsetZ[j] + floorVelocityZ[j]) * 0.993, -0.9, 0.9);
+        arr[i] = baseX + floorOffsetX[j] * ease((free - 0.82) / 0.18);
         arr[i + 1] = original[i + 1] +
           (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - original[i + 1]) * free;
-        arr[i + 2] = original[i + 2] + scatter[i + 2] * free * sideDrift;
+        arr[i + 2] = baseZ + floorOffsetZ[j] * ease((free - 0.82) / 0.18);
         if (!reduced && broken < 0.001) {
           arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
         }
@@ -737,6 +785,8 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     frame = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onFloorMouse);
+      document.removeEventListener("pointerleave", onFloorMouseLeave);
       document.removeEventListener("visibilitychange", onVisibility);
       observer.disconnect();
       cancelAnimationFrame(fallbackFrame);
