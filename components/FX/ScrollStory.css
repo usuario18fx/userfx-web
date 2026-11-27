@@ -347,3 +347,19 @@
     will-change: auto;
   }
 }
+
+/* FX header quick actions — anchored to the existing nav, not the crown. */
+.fx-scroll-quick-nav { flex: 1; justify-content: center; gap: clamp(16px, 3vw, 56px); }
+.fx-scroll-quick-nav > a { font-family: inherit; font-size: clamp(12px,1.1vw,16px); letter-spacing: .02em; text-transform: none; }
+.fx-scroll-nav-actions { display: flex; align-items: center; gap: 10px; position: absolute; right: clamp(18px,4vw,76px); top: 50%; transform: translateY(-50%); }
+.fx-scroll-quick-nav .fx-scroll-nav-icon { display: grid; place-items: center; width: 43px; height: 39px; padding: 4px; border: 1px solid rgba(54,163,205,.46); border-radius: 8px; background: linear-gradient(150deg,#0b3961,#071325); cursor: pointer; box-shadow: inset 0 1px 1px rgba(133,209,246,.18); }
+.fx-scroll-nav-icon img { width: 31px; height: 31px; object-fit: contain; }
+.fx-scroll-quick-nav .fx-scroll-nav-menu { align-content: center; justify-items: center; gap: 5px; }
+.fx-scroll-quick-nav .fx-scroll-nav-menu span, .fx-scroll-quick-nav .fx-scroll-nav-menu span:last-child { display: block; width: 22px; height: 2px; border-radius: 2px; background: #a8e5ff; }
+.fx-scroll-quick-nav .fx-scroll-nav-icon:hover, .fx-scroll-quick-nav .fx-scroll-nav-icon:focus-visible { border-color: #5dd6ef; background: #0a3c62; }
+@media (max-width: 850px) {
+  .fx-scroll-quick-nav { justify-content: flex-end; padding-right: 145px; gap: 12px; }
+  .fx-scroll-quick-nav > a { display: none; }
+  .fx-scroll-nav-actions { right: 14px; gap: 6px; }
+  .fx-scroll-quick-nav .fx-scroll-nav-icon { width: 38px; height: 36px; }
+}
