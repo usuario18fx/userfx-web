@@ -663,6 +663,32 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     halo.frustumCulled = false;
     group.add(halo);
 
+    // FX_MOBILE_CROWN_FLOOR_REBIRTH_V1: keep the fallen particles on a separate floor
+    // layer while the crown regenerates in a new color. Desktop stays unchanged.
+    const mobileFloorGeometry = isMobile ? data.geometry.clone() : null;
+    const mobileFloorMaterial = isMobile ? new THREE.PointsMaterial({
+      size: 0.019,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.68,
+      depthWrite: false,
+      sizeAttenuation: true,
+      blending: THREE.AdditiveBlending,
+    }) : null;
+    const mobileFloorPoints = mobileFloorGeometry && mobileFloorMaterial
+      ? new THREE.Points(mobileFloorGeometry, mobileFloorMaterial) : null;
+    if (mobileFloorPoints) {
+      mobileFloorPoints.visible = false;
+      mobileFloorPoints.renderOrder = 4;
+      mobileFloorPoints.frustumCulled = false;
+      group.add(mobileFloorPoints);
+    }
+    const originalMobileColors = isMobile
+      ? ((data.geometry.getAttribute("color") as THREE.BufferAttribute).array as Float32Array).slice()
+      : null;
+    let mobileSettledAt: number | null = null;
+    let mobileColorCycle = -1;
+
     let w = 1, h = 1, frame = 0;
     let visible = !document.hidden;
     const resize = () => {
@@ -697,12 +723,43 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const arr = v.array as Float32Array;
       const original = data.original;
       const scatter = data.scatter;
+      if (isMobile && mobileSettledAt !== null && broken < 0.005 && mobileFloorPoints) {
+        mobileSettledAt = null;
+        mobileColorCycle = -1;
+        mobileFloorPoints.visible = false;
+        if (originalMobileColors) {
+          const originalColorAttr = data.geometry.getAttribute("color") as THREE.BufferAttribute;
+          (originalColorAttr.array as Float32Array).set(originalMobileColors);
+          originalColorAttr.needsUpdate = true;
+        }
+      }
+      const rebirthElapsed = isMobile && mobileSettledAt !== null && !reduced
+        ? ms - mobileSettledAt - 2600 : -1;
+      const rebirthPhase = rebirthElapsed >= 0 ? rebirthElapsed % 6900 : -1;
+      const rebirthCycle = rebirthElapsed >= 0 ? Math.floor(rebirthElapsed / 6900) : -1;
+      if (isMobile && rebirthCycle >= 0 && rebirthCycle !== mobileColorCycle) {
+        mobileColorCycle = rebirthCycle;
+        const colorAttribute = data.geometry.getAttribute("color") as THREE.BufferAttribute;
+        const colorValues = colorAttribute.array as Float32Array;
+        const nextColor = new THREE.Color();
+        for (let j = 0; j < colorValues.length / 3; j++) {
+          nextColor.setHSL((0.55 + (rebirthCycle + 1) * 0.17 + (j % 7) * 0.012) % 1, 0.84, 0.58);
+          colorValues[j * 3] = nextColor.r;
+          colorValues[j * 3 + 1] = nextColor.g;
+          colorValues[j * 3 + 2] = nextColor.b;
+        }
+        colorAttribute.needsUpdate = true;
+      }
+      const mobileFree = rebirthPhase < 0 ? null
+        : rebirthPhase < 1000 ? 1 - rebirthPhase / 1000
+          : rebirthPhase < 3800 ? 0
+            : Math.min(1, (rebirthPhase - 3800) / 1900);
 
       // Purely independent motion: no spring, wobble or jelly interpolation.
       for (let i = 0; i < arr.length; i += 3) {
         const j = i / 3;
         // Gravity-like descent: visible grains drop first, fade only on landing.
-        const free = clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken;
+        const free = mobileFree ?? (clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken);
         const sideDrift = clickFall > 0 ? 0.12 : 1;
         arr[i] = original[i] + scatter[i] * free * sideDrift;
         arr[i + 1] = original[i + 1] +
@@ -713,6 +770,13 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
         }
       }
       v.needsUpdate = true;
+      if (isMobile && mobileSettledAt === null && broken >= 0.999 && mobileFloorGeometry && mobileFloorPoints) {
+        const floorPosition = mobileFloorGeometry.getAttribute("position") as THREE.BufferAttribute;
+        (floorPosition.array as Float32Array).set(arr);
+        floorPosition.needsUpdate = true;
+        mobileFloorPoints.visible = true;
+        mobileSettledAt = ms;
+      }
       // The previous 0.12-radian sway took ~45 seconds and looked static.
       // A continuous 20-second turn plus independent pointer tilt is visible.
       const motion = interactionRef.current;
@@ -746,6 +810,8 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       data.geometry.dispose();
       material.dispose();
       haloMaterial.dispose();
+      mobileFloorGeometry?.dispose();
+      mobileFloorMaterial?.dispose();
       fxContour.geometries.forEach((geometry) => geometry.dispose());
       fxContour.materials.forEach((material) => material.dispose());
             fxStageFloorGeometry.dispose();
