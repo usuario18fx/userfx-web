@@ -748,6 +748,13 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       // Project the pointer onto the actual inclined ground plane, not an
       // approximate horizontal pixel band. One impulse per pointer movement.
 
+      const motion = interactionRef.current;
+      advanceInteraction(motion);
+      group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.55) * 0.10) + p * 0.3 + motion.hoverY + motion.dragY;
+      group.rotation.x = -0.055 + motion.hoverX + motion.dragX;
+      group.rotation.z = -0.07;
+      group.position.set((w < 700 ? 0 : 0.55) + motion.posX,
+        (rise - descend) * 1.0 + motion.posY, 0);
       group.updateMatrixWorld(true);
       floorHitValid = false;
       floorImpulseX = 0;
@@ -805,13 +812,6 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       v.needsUpdate = true;
       // The previous 0.12-radian sway took ~45 seconds and looked static.
       // A continuous 20-second turn plus independent pointer tilt is visible.
-      const motion = interactionRef.current;
-      advanceInteraction(motion);
-      group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.55) * 0.10) + p * 0.3 + motion.hoverY + motion.dragY;
-      group.rotation.x = -0.055 + motion.hoverX + motion.dragX;
-      group.rotation.z = -0.07;
-      group.position.set((w < 700 ? 0 : 0.55) + motion.posX,
-        (rise - descend) * 1.0 + motion.posY, 0);
             const floorVisibility = 1;
       material.opacity = 0.92 * opacity * floorVisibility;
       haloMaterial.opacity = 0.075 * opacity * (1 - broken);
