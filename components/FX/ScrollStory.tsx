@@ -33,19 +33,21 @@ export default function ScrollStory({ onOpenTelegram }: { onOpenTelegram: () => 
             <AdminModeSwitch />
           </div>
           <nav className="fx-scroll-quick-nav" aria-label="Landing navigation">
-            <a href="#protocol">
-              PROTOCOL
-            </a>
-            <a href="#spaces">
-              INSIDE
-            </a>
-            <a href="#access">
-              ACCESS
-            </a>
-            <button type="button" aria-label="Open full navigation" onClick={menu.toggle}>
-              <span />
-              <span />
-            </button>
+            <a href="#landing">Home</a>
+            <a href="#spaces">Inside</a>
+            <a href="#protocol">Protocol</a>
+            <a href="#access">Access</a>
+            <span className="fx-scroll-nav-actions">
+              <button type="button" className="fx-scroll-nav-icon" aria-label="Open chat" title="Open chat" onClick={() => document.querySelector<HTMLButtonElement>("#fx-chat-dock .fx-web-chat-launcher")?.click()}>
+                <img src="/assets/my-room/chat.png" alt="" />
+              </button>
+              <button type="button" className="fx-scroll-nav-icon" aria-label="Verify identity" title="Profile and identity" onClick={onOpenTelegram}>
+                <img src="/assets/room-priv-user-lock.webp" alt="" />
+              </button>
+              <button type="button" className="fx-scroll-nav-icon fx-scroll-nav-menu" aria-label="Open full navigation" aria-expanded={menu.open} onClick={menu.toggle}>
+                <span /><span /><span />
+              </button>
+            </span>
           </nav>
         </header>
         <div className="fx-scroll-hero-grid">
