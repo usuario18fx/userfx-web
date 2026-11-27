@@ -215,6 +215,20 @@ function PhotoPanel({
   );
 }
 
+/* FX_MOBILE_SINGLE_PHOTOS_V1 — one full-screen photograph per scroll segment on phones. */
+function MobilePhotoPanel({
+  src, index, progress, range,
+}: { src: string; index: number; progress: MotionValue<number>; range: [number, number] }) {
+  const clipPath = useTransform(progress, (value) => {
+    const reveal = Math.max(0, Math.min(1, (value - range[0]) / Math.max(0.00001, range[1] - range[0])));
+    return "inset(0 " + (100 - reveal * 100).toFixed(2) + "% 0 0)";
+  });
+  return (
+    <motion.figure className="pv-mobile-pic" style={{ clipPath, zIndex: index + 1 }}>
+      <img src={src} alt={"USER FX photo " + (index + 1)} decoding="async" loading={index < 2 ? "eager" : "lazy"} draggable={false} />
+    </motion.figure>
+  );
+}
 function VideoQuadrant({
   src,
   index,
@@ -489,6 +503,11 @@ export default function ProtocolVault({
           </div>
         </motion.div>
 
+        <div className="pv-mobile-pics" aria-label="USER FX mobile photo sequence">
+          {photos.slice(0, 4).map((src, index) => (
+            <MobilePhotoPanel key={src + "-" + index} src={src} index={index} progress={smooth} range={config.photos[index]} />
+          ))}
+        </div>
         <div className="pv-chapter-hud" aria-label="Scroll chapter">
           <div className="pv-chapter-count">
             {String(chapter).padStart(2, "0")}
