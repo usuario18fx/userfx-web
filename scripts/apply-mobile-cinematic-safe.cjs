@@ -83,7 +83,7 @@ try {
                incoming.toString("utf8").startsWith(previous.toString("utf8"))) {
       // The branch only appends a mobile CSS block. Keep all existing local
       // CSS rules and add the feature block, even if its old patch context moved.
-      const addition = incoming.toString("utf8").slice(previous.length);
+      const addition = incoming.toString("utf8").slice(previous.toString("utf8").length);
       const original = current.toString("utf8");
       const marker = name.includes("CinematicTour")
         ? "FX_MOBILE_SCROLL_SWIPE_V1" : "FX_MOBILE_SINGLE_PHOTOS_V1";
