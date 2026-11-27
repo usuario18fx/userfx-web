@@ -243,6 +243,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
   const clickReleaseRef = useRef<number | null>(null);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
+  const regenerationRef = useRef(0);
   const ignoreClickRef = useRef(false);
   const activeRef = useRef(active ?? true);
   const timeline = tl ?? DEFAULT_TL;
@@ -356,6 +357,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     if (now - lastTapRef.current < 420) return; // Prevent pointerup + click double toggle.
     lastTapRef.current = now;
     // Clicking again restores the original shape, allowing another demonstration.
+    if (clickReleaseRef.current !== null) regenerationRef.current += 1;
     clickReleaseRef.current = clickReleaseRef.current === null ? now : null;
   };
 
@@ -627,7 +629,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     fxStageFloor.rotation.x = -Math.PI / 2;
     fxStageFloor.position.set(0, PARTICLE_FLOOR_Y - 0.045, 0);
     fxStageFloor.renderOrder = -2;
-    group.add(fxStageFloor);
+    scene.add(fxStageFloor); // Fixed world-space ground, outside draggable crown.
 
     const upperTrace = createUpperTrace();
     group.add(upperTrace.line);
@@ -663,32 +665,50 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
     halo.frustumCulled = false;
     group.add(halo);
 
-    // FX_MOBILE_CROWN_FLOOR_REBIRTH_V1: keep the fallen particles on a separate floor
-    // layer while the crown regenerates in a new color. Desktop stays unchanged.
-    const mobileFloorGeometry = isMobile ? data.geometry.clone() : null;
-    const mobileFloorMaterial = isMobile ? new THREE.PointsMaterial({
-      size: 0.019,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.68,
-      depthWrite: false,
-      sizeAttenuation: true,
-      blending: THREE.AdditiveBlending,
-    }) : null;
-    const mobileFloorPoints = mobileFloorGeometry && mobileFloorMaterial
-      ? new THREE.Points(mobileFloorGeometry, mobileFloorMaterial) : null;
-    if (mobileFloorPoints) {
-      mobileFloorPoints.visible = false;
-      mobileFloorPoints.renderOrder = 4;
-      mobileFloorPoints.frustumCulled = false;
-      group.add(mobileFloorPoints);
-    }
-    const originalMobileColors = isMobile
-      ? ((data.geometry.getAttribute("color") as THREE.BufferAttribute).array as Float32Array).slice()
-      : null;
-    let mobileSettledAt: number | null = null;
-    let mobileColorCycle = -1;
-
+    // FX_FIXED_GROUND_V2: capped world-space deposits never inherit crown motion.
+    const groundLayers = Array.from({ length: 3 }, () => {
+      const geometry = data.geometry.clone();
+      const material = new THREE.PointsMaterial({
+        size: isMobile ? 0.019 : 0.016,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.6,
+        depthWrite: false,
+        sizeAttenuation: true,
+        blending: THREE.AdditiveBlending,
+      });
+      const particles = new THREE.Points(geometry, material);
+      particles.visible = false;
+      particles.frustumCulled = false;
+      particles.renderOrder = 3;
+      scene.add(particles);
+      return { geometry, material, particles };
+    });
+    let depositIndex = 0;
+    let settledAt: number | null = null;
+    let depositedCycle = -2;
+    let renderedGeneration = -1;
+    const pointWorld = new THREE.Vector3();
+    const startWorld = new THREE.Vector3();
+    const inverseWorld = new THREE.Matrix4();
+    const paletteColor = new THREE.Color();
+    const saveGroundDeposit = (positions: Float32Array) => {
+      const layer = groundLayers[depositIndex % groundLayers.length];
+      const attr = layer.geometry.getAttribute("position") as THREE.BufferAttribute;
+      const stored = attr.array as Float32Array;
+      for (let i = 0; i < positions.length; i += 3) {
+        pointWorld.set(positions[i], positions[i + 1], positions[i + 2]).applyMatrix4(group.matrixWorld);
+        stored[i] = pointWorld.x;
+        stored[i + 1] = PARTICLE_FLOOR_Y + ((i / 3) % 7) * 0.008;
+        stored[i + 2] = pointWorld.z;
+      }
+      attr.needsUpdate = true;
+      const storedColors = layer.geometry.getAttribute("color") as THREE.BufferAttribute;
+      storedColors.array.set((data.geometry.getAttribute("color") as THREE.BufferAttribute).array);
+      storedColors.needsUpdate = true;
+      layer.particles.visible = true;
+      depositIndex += 1;
+    };
     let w = 1, h = 1, frame = 0;
     let visible = !document.hidden;
     const resize = () => {
@@ -723,62 +743,39 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       const arr = v.array as Float32Array;
       const original = data.original;
       const scatter = data.scatter;
-      if (isMobile && mobileSettledAt !== null && broken < 0.005 && mobileFloorPoints) {
-        mobileSettledAt = null;
-        mobileColorCycle = -1;
-        mobileFloorPoints.visible = false;
-        if (originalMobileColors) {
-          const originalColorAttr = data.geometry.getAttribute("color") as THREE.BufferAttribute;
-          (originalColorAttr.array as Float32Array).set(originalMobileColors);
-          originalColorAttr.needsUpdate = true;
-        }
+      if (settledAt !== null && broken < 0.005) {
+        // Reset the crown only; deposits remain visible on the fixed floor.
+        settledAt = null;
+        depositedCycle = -2;
       }
-      const rebirthElapsed = isMobile && mobileSettledAt !== null && !reduced
-        ? ms - mobileSettledAt - 2600 : -1;
+      const rebirthElapsed = isMobile && settledAt !== null && !reduced
+        ? ms - settledAt - 2600 : -1;
       const rebirthPhase = rebirthElapsed >= 0 ? rebirthElapsed % 6900 : -1;
       const rebirthCycle = rebirthElapsed >= 0 ? Math.floor(rebirthElapsed / 6900) : -1;
-      if (isMobile && rebirthCycle >= 0 && rebirthCycle !== mobileColorCycle) {
-        mobileColorCycle = rebirthCycle;
-        const colorAttribute = data.geometry.getAttribute("color") as THREE.BufferAttribute;
-        const colorValues = colorAttribute.array as Float32Array;
-        const nextColor = new THREE.Color();
-        for (let j = 0; j < colorValues.length / 3; j++) {
-          nextColor.setHSL((0.55 + (rebirthCycle + 1) * 0.17 + (j % 7) * 0.012) % 1, 0.84, 0.58);
-          colorValues[j * 3] = nextColor.r;
-          colorValues[j * 3 + 1] = nextColor.g;
-          colorValues[j * 3 + 2] = nextColor.b;
+      const generation = isMobile && rebirthCycle >= 0
+        ? rebirthCycle + 1 + regenerationRef.current * 4
+        : regenerationRef.current;
+      if (generation !== renderedGeneration) {
+        renderedGeneration = generation;
+        if (generation > 0) {
+          const colorAttribute = data.geometry.getAttribute("color") as THREE.BufferAttribute;
+          const colors = colorAttribute.array as Float32Array;
+          for (let j = 0; j < colors.length / 3; j++) {
+            paletteColor.setHSL((0.53 + generation * 0.16 + (j % 7) * 0.013) % 1, 0.82, 0.57);
+            colors[j * 3] = paletteColor.r;
+            colors[j * 3 + 1] = paletteColor.g;
+            colors[j * 3 + 2] = paletteColor.b;
+          }
+          colorAttribute.needsUpdate = true;
         }
-        colorAttribute.needsUpdate = true;
       }
       const mobileFree = rebirthPhase < 0 ? null
         : rebirthPhase < 1000 ? 1 - rebirthPhase / 1000
           : rebirthPhase < 3800 ? 0
             : Math.min(1, (rebirthPhase - 3800) / 1900);
 
-      // Purely independent motion: no spring, wobble or jelly interpolation.
-      for (let i = 0; i < arr.length; i += 3) {
-        const j = i / 3;
-        // Gravity-like descent: visible grains drop first, fade only on landing.
-        const free = mobileFree ?? (clickFall > 0 ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken);
-        const sideDrift = clickFall > 0 ? 0.12 : 1;
-        arr[i] = original[i] + scatter[i] * free * sideDrift;
-        arr[i + 1] = original[i + 1] +
-          (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - original[i + 1]) * free;
-        arr[i + 2] = original[i + 2] + scatter[i + 2] * free * sideDrift;
-        if (!reduced && broken < 0.001) {
-          arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
-        }
-      }
-      v.needsUpdate = true;
-      if (isMobile && mobileSettledAt === null && broken >= 0.999 && mobileFloorGeometry && mobileFloorPoints) {
-        const floorPosition = mobileFloorGeometry.getAttribute("position") as THREE.BufferAttribute;
-        (floorPosition.array as Float32Array).set(arr);
-        floorPosition.needsUpdate = true;
-        mobileFloorPoints.visible = true;
-        mobileSettledAt = ms;
-      }
-      // The previous 0.12-radian sway took ~45 seconds and looked static.
-      // A continuous 20-second turn plus independent pointer tilt is visible.
+      // The background, ground and deposited grains remain in scene space.
+      // Only the crown edge and airborne grains inherit pointer transformations.
       const motion = interactionRef.current;
       advanceInteraction(motion);
       group.rotation.y = -0.18 + (reduced ? 0 : Math.sin(time * 0.55) * 0.10) + p * 0.3 + motion.hoverY + motion.dragY;
@@ -786,7 +783,42 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       group.rotation.z = -0.07;
       group.position.set((w < 700 ? 0 : 0.55) + motion.posX,
         (rise - descend) * 1.0 + motion.posY, 0);
-            const floorVisibility = 1;
+      group.updateMatrixWorld(true);
+      inverseWorld.copy(group.matrixWorld).invert();
+
+      // Gravity lands at the same world Y irrespective of crown tilt/drag.
+      const free = mobileFree ?? (clickFall > 0
+        ? 1 - Math.pow(1 - clickFall, 2.6) : broken * broken);
+      const sideDrift = clickFall > 0 ? 0.12 : 1;
+      for (let i = 0; i < arr.length; i += 3) {
+        const j = i / 3;
+        startWorld.set(original[i], original[i + 1], original[i + 2]).applyMatrix4(group.matrixWorld);
+        pointWorld.set(
+          startWorld.x + scatter[i] * free * sideDrift,
+          startWorld.y + (PARTICLE_FLOOR_Y + (j % 7) * 0.008 - startWorld.y) * free,
+          startWorld.z + scatter[i + 2] * free * sideDrift,
+        ).applyMatrix4(inverseWorld);
+        arr[i] = pointWorld.x;
+        arr[i + 1] = pointWorld.y;
+        arr[i + 2] = pointWorld.z;
+        if (!reduced && free < 0.001) {
+          arr[i + 1] += Math.sin(time * 0.55 + data.phase[j]) * 0.002;
+        }
+      }
+      v.needsUpdate = true;
+      const isOnGround = free >= 0.999;
+      if (isOnGround && settledAt === null) {
+        saveGroundDeposit(arr);
+        settledAt = ms;
+        depositedCycle = -1;
+      } else if (isMobile && isOnGround && rebirthCycle >= 0 &&
+        rebirthPhase >= 5700 && depositedCycle !== rebirthCycle) {
+        saveGroundDeposit(arr);
+        depositedCycle = rebirthCycle;
+      }
+      // The previous 0.12-radian sway took ~45 seconds and looked static.
+      // A continuous 20-second turn plus independent pointer tilt is visible.
+      const floorVisibility = isOnGround && depositIndex > 0 ? 0 : 1;
       material.opacity = 0.92 * opacity * floorVisibility;
       haloMaterial.opacity = 0.075 * opacity * (1 - broken);
      fxContour.materials.forEach((material, index) => {
@@ -810,8 +842,7 @@ export default function ProtocolCrown({ progress, tl, active, className, interac
       data.geometry.dispose();
       material.dispose();
       haloMaterial.dispose();
-      mobileFloorGeometry?.dispose();
-      mobileFloorMaterial?.dispose();
+      for (const layer of groundLayers) { layer.geometry.dispose(); layer.material.dispose(); }
       fxContour.geometries.forEach((geometry) => geometry.dispose());
       fxContour.materials.forEach((material) => material.dispose());
             fxStageFloorGeometry.dispose();
