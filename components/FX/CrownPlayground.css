@@ -92,3 +92,32 @@
     bottom: 15%;
   }
 }
+
+
+/* FX_CROWN_ENERGY_EXPERIMENT — only the dedicated pre-access chapter. */
+.fx-crown-playground--energy { height: 330svh; }
+.fx-crown-energy-stage { position: absolute; inset: 0; z-index: 2; touch-action: pan-y pinch-zoom; }
+.fx-crown-energy-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.fx-crown-energy-stage .fx-crown-playground-info { pointer-events: none; }
+.fx-crown-energy-pulse {
+  pointer-events: auto;
+  justify-self: start;
+  border: 1px solid rgba(63,216,208,.38);
+  border-radius: 6px;
+  background: rgba(6,23,32,.68);
+  color: #98f6ee;
+  font: inherit;
+  font-size: 10px;
+  padding: 8px 13px;
+  letter-spacing: .10em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.fx-crown-energy-pulse:focus-visible { outline: 2px solid #9bf9ef; outline-offset: 3px; }
+.fx-crown-energy-pulse:hover { border-color: #86f6ed; }
+@media (max-width: 700px) {
+  .fx-crown-playground--energy { height: 305svh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-crown-playground--energy { height: 100svh; }
+}
