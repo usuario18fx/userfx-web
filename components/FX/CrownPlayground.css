@@ -66,3 +66,29 @@
     radial-gradient(ellipse at 57% 45%, #071c24, #05070b 65%);
 }
 
+
+/* FX_FIXED_GROUND_V2: stationary backdrop/floor, separate from interactive crown. */
+.fx-crown-playground-sticky {
+  isolation: isolate;
+}
+.fx-crown-playground-sticky::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  left: 18%;
+  right: 12%;
+  bottom: 15%;
+  height: 13%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18, 95, 103, .20) 0%, rgba(9, 42, 54, .12) 46%, transparent 78%);
+  filter: blur(16px);
+}
+.fx-crown-playground-sticky .pv-crown-layer { z-index: 1; }
+@media (max-width: 700px) {
+  .fx-crown-playground-sticky::before {
+    left: 4%;
+    right: 4%;
+    bottom: 15%;
+  }
+}
