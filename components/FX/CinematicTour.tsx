@@ -479,6 +479,7 @@ export default function CinematicTour({
     };
     mql?.addEventListener?.("change", onReducedMotionChange);
     const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+    const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#14121c");
@@ -1148,13 +1149,13 @@ export default function CinematicTour({
         const top = 42 + row * 78;
         for (let col = 0; col < count; col++) {
           const x = left + col * (cellW + gap);
-          const shade = col % 3 === 0 ? "#24dcff" : col % 3 === 1 ? "#4d86ff" : "#9eeaff";
-          ctx.fillStyle = "rgba(13, 26, 45, .98)";
+          const shade = isMobileViewport ? "#343b45" : col % 3 === 0 ? "#24dcff" : col % 3 === 1 ? "#4d86ff" : "#9eeaff";
+          ctx.fillStyle = isMobileViewport ? "#171b22" : "rgba(13, 26, 45, .98)";
           ctx.fillRect(x, top, cellW, 62);
           ctx.strokeStyle = shade;
           ctx.lineWidth = 3;
           ctx.strokeRect(x + 2, top + 2, cellW - 4, 58);
-          ctx.fillStyle = "#e2f8ff";
+          ctx.fillStyle = isMobileViewport ? "#77818c" : "#e2f8ff";
           ctx.font = "bold 23px monospace";
           ctx.fillText(row === 4 && col === 3 ? "SPACE" : "FX1234567890QWERTY"[(row * 3 + col) % 18], x + 9, top + 34);
         }
@@ -1169,7 +1170,7 @@ export default function CinematicTour({
     laptopGroup.add(keyboardTop);
 
     box(0.27, 0.005, 0.13, 0, 0.595, 0.258, mat("#a4afc1", 0.24, 0.28), laptopGroup);
-    const keyboardGlow = new THREE.PointLight("#54caff", 2.8, 1.7);
+    const keyboardGlow = new THREE.PointLight("#54caff", isMobileViewport ? 0 : 2.8, 1.7);
     keyboardGlow.position.set(0, 0.78, 0);
     laptopGroup.add(keyboardGlow);
 
@@ -1856,7 +1857,7 @@ export default function CinematicTour({
 
     for (const [x, z] of [[1.12, -2.48], [4.51, -2.45]]) {
       box(0.48, 0.58, 0.54, x, 0.33, z, mat("#1f1921", 0.45));
-      if (x === 1.12) continue; // USERFX_REMOVE_TABLE_ORB: leave the table and the other globe intact.
+      if (x === 1.12 || isMobileViewport) continue; // Mobile-only: remove the white desk orb.
       const globe = new THREE.Mesh(
         new THREE.SphereGeometry(0.18, 20, 14),
         new THREE.MeshStandardMaterial({ color: "#fff1da", emissive: "#aa0a0a", emissiveIntensity: 2.2 })
@@ -2263,6 +2264,12 @@ export default function CinematicTour({
           <span className="fx-cover-scroll-pulse">
 SCROLL DOWN TO ENTER
 </span>
+          <span className="fx-cover-mobile-swipe" aria-hidden="true">
+            <svg viewBox="0 0 34 46" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 22V8a3 3 0 0 1 6 0v16l2-3a3 3 0 0 1 5 3l-2 10c-1 5-5 8-11 8h-3c-4 0-7-2-9-5l-5-8a3 3 0 0 1 5-3l6 5V17a3 3 0 0 1 6 0" />
+              <path d="M13 7l4-4 4 4" opacity=".8" />
+            </svg>
+          </span>
         </div>
       </div>
 
